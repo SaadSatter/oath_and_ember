@@ -1,0 +1,175 @@
+:root {
+  font-family: Georgia, serif;
+  color: #f4e7ce;
+  background: #10202b;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  overflow: hidden;
+}
+#game {
+  position: fixed;
+  inset: 0;
+}
+button,
+input {
+  font: inherit;
+  font-size: 16px;
+  border: 1px solid #a98a58;
+  border-radius: 7px;
+  padding: 14px;
+  background: #243b40;
+  color: #fae9c9;
+}
+button {
+  cursor: pointer;
+}
+button:hover {
+  background: #365258;
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.card {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(590px, 94vw);
+  max-height: 90vh;
+  overflow: auto;
+  padding: 38px;
+  background: linear-gradient(145deg, #20383bf5, #101b2af5);
+  border: 1px solid #8f7851;
+  border-radius: 18px;
+  box-shadow: 0 25px 90px #0008;
+  text-align: center;
+}
+h1 {
+  font-size: clamp(32px, 6vw, 55px);
+  font-weight: normal;
+  margin: 18px 0;
+}
+h1 span {
+  color: #bb98e1;
+}
+.eyebrow {
+  letter-spacing: 3px;
+  font: 12px system-ui;
+  color: #d6b879;
+}
+p {
+  line-height: 1.6;
+  color: #c3d0c8;
+}
+.card > button {
+  width: 100%;
+  margin: 10px 0;
+}
+.join,
+.roles {
+  display: flex;
+  gap: 12px;
+  margin: 20px 0;
+}
+.join input {
+  min-width: 0;
+  width: 70%;
+  text-transform: uppercase;
+}
+.roles button {
+  width: 50%;
+}
+small {
+  font: 12px system-ui;
+  line-height: 1.7;
+  color: #aabfb9;
+}
+.hidden {
+  display: none;
+}
+#hud {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  font: 14px system-ui;
+  pointer-events: none;
+}
+#hud span {
+  background: #10202bdd;
+  padding: 12px;
+  border-radius: 6px;
+}
+#hud button {
+  pointer-events: auto;
+  padding: 10px;
+}
+#notice {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #54313a;
+  color: white;
+  padding: 12px;
+  border-radius: 6px;
+  font: 14px system-ui;
+}
+#notice:empty {
+  display: none;
+}
+#touch {
+  display: none;
+  position: fixed;
+  bottom: 16px;
+  left: 12px;
+  right: 12px;
+  justify-content: space-between;
+  pointer-events: none;
+}
+#touch button {
+  pointer-events: auto;
+  touch-action: none;
+  min-width: 48px;
+  padding: 14px 10px;
+  font: 14px system-ui;
+  background: #20343dcc;
+}
+.pad {
+  display: grid;
+  grid-template-columns: repeat(3, 48px);
+  gap: 3px;
+}
+.pad button:first-child {
+  grid-column: 2;
+}
+.pad button:nth-child(2) {
+  grid-column: 1;
+}
+.skills button {
+  text-align: left;
+  font: 14px system-ui;
+}
+@media (pointer: coarse) {
+  #touch {
+    display: flex;
+  }
+  #notice {
+    bottom: 140px;
+  }
+  .card {
+    padding: 22px;
+  }
+  #hud {
+    font-size: 11px;
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "@oath/client",
+  "private": true,
+  "type": "module"
+}

@@ -1,0 +1,5 @@
+{
+  "name": "@oath/shared",
+  "private": true,
+  "type": "module"
+}

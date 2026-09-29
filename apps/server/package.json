@@ -1,0 +1,5 @@
+{
+  "name": "@oath/server",
+  "private": true,
+  "type": "module"
+}
