@@ -2,13 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
     <title>Oath & Ember</title>
   </head>
   <body>
     <div id="game"></div>
     <div id="panel"></div>
-    <div id="hud"></div>
+    <div id="screen-ui">
+      <div id="hud"></div>
+      <div id="objective"></div>
+      <div id="control-hints">
+        WASD / arrows · J attack · K defense · E use · Space jump
+      </div>
+      <div id="debug" hidden></div>
+    </div>
     <div id="notice" role="status"></div>
     <div id="touch">
       <div class="pad">
@@ -17,7 +27,7 @@
         ><button data-key="ArrowDown">↓</button
         ><button data-key="ArrowRight">→</button>
       </div>
-      <div>
+      <div class="actions">
         <button data-key="j">Strike</button><button data-key="k">Guard</button
         ><button data-key="e">Use</button><button data-key=" ">Jump</button>
       </div>

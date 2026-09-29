@@ -63,3 +63,11 @@ Docker configuration has been supplied but the image has not been built in this 
 This is the first technical slice, not the finished 15–25 minute game. It uses one Phaser presentation scene to handle all three map modes, and DOM overlays for menu/lobby/skills. Art is generated geometry. No paid or proprietary assets are required. Only the Mossling enemy archetype is implemented. Additional puzzle types and full art/audio remain future work. Enemy seeking is deliberately simple; it does not pathfind around obstacles. Ember channels the gate rune instantly; engine channeling is timed. Interpolation holds the last remote state on stalls. Prediction uses latest-input server acknowledgement, so packet jitter can still cause correction; F3 exposes the error.
 
 Validation on the host used Node 26.9.0, while Docker and Render target Node 24. Mobile input is implemented but has not been exercised on physical devices. The automated network test uses real Socket.IO connections; it does not substitute for a full two-person playtest.
+
+## Hero art pipeline
+
+See [docs/ART_PIPELINE.md](docs/ART_PIPELINE.md) for sprite-sheet layout and final-art replacement. F4 toggles sprites/geometric debug heroes; `?characters=geometric` starts in debug mode. Runtime-generated test sheets are presentation-only and do not affect gameplay.
+
+## Responsive display
+
+World rendering uses a bounded logical pixel budget with integer enlargement and nearest-neighbor filtering. HUD and touch controls reflow independently in screen space. See [docs/RESPONSIVE_RENDERING.md](docs/RESPONSIVE_RENDERING.md) for camera strategy, supported screen sizes and asset-authoring guidance.

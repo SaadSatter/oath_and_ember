@@ -1,4 +1,8 @@
 import Phaser from "phaser";
+import { attachResponsiveRenderer } from "./rendering/ResponsiveRenderer.js";
+import { smoothingFactor } from "./rendering/viewport.js";
+import { preloadHeroes, registerHeroes } from "./assets/heroLoader.js";
+import { PlayerView, type CharacterRendering } from "./entities/PlayerView.js";
 import "./styles.css";
 import { NetworkClient } from "./net/NetworkClient.js";
 import { maps, collisionRects } from "../../../packages/shared/src/maps.js";
@@ -12,6 +16,10 @@ let skillOpen = false,
   debug = false,
   uiKey = "",
   keys = new Set<string>();
+let characterRendering: CharacterRendering =
+  new URLSearchParams(location.search).get("characters") === "geometric"
+    ? "geometric"
+    : "sprite";
 const tell = (s: string) => {
   notice.textContent = s;
   setTimeout(() => {
@@ -30,6 +38,9 @@ async function request(e: Parameters<typeof net.request>[0], p: unknown) {
 function renderUI() {
   const w = net.world,
     me = w?.players[net.session?.playerId || ""];
+  document.body.dataset.playing = String(w?.phase === "PLAYING" && !skillOpen);
+  document.querySelector<HTMLDivElement>("#screen-ui")!.hidden =
+    !w || w.phase === "LOBBY";
   const k = JSON.stringify([
     net.session?.playerId,
     w?.phase,
@@ -138,6 +149,12 @@ window.addEventListener("keydown", (e) => {
     )
   )
     e.preventDefault();
+  if (!e.repeat && e.key === "F4") {
+    e.preventDefault();
+    characterRendering =
+      characterRendering === "sprite" ? "geometric" : "sprite";
+    tell(`Characters: ${characterRendering}`);
+  }
   keys.add(e.key.toLowerCase());
   if (!e.repeat && e.key === "Tab") {
     skillOpen = !skillOpen;
@@ -150,6 +167,16 @@ window.addEventListener("keydown", (e) => {
 });
 window.addEventListener("keyup", (e) => keys.delete(e.key.toLowerCase()));
 window.addEventListener("blur", () => keys.clear());
+// Device capability changes update CSS live, independently of canvas size.
+const touchMedia = window.matchMedia("(any-pointer: coarse)");
+const updateTouch = () => {
+  document.body.dataset.touch = String(
+    touchMedia.matches ||
+      new URLSearchParams(location.search).get("touch") === "1",
+  );
+};
+touchMedia.addEventListener("change", updateTouch);
+updateTouch();
 for (const b of document.querySelectorAll<HTMLButtonElement>("[data-key]")) {
   const key = b.dataset.key!.toLowerCase();
   b.onpointerdown = (e) => {
@@ -157,9 +184,12 @@ for (const b of document.querySelectorAll<HTMLButtonElement>("[data-key]")) {
     b.setPointerCapture(e.pointerId);
     keys.add(key);
   };
-  b.onpointerup = b.onpointercancel = () => {
-    keys.delete(key);
-  };
+  b.onpointerup =
+    b.onpointercancel =
+    b.onlostpointercapture =
+      () => {
+        keys.delete(key);
+      };
 }
 setInterval(() => {
   const w = net.world;
@@ -189,13 +219,28 @@ class Adventure extends Phaser.Scene {
   labels: Phaser.GameObjects.Text[] = [];
   sceneKey = "";
   rendered = { x: 0, y: 0 };
+  playerViews = new Map<string, PlayerView>();
+  preload() {
+    preloadHeroes(this);
+  }
+  clearPlayerViews() {
+    for (const view of this.playerViews.values()) view.destroy();
+    this.playerViews.clear();
+  }
   create() {
+    registerHeroes(this);
+    const detachResponsive = attachResponsiveRenderer(this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, detachResponsive);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
+      this.clearPlayerViews(),
+    );
     this.gfx = this.add.graphics();
   }
-  update() {
+  update(_time: number, delta: number) {
     const w = net.world;
     if (!w || w.phase === "LOBBY") {
       this.gfx.clear();
+      this.clearPlayerViews();
       return;
     }
     const map = maps[w.sceneId],
@@ -204,6 +249,7 @@ class Adventure extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, map.width, map.height);
     const local = net.prediction.player || me;
     if (this.sceneKey !== w.sceneId) {
+      this.clearPlayerViews();
       this.sceneKey = w.sceneId;
       this.rendered = { x: local.x, y: local.y };
     }
@@ -211,7 +257,7 @@ class Adventure extends Phaser.Scene {
       this.rendered.x - local.x,
       this.rendered.y - local.y,
     );
-    const a = err > 100 ? 1 : 0.3;
+    const a = err > 100 ? 1 : smoothingFactor(delta);
     this.rendered.x += (local.x - this.rendered.x) * a;
     this.rendered.y += (local.y - this.rendered.y) * a;
     this.cameras.main.centerOn(this.rendered.x, this.rendered.y);
@@ -262,23 +308,26 @@ class Adventure extends Phaser.Scene {
         p.id === me.id
           ? this.rendered
           : net.interpolation.position(p.id, "players") || p;
-      g.fillStyle(p.role === "OATH" ? 0xe4b56b : 0xc5a1f5);
-      if (p.role === "OATH")
-        g.fillRoundedRect(pos.x - 13, pos.y - 17, 26, 34, 4);
-      else g.fillCircle(pos.x, pos.y, 14);
-      g.lineStyle(3, 0xffffff);
-      g.lineBetween(
-        pos.x,
-        pos.y,
-        pos.x + Math.cos(p.facing) * 25,
-        pos.y + Math.sin(p.facing) * 25,
-      );
-      if (p.actionState === "guard") {
-        g.lineStyle(2, 0x90d9ef);
-        g.strokeCircle(pos.x, pos.y, 23);
+      let view = this.playerViews.get(p.id);
+      if (!view) {
+        view = new PlayerView(this);
+        this.playerViews.set(p.id, view);
       }
-      g.fillStyle(0xe05260);
-      g.fillRect(pos.x - 18, pos.y - 28, (36 * p.hp) / p.maxHp, 4);
+      const motion = p.id === me.id ? local : p;
+      view.update(p, motion, pos, map.mode, characterRendering, {
+        interacting:
+          p.id === me.id &&
+          keys.has("e") &&
+          !skillOpen &&
+          net.socket.connected &&
+          Object.values(w.players).every((hero) => hero.connected),
+      });
+    }
+    for (const [id, view] of this.playerViews) {
+      if (!w.players[id]) {
+        view.destroy();
+        this.playerViews.delete(id);
+      }
     }
     for (const e of Object.values(w.enemies)) {
       const q = net.interpolation.position(e.id, "enemies") || e;
@@ -329,42 +378,28 @@ class Adventure extends Phaser.Scene {
           : `Ember: hold E at anchor. Oath: J near Warden. Shield: ${w.boss?.phase}`;
     if (Object.values(w.players).some((p) => !p.connected))
       goal = "Partner disconnected. Game paused for up to 30 seconds.";
-    this.labels.push(
-      this.add
-        .text(
-          16,
-          70,
-          goal + "\nWASD / arrows · J attack · K defense · E use · Space jump",
-          {
-            fontSize: "14px",
-            color: "#f6e9cd",
-            backgroundColor: "#10202bdd",
-            wordWrap: { width: Math.max(260, this.scale.width - 32) },
-          },
-        )
-        .setScrollFactor(0),
-    );
+    document.querySelector<HTMLDivElement>("#objective")!.textContent = goal;
+    const debugPanel = document.querySelector<HTMLDivElement>("#debug")!;
+    debugPanel.hidden = !debug;
     if (debug)
-      this.labels.push(
-        this.add
-          .text(
-            16,
-            130,
-            `F3 · tick ${w.serverTick} · seq ${net.seq} / ack ${me.lastProcessedInputSeq}\npending ${net.prediction.pending.length} · correction ${net.prediction.error.toFixed(1)}px · buffer ${net.interpolation.buffer.length}`,
-            { fontSize: "12px", color: "#a5e4ba", backgroundColor: "#000000" },
-          )
-          .setScrollFactor(0),
-      );
+      debugPanel.textContent = `F3 · ${characterRendering} (F4) · tick ${w.serverTick} · seq ${net.seq} / ack ${me.lastProcessedInputSeq}\npending ${net.prediction.pending.length} · correction ${net.prediction.error.toFixed(1)}px · buffer ${net.interpolation.buffer.length} · viewport ${this.scale.width}×${this.scale.height}`;
+    const root = document.querySelector<HTMLDivElement>("#game")!;
+    root.dataset.playerId = me.id;
+    root.dataset.worldPosition = `${me.x},${me.y}`;
+    root.dataset.scene = w.sceneId;
   }
 }
 new Phaser.Game({
   type: Phaser.AUTO,
   parent: "game",
   backgroundColor: "#10202b",
+  pixelArt: true,
+  roundPixels: true,
   scale: {
-    mode: Phaser.Scale.RESIZE,
-    width: window.innerWidth,
-    height: window.innerHeight,
+    mode: Phaser.Scale.NONE,
+    width: 640,
+    height: 360,
+    autoRound: false,
   },
   scene: Adventure,
 });
