@@ -1,0 +1,232 @@
+# Generation brief: coco_ward_v3
+
+See the JSON contract and art/ART_SPEC.md.
+
+{
+  "asset_id": "coco_ward_v3",
+  "version": 3,
+  "status": "BRIEF",
+  "character": "coco",
+  "animation": "ward",
+  "source_file": "art/incoming/coco_ward_v3",
+  "canonical_references": [
+    "Images/Character Concept art.png",
+    "Images/Sprites/Defense Basic Sprites.png",
+    "docs/DEFENSE_ASSET_PROVENANCE.json"
+  ],
+  "runtime_files": [],
+  "directions": [
+    "omnidirectional"
+  ],
+  "frame_count": 1,
+  "frame_dimensions": [
+    128,
+    128
+  ],
+  "anchor": [
+    64,
+    70
+  ],
+  "palette_behavior": {
+    "source": "canonical_ember_magic",
+    "runtime_recolor": true,
+    "mask_channel": "green"
+  },
+  "qa_status": "NOT_RUN",
+  "iteration": 0,
+  "approved_at": null,
+  "target": "assets/characters/ember/defense.png",
+  "mask_target": "assets/characters/ember/defense-mask.png",
+  "reports": [],
+  "art_spec": {
+    "path": "art/ART_SPEC.md",
+    "sha256": "d16aaee905c5d9b27d5ddf8aeba905214cd4cd2d66ad9558749d197ec1b2809a"
+  },
+  "canonical_reference_hashes": {
+    "Images/Character Concept art.png": "d6cb8715f3f8d8630079b1a29cb97238482c2338c10096a351a424ed11ebce8d",
+    "Images/Sprites/Defense Basic Sprites.png": "54ff7a00f227ece98054e5b2ffe5cd94511ef8b38d7e3d6196fe3697b3bffd5f",
+    "docs/DEFENSE_ASSET_PROVENANCE.json": "327c9d35e78a2afad961e9a03329f193fbc4b42a5c3e40885ada855c868b54da"
+  },
+  "approved_runtime_hash": "6a5a037623ea305949419dc09b01656807938f48226b64b8fe6d7b2ca142233d",
+  "asset_type": "defensive_vfx",
+  "perspective": "top_down",
+  "frame_count_target": 1,
+  "frame_dimensions_target": [
+    128,
+    128
+  ],
+  "ground_anchor": [
+    64,
+    70
+  ],
+  "canonical_reference": [
+    "Images/Character Concept art.png",
+    "Images/Sprites/Defense Basic Sprites.png",
+    "docs/DEFENSE_ASSET_PROVENANCE.json"
+  ],
+  "approved_runtime_reference": "apps/client/public/assets/characters/ember/defense.png",
+  "effect_behavior": "Separate hollow rim; existing start/held/end envelope; Coco body unchanged",
+  "must_preserve": [
+    "canonical silhouette",
+    "equipment",
+    "hair",
+    "skin",
+    "costume proportions"
+  ],
+  "must_not_change": [
+    "gameplay",
+    "collision",
+    "staff structure",
+    "skin/hair/eyes palette"
+  ],
+  "acceptance_criteria": [
+    "transparent horizontal atlas",
+    "exact frame grid and anchor",
+    "green effect-only mask",
+    "stable design across frames",
+    "local/remote visibility",
+    "four responsive viewports"
+  ],
+  "previous_feedback": [
+    {
+      "report": "art/qa/coco_ward_v1/iteration-01/qa-report.json",
+      "checks": [
+        {
+          "id": "typecheck",
+          "result": "PASS"
+        },
+        {
+          "id": "qa_execution",
+          "result": "FAIL",
+          "category": "IMPLEMENTATION",
+          "evidence": "art/qa/coco_ward_v1/iteration-01",
+          "feedback": "Error: test failed"
+        }
+      ]
+    },
+    {
+      "report": "art/qa/coco_ward_v1/iteration-02/qa-report.json",
+      "checks": [
+        {
+          "id": "typecheck",
+          "result": "PASS"
+        },
+        {
+          "id": "qa_execution",
+          "result": "FAIL",
+          "category": "IMPLEMENTATION",
+          "evidence": "art/qa/coco_ward_v1/iteration-02",
+          "feedback": "Error: test failed"
+        }
+      ]
+    },
+    {
+      "report": "art/qa/coco_ward_v1/iteration-03/qa-report.json",
+      "checks": [
+        {
+          "id": "typecheck",
+          "result": "PASS"
+        },
+        {
+          "id": "test",
+          "result": "PASS"
+        },
+        {
+          "id": "build",
+          "result": "PASS"
+        },
+        {
+          "id": "viewport_1920_1080_client_1",
+          "result": "PASS",
+          "evidence": "art/qa/coco_ward_v1/iteration-03/1920x1080-client-2-recovered.png"
+        },
+        {
+          "id": "viewport_1920_1080_client_2",
+          "result": "PASS",
+          "evidence": "art/qa/coco_ward_v1/iteration-03/1920x1080-client-2-recovered.png"
+        },
+        {
+          "id": "authoritative_mechanic_1920_1080",
+          "result": "PASS",
+          "evidence": "art/qa/coco_ward_v1/iteration-03/1920x1080-states.json"
+        },
+        {
+          "id": "two_clients_1920_1080",
+          "result": "PASS",
+          "evidence": "art/qa/coco_ward_v1/iteration-03/1920x1080-client-1-idle.png"
+        },
+        {
+          "id": "viewport_1440_900_client_1",
+          "result": "PASS",
+          "evidence": "art/qa/coco_ward_v1/iteration-03/1440x900-client-2-recovered.png"
+        },
+        {
+          "id": "viewport_1440_900_client_2",
+          "result": "PASS",
+          "evidence": "art/qa/coco_ward_v1/iteration-03/1440x900-client-2-recovered.png"
+        },
+        {
+          "id": "authoritative_mechanic_1440_900",
+          "result": "PASS",
+          "evidence": "art/qa/coco_ward_v1/iteration-03/1440x900-states.json"
+        },
+        {
+          "id": "two_clients_1440_900",
+          "result": "PASS",
+          "evidence": "art/qa/coco_ward_v1/iteration-03/1440x900-client-1-idle.png"
+        },
+        {
+          "id": "viewport_390_844_client_1",
+          "result": "PASS",
+          "evidence": "art/qa/coco_ward_v1/iteration-03/390x844-client-2-recovered.png"
+        },
+        {
+          "id": "viewport_390_844_client_2",
+          "result": "PASS",
+          "evidence": "art/qa/coco_ward_v1/iteration-03/390x844-client-2-recovered.png"
+        },
+        {
+          "id": "authoritative_mechanic_390_844",
+          "result": "PASS",
+          "evidence": "art/qa/coco_ward_v1/iteration-03/390x844-states.json"
+        },
+        {
+          "id": "two_clients_390_844",
+          "result": "PASS",
+          "evidence": "art/qa/coco_ward_v1/iteration-03/390x844-client-1-idle.png"
+        },
+        {
+          "id": "viewport_844_390_client_1",
+          "result": "PASS",
+          "evidence": "art/qa/coco_ward_v1/iteration-03/844x390-client-2-recovered.png"
+        },
+        {
+          "id": "viewport_844_390_client_2",
+          "result": "PASS",
+          "evidence": "art/qa/coco_ward_v1/iteration-03/844x390-client-2-recovered.png"
+        },
+        {
+          "id": "authoritative_mechanic_844_390",
+          "result": "PASS",
+          "evidence": "art/qa/coco_ward_v1/iteration-03/844x390-states.json"
+        },
+        {
+          "id": "two_clients_844_390",
+          "result": "PASS",
+          "evidence": "art/qa/coco_ward_v1/iteration-03/844x390-client-1-idle.png"
+        },
+        {
+          "id": "browser_errors",
+          "result": "PASS",
+          "evidence": "art/qa/coco_ward_v1/iteration-03/browser-log.json"
+        },
+        {
+          "id": "visual_rubric",
+          "result": "REVIEW",
+          "evidence": "art/qa/coco_ward_v1/iteration-03",
+          "feedback": "Review contact sheet, both-client sequences and VISUAL_QA.md. Screenshots do not prove design consistency, timing, correct scale, or palette isolation."
+        }
+      ]
+    }
+  ]
+}
