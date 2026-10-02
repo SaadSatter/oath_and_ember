@@ -336,3 +336,13 @@ body[data-touch="true"][data-playing="true"] #notice {
     overflow: auto;
   }
 }
+
+.appearance-grid { display:flex; flex-wrap:wrap; gap:12px; margin:12px 0; }
+.appearance-card { flex:1 1 180px; padding:10px; border:1px solid #76654c; border-radius:8px; }
+.hero-preview { display:block; width:96px; height:128px; margin:4px auto; image-rendering:pixelated; }
+.palette-group { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:6px 0; }
+.palette-group span { width:100%; font-size:14px; }
+.palette-group .color-swatch { background:var(--swatch); width:36px; height:36px; min-width:36px; padding:0; border:2px solid #aaa; border-radius:50%; margin:0; }
+.color-swatch[aria-pressed=true] { outline:3px solid #fff; outline-offset:2px; }
+.color-swatch:disabled { opacity:1; cursor:default; }
+@media (pointer:coarse) { .palette-group .color-swatch { width:44px; height:44px; min-width:44px; } }

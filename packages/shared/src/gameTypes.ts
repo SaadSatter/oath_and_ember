@@ -1,3 +1,4 @@
+import type { CharacterAppearance } from "./appearance.js";
 export type Role = "OATH" | "EMBER";
 export type SceneId = "FOREST_RUINS" | "AIRSHIP" | "AIRSHIP_BOSS";
 export interface InputFrame {
@@ -9,9 +10,17 @@ export interface InputFrame {
   secondaryHeld: boolean;
   interactHeld: boolean;
 }
+export interface CombatAction {
+  seq: number;
+  kind: "sword" | "heavy" | "cast";
+  facing: number;
+  startedTick: number;
+}
 export interface Player {
   id: string;
   role: Role | null;
+  appearance?: CharacterAppearance;
+  combat?: CombatAction;
   connected: boolean;
   ready: boolean;
   x: number;

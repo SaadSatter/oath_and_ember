@@ -1,0 +1,86 @@
+[
+  {
+    "canvas": {
+      "display": [
+        1920,
+        1080
+      ],
+      "logical": [
+        640,
+        360
+      ]
+    },
+    "logical": "640x360",
+    "player": "e0db9591-b7d9-4653-893b-acfbaacf6f79",
+    "position": "170.6666666666667,480",
+    "scale": "3",
+    "status": "EMBER · HP 100 · 1 points · Room 98UPBB · Connected",
+    "viewport": [
+      1920,
+      1080
+    ]
+  },
+  {
+    "canvas": {
+      "display": [
+        1214,
+        758
+      ],
+      "logical": [
+        607,
+        379
+      ]
+    },
+    "logical": "607x379",
+    "player": "e0db9591-b7d9-4653-893b-acfbaacf6f79",
+    "position": "170.6666666666667,480",
+    "scale": "2",
+    "status": "EMBER · HP 100 · 1 points · Room 98UPBB · Connected",
+    "viewport": [
+      1440,
+      900
+    ]
+  },
+  {
+    "canvas": {
+      "display": [
+        360,
+        640
+      ],
+      "logical": [
+        360,
+        640
+      ]
+    },
+    "logical": "360x640",
+    "player": "e0db9591-b7d9-4653-893b-acfbaacf6f79",
+    "position": "170.6666666666667,480",
+    "scale": "1",
+    "status": "EMBER · HP 100 · 1 points · Room 98UPBB · Connected",
+    "viewport": [
+      390,
+      844
+    ]
+  },
+  {
+    "canvas": {
+      "display": [
+        640,
+        360
+      ],
+      "logical": [
+        640,
+        360
+      ]
+    },
+    "logical": "640x360",
+    "player": "e0db9591-b7d9-4653-893b-acfbaacf6f79",
+    "position": "170.6666666666667,480",
+    "scale": "1",
+    "status": "EMBER · HP 100 · 1 points · Room 98UPBB · Connected",
+    "viewport": [
+      844,
+      390
+    ]
+  }
+]

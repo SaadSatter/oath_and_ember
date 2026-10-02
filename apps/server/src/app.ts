@@ -99,6 +99,12 @@ export function createApp() {
         sync();
       }),
     );
+    socket.on("appearance:select", (p, ack) =>
+      request(ack, () => {
+        requireRoom().setAppearance(id, p);
+        sync();
+      }),
+    );
     socket.on("lobby:ready", (p, ack) =>
       request(ack, () => {
         requireRoom().ready(id, z.boolean().parse(p?.ready));

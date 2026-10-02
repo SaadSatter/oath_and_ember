@@ -1,3 +1,4 @@
+import type { CharacterAppearance } from "./appearance.js";
 import type { World, Role, InputFrame } from "./gameTypes.js";
 export type Result<T = unknown> =
   { ok: true; data: T } | { ok: false; error: string };
@@ -14,6 +15,7 @@ export interface ClientEvents {
   "room:join": (p: { roomCode: string }, ack: Ack<Session>) => void;
   "session:resume": (p: Session, ack: Ack<Session>) => void;
   "role:select": (p: { role: Role }, ack: Ack) => void;
+  "appearance:select": (p: CharacterAppearance, ack: Ack) => void;
   "lobby:ready": (p: { ready: boolean }, ack: Ack) => void;
   "player:input": (p: InputFrame) => void;
   "skill:unlock": (p: { nodeId: string }, ack: Ack) => void;

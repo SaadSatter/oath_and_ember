@@ -1,3 +1,7 @@
+import {
+  defaultAppearance,
+  validAppearance,
+} from "../../../packages/shared/src/appearance.js";
 import { randomUUID } from "node:crypto";
 import { DT } from "../../../packages/shared/src/constants.js";
 import {
@@ -85,8 +89,22 @@ export class GameRoom {
       )
     )
       throw Error("That role is already taken.");
+    if (
+      this.state.players[id].role !== role ||
+      !this.state.players[id].appearance
+    )
+      this.state.players[id].appearance = defaultAppearance(role);
     this.state.players[id].role = role;
     this.state.players[id].ready = false;
+  }
+  setAppearance(id: string, appearance: unknown) {
+    const p = this.state.players[id];
+    if (this.state.phase !== "LOBBY" || !p.role)
+      throw Error("Choose a hero in the lobby first.");
+    if (!validAppearance(p.role, appearance))
+      throw Error("Invalid appearance palette.");
+    p.appearance = { ...appearance };
+    p.ready = false;
   }
   ready(id: string, ready: boolean) {
     const p = this.state.players[id];
@@ -172,6 +190,7 @@ export class GameRoom {
     w.enemies = { moss: { id: "moss", x: 710, y: 380, hp: 60, cooldown: 0 } };
     w.checkpoint = "Clearing";
     Object.values(w.players).forEach((p, i) => {
+      delete p.combat;
       Object.assign(p, {
         x: 120,
         y: 430 + i * 50,
@@ -197,6 +216,7 @@ export class GameRoom {
     if (scene === "AIRSHIP_BOSS")
       w.boss = { hp: 220, phase: "SHIELDED", shieldReturned: false };
     Object.values(w.players).forEach((p, i) => {
+      delete p.combat;
       Object.assign(p, {
         ...maps[scene].spawn,
         x: maps[scene].spawn.x + i * 50,
@@ -249,6 +269,17 @@ export class GameRoom {
         p.cooldowns.dash = 2;
       }
       if (i.primaryHeld && !p.cooldowns.attack) {
+        p.combat = {
+          seq: w.serverTick,
+          startedTick: w.serverTick,
+          facing: p.facing,
+          kind:
+            p.role === "OATH"
+              ? p.unlockedSkills.includes("heavy")
+                ? "heavy"
+                : "sword"
+              : "cast",
+        };
         p.cooldowns.attack = p.role === "OATH" ? 0.45 : 0.6;
         if (p.role === "OATH") {
           for (const e of Object.values(w.enemies))

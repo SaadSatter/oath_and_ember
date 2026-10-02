@@ -102,6 +102,10 @@ it("resizes one live presentation without reconnecting, resetting player or rest
     expect(scene.events.emit).not.toHaveBeenCalled();
     expect(scene.cameras.main.setZoom).toHaveBeenLastCalledWith(1);
   }
+  // Portrait and landscape both use zoom=1, but CSS dimensions still need
+  // refreshing on orientation change. A no-op resize must not refresh them.
+  expect(scene.scale.setZoom).toHaveBeenLastCalledWith(1);
+  expect(scene.scale.setZoom).toHaveBeenCalledTimes(4);
   const refreshes = scene.scale.setZoom.mock.calls.length;
   h.resize();
   expect(scene.scale.setZoom.mock.calls.length).toBe(refreshes);

@@ -1,3 +1,5 @@
+import { renderAppearanceLobby } from "./ui/appearanceLobby.js";
+import { effectColor } from "./assets/palettes.js";
 import Phaser from "phaser";
 import { attachResponsiveRenderer } from "./rendering/ResponsiveRenderer.js";
 import { smoothingFactor } from "./rendering/viewport.js";
@@ -7,6 +9,7 @@ import "./styles.css";
 import { NetworkClient } from "./net/NetworkClient.js";
 import { maps, collisionRects } from "../../../packages/shared/src/maps.js";
 import { skills } from "../../../packages/shared/src/abilities.js";
+import { heroNames } from "./assets/heroNames.js";
 import { neutral } from "../../../packages/shared/src/gameTypes.js";
 const net = new NetworkClient(),
   panel = document.querySelector<HTMLDivElement>("#panel")!,
@@ -47,6 +50,7 @@ function renderUI() {
     w?.players &&
       Object.values(w.players).map((p) => [
         p.role,
+        p.appearance,
         p.ready,
         p.connected,
         p.unlockedSkills,
@@ -78,11 +82,11 @@ function renderUI() {
   }
   if (w.phase === "LOBBY") {
     panel.className = "card";
-    panel.innerHTML = `<div class="eyebrow">GATHER YOUR PARTY</div><h1>Room ${w.roomCode}</h1><button id="copy">Copy code</button><div class="roles"><button id="oath">OATH<br><small>Guardian • sword & mechanisms</small></button><button id="ember">EMBER<br><small>Arcanist • bolts & runes</small></button></div><p id="slots"></p><button id="ready">${me?.ready ? "Cancel ready" : "Ready for adventure"}</button>`;
+    panel.innerHTML = `<div class="eyebrow">GATHER YOUR PARTY</div><h1>Room ${w.roomCode}</h1><button id="copy">Copy code</button><div class="roles"><button id="oath">Sieg<br><small>Guardian • sword & mechanisms</small></button><button id="ember">Coco<br><small>Arcanist • bolts & runes</small></button></div><p id="slots"></p><button id="ready">${me?.ready ? "Cancel ready" : "Ready for adventure"}</button>`;
     panel.querySelector("#slots")!.textContent = Object.values(w.players)
       .map(
         (p) =>
-          `${p.id === me?.id ? "You" : "Partner"}: ${p.role || "choosing"} · ${p.connected ? (p.ready ? "ready" : "not ready") : "disconnected"}`,
+          `${p.id === me?.id ? "You" : "Partner"}: ${p.role ? heroNames[p.role] : "choosing"} · ${p.connected ? (p.ready ? "ready" : "not ready") : "disconnected"}`,
       )
       .join(" / ");
     for (const [selector, role] of [
@@ -95,6 +99,12 @@ function renderUI() {
       );
       b.onclick = () => void request("role:select", { role });
     }
+    renderAppearanceLobby(
+      panel,
+      w,
+      me?.id || "",
+      (appearance) => void request("appearance:select", appearance),
+    );
     panel.querySelector<HTMLButtonElement>("#ready")!.onclick = () =>
       void request("lobby:ready", { ready: !me?.ready });
     panel.querySelector<HTMLButtonElement>("#copy")!.onclick = () =>
@@ -315,6 +325,7 @@ class Adventure extends Phaser.Scene {
       }
       const motion = p.id === me.id ? local : p;
       view.update(p, motion, pos, map.mode, characterRendering, {
+        serverTick: w.serverTick,
         interacting:
           p.id === me.id &&
           keys.has("e") &&
@@ -338,7 +349,7 @@ class Adventure extends Phaser.Scene {
     }
     for (const p of Object.values(w.projectiles)) {
       const q = net.interpolation.position(p.id, "projectiles") || p;
-      g.fillStyle(0xdac1ff);
+      g.fillStyle(effectColor(w.players[p.owner]?.appearance?.effectPalette));
       g.fillCircle(q.x, q.y, 6);
     }
     if (w.boss) {
@@ -365,17 +376,17 @@ class Adventure extends Phaser.Scene {
     }
     const stats = hud.querySelector("#stats");
     if (stats)
-      stats.textContent = `${me.role} · HP ${Math.round(me.hp)} · ${me.skillPoints} points · Room ${w.roomCode} · ${net.socket.connected ? "Connected" : "Reconnecting"}`;
+      stats.textContent = `${me.role ? heroNames[me.role] : "Choosing"} · HP ${Math.round(me.hp)} · ${me.skillPoints} points · Room ${w.roomCode} · ${net.socket.connected ? "Connected" : "Reconnecting"}`;
     let goal =
       w.sceneId === "FOREST_RUINS"
         ? !w.puzzles.gate.complete
-          ? "Oath: J at bramble. Ember: hold E at rune."
+          ? "Sieg: J at bramble. Coco: hold E at rune."
           : !w.puzzles.bridge.complete
-            ? "Oath: hold E at crate to push to plate. Ember: E at crystal."
+            ? "Sieg: hold E at crate to push to plate. Coco: E at crystal."
             : "Both gates open. Explore east to board the airship."
         : w.sceneId === "AIRSHIP"
-          ? `Hold E together: Oath at crank, Ember at core. Engine ${Math.min(100, Math.round((w.puzzles.engine.progress / 3) * 100))}%`
-          : `Ember: hold E at anchor. Oath: J near Warden. Shield: ${w.boss?.phase}`;
+          ? `Hold E together: Sieg at crank, Coco at core. Engine ${Math.min(100, Math.round((w.puzzles.engine.progress / 3) * 100))}%`
+          : `Coco: hold E at anchor. Sieg: J near Warden. Shield: ${w.boss?.phase}`;
     if (Object.values(w.players).some((p) => !p.connected))
       goal = "Partner disconnected. Game paused for up to 30 seconds.";
     document.querySelector<HTMLDivElement>("#objective")!.textContent = goal;
@@ -387,6 +398,13 @@ class Adventure extends Phaser.Scene {
     root.dataset.playerId = me.id;
     root.dataset.worldPosition = `${me.x},${me.y}`;
     root.dataset.scene = w.sceneId;
+    root.dataset.combatActions = JSON.stringify(
+      Object.values(w.players).map((p) => ({
+        id: p.id,
+        role: p.role,
+        combat: p.combat,
+      })),
+    );
   }
 }
 new Phaser.Game({

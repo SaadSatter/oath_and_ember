@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { selectAnimation } from "../src/animation/selectAnimation.js";
+import {
+  selectAnimation,
+  directionalIdle,
+  resolveHeroAnimation,
+} from "../src/animation/selectAnimation.js";
 import {
   heroAssets,
   animationSets,
@@ -28,7 +32,7 @@ const hero = (): Player => ({
 describe("presentation animation selection", () => {
   it("selects all four top-down directions without mutating player state", () => {
     const p = hero();
-    expect(selectAnimation(p, "TOP_DOWN")).toBe("idle");
+    expect(selectAnimation(p, "TOP_DOWN")).toBe("idle_right");
     for (const [vx, vy, want] of [
       [0, -190, "walk_north"],
       [0, 190, "walk_south"],
@@ -66,19 +70,57 @@ describe("presentation animation selection", () => {
       ).toBe("interact_channel");
     }
   });
-  it("provides distinct, complete art manifests for both roles and perspectives", () => {
-    const keys = new Set<string>();
-    for (const role of ["OATH", "EMBER"] as const)
-      for (const mode of ["TOP_DOWN", "PLATFORMER"] as const)
-        for (const state of animationSets[mode]) {
-          const clip = heroAssets[role].clips[mode][state]!;
-          expect(clip).toBeDefined();
-          expect(clip.start).toBeLessThanOrEqual(clip.end);
-          expect(clip.end).toBeLessThan(68);
-          const key = animationKey(role, mode, state);
-          expect(keys.has(key)).toBe(false);
-          keys.add(key);
-        }
-    expect(keys.size).toBe(34);
+  it("registers the approved idles and six-frame walks per hero and no side-view artwork", () => {
+    for (const role of ["OATH", "EMBER"] as const) {
+      expect(Object.keys(heroAssets[role].clips.TOP_DOWN)).toEqual([
+        "idle_down",
+        "idle_up",
+        "idle_left",
+        "idle_right",
+        "walk_south",
+        "walk_north",
+        "walk_east",
+        "walk_west",
+      ]);
+      expect(heroAssets[role].clips.PLATFORMER).toEqual({});
+      const keys = ["idle_down", "idle_up", "idle_left", "idle_right"].map(
+        (state) =>
+          animationKey(
+            role,
+            "TOP_DOWN",
+            state as (typeof animationSets.TOP_DOWN)[number],
+          ),
+      );
+      expect(new Set(keys).size).toBe(4);
+      for (const clip of Object.values(heroAssets[role].clips.TOP_DOWN)) {
+        expect(clip!.end - clip!.start).toBe(clip!.start < 4 ? 0 : 5);
+        expect(clip!.end).toBeLessThan(28);
+        expect(clip!.repeat).toBe(-1);
+      }
+    }
+  });
+  it("preserves facing while stopped and falls back to directional idles for missing actions", () => {
+    for (const [facing, direction] of [
+      [0, "idle_right"],
+      [Math.PI, "idle_left"],
+      [-Math.PI / 2, "idle_up"],
+      [Math.PI / 2, "idle_down"],
+    ] as const) {
+      expect(directionalIdle(facing)).toBe(direction);
+      for (const role of ["OATH", "EMBER"] as const) {
+        for (const state of [
+          "primary_attack",
+          "secondary_ability",
+          "hurt",
+          "interact_channel",
+        ] as const)
+          expect(resolveHeroAnimation(role, "TOP_DOWN", state, facing)).toBe(
+            direction,
+          );
+        expect(
+          resolveHeroAnimation(role, "PLATFORMER", "run", facing),
+        ).toBeNull();
+      }
+    }
   });
 });

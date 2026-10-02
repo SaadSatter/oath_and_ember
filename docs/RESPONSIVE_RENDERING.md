@@ -47,8 +47,10 @@ Automated layout tests cover 1920×1080, 1440×900, 390×844, 844×390, 4K, ultr
 
 Manual browser QA should resize a connected playing client at all four required sizes, verify the same hero/session and world position persist, test sprite/geometric F4 toggling, inspect portrait/landscape touch controls and scrollable skills, and keep a second differently sized client in the same room. Device safe-area behavior and physical touch feel require real-device testing beyond desktop emulation.
 
-### This implementation's validation results
+### Latest validation results (approved hero integration)
 
-`npm run typecheck`, `npm test` (25 tests), and `npm run build` pass. ResponsiveRenderer regression tests exercise all four required sizes on a retained presentation instance and simulate concurrent desktop/phone renderers with equal player coordinates. The existing Socket.IO integration test separately verifies shared authoritative snapshots across real connected clients.
+`npm run typecheck`, `npm test` (30 tests), and `npm run build` pass. The connected Ember browser was resized through 1920×1080, 1440×900, 390×844 and 844×390 while Oath remained connected in a differently sized browser. Both heroes were visible on both clients. Player identity, room, connection and world position persisted across all four resizes. Recorded canvas dimensions confirm uniform scaling; see `hero-browser-validation.json` and `heroes-*.png`.
 
-A visual browser pass was attempted but could not be completed: the in-app browser's viewport override and debugger connection timed out, and native-browser fallback was interrupted by user interaction. Therefore real simultaneous browsers at different physical viewport sizes, screenshot-based layout review, device safe-area behavior and physical touch controls remain unverified. The simulated renderer tests are not claimed as a completed visual browser playtest. Temporary viewport-override reset was attempted but also timed out; if the in-app browser appears unusually sized, clear its viewport override or reopen the browser panel.
+The visual pass exposed a Phaser Scale.NONE issue: changing logical dimensions at an unchanged zoom could retain old CSS dimensions and distort the canvas. ResponsiveRenderer now reapplies zoom after logical resize, including portrait-to-landscape transitions at scale 1. A regression test covers this path.
+
+Independent keyboard/touch movement, remote facing updates and F4 geometric/sprite switching were verified in the shared room. No obvious remote pose flicker was observed. Static idle assets provide no multi-frame walking cycle to assess. Physical device safe areas and touch feel remain outside desktop viewport emulation.

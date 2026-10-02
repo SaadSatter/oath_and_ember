@@ -193,11 +193,35 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
       false,
     );
     await req(clients[1], "role:select", { role: "EMBER" });
+    expect(
+      (await req(clients[0], "appearance:select", { primaryPalette: "blue" }))
+        .ok,
+    ).toBe(true);
+    expect(
+      (
+        await req(clients[1], "appearance:select", {
+          primaryPalette: "emerald",
+          effectPalette: "arcane",
+        })
+      ).ok,
+    ).toBe(true);
+    for (const invalid of [
+      { primaryPalette: "hacked" },
+      { primaryPalette: "blue", x: 999 },
+      { primaryPalette: "blue", effectPalette: "rose" },
+    ])
+      expect((await req(clients[0], "appearance:select", invalid)).ok).toBe(
+        false,
+      );
     await req(clients[0], "lobby:ready", { ready: true });
     await req(clients[1], "lobby:ready", { ready: true });
     const room = app.manager.get(sa.roomCode),
       start = room.state.players[sa.playerId].x;
-    clients[0].emit("player:input", { ...neutral(1), moveX: 1 });
+    clients[0].emit("player:input", {
+      ...neutral(1),
+      moveX: 1,
+      primaryHeld: true,
+    });
     await new Promise((res) => setTimeout(res, 120));
     expect(room.state.players[sa.playerId].x).toBeGreaterThan(start);
     expect(room.state.players[sa.playerId].lastProcessedInputSeq).toBe(1);
@@ -215,11 +239,125 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
         .map((s) => new Promise<any>((res) => s.once("game:snapshot", res))),
     );
     expect(snapshots[0]).toEqual(snapshots[1]);
+    expect(snapshots[0].players[sa.playerId].combat).toMatchObject({
+      kind: "sword",
+      facing: 0,
+    });
+    expect(snapshots[0].players[sa.playerId].combat.seq).toBe(
+      snapshots[0].players[sa.playerId].combat.startedTick,
+    );
+    expect(snapshots[0].players[sa.playerId].appearance).toEqual({
+      primaryPalette: "blue",
+    });
+    expect(snapshots[1].players[sb.playerId].appearance).toEqual({
+      primaryPalette: "emerald",
+      effectPalette: "arcane",
+    });
     clients[1].disconnect();
     await new Promise((res) => setTimeout(res, 30));
+    const resumed = new Promise<any>((res) =>
+      clients[2].once("state:sync", res),
+    );
     expect((await req(clients[2], "session:resume", sb)).ok).toBe(true);
+    expect((await resumed).players[sb.playerId].appearance).toEqual({
+      primaryPalette: "emerald",
+      effectPalette: "arcane",
+    });
+    room.transition("AIRSHIP");
+    const transitioned = await new Promise<any>((res) =>
+      clients[2].once("game:snapshot", res),
+    );
+    expect(transitioned.sceneId).toBe("AIRSHIP");
+    expect(transitioned.players[sb.playerId].appearance).toEqual({
+      primaryPalette: "emerald",
+      effectPalette: "arcane",
+    });
   } finally {
     clients.forEach((s) => s.disconnect());
     await app.close();
   }
+});
+
+describe("cosmetic appearance state", () => {
+  it("defaults legacy initialization, validates roles and preserves gameplay and transitions", () => {
+    const r = new GameRoom("COS234"),
+      s = r.add("s"),
+      c = r.add("c");
+    expect(r.state.players[s.playerId].appearance).toBeUndefined();
+    r.select(s.playerId, "OATH");
+    r.select(c.playerId, "EMBER");
+    expect(r.state.players[s.playerId].appearance).toEqual({
+      primaryPalette: "crimson",
+    });
+    expect(r.state.players[c.playerId].appearance).toEqual({
+      primaryPalette: "purple",
+      effectPalette: "ember",
+    });
+    const before = JSON.parse(JSON.stringify(r.state));
+    r.setAppearance(s.playerId, { primaryPalette: "ivory" });
+    r.setAppearance(c.playerId, {
+      primaryPalette: "blue",
+      effectPalette: "rose",
+    });
+    const after = JSON.parse(JSON.stringify(r.state));
+    for (const id of Object.keys(after.players)) {
+      delete before.players[id].appearance;
+      delete after.players[id].appearance;
+    }
+    expect(after).toEqual(before);
+    expect(() =>
+      r.setAppearance(c.playerId, {
+        primaryPalette: "ivory",
+        effectPalette: "rose",
+      }),
+    ).toThrow();
+    expect(() =>
+      r.setAppearance(c.playerId, {
+        primaryPalette: "blue",
+        effectPalette: "#ffffff",
+      }),
+    ).toThrow();
+    r.ready(s.playerId, true);
+    r.ready(c.playerId, true);
+    r.transition("AIRSHIP");
+    expect(r.state.players[s.playerId].appearance).toEqual({
+      primaryPalette: "ivory",
+    });
+    expect(r.state.players[c.playerId].appearance).toEqual({
+      primaryPalette: "blue",
+      effectPalette: "rose",
+    });
+    expect(() =>
+      r.setAppearance(s.playerId, { primaryPalette: "blue" }),
+    ).toThrow();
+    r.reset();
+    expect(r.state.players[s.playerId].appearance).toEqual({
+      primaryPalette: "ivory",
+    });
+  });
+});
+
+it("accepted combat markers follow cooldowns and heavy upgrades without altering attacks", () => {
+  const { r, a, b } = pair();
+  input(r, a.id, { primaryHeld: true });
+  input(r, b.id, { primaryHeld: true });
+  r.tick();
+  expect(a.combat).toMatchObject({
+    seq: 1,
+    startedTick: 1,
+    kind: "sword",
+    facing: 0,
+  });
+  expect(b.combat).toMatchObject({ kind: "cast" });
+  expect(Object.keys(r.state.projectiles)).toHaveLength(1);
+  for (let n = 0; n < 5; n++) r.tick();
+  expect(a.combat!.seq).toBe(1);
+  expect(Object.keys(r.state.projectiles)).toHaveLength(1);
+  a.unlockedSkills.push("heavy");
+  a.cooldowns.attack = 0;
+  r.tick();
+  expect(a.combat).toMatchObject({ seq: 7, kind: "heavy" });
+  r.transition("AIRSHIP");
+  expect(a.combat).toBeUndefined();
+  expect(b.combat).toBeUndefined();
 });

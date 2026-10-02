@@ -1,8 +1,13 @@
 import type { Role } from "../../../../packages/shared/src/gameTypes.js";
 export type MovementMode = "TOP_DOWN" | "PLATFORMER";
+// Semantic actions remain available to future art, but this milestone registers
+// approved directional idles and walk cycles. Missing clips resolve to a deliberate fallback.
 export const animationSets = {
   TOP_DOWN: [
-    "idle",
+    "idle_down",
+    "idle_up",
+    "idle_left",
+    "idle_right",
     "walk_north",
     "walk_south",
     "walk_east",
@@ -31,48 +36,49 @@ export interface Clip {
   repeat: number;
 }
 export interface HeroAsset {
-  source: "generated" | "file";
+  source: "file";
   url: string;
   frameWidth: number;
   frameHeight: number;
-  origin: { x: number; y: number };
-  scale: number;
   clips: Record<MovementMode, Partial<Record<AnimationState, Clip>>>;
 }
-// Frame numbers belong exclusively to the art manifest, never gameplay scenes.
-function clips(): HeroAsset["clips"] {
-  let row = 0;
-  const result: HeroAsset["clips"] = { TOP_DOWN: {}, PLATFORMER: {} };
-  for (const mode of ["TOP_DOWN", "PLATFORMER"] as const)
-    for (const state of animationSets[mode]) {
-      result[mode][state] = {
-        start: row * 4,
-        end: row * 4 + 3,
-        fps: state === "idle" ? 6 : state === "hurt" ? 12 : 10,
-        repeat: ["primary_attack", "hurt"].includes(state) ? 0 : -1,
-      };
-      row++;
-    }
-  return result;
+function directionalClips(): HeroAsset["clips"] {
+  return {
+    TOP_DOWN: {
+      ...Object.fromEntries(
+        ["idle_down", "idle_up", "idle_left", "idle_right"].map(
+          (state, frame) => [
+            state,
+            { start: frame, end: frame, fps: 1, repeat: -1 },
+          ],
+        ),
+      ),
+      ...Object.fromEntries(
+        ["walk_south", "walk_north", "walk_east", "walk_west"].map(
+          (state, row) => [
+            state,
+            { start: 4 + row * 6, end: 9 + row * 6, fps: 8, repeat: -1 },
+          ],
+        ),
+      ),
+    },
+    PLATFORMER: {},
+  };
 }
 export const heroAssets: Record<Role, HeroAsset> = {
   OATH: {
-    source: "generated",
-    url: "/assets/characters/oath/oath.png",
-    frameWidth: 64,
+    source: "file",
+    url: "/assets/characters/oath/top-down.png",
+    frameWidth: 48,
     frameHeight: 64,
-    origin: { x: 0.5, y: 0.5 },
-    scale: 1,
-    clips: clips(),
+    clips: directionalClips(),
   },
   EMBER: {
-    source: "generated",
-    url: "/assets/characters/ember/ember.png",
-    frameWidth: 64,
+    source: "file",
+    url: "/assets/characters/ember/top-down.png",
+    frameWidth: 48,
     frameHeight: 64,
-    origin: { x: 0.5, y: 0.5 },
-    scale: 1,
-    clips: clips(),
+    clips: directionalClips(),
   },
 };
 export const textureKey = (role: Role) => `hero:${role}`;

@@ -1,0 +1,181 @@
+{
+  "source": "Images/Sprites/Sprites2.png",
+  "sourceSha256": "5863e3a3a3c9a3e19efed9780ef0dfd5e47d05382c7ac1104b2dc0a78e5157fd",
+  "frameSize": [
+    48,
+    64
+  ],
+  "footAnchor": [
+    24,
+    60
+  ],
+  "sourceScale": 0.22,
+  "resampling": "nearest",
+  "walking": "directional-idle fallback; no walk cycle inferred",
+  "heroes": {
+    "oath": {
+      "idle_down": {
+        "bounds": [
+          198,
+          23,
+          367,
+          251
+        ],
+        "sourceFootAnchor": [
+          306,
+          251
+        ],
+        "mirrored": false,
+        "frameIndex": 0,
+        "normalizedBounds": [
+          0,
+          10,
+          37,
+          60
+        ]
+      },
+      "idle_up": {
+        "bounds": [
+          400,
+          24,
+          571,
+          243
+        ],
+        "sourceFootAnchor": [
+          466,
+          243
+        ],
+        "mirrored": false,
+        "frameIndex": 1,
+        "normalizedBounds": [
+          9,
+          12,
+          47,
+          60
+        ]
+      },
+      "idle_left": {
+        "bounds": [
+          579,
+          24,
+          720,
+          250
+        ],
+        "sourceFootAnchor": [
+          628,
+          250
+        ],
+        "mirrored": false,
+        "frameIndex": 2,
+        "normalizedBounds": [
+          13,
+          10,
+          44,
+          60
+        ]
+      },
+      "idle_right": {
+        "bounds": [
+          736,
+          24,
+          914,
+          250
+        ],
+        "sourceFootAnchor": [
+          811,
+          250
+        ],
+        "mirrored": false,
+        "frameIndex": 3,
+        "normalizedBounds": [
+          7,
+          10,
+          47,
+          60
+        ]
+      }
+    },
+    "ember": {
+      "idle_down": {
+        "bounds": [
+          1268,
+          17,
+          1447,
+          248
+        ],
+        "sourceFootAnchor": [
+          1362,
+          248
+        ],
+        "mirrored": false,
+        "frameIndex": 0,
+        "normalizedBounds": [
+          3,
+          9,
+          43,
+          60
+        ]
+      },
+      "idle_up": {
+        "bounds": [
+          1467,
+          17,
+          1626,
+          248
+        ],
+        "sourceFootAnchor": [
+          1540,
+          248
+        ],
+        "mirrored": false,
+        "frameIndex": 1,
+        "normalizedBounds": [
+          8,
+          9,
+          43,
+          60
+        ]
+      },
+      "idle_left": {
+        "bounds": [
+          1852,
+          17,
+          2025,
+          250
+        ],
+        "sourceFootAnchor": [
+          1950,
+          250
+        ],
+        "mirrored": true,
+        "frameIndex": 2,
+        "normalizedBounds": [
+          8,
+          9,
+          46,
+          60
+        ]
+      },
+      "idle_right": {
+        "bounds": [
+          1852,
+          17,
+          2025,
+          250
+        ],
+        "sourceFootAnchor": [
+          1950,
+          250
+        ],
+        "mirrored": false,
+        "frameIndex": 3,
+        "normalizedBounds": [
+          2,
+          9,
+          41,
+          60
+        ]
+      }
+    }
+  }
+}

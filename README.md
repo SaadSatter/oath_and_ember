@@ -66,8 +66,12 @@ Validation on the host used Node 26.9.0, while Docker and Render target Node 24.
 
 ## Hero art pipeline
 
-See [docs/ART_PIPELINE.md](docs/ART_PIPELINE.md) for sprite-sheet layout and final-art replacement. F4 toggles sprites/geometric debug heroes; `?characters=geometric` starts in debug mode. Runtime-generated test sheets are presentation-only and do not affect gameplay.
+See [docs/ART_PIPELINE.md](docs/ART_PIPELINE.md) for sprite-sheet layout and final-art replacement. F4 toggles sprites/geometric debug heroes; `?characters=geometric` starts in debug mode. Approved-reference directional idles are presentation-only; missing animations use directional idles, and side-view maps keep geometric rendering. See [docs/HERO_REFERENCE_INTEGRATION.md](docs/HERO_REFERENCE_INTEGRATION.md) for asset provenance and visual-scale configuration.
 
 ## Responsive display
 
 World rendering uses a bounded logical pixel budget with integer enlargement and nearest-neighbor filtering. HUD and touch controls reflow independently in screen space. See [docs/RESPONSIVE_RENDERING.md](docs/RESPONSIVE_RENDERING.md) for camera strategy, supported screen sizes and asset-authoring guidance.
+
+Sieg and Coco support synchronized lobby color swatches and partner previews. Runtime mask recoloring preserves one canonical art set and existing animation clocks. See [character appearance documentation](docs/CHARACTER_APPEARANCE.md) for palettes, masks, caching and protocol validation.
+
+Directional sword attacks and projectile casts use approved reference artwork with server-accepted combat markers, locked facing and presentation recovery. See [combat presentation documentation](docs/COMBAT_PRESENTATION.md) for extraction, frame timing, palette/VFX layers, artwork fallbacks and two-client validation.
