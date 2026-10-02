@@ -7,6 +7,7 @@ import {
   cpSync,
   renameSync,
   rmSync,
+  readdirSync,
 } from "node:fs";
 import { resolve, relative, join } from "node:path";
 import { createHash } from "node:crypto";
@@ -22,6 +23,18 @@ import {
 } from "./model.js";
 import { inspectAtlas } from "./png.js";
 import { capture } from "./qa.js";
+import {
+  loadProviderConfig,
+  requireApiKey,
+  ProviderUnavailableError,
+} from "./provider-config.js";
+import {
+  OpenAISpriteProvider,
+  GeneratedArtError,
+  effectLayout,
+} from "./generation.js";
+import { OpenAIVisionReviewer } from "./vision.js";
+import { advanceAsset } from "./runner.js";
 const root = resolve(
     process.env.ART_WORKSPACE_ROOT || resolve(import.meta.dirname, "../.."),
   ),
@@ -236,6 +249,219 @@ function brief(character: string, animation: string) {
   save();
   waiting(a);
 }
+function iterationDirectory(a: Asset) {
+  return `art/qa/${a.asset_id}/iteration-${String(a.iteration).padStart(2, "0")}`;
+}
+function canReview(a: Asset) {
+  const directory = iterationDirectory(a);
+  const qaReport = path(`${directory}/qa-report.json`);
+  return (
+    existsSync(qaReport) &&
+    !json(qaReport).checks.some((c: Finding) => c.result === "FAIL") &&
+    !a.reports.some((p) => p.startsWith(`${directory}/vision`)) &&
+    !readdirSync(path(directory)).some((f) => /^vision-attempt-[0-9]+$/.test(f))
+  );
+}
+async function generate(a: Asset) {
+  if (
+    ![
+      "BRIEF",
+      "WAITING_FOR_ART",
+      "GENERATING_ART",
+      "READY_FOR_INTEGRATION",
+      "QA_FAILED_ART",
+      ...(a.status === "NEEDS_HUMAN_REVIEW" &&
+      a.generation_history?.at(-1) &&
+      existsSync(path(`${a.generation_history.at(-1)}/error.json`)) &&
+      json(path(`${a.generation_history.at(-1)}/error.json`)).status ===
+        "PROVIDER_FAILURE"
+        ? ["NEEDS_HUMAN_REVIEW"]
+        : []),
+    ].includes(a.status)
+  )
+    throw Error(
+      "Generation requires an art handoff or ART failure; create a new version for approved art.",
+    );
+  if (a.status === "GENERATING_ART") {
+    const last = a.generation_history?.at(-1);
+    if (last && existsSync(path(`${last}/submission.json`))) {
+      a.source_file = last;
+      a.status = "READY_FOR_INTEGRATION";
+      save();
+      console.log("Recovered completed generation; no new request made.");
+      return;
+    }
+  }
+  const config = loadProviderConfig(root);
+  if (config.sprite_artist.provider === "manual") {
+    waiting(a);
+    return;
+  }
+  let key: string;
+  try {
+    key = requireApiKey();
+    effectLayout(a);
+  } catch (e) {
+    if (e instanceof ProviderUnavailableError) waiting(a);
+    else {
+      a.status = "NEEDS_HUMAN_REVIEW";
+      save();
+    }
+    console.log(String(e));
+    return;
+  }
+  if (
+    a.iteration >= manifest.max_iterations ||
+    (a.generation_attempts || 0) >= manifest.max_iterations
+  ) {
+    a.status = "NEEDS_HUMAN_REVIEW";
+    save();
+    console.log(
+      "Generation/iteration limit reached; create a new brief with human direction.",
+    );
+    return;
+  }
+  const previousSource = a.source_file;
+  a.generation_attempts = (a.generation_attempts || 0) + 1;
+  const destination = `art/incoming/${a.asset_id}/generated/attempt-${String(a.generation_attempts).padStart(2, "0")}`;
+  mkdirSync(path(destination), { recursive: true });
+  a.generation_history ||= [];
+  a.generation_history.push(destination);
+  a.status = "GENERATING_ART";
+  save();
+  write(path(`${destination}/attempt.json`), {
+    assetId: a.asset_id,
+    attempt: a.generation_attempts,
+    previousSource,
+    status: "REQUESTING",
+    started: new Date().toISOString(),
+  });
+  console.log(
+    `SPRITE_ARTIST generating ${a.asset_id}, attempt ${a.generation_attempts}/${manifest.max_iterations} (${config.sprite_artist.model}).`,
+  );
+  try {
+    const provider = new OpenAISpriteProvider(
+      root,
+      a,
+      path(destination),
+      config.sprite_artist,
+      key,
+    );
+    const feedback: Finding[] = a.reports.length
+      ? json(path(a.reports.at(-1)!)).checks
+      : [];
+    const generated = await provider.generate({
+      assetId: a.asset_id,
+      briefPath: `art/briefs/${a.asset_id}.json`,
+      referencePaths: [
+        ...a.canonical_references,
+        ...(existsSync(path(`${previousSource}/atlas.png`))
+          ? [`${previousSource}/atlas.png`]
+          : []),
+      ],
+      feedback,
+    });
+    a.source_file = generated.submissionDirectory;
+    a.status = "READY_FOR_INTEGRATION";
+    save();
+    write(path(`${destination}/completion.json`), {
+      status: "READY_FOR_INTEGRATION",
+      provenance: generated.provenance,
+    });
+  } catch (e) {
+    write(path(`${destination}/error.json`), {
+      error: String(e),
+      status:
+        e instanceof GeneratedArtError ? "ART_FAILURE" : "PROVIDER_FAILURE",
+    });
+    if (e instanceof GeneratedArtError) {
+      a.iteration++;
+      report(
+        a,
+        [
+          {
+            id: "generated_art",
+            result: "FAIL",
+            category: "ART",
+            evidence: destination,
+            feedback: String(e),
+          },
+        ],
+        "generation",
+      );
+    } else {
+      a.status = "NEEDS_HUMAN_REVIEW";
+      save();
+      console.log(
+        `HUMAN: ${String(e)}; inspect ${destination}/error.json. A request may have been billed; no HTTP retry was made.`,
+      );
+    }
+  }
+}
+async function vision(a: Asset) {
+  if (
+    ![
+      "NEEDS_HUMAN_REVIEW",
+      "QA_FAILED_ART",
+      "QA_FAILED_IMPLEMENTATION",
+    ].includes(a.status)
+  )
+    throw Error(
+      "Vision review requires completed QA awaiting review; approved/passed assets are immutable.",
+    );
+  const config = loadProviderConfig(root);
+  if (config.visual_qa.provider === "manual") {
+    console.log(
+      "Vision provider is manual; use art:review or enable visual_qa in art/providers.json.",
+    );
+    return;
+  }
+  let key: string;
+  try {
+    key = requireApiKey();
+  } catch (e) {
+    console.log(String(e));
+    return;
+  }
+  const directory = iterationDirectory(a);
+  mkdirSync(path(directory), { recursive: true });
+  const attempts = readdirSync(path(directory)).filter((f) =>
+    /^vision-attempt-[0-9]+$/.test(f),
+  ).length;
+  if (attempts >= manifest.max_iterations)
+    throw Error("Vision attempt limit reached; human review required.");
+  const destination = `${directory}/vision-attempt-${String(attempts + 1).padStart(2, "0")}`;
+  mkdirSync(path(destination));
+  console.log(
+    `VISUAL_QA reviewing ${a.asset_id}, iteration ${a.iteration} (${config.visual_qa.model}).`,
+  );
+  try {
+    const reviewer = new OpenAIVisionReviewer(root, config.visual_qa, key);
+    const result = await reviewer.review(a, path(destination));
+    report(
+      a,
+      [...result.packet.objectiveChecks, ...result.checks],
+      attempts === 0
+        ? "vision"
+        : `vision-${String(attempts + 1).padStart(2, "0")}`,
+    );
+  } catch (e) {
+    write(path(`${destination}/error.json`), { error: String(e) });
+    report(
+      a,
+      [
+        {
+          id: "vision_execution",
+          result: "REVIEW",
+          category: "DESIGN",
+          evidence: `${destination}/error.json`,
+          feedback: `Vision unavailable or invalid: ${String(e)}. No artistic PASS inferred. Retry explicitly with art:vision or submit art:review.`,
+        },
+      ],
+      `vision-error-${String(attempts + 1).padStart(2, "0")}`,
+    );
+  }
+}
 async function integrate(a: Asset) {
   if (
     ![
@@ -386,23 +612,46 @@ async function main() {
   const a = manifest.assets[arg];
   if (!a) throw Error("Unknown asset; create a brief first.");
   if (command === "run") {
-    if (
-      a.status === "BRIEF" ||
-      a.status === "WAITING_FOR_ART" ||
-      a.status === "READY_FOR_INTEGRATION" ||
-      a.status === "INTEGRATING"
-    )
-      await integrate(a);
-    if (a.status === "READY_FOR_QA") await qa(a);
+    const config = loadProviderConfig(root);
+    if (a.status === "GENERATING_ART") {
+      console.log(
+        "Interrupted generation: inspect the saved attempt; retry explicitly with art:generate to avoid silently duplicating a billed request.",
+      );
+      return;
+    }
+    await advanceAsset(a, {
+      artistEnabled: config.sprite_artist.provider === "openai",
+      visionEnabled: config.visual_qa.provider === "openai",
+      maxIterations: manifest.max_iterations,
+      hasSubmission: (a) =>
+        existsSync(path(`${a.source_file}/submission.json`)),
+      canReview,
+      generate,
+      integrate,
+      qa,
+      vision,
+    });
     console.log(a.status);
     return;
   }
+  if (command === "generate") return generate(a);
+  if (command === "vision") return vision(a);
   if (command === "integrate") return integrate(a);
-  if (command === "qa") return qa(a);
+  if (command === "qa") {
+    await qa(a);
+    if (
+      loadProviderConfig(root).visual_qa.provider === "openai" &&
+      canReview(a)
+    )
+      await vision(a);
+    return;
+  }
   if (command === "review") {
     if (a.status !== "NEEDS_HUMAN_REVIEW")
       throw Error("Review requires a pending human review.");
-    const latest = a.reports.at(-1);
+    const latest = [...a.reports]
+      .reverse()
+      .find((p) => p === `${iterationDirectory(a)}/qa-report.json`);
     if (!latest || !latest.endsWith("qa-report.json"))
       throw Error("Complete browser QA before visual review.");
     const review = json(resolve(arg2));
@@ -457,7 +706,9 @@ async function main() {
   }
   if (command === "approve") {
     if (a.status !== "AWAITING_APPROVAL")
-      throw Error("Resolve QA and submit art:review before explicit approval.");
+      throw Error(
+        "Resolve objective QA and vision or human review before explicit approval.",
+      );
     const dir = path(`art/approved/${a.asset_id}`);
     if (existsSync(dir)) throw Error("Approved version already exists.");
     if (

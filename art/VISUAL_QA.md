@@ -1,6 +1,6 @@
 # Visual QA rubric
 
-Objective validation and screenshots are evidence, not artistic approval. Every applicable item must be reviewed; mark inapplicable items with a PASS and explanation. Review both clients across all four viewports, contact sheet and sequential frames. Ward body is unchanged; inspect its separate rim and envelope.
+Objective validation and screenshots are evidence, not artistic approval. An optional AI reviewer may produce structured findings, subject to evidence and confidence validation. Explicit human approval remains required. Every applicable item must be reviewed; mark inapplicable items with a PASS and explanation. Review both clients across all four viewports, contact sheet and sequential frames. Ward body is unchanged; inspect its separate rim and envelope.
 
 | Review ID             | Criteria                                                                                                                                            |
 | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -21,3 +21,9 @@ DESIGN → HUMAN: conflicting brief, unclear size or obscuration, technically co
 Every failure needs category, actionable feedback and evidence path. Example: “Runtime effect diameter is 140 px versus brief 100 px (40% too large); source atlas matches target, reduce renderer scale” = IMPLEMENTATION. “Frames 4–5 replace Coco's staff head; visible in source contact sheet” = ART. Do not claim numerical size errors without a target and measurement.
 
 Submit all seven review IDs with PASS/FAIL through `art:review`. PASS means a reviewer actually inspected the evidence. A failed objective check cannot be waived with a subjective review. Approval is a separate human command.
+
+## AI review contract
+
+The enabled vision provider sees the full source/reference/runtime packet, not filenames alone. All seven IDs are required exactly once with result, category (null for PASS), confidence 0–1, evidence paths and actionable feedback. It may cite only supplied image paths. ART must cite the candidate/source; IMPLEMENTATION must cite runtime evidence. Confidence below the configured threshold (default .85) turns the criterion into DESIGN/REVIEW. Model refusal, incomplete/malformed response and unseen evidence cannot produce PASS. Objective failures and changed candidate hashes block vision review.
+
+Sampled temporal screenshots do not prove continuous smooth motion; return REVIEW for unsupported timing or numeric claims. All AI PASS produces AWAITING_APPROVAL, never APPROVED. API errors go to a human/configuration handoff rather than blaming the artist or triggering automatic HTTP retries.

@@ -72,7 +72,7 @@ describe("visual asset workflow", () => {
         ["--import", "tsx", join(root, "scripts/art/cli.ts"), ...args],
         {
           cwd: root,
-          env: { ...process.env, ART_WORKSPACE_ROOT: temp },
+          env: { ...process.env, ART_WORKSPACE_ROOT: temp, OPENAI_API_KEY: "" },
           encoding: "utf8",
         },
       );
@@ -83,6 +83,22 @@ describe("visual asset workflow", () => {
       expect(manifest().assets.coco_ward_v1.status).toBe("WAITING_FOR_ART");
       expect(cli("run", "coco_ward_v1").stdout).toContain("WAITING_FOR_ART");
       expect(cli("approve", "coco_ward_v1").status).toBe(1);
+      writeFileSync(
+        join(temp, "art/providers.json"),
+        JSON.stringify({
+          schema_version: 1,
+          sprite_artist: { provider: "openai" },
+        }),
+      );
+      expect(cli("generate", "coco_ward_v1").stdout).toContain(
+        "OPENAI_API_KEY",
+      );
+      expect(manifest().assets.coco_ward_v1.status).toBe("WAITING_FOR_ART");
+      expect(
+        manifest().assets.coco_ward_v1.generation_attempts,
+      ).toBeUndefined();
+      rmSync(join(temp, "art/providers.json"));
+
       const incoming = join(temp, "art/incoming/coco_ward_v1");
       mkdirSync(incoming, { recursive: true });
       writeFileSync(
@@ -176,5 +192,5 @@ describe("visual asset workflow", () => {
     } finally {
       rmSync(temp, { recursive: true, force: true });
     }
-  }, 20000);
+  }, 30000);
 });

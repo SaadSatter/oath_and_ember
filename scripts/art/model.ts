@@ -2,6 +2,7 @@ import { z } from "zod";
 export const statuses = [
   "BRIEF",
   "WAITING_FOR_ART",
+  "GENERATING_ART",
   "READY_FOR_INTEGRATION",
   "INTEGRATING",
   "READY_FOR_QA",
@@ -19,6 +20,8 @@ export const findingSchema = z
     category: z.enum(["ART", "IMPLEMENTATION", "DESIGN"]).optional(),
     evidence: z.string().optional(),
     feedback: z.string().optional(),
+    confidence: z.number().min(0).max(1).optional(),
+    evidence_paths: z.array(z.string()).optional(),
   })
   .superRefine((v, c) => {
     if (v.result === "FAIL" && (!v.category || !v.evidence || !v.feedback))
@@ -96,6 +99,8 @@ export interface Asset {
   target: string | null;
   mask_target: string | null;
   reports: string[];
+  generation_attempts?: number;
+  generation_history?: string[];
 }
 export interface Manifest {
   schema_version: 1;

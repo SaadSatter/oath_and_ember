@@ -14,7 +14,7 @@ incoming/<id>/{atlas.png,mask.png,submission.json}.
 
 ## ALLOWED CHANGES
 
-New submissions with provenance; provider adapter after configuration.
+New submissions with provenance; configured OpenAISpriteProvider for the supported isolated Coco effects. Requests use the current brief/references and ART feedback; preserve every attempt.
 
 ## FORBIDDEN CHANGES
 
@@ -26,6 +26,6 @@ Exact grid/anchor, transparency, preserved design and effect-only mask.
 
 ## FAILURE HANDOFF
 
-No provider/image → WAITING_FOR_ART with exact paths; ART findings → external revision.
+Manual/no credentials → WAITING_FOR_ART. Configured provider → generated candidate; ART failures → bounded automatic regeneration. API failures/unsupported bindings → human/configuration review. Never retry HTTP requests implicitly.
 
 Shared contracts: ../ART_SPEC.md, ../VISUAL_QA.md, ../README.md. Roles are artifact-driven stages, not running AI services.
