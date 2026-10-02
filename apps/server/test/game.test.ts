@@ -253,6 +253,87 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
       primaryPalette: "emerald",
       effectPalette: "arcane",
     });
+    const fighter = room.state.players[sa.playerId];
+    fighter.skillPoints = 2; // Fixture grants points; unlock still uses validated socket commands.
+    expect(
+      (await req(clients[0], "skill:unlock", { nodeId: "guard" })).ok,
+    ).toBe(true);
+    expect(
+      (await req(clients[0], "skill:unlock", { nodeId: "heavy" })).ok,
+    ).toBe(true);
+    clients[0].emit("player:input", neutral(3));
+    await new Promise((res) => setTimeout(res, 500));
+    let chargeSeq = 4;
+    const heldTimer = setInterval(
+      () =>
+        clients[0].emit("player:input", {
+          ...neutral(chargeSeq++),
+          primaryHeld: true,
+        }),
+      30,
+    );
+    await new Promise((res) => setTimeout(res, 600));
+    const charging = await Promise.all(
+      clients
+        .slice(0, 2)
+        .map((s) => new Promise<any>((res) => s.once("game:snapshot", res))),
+    );
+    clearInterval(heldTimer);
+    expect(charging[0]).toEqual(charging[1]);
+    expect(
+      charging[0].players[sa.playerId].heavyCharge.ticks,
+    ).toBeGreaterThanOrEqual(14);
+    clients[0].emit("player:input", neutral(chargeSeq++));
+    await new Promise((res) => setTimeout(res, 70));
+    const released = await Promise.all(
+      clients
+        .slice(0, 2)
+        .map((s) => new Promise<any>((res) => s.once("game:snapshot", res))),
+    );
+    expect(released[0]).toEqual(released[1]);
+    expect(released[0].players[sa.playerId].heavyCharge).toBeUndefined();
+    expect(released[0].players[sa.playerId].combat.kind).toBe("heavy");
+    await new Promise((res) => setTimeout(res, 500));
+    clients[0].emit("player:input", {
+      ...neutral(chargeSeq++),
+      primaryHeld: true,
+    });
+    clients[0].emit("player:input", neutral(chargeSeq++)); // Both edges arrive before one simulation tick.
+    await new Promise((res) => setTimeout(res, 100));
+    expect(fighter.combat!.kind).toBe("sword");
+    expect(fighter.heavyCharge).toBeUndefined();
+    const mage = room.state.players[sb.playerId];
+    room.state.enemies = {};
+    clients[1].emit("player:input", { ...neutral(10), primaryHeld: true });
+    const traveling = await Promise.all(
+      clients
+        .slice(0, 2)
+        .map((s) => new Promise<any>((res) => s.once("game:snapshot", res))),
+    );
+    expect(traveling[0]).toEqual(traveling[1]);
+    expect(
+      Object.values(traveling[0].projectiles).some(
+        (p: any) => p.owner === sb.playerId,
+      ),
+    ).toBe(true);
+    clients[1].emit("player:input", neutral(11));
+    const missile = Object.values(room.state.projectiles)[0];
+    room.state.enemies.target = {
+      id: "target",
+      x: missile.x + 14,
+      y: missile.y,
+      hp: 60,
+      cooldown: 999,
+    };
+    const impacts = await Promise.all(
+      clients
+        .slice(0, 2)
+        .map((s) => new Promise<any>((res) => s.once("game:snapshot", res))),
+    );
+    expect(impacts[0]).toEqual(impacts[1]);
+    expect(
+      impacts[0].projectileImpacts.some((e: any) => e.id === missile.id),
+    ).toBe(true);
     clients[1].disconnect();
     await new Promise((res) => setTimeout(res, 30));
     const resumed = new Promise<any>((res) =>
@@ -337,7 +418,7 @@ describe("cosmetic appearance state", () => {
   });
 });
 
-it("accepted combat markers follow cooldowns and heavy upgrades without altering attacks", () => {
+it("accepted combat markers follow cooldowns and charge upgrades", () => {
   const { r, a, b } = pair();
   input(r, a.id, { primaryHeld: true });
   input(r, b.id, { primaryHeld: true });
@@ -355,9 +436,118 @@ it("accepted combat markers follow cooldowns and heavy upgrades without altering
   expect(Object.keys(r.state.projectiles)).toHaveLength(1);
   a.unlockedSkills.push("heavy");
   a.cooldowns.attack = 0;
+  input(r, a.id, { primaryHeld: false });
   r.tick();
-  expect(a.combat).toMatchObject({ seq: 7, kind: "heavy" });
+  input(r, a.id, { primaryHeld: true });
+  r.tick();
+  expect(a.heavyCharge).toBeDefined();
+  for (let n = 0; n < 14; n++) r.tick();
+  input(r, a.id, { primaryHeld: false });
+  r.tick();
+  expect(a.combat).toMatchObject({ kind: "heavy" });
   r.transition("AIRSHIP");
   expect(a.combat).toBeUndefined();
   expect(b.combat).toBeUndefined();
+});
+
+describe("authoritative Heavy Break", () => {
+  const charge = (ticks: number) => {
+    const { r, a, b } = pair();
+    a.unlockedSkills.push("heavy");
+    r.state.enemies = {
+      target: { id: "target", x: a.x + 65, y: a.y, hp: 100, cooldown: 999 },
+    };
+    for (let n = 0; n < ticks; n++) {
+      input(r, a.id, { primaryHeld: true });
+      r.tick();
+    }
+    return { r, a, b };
+  };
+  it("tap/early release slashes normally; holding causes no damage and locks facing", () => {
+    const { r, a } = charge(3);
+    expect(a.combat).toBeUndefined();
+    expect(r.state.enemies.target.hp).toBe(100);
+    expect(a.heavyCharge).toMatchObject({ ticks: 3, facing: 0 });
+    input(r, a.id, { primaryHeld: false, moveY: 1 });
+    r.tick();
+    expect(a.heavyCharge).toBeUndefined();
+    expect(a.combat).toMatchObject({ kind: "sword", facing: 0 });
+    expect(r.state.enemies.target.hp).toBe(75);
+    const seq = a.combat!.seq;
+    r.tick();
+    expect(a.combat!.seq).toBe(seq);
+  });
+  it("minimum/full/capped charge releases a single 40-damage strike and preserves cooldown", () => {
+    for (const ticks of [14, 33, 60]) {
+      const { r, a } = charge(ticks);
+      expect(a.heavyCharge!.ticks).toBe(Math.min(38, ticks));
+      expect(a.heavyCharge!.progress).toBe(Math.min(1, ticks / 33));
+      expect(r.state.enemies.target.hp).toBe(100);
+      input(r, a.id, { primaryHeld: false });
+      r.tick();
+      expect(a.combat!.kind).toBe("heavy");
+      expect(r.state.enemies.target.hp).toBe(60);
+      expect(a.cooldowns.attack).toBe(0.45);
+      input(r, a.id, { primaryHeld: true });
+      r.tick();
+      expect(a.heavyCharge).toBeUndefined();
+      input(r, a.id, { primaryHeld: false });
+      r.tick();
+      expect(r.state.enemies.target.hp).toBe(60);
+    }
+  });
+  it("stale intent, hurt, disconnect and scene transition cancel rather than release charge", () => {
+    for (const reason of ["stale", "hurt", "disconnect", "transition"]) {
+      const { r, a } = charge(16);
+      if (reason === "stale") {
+        r.sessions.get(a.id)!.received = 0;
+        r.tick();
+      }
+      if (reason === "hurt") r.damage(a, 10);
+      if (reason === "disconnect") r.disconnect(a.id);
+      if (reason === "transition") r.transition("AIRSHIP");
+      expect(a.heavyCharge).toBeUndefined();
+      expect(a.combat).toBeUndefined();
+    }
+  });
+});
+it("server records projectile collision impacts once, never expiry bursts", () => {
+  const { r, a, b } = pair();
+  r.state.enemies = {};
+  const q = {
+    id: "hit",
+    x: b.x,
+    y: b.y,
+    vx: 420,
+    vy: 0,
+    life: 1.6,
+    owner: b.id,
+  };
+  r.state.projectiles.hit = q;
+  r.state.enemies.target = {
+    id: "target",
+    x: b.x + 14,
+    y: b.y,
+    hp: 60,
+    cooldown: 999,
+  };
+  r.tick();
+  expect(r.state.enemies.target.hp).toBe(40);
+  expect(r.state.projectiles.hit).toBeUndefined();
+  expect(r.state.projectileImpacts).toEqual([
+    { id: "hit", x: b.x + 14, y: b.y, owner: b.id, tick: 1 },
+  ]);
+  r.tick();
+  expect(r.state.projectileImpacts).toHaveLength(1);
+  r.state.projectiles.expiry = {
+    ...q,
+    id: "expiry",
+    x: 1000,
+    y: 800,
+    life: 0.01,
+  };
+  r.tick();
+  expect(r.state.projectileImpacts).toHaveLength(1);
+  for (let n = 0; n < 31; n++) r.tick();
+  expect(r.state.projectileImpacts).toHaveLength(0);
 });

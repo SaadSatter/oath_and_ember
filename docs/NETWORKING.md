@@ -13,3 +13,5 @@ Requests: room:create, room:join, session:resume, role:select, lobby:ready, skil
 Input is limited to at most 100 accepted frames/second and stale sequences are ignored. After 250ms without input the server clears held actions. On disconnect, game simulation pauses and the slot is reserved for 30 seconds. Reconnect replaces client state and clears stale prediction/interpolation. On grace expiry the departed player is removed and the room returns to the lobby. Resume failures remove the client's stale session.
 
 The current server consumes the most recent input per simulation tick. That keeps disposable button-state transport simple but is not a full tick-aligned input queue. Prediction errors under real-world jitter should be measured before production polish. All gameplay invariants continue to be server-owned.
+
+Primary-button edges use reliable validated input frames and a bounded server intent queue so brief taps are not lost between ticks. Snapshots expose server-owned Heavy Break charge, accepted release markers and one-second retained projectile collision impacts. See [combat details](COMBAT_CHARGE_AND_PROJECTILES.md).

@@ -1,4 +1,6 @@
 import {
+  heavyAsset,
+  heavyKey,
   combatAssets,
   combatTextureKey,
   combatKey,
@@ -12,6 +14,10 @@ import {
   animationSets,
 } from "../animation/definitions.js";
 export function preloadHeroes(scene: Phaser.Scene) {
+  scene.load.spritesheet(heavyKey, heavyAsset.url, {
+    frameWidth: 128,
+    frameHeight: 128,
+  });
   for (const role of ["OATH", "EMBER"] as const) {
     const a = heroAssets[role];
     const combat = combatAssets[role];
@@ -32,6 +38,29 @@ export function preloadHeroes(scene: Phaser.Scene) {
   }
 }
 export function registerHeroes(scene: Phaser.Scene) {
+  if (scene.textures.exists(heavyKey) && !scene.anims.exists(heavyKey))
+    scene.anims.create({
+      key: heavyKey,
+      frames: Array.from({ length: 5 }, (_, i) => ({
+        key: heavyKey,
+        frame: i + 2,
+      })),
+      frameRate: 10,
+      repeat: 0,
+    });
+  if (
+    scene.textures.exists(heavyKey) &&
+    !scene.anims.exists(`${heavyKey}:charge`)
+  )
+    scene.anims.create({
+      key: `${heavyKey}:charge`,
+      frames: [
+        { key: heavyKey, frame: 0 },
+        { key: heavyKey, frame: 1 },
+      ],
+      frameRate: 8,
+      repeat: 0,
+    });
   for (const role of ["OATH", "EMBER"] as const) {
     for (const direction of combatAssets[role].directions) {
       const c = combatClip(role, direction),

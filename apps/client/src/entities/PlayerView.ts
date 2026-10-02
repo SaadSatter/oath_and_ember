@@ -1,5 +1,5 @@
 import { PlayerPresentation } from "../animation/PlayerPresentation.js";
-import { combatKey, combatClip } from "../animation/combat.js";
+import { heavyKey, combatKey, actionClip } from "../animation/combat.js";
 import { ensureAppearanceTexture } from "../assets/appearanceTextures.js";
 import { effectColor } from "../assets/palettes.js";
 import type Phaser from "phaser";
@@ -60,13 +60,21 @@ export class PlayerView {
       hurt,
     );
     const combat = presentation.kind === "combat" ? presentation : null;
+    const charge = presentation.kind === "charge" ? presentation : null;
+    const direction = combat?.direction || charge?.direction;
+    const horizontalHeavy =
+      role === "OATH" &&
+      (direction === "right" || direction === "left") &&
+      (!!charge || combat?.action.kind === "heavy");
+
     const state = selectAnimation(
       {
         ...motion,
         actionState:
           presentation.kind === "defeated" || presentation.kind === "hurt"
             ? "hurt"
-            : player.actionState === "attack"
+            : player.actionState === "attack" ||
+                player.actionState === "heavyCharge"
               ? "idle"
               : player.actionState,
       },
@@ -74,10 +82,22 @@ export class PlayerView {
       { ...hints, hurt },
     );
     const resolved = role
-      ? resolveHeroAnimation(role, mode, state, motion.facing)
+      ? resolveHeroAnimation(
+          role,
+          mode,
+          charge ? "idle" : state,
+          charge
+            ? { right: 0, left: Math.PI, down: Math.PI / 2, up: -Math.PI / 2 }[
+                charge.direction
+              ]
+            : motion.facing,
+        )
       : null;
-    const key =
-      role && combat
+    const key = horizontalHeavy
+      ? charge
+        ? `${heavyKey}:charge`
+        : heavyKey
+      : role && combat
         ? combatKey(role, combat.direction)
         : role && resolved
           ? animationKey(role, mode, resolved)
@@ -93,7 +113,7 @@ export class PlayerView {
         this.scene,
         role,
         player.appearance,
-        combat ? "combat" : "base",
+        horizontalHeavy ? "heavy" : combat ? "combat" : "base",
       );
       if (!this.sprite) {
         this.sprite = this.scene.add
@@ -106,9 +126,13 @@ export class PlayerView {
       this.sprite
         .setVisible(true)
         .setPosition(position.x + visual.offset.x, position.y + visual.offset.y)
-        .setOrigin(0.5, combat ? 96 / 128 : visual.origin.y)
+        .setOrigin(0.5, combat || horizontalHeavy ? 96 / 128 : visual.origin.y)
         .setScale(visual.scale)
-        .setFlipX(mode === "PLATFORMER" && Math.cos(motion.facing) < 0)
+        .setFlipX(
+          horizontalHeavy
+            ? direction === "left"
+            : mode === "PLATFORMER" && Math.cos(motion.facing) < 0,
+        )
         .setDepth(mode === "TOP_DOWN" ? position.y : 10);
       // Ignore the same animation instead of restarting it each render frame.
       // A completed one-shot stays on its final frame until semantic state changes.
@@ -120,7 +144,7 @@ export class PlayerView {
         if (combat) this.combatSequence = combat.action.seq;
       }
       if (combat) {
-        const c = combatClip(role, combat.direction);
+        const c = actionClip(role, combat.direction, combat.action.kind);
         this.sprite.setFrame(
           c.start +
             Math.min(
@@ -129,6 +153,8 @@ export class PlayerView {
             ),
         );
       }
+      if (horizontalHeavy && charge)
+        this.sprite.setFrame(charge.ticks < 4 ? 0 : 1);
       this.applyAppearance();
       if (hurt) this.sprite.setTint(0xff9999);
       else this.sprite.clearTint();
@@ -168,6 +194,36 @@ export class PlayerView {
         position.x + Math.cos(motion.facing) * 25,
         position.y + Math.sin(motion.facing) * 25,
       );
+    }
+    if (charge) {
+      const progress = charge.progress;
+      g.lineStyle(2, 0xff5544, 0.35 + 0.6 * progress);
+      g.strokeCircle(position.x, position.y, 18 + progress * 9);
+      g.fillStyle(0x301c22);
+      g.fillRect(position.x - 18, position.y + 20, 36, 3);
+      g.fillStyle(progress >= 1 ? 0xffdd9c : 0xf05c4d);
+      g.fillRect(position.x - 18, position.y + 20, 36 * progress, 3);
+      for (let n = 0; n < 5; n++) {
+        const a = now / 180 + (n * Math.PI * 2) / 5;
+        g.fillStyle(0xffa16a, 0.4 + progress * 0.5);
+        g.fillRect(
+          position.x + Math.cos(a) * (22 - progress * 10),
+          position.y + Math.sin(a) * (22 - progress * 10),
+          2,
+          2,
+        );
+      }
+    }
+    if (combat?.action.kind === "heavy" && !horizontalHeavy) {
+      // Unsupplied vertical heavy poses retain directional basic art plus a larger visual arc.
+      const t = combat.elapsedMs / 500,
+        a = combat.action.facing;
+      if (t < 0.8) {
+        g.lineStyle(3, 0xff634f, 1 - t);
+        g.beginPath();
+        g.arc(position.x, position.y, 34, a - 1 + t, a + 1 + t);
+        g.strokePath();
+      }
     }
     if (player.actionState === "guard") {
       g.lineStyle(

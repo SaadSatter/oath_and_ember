@@ -3,6 +3,7 @@ import {
   validAppearance,
 } from "../../../packages/shared/src/appearance.js";
 import { randomUUID } from "node:crypto";
+import { heavyTiming } from "../../../packages/shared/src/combat.js";
 import { DT } from "../../../packages/shared/src/constants.js";
 import {
   neutral,
@@ -16,6 +17,7 @@ import { move } from "../../../packages/shared/src/movement.js";
 import { skills } from "../../../packages/shared/src/abilities.js";
 export class GameRoom {
   state: World;
+  private primaryWasHeld = new Map<string, boolean>();
   sessions = new Map<
     string,
     {
@@ -24,6 +26,7 @@ export class GameRoom {
       expires: number;
       input: InputFrame;
       received: number;
+      primaryEdges?: boolean[];
     }
   >();
   constructor(code: string) {
@@ -140,6 +143,9 @@ export class GameRoom {
     s.socketId = socketId;
     s.expires = Infinity;
     s.input = neutral();
+    s.primaryEdges = [];
+    delete this.state.players[id].heavyCharge;
+    this.primaryWasHeld.delete(id);
     this.state.players[id].connected = true;
     return {
       roomCode: this.state.roomCode,
@@ -153,6 +159,9 @@ export class GameRoom {
       s.socketId = null;
       s.expires = Date.now() + 30000;
       s.input = neutral();
+      s.primaryEdges = [];
+      delete this.state.players[id].heavyCharge;
+      this.primaryWasHeld.delete(id);
       this.state.players[id].connected = false;
     }
   }
@@ -187,10 +196,13 @@ export class GameRoom {
     w.interactables = { crate: { x: 790, y: 430 } };
     w.boss = null;
     w.projectiles = {};
+    w.projectileImpacts = [];
+    this.primaryWasHeld.clear();
     w.enemies = { moss: { id: "moss", x: 710, y: 380, hp: 60, cooldown: 0 } };
     w.checkpoint = "Clearing";
     Object.values(w.players).forEach((p, i) => {
       delete p.combat;
+      delete p.heavyCharge;
       Object.assign(p, {
         x: 120,
         y: 430 + i * 50,
@@ -203,7 +215,10 @@ export class GameRoom {
         lastProcessedInputSeq: 0,
       });
       const s = this.sessions.get(p.id);
-      if (s) s.input = neutral();
+      if (s) {
+        s.input = neutral();
+        s.primaryEdges = [];
+      }
     });
   }
   transition(scene: World["sceneId"]) {
@@ -212,11 +227,19 @@ export class GameRoom {
     w.worldRevision++;
     w.checkpoint = scene === "AIRSHIP" ? "Airship deck" : "Stormbound Warden";
     w.projectiles = {};
+    w.projectileImpacts = [];
+    this.primaryWasHeld.clear();
     w.enemies = {};
     if (scene === "AIRSHIP_BOSS")
       w.boss = { hp: 220, phase: "SHIELDED", shieldReturned: false };
     Object.values(w.players).forEach((p, i) => {
       delete p.combat;
+      delete p.heavyCharge;
+      const session = this.sessions.get(p.id);
+      if (session) {
+        session.input = neutral(session.input.seq);
+        session.primaryEdges = [];
+      }
       Object.assign(p, {
         ...maps[scene].spawn,
         x: maps[scene].spawn.x + i * 50,
@@ -235,6 +258,9 @@ export class GameRoom {
       Object.values(w.players).some((p) => !p.connected)
     )
       return;
+    w.projectileImpacts = (w.projectileImpacts || []).filter(
+      (e) => w.serverTick - e.tick <= 30,
+    );
     const map = maps[w.sceneId],
       near = (
         p: { x: number; y: number },
@@ -243,7 +269,14 @@ export class GameRoom {
       ) => Math.hypot(p.x - q.x, p.y - q.y) < d;
     for (const p of Object.values(w.players)) {
       const s = this.sessions.get(p.id)!;
-      const i = Date.now() - s.received < 250 ? s.input : neutral(s.input.seq);
+      const fresh = Date.now() - s.received < 250;
+      const i = fresh
+        ? {
+            ...s.input,
+            primaryHeld: s.primaryEdges?.shift() ?? s.input.primaryHeld,
+          }
+        : neutral(s.input.seq);
+      if (!fresh) s.primaryEdges = [];
       p.lastProcessedInputSeq = i.seq;
       move(p, i, map, collisionRects(w.sceneId, w.puzzles), DT);
       for (const k in p.cooldowns)
@@ -268,29 +301,56 @@ export class GameRoom {
         );
         p.cooldowns.dash = 2;
       }
-      if (i.primaryHeld && !p.cooldowns.attack) {
+      let strike: "sword" | "heavy" | "cast" | null = null;
+      let strikeFacing = p.facing;
+      const heavyEnabled =
+        p.role === "OATH" && p.unlockedSkills.includes("heavy");
+      const wasHeld = this.primaryWasHeld.get(p.id) || false;
+      if (!fresh || p.hp <= 0) delete p.heavyCharge;
+      if (heavyEnabled && fresh && p.hp > 0) {
+        if (i.primaryHeld && !wasHeld && !p.cooldowns.attack) {
+          p.heavyCharge = {
+            startedTick: w.serverTick,
+            facing: p.facing,
+            ticks: 0,
+            progress: 0,
+          };
+        }
+        if (p.heavyCharge) {
+          const charge = p.heavyCharge;
+          if (i.primaryHeld) {
+            charge.ticks = Math.min(heavyTiming.capTicks, charge.ticks + 1);
+            charge.progress = Math.min(1, charge.ticks / heavyTiming.fullTicks);
+            p.actionState = "heavyCharge";
+          } else {
+            strike =
+              charge.ticks >= heavyTiming.minimumTicks ? "heavy" : "sword";
+            strikeFacing = charge.facing;
+            delete p.heavyCharge;
+          }
+        }
+      } else if (i.primaryHeld && !p.cooldowns.attack && p.hp > 0) {
+        strike = p.role === "OATH" ? "sword" : "cast";
+      }
+      this.primaryWasHeld.set(p.id, i.primaryHeld);
+      if (strike) {
         p.combat = {
           seq: w.serverTick,
           startedTick: w.serverTick,
-          facing: p.facing,
-          kind:
-            p.role === "OATH"
-              ? p.unlockedSkills.includes("heavy")
-                ? "heavy"
-                : "sword"
-              : "cast",
+          facing: strikeFacing,
+          kind: strike,
         };
         p.cooldowns.attack = p.role === "OATH" ? 0.45 : 0.6;
         if (p.role === "OATH") {
+          const damage = strike === "heavy" ? 40 : 25;
           for (const e of Object.values(w.enemies))
-            if (near(p, e, 85))
-              e.hp -= p.unlockedSkills.includes("heavy") ? 40 : 25;
+            if (near(p, e, 85)) e.hp -= damage;
           if (
             w.boss &&
             near(p, map.points.boss, 95) &&
             w.boss.phase === "VULNERABLE"
           )
-            w.boss.hp -= p.unlockedSkills.includes("heavy") ? 40 : 25;
+            w.boss.hp -= damage;
           if (w.sceneId === "FOREST_RUINS" && near(p, map.points.bramble))
             w.puzzles.gate.physical = true;
         } else {
@@ -299,8 +359,8 @@ export class GameRoom {
             id,
             x: p.x,
             y: p.y,
-            vx: Math.cos(p.facing) * 420,
-            vy: Math.sin(p.facing) * 420,
+            vx: Math.cos(strikeFacing) * 420,
+            vy: Math.sin(strikeFacing) * 420,
             life: 1.6,
             owner: p.id,
           };
@@ -335,8 +395,10 @@ export class GameRoom {
       q.x += q.vx * DT;
       q.y += q.vy * DT;
       q.life -= DT;
+      let collided = false;
       for (const e of Object.values(w.enemies))
         if (near(q, e, 28)) {
+          collided = true;
           e.hp -= 20;
           q.life = 0;
         }
@@ -345,9 +407,18 @@ export class GameRoom {
         w.boss.phase === "VULNERABLE" &&
         near(q, map.points.boss, 45)
       ) {
+        collided = true;
         w.boss.hp -= 10;
         q.life = 0;
       }
+      if (collided)
+        w.projectileImpacts!.push({
+          id: q.id,
+          x: q.x,
+          y: q.y,
+          owner: q.owner,
+          tick: w.serverTick,
+        });
       if (q.life <= 0) delete w.projectiles[q.id];
     }
     for (const e of Object.values(w.enemies)) {
@@ -430,6 +501,7 @@ export class GameRoom {
       p.actionState === "guard" &&
       (p.unlockedSkills.includes("guard") || p.unlockedSkills.includes("ward"));
     p.hp -= defended ? n * 0.25 : n;
+    delete p.heavyCharge;
     if (p.hp <= 0) {
       p.hp = 100;
       Object.assign(p, maps[this.state.sceneId].spawn);

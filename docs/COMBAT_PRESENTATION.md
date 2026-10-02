@@ -1,5 +1,7 @@
 # Combat presentation integration
 
+The subsequent [Heavy Break and projectile update](COMBAT_CHARGE_AND_PROJECTILES.md) adds server-owned hold/release charging and replaces geometric traveling blasts. Its behavior supersedes the initial heavy fallback described below.
+
 Sieg's four basic sword attacks and Coco's four projectile casts now use the approved `Images/Sprites/Basic Fighting Sprites.png`. The original reference remains separate from runtime assets. No replacement artwork, gameplay mechanic, damage, range, cooldown, collision box, or movement rule was introduced.
 
 ## Extracted clips

@@ -129,7 +129,7 @@ export function createApp() {
     );
     socket.on("player:input", (data) => {
       const parsed = inputSchema.safeParse(data);
-      if (!parsed.success || !room || Date.now() - lastInput < 10) return;
+      if (!parsed.success || !room) return;
       const s = room.sessions.get(id);
       if (
         !s ||
@@ -137,6 +137,13 @@ export function createApp() {
           Math.max(s.input.seq, room.state.players[id].lastProcessedInputSeq)
       )
         return;
+      const primaryChanged = parsed.data.primaryHeld !== s.input.primaryHeld;
+      if (!primaryChanged && Date.now() - lastInput < 10) return;
+      if (primaryChanged) {
+        s.primaryEdges ||= [];
+        if (s.primaryEdges.length >= 8) return;
+        s.primaryEdges.push(parsed.data.primaryHeld);
+      }
       lastInput = Date.now();
       s.input = parsed.data;
       s.received = lastInput;

@@ -71,7 +71,7 @@ function harness() {
     textures: { exists: () => true },
     anims: {
       exists: (key: string) =>
-        /(TOP_DOWN:(idle_(down|up|left|right)|walk_(north|south|east|west))|combat:(down|up|left|right))$/.test(
+        /(TOP_DOWN:(idle_(down|up|left|right)|walk_(north|south|east|west))|combat:(down|up|left|right)|OATH:heavy(:charge)?)$/.test(
           key,
         ),
     },
@@ -215,4 +215,44 @@ it("plays accepted combat once, locks direction and restores locomotion after re
     "hero:OATH:TOP_DOWN:walk_east",
   );
   expect(h.sprite.setOrigin).toHaveBeenLastCalledWith(0.5, 60 / 64);
+});
+
+it("holds horizontal heavy wind-up, mirrors left, and plays release once without moving the anchor", () => {
+  const h = harness(),
+    p = {
+      ...player(),
+      heavyCharge: {
+        startedTick: 1,
+        facing: Math.PI,
+        ticks: 20,
+        progress: 20 / 33,
+      },
+    };
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 20 });
+  expect(h.sprite.play).toHaveBeenLastCalledWith("hero:OATH:heavy:charge");
+  expect(h.sprite.setFrame).toHaveBeenLastCalledWith(1);
+  expect(h.sprite.setFlipX).toHaveBeenLastCalledWith(true);
+  h.view.update(p, { ...p, vx: 190, facing: 0 }, p, "TOP_DOWN", "sprite", {
+    serverTick: 21,
+  });
+  expect(h.sprite.play).toHaveBeenCalledTimes(1);
+  const release = {
+    ...p,
+    heavyCharge: undefined,
+    combat: {
+      seq: 22,
+      startedTick: 22,
+      kind: "heavy" as const,
+      facing: Math.PI,
+    },
+  };
+  h.view.update(release, release, p, "TOP_DOWN", "sprite", { serverTick: 22 });
+  expect(h.sprite.play).toHaveBeenLastCalledWith("hero:OATH:heavy");
+  expect(h.sprite.setPosition).toHaveBeenLastCalledWith(120, 463);
+  expect(h.sprite.setOrigin).toHaveBeenLastCalledWith(0.5, 0.75);
+  h.view.update(release, release, p, "TOP_DOWN", "geometric", {
+    serverTick: 23,
+  });
+  h.view.update(release, release, p, "TOP_DOWN", "sprite", { serverTick: 23 });
+  expect(h.sprite.play).toHaveBeenCalledTimes(2);
 });

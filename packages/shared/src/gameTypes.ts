@@ -21,6 +21,12 @@ export interface Player {
   role: Role | null;
   appearance?: CharacterAppearance;
   combat?: CombatAction;
+  heavyCharge?: {
+    startedTick: number;
+    facing: number;
+    ticks: number;
+    progress: number;
+  };
   connected: boolean;
   ready: boolean;
   x: number;
@@ -69,6 +75,13 @@ export interface World {
   players: Record<string, Player>;
   enemies: Record<string, Enemy>;
   projectiles: Record<string, Projectile>;
+  projectileImpacts?: {
+    id: string;
+    x: number;
+    y: number;
+    owner: string;
+    tick: number;
+  }[];
   puzzles: Record<string, Puzzle>;
   interactables: Record<string, { x: number; y: number }>;
   boss: null | {

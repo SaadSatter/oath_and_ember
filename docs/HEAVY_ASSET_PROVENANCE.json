@@ -1,0 +1,67 @@
+{
+  "source": "Images/Sprites/Basic Fighting Sprites.png",
+  "bounds": [
+    [
+      18,
+      849,
+      140,
+      962
+    ],
+    [
+      106,
+      845,
+      252,
+      962
+    ],
+    [
+      222,
+      829,
+      402,
+      968
+    ],
+    [
+      565,
+      804,
+      753,
+      977
+    ],
+    [
+      565,
+      804,
+      753,
+      977
+    ],
+    [
+      18,
+      849,
+      140,
+      962
+    ],
+    [
+      18,
+      849,
+      140,
+      962
+    ]
+  ],
+  "anchors": [
+    72,
+    170,
+    269,
+    613,
+    613,
+    72,
+    72
+  ],
+  "ground": 959,
+  "frame": [
+    128,
+    128
+  ],
+  "foot": [
+    64,
+    96
+  ],
+  "unused": "crowded intermediate poses and final debris-only cell; repeated source poses hold arc/recovery",
+  "mirror": "left; up/down basic fallback"
+}

@@ -2,10 +2,16 @@ import type {
   Player,
   CombatAction,
 } from "../../../../packages/shared/src/gameTypes.js";
-import { combatDirection, combatClip, type CombatDirection } from "./combat.js";
+import { combatDirection, actionClip, type CombatDirection } from "./combat.js";
 import type { MovementMode } from "./definitions.js";
 export type Presentation =
   | { kind: "defeated" | "hurt" | "locomotion" }
+  | {
+      kind: "charge";
+      direction: CombatDirection;
+      progress: number;
+      ticks: number;
+    }
   | {
       kind: "combat";
       direction: CombatDirection;
@@ -51,7 +57,7 @@ export class PlayerPresentation {
       const action = this.queued;
       this.queued = null;
       const direction = combatDirection(action.facing),
-        clip = combatClip(p.role, direction);
+        clip = actionClip(p.role, direction, action.kind);
       const age = Math.max(0, ((serverTick - action.startedTick) * 1000) / 30);
       // Old snapshots on scene creation/reconnect never replay stale attacks.
       if (age < clip.durationMs)
@@ -69,6 +75,13 @@ export class PlayerPresentation {
           action: this.active.action,
           elapsedMs: Math.max(0, now - this.active.start),
         }
-      : { kind: "locomotion" };
+      : p.heavyCharge
+        ? {
+            kind: "charge",
+            direction: combatDirection(p.heavyCharge.facing),
+            progress: p.heavyCharge.progress,
+            ticks: p.heavyCharge.ticks,
+          }
+        : { kind: "locomotion" };
   }
 }

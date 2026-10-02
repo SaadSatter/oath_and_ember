@@ -1,4 +1,9 @@
-import { combatAssets, combatTextureKey } from "../animation/combat.js";
+import {
+  heavyAsset,
+  heavyKey,
+  combatAssets,
+  combatTextureKey,
+} from "../animation/combat.js";
 import type Phaser from "phaser";
 import type { Role } from "../../../../packages/shared/src/gameTypes.js";
 import {
@@ -11,11 +16,13 @@ const sources = new Map<
   string,
   Promise<[HTMLImageElement, HTMLImageElement]>
 >();
-export type AppearanceLayer = "base" | "combat" | "effects";
+export type AppearanceLayer = "base" | "combat" | "effects" | "heavy";
 const layerKey = (role: Role, layer: AppearanceLayer) =>
-  layer === "base"
-    ? textureKey(role)
-    : combatTextureKey(role, layer === "effects");
+  layer === "heavy"
+    ? heavyKey
+    : layer === "base"
+      ? textureKey(role)
+      : combatTextureKey(role, layer === "effects");
 const cache = new Map<string, HTMLCanvasElement>();
 function image(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -40,17 +47,24 @@ export async function appearanceCanvas(
     key = appearanceKey(role, a, layer);
   if (cache.has(key)) return cache.get(key)!;
   const sourceKey = layerKey(role, layer);
-  const asset = layer === "base" ? heroAssets[role] : combatAssets[role];
+  const asset =
+    layer === "heavy"
+      ? heavyAsset
+      : layer === "base"
+        ? heroAssets[role]
+        : combatAssets[role];
   const url =
     layer === "effects"
       ? "/assets/characters/ember/combat-effects.png"
       : asset.url;
   const maskName =
-    layer === "base"
-      ? "palette-mask"
-      : layer === "combat"
-        ? "combat-mask"
-        : "combat-effects-mask";
+    layer === "heavy"
+      ? "heavy-mask"
+      : layer === "base"
+        ? "palette-mask"
+        : layer === "combat"
+          ? "combat-mask"
+          : "combat-effects-mask";
   if (!sources.has(sourceKey))
     sources.set(
       sourceKey,
@@ -108,7 +122,12 @@ export function ensureAppearanceTexture(
         if (scene.textures.exists(key)) return;
         const texture = scene.textures.addCanvas(key, canvas);
         if (!texture) return;
-        const asset = layer === "base" ? heroAssets[role] : combatAssets[role];
+        const asset =
+          layer === "heavy"
+            ? heavyAsset
+            : layer === "base"
+              ? heroAssets[role]
+              : combatAssets[role];
         const columns = Math.floor(canvas.width / asset.frameWidth);
         const count = columns * Math.floor(canvas.height / asset.frameHeight);
         for (let n = 0; n < count; n++)

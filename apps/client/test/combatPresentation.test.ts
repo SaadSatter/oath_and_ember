@@ -104,3 +104,43 @@ it("combat sheets and separate effects share frame dimensions and valid clip ran
   expect(effect.readUInt32BE(16)).toBe(1024);
   expect(effect.readUInt32BE(20)).toBe(512);
 });
+
+it("holds charge from authoritative state without input guesses and releases above locomotion", () => {
+  const m = new PlayerPresentation(),
+    p = {
+      ...hero(),
+      combat: undefined,
+      heavyCharge: {
+        startedTick: 1,
+        facing: Math.PI,
+        ticks: 20,
+        progress: 20 / 33,
+      },
+    };
+  expect(m.update(p, "TOP_DOWN", 1000, 20, false)).toMatchObject({
+    kind: "charge",
+    direction: "left",
+    ticks: 20,
+  });
+  expect(
+    m.update({ ...p, facing: 0, vx: 190 }, "TOP_DOWN", 1200, 25, false),
+  ).toMatchObject({ kind: "charge", direction: "left" });
+  const release = {
+    ...p,
+    heavyCharge: undefined,
+    combat: {
+      seq: 26,
+      startedTick: 26,
+      kind: "heavy" as const,
+      facing: Math.PI,
+    },
+  };
+  expect(m.update(release, "TOP_DOWN", 1300, 26, false)).toMatchObject({
+    kind: "combat",
+    direction: "left",
+  });
+  expect(m.update(release, "TOP_DOWN", 1801, 42, false).kind).toBe(
+    "locomotion",
+  );
+  expect(m.update(p, "TOP_DOWN", 1900, 50, true).kind).toBe("hurt");
+});

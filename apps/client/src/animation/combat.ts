@@ -41,3 +41,21 @@ export function combatClip(role: Role, direction: CombatDirection) {
     durationMs: (count / a.fps) * 1000,
   };
 }
+
+export const heavyAsset = {
+  url: "/assets/characters/oath/heavy.png",
+  frameWidth: 128,
+  frameHeight: 128,
+};
+export const heavyKey = "hero:OATH:heavy";
+export function actionClip(
+  role: Role,
+  direction: CombatDirection,
+  kind: string,
+) {
+  return role === "OATH" &&
+    kind === "heavy" &&
+    (direction === "right" || direction === "left")
+    ? { start: 2, end: 6, fps: 10, durationMs: 500 }
+    : combatClip(role, direction);
+}

@@ -1,5 +1,5 @@
 import { renderAppearanceLobby } from "./ui/appearanceLobby.js";
-import { effectColor } from "./assets/palettes.js";
+import { ProjectileView } from "./entities/ProjectileView.js";
 import Phaser from "phaser";
 import { attachResponsiveRenderer } from "./rendering/ResponsiveRenderer.js";
 import { smoothingFactor } from "./rendering/viewport.js";
@@ -166,6 +166,7 @@ window.addEventListener("keydown", (e) => {
     tell(`Characters: ${characterRendering}`);
   }
   keys.add(e.key.toLowerCase());
+  if (!e.repeat && e.key.toLowerCase() === "j") submitInput(true);
   if (!e.repeat && e.key === "Tab") {
     skillOpen = !skillOpen;
     renderUI();
@@ -175,8 +176,14 @@ window.addEventListener("keydown", (e) => {
     debug = !debug;
   }
 });
-window.addEventListener("keyup", (e) => keys.delete(e.key.toLowerCase()));
-window.addEventListener("blur", () => keys.clear());
+window.addEventListener("keyup", (e) => {
+  keys.delete(e.key.toLowerCase());
+  if (e.key.toLowerCase() === "j") submitInput(true);
+});
+window.addEventListener("blur", () => {
+  keys.clear();
+  submitInput(true);
+});
 // Device capability changes update CSS live, independently of canvas size.
 const touchMedia = window.matchMedia("(any-pointer: coarse)");
 const updateTouch = () => {
@@ -193,15 +200,17 @@ for (const b of document.querySelectorAll<HTMLButtonElement>("[data-key]")) {
     e.preventDefault();
     b.setPointerCapture(e.pointerId);
     keys.add(key);
+    if (key === "j") submitInput(true);
   };
   b.onpointerup =
     b.onpointercancel =
     b.onlostpointercapture =
       () => {
         keys.delete(key);
+        if (key === "j") submitInput(true);
       };
 }
-setInterval(() => {
+function submitInput(reliable = false) {
   const w = net.world;
   if (
     !w ||
@@ -222,16 +231,20 @@ setInterval(() => {
     i.interactHeld = held("e");
   }
   net.prediction.push(i, w);
-  net.socket.volatile.emit("player:input", i);
-}, 1000 / 30);
+  if (reliable) net.socket.emit("player:input", i);
+  else net.socket.volatile.emit("player:input", i);
+}
+setInterval(() => submitInput(), 1000 / 30);
 class Adventure extends Phaser.Scene {
   gfx!: Phaser.GameObjects.Graphics;
   labels: Phaser.GameObjects.Text[] = [];
   sceneKey = "";
   rendered = { x: 0, y: 0 };
   playerViews = new Map<string, PlayerView>();
+  projectileView!: ProjectileView;
   preload() {
     preloadHeroes(this);
+    this.load.image("coco:blast", "/assets/effects/coco-blast.png");
   }
   clearPlayerViews() {
     for (const view of this.playerViews.values()) view.destroy();
@@ -245,11 +258,16 @@ class Adventure extends Phaser.Scene {
       this.clearPlayerViews(),
     );
     this.gfx = this.add.graphics();
+    this.projectileView = new ProjectileView(this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
+      this.projectileView.destroy(),
+    );
   }
   update(_time: number, delta: number) {
     const w = net.world;
     if (!w || w.phase === "LOBBY") {
       this.gfx.clear();
+      this.projectileView.clear();
       this.clearPlayerViews();
       return;
     }
@@ -260,6 +278,8 @@ class Adventure extends Phaser.Scene {
     const local = net.prediction.player || me;
     if (this.sceneKey !== w.sceneId) {
       this.clearPlayerViews();
+      this.projectileView.destroy();
+      this.projectileView = new ProjectileView(this);
       this.sceneKey = w.sceneId;
       this.rendered = { x: local.x, y: local.y };
     }
@@ -347,11 +367,11 @@ class Adventure extends Phaser.Scene {
       g.fillStyle(0xeb6175);
       g.fillRect(q.x - 18, q.y - 28, (e.hp / 60) * 36, 4);
     }
-    for (const p of Object.values(w.projectiles)) {
-      const q = net.interpolation.position(p.id, "projectiles") || p;
-      g.fillStyle(effectColor(w.players[p.owner]?.appearance?.effectPalette));
-      g.fillCircle(q.x, q.y, 6);
-    }
+    this.projectileView.update(
+      w,
+      (id) => net.interpolation.position(id, "projectiles"),
+      characterRendering === "geometric",
+    );
     if (w.boss) {
       const p = map.points.boss;
       g.fillStyle(w.boss.phase === "SHIELDED" ? 0x7898bf : 0xe26b65);
@@ -398,11 +418,16 @@ class Adventure extends Phaser.Scene {
     root.dataset.playerId = me.id;
     root.dataset.worldPosition = `${me.x},${me.y}`;
     root.dataset.scene = w.sceneId;
+    root.dataset.projectileState = JSON.stringify({
+      projectiles: w.projectiles,
+      impacts: w.projectileImpacts,
+    });
     root.dataset.combatActions = JSON.stringify(
       Object.values(w.players).map((p) => ({
         id: p.id,
         role: p.role,
         combat: p.combat,
+        heavyCharge: p.heavyCharge,
       })),
     );
   }

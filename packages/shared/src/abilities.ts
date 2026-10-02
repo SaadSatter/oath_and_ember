@@ -10,7 +10,8 @@ export const skills = [
     id: "heavy",
     role: "OATH",
     name: "Heavy Break",
-    description: "Slash deals increased damage.",
+    description:
+      "Hold J to charge; release after 0.47s for a heavy slash. Early release slashes normally.",
   },
   {
     id: "dash",

@@ -75,3 +75,5 @@ World rendering uses a bounded logical pixel budget with integer enlargement and
 Sieg and Coco support synchronized lobby color swatches and partner previews. Runtime mask recoloring preserves one canonical art set and existing animation clocks. See [character appearance documentation](docs/CHARACTER_APPEARANCE.md) for palettes, masks, caching and protocol validation.
 
 Directional sword attacks and projectile casts use approved reference artwork with server-accepted combat markers, locked facing and presentation recovery. See [combat presentation documentation](docs/COMBAT_PRESENTATION.md) for extraction, frame timing, palette/VFX layers, artwork fallbacks and two-client validation.
+
+Heavy Break now charges on hold and strikes on release; Coco’s traveling blast uses approved effect art and authoritative collision bursts. See [charge/projectile behavior and validation](docs/COMBAT_CHARGE_AND_PROJECTILES.md).
