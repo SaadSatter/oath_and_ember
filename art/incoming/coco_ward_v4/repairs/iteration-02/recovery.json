@@ -1,0 +1,79 @@
+{
+  "assetId": "coco_ward_v4",
+  "fromIteration": 1,
+  "toIteration": 2,
+  "result": "NOT_REPRODUCED",
+  "atlasBefore": "f5b7e3d92d1b4dd6566421eb298ecfb5b6caabaac67f7e6f6cc4255d0909cc99",
+  "atlasAfter": "f5b7e3d92d1b4dd6566421eb298ecfb5b6caabaac67f7e6f6cc4255d0909cc99",
+  "maskBefore": "742a8b0ac4a2e7639951d9c427fb1c119ba21a0a9a25830c194ce761f0d45d43",
+  "maskAfter": "742a8b0ac4a2e7639951d9c427fb1c119ba21a0a9a25830c194ce761f0d45d43",
+  "before": {
+    "dimensionsMatch": true,
+    "visiblePixels": 1264,
+    "missingPixels": 0,
+    "extraPixels": 0,
+    "invalidPixels": 0,
+    "complete": true
+  },
+  "after": {
+    "dimensionsMatch": true,
+    "visiblePixels": 1264,
+    "missingPixels": 0,
+    "extraPixels": 0,
+    "invalidPixels": 0,
+    "complete": true
+  },
+  "triggerFindings": [
+    {
+      "id": "animation",
+      "result": "REVIEW",
+      "category": "DESIGN",
+      "evidence": "art/qa/coco_ward_v4/iteration-01/1920x1080-client-2-start.png",
+      "evidence_paths": [
+        "art/qa/coco_ward_v4/iteration-01/1920x1080-client-2-start.png",
+        "art/qa/coco_ward_v4/iteration-01/1920x1080-client-2-start-mid.png",
+        "art/qa/coco_ward_v4/iteration-01/1920x1080-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-01/1920x1080-client-2-loop-next.png",
+        "art/qa/coco_ward_v4/iteration-01/1920x1080-client-2-end.png",
+        "art/qa/coco_ward_v4/iteration-01/1920x1080-client-2-end-mid.png",
+        "art/qa/coco_ward_v4/iteration-01/1920x1080-client-2-recovered.png"
+      ],
+      "confidence": 0.99,
+      "feedback": "Samples support a faint-to-full held rim followed by fade-out and recovery, with a stable center. Still screenshots cannot establish continuous smoothness, exact timing, or absence of an intervening restart; review continuous temporal evidence."
+    },
+    {
+      "id": "palette",
+      "result": "FAIL",
+      "category": "ART",
+      "evidence": "art/qa/coco_ward_v4/iteration-01/candidate/atlas.png",
+      "evidence_paths": [
+        "art/qa/coco_ward_v4/iteration-01/candidate/atlas.png",
+        "art/qa/coco_ward_v4/iteration-01/candidate/mask.png",
+        "art/qa/coco_ward_v4/iteration-01/1920x1080-client-2-loop.png"
+      ],
+      "confidence": 0.96,
+      "feedback": "The green mask covers the bright ring and particles but omits the visibly alpha-bearing diffuse outer glow in the atlas. Regenerate the effect-only mask so all alpha-bearing Ward pixels, including the outer halo, receive green coverage while transparent pixels remain unmasked."
+    }
+  ],
+  "unresolvedReview": [
+    {
+      "id": "animation",
+      "result": "REVIEW",
+      "category": "DESIGN",
+      "evidence": "art/qa/coco_ward_v4/iteration-01/1920x1080-client-2-start.png",
+      "evidence_paths": [
+        "art/qa/coco_ward_v4/iteration-01/1920x1080-client-2-start.png",
+        "art/qa/coco_ward_v4/iteration-01/1920x1080-client-2-start-mid.png",
+        "art/qa/coco_ward_v4/iteration-01/1920x1080-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-01/1920x1080-client-2-loop-next.png",
+        "art/qa/coco_ward_v4/iteration-01/1920x1080-client-2-end.png",
+        "art/qa/coco_ward_v4/iteration-01/1920x1080-client-2-end-mid.png",
+        "art/qa/coco_ward_v4/iteration-01/1920x1080-client-2-recovered.png"
+      ],
+      "confidence": 0.99,
+      "feedback": "Samples support a faint-to-full held rim followed by fade-out and recovery, with a stable center. Still screenshots cannot establish continuous smoothness, exact timing, or absence of an intervening restart; review continuous temporal evidence."
+    }
+  ],
+  "method": "Green coverage iff atlas alpha > 0; no threshold, no RGB/alpha changes to artwork",
+  "source": "art/incoming/coco_ward_v4/repairs/iteration-02"
+}

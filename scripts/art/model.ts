@@ -31,16 +31,24 @@ export const findingSchema = z
       });
   });
 export type Finding = z.infer<typeof findingSchema>;
-export function route(checks: Finding[], iteration: number, max = 3) {
+export function route(
+  checks: Finding[],
+  iteration: number,
+  max = 3,
+  confidenceThreshold = 0.85,
+) {
   const failures = checks.filter((c) => c.result === "FAIL");
   if (failures.length && iteration >= max) return "NEEDS_HUMAN_REVIEW";
-  if (
-    checks.some((c) => c.result === "REVIEW") ||
-    failures.some((c) => c.category === "DESIGN")
-  )
+  const actionable = failures.filter(
+    (c) => c.confidence === undefined || c.confidence >= confidenceThreshold,
+  );
+  // Vision validation downgrades low-confidence decisions to REVIEW first.
+  // Objective/high-confidence actionable failures take precedence over uncertainty.
+  if (actionable.some((c) => c.category === "ART")) return "QA_FAILED_ART";
+  if (actionable.some((c) => c.category === "IMPLEMENTATION"))
+    return "QA_FAILED_IMPLEMENTATION";
+  if (checks.some((c) => c.result === "REVIEW") || failures.length)
     return "NEEDS_HUMAN_REVIEW";
-  if (failures.some((c) => c.category === "ART")) return "QA_FAILED_ART";
-  if (failures.length) return "QA_FAILED_IMPLEMENTATION";
   return "AWAITING_APPROVAL";
 }
 export const submissionSchema = z

@@ -172,15 +172,15 @@
       "status": "NEEDS_HUMAN_REVIEW",
       "character": "coco",
       "animation": "ward",
-      "source_file": "art/incoming/coco_ward_v4/generated/attempt-01",
+      "source_file": "art/incoming/coco_ward_v4/repairs/iteration-02",
       "canonical_references": [
         "Images/Character Concept art.png",
         "Images/Sprites/Defense Basic Sprites.png",
         "docs/DEFENSE_ASSET_PROVENANCE.json"
       ],
       "runtime_files": [
-        "art/qa/coco_ward_v4/iteration-01/candidate/atlas.png",
-        "art/qa/coco_ward_v4/iteration-01/candidate/mask.png"
+        "art/qa/coco_ward_v4/iteration-02/candidate/atlas.png",
+        "art/qa/coco_ward_v4/iteration-02/candidate/mask.png"
       ],
       "directions": [
         "omnidirectional"
@@ -199,14 +199,15 @@
         "runtime_recolor": true,
         "mask_channel": "green"
       },
-      "qa_status": "FAIL",
-      "iteration": 1,
+      "qa_status": "REVIEW",
+      "iteration": 2,
       "approved_at": null,
       "target": "assets/characters/ember/defense.png",
       "mask_target": "assets/characters/ember/defense-mask.png",
       "reports": [
         "art/qa/coco_ward_v4/iteration-01/qa-report.json",
-        "art/qa/coco_ward_v4/iteration-01/vision-report.json"
+        "art/qa/coco_ward_v4/iteration-01/vision-report.json",
+        "art/qa/coco_ward_v4/iteration-02/qa-report.json"
       ],
       "generation_attempts": 1,
       "generation_history": [

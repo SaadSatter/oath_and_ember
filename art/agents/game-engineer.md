@@ -29,3 +29,5 @@ Transparency/anchor preserved, existing palette pipeline, typecheck/test/build.
 Bad source → ART; renderer bug → IMPLEMENTATION; unbound adapter → HUMAN.
 
 Shared contracts: ../ART_SPEC.md, ../VISUAL_QA.md, ../README.md. Roles are artifact-driven stages, not running AI services.
+
+For isolated, positively reviewed Coco VFX, recover mask-only defects from exact atlas alpha before requesting new artwork. Preserve the atlas byte-for-byte, record measured before/after coverage and stage a new QA iteration. An unverified or mixed art defect needs the normal art/human handoff.

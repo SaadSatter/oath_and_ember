@@ -1,5 +1,6 @@
 import type { Asset } from "./model.js";
 export interface PipelineStages {
+  recover?: (a: Asset) => Promise<boolean>;
   artistEnabled: boolean;
   visionEnabled: boolean;
   maxIterations: number;
@@ -14,6 +15,19 @@ export interface PipelineStages {
 export async function advanceAsset(a: Asset, s: PipelineStages) {
   const status = () => a.status;
   for (let step = 0; step < s.maxIterations * 4 + 4; step++) {
+    if (
+      [
+        "QA_FAILED_ART",
+        "QA_FAILED_IMPLEMENTATION",
+        "NEEDS_HUMAN_REVIEW",
+      ].includes(status()) &&
+      a.iteration < s.maxIterations &&
+      s.recover &&
+      (await s.recover(a))
+    ) {
+      if (status() !== "READY_FOR_INTEGRATION")
+        throw Error("Recovery must stage a new candidate before QA.");
+    }
     if (status() === "QA_FAILED_ART") {
       if (!s.artistEnabled || a.iteration >= s.maxIterations) return;
       const before = a.iteration;

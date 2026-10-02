@@ -16,7 +16,7 @@ Objective validation and screenshots are evidence, not artistic approval. An opt
 
 ART → SPRITE_ARTIST: inconsistent design/equipment, missing frames, bad poses/anatomy, unsuitable VFX, unusable transparency, clipping already in source.
 IMPLEMENTATION → GAME_ENGINEER: wrong crop/anchor/order/timing/scale/layering, palette recolors protected regions, remote animation absent, resize failure.
-DESIGN → HUMAN: conflicting brief, unclear size or obscuration, technically correct but undesirable. Mixed art + implementation findings route art first; retain all findings. Third failed iteration stops at human review.
+DESIGN → HUMAN: conflicting brief, unclear size or obscuration, technically correct but undesirable. Mixed art + implementation findings route art first; retain all findings. Actionable high-confidence ART/IMPLEMENTATION findings are processed before non-actionable DESIGN/REVIEW findings. Third failed iteration stops at human review.
 
 Every failure needs category, actionable feedback and evidence path. Example: “Runtime effect diameter is 140 px versus brief 100 px (40% too large); source atlas matches target, reduce renderer scale” = IMPLEMENTATION. “Frames 4–5 replace Coco's staff head; visible in source contact sheet” = ART. Do not claim numerical size errors without a target and measurement.
 
@@ -27,3 +27,9 @@ Submit all seven review IDs with PASS/FAIL through `art:review`. PASS means a re
 The enabled vision provider sees the full source/reference/runtime packet, not filenames alone. All seven IDs are required exactly once with result, category (null for PASS), confidence 0–1, evidence paths and actionable feedback. It may cite only supplied image paths. ART must cite the candidate/source; IMPLEMENTATION must cite runtime evidence. Confidence below the configured threshold (default .85) turns the criterion into DESIGN/REVIEW. Model refusal, incomplete/malformed response and unseen evidence cannot produce PASS. Objective failures and changed candidate hashes block vision review.
 
 Sampled temporal screenshots do not prove continuous smooth motion; return REVIEW for unsupported timing or numeric claims. All AI PASS produces AWAITING_APPROVAL, never APPROVED. API errors go to a human/configuration handoff rather than blaming the artist or triggering automatic HTTP retries.
+
+## Mask coverage and temporal evidence
+
+Mask coverage is an objective pixel measurement: green coverage at every atlas alpha > 0 pixel, no nontransparent mask outside the effect. Do not infer missing halo coverage solely from image brightness. Isolated effect masks may be deterministically rebuilt from a positively reviewed effect atlas; retain atlas bytes and create a fresh QA iteration. Complete coverage still requires semantic and runtime palette review. When model feedback conflicts with measured coverage, preserve both and seek human adjudication if the conflict persists.
+
+`temporal/` includes continuous both-client WebM recordings and approximate phase-request timelines. Review videos for motion, holds and resets. Current vision calls receive PNGs, not video frames: recorded video availability alone is insufficient for animation PASS. Future automatic temporal review needs native frame presentation timestamps and cadence/transition evidence.

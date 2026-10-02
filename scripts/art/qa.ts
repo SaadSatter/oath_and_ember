@@ -1,4 +1,4 @@
-import { chromium } from "@playwright/test";
+import type { chromium as Chromium } from "@playwright/test";
 import { spawn } from "node:child_process";
 import {
   cpSync,
@@ -50,7 +50,7 @@ export async function capture(
   let output = "";
   server.stdout.on("data", (b) => (output += b));
   server.stderr.on("data", (b) => (output += b));
-  let browser: Awaited<ReturnType<typeof chromium.launch>> | undefined;
+  let browser: Awaited<ReturnType<typeof Chromium.launch>> | undefined;
   const errors: string[] = [];
   const checks: Finding[] = [];
   try {
@@ -69,6 +69,7 @@ export async function capture(
     if (!ready) throw Error("QA server startup timeout");
     process.env.PLAYWRIGHT_BROWSERS_PATH ||=
       "/private/tmp/oath-ember-playwright";
+    const { chromium } = await import("@playwright/test");
     const systemChrome =
       "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
     browser = await chromium.launch({
@@ -77,6 +78,12 @@ export async function capture(
         process.env.ART_QA_BROWSER_EXECUTABLE ||
         (existsSync(systemChrome) ? systemChrome : undefined),
     });
+    const recordings: {
+      client: number;
+      viewport: string;
+      path: string;
+      scope: string;
+    }[] = [];
     for (const [width, height] of [
       [1920, 1080],
       [1440, 900],
@@ -84,11 +91,19 @@ export async function capture(
       [844, 390],
     ]) {
       const contexts = await Promise.all([
-        browser.newContext({ viewport: { width, height } }),
-        browser.newContext({ viewport: { width, height } }),
+        browser.newContext({
+          viewport: { width, height },
+          recordVideo: { dir: join(dir, "temporal"), size: { width, height } },
+        }),
+        browser.newContext({
+          viewport: { width, height },
+          recordVideo: { dir: join(dir, "temporal"), size: { width, height } },
+        }),
       ]);
+      const pages = await Promise.all(contexts.map((c) => c.newPage()));
+      const phaseEvents: { phase: string; atMs: number }[] = [];
+      const started = performance.now();
       try {
-        const pages = await Promise.all(contexts.map((c) => c.newPage()));
         for (const p of pages) {
           p.on("pageerror", (e) => errors.push(e.message));
           p.on("response", (r) => {
@@ -130,9 +145,14 @@ export async function capture(
             evidence.push(relative(root, file));
           }
         };
+        phaseEvents.push({ phase: "idle", atMs: performance.now() - started });
         await fetch(`${url}/__art/phase/idle`, { method: "POST" });
         await pages[0].waitForTimeout(800);
         await shots("idle");
+        phaseEvents.push({
+          phase: a.animation === "ward" ? "held" : "projectile",
+          atMs: performance.now() - started,
+        });
         await fetch(
           `${url}/__art/phase/${a.animation === "ward" ? "held" : "projectile"}`,
           { method: "POST" },
@@ -146,6 +166,7 @@ export async function capture(
           await pages[0].waitForTimeout(delay);
           await shots(label);
         }
+        phaseEvents.push({ phase: "idle", atMs: performance.now() - started });
         await fetch(`${url}/__art/phase/idle`, { method: "POST" });
         for (const [delay, label] of [
           [120, "end"],
@@ -208,8 +229,61 @@ export async function capture(
         });
       } finally {
         await Promise.all(contexts.map((c) => c.close()));
+        for (let i = 0; i < pages.length; i++) {
+          const video = pages[i].video();
+          if (video) {
+            const destination = join(
+              dir,
+              "temporal",
+              `${width}x${height}-client-${i + 1}.webm`,
+            );
+            await video.saveAs(destination);
+            recordings.push({
+              client: i + 1,
+              viewport: `${width}x${height}`,
+              path: relative(root, destination),
+              scope:
+                "Continuous browser recording including lobby, start/held/end and recovery; not frame-accurate simulation telemetry.",
+            });
+          }
+        }
+        writeFileSync(
+          join(dir, "temporal", `${width}x${height}-timeline.json`),
+          JSON.stringify(
+            {
+              phaseEvents,
+              durationMs: performance.now() - started,
+              clock:
+                "Node performance.now relative to browser setup; approximate request timing, not video presentation timestamps",
+            },
+            null,
+            2,
+          ),
+        );
       }
     }
+    writeFileSync(
+      join(dir, "temporal", "index.json"),
+      JSON.stringify(
+        {
+          recordings,
+          limitations:
+            "Videos are continuous human-review evidence. Current Responses adapter consumes PNG inputs, not WebM. No automatic animation PASS inferred; frame extraction with presentation timestamps and cadence analysis is future work.",
+        },
+        null,
+        2,
+      ),
+    );
+    checks.push({
+      id: "temporal_recordings",
+      result: recordings.length === 8 ? "PASS" : "FAIL",
+      category: recordings.length === 8 ? undefined : "IMPLEMENTATION",
+      feedback:
+        recordings.length === 8
+          ? undefined
+          : "Expected eight continuous client recordings.",
+      evidence: relative(root, join(dir, "temporal", "index.json")),
+    });
     checks.push({
       id: "browser_errors",
       result: errors.length ? "FAIL" : "PASS",

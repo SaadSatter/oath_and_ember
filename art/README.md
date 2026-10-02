@@ -57,7 +57,7 @@ Use installed system Chrome on macOS, or install Chromium once:
 PLAYWRIGHT_BROWSERS_PATH=/private/tmp/oath-ember-playwright npx playwright install chromium
 ```
 
-Alternatively set `ART_QA_BROWSER_EXECUTABLE` to a Chromium executable. `ART_QA_PORT` defaults to 3015; occupied ports fail rather than attaching to another service. Dependencies require no provider credentials. QA startup failures produce structured IMPLEMENTATION feedback, not a false visual pass. Short sampled sequences supplement the contact sheet; inspect them together for temporal behavior. Continuous video and pixel comparison baselines are future additions.
+Alternatively set `ART_QA_BROWSER_EXECUTABLE` to a Chromium executable. `ART_QA_PORT` defaults to 3015; occupied ports fail rather than attaching to another service. Dependencies require no provider credentials. QA startup failures produce structured IMPLEMENTATION feedback, not a false visual pass. Short sampled sequences supplement the contact sheet; inspect them together for temporal behavior. Continuous WebM recordings and phase timelines now accompany each browser run. Automated temporal extraction/cadence analysis and pixel comparison baselines remain future additions.
 
 ## Review, revisions and approval
 
@@ -176,3 +176,26 @@ Sampled frames support comparisons and visible discontinuities, not a guarantee 
 No OPENAI_API_KEY was configured during this upgrade, so a live paid generation/vision run has not been verified. Existing browser Ward evidence is preserved and can be reviewed with `art:vision` once configured. This distinction is recorded in `qa/AI_PROVIDER_VALIDATION.md`.
 
 Official API contracts: [image editing and transparency](https://developers.openai.com/api/docs/guides/image-generation), [vision inputs](https://developers.openai.com/api/docs/guides/images-vision), [structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs).
+
+## Recovery before regeneration
+
+Actionable high-confidence ART/IMPLEMENTATION failures now take precedence over non-actionable DESIGN/REVIEW findings. Low-confidence failures remain human-review items. The iteration cap and human-approval gate are unchanged; animation REVIEW is never converted to PASS to make a loop proceed.
+
+Before regenerating an isolated Coco Ward/projectile atlas for a mask-coverage finding, recovery checks the PNG pixels and requires existing positive character-consistency/rendering/VFX findings. It compares every atlas alpha > 0 pixel against green mask coverage, including faint halos, and verifies candidate hashes. For a mask-only defect it builds `[0,255,0,255]` exactly where atlas alpha > 0, leaving atlas RGB/alpha/cells/anchors byte-for-byte unchanged. Other artwork defects, character masks and stale candidates do not qualify.
+
+If all pixels are already covered, record NOT_REPRODUCED rather than pretending to fix the image or regenerating it. Stage a new verification iteration with measured diagnostics; retain the original model FAIL and all REVIEW findings. A repeated mask claim contradicted by exact pixel coverage goes to human adjudication, not endless regeneration. Actual pixel coverage does not prove semantic mask correctness or runtime recoloring; those criteria remain in the rubric.
+
+```sh
+npm run art:recover -- coco_ward_v4  # stage safe mask repair/verification from existing vision findings
+npm run art:integrate -- coco_ward_v4
+npm run art:capture -- coco_ward_v4  # tests/build + local browser evidence; no API calls
+npm run art:vision -- coco_ward_v4   # new vision critique after capture
+```
+
+`art:run` performs the same recovery before regeneration when all enabled stages can run. Each new iteration preserves its own atlas/mask, recovery provenance, screenshots, timelines, recordings and reports. No production asset is overwritten.
+
+## Temporal evidence and next step
+
+Browser QA records both clients continuously at all four sizes using Playwright's video encoder (install with `PLAYWRIGHT_BROWSERS_PATH=/private/tmp/oath-ember-playwright npx playwright install ffmpeg`). Named recordings and `temporal/index.json` cover lobby, entry, held effect, release and recovery; per-viewport phase timelines use approximate Node request timing, not video presentation timestamps. Actual recording dimensions match each viewport.
+
+These WebM files enable human smoothness/restart inspection. The current Responses adapter accepts the original PNGs and numeric diagnostics; it does **not** transmit video bytes or infer animation PASS because a video exists. A future automated temporal stage should extract frames at native presentation timestamps, record dropped/duplicate-frame gaps, correlate browser render clocks and presentation phase transitions, and send ordered timestamped windows for critique. Do not manufacture a 30-fps sequence by duplicating frames or claim sampled stills prove continuous motion. Until adequate temporal evidence reaches the reviewer, unsupported animation judgments remain DESIGN/REVIEW.

@@ -9,3 +9,4 @@ art/manifest.json.tmp
 art/qa/**/preview/
 art/qa/**/*.png
 art/qa/**/*-states.json
+art/qa/**/*.webm

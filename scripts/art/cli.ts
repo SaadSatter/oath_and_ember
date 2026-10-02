@@ -34,6 +34,7 @@ import {
   effectLayout,
 } from "./generation.js";
 import { OpenAIVisionReviewer } from "./vision.js";
+import { prepareMaskRecovery } from "./recovery.js";
 import { advanceAsset } from "./runner.js";
 const root = resolve(
     process.env.ART_WORKSPACE_ROOT || resolve(import.meta.dirname, "../.."),
@@ -75,7 +76,12 @@ function report(a: Asset, checks: Finding[], stage: string) {
   const file = join(dir, `${stage}-report.json`);
   if (existsSync(file))
     throw Error("Evidence already exists; use art:revise for a new iteration.");
-  a.status = route(checks, a.iteration, manifest.max_iterations);
+  a.status = route(
+    checks,
+    a.iteration,
+    manifest.max_iterations,
+    loadProviderConfig(root).visual_qa.confidence_threshold,
+  );
   a.qa_status = checks.some((c) => c.result === "FAIL")
     ? "FAIL"
     : checks.some((c) => c.result === "REVIEW")
@@ -462,6 +468,56 @@ async function vision(a: Asset) {
     );
   }
 }
+async function recover(a: Asset) {
+  if (a.iteration >= manifest.max_iterations || a.status === "APPROVED")
+    return false;
+  const latest = [...a.reports]
+    .reverse()
+    .find(
+      (p) =>
+        p.startsWith(`${iterationDirectory(a)}/`) &&
+        /vision(?:-[0-9]+)?-report\.json$/.test(p),
+    );
+  if (!latest) return false;
+  const checks: Finding[] = json(path(latest)).checks;
+  const previous = path(`${a.source_file}/recovery.json`);
+  if (
+    existsSync(previous) &&
+    json(previous).result === "NOT_REPRODUCED" &&
+    json(previous).atlasAfter === a.source_hash &&
+    json(previous).maskAfter === a.integration_hash
+  ) {
+    // Repeat claim contradicted by exact pixel data: retain original FAIL, seek human adjudication.
+    const { isMaskOnlyFailure } = await import("./recovery.js");
+    if (isMaskOnlyFailure(checks)) {
+      report(
+        a,
+        checks.map((c) =>
+          c.result === "FAIL" &&
+          (c.category === "ART" || c.category === "IMPLEMENTATION")
+            ? {
+                ...c,
+                result: "REVIEW" as const,
+                category: "DESIGN" as const,
+                feedback: `Repeated mask claim conflicts with verified complete atlas-alpha coverage. Human adjudication required; original vision FAIL is preserved. ${c.feedback}`,
+              }
+            : c,
+        ),
+        "mask-dispute",
+      );
+      return false;
+    }
+  }
+  const result = prepareMaskRecovery(root, a, checks);
+  if (!result) return false;
+  a.source_file = result.source;
+  a.status = "READY_FOR_INTEGRATION";
+  save();
+  console.log(
+    `${result.result}: ${result.before.missingPixels} missing mask pixels; atlas unchanged. New iteration ${result.toIteration}; animation REVIEW remains unresolved.`,
+  );
+  return true;
+}
 async function integrate(a: Asset) {
   if (
     ![
@@ -619,6 +675,25 @@ async function main() {
       );
       return;
     }
+    if (a.status === "NEEDS_HUMAN_REVIEW") {
+      const latest = [...a.reports]
+        .reverse()
+        .find(
+          (p) =>
+            p.startsWith(`${iterationDirectory(a)}/`) &&
+            /vision(?:-[0-9]+)?-report\.json$/.test(p),
+        );
+      if (latest) {
+        const checks: Finding[] = json(path(latest)).checks;
+        const next = route(
+          checks,
+          a.iteration,
+          manifest.max_iterations,
+          loadProviderConfig(root).visual_qa.confidence_threshold,
+        );
+        if (next !== a.status) report(a, checks, "routing");
+      }
+    }
     await advanceAsset(a, {
       artistEnabled: config.sprite_artist.provider === "openai",
       visionEnabled: config.visual_qa.provider === "openai",
@@ -626,6 +701,7 @@ async function main() {
       hasSubmission: (a) =>
         existsSync(path(`${a.source_file}/submission.json`)),
       canReview,
+      recover,
       generate,
       integrate,
       qa,
@@ -634,9 +710,17 @@ async function main() {
     console.log(a.status);
     return;
   }
+  if (command === "recover") {
+    if (!(await recover(a)))
+      throw Error(
+        "No safely recoverable mask-only failure, or iteration limit reached.",
+      );
+    return;
+  }
   if (command === "generate") return generate(a);
   if (command === "vision") return vision(a);
   if (command === "integrate") return integrate(a);
+  if (command === "capture") return qa(a);
   if (command === "qa") {
     await qa(a);
     if (
