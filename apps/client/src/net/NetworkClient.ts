@@ -14,6 +14,7 @@ export class NetworkClient {
   prediction = new Prediction();
   interpolation = new Interpolation();
   seq = 0;
+  private leaving = false;
   onchange = () => {};
   onerror = (s: string) => console.warn(s);
   constructor() {
@@ -50,6 +51,7 @@ export class NetworkClient {
     this.socket.on("server:error", (e) => this.onerror(e.message));
   }
   accept(w: World, full: boolean) {
+    if (this.leaving) return;
     if (this.session && !w.players[this.session.playerId]) {
       this.session = null;
       this.world = null;
@@ -68,6 +70,23 @@ export class NetworkClient {
     if (p) this.seq = Math.max(this.seq, p.lastProcessedInputSeq);
     this.interpolation.push(w);
     this.onchange();
+  }
+  async leaveRoom() {
+    this.leaving = true;
+    try {
+      await this.request("room:leave", {});
+      this.session = null;
+      this.world = null;
+      this.seq = 0;
+      this.prediction.player = null;
+      this.prediction.pending = [];
+      this.prediction.error = 0;
+      this.interpolation.clear();
+      sessionStorage.removeItem("oath-session");
+      this.onchange();
+    } finally {
+      this.leaving = false;
+    }
   }
   save(s: Session) {
     this.session = s;

@@ -1,0 +1,8 @@
+{
+  "characters": {
+    "sieg": ["Images/Character Concept art.png", "apps/client/public/assets/characters/oath"],
+    "coco": ["Images/Character Concept art.png", "apps/client/public/assets/characters/ember"]
+  },
+  "effects": ["Images/Sprites/Defense Basic Sprites.png", "Images/Sprites/Magic Basic Spell.png"],
+  "provenance": ["docs/DEFENSE_ASSET_PROVENANCE.json", "docs/MAGIC_PROJECTILE_PROVENANCE.json"]
+}

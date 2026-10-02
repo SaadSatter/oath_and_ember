@@ -500,6 +500,11 @@ export class GameRoom {
     const defended =
       p.actionState === "guard" &&
       (p.unlockedSkills.includes("guard") || p.unlockedSkills.includes("ward"));
+    if (defended && n > 0)
+      p.defensiveHit = {
+        seq: (p.defensiveHit?.seq ?? 0) + 1,
+        tick: this.state.serverTick,
+      };
     p.hp -= defended ? n * 0.25 : n;
     delete p.heavyCharge;
     if (p.hp <= 0) {

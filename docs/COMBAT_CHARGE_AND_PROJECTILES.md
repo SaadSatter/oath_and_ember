@@ -1,5 +1,7 @@
 # Heavy Break and Coco projectile update
 
+The projectile presentation described below has since been replaced by the [twirling projectile pipeline](TWIRLING_MAGIC_PROJECTILES.md). Charge behavior and server collision records remain unchanged.
+
 This update fixes the geometric traveling blast and makes Heavy Break a true server-authoritative charge attack. Server movement, hit ranges, puzzle interactions, Coco's projectile speed (420), damage (20 to enemies / 10 to the boss), lifetime (1.6 seconds), and collision tests are unchanged.
 
 ## Heavy Break state machine

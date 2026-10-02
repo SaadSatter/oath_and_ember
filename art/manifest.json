@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "max_iterations": 3,
+  "assets": {
+    "coco_projectile_v1": {
+      "asset_id": "coco_projectile_v1",
+      "version": 1,
+      "status": "WAITING_FOR_ART",
+      "character": "coco",
+      "animation": "projectile",
+      "source_file": "art/incoming/coco_projectile_v1",
+      "canonical_references": [
+        "Images/Character Concept art.png",
+        "Images/Sprites/Magic Basic Spell.png",
+        "docs/MAGIC_PROJECTILE_PROVENANCE.json"
+      ],
+      "runtime_files": [],
+      "directions": [
+        "right",
+        "left",
+        "up",
+        "down"
+      ],
+      "frame_count": 4,
+      "frame_dimensions": [
+        64,
+        64
+      ],
+      "anchor": [
+        32,
+        32
+      ],
+      "palette_behavior": {
+        "source": "canonical_ember_magic",
+        "runtime_recolor": true,
+        "mask_channel": "green"
+      },
+      "qa_status": "NOT_RUN",
+      "iteration": 0,
+      "approved_at": null,
+      "target": "assets/effects/coco/flight.png",
+      "mask_target": "assets/effects/coco/flight-mask.png",
+      "reports": []
+    },
+    "coco_ward_v1": {
+      "asset_id": "coco_ward_v1",
+      "version": 1,
+      "status": "NEEDS_HUMAN_REVIEW",
+      "character": "coco",
+      "animation": "ward",
+      "source_file": "art/incoming/coco_ward_v1",
+      "canonical_references": [
+        "Images/Character Concept art.png",
+        "Images/Sprites/Defense Basic Sprites.png",
+        "docs/DEFENSE_ASSET_PROVENANCE.json"
+      ],
+      "runtime_files": [
+        "art/qa/coco_ward_v1/iteration-03/candidate/atlas.png",
+        "art/qa/coco_ward_v1/iteration-03/candidate/mask.png"
+      ],
+      "directions": [
+        "omnidirectional"
+      ],
+      "frame_count": 1,
+      "frame_dimensions": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        70
+      ],
+      "palette_behavior": {
+        "source": "canonical_ember_magic",
+        "runtime_recolor": true,
+        "mask_channel": "green"
+      },
+      "qa_status": "REVIEW",
+      "iteration": 3,
+      "approved_at": null,
+      "target": "assets/characters/ember/defense.png",
+      "mask_target": "assets/characters/ember/defense-mask.png",
+      "reports": [
+        "art/qa/coco_ward_v1/iteration-01/qa-report.json",
+        "art/qa/coco_ward_v1/iteration-02/qa-report.json",
+        "art/qa/coco_ward_v1/iteration-03/qa-report.json"
+      ],
+      "source_hash": "6a5a037623ea305949419dc09b01656807938f48226b64b8fe6d7b2ca142233d",
+      "integration_hash": "8996f97ab1f5e44e4cb86783132949521797c6865ee18591a0a5f4ccd5def94d"
+    }
+  }
+}

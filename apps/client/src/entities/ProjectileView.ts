@@ -1,13 +1,27 @@
 import type Phaser from "phaser";
 import type { World } from "../../../../packages/shared/src/gameTypes.js";
 import { effectColor } from "../assets/palettes.js";
-/** Presentation only: positions come from snapshot interpolation, impacts from server events. */
+import { ensureMagicTexture } from "../assets/magicTextures.js";
+import {
+  flightFrame,
+  impactFrame,
+  impactDuration,
+  magicKey,
+} from "../animation/projectile.js";
+/** Positions/impacts are authoritative; ribbon frame timing is purely cosmetic. */
 export class ProjectileView {
-  private sprites = new Map<string, Phaser.GameObjects.Image>();
+  private flights = new Map<
+    string,
+    {
+      ribbons: Phaser.GameObjects.Image;
+      core: Phaser.GameObjects.Image;
+      start: number;
+    }
+  >();
   private seen = new Set<string>();
   private bursts = new Map<
     string,
-    { x: number; y: number; color: number; start: number }
+    { sprite: Phaser.GameObjects.Image; start: number; palette: string }
   >();
   private graphics: Phaser.GameObjects.Graphics;
   constructor(private scene: Phaser.Scene) {
@@ -23,94 +37,136 @@ export class ProjectileView {
     g.clear();
     for (const p of Object.values(world.projectiles)) {
       const q = position(p.id) || p,
-        color = effectColor(world.players[p.owner]?.appearance?.effectPalette);
+        palette = world.players[p.owner]?.appearance?.effectPalette || "ember",
+        color = effectColor(palette);
+      // Velocity supplies a stable travel orientation, never a time-based PNG spin.
       const angle = Math.atan2(p.vy, p.vx),
         dx = Math.cos(angle),
         dy = Math.sin(angle);
-      let sprite = this.sprites.get(p.id);
-      if (!sprite && this.scene.textures.exists("coco:blast")) {
-        sprite = this.scene.add
-          .image(q.x, q.y, "coco:blast")
-          .setOrigin(76 / 96, 32 / 64)
-          .setDepth(30);
-        this.sprites.set(p.id, sprite);
+      let flight = this.flights.get(p.id);
+      if (
+        !flight &&
+        this.scene.textures.exists(magicKey("flight")) &&
+        this.scene.textures.exists(magicKey("core"))
+      ) {
+        flight = {
+          ribbons: this.scene.add
+            .image(q.x, q.y, magicKey("flight"))
+            .setOrigin(0.5, 0.5)
+            .setDepth(30),
+          core: this.scene.add
+            .image(q.x, q.y, magicKey("core"))
+            .setOrigin(0.5, 0.5)
+            .setDepth(31),
+          start: now,
+        };
+        this.flights.set(p.id, flight);
       }
-      sprite
-        ?.setVisible(!debug)
-        .setPosition(q.x, q.y)
-        .setRotation(angle)
-        .setTint(color);
-      if (debug) {
+      if (flight) {
+        flight.ribbons
+          .setTexture(
+            ensureMagicTexture(this.scene, "flight", palette),
+            flightFrame(now - flight.start),
+          )
+          .setVisible(!debug)
+          .setPosition(q.x, q.y)
+          .setRotation(angle);
+        // Core never changes animation frame, scale or offset.
+        flight.core
+          .setTexture(ensureMagicTexture(this.scene, "core", palette), 0)
+          .setVisible(!debug)
+          .setPosition(q.x, q.y);
+      }
+      if (debug || !flight) {
         g.fillStyle(color);
         g.fillCircle(q.x, q.y, 6);
         continue;
       }
-      // Compact colored halo and sharp white core match the reference blast.
-      g.fillStyle(color, 0.1);
-      g.fillCircle(q.x, q.y, 14);
-      g.fillStyle(color, 0.28);
-      g.fillCircle(q.x, q.y, 9);
-      g.fillStyle(0xfff4df);
-      g.fillCircle(q.x, q.y, 3);
-      for (let n = 0; n < 7; n++) {
-        const distance = 12 + n * 5,
-          drift = Math.sin(now / 90 + n * 2) * 4;
-        const x = q.x - dx * distance - dy * drift,
-          y = q.y - dy * distance + dx * drift;
-        g.fillStyle(color, (1 - n / 8) * 0.7);
-        g.fillRect(Math.round(x), Math.round(y), n % 2 ? 2 : 3, 2);
+      for (let n = 0; n < 5; n++) {
+        const distance = 14 + n * 5,
+          drift = Math.sin(now / 100 + n * 2) * 2;
+        g.fillStyle(color, (1 - n / 6) * 0.5);
+        g.fillRect(
+          Math.round(q.x - dx * distance - dy * drift),
+          Math.round(q.y - dy * distance + dx * drift),
+          2,
+          2,
+        );
       }
     }
-    for (const [id, sprite] of this.sprites)
+    for (const [id, f] of this.flights)
       if (!world.projectiles[id]) {
-        sprite.destroy();
-        this.sprites.delete(id);
+        f.ribbons.destroy();
+        f.core.destroy();
+        this.flights.delete(id);
       }
     for (const hit of world.projectileImpacts || [])
       if (!this.seen.has(hit.id)) {
         this.seen.add(hit.id);
         const age = Math.max(0, ((world.serverTick - hit.tick) * 1000) / 30);
-        if (age < 350)
+        if (
+          age < impactDuration &&
+          this.scene.textures.exists(magicKey("impact"))
+        ) {
+          const palette =
+            world.players[hit.owner]?.appearance?.effectPalette || "ember";
           this.bursts.set(hit.id, {
-            x: hit.x,
-            y: hit.y,
-            color: effectColor(
-              world.players[hit.owner]?.appearance?.effectPalette,
-            ),
+            sprite: this.scene.add
+              .image(hit.x, hit.y, magicKey("impact"))
+              .setOrigin(0.5, 0.5)
+              .setDepth(32),
             start: now - age,
+            palette,
           });
+        }
       }
-    // Deduplication remains bounded by the server's short event retention window.
     const retained = new Set((world.projectileImpacts || []).map((e) => e.id));
     for (const id of this.seen) if (!retained.has(id)) this.seen.delete(id);
     for (const [id, b] of this.bursts) {
-      const t = (now - b.start) / 350;
-      if (t >= 1) {
+      const elapsed = now - b.start;
+      if (elapsed >= impactDuration) {
+        b.sprite.destroy();
         this.bursts.delete(id);
         continue;
       }
-      g.lineStyle(2, b.color, 1 - t);
-      g.strokeCircle(b.x, b.y, 4 + t * 25);
-      for (let n = 0; n < 9; n++) {
-        const a = (n * Math.PI * 2) / 9,
-          r = 7 + t * 28;
-        g.fillStyle(b.color, 1 - t);
-        g.fillRect(
-          Math.round(b.x + Math.cos(a) * r),
-          Math.round(b.y + Math.sin(a) * r),
-          3,
-          3,
+      b.sprite
+        .setTexture(
+          ensureMagicTexture(this.scene, "impact", b.palette),
+          impactFrame(elapsed),
+        )
+        .setVisible(!debug)
+        .setAlpha(
+          elapsed > impactDuration - 100 ? (impactDuration - elapsed) / 100 : 1,
         );
-      }
-      g.fillStyle(0xfff4df, (1 - t) * 0.8);
-      g.fillCircle(b.x, b.y, 5 * (1 - t));
     }
+  }
+  // Read-only presentation diagnostics; never consumed by simulation or networking.
+  inspect() {
+    return {
+      flights: [...this.flights].map(([id, f]) => ({
+        id,
+        frame: Number(f.ribbons.frame.name),
+        coreFrame: Number(f.core.frame.name),
+        x: f.ribbons.x,
+        y: f.ribbons.y,
+        angle: f.ribbons.rotation,
+      })),
+      impacts: [...this.bursts].map(([id, b]) => ({
+        id,
+        frame: Number(b.sprite.frame.name),
+        x: b.sprite.x,
+        y: b.sprite.y,
+      })),
+    };
   }
   clear() {
     this.graphics.clear();
-    for (const s of this.sprites.values()) s.destroy();
-    this.sprites.clear();
-
+    for (const f of this.flights.values()) {
+      f.ribbons.destroy();
+      f.core.destroy();
+    }
+    this.flights.clear();
+    for (const b of this.bursts.values()) b.sprite.destroy();
     this.bursts.clear();
     this.seen.clear();
   }

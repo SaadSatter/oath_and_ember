@@ -305,6 +305,7 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
     const mage = room.state.players[sb.playerId];
     room.state.enemies = {};
     clients[1].emit("player:input", { ...neutral(10), primaryHeld: true });
+    await new Promise((res) => setTimeout(res, 70)); // Wait for the accepted cast before observing a snapshot.
     const traveling = await Promise.all(
       clients
         .slice(0, 2)
@@ -334,6 +335,37 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
     expect(
       impacts[0].projectileImpacts.some((e: any) => e.id === missile.id),
     ).toBe(true);
+    room.state.enemies = {};
+    mage.skillPoints = 1;
+    expect((await req(clients[1], "skill:unlock", { nodeId: "ward" })).ok).toBe(
+      true,
+    );
+    clients[0].emit("player:input", {
+      ...neutral(chargeSeq++),
+      secondaryHeld: true,
+    });
+    clients[1].emit("player:input", { ...neutral(12), secondaryHeld: true });
+    await new Promise((res) => setTimeout(res, 70));
+    expect(fighter.actionState).toBe("guard");
+    expect(mage.actionState).toBe("guard");
+    const health = [fighter.hp, mage.hp];
+    room.damage(fighter, 12);
+    room.damage(mage, 12);
+    const defended = await Promise.all(
+      clients
+        .slice(0, 2)
+        .map((s) => new Promise<any>((res) => s.once("game:snapshot", res))),
+    );
+    expect(defended[0]).toEqual(defended[1]);
+    for (const [index, p] of [fighter, mage].entries()) {
+      expect(defended[0].players[p.id].defensiveHit).toMatchObject({ seq: 1 });
+      expect(defended[0].players[p.id].hp).toBe(health[index] - 3);
+    }
+    clients[0].emit("player:input", neutral(chargeSeq++));
+    clients[1].emit("player:input", neutral(13));
+    await new Promise((res) => setTimeout(res, 70));
+    expect(fighter.actionState).not.toBe("guard");
+    expect(mage.actionState).not.toBe("guard");
     clients[1].disconnect();
     await new Promise((res) => setTimeout(res, 30));
     const resumed = new Promise<any>((res) =>

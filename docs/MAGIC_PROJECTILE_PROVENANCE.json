@@ -1,0 +1,189 @@
+{
+  "source": "Images/Sprites/Magic Basic Spell.png",
+  "sha256": "f3b2c95027149aa18b39b77b597229fde19e366709b3ee0f5aae189f90db30eb",
+  "flight": {
+    "bounds_and_core_anchors": [
+      [
+        [
+          205,
+          123,
+          296,
+          222
+        ],
+        [
+          250,
+          172
+        ]
+      ],
+      [
+        [
+          295,
+          123,
+          393,
+          223
+        ],
+        [
+          344,
+          172
+        ]
+      ],
+      [
+        [
+          392,
+          119,
+          488,
+          226
+        ],
+        [
+          441,
+          171
+        ]
+      ],
+      [
+        [
+          491,
+          126,
+          592,
+          227
+        ],
+        [
+          547,
+          177
+        ]
+      ]
+    ],
+    "frame": [
+      64,
+      64
+    ],
+    "anchor": [
+      32,
+      32
+    ],
+    "fps": 14,
+    "loop": true,
+    "source_poses": [
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "core": {
+    "bounds": [
+      326,
+      154,
+      362,
+      190
+    ],
+    "frame": [
+      32,
+      32
+    ],
+    "anchor": [
+      16,
+      16
+    ],
+    "animated": false
+  },
+  "impact": {
+    "bounds_and_anchors": [
+      [
+        [
+          911,
+          708,
+          948,
+          761
+        ],
+        [
+          929,
+          737
+        ]
+      ],
+      [
+        [
+          960,
+          694,
+          1022,
+          769
+        ],
+        [
+          991,
+          733
+        ]
+      ],
+      [
+        [
+          1011,
+          680,
+          1103,
+          777
+        ],
+        [
+          1058,
+          732
+        ]
+      ],
+      [
+        [
+          1070,
+          666,
+          1205,
+          794
+        ],
+        [
+          1135,
+          732
+        ]
+      ],
+      [
+        [
+          1153,
+          658,
+          1295,
+          795
+        ],
+        [
+          1224,
+          732
+        ]
+      ],
+      [
+        [
+          1247,
+          653,
+          1403,
+          799
+        ],
+        [
+          1325,
+          732
+        ]
+      ],
+      [
+        [
+          1399,
+          663,
+          1524,
+          798
+        ],
+        [
+          1445,
+          731
+        ]
+      ]
+    ],
+    "frame": [
+      96,
+      96
+    ],
+    "anchor": [
+      48,
+      48
+    ],
+    "fps": 14,
+    "loop": false,
+    "count": 7
+  },
+  "notes": "Opaque matte removed using warm/bright foreground. Final numbered 7/8 impact shares one dispersing cloud; seven distinct usable impact phases retained. No palette-variant rows copied."
+}

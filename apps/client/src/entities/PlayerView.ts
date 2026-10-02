@@ -1,3 +1,4 @@
+import { defenseClip, defenseKey, wardEnvelope } from "../animation/defense.js";
 import { PlayerPresentation } from "../animation/PlayerPresentation.js";
 import { heavyKey, combatKey, actionClip } from "../animation/combat.js";
 import { ensureAppearanceTexture } from "../assets/appearanceTextures.js";
@@ -20,6 +21,8 @@ export type CharacterRendering = "geometric" | "sprite";
 export class PlayerView {
   private presentation = new PlayerPresentation();
   private combatSequence = -1;
+  private defenseSprite: Phaser.GameObjects.Image | null = null;
+  private previousHit = 0;
   private effects: Phaser.GameObjects.Image | null = null;
   private sprite: Phaser.GameObjects.Sprite | null = null;
   private graphics: Phaser.GameObjects.Graphics;
@@ -39,13 +42,22 @@ export class PlayerView {
     hints: VisualHints = {},
   ) {
     const now = this.scene.time.now;
-    if (this.previousHP !== undefined && player.hp < this.previousHP)
+    const defensiveHit =
+      !!player.defensiveHit && player.defensiveHit.seq > this.previousHit;
+    this.previousHit = player.defensiveHit?.seq ?? 0;
+    if (
+      this.previousHP !== undefined &&
+      player.hp < this.previousHP &&
+      !defensiveHit
+    )
       this.hurtUntil = now + 250;
     this.previousHP = player.hp;
     const hurt = now < this.hurtUntil;
     const role = player.role;
     if (role !== this.role) {
       this.sprite?.destroy();
+      this.defenseSprite?.destroy();
+      this.defenseSprite = null;
       this.effects?.destroy();
       this.effects = null;
       this.presentation = new PlayerPresentation();
@@ -60,6 +72,7 @@ export class PlayerView {
       hurt,
     );
     const combat = presentation.kind === "combat" ? presentation : null;
+    const defense = presentation.kind === "defense" ? presentation : null;
     const charge = presentation.kind === "charge" ? presentation : null;
     const direction = combat?.direction || charge?.direction;
     const horizontalHeavy =
@@ -76,15 +89,18 @@ export class PlayerView {
             : player.actionState === "attack" ||
                 player.actionState === "heavyCharge"
               ? "idle"
-              : player.actionState,
+              : role === "EMBER" && defense
+                ? "idle"
+                : player.actionState,
       },
       mode,
       { ...hints, hurt },
     );
+    const bodyMode = role === "EMBER" && defense ? "TOP_DOWN" : mode;
     const resolved = role
       ? resolveHeroAnimation(
           role,
-          mode,
+          bodyMode,
           charge ? "idle" : state,
           charge
             ? { right: 0, left: Math.PI, down: Math.PI / 2, up: -Math.PI / 2 }[
@@ -100,7 +116,7 @@ export class PlayerView {
       : role && combat
         ? combatKey(role, combat.direction)
         : role && resolved
-          ? animationKey(role, mode, resolved)
+          ? animationKey(role, bodyMode, resolved)
           : "";
     const useSprite =
       rendering === "sprite" &&
@@ -179,10 +195,58 @@ export class PlayerView {
         .setScale(characterVisuals[role].scale)
         .setDepth(position.y + 0.5);
     } else this.effects?.setVisible(false);
+    const defenseArtwork =
+      rendering === "sprite" &&
+      !!role &&
+      !!defense &&
+      this.scene.textures.exists(defenseKey(role));
+    if (defenseArtwork && role && defense) {
+      const c = defenseClip(role, defense.phase, defense.direction);
+      const frame =
+        c.heldFrame ??
+        c.start +
+          (defense.phase === "loop"
+            ? Math.floor((defense.elapsedMs * c.fps) / 1000) % c.count
+            : Math.min(
+                c.count - 1,
+                Math.floor((defense.elapsedMs * c.fps) / 1000),
+              ));
+      const texture = ensureAppearanceTexture(
+        this.scene,
+        role,
+        player.appearance,
+        "defense",
+      );
+      if (!this.defenseSprite)
+        this.defenseSprite = this.scene.add.image(
+          position.x,
+          position.y,
+          texture,
+        );
+      const ward =
+        role === "EMBER"
+          ? wardEnvelope(defense.phase, defense.elapsedMs, c.durationMs)
+          : null;
+      this.defenseSprite
+        .setAlpha(ward?.alpha ?? 1)
+        .setTexture(texture, frame)
+        .setVisible(true)
+        .setOrigin(0.5, ward ? 70 / 128 : 96 / 128)
+        .setPosition(
+          position.x + characterVisuals[role].offset.x,
+          position.y +
+            characterVisuals[role].offset.y -
+            (ward ? 26 * characterVisuals[role].scale : 0),
+        )
+        .setScale(characterVisuals[role].scale * (ward?.scale ?? 1))
+        .setFlipX(!ward && defense.direction === "left")
+        .setDepth((mode === "TOP_DOWN" ? position.y : 10) + (ward ? 0.5 : 0));
+      if (role === "OATH") this.sprite?.setVisible(false);
+    } else this.defenseSprite?.setVisible(false);
     const g = this.graphics;
     g.clear();
     g.setDepth(mode === "TOP_DOWN" ? position.y + 1 : 11);
-    if (!useSprite) {
+    if (!useSprite && !(defenseArtwork && role === "OATH")) {
       g.fillStyle(hurt ? 0xff9999 : role === "OATH" ? 0xe4b56b : 0xc5a1f5);
       if (role === "OATH")
         g.fillRoundedRect(position.x - 13, position.y - 17, 26, 34, 4);
@@ -225,7 +289,13 @@ export class PlayerView {
         g.strokePath();
       }
     }
-    if (player.actionState === "guard") {
+    if (
+      player.actionState === "guard" &&
+      (!defense ||
+        rendering === "geometric" ||
+        !role ||
+        !this.scene.textures.exists(defenseKey(role)))
+    ) {
       g.lineStyle(
         2,
         role === "EMBER"
@@ -233,6 +303,35 @@ export class PlayerView {
           : 0x90d9ef,
       );
       g.strokeCircle(position.x, position.y, 23);
+    }
+    if (
+      defenseArtwork &&
+      defense?.phase === "loop" &&
+      role === "OATH" &&
+      (defense.direction === "left" || defense.direction === "right")
+    ) {
+      const side = defense.direction === "left" ? -1 : 1;
+      const pulse = 0.1 + 0.06 * Math.sin(now / 380);
+      g.lineStyle(1, 0xffe4ae, pulse);
+      g.strokeCircle(position.x + side * 12, position.y - 4, 6);
+    }
+    if (
+      defense?.phase === "loop" &&
+      role === "EMBER" &&
+      rendering === "sprite"
+    ) {
+      const a = now / 450;
+      g.fillStyle(effectColor(player.appearance?.effectPalette), 0.7);
+      g.fillCircle(
+        position.x + Math.cos(a) * 23,
+        position.y - 11 + Math.sin(a) * 26,
+        1.2,
+      );
+    }
+    if (defense?.impact && role === "EMBER") {
+      const t = (now % 250) / 250;
+      g.lineStyle(3, effectColor(player.appearance?.effectPalette), 1 - t);
+      g.strokeCircle(position.x, position.y - 11, 23 + t * 12);
     }
     if (hints.interacting) {
       g.lineStyle(
@@ -268,6 +367,7 @@ export class PlayerView {
       this.sprite.setTexture(this.appearanceTexture, this.sprite.frame.name);
   }
   destroy() {
+    this.defenseSprite?.destroy();
     this.sprite?.destroy();
     this.effects?.destroy();
     this.graphics.destroy();

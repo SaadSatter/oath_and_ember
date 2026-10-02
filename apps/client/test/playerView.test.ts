@@ -75,7 +75,18 @@ function harness() {
           key,
         ),
     },
-    add: { graphics: () => graphics, sprite: vi.fn(() => sprite) },
+    add: {
+      graphics: () => graphics,
+      sprite: vi.fn(() => sprite),
+      image: vi.fn(() => ({
+        ...sprite,
+        setTexture: chain(),
+        setVisible: chain(),
+        setScale: chain(),
+        setPosition: chain(),
+        setAlpha: chain(),
+      })),
+    },
   };
   return {
     scene,
@@ -255,4 +266,55 @@ it("holds horizontal heavy wind-up, mirrors left, and plays release once without
   });
   h.view.update(release, release, p, "TOP_DOWN", "sprite", { serverTick: 23 });
   expect(h.sprite.play).toHaveBeenCalledTimes(2);
+});
+
+it("keeps Coco's clean body visible while animating only the isolated Ward layer", () => {
+  const h = harness(),
+    p = {
+      ...player("EMBER"),
+      actionState: "guard",
+      appearance: {
+        primaryPalette: "purple" as const,
+        effectPalette: "emerald" as const,
+      },
+    };
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 0 });
+  const ward = h.scene.add.image.mock.results[0].value;
+  expect(h.sprite.setVisible).toHaveBeenLastCalledWith(true);
+  expect(h.sprite.play).toHaveBeenLastCalledWith(
+    "hero:EMBER:TOP_DOWN:idle_right",
+  );
+  expect(ward.setTexture.mock.calls[0][1]).toBe(0);
+  h.scene.time.now = 1000;
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 30 });
+  expect(ward.setTexture.mock.calls.at(-1)?.[1]).toBe(0);
+  expect(h.sprite.setScale).toHaveBeenLastCalledWith(1);
+  expect(h.sprite.setTint).not.toHaveBeenCalled();
+  h.view.update(p, p, p, "TOP_DOWN", "geometric", { serverTick: 30 });
+  expect(ward.setVisible).toHaveBeenLastCalledWith(false);
+  h.scene.time.now = 2000;
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 60 });
+  expect(ward.setVisible).toHaveBeenLastCalledWith(true);
+  expect(h.sprite.setVisible).toHaveBeenLastCalledWith(true);
+  expect(h.sprite.play).toHaveBeenCalledTimes(1);
+});
+it("holds Sieg's Guard body on one anchored pose across loop cycles", () => {
+  const h = harness(),
+    p = { ...player(), actionState: "guard" };
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 0 });
+  const guard = h.scene.add.image.mock.results[0].value;
+  h.scene.time.now = 1000;
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 30 });
+  const frame = guard.setTexture.mock.calls.at(-1)?.[1];
+  for (const time of [1500, 2300, 5100]) {
+    h.scene.time.now = time;
+    h.view.update(p, p, p, "TOP_DOWN", "sprite", {
+      serverTick: (time * 30) / 1000,
+    });
+    expect(guard.setTexture.mock.calls.at(-1)?.[1]).toBe(frame);
+  }
+  expect(frame).toBe(8);
+  expect(guard.setPosition).toHaveBeenLastCalledWith(p.x, p.y + 13);
+  expect(guard.setScale).toHaveBeenLastCalledWith(1);
+  expect(h.sprite.setVisible).toHaveBeenLastCalledWith(false);
 });

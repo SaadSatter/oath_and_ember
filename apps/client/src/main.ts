@@ -1,4 +1,5 @@
 import { renderAppearanceLobby } from "./ui/appearanceLobby.js";
+import { preloadMagic, warmMagicTextures } from "./assets/magicTextures.js";
 import { ProjectileView } from "./entities/ProjectileView.js";
 import Phaser from "phaser";
 import { attachResponsiveRenderer } from "./rendering/ResponsiveRenderer.js";
@@ -82,7 +83,21 @@ function renderUI() {
   }
   if (w.phase === "LOBBY") {
     panel.className = "card";
-    panel.innerHTML = `<div class="eyebrow">GATHER YOUR PARTY</div><h1>Room ${w.roomCode}</h1><button id="copy">Copy code</button><div class="roles"><button id="oath">Sieg<br><small>Guardian • sword & mechanisms</small></button><button id="ember">Coco<br><small>Arcanist • bolts & runes</small></button></div><p id="slots"></p><button id="ready">${me?.ready ? "Cancel ready" : "Ready for adventure"}</button>`;
+    panel.innerHTML = `<div class="eyebrow">GATHER YOUR PARTY</div><h1>Room ${w.roomCode}</h1><button id="leave">← Back to main page</button><button id="copy">Copy code</button><div class="roles"><button id="oath">Sieg<br><small>Guardian • sword & mechanisms</small></button><button id="ember">Coco<br><small>Arcanist • bolts & runes</small></button></div><p id="slots"></p><button id="ready">${me?.ready ? "Cancel ready" : "Ready for adventure"}</button>`;
+    const leave = panel.querySelector<HTMLButtonElement>("#leave")!;
+    leave.disabled = !net.socket.connected;
+    leave.onclick = async () => {
+      leave.disabled = true;
+      try {
+        await net.leaveRoom();
+        keys.clear();
+        skillOpen = false;
+        renderUI();
+      } catch (err) {
+        leave.disabled = !net.socket.connected;
+        tell((err as Error).message);
+      }
+    };
     panel.querySelector("#slots")!.textContent = Object.values(w.players)
       .map(
         (p) =>
@@ -244,7 +259,7 @@ class Adventure extends Phaser.Scene {
   projectileView!: ProjectileView;
   preload() {
     preloadHeroes(this);
-    this.load.image("coco:blast", "/assets/effects/coco-blast.png");
+    preloadMagic(this);
   }
   clearPlayerViews() {
     for (const view of this.playerViews.values()) view.destroy();
@@ -252,6 +267,7 @@ class Adventure extends Phaser.Scene {
   }
   create() {
     registerHeroes(this);
+    warmMagicTextures(this);
     const detachResponsive = attachResponsiveRenderer(this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, detachResponsive);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
@@ -418,6 +434,9 @@ class Adventure extends Phaser.Scene {
     root.dataset.playerId = me.id;
     root.dataset.worldPosition = `${me.x},${me.y}`;
     root.dataset.scene = w.sceneId;
+    root.dataset.projectileVisuals = JSON.stringify(
+      this.projectileView.inspect(),
+    );
     root.dataset.projectileState = JSON.stringify({
       projectiles: w.projectiles,
       impacts: w.projectileImpacts,

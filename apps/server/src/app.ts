@@ -57,6 +57,24 @@ export function createApp() {
       if (!room || !room.sessions.has(id)) throw Error("Join a room first.");
       return room;
     };
+    socket.on("room:leave", (p, ack) =>
+      request(ack, () => {
+        z.object({}).strict().parse(p);
+        const r = requireRoom();
+        if (r.state.phase !== "LOBBY")
+          throw Error("Return to the main page from the lobby.");
+        socket.leave(r.state.roomCode);
+        r.sessions.delete(id);
+        delete r.state.players[id];
+        for (const player of Object.values(r.state.players))
+          player.ready = false;
+        if (!r.sessions.size) manager.rooms.delete(r.state.roomCode);
+        else io.to(r.state.roomCode).emit("state:sync", r.state);
+        room = undefined;
+        id = "";
+        lastInput = 0;
+      }),
+    );
     socket.on("room:create", (_p, ack) =>
       request(ack, () => {
         if (room) throw Error("Already in a room.");

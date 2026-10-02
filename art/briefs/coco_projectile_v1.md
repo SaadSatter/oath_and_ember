@@ -1,0 +1,84 @@
+# Generation brief: coco_projectile_v1
+
+See the JSON contract and art/ART_SPEC.md.
+
+{
+  "asset_id": "coco_projectile_v1",
+  "version": 1,
+  "status": "BRIEF",
+  "character": "coco",
+  "animation": "projectile",
+  "source_file": "art/incoming/coco_projectile_v1",
+  "canonical_references": [
+    "Images/Character Concept art.png",
+    "Images/Sprites/Magic Basic Spell.png",
+    "docs/MAGIC_PROJECTILE_PROVENANCE.json"
+  ],
+  "runtime_files": [],
+  "directions": [
+    "right",
+    "left",
+    "up",
+    "down"
+  ],
+  "frame_count": 4,
+  "frame_dimensions": [
+    64,
+    64
+  ],
+  "anchor": [
+    32,
+    32
+  ],
+  "palette_behavior": {
+    "source": "canonical_ember_magic",
+    "runtime_recolor": true,
+    "mask_channel": "green"
+  },
+  "qa_status": "NOT_RUN",
+  "iteration": 0,
+  "approved_at": null,
+  "target": "assets/effects/coco/flight.png",
+  "mask_target": "assets/effects/coco/flight-mask.png",
+  "reports": [],
+  "asset_type": "projectile_vfx",
+  "perspective": "top_down",
+  "frame_count_target": 4,
+  "frame_dimensions_target": [
+    64,
+    64
+  ],
+  "ground_anchor": [
+    32,
+    32
+  ],
+  "canonical_reference": [
+    "Images/Character Concept art.png",
+    "Images/Sprites/Magic Basic Spell.png",
+    "docs/MAGIC_PROJECTILE_PROVENANCE.json"
+  ],
+  "approved_runtime_reference": "apps/client/public/assets/effects/coco/flight.png",
+  "effect_behavior": "Existing flight animation and authoritative projectile movement",
+  "must_preserve": [
+    "canonical silhouette",
+    "equipment",
+    "hair",
+    "skin",
+    "costume proportions"
+  ],
+  "must_not_change": [
+    "gameplay",
+    "collision",
+    "staff structure",
+    "skin/hair/eyes palette"
+  ],
+  "acceptance_criteria": [
+    "transparent horizontal atlas",
+    "exact frame grid and anchor",
+    "green effect-only mask",
+    "stable design across frames",
+    "local/remote visibility",
+    "four responsive viewports"
+  ],
+  "previous_feedback": []
+}

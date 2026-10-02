@@ -1,0 +1,20 @@
+{
+  "assetId": "coco_ward_v1",
+  "iteration": 1,
+  "result": "FAIL",
+  "status": "QA_FAILED_IMPLEMENTATION",
+  "route": "GAME_ENGINEER",
+  "checks": [
+    {
+      "id": "typecheck",
+      "result": "PASS"
+    },
+    {
+      "id": "qa_execution",
+      "result": "FAIL",
+      "category": "IMPLEMENTATION",
+      "evidence": "art/qa/coco_ward_v1/iteration-01",
+      "feedback": "Error: test failed"
+    }
+  ]
+}

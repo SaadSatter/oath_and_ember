@@ -1,0 +1,38 @@
+{
+  "sourceHash": "6a5a037623ea305949419dc09b01656807938f48226b64b8fe6d7b2ca142233d",
+  "maskHash": "8996f97ab1f5e44e4cb86783132949521797c6865ee18591a0a5f4ccd5def94d",
+  "adapter": "exact-grid identity normalization",
+  "target": "assets/characters/ember/defense.png",
+  "maskTarget": "assets/characters/ember/defense-mask.png",
+  "anchor": [
+    64,
+    70
+  ],
+  "checks": [
+    {
+      "id": "atlas_grid",
+      "result": "PASS",
+      "evidence": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/art/incoming/coco_ward_v1/atlas.png"
+    },
+    {
+      "id": "mask_dimensions",
+      "result": "PASS",
+      "evidence": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/art/incoming/coco_ward_v1/atlas.png"
+    },
+    {
+      "id": "transparency",
+      "result": "PASS",
+      "evidence": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/art/incoming/coco_ward_v1/atlas.png"
+    },
+    {
+      "id": "missing_frames",
+      "result": "PASS",
+      "evidence": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/art/incoming/coco_ward_v1/atlas.png"
+    },
+    {
+      "id": "effect_mask",
+      "result": "PASS",
+      "evidence": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/art/incoming/coco_ward_v1/atlas.png"
+    }
+  ]
+}

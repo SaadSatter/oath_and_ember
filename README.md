@@ -77,3 +77,5 @@ Sieg and Coco support synchronized lobby color swatches and partner previews. Ru
 Directional sword attacks and projectile casts use approved reference artwork with server-accepted combat markers, locked facing and presentation recovery. See [combat presentation documentation](docs/COMBAT_PRESENTATION.md) for extraction, frame timing, palette/VFX layers, artwork fallbacks and two-client validation.
 
 Heavy Break now charges on hold and strikes on release; Coco’s traveling blast uses approved effect art and authoritative collision bursts. See [charge/projectile behavior and validation](docs/COMBAT_CHARGE_AND_PROJECTILES.md).
+
+Coco's projectile now loops normalized magical ribbons around a stable core at 14 FPS, with palette recoloring and a separate one-shot impact. See [twirling projectile assets and validation](docs/TWIRLING_MAGIC_PROJECTILES.md).

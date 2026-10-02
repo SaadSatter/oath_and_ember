@@ -1,3 +1,4 @@
+import { defenseAsset, defenseKey } from "../animation/defense.js";
 import {
   heavyAsset,
   heavyKey,
@@ -19,6 +20,11 @@ export function preloadHeroes(scene: Phaser.Scene) {
     frameHeight: 128,
   });
   for (const role of ["OATH", "EMBER"] as const) {
+    const defense = defenseAsset(role);
+    scene.load.spritesheet(defenseKey(role), defense.url, {
+      frameWidth: 128,
+      frameHeight: 128,
+    });
     const a = heroAssets[role];
     const combat = combatAssets[role];
     scene.load.spritesheet(combatTextureKey(role), combat.url, {

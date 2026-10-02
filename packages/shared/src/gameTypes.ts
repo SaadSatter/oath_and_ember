@@ -21,6 +21,7 @@ export interface Player {
   role: Role | null;
   appearance?: CharacterAppearance;
   combat?: CombatAction;
+  defensiveHit?: { seq: number; tick: number };
   heavyCharge?: {
     startedTick: number;
     facing: number;

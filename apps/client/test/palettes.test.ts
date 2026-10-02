@@ -40,3 +40,15 @@ it("renders ivory as light cloth while retaining folds, alpha and protected pixe
   expect(result[7]).toBe(240);
   expect(result.slice(12)).toEqual(source.slice(12));
 });
+
+it("supports every Coco magic palette while keeping a protected bright core and alpha", () => {
+  const source = new Uint8ClampedArray([255, 150, 30, 170, 255, 255, 240, 255]);
+  const mask = new Uint8ClampedArray([0, 255, 0, 255, 0, 0, 0, 0]);
+  for (const palette of ["ember", "arcane", "violet", "emerald", "rose"]) {
+    const result = recolorPixels(source, mask, "purple", palette, "purple");
+    expect(result.slice(4)).toEqual(source.slice(4));
+    expect(result[3]).toBe(170);
+    if (palette === "ember") expect(result).toEqual(source);
+    else expect(result.slice(0, 3)).not.toEqual(source.slice(0, 3));
+  }
+});

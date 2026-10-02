@@ -1,0 +1,9 @@
+{
+  "kind": "production_atlas",
+  "image": "atlas.png",
+  "mask": "mask.png",
+  "frame_dimensions": [128, 128],
+  "frame_count": 1,
+  "anchor": [64, 70],
+  "provenance": "Existing locally supplied Defense Basic Sprites reference, reviewed extraction by scripts/normalize_defense_reference.py. See docs/DEFENSE_ASSET_PROVENANCE.json. This validation submission is not newly approved."
+}

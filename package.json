@@ -14,7 +14,17 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "build": "vite build --config apps/client/vite.config.ts && tsc -p apps/server/tsconfig.json",
-    "start": "node dist/apps/server/src/index.js"
+    "start": "node dist/apps/server/src/index.js",
+    "art:brief": "node --import tsx scripts/art/cli.ts brief",
+    "art:status": "node --import tsx scripts/art/cli.ts status",
+    "art:integrate": "node --import tsx scripts/art/cli.ts integrate",
+    "art:qa": "node --import tsx scripts/art/cli.ts qa",
+    "art:run": "node --import tsx scripts/art/cli.ts run",
+    "art:review": "node --import tsx scripts/art/cli.ts review",
+    "art:revise": "node --import tsx scripts/art/cli.ts revise",
+    "art:approve": "node --import tsx scripts/art/cli.ts approve",
+    "art:publish": "node --import tsx scripts/art/cli.ts publish",
+    "art:test": "vitest run scripts/art"
   },
   "dependencies": {
     "express": "^5.1.0",
@@ -24,9 +34,12 @@
     "zod": "^4.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@types/express": "^5.0.0",
     "@types/node": "^24.0.0",
+    "@types/pngjs": "^6.0.5",
     "concurrently": "^9.0.0",
+    "pngjs": "^7.0.0",
     "prettier": "^3.9.9",
     "tsx": "^4.0.0",
     "typescript": "^5.9.0",
