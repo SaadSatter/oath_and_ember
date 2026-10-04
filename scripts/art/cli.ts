@@ -23,6 +23,7 @@ import {
 } from "./model.js";
 import { inspectAtlas } from "./png.js";
 import { capture } from "./qa.js";
+import { extractTemporal } from "./temporal.js";
 import {
   loadProviderConfig,
   requireApiKey,
@@ -718,6 +719,11 @@ async function main() {
     return;
   }
   if (command === "generate") return generate(a);
+  if (command === "temporal") {
+    const packet = extractTemporal(root, a);
+    console.log(`Prepared ${packet.frames.length} timestamped frames; candidate and QA iteration preserved. Phase alignment approximate; no API request made.`);
+    return;
+  }
   if (command === "vision") return vision(a);
   if (command === "integrate") return integrate(a);
   if (command === "capture") return qa(a);

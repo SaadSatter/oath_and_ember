@@ -286,8 +286,20 @@ describe("AI art and vision adapters", () => {
       expect(packet.images.filter((i) => i.role === "runtime")).toHaveLength(
         64,
       );
+      const temporalDirectory = `art/qa/${f.a.asset_id}/iteration-${String(f.a.iteration).padStart(2, "0")}/temporal/frames-v1`;
+      mkdirSync(join(f.root, temporalDirectory), {recursive: true});
+      const temporalPath = `${temporalDirectory}/frame-83.png`;
+      copyFileSync(join(f.root, f.a.runtime_files[0]), join(f.root, temporalPath));
+      writeFileSync(join(f.root, temporalDirectory, "manifest.json"), JSON.stringify({
+        schema_version: 1, candidateHashes: f.a.runtime_files.map(p => digest(join(f.root, p))), recordings: [],
+        frames: [{path: temporalPath, sha256: digest(join(f.root, temporalPath)), ptsMs: 83, sequence: "desktop-client-1", phaseHint: "HELD_REQUEST", phaseAlignment: "approximate", client: 1, viewport: "1920x1080"}],
+      }));
+      const temporalPacket = collectVisionEvidence(f.root, f.a);
+      expect(temporalPacket.images.at(-1)?.temporal?.ptsMs).toBe(83);
       const fetcher = vi.fn<ApiFetch>(async (_url, init) => {
         const body = JSON.parse(init!.body as string);
+        expect(body.instructions).toContain("Return REVIEW whenever animation requirements exceed supplied evidence");
+        expect(body.input[0].content.some((c: {text?: string}) => c.text?.includes("ordered temporal frame:") && c.text.includes('"ptsMs":83'))).toBe(true);
         expect(body.store).toBe(false);
         expect(body.text.format.type).toBe("json_schema");
         expect(body.text.format.strict).toBe(true);
@@ -295,7 +307,7 @@ describe("AI art and vision adapters", () => {
           body.input[0].content.filter(
             (c: { type: string }) => c.type === "input_image",
           ),
-        ).toHaveLength(packet.images.length);
+        ).toHaveLength(temporalPacket.images.length);
         return visionResponse(reviewResult(packet));
       });
       const reviewer = new OpenAIVisionReviewer(

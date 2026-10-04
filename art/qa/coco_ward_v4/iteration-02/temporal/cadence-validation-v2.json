@@ -1,0 +1,297 @@
+{
+  "captureDirectory": "/var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5",
+  "checks": [
+    {
+      "id": "viewport_1920_1080_client_1",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/1920x1080-client-1-recovered.png"
+    },
+    {
+      "id": "viewport_1920_1080_client_2",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/1920x1080-client-2-recovered.png"
+    },
+    {
+      "id": "authoritative_mechanic_1920_1080",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/1920x1080-states.json"
+    },
+    {
+      "id": "two_clients_1920_1080",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/1920x1080-client-1-idle.png"
+    },
+    {
+      "id": "viewport_1440_900_client_1",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/1440x900-client-1-recovered.png"
+    },
+    {
+      "id": "viewport_1440_900_client_2",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/1440x900-client-2-recovered.png"
+    },
+    {
+      "id": "authoritative_mechanic_1440_900",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/1440x900-states.json"
+    },
+    {
+      "id": "two_clients_1440_900",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/1440x900-client-1-idle.png"
+    },
+    {
+      "id": "viewport_390_844_client_1",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/390x844-client-1-recovered.png"
+    },
+    {
+      "id": "viewport_390_844_client_2",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/390x844-client-2-recovered.png"
+    },
+    {
+      "id": "authoritative_mechanic_390_844",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/390x844-states.json"
+    },
+    {
+      "id": "two_clients_390_844",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/390x844-client-1-idle.png"
+    },
+    {
+      "id": "viewport_844_390_client_1",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/844x390-client-1-recovered.png"
+    },
+    {
+      "id": "viewport_844_390_client_2",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/844x390-client-2-recovered.png"
+    },
+    {
+      "id": "authoritative_mechanic_844_390",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/844x390-states.json"
+    },
+    {
+      "id": "two_clients_844_390",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/844x390-client-1-idle.png"
+    },
+    {
+      "id": "temporal_recordings",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/temporal/index.json"
+    },
+    {
+      "id": "browser_errors",
+      "result": "PASS",
+      "evidence": "../../../../../var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/ward-cadence-validation-taRpK5/browser-log.json"
+    }
+  ],
+  "telemetry": [
+    {
+      "file": "1440x900-client-1-cadence.json",
+      "summary": {
+        "samples": 661,
+        "medianIntervalMs": 16.69999999999999,
+        "maximumIntervalMs": 150.10000000000036,
+        "intervalsOver50Ms": 5,
+        "scope": "requestAnimationFrame callback cadence, not game render completion, display FPS or video cadence; capture overhead can cause stalls"
+      },
+      "phases": [
+        {
+          "phase": "idle-request",
+          "atMs": 2538.2999999523163
+        },
+        {
+          "phase": "held-request",
+          "atMs": 3972.7999999523163
+        },
+        {
+          "phase": "release-request",
+          "atMs": 9425.099999904633
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "file": "1440x900-client-2-cadence.json",
+      "summary": {
+        "samples": 646,
+        "medianIntervalMs": 16.699999999999932,
+        "maximumIntervalMs": 183.19999999999982,
+        "intervalsOver50Ms": 5,
+        "scope": "requestAnimationFrame callback cadence, not game render completion, display FPS or video cadence; capture overhead can cause stalls"
+      },
+      "phases": [
+        {
+          "phase": "idle-request",
+          "atMs": 2236
+        },
+        {
+          "phase": "held-request",
+          "atMs": 3671
+        },
+        {
+          "phase": "release-request",
+          "atMs": 9122.400000095367
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "file": "1920x1080-client-1-cadence.json",
+      "summary": {
+        "samples": 824,
+        "medianIntervalMs": 16.699999999999818,
+        "maximumIntervalMs": 816.7,
+        "intervalsOver50Ms": 6,
+        "scope": "requestAnimationFrame callback cadence, not game render completion, display FPS or video cadence; capture overhead can cause stalls"
+      },
+      "phases": [
+        {
+          "phase": "idle-request",
+          "atMs": 5416
+        },
+        {
+          "phase": "held-request",
+          "atMs": 8100
+        },
+        {
+          "phase": "release-request",
+          "atMs": 14610.700000047684
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "file": "1920x1080-client-2-cadence.json",
+      "summary": {
+        "samples": 782,
+        "medianIntervalMs": 16.700000000000045,
+        "maximumIntervalMs": 300.10000000000036,
+        "intervalsOver50Ms": 10,
+        "scope": "requestAnimationFrame callback cadence, not game render completion, display FPS or video cadence; capture overhead can cause stalls"
+      },
+      "phases": [
+        {
+          "phase": "idle-request",
+          "atMs": 4144.700000047684
+        },
+        {
+          "phase": "held-request",
+          "atMs": 6829.900000095367
+        },
+        {
+          "phase": "release-request",
+          "atMs": 13361.700000047684
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "file": "390x844-client-1-cadence.json",
+      "summary": {
+        "samples": 346,
+        "medianIntervalMs": 16.699999999999818,
+        "maximumIntervalMs": 116.6,
+        "intervalsOver50Ms": 1,
+        "scope": "requestAnimationFrame callback cadence, not game render completion, display FPS or video cadence; capture overhead can cause stalls"
+      },
+      "phases": [
+        {
+          "phase": "idle-request",
+          "atMs": 1794.7000000476837
+        },
+        {
+          "phase": "held-request",
+          "atMs": 2939.7000000476837
+        },
+        {
+          "phase": "release-request",
+          "atMs": 4942.300000190735
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "file": "390x844-client-2-cadence.json",
+      "summary": {
+        "samples": 329,
+        "medianIntervalMs": 16.699999999999818,
+        "maximumIntervalMs": 150,
+        "intervalsOver50Ms": 1,
+        "scope": "requestAnimationFrame callback cadence, not game render completion, display FPS or video cadence; capture overhead can cause stalls"
+      },
+      "phases": [
+        {
+          "phase": "idle-request",
+          "atMs": 1514
+        },
+        {
+          "phase": "held-request",
+          "atMs": 2651.399999856949
+        },
+        {
+          "phase": "release-request",
+          "atMs": 4655.599999904633
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "file": "844x390-client-1-cadence.json",
+      "summary": {
+        "samples": 345,
+        "medianIntervalMs": 16.699999999999818,
+        "maximumIntervalMs": 133.29999999999998,
+        "intervalsOver50Ms": 5,
+        "scope": "requestAnimationFrame callback cadence, not game render completion, display FPS or video cadence; capture overhead can cause stalls"
+      },
+      "phases": [
+        {
+          "phase": "idle-request",
+          "atMs": 1647
+        },
+        {
+          "phase": "held-request",
+          "atMs": 2824.7000000476837
+        },
+        {
+          "phase": "release-request",
+          "atMs": 4911.700000047684
+        }
+      ],
+      "truncated": false
+    },
+    {
+      "file": "844x390-client-2-cadence.json",
+      "summary": {
+        "samples": 325,
+        "medianIntervalMs": 16.699999999999818,
+        "maximumIntervalMs": 166.6,
+        "intervalsOver50Ms": 1,
+        "scope": "requestAnimationFrame callback cadence, not game render completion, display FPS or video cadence; capture overhead can cause stalls"
+      },
+      "phases": [
+        {
+          "phase": "idle-request",
+          "atMs": 1346.5
+        },
+        {
+          "phase": "held-request",
+          "atMs": 2519.2999999523163
+        },
+        {
+          "phase": "release-request",
+          "atMs": 4605.299999952316
+        }
+      ],
+      "truncated": false
+    }
+  ]
+}

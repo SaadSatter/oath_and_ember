@@ -31,3 +31,5 @@ ART → SPRITE_ARTIST; IMPLEMENTATION → GAME_ENGINEER; DESIGN/low confidence/i
 Shared contracts: ../ART_SPEC.md, ../VISUAL_QA.md, ../README.md. Roles are artifact-driven stages, not running AI services.
 
 Process high-confidence actionable failures before non-actionable REVIEW findings. Check numeric PNG mask diagnostics instead of judging coverage from displayed brightness. Continuous recordings are human temporal evidence; never infer model animation PASS from video files not provided to the model.
+
+Use art:temporal to supply native timestamped decoded PNG sequences. Respect approximate request-phase labels and uncovered intervals. Browser RAF cadence measures callbacks under capture overhead, not true render FPS. Preserve REVIEW for unsupported animation judgments.

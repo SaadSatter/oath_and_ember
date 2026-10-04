@@ -12,6 +12,7 @@ import { join, relative } from "node:path";
 import { PNG } from "pngjs";
 import type { World } from "../../packages/shared/src/gameTypes.js";
 import type { Asset, Finding } from "./model.js";
+import { cadence } from "./temporal.js";
 export async function capture(
   root: string,
   dir: string,
@@ -100,6 +101,18 @@ export async function capture(
           recordVideo: { dir: join(dir, "temporal"), size: { width, height } },
         }),
       ]);
+      // Plain browser JavaScript avoids tsx/esbuild's injected __name helper.
+      for (const context of contexts) await context.addInitScript(`
+        const telemetry = {timestamps: [], phases: [], visibility: [], truncated: false};
+        window.__artCadence = telemetry;
+        document.addEventListener("visibilitychange", () => telemetry.visibility.push({state: document.visibilityState, atMs: performance.now()}));
+        function sample(t) {
+          if (telemetry.timestamps.length < 10000) telemetry.timestamps.push(t);
+          else telemetry.truncated = true;
+          requestAnimationFrame(sample);
+        }
+        requestAnimationFrame(sample);
+      `);
       const pages = await Promise.all(contexts.map((c) => c.newPage()));
       const phaseEvents: { phase: string; atMs: number }[] = [];
       const started = performance.now();
@@ -145,10 +158,16 @@ export async function capture(
             evidence.push(relative(root, file));
           }
         };
+        const markPhase = async (phase: string) => Promise.all(pages.map(p => p.evaluate((phase) => {
+          const telemetry = (window as unknown as {__artCadence: {phases: {phase: string; atMs: number}[]}}).__artCadence;
+          telemetry.phases.push({phase, atMs: performance.now()});
+        }, phase)));
+        await markPhase("idle-request");
         phaseEvents.push({ phase: "idle", atMs: performance.now() - started });
         await fetch(`${url}/__art/phase/idle`, { method: "POST" });
         await pages[0].waitForTimeout(800);
         await shots("idle");
+        await markPhase(a.animation === "ward" ? "held-request" : "projectile-request");
         phaseEvents.push({
           phase: a.animation === "ward" ? "held" : "projectile",
           atMs: performance.now() - started,
@@ -166,6 +185,7 @@ export async function capture(
           await pages[0].waitForTimeout(delay);
           await shots(label);
         }
+        await markPhase("release-request");
         phaseEvents.push({ phase: "idle", atMs: performance.now() - started });
         await fetch(`${url}/__art/phase/idle`, { method: "POST" });
         for (const [delay, label] of [
@@ -228,6 +248,14 @@ export async function capture(
           evidence: evidence[0],
         });
       } finally {
+        for (let i = 0; i < pages.length; i++) {
+          const telemetry = await pages[i].evaluate(() => (window as unknown as {__artCadence?: {timestamps: number[]; phases: {phase: string; atMs: number}[]; visibility: {state: string; atMs: number}[]; truncated: boolean}}).__artCadence).catch(() => undefined);
+          if (telemetry) writeFileSync(join(dir, "temporal", `${width}x${height}-client-${i + 1}-cadence.json`), JSON.stringify({
+            ...telemetry, summary: cadence(telemetry.timestamps),
+            clock: "Browser performance time origin; phase-request markers share RAF clock, but are not video PTS or confirmed rendered phase transitions",
+            limitations: "Headless instrumented capture including screenshots; scheduling and capture overhead affect callback cadence. No render-completion/FPS assertion or automatic pacing PASS.",
+          }, null, 2));
+        }
         await Promise.all(contexts.map((c) => c.close()));
         for (let i = 0; i < pages.length; i++) {
           const video = pages[i].video();
@@ -268,7 +296,7 @@ export async function capture(
         {
           recordings,
           limitations:
-            "Videos are continuous human-review evidence. Current Responses adapter consumes PNG inputs, not WebM. No automatic animation PASS inferred; frame extraction with presentation timestamps and cadence analysis is future work.",
+            "Videos are continuous human-review evidence. Current Responses adapter consumes PNG inputs, not WebM. Use art:temporal to extract ordered PNG evidence with native timestamps. Browser callback cadence telemetry is separate from video FPS; no automatic animation PASS inferred.",
         },
         null,
         2,
