@@ -287,19 +287,48 @@ describe("AI art and vision adapters", () => {
         64,
       );
       const temporalDirectory = `art/qa/${f.a.asset_id}/iteration-${String(f.a.iteration).padStart(2, "0")}/temporal/frames-v1`;
-      mkdirSync(join(f.root, temporalDirectory), {recursive: true});
+      mkdirSync(join(f.root, temporalDirectory), { recursive: true });
       const temporalPath = `${temporalDirectory}/frame-83.png`;
-      copyFileSync(join(f.root, f.a.runtime_files[0]), join(f.root, temporalPath));
-      writeFileSync(join(f.root, temporalDirectory, "manifest.json"), JSON.stringify({
-        schema_version: 1, candidateHashes: f.a.runtime_files.map(p => digest(join(f.root, p))), recordings: [],
-        frames: [{path: temporalPath, sha256: digest(join(f.root, temporalPath)), ptsMs: 83, sequence: "desktop-client-1", phaseHint: "HELD_REQUEST", phaseAlignment: "approximate", client: 1, viewport: "1920x1080"}],
-      }));
+      copyFileSync(
+        join(f.root, f.a.runtime_files[0]),
+        join(f.root, temporalPath),
+      );
+      writeFileSync(
+        join(f.root, temporalDirectory, "manifest.json"),
+        JSON.stringify({
+          schema_version: 1,
+          candidateHashes: f.a.runtime_files.map((p) =>
+            digest(join(f.root, p)),
+          ),
+          recordings: [],
+          frames: [
+            {
+              path: temporalPath,
+              sha256: digest(join(f.root, temporalPath)),
+              ptsMs: 83,
+              sequence: "desktop-client-1",
+              phaseHint: "HELD_REQUEST",
+              phaseAlignment: "approximate",
+              client: 1,
+              viewport: "1920x1080",
+            },
+          ],
+        }),
+      );
       const temporalPacket = collectVisionEvidence(f.root, f.a);
       expect(temporalPacket.images.at(-1)?.temporal?.ptsMs).toBe(83);
       const fetcher = vi.fn<ApiFetch>(async (_url, init) => {
         const body = JSON.parse(init!.body as string);
-        expect(body.instructions).toContain("Return REVIEW whenever animation requirements exceed supplied evidence");
-        expect(body.input[0].content.some((c: {text?: string}) => c.text?.includes("ordered temporal frame:") && c.text.includes('"ptsMs":83'))).toBe(true);
+        expect(body.instructions).toContain(
+          "Return REVIEW whenever animation requirements exceed supplied evidence",
+        );
+        expect(
+          body.input[0].content.some(
+            (c: { text?: string }) =>
+              c.text?.includes("ordered temporal frame:") &&
+              c.text.includes('"ptsMs":83'),
+          ),
+        ).toBe(true);
         expect(body.store).toBe(false);
         expect(body.text.format.type).toBe("json_schema");
         expect(body.text.format.strict).toBe(true);
@@ -520,4 +549,68 @@ describe("AI art and vision adapters", () => {
       f.cleanup();
     }
   });
+});
+
+it("edits the human-selected current candidate with exact art feedback and records provenance", async () => {
+  const f = fixture();
+  try {
+    const seed = PNG.sync.read(
+      readFileSync(
+        join(f.root, "apps/client/public/assets/characters/ember/defense.png"),
+      ),
+    );
+    let offset = 0;
+    while (!seed.data[offset + 3]) offset += 4;
+    seed.data.set([101, 202, 33, 255], offset);
+    const source = "art/current-candidate.png";
+    writeFileSync(join(f.root, source), PNG.sync.write(seed));
+    const feedback =
+      "Make the barrier brighter; preserve the silhouette exactly.";
+    const fetcher = vi.fn<ApiFetch>(async (_url, init) => {
+      const form = init!.body as FormData;
+      expect(String(form.get("prompt"))).toContain(feedback);
+      const first = form.getAll("image[]")[0] as Blob;
+      const template = PNG.sync.read(Buffer.from(await first.arrayBuffer()));
+      const x = (offset / 4) % seed.width,
+        y = Math.floor(offset / 4 / seed.width);
+      expect([
+        ...template.data.subarray(
+          (y * 8 * 1024 + x * 8) * 4,
+          (y * 8 * 1024 + x * 8) * 4 + 4,
+        ),
+      ]).toEqual([101, 202, 33, 255]);
+      return new Response(
+        JSON.stringify({
+          data: [{ b64_json: rawWard(f.root).toString("base64") }],
+        }),
+        { status: 200 },
+      );
+    });
+    const destination = join(f.root, "art/generated-human-edit");
+    await new OpenAISpriteProvider(
+      f.root,
+      f.a,
+      destination,
+      config.sprite_artist,
+      "fake_key",
+      fetcher,
+    ).generate({
+      assetId: f.a.asset_id,
+      briefPath: "art/briefs/coco_ward_v1.json",
+      referencePaths: [],
+      feedback: [],
+      humanFeedback: feedback,
+      editSource: source,
+    });
+    const request = JSON.parse(
+      readFileSync(join(destination, "request.json"), "utf8"),
+    );
+    expect(request.editSource).toEqual({
+      path: source,
+      sha256: digest(join(f.root, source)),
+    });
+    expect(request.humanFeedback).toBe(feedback);
+  } finally {
+    f.cleanup();
+  }
 });

@@ -1,0 +1,223 @@
+{
+  "checks": [
+    {
+      "id": "character_consistency",
+      "result": "PASS",
+      "evidence": "Images/Character Concept art.png",
+      "evidence_paths": [
+        "Images/Character Concept art.png",
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/390x844-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/844x390-client-2-loop.png"
+      ],
+      "confidence": 0.97,
+      "feedback": "Coco retains her witch hat, long dark hair, purple outfit, staff, proportions, and unchanged body while the separate Ward rim is active."
+    },
+    {
+      "id": "animation",
+      "result": "REVIEW",
+      "category": "DESIGN",
+      "evidence": "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-1-START_REQUEST/frame-8680.png",
+      "evidence_paths": [
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-1-START_REQUEST/frame-8680.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-1-START_REQUEST/frame-9400.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-13600.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-14320.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-1-END_REQUEST/frame-18120.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-1-END_REQUEST/frame-18840.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-2-HELD_REQUEST/frame-13600.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-2-HELD_REQUEST/frame-14320.png"
+      ],
+      "confidence": 0.99,
+      "feedback": "Ordered desktop samples show a strengthening start, visible held rim, fade-out, and stable center on both clients. Approximate phase alignment, gaps, and still-only laptop/mobile evidence cannot establish continuous smoothness, exact timing, or global absence of restart/flicker."
+    },
+    {
+      "id": "rendering",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-03/candidate/atlas.png",
+      "evidence_paths": [
+        "art/qa/coco_ward_v4/iteration-03/candidate/atlas.png",
+        "art/qa/coco_ward_v4/iteration-03/contact-sheet.png",
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1440x900-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/390x844-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/844x390-client-2-loop.png"
+      ],
+      "confidence": 0.96,
+      "feedback": "The inspected source and runtime states show transparent surroundings, crisp nearest-neighbor edges, stable centering, correct layer visibility, and no rectangular artifacts or clipping."
+    },
+    {
+      "id": "vfx",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-03/candidate/atlas.png",
+      "evidence_paths": [
+        "art/qa/coco_ward_v4/iteration-03/candidate/atlas.png",
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1440x900-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/390x844-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/844x390-client-1-loop.png"
+      ],
+      "confidence": 0.97,
+      "feedback": "The omnidirectional Ward remains a readable hollow rim; Coco's body, hat, staff, and surrounding play area remain visible through its center."
+    },
+    {
+      "id": "palette",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-03/candidate/atlas.png",
+      "evidence_paths": [
+        "art/qa/coco_ward_v4/iteration-03/candidate/atlas.png",
+        "art/qa/coco_ward_v4/iteration-03/candidate/mask.png",
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-2-loop.png"
+      ],
+      "confidence": 0.98,
+      "feedback": "The source is canonical ember and runtime is intentionally emerald. Exact diagnostics cover all 1,264 alpha-bearing effect pixels with zero missing, extra, or invalid pixels; the source contains only Ward effect imagery, and Coco's protected colors remain unchanged."
+    },
+    {
+      "id": "multiplayer",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-03/1920x1080-client-1-loop.png",
+      "evidence_paths": [
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1440x900-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1440x900-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/390x844-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/390x844-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/844x390-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/844x390-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-14320.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-2-HELD_REQUEST/frame-14320.png"
+      ],
+      "confidence": 0.95,
+      "feedback": "Coco is local on client 2 and remote on client 1; both clients visibly present the same emerald hollow Ward in inspected held states across all four viewports."
+    },
+    {
+      "id": "responsive",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-03/1920x1080-client-1-loop.png",
+      "evidence_paths": [
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1440x900-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1440x900-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/390x844-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/390x844-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/844x390-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/844x390-client-2-loop.png"
+      ],
+      "confidence": 0.96,
+      "feedback": "Coco and the Ward remain visible, readable, and free of viewport-edge clipping on both clients at 1920×1080, 1440×900, 390×844, and 844×390."
+    }
+  ],
+  "rawChecks": [
+    {
+      "id": "character_consistency",
+      "result": "PASS",
+      "category": null,
+      "confidence": 0.97,
+      "evidence": [
+        "Images/Character Concept art.png",
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/390x844-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/844x390-client-2-loop.png"
+      ],
+      "feedback": "Coco retains her witch hat, long dark hair, purple outfit, staff, proportions, and unchanged body while the separate Ward rim is active."
+    },
+    {
+      "id": "animation",
+      "result": "REVIEW",
+      "category": "DESIGN",
+      "confidence": 0.99,
+      "evidence": [
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-1-START_REQUEST/frame-8680.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-1-START_REQUEST/frame-9400.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-13600.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-14320.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-1-END_REQUEST/frame-18120.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-1-END_REQUEST/frame-18840.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-2-HELD_REQUEST/frame-13600.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-2-HELD_REQUEST/frame-14320.png"
+      ],
+      "feedback": "Ordered desktop samples show a strengthening start, visible held rim, fade-out, and stable center on both clients. Approximate phase alignment, gaps, and still-only laptop/mobile evidence cannot establish continuous smoothness, exact timing, or global absence of restart/flicker."
+    },
+    {
+      "id": "rendering",
+      "result": "PASS",
+      "category": null,
+      "confidence": 0.96,
+      "evidence": [
+        "art/qa/coco_ward_v4/iteration-03/candidate/atlas.png",
+        "art/qa/coco_ward_v4/iteration-03/contact-sheet.png",
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1440x900-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/390x844-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/844x390-client-2-loop.png"
+      ],
+      "feedback": "The inspected source and runtime states show transparent surroundings, crisp nearest-neighbor edges, stable centering, correct layer visibility, and no rectangular artifacts or clipping."
+    },
+    {
+      "id": "vfx",
+      "result": "PASS",
+      "category": null,
+      "confidence": 0.97,
+      "evidence": [
+        "art/qa/coco_ward_v4/iteration-03/candidate/atlas.png",
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1440x900-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/390x844-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/844x390-client-1-loop.png"
+      ],
+      "feedback": "The omnidirectional Ward remains a readable hollow rim; Coco's body, hat, staff, and surrounding play area remain visible through its center."
+    },
+    {
+      "id": "palette",
+      "result": "PASS",
+      "category": null,
+      "confidence": 0.98,
+      "evidence": [
+        "art/qa/coco_ward_v4/iteration-03/candidate/atlas.png",
+        "art/qa/coco_ward_v4/iteration-03/candidate/mask.png",
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-2-loop.png"
+      ],
+      "feedback": "The source is canonical ember and runtime is intentionally emerald. Exact diagnostics cover all 1,264 alpha-bearing effect pixels with zero missing, extra, or invalid pixels; the source contains only Ward effect imagery, and Coco's protected colors remain unchanged."
+    },
+    {
+      "id": "multiplayer",
+      "result": "PASS",
+      "category": null,
+      "confidence": 0.95,
+      "evidence": [
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1440x900-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1440x900-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/390x844-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/390x844-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/844x390-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/844x390-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-14320.png",
+        "art/qa/coco_ward_v4/iteration-03/temporal/frames-v1/1920x1080-client-2-HELD_REQUEST/frame-14320.png"
+      ],
+      "feedback": "Coco is local on client 2 and remote on client 1; both clients visibly present the same emerald hollow Ward in inspected held states across all four viewports."
+    },
+    {
+      "id": "responsive",
+      "result": "PASS",
+      "category": null,
+      "confidence": 0.96,
+      "evidence": [
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1920x1080-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1440x900-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/1440x900-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/390x844-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/390x844-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/844x390-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-03/844x390-client-2-loop.png"
+      ],
+      "feedback": "Coco and the Ward remain visible, readable, and free of viewport-edge clipping on both clients at 1920×1080, 1440×900, 390×844, and 844×390."
+    }
+  ]
+}

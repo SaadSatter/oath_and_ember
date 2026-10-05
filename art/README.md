@@ -205,3 +205,34 @@ The current bounded packet adds 60 real frames from both desktop clients: three 
 New captures write per-client `*-cadence.json`: raw browser `requestAnimationFrame` timestamps, request markers in the same browser clock, visibility changes, median/max callback intervals and counts over 50ms. This measures callback scheduling under headless capture overhead, not actual game renders or display FPS; it is local engineering evidence, with no automatic pacing PASS. To evaluate true jank, the next instrumentation step is to correlate Phaser render-completion events and actual presentation-state transitions with decoded video timestamps using a synchronized capture marker. Legacy recordings have no such telemetry. Until that alignment exists, vision assesses only visible artifacts supported by the sampled sequences.
 
 Synchronized Ward captures now include a QA-only frame/tick marker, per-client presentation samples and server tick history; see VISUAL_QA.md. The iteration-02 investigation is additive under `art/qa/coco_ward_v4/iteration-02/investigation-01`, preserving the original vision findings and candidate files. Correlate captured markers with exact server ticks before treating equal-PTS remote/local differences as an implementation bug.
+
+## Human art direction
+
+Four decisions are available after visual review. These commands record human intent; the examples below do not approve or revise the current Ward automatically.
+
+```sh
+# Explicitly accept remaining REVIEW findings, then publish separately
+npm run art:approve -- coco_ward_v4 "Watched both clients; accept the remaining animation review"
+npm run art:publish -- coco_ward_v4
+
+# Request a targeted source-art edit within the SAME asset version
+npm run art:revise -- coco_ward_v4 --art "Make the barrier brighter; preserve the silhouette"
+npm run art:run -- coco_ward_v4
+
+# Request a presentation-code change, preserving the candidate images
+npm run art:revise -- coco_ward_v4 --implementation "Increase Ward visual size 15% and slow release"
+# Game Engineer implements the feedback in the presentation code, then:
+npm run art:integrate -- coco_ward_v4
+npm run art:run -- coco_ward_v4
+
+# Stop this experiment and preserve its history
+npm run art:reject -- coco_ward_v4 "The overall direction is unsuitable"
+```
+
+Either revision accepts `--feedback-file /absolute/path/to/feedback.txt` in place of text. The exact text, previous candidate paths/hashes, target iteration, timestamp and explicit authorization are saved in the next iteration's `human-request.json`. For v4 iteration 2, that reserves iteration 3; no v5 is created. Beyond the automatic limit, each explicit human revision grants **one additional iteration**, including at most one additional generation attempt when the previous generation budget was exhausted. It does not reset global attempt history or authorize unbounded automatic loops. The manifest's active iteration advances when the new submission is integrated; until then `pending_revision.to_iteration` identifies the reserved iteration.
+
+Art revisions start a fresh incoming handoff so `art:run` cannot silently reintegrate the previous submission. The configured artist edits a template made from the current candidate and receives the exact human feedback plus canonical references. A manual provider waits for a new submission. A one-frame Ward still cannot acquire new frame animation without a reviewed engineering adapter. Image-generation/vision uploads retain their normal external authorization boundary; ambiguous billed requests require explicit inspection and retry.
+
+Implementation revisions enter `WAITING_FOR_IMPLEMENTATION`. This is a real artifact-based **Game Engineer handoff**, not an autonomous natural-language code service. `art:run` stops and `art:generate` refuses. After the engineer changes presentation code, `art:integrate` verifies that code changed and the prior atlas/mask bytes stayed intact, stages the next candidate, then normal tests/build/browser/vision QA apply. A changed file is evidence that engineering work occurred, not proof that it satisfies the feedback; visual QA and human review still decide that. Code changes use the normal repository review process; `art:publish` publishes approved images, not code patches.
+
+`art:approve` can explicitly accept remaining subjective `REVIEW` findings after a complete seven-item visual review. It cannot waive objective failures, unresolved classified `FAIL` findings, missing visual review or changed candidate bytes. `human-approval.json` records the accepted findings, source review/hash and candidate hashes separately, and is preserved with the approved asset. AI findings and `qa_status: REVIEW` remain intact; only human approval changes status to `APPROVED`. Rejection is terminal for this candidate: evidence is kept and run/generate/approve/publish stop. Approved or rejected versions are immutable.

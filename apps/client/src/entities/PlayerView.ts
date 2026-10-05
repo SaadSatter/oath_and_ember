@@ -1,4 +1,4 @@
-import { defenseClip, defenseKey, wardEnvelope } from "../animation/defense.js";
+import { defenseClip, defenseKey, wardEnvelope, wardRotation } from "../animation/defense.js";
 import { PlayerPresentation } from "../animation/PlayerPresentation.js";
 import { heavyKey, combatKey, actionClip } from "../animation/combat.js";
 import { ensureAppearanceTexture } from "../assets/appearanceTextures.js";
@@ -229,6 +229,7 @@ export class PlayerView {
           ? wardEnvelope(defense.phase, defense.elapsedMs, c.durationMs)
           : null;
       this.defenseSprite
+        .setRotation(ward ? wardRotation(now) : 0)
         .setAlpha(ward?.alpha ?? 1)
         .setTexture(texture, frame)
         .setVisible(true)

@@ -36,6 +36,11 @@ import {
 } from "./generation.js";
 import { OpenAIVisionReviewer } from "./vision.js";
 import { prepareMaskRecovery } from "./recovery.js";
+import {
+  approvalEvidence,
+  iterationLimit,
+  requireDecisionState,
+} from "./human-decisions.js";
 import { advanceAsset } from "./runner.js";
 const root = resolve(
     process.env.ART_WORKSPACE_ROOT || resolve(import.meta.dirname, "../.."),
@@ -80,7 +85,7 @@ function report(a: Asset, checks: Finding[], stage: string) {
   a.status = route(
     checks,
     a.iteration,
-    manifest.max_iterations,
+    iterationLimit(a, manifest.max_iterations),
     loadProviderConfig(root).visual_qa.confidence_threshold,
   );
   a.qa_status = checks.some((c) => c.result === "FAIL")
@@ -260,6 +265,7 @@ function iterationDirectory(a: Asset) {
   return `art/qa/${a.asset_id}/iteration-${String(a.iteration).padStart(2, "0")}`;
 }
 function canReview(a: Asset) {
+  if (a.pending_revision) return false;
   const directory = iterationDirectory(a);
   const qaReport = path(`${directory}/qa-report.json`);
   return (
@@ -299,6 +305,14 @@ async function generate(a: Asset) {
       return;
     }
   }
+  if (a.pending_revision?.reference_atlas) {
+    const request = json(path(a.pending_revision.request_file));
+    if (
+      hash(path(a.pending_revision.reference_atlas)) !==
+      request.candidate_hashes[0]
+    )
+      throw Error("Human revision reference changed after the decision");
+  }
   const config = loadProviderConfig(root);
   if (config.sprite_artist.provider === "manual") {
     waiting(a);
@@ -318,8 +332,9 @@ async function generate(a: Asset) {
     return;
   }
   if (
-    a.iteration >= manifest.max_iterations ||
-    (a.generation_attempts || 0) >= manifest.max_iterations
+    a.iteration >= iterationLimit(a, manifest.max_iterations) ||
+    (a.generation_attempts || 0) >=
+      (a.authorized_generation_limit ?? manifest.max_iterations)
   ) {
     a.status = "NEEDS_HUMAN_REVIEW";
     save();
@@ -344,7 +359,7 @@ async function generate(a: Asset) {
     started: new Date().toISOString(),
   });
   console.log(
-    `SPRITE_ARTIST generating ${a.asset_id}, attempt ${a.generation_attempts}/${manifest.max_iterations} (${config.sprite_artist.model}).`,
+    `SPRITE_ARTIST generating ${a.asset_id}, attempt ${a.generation_attempts}/${a.authorized_generation_limit ?? manifest.max_iterations} (${config.sprite_artist.model}).`,
   );
   try {
     const provider = new OpenAISpriteProvider(
@@ -360,6 +375,14 @@ async function generate(a: Asset) {
     const generated = await provider.generate({
       assetId: a.asset_id,
       briefPath: `art/briefs/${a.asset_id}.json`,
+      humanFeedback:
+        a.pending_revision?.kind === "art"
+          ? a.pending_revision.feedback
+          : undefined,
+      editSource:
+        a.pending_revision?.kind === "art"
+          ? a.pending_revision.reference_atlas
+          : undefined,
       referencePaths: [
         ...a.canonical_references,
         ...(existsSync(path(`${previousSource}/atlas.png`))
@@ -383,6 +406,7 @@ async function generate(a: Asset) {
     });
     if (e instanceof GeneratedArtError) {
       a.iteration++;
+      a.pending_revision = undefined;
       report(
         a,
         [
@@ -470,15 +494,15 @@ async function vision(a: Asset) {
   }
 }
 async function recover(a: Asset) {
-  if (a.iteration >= manifest.max_iterations || a.status === "APPROVED")
+  if (a.pending_revision) return false;
+  if (
+    a.iteration >= iterationLimit(a, manifest.max_iterations) ||
+    ["APPROVED", "REJECTED", "WAITING_FOR_IMPLEMENTATION"].includes(a.status)
+  )
     return false;
   const latest = [...a.reports]
     .reverse()
-    .find(
-      (p) =>
-        p.startsWith(`${iterationDirectory(a)}/`) &&
-        /vision(?:-[0-9]+)?-report\.json$/.test(p),
-    );
+    .find((p) => p.startsWith(`${iterationDirectory(a)}/`));
   if (!latest) return false;
   const checks: Finding[] = json(path(latest)).checks;
   const previous = path(`${a.source_file}/recovery.json`);
@@ -521,6 +545,39 @@ async function recover(a: Asset) {
 }
 async function integrate(a: Asset) {
   if (
+    a.status === "WAITING_FOR_IMPLEMENTATION" &&
+    a.pending_revision?.kind === "implementation"
+  ) {
+    const request = json(path(a.pending_revision.request_file));
+    const entries = Object.entries(request.implementation_baseline || {}) as [
+      string,
+      string,
+    ][];
+    if (
+      !entries.length ||
+      !entries.some(
+        ([p, before]) => existsSync(path(p)) && hash(path(p)) !== before,
+      )
+    )
+      throw Error(
+        "Game Engineer handoff: implement the requested presentation change before integration",
+      );
+    if (
+      !a.pending_revision.reference_atlas ||
+      !a.pending_revision.reference_mask ||
+      hash(path(a.pending_revision.reference_atlas)) !== a.source_hash ||
+      hash(path(a.pending_revision.reference_mask)) !== a.integration_hash
+    )
+      throw Error(
+        "Implementation revision must preserve the reviewed atlas and mask",
+      );
+    a.source_file = relative(
+      root,
+      resolve(path(a.pending_revision.reference_atlas), ".."),
+    );
+    a.status = "READY_FOR_INTEGRATION";
+  }
+  if (
     ![
       "BRIEF",
       "WAITING_FOR_ART",
@@ -543,7 +600,7 @@ async function integrate(a: Asset) {
     waiting(a);
     return;
   }
-  if (a.iteration >= manifest.max_iterations) {
+  if (a.iteration >= iterationLimit(a, manifest.max_iterations)) {
     a.status = "NEEDS_HUMAN_REVIEW";
     save();
     throw Error("Iteration limit reached.");
@@ -581,6 +638,7 @@ async function integrate(a: Asset) {
     ];
   }
   if (checks.some((c) => c.result === "FAIL")) {
+    a.pending_revision = undefined;
     report(a, checks, "integration");
     return;
   }
@@ -607,6 +665,13 @@ async function integrate(a: Asset) {
     anchor: a.anchor,
     checks,
   });
+  if (a.pending_revision) {
+    write(
+      join(dir, "human-request.json"),
+      json(path(a.pending_revision.request_file)),
+    );
+    a.pending_revision = undefined;
+  }
   a.status = "READY_FOR_QA";
   save();
   console.log(
@@ -669,6 +734,18 @@ async function main() {
   const a = manifest.assets[arg];
   if (!a) throw Error("Unknown asset; create a brief first.");
   if (command === "run") {
+    if (a.pending_revision && a.status === "NEEDS_HUMAN_REVIEW") {
+      console.log(
+        "Pending human revision requires explicit provider-failure review; inspect saved attempt before art:generate. No automatic retry.",
+      );
+      return;
+    }
+    if (a.status === "REJECTED" || a.status === "WAITING_FOR_IMPLEMENTATION") {
+      console.log(
+        `${a.status}: ${a.pending_revision?.request_file || "candidate abandoned"}`,
+      );
+      return;
+    }
     const config = loadProviderConfig(root);
     if (a.status === "GENERATING_ART") {
       console.log(
@@ -679,17 +756,13 @@ async function main() {
     if (a.status === "NEEDS_HUMAN_REVIEW") {
       const latest = [...a.reports]
         .reverse()
-        .find(
-          (p) =>
-            p.startsWith(`${iterationDirectory(a)}/`) &&
-            /vision(?:-[0-9]+)?-report\.json$/.test(p),
-        );
+        .find((p) => p.startsWith(`${iterationDirectory(a)}/`));
       if (latest) {
         const checks: Finding[] = json(path(latest)).checks;
         const next = route(
           checks,
           a.iteration,
-          manifest.max_iterations,
+          iterationLimit(a, manifest.max_iterations),
           loadProviderConfig(root).visual_qa.confidence_threshold,
         );
         if (next !== a.status) report(a, checks, "routing");
@@ -698,7 +771,7 @@ async function main() {
     await advanceAsset(a, {
       artistEnabled: config.sprite_artist.provider === "openai",
       visionEnabled: config.visual_qa.provider === "openai",
-      maxIterations: manifest.max_iterations,
+      maxIterations: iterationLimit(a, manifest.max_iterations),
       hasSubmission: (a) =>
         existsSync(path(`${a.source_file}/submission.json`)),
       canReview,
@@ -721,7 +794,9 @@ async function main() {
   if (command === "generate") return generate(a);
   if (command === "temporal") {
     const packet = extractTemporal(root, a);
-    console.log(`Prepared ${packet.frames.length} timestamped frames; candidate and QA iteration preserved. Phase alignment approximate; no API request made.`);
+    console.log(
+      `Prepared ${packet.frames.length} timestamped frames; candidate and QA iteration preserved. Phase alignment approximate; no API request made.`,
+    );
     return;
   }
   if (command === "vision") return vision(a);
@@ -776,9 +851,94 @@ async function main() {
     report(a, checks, "human");
     return;
   }
+  if (command === "reject") {
+    if (["APPROVED", "REJECTED"].includes(a.status))
+      throw Error("Cannot reject an approved or already rejected asset");
+    const feedback = process.argv.slice(4).join(" ").trim();
+    if (!feedback) throw Error("Usage: art:reject -- asset_id reason");
+    const file = `${iterationDirectory(a)}/human-rejection.json`;
+    if (existsSync(path(file))) throw Error("Decision already recorded");
+    write(path(file), {
+      decision: "reject",
+      feedback,
+      assetId: a.asset_id,
+      iteration: a.iteration,
+      created_at: new Date().toISOString(),
+    });
+    (a.human_decisions ||= []).push(file);
+    a.pending_revision = undefined;
+    a.status = "REJECTED";
+    save();
+    console.log("REJECTED: evidence preserved; no generation or publication.");
+    return;
+  }
+  if (command === "revise" && ["--art", "--implementation"].includes(arg2)) {
+    requireDecisionState(a);
+    const args = process.argv.slice(5);
+    const feedback =
+      args[0] === "--feedback-file"
+        ? readFileSync(resolve(args[1]), "utf8")
+        : args.join(" ");
+    if (!feedback.trim()) throw Error("Revision requires explicit feedback");
+    const kind: "art" | "implementation" =
+      arg2 === "--art" ? "art" : "implementation";
+    const toIteration = a.iteration + 1;
+    const file = `art/qa/${a.asset_id}/iteration-${String(toIteration).padStart(2, "0")}/human-request.json`;
+    if (existsSync(path(file))) throw Error("Revision already requested");
+    const request = {
+      kind,
+      feedback,
+      request_file: file,
+      from_iteration: a.iteration,
+      to_iteration: toIteration,
+      reference_atlas: a.runtime_files[0],
+      reference_mask: a.runtime_files[1],
+      previous_source: a.source_file,
+    };
+    const codeRoot = "apps/client/src";
+    const codeFiles = existsSync(path(codeRoot))
+      ? readdirSync(path(codeRoot), { recursive: true })
+          .map(String)
+          .filter((p) => /\.(ts|css)$/.test(p) && !p.startsWith("net/"))
+          .map((p) => `${codeRoot}/${p}`)
+      : [];
+    write(path(file), {
+      ...request,
+      assetId: a.asset_id,
+      decision: `revise_${kind}`,
+      created_at: new Date().toISOString(),
+      authorized_iterations: 1,
+      automatic_max_iterations: manifest.max_iterations,
+      candidate_hashes: [a.source_hash, a.integration_hash],
+      implementation_baseline: Object.fromEntries(
+        codeFiles
+          .filter((p) => existsSync(path(p)))
+          .map((p) => [p, hash(path(p))]),
+      ),
+    });
+    a.pending_revision = request;
+    (a.human_decisions ||= []).push(file);
+    a.authorized_iteration_limit = Math.max(
+      manifest.max_iterations,
+      toIteration,
+    );
+    if (kind === "art") {
+      a.authorized_generation_limit = Math.max(
+        manifest.max_iterations,
+        (a.generation_attempts || 0) + 1,
+      );
+      a.source_file = `art/incoming/${a.asset_id}/human-revisions/iteration-${String(toIteration).padStart(2, "0")}`;
+      a.status = "WAITING_FOR_ART";
+    } else a.status = "WAITING_FOR_IMPLEMENTATION";
+    save();
+    console.log(
+      `${a.status}: iteration ${toIteration}; exact feedback preserved in ${file}. ${kind === "art" ? "Run art:run for the configured artist or supply the new submission." : "Game Engineer: change presentation code, then art:integrate and art:run. Atlas is preserved; no artist call."}`,
+    );
+    return;
+  }
   if (command === "revise") {
     if (a.status === "APPROVED") throw Error("Create a new version.");
-    if (a.iteration >= manifest.max_iterations)
+    if (a.iteration >= iterationLimit(a, manifest.max_iterations))
       throw Error(
         "Iteration limit reached; create a new brief with revised direction.",
       );
@@ -795,10 +955,7 @@ async function main() {
     return;
   }
   if (command === "approve") {
-    if (a.status !== "AWAITING_APPROVAL")
-      throw Error(
-        "Resolve objective QA and vision or human review before explicit approval.",
-      );
+    const acceptance = approvalEvidence(root, a);
     const dir = path(`art/approved/${a.asset_id}`);
     if (existsSync(dir)) throw Error("Approved version already exists.");
     if (
@@ -822,6 +979,26 @@ async function main() {
       path(`art/briefs/${a.asset_id}.json`),
       join(dir, "brief.json"),
     );
+    const decisionFile = `${iterationDirectory(a)}/human-approval.json`;
+    write(path(decisionFile), {
+      decision: "approve",
+      assetId: a.asset_id,
+      iteration: a.iteration,
+      created_at: new Date().toISOString(),
+      feedback:
+        process.argv.slice(4).join(" ").trim() ||
+        "Explicit human acceptance via art:approve",
+      ...acceptance,
+      reviewHash: hash(path(acceptance.reviewPath)),
+      candidateHashes: [a.source_hash, a.integration_hash],
+    });
+    copyFileSync(path(decisionFile), join(dir, "human-approval.json"));
+    copyFileSync(
+      path(acceptance.reviewPath),
+      join(dir, "accepted-review.json"),
+    );
+    a.human_approval = decisionFile;
+    (a.human_decisions ||= []).push(decisionFile);
     a.status = "APPROVED";
     a.approved_at = new Date().toISOString();
     save();

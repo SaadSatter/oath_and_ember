@@ -56,6 +56,7 @@ function harness() {
     setVisible: chain(),
     setPosition: chain(),
     setFlipX: chain(),
+    setRotation: chain(),
     setDepth: chain(),
     setTint: chain(),
     clearTint: chain(),
@@ -288,6 +289,7 @@ it("keeps Coco's clean body visible while animating only the isolated Ward layer
   h.scene.time.now = 1000;
   h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 30 });
   expect(ward.setTexture.mock.calls.at(-1)?.[1]).toBe(0);
+  expect(ward.setRotation).toHaveBeenLastCalledWith((1000 * Math.PI * 2) / 2400);
   expect(h.sprite.setScale).toHaveBeenLastCalledWith(1);
   expect(h.sprite.setTint).not.toHaveBeenCalled();
   h.view.update(p, p, p, "TOP_DOWN", "geometric", { serverTick: 30 });

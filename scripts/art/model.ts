@@ -11,6 +11,8 @@ export const statuses = [
   "NEEDS_HUMAN_REVIEW",
   "AWAITING_APPROVAL",
   "APPROVED",
+  "WAITING_FOR_IMPLEMENTATION",
+  "REJECTED",
 ] as const;
 export const idSchema = z.string().regex(/^[a-z][a-z0-9_]*_v[1-9][0-9]*$/);
 export const findingSchema = z
@@ -70,6 +72,8 @@ export interface SpriteGenerationRequest {
   briefPath: string;
   referencePaths: string[];
   feedback: Finding[];
+  humanFeedback?: string;
+  editSource?: string;
 }
 export interface GeneratedAsset {
   submissionDirectory: string;
@@ -107,6 +111,20 @@ export interface Asset {
   target: string | null;
   mask_target: string | null;
   reports: string[];
+  authorized_iteration_limit?: number;
+  authorized_generation_limit?: number;
+  human_decisions?: string[];
+  human_approval?: string;
+  pending_revision?: {
+    kind: "art" | "implementation";
+    feedback: string;
+    request_file: string;
+    from_iteration: number;
+    to_iteration: number;
+    reference_atlas?: string;
+    reference_mask?: string;
+    previous_source: string;
+  };
   generation_attempts?: number;
   generation_history?: string[];
 }

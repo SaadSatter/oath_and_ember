@@ -22,7 +22,7 @@ export function defenseClip(
       fps: 12,
       heldFrame: 0,
       durationMs:
-        phase === "impact"
+        (phase === "impact"
           ? 250
           : phase === "loop"
             ? (7 * 1000) / 12
@@ -30,7 +30,7 @@ export function defenseClip(
               ? 500
               : phase === "start" && direction === "up"
                 ? (7 * 1000) / 12
-                : (8 * 1000) / 12,
+                : (8 * 1000) / 12) / 1.5,
     };
   // Only start poses exist vertically. Hold their final pose; recovery uses right art.
   const vertical = direction === "up" || direction === "down";
@@ -87,7 +87,10 @@ export function wardEnvelope(
   return {
     alpha:
       strength *
-      (phase === "loop" ? 0.9 + Math.sin(elapsedMs / 420) * 0.06 : 0.96),
+      (phase === "loop" ? 0.9 + Math.sin(elapsedMs / 210) * 0.06 : 0.96),
     scale: 0.9 + 0.1 * strength,
   };
 }
+
+// Continuous scene clock keeps rotation stable across phase changes and snapshots.
+export const wardRotation = (nowMs: number) => (nowMs * Math.PI * 2) / 2400;

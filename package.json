@@ -21,6 +21,7 @@
     "art:qa": "node --env-file-if-exists=.env --import tsx scripts/art/cli.ts qa",
     "art:run": "node --env-file-if-exists=.env --import tsx scripts/art/cli.ts run",
     "art:review": "node --env-file-if-exists=.env --import tsx scripts/art/cli.ts review",
+    "art:reject": "node --env-file-if-exists=.env --import tsx scripts/art/cli.ts reject",
     "art:revise": "node --env-file-if-exists=.env --import tsx scripts/art/cli.ts revise",
     "art:approve": "node --env-file-if-exists=.env --import tsx scripts/art/cli.ts approve",
     "art:publish": "node --env-file-if-exists=.env --import tsx scripts/art/cli.ts publish",
