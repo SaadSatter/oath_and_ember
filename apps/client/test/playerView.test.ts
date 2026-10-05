@@ -318,3 +318,21 @@ it("holds Sieg's Guard body on one anchored pose across loop cycles", () => {
   expect(guard.setScale).toHaveBeenLastCalledWith(1);
   expect(h.sprite.setVisible).toHaveBeenLastCalledWith(false);
 });
+
+it("reports the actual Ward layer without mutating authoritative state or changing presentation", () => {
+  const h = harness();
+  const image = Object.assign(h.scene.add.image(), {visible: false, alpha: 0, x: 0, y: 0, scaleX: 1});
+  image.setVisible.mockImplementation(function (this: any, value: boolean) {this.visible = value; return this;});
+  image.setAlpha.mockImplementation(function (this: any, value: number) {this.alpha = value; return this;});
+  h.scene.add.image.mockReturnValue(image);
+  const p = Object.freeze({...player("EMBER"), actionState: "guard"});
+  const observe = vi.fn();
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", {serverTick: 10}, observe);
+  h.scene.time.now = 1000;
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", {serverTick: 40}, observe);
+  expect(observe).toHaveBeenLastCalledWith(expect.objectContaining({kind: "defense", phase: "loop", visible: true, alpha: image.alpha}));
+  expect(image.alpha).toBeGreaterThan(0);
+  expect(p.actionState).toBe("guard");
+  h.view.update(p, p, p, "TOP_DOWN", "geometric", {serverTick: 40}, observe);
+  expect(observe).toHaveBeenLastCalledWith(expect.objectContaining({visible: false}));
+});

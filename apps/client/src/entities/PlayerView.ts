@@ -40,6 +40,7 @@ export class PlayerView {
     mode: MovementMode,
     rendering: CharacterRendering,
     hints: VisualHints = {},
+    observeWard?: (state: WardObservation) => void,
   ) {
     const now = this.scene.time.now;
     const defensiveHit =
@@ -357,6 +358,16 @@ export class PlayerView {
       36 * Math.max(0, Math.min(1, player.hp / player.maxHp)),
       4,
     );
+    if (observeWard && role === "EMBER") observeWard({
+      kind: presentation.kind, phase: defense?.phase ?? null,
+      elapsedMs: defense?.elapsedMs ?? null,
+      visible: this.defenseSprite?.visible ?? false,
+      alpha: this.defenseSprite?.alpha ?? 0,
+      x: this.defenseSprite?.x ?? null, y: this.defenseSprite?.y ?? null,
+      scaleX: this.defenseSprite?.scaleX ?? null,
+      texture: this.defenseSprite?.texture.key ?? null,
+      frame: this.defenseSprite?.frame.name ?? null,
+    });
   }
   private applyAppearance() {
     if (
@@ -372,4 +383,10 @@ export class PlayerView {
     this.effects?.destroy();
     this.graphics.destroy();
   }
+}
+
+export interface WardObservation {
+  kind: string; phase: string | null; elapsedMs: number | null;
+  visible: boolean; alpha: number; x: number | null; y: number | null;
+  scaleX: number | null; texture: string | null; frame: string | number | null;
 }

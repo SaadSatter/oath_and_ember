@@ -103,6 +103,25 @@ export async function capture(
       ]);
       // Plain browser JavaScript avoids tsx/esbuild's injected __name helper.
       for (const context of contexts) await context.addInitScript(`
+        let wardPending = null;
+        window.__artWardEvidence = {samples: [], truncated: false};
+        window.__artWardUpdate = sample => {wardPending = sample;};
+        window.__artWardRendered = () => {
+          if (!wardPending) return;
+          const evidence = window.__artWardEvidence;
+          const sample = {...wardPending, browserMs: performance.now(), renderId: evidence.samples.length};
+          if (evidence.samples.length >= 10000) {evidence.truncated = true; return;}
+          evidence.samples.push(sample);
+          let marker = document.getElementById("art-ward-sync");
+          if (!marker) {
+            marker = document.createElement("div"); marker.id = "art-ward-sync";
+            marker.style.cssText = "position:fixed;bottom:0;left:0;z-index:99999;background:black;color:white;font:12px monospace;pointer-events:none";
+            document.body.appendChild(marker);
+          }
+          marker.textContent = "QA F=" + sample.renderId + " T=" + sample.serverTick + " " + sample.ward.phase + " V=" + Number(sample.ward.visible) + " A=" + sample.ward.alpha.toFixed(3);
+          marker.dataset.renderId = String(sample.renderId);
+          wardPending = null;
+        };
         const telemetry = {timestamps: [], phases: [], visibility: [], truncated: false};
         window.__artCadence = telemetry;
         document.addEventListener("visibilitychange", () => telemetry.visibility.push({state: document.visibilityState, atMs: performance.now()}));
@@ -154,7 +173,11 @@ export async function capture(
               dir,
               `${width}x${height}-client-${i + 1}-${label}.png`,
             );
+            const before = await pages[i].locator("#art-ward-sync").getAttribute("data-render-id");
             await pages[i].screenshot({ path: file });
+            const after = await pages[i].locator("#art-ward-sync").getAttribute("data-render-id");
+            writeFileSync(file.replace(/\.png$/, "-sync.json"), JSON.stringify({screenshot: relative(root, file), beforeRenderId: Number(before), afterRenderId: Number(after),
+              correlation: "Read the visible QA F marker in the screenshot/video and look up that exact renderId in client presentation samples; bracketing IDs alone do not claim atomic capture."}, null, 2));
             evidence.push(relative(root, file));
           }
         };
@@ -256,6 +279,11 @@ export async function capture(
             limitations: "Headless instrumented capture including screenshots; scheduling and capture overhead affect callback cadence. No render-completion/FPS assertion or automatic pacing PASS.",
           }, null, 2));
         }
+        for (let i = 0; i < pages.length; i++) {
+          const wardEvidence = await pages[i].evaluate(() => (window as unknown as {__artWardEvidence: unknown}).__artWardEvidence);
+          writeFileSync(join(dir, "temporal", `${width}x${height}-client-${i + 1}-presentation.json`), JSON.stringify(wardEvidence, null, 2));
+        }
+        writeFileSync(join(dir, "temporal", `${width}x${height}-authority.json`), JSON.stringify(await (await fetch(`${url}/__art/history`)).json(), null, 2));
         await Promise.all(contexts.map((c) => c.close()));
         for (let i = 0; i < pages.length; i++) {
           const video = pages[i].video();

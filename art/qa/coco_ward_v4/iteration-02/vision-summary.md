@@ -1,0 +1,30 @@
+# coco_ward_v4: QA_FAILED_IMPLEMENTATION
+
+- PASS typecheck:  
+- PASS test:  
+- PASS build:  
+- PASS viewport_1920_1080_client_1:  art/qa/coco_ward_v4/iteration-02/1920x1080-client-1-recovered.png
+- PASS viewport_1920_1080_client_2:  art/qa/coco_ward_v4/iteration-02/1920x1080-client-2-recovered.png
+- PASS authoritative_mechanic_1920_1080:  art/qa/coco_ward_v4/iteration-02/1920x1080-states.json
+- PASS two_clients_1920_1080:  art/qa/coco_ward_v4/iteration-02/1920x1080-client-1-idle.png
+- PASS viewport_1440_900_client_1:  art/qa/coco_ward_v4/iteration-02/1440x900-client-1-recovered.png
+- PASS viewport_1440_900_client_2:  art/qa/coco_ward_v4/iteration-02/1440x900-client-2-recovered.png
+- PASS authoritative_mechanic_1440_900:  art/qa/coco_ward_v4/iteration-02/1440x900-states.json
+- PASS two_clients_1440_900:  art/qa/coco_ward_v4/iteration-02/1440x900-client-1-idle.png
+- PASS viewport_390_844_client_1:  art/qa/coco_ward_v4/iteration-02/390x844-client-1-recovered.png
+- PASS viewport_390_844_client_2:  art/qa/coco_ward_v4/iteration-02/390x844-client-2-recovered.png
+- PASS authoritative_mechanic_390_844:  art/qa/coco_ward_v4/iteration-02/390x844-states.json
+- PASS two_clients_390_844:  art/qa/coco_ward_v4/iteration-02/390x844-client-1-idle.png
+- PASS viewport_844_390_client_1:  art/qa/coco_ward_v4/iteration-02/844x390-client-1-recovered.png
+- PASS viewport_844_390_client_2:  art/qa/coco_ward_v4/iteration-02/844x390-client-2-recovered.png
+- PASS authoritative_mechanic_844_390:  art/qa/coco_ward_v4/iteration-02/844x390-states.json
+- PASS two_clients_844_390:  art/qa/coco_ward_v4/iteration-02/844x390-client-1-idle.png
+- PASS temporal_recordings:  art/qa/coco_ward_v4/iteration-02/temporal/index.json
+- PASS browser_errors:  art/qa/coco_ward_v4/iteration-02/browser-log.json
+- PASS character_consistency: Coco retains the canonical witch hat, long dark hair, purple clothing, staff, proportions, and unchanged body while the separate Ward rim is active. Images/Character Concept art.png
+- REVIEW animation: The sampled desktop windows show stable character placement and an observable envelope, but phase alignment is approximate and windows contain gaps. Client 1 also loses the rim during its HELD_REQUEST sample while client 2 retains it; exact transition timing, uninterrupted hold behavior, and absence of restart require synchronized presentation-state review. art/qa/coco_ward_v4/iteration-02/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-11320.png
+- PASS rendering: The inspected source and runtime captures show transparent surroundings, crisp pixel edges, no rectangular background, no clipping, and consistent centering around Coco. art/qa/coco_ward_v4/iteration-02/candidate/atlas.png
+- PASS vfx: The omnidirectional Ward is a readable hollow rim; Coco's body, hat, staff, and surrounding playfield remain visible through its center. art/qa/coco_ward_v4/iteration-02/candidate/atlas.png
+- PASS palette: The source remains canonical ember while runtime displays the intended emerald recolor. Mask diagnostics report all 1,264 alpha-bearing atlas pixels covered with zero missing, extra, or invalid pixels; the source contains only Ward effect pixels and no embedded character or equipment. art/qa/coco_ward_v4/iteration-02/candidate/atlas.png
+- FAIL multiplayer: During matched desktop HELD_REQUEST sampling, the remote Ward on client 1 fades and is absent by PTS 11880, while Coco's local Ward remains fully visible on client 2 at PTS 11880–12040. Keep the remote presentation active for the same held state as the local client and verify with synchronized presentation-state capture. art/qa/coco_ward_v4/iteration-02/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-11320.png
+- PASS responsive: Coco and the Ward remain visible, readable, and free of viewport-edge clipping on both clients at 1920×1080, 1440×900, 390×844, and 844×390. art/qa/coco_ward_v4/iteration-02/1920x1080-client-1-loop.png

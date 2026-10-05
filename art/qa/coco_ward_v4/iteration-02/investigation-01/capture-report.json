@@ -1,0 +1,94 @@
+{
+  "checks": [
+    {
+      "id": "viewport_1920_1080_client_1",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/1920x1080-client-1-recovered.png"
+    },
+    {
+      "id": "viewport_1920_1080_client_2",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/1920x1080-client-2-recovered.png"
+    },
+    {
+      "id": "authoritative_mechanic_1920_1080",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/1920x1080-states.json"
+    },
+    {
+      "id": "two_clients_1920_1080",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/1920x1080-client-1-idle.png"
+    },
+    {
+      "id": "viewport_1440_900_client_1",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/1440x900-client-1-recovered.png"
+    },
+    {
+      "id": "viewport_1440_900_client_2",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/1440x900-client-2-recovered.png"
+    },
+    {
+      "id": "authoritative_mechanic_1440_900",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/1440x900-states.json"
+    },
+    {
+      "id": "two_clients_1440_900",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/1440x900-client-1-idle.png"
+    },
+    {
+      "id": "viewport_390_844_client_1",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/390x844-client-1-recovered.png"
+    },
+    {
+      "id": "viewport_390_844_client_2",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/390x844-client-2-recovered.png"
+    },
+    {
+      "id": "authoritative_mechanic_390_844",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/390x844-states.json"
+    },
+    {
+      "id": "two_clients_390_844",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/390x844-client-1-idle.png"
+    },
+    {
+      "id": "viewport_844_390_client_1",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/844x390-client-1-recovered.png"
+    },
+    {
+      "id": "viewport_844_390_client_2",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/844x390-client-2-recovered.png"
+    },
+    {
+      "id": "authoritative_mechanic_844_390",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/844x390-states.json"
+    },
+    {
+      "id": "two_clients_844_390",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/844x390-client-1-idle.png"
+    },
+    {
+      "id": "temporal_recordings",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/temporal/index.json"
+    },
+    {
+      "id": "browser_errors",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-02/investigation-01/browser-log.json"
+    }
+  ]
+}

@@ -3,6 +3,8 @@ import { createApp } from "../../dist/apps/server/src/app.js";
 const game = createApp();
 let mode = "idle";
 const seeded = new Set();
+const history = [];
+game.app.get("/__art/history", (_req, res) => res.json(history));
 game.app.get("/__art/state", (_req, res) =>
   res.json([...game.manager.rooms.values()].map((r) => r.state)),
 );
@@ -27,6 +29,9 @@ const timer = setInterval(() => {
         s.received = Date.now();
       }
       tick();
+      history.push({roomCode: room.state.roomCode, serverTick: room.state.serverTick,
+        players: Object.values(room.state.players).filter(p => p.role === "EMBER").map(p => ({id: p.id, actionState: p.actionState, combat: p.combat ?? null, hp: p.hp}))});
+      if (history.length > 10000) history.shift();
     };
     seeded.add(room.state.roomCode);
   }

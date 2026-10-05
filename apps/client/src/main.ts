@@ -1,3 +1,10 @@
+// Optional read-only hooks are installed only by the local art QA browser harness.
+declare global {
+  interface Window {
+    __artWardUpdate?: (sample: unknown) => void;
+    __artWardRendered?: () => void;
+  }
+}
 import { renderAppearanceLobby } from "./ui/appearanceLobby.js";
 import { preloadMagic, warmMagicTextures } from "./assets/magicTextures.js";
 import { ProjectileView } from "./entities/ProjectileView.js";
@@ -266,6 +273,11 @@ class Adventure extends Phaser.Scene {
     this.playerViews.clear();
   }
   create() {
+    if (window.__artWardRendered) {
+      const rendered = () => window.__artWardRendered?.();
+      this.game.events.on(Phaser.Core.Events.POST_RENDER, rendered);
+      this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.game.events.off(Phaser.Core.Events.POST_RENDER, rendered));
+    }
     registerHeroes(this);
     warmMagicTextures(this);
     const detachResponsive = attachResponsiveRenderer(this);
@@ -368,7 +380,11 @@ class Adventure extends Phaser.Scene {
           !skillOpen &&
           net.socket.connected &&
           Object.values(w.players).every((hero) => hero.connected),
-      });
+      }, window.__artWardUpdate && p.role === "EMBER" ? visual => window.__artWardUpdate?.({
+        roomCode: w.roomCode, serverTick: w.serverTick, playerId: p.id,
+        local: p.id === me.id, actionState: p.actionState, combat: p.combat ?? null,
+        hp: p.hp, ward: visual,
+      }) : undefined);
     }
     for (const [id, view] of this.playerViews) {
       if (!w.players[id]) {

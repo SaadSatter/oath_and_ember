@@ -207,7 +207,9 @@
       "reports": [
         "art/qa/coco_ward_v4/iteration-01/qa-report.json",
         "art/qa/coco_ward_v4/iteration-01/vision-report.json",
-        "art/qa/coco_ward_v4/iteration-02/qa-report.json"
+        "art/qa/coco_ward_v4/iteration-02/qa-report.json",
+        "art/qa/coco_ward_v4/iteration-02/vision-report.json",
+        "art/qa/coco_ward_v4/iteration-02/investigation-disposition.json"
       ],
       "generation_attempts": 1,
       "generation_history": [
