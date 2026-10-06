@@ -7,6 +7,7 @@ import {
 } from "node:fs";
 import { join } from "node:path";
 import { PNG } from "pngjs";
+import { resolveContract } from "./contracts.js";
 import type { Asset, Finding } from "./model.js";
 import { digest } from "./generation.js";
 import { buildEffectMask, effectMaskDiagnostics, inspectAtlas } from "./png.js";
@@ -32,15 +33,11 @@ export function isMaskOnlyFailure(checks: Finding[]) {
 }
 export function prepareMaskRecovery(root: string, a: Asset, checks: Finding[]) {
   if (a.status === "APPROVED" || !isMaskOnlyFailure(checks)) return null;
-  const ward =
-    a.character === "coco" &&
-    a.animation === "ward" &&
-    a.target === "assets/characters/ember/defense.png";
-  const flight =
-    a.character === "coco" &&
-    a.animation === "projectile" &&
-    a.target === "assets/effects/coco/flight.png";
-  if (!ward && !flight) return null;
+  try {
+    if (resolveContract(a, root).mask.strategy !== "alpha_effect") return null;
+  } catch {
+    return null;
+  }
   // Semantic assurance comes from existing positive art findings, not mask geometry.
   for (const id of ["character_consistency", "rendering", "vfx"])
     if (
@@ -98,6 +95,7 @@ export function prepareMaskRecovery(root: string, a: Asset, checks: Finding[]) {
     join(directory, "mask.png"),
     a.frame_dimensions,
     a.frame_count,
+    resolveContract(a, root),
   );
   if (checksAfter.some((c) => c.result === "FAIL"))
     throw Error("Recovered mask did not pass objective validation.");

@@ -2,6 +2,7 @@
 import { createApp } from "../../dist/apps/server/src/app.js";
 const game = createApp();
 let mode = "idle";
+const candidateRole = process.env.ART_QA_ROLE || "EMBER";
 const seeded = new Set();
 const history = [];
 game.app.get("/__art/history", (_req, res) => res.json(history));
@@ -23,14 +24,28 @@ const timer = setInterval(() => {
     room.state.enemies = {};
     const tick = room.tick.bind(room);
     room.tick = () => {
-      for (const s of room.sessions.values()) {
-        s.input.secondaryHeld = mode === "held";
-        s.input.primaryHeld = mode === "projectile";
+      for (const [playerId, s] of room.sessions) {
+        s.input.secondaryHeld =
+          mode === "held" &&
+          room.state.players[playerId]?.role === candidateRole;
+        s.input.primaryHeld =
+          mode === "projectile" &&
+          room.state.players[playerId]?.role === candidateRole;
         s.received = Date.now();
       }
       tick();
-      history.push({roomCode: room.state.roomCode, serverTick: room.state.serverTick,
-        players: Object.values(room.state.players).filter(p => p.role === "EMBER").map(p => ({id: p.id, actionState: p.actionState, combat: p.combat ?? null, hp: p.hp}))});
+      history.push({
+        roomCode: room.state.roomCode,
+        serverTick: room.state.serverTick,
+        players: Object.values(room.state.players)
+          .filter((p) => p.role === "EMBER" || p.role === candidateRole)
+          .map((p) => ({
+            id: p.id,
+            actionState: p.actionState,
+            combat: p.combat ?? null,
+            hp: p.hp,
+          })),
+      });
       if (history.length > 10000) history.shift();
     };
     seeded.add(room.state.roomCode);

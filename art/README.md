@@ -50,7 +50,7 @@ npm run art:status
 npm run art:run -- coco_ward_v1
 ```
 
-The first two commands produce a versioned brief and WAITING_FOR_ART. Running again without files stays waiting. Later briefs increment `_v2`, `_v3`, etc. Use the returned ID, not an assumed version. `coco projectile` binds the existing four-frame flight atlas. Other requests draft a brief but require an engineer-reviewed adapter before integration or paid generation; they stop at human review.
+The first two commands produce a versioned brief and WAITING_FOR_ART. Running again without files stays waiting. Later briefs increment `_v2`, `_v3`, etc. Use the returned ID, not an assumed version. `coco projectile` binds the existing four-frame flight atlas. `sieg shield` binds the existing multi-row Guard atlas. The Director resolves requirements from `art/contracts.json`; compatible assets require a contract declaration rather than changes to generation logic. Missing/unsafe normalization, runtime or QA capabilities produce `WAITING_FOR_IMPLEMENTATION` with a version-preserving request under `art/handoffs/<asset>/`. Once implemented, `art:run` or `art:agent ... RESUME` rechecks that request and continues the same asset without a new brief. There is no background code-writing service.
 
 Put these files in `art/incoming/coco_ward_v1/`:
 
@@ -171,15 +171,19 @@ The previously validated Ward v1 remains unapproved and at its integration limit
 
 ### Sprite Artist
 
-`OpenAISpriteProvider` implements `SpriteGenerationProvider` via the official `POST /v1/images/edits` endpoint. It sends a 1024×1024 layout reference made from the existing effect, canonical references, the brief/art spec, and latest structured ART feedback. The first input establishes scale, frame order and anchors. Transparent PNG and one canonical ember palette are requested.
+`OpenAISpriteProvider` implements `SpriteGenerationProvider` via the official `POST /v1/images/edits` endpoint. It sends a 1024×1024 fixed-grid layout reference made from the existing runtime asset, canonical references, the brief/art spec, and latest structured ART feedback. The first input establishes scale, frame order and anchors. Transparent PNG and the contract's canonical palette are requested.
 
-Automatic normalization is deliberately limited to **Coco Ward** and **Coco projectile flight**: both are isolated magic effects whose entire visible area may use the green palette mask. It never constructs character masks by tinting everything. Character animations, enemies and other effects need a reviewed adapter before auto-generation/integration.
+`art/contracts.json` declares pixel content, asset type, grid columns/frame count/dimensions, anchor/directions, canonical references/palette, runtime targets, animation behavior and QA mechanism/role. The shared `fixed_grid_v1` normalizer supports horizontal and multi-row atlases. It rejects opaque, off-grid, padded-cell and missing-frame artwork, without silhouette recentering. Runtime capabilities are checked against the actual loader/clip definitions before provider calls; a contract cannot invent a loader by naming a file. Another compatible asset may reuse a reviewed contract/binding under a new registry key without editing generation.ts. A genuinely new runtime loader or normalization strategy still requires Game Engineer implementation; it is not mislabeled visual review.
 
 Ward uses the entire square canvas at integer scale 8; projectile uses four scaled cells in the top row with unused canvas fully transparent. Fixed-cell nearest-neighbor sampling converts the declared grid to runtime resolution without silhouette-based recentering, guessed cropping, painting, or anchor changes. Off-grid pixels, opaque backgrounds or wrong canvas sizes become ART failures. The generated source is retained even when rejected. Exact grid requirements may be difficult for a generator; three failures stop for human direction rather than inventing crops.
 
-The normalized mask is derived from alpha **only because these adapters forbid embedded character/equipment pixels**. Vision checks that restriction; semantic errors route to ART. The existing runtime palette system performs all recoloring.
+Mask strategies are explicit: `alpha_effect` requires effect-only content and green alpha coverage; `semantic_external` requires a separate semantic mask restricted to declared channels; `none` produces no runtime recolor mask (an empty auxiliary PNG retains hash/artifact compatibility). None cannot be bound to an existing loader that requires a palette mask. Never use alpha recovery for semantic or no-mask contracts. Semantic geometry/channel checks cannot prove cloth-region safety; the palette rubric must review protected pixels before human approval.
+
+Sieg Shield uses the existing character-and-shield Guard atlas: 47 frames, eight columns, six rows with one transparent padded cell; 128×128 cells, foot anchor (64,96), existing directional start/hold/recovery/impact clips, left mirroring right. Only scarf/cape may recolor through a red semantic mask; shield metal, body and equipment are protected. Generation makes two separately preserved Images edit requests (art, then semantic mask), so it may cost more than an isolated effect. Each request/response/raw image is retained; ambiguous HTTP failures stop without automatic request retries. Browser QA holds authoritative Guard on OATH/client 1 and captures client 2 as the remote view, with a non-default scarf palette. Ward overlay telemetry continues to describe Coco only; it is not Sieg presentation-state instrumentation.
 
 ### Vision critique
+
+For headless macOS Chrome display-link/recording teardown errors, use `ART_QA_SOFTWARE_RENDERING=1 npm run art:run -- <asset>`. This changes only the QA browser launch, is recorded in `temporal/index.json`, and makes no production-rendering or FPS/smoothness claim. `art:run` prints the normal Review Card and a clear preview link after completed QA; `art:agent -- --asset <asset> REVIEW` refreshes it.
 
 `OpenAIVisionReviewer` uses `POST /v1/responses` with image inputs and a strict JSON schema. Its packet contains all 64 original screenshots, source atlas/mask/contact sheet (plus raw generated sheet when available), canonical references, existing runtime reference, authoritative state samples, brief, art spec, rubric and previous feedback. It saves the packet index and SHA-256 image hashes.
 
@@ -264,3 +268,13 @@ Art revisions start a fresh incoming handoff so `art:run` cannot silently reinte
 Implementation revisions enter `WAITING_FOR_IMPLEMENTATION`. This is a real artifact-based **Game Engineer handoff**, not an autonomous natural-language code service. `art:run` stops and `art:generate` refuses. After the engineer changes presentation code, `art:integrate` verifies that code changed and the prior atlas/mask bytes stayed intact, stages the next candidate, then normal tests/build/browser/vision QA apply. A changed file is evidence that engineering work occurred, not proof that it satisfies the feedback; visual QA and human review still decide that. Code changes use the normal repository review process; `art:publish` publishes approved images, not code patches.
 
 `art:approve` can explicitly accept remaining subjective `REVIEW` findings after a complete seven-item visual review. It cannot waive objective failures, unresolved classified `FAIL` findings, missing visual review or changed candidate bytes. `human-approval.json` records the accepted findings, source review/hash and candidate hashes separately, and is preserved with the approved asset. AI findings and `qa_status: REVIEW` remain intact; only human approval changes status to `APPROVED`. Rejection is terminal for this candidate: evidence is kept and run/generate/approve/publish stop. Approved or rejected versions are immutable.
+
+## Reserved canvas noise
+
+Fixed-grid artwork normalization can clear at most 1,024 pixels at exactly alpha
+1/255 in declared unused canvas or padding cells. Active frame pixels are never
+thresholded or moved. More opaque spill or larger amounts remain ART failures.
+Semantic masks retain strict validation and do not use this cleanup. Provider
+`raw.png` is retained unchanged; `normalization.json` records the source hash,
+cleared pixel count and zero active-pixel changes. This does not replace semantic
+mask review or authorize extra provider attempts.

@@ -1,0 +1,5 @@
+{
+  "stage": "QA fixture setup",
+  "error": "Palette selector used display palette text instead of the role-specific aria label; corrected to use paletteLabel.",
+  "preserved": true
+}

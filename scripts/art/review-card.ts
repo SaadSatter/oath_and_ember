@@ -1,3 +1,4 @@
+import { resolveContract } from "./contracts.js";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -36,12 +37,17 @@ export function buildReviewCard(root: string, a: Asset) {
   const contact = safe(`${dir}/contact-sheet.png`),
     atlas = safe(a.runtime_files[0]),
     mask = safe(a.runtime_files[1]);
+  let localClient = 2;
+  try {
+    localClient = resolveContract(a, root).qa.role === "OATH" ? 1 : 2;
+  } catch {}
+  const remoteClient = localClient === 1 ? 2 : 1;
   const local = animated
-    ? video(2)
-    : safe(`${dir}/1920x1080-client-2-loop.png`);
+    ? video(localClient)
+    : safe(`${dir}/1920x1080-client-${localClient}-loop.png`);
   const remote = animated
-    ? video(1)
-    : safe(`${dir}/1920x1080-client-1-loop.png`);
+    ? video(remoteClient)
+    : safe(`${dir}/1920x1080-client-${remoteClient}-loop.png`);
   const checks = new Map<string, Finding>();
   const qa = join(root, dir, "qa-report.json");
   if (existsSync(qa))
@@ -81,13 +87,15 @@ export function buildReviewCard(root: string, a: Asset) {
     status: a.status,
     published:
       !!a.target &&
-      !!a.mask_target &&
+      (a.mask_target !== null || a.contract?.mask.strategy === "none") &&
       existsSync(join(root, `art/approved/${a.asset_id}/previous-runtime`)) &&
       existsSync(join(root, "apps/client/public", a.target)) &&
-      existsSync(join(root, "apps/client/public", a.mask_target)) &&
+      (!a.mask_target ||
+        existsSync(join(root, "apps/client/public", a.mask_target))) &&
       digest(join(root, "apps/client/public", a.target)) === a.source_hash &&
-      digest(join(root, "apps/client/public", a.mask_target)) ===
-        a.integration_hash,
+      (!a.mask_target ||
+        digest(join(root, "apps/client/public", a.mask_target)) ===
+          a.integration_hash),
     animated,
     best: local || remote || contact || atlas,
     local,

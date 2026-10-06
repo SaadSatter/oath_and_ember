@@ -10,7 +10,7 @@ ART_SPEC.md, references/index.json, existing runtime, request, previous QA repor
 
 ## OUTPUTS
 
-briefs/<id>.json and .md; BRIEF → WAITING_FOR_ART.
+briefs/<id>.json and .md with explicit capabilities from ../contracts.json; BRIEF → WAITING_FOR_ART or a precise WAITING_FOR_IMPLEMENTATION capability request.
 
 ## ALLOWED CHANGES
 

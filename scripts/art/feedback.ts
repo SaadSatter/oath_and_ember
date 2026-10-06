@@ -1,3 +1,4 @@
+import { contractRegistry } from "./contracts.js";
 import type { Asset, Manifest } from "./model.js";
 export type FeedbackRoute = "ART" | "IMPLEMENTATION" | "COMBINED" | "AMBIGUOUS";
 export interface Classification {
@@ -90,6 +91,7 @@ export function selectAsset(
   text: string,
   explicit?: string,
   active?: string,
+  registeredTargets = Object.keys(contractRegistry()),
 ): {
   asset?: Asset;
   target?: { character: string; animation: string };
@@ -115,12 +117,15 @@ export function selectAsset(
     return { clarification: "Request mentions multiple assets; choose one." };
   if (matches.length)
     return { asset: matches.sort((a, b) => b.version - a.version)[0] };
-  const known = [
-    { character: "coco", animation: "ward" },
-    { character: "coco", animation: "projectile" },
-  ].filter(
-    (t) => normalized.includes(t.character) && normalized.includes(t.animation),
-  );
+  const known = registeredTargets
+    .map((key) => {
+      const [character, animation] = key.split(":");
+      return { character, animation };
+    })
+    .filter(
+      (t) =>
+        normalized.includes(t.character) && normalized.includes(t.animation),
+    );
   if (known.length === 1) return { target: known[0] };
   if (known.length > 1) return { clarification: "Choose one effect." };
   if (

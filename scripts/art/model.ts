@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { AssetContract } from "./contracts.js";
 export const statuses = [
   "BRIEF",
   "WAITING_FOR_ART",
@@ -111,6 +112,12 @@ export interface Asset {
   target: string | null;
   mask_target: string | null;
   reports: string[];
+  contract?: AssetContract;
+  capability_handoff?: {
+    reason: string;
+    previous_status: string;
+    request_file: string;
+  };
   authorized_iteration_limit?: number;
   authorized_generation_limit?: number;
   human_decisions?: string[];

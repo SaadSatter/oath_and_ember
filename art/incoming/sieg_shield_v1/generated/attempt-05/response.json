@@ -1,0 +1,18 @@
+{
+  "requestId": "req_076de63ce3194aef8e50e2afa996529d",
+  "created": 1791316353,
+  "usage": {
+    "input_tokens": 6293,
+    "input_tokens_details": {
+      "image_tokens": 4012,
+      "text_tokens": 2281
+    },
+    "output_tokens": 439,
+    "output_tokens_details": {
+      "image_tokens": 439,
+      "text_tokens": 0
+    },
+    "total_tokens": 6732
+  },
+  "raw_sha256": "d5db89477acd400f1df2b59dd6f952413f97823708b814f2cedaf608b40659aa"
+}

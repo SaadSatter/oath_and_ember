@@ -193,6 +193,9 @@ describe("AI art and vision adapters", () => {
       const projectile = {
         ...f.a,
         animation: "projectile",
+        target: "assets/effects/coco/flight.png",
+        mask_target: "assets/effects/coco/flight-mask.png",
+        directions: ["right", "left", "up", "down"],
         frame_count: 4,
         frame_dimensions: [64, 64] as [number, number],
         anchor: [32, 32] as [number, number],

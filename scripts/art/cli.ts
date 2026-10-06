@@ -11,6 +11,7 @@ import {
 } from "node:fs";
 import { resolve, relative, join } from "node:path";
 import { createHash } from "node:crypto";
+import { PNG } from "pngjs";
 import { spawnSync } from "node:child_process";
 import {
   idSchema,
@@ -33,6 +34,8 @@ import {
   OpenAISpriteProvider,
   GeneratedArtError,
   effectLayout,
+  normalizeGeneratedAsset,
+  normalizeGrid,
 } from "./generation.js";
 import { OpenAIVisionReviewer } from "./vision.js";
 import { prepareMaskRecovery } from "./recovery.js";
@@ -44,6 +47,14 @@ import {
 import { advanceAsset } from "./runner.js";
 import { qaEnvironment } from "./qa-environment.js";
 import { cleanupApprovedIterations } from "./cleanup.js";
+import { writeReviewPage, formatReviewCard } from "./review-card.js";
+import {
+  applyContract,
+  contractRegistry,
+  resolveContract,
+  ProviderBindingError,
+  validateRuntimeCapability,
+} from "./contracts.js";
 const root = resolve(
     process.env.ART_WORKSPACE_ROOT || resolve(import.meta.dirname, "../.."),
   ),
@@ -154,21 +165,9 @@ function brief(character: string, animation: string) {
   let version = 1;
   while (manifest.assets[`${character}_${animation}_v${version}`]) version++;
   const id = `${character}_${animation}_v${version}`;
-  const ward = character === "coco" && animation === "ward",
-    projectile = character === "coco" && animation === "projectile";
-  const refs = [
+  const contract = contractRegistry(root)[`${character}:${animation}`];
+  const refs = contract?.canonical_references ?? [
     "Images/Character Concept art.png",
-    ...(ward
-      ? [
-          "Images/Sprites/Defense Basic Sprites.png",
-          "docs/DEFENSE_ASSET_PROVENANCE.json",
-        ]
-      : projectile
-        ? [
-            "Images/Sprites/Magic Basic Spell.png",
-            "docs/MAGIC_PROJECTILE_PROVENANCE.json",
-          ]
-        : []),
   ];
   const a: Asset = {
     asset_id: id,
@@ -179,30 +178,19 @@ function brief(character: string, animation: string) {
     source_file: `art/incoming/${id}`,
     canonical_references: refs,
     runtime_files: [],
-    directions: ward ? ["omnidirectional"] : ["right", "left", "up", "down"],
-    frame_count: ward ? 1 : 4,
-    frame_dimensions: ward ? [128, 128] : [64, 64],
-    anchor: ward ? [64, 70] : [32, 32],
-    palette_behavior: {
-      source: "canonical_ember_magic",
-      runtime_recolor: true,
-      mask_channel: "green",
-    },
+    directions: contract?.directions ?? ["unspecified"],
+    frame_count: contract?.frame_count ?? 1,
+    frame_dimensions: contract?.frame_dimensions ?? [64, 64],
+    anchor: contract?.anchor ?? [32, 32],
+    palette_behavior: {},
     qa_status: "NOT_RUN",
     iteration: 0,
     approved_at: null,
-    target: ward
-      ? "assets/characters/ember/defense.png"
-      : projectile
-        ? "assets/effects/coco/flight.png"
-        : null,
-    mask_target: ward
-      ? "assets/characters/ember/defense-mask.png"
-      : projectile
-        ? "assets/effects/coco/flight-mask.png"
-        : null,
+    target: null,
+    mask_target: null,
     reports: [],
   };
+  if (contract) applyContract(a, contract);
   const specPath = path("art/ART_SPEC.md");
   if (!existsSync(specPath)) throw Error("Missing art/ART_SPEC.md");
   const b = {
@@ -215,11 +203,7 @@ function brief(character: string, animation: string) {
       a.target && existsSync(path(`apps/client/public/${a.target}`))
         ? hash(path(`apps/client/public/${a.target}`))
         : null,
-    asset_type: ward
-      ? "defensive_vfx"
-      : projectile
-        ? "projectile_vfx"
-        : "requires_engineer_binding",
+    asset_type: contract?.asset_type ?? "requires_engineer_binding",
     perspective: "top_down",
     frame_count_target: a.frame_count,
     frame_dimensions_target: a.frame_dimensions,
@@ -228,9 +212,9 @@ function brief(character: string, animation: string) {
     approved_runtime_reference: a.target
       ? `apps/client/public/${a.target}`
       : null,
-    effect_behavior: ward
-      ? "Separate hollow rim; existing start/held/end envelope; Coco body unchanged"
-      : "Existing flight animation and authoritative projectile movement",
+    effect_behavior:
+      contract?.behavior ??
+      "Game Engineer must declare animation behavior; no inferred effect template.",
     must_preserve: [
       "canonical silhouette",
       "equipment",
@@ -247,7 +231,7 @@ function brief(character: string, animation: string) {
     acceptance_criteria: [
       "transparent horizontal atlas",
       "exact frame grid and anchor",
-      "green effect-only mask",
+      "contract-specific safe mask strategy",
       "stable design across frames",
       "local/remote visibility",
       "four responsive viewports",
@@ -267,7 +251,8 @@ function brief(character: string, animation: string) {
   );
   manifest.assets[id] = a;
   save();
-  waiting(a);
+  if (contract) waiting(a);
+  else prepareCapabilities(a);
 }
 function iterationDirectory(a: Asset) {
   return `art/qa/${a.asset_id}/iteration-${String(a.iteration).padStart(2, "0")}`;
@@ -283,7 +268,110 @@ function canReview(a: Asset) {
     !readdirSync(path(directory)).some((f) => /^vision-attempt-[0-9]+$/.test(f))
   );
 }
+function prepareCapabilities(a: Asset): boolean {
+  if (["APPROVED", "REJECTED"].includes(a.status)) return true;
+  try {
+    const declared = contractRegistry(root)[`${a.character}:${a.animation}`];
+    if (!a.contract && declared && a.iteration === 0 && !a.target) {
+      const backup = path(`art/handoffs/${a.asset_id}/original-brief.json`);
+      if (!existsSync(backup))
+        write(backup, json(path(`art/briefs/${a.asset_id}.json`)));
+      const originalMarkdown = path(
+        `art/handoffs/${a.asset_id}/original-brief.md`,
+      );
+      if (
+        !existsSync(originalMarkdown) &&
+        existsSync(path(`art/briefs/${a.asset_id}.md`))
+      )
+        copyFileSync(path(`art/briefs/${a.asset_id}.md`), originalMarkdown);
+      applyContract(a, declared);
+      const previous = json(path(`art/briefs/${a.asset_id}.json`));
+      write(path(`art/briefs/${a.asset_id}.json`), {
+        ...previous,
+        ...a,
+        asset_type: declared.asset_type,
+        effect_behavior: declared.behavior,
+        frame_count_target: a.frame_count,
+        frame_dimensions_target: a.frame_dimensions,
+        ground_anchor: a.anchor,
+        canonical_reference: a.canonical_references,
+        canonical_reference_hashes: Object.fromEntries(
+          a.canonical_references
+            .filter((p) => existsSync(path(p)))
+            .map((p) => [p, hash(path(p))]),
+        ),
+        approved_runtime_hash: existsSync(
+          path(`apps/client/public/${a.target}`),
+        )
+          ? hash(path(`apps/client/public/${a.target}`))
+          : null,
+        approved_runtime_reference: `apps/client/public/${a.target}`,
+      });
+      writeFileSync(
+        path(`art/briefs/${a.asset_id}.md`),
+        `# Generation brief: ${a.asset_id}\n\nResolved asset contract; original brief retained in art/handoffs/${a.asset_id}/.\n\n${JSON.stringify(json(path(`art/briefs/${a.asset_id}.json`)), null, 2)}\n`,
+      );
+      if (a.status === "NEEDS_HUMAN_REVIEW") a.status = "WAITING_FOR_ART";
+    }
+    const contract = resolveContract(a, root);
+    validateRuntimeCapability(contract);
+    const layout = effectLayout({ ...a, contract });
+    if (!existsSync(path(`apps/client/public/${contract.target}`)))
+      throw new ProviderBindingError(
+        `Missing runtime loader/reference binding for ${contract.target}; implement that reusable presentation slot before generation.`,
+      );
+    if (
+      contract.mask_target &&
+      !existsSync(path(`apps/client/public/${contract.mask_target}`))
+    )
+      throw new ProviderBindingError(
+        `Missing canonical semantic/recolor mask reference ${contract.mask_target}.`,
+      );
+    const reference = PNG.sync.read(
+      readFileSync(path(`apps/client/public/${contract.target}`)),
+    );
+    if (
+      reference.width !== layout.atlasWidth ||
+      reference.height !== layout.atlasHeight
+    )
+      throw new ProviderBindingError(
+        "Canonical runtime reference does not match the declared fixed grid; Game Engineer must reconcile reference extraction/loader geometry before generation.",
+      );
+    if (a.capability_handoff) {
+      a.status = a.capability_handoff.previous_status as Asset["status"];
+      a.capability_handoff = undefined;
+    }
+    a.contract = contract;
+    save();
+    return true;
+  } catch (e) {
+    const request_file = `art/handoffs/${a.asset_id}/capability-request.json`;
+    const reason = String(e);
+    a.capability_handoff ||= {
+      reason,
+      previous_status: a.iteration === 0 ? "WAITING_FOR_ART" : a.status,
+      request_file,
+    };
+    a.capability_handoff.reason = reason;
+    a.status = "WAITING_FOR_IMPLEMENTATION";
+    if (!existsSync(path(request_file)))
+      write(path(request_file), {
+        assetId: a.asset_id,
+        reason,
+        brief: `art/briefs/${a.asset_id}.json`,
+        created_at: new Date().toISOString(),
+        resume: `npm run art:run -- ${a.asset_id}`,
+        providerRequestMade: false,
+      });
+    save();
+    console.log(
+      `WAITING_FOR_IMPLEMENTATION: Game Engineer — ${reason}. Request preserved: ${request_file}; run/RESUME rechecks capabilities for this same asset.`,
+    );
+    return false;
+  }
+}
 async function generate(a: Asset) {
+  if (!prepareCapabilities(a)) return;
   if (
     ![
       "BRIEF",
@@ -554,6 +642,7 @@ async function recover(a: Asset) {
   return true;
 }
 async function integrate(a: Asset) {
+  if (!prepareCapabilities(a)) return;
   if (
     a.status === "WAITING_FOR_IMPLEMENTATION" &&
     a.pending_revision?.kind === "implementation"
@@ -598,7 +687,7 @@ async function integrate(a: Asset) {
     throw Error(
       "Integration requires an art handoff or explicit art:revise; approved assets are immutable.",
     );
-  if (!a.target || !a.mask_target) {
+  if (!a.target || (!a.mask_target && a.contract?.mask.strategy !== "none")) {
     a.status = "NEEDS_HUMAN_REVIEW";
     save();
     throw Error(
@@ -635,6 +724,7 @@ async function integrate(a: Asset) {
       join(source, s.mask),
       a.frame_dimensions,
       a.frame_count,
+      resolveContract(a, root),
     );
   } catch (e) {
     checks = [
@@ -670,6 +760,7 @@ async function integrate(a: Asset) {
     sourceHash: a.source_hash,
     maskHash: a.integration_hash,
     adapter: "exact-grid identity normalization",
+    contract: resolveContract(a, root),
     target: a.target,
     maskTarget: a.mask_target,
     anchor: a.anchor,
@@ -752,6 +843,7 @@ async function main() {
     return;
   }
   if (command === "run") {
+    if (!prepareCapabilities(a)) return;
     if (a.pending_revision && a.status === "NEEDS_HUMAN_REVIEW") {
       console.log(
         "Pending human revision requires explicit provider-failure review; inspect saved attempt before art:generate. No automatic retry.",
@@ -804,9 +896,103 @@ async function main() {
       vision,
     });
     console.log(a.status);
+    if (
+      a.iteration > 0 &&
+      existsSync(path(`${iterationDirectory(a)}/qa-report.json`))
+    )
+      console.log(formatReviewCard(root, writeReviewPage(root, a)));
     return;
   }
   if (command === "recover") {
+    if (arg2 === "--mask-from-attempt") {
+      requireDecisionState(a);
+      if (a.pending_revision) throw Error("A revision is already pending");
+      if (!prepareCapabilities(a)) return;
+      const attempt = Number(process.argv[5]);
+      if (!Number.isSafeInteger(attempt) || attempt < 1)
+        throw Error("Supply a positive saved attempt number");
+      const original = `art/incoming/${a.asset_id}/generated/attempt-${String(attempt).padStart(2, "0")}`;
+      if (!a.generation_history?.includes(original))
+        throw Error("Attempt is not recorded for this asset");
+      const raw = readFileSync(path(`${original}/raw.png`));
+      const artwork = normalizeGrid(raw, a);
+      const next = a.iteration + 1;
+      const destination = `art/incoming/${a.asset_id}/mask-repairs/iteration-${String(next).padStart(2, "0")}`;
+      if (existsSync(path(destination)))
+        throw Error(
+          "Mask repair already attempted; inspect preserved evidence before another explicit retry",
+        );
+      const config = loadProviderConfig(root);
+      if (config.sprite_artist.provider !== "openai")
+        throw Error(
+          "Mask-only generation requires the configured OpenAI provider",
+        );
+      const key = requireApiKey();
+      mkdirSync(path(destination), { recursive: true });
+      copyFileSync(path(`${original}/raw.png`), path(`${destination}/raw.png`));
+      writeFileSync(path(`${destination}/atlas.png`), artwork.atlas);
+      write(path(`${destination}/recovery.json`), {
+        kind: "human_authorized_semantic_mask_retry",
+        original,
+        originalArtworkHash: hash(path(`${original}/raw.png`)),
+        normalizedArtworkHash: hash(path(`${destination}/atlas.png`)),
+        from_iteration: a.iteration,
+        to_iteration: next,
+        authorized_mask_requests: 1,
+        artwork_requests: 0,
+      });
+      a.authorized_iteration_limit = Math.max(
+        iterationLimit(a, manifest.max_iterations),
+        next,
+      );
+      a.status = "GENERATING_ART";
+      save();
+      console.log(
+        `SEMANTIC_MASK: one authorized request; saved attempt ${attempt} artwork preserved.`,
+      );
+      try {
+        const provider = new OpenAISpriteProvider(
+          root,
+          a,
+          path(destination),
+          config.sprite_artist,
+          key,
+        );
+        const mask = await provider.generateSemanticMask(raw);
+        const normalized = normalizeGeneratedAsset(raw, a, mask);
+        if (!normalized.atlas.equals(artwork.atlas))
+          throw Error("Mask recovery changed artwork");
+        writeFileSync(path(`${destination}/mask.png`), normalized.mask);
+        write(path(`${destination}/submission.json`), {
+          kind: "production_atlas",
+          image: "atlas.png",
+          mask: "mask.png",
+          frame_dimensions: a.frame_dimensions,
+          frame_count: a.frame_count,
+          anchor: a.anchor,
+          provenance: `Mask-only provider recovery from ${original}; artwork preserved; see recovery.json and mask-request.json. Semantic correctness requires visual review.`,
+        });
+        a.source_file = destination;
+        a.status = "READY_FOR_INTEGRATION";
+        save();
+        console.log(
+          "READY_FOR_INTEGRATION: run art:run; no artwork generation is needed.",
+        );
+      } catch (e) {
+        write(path(`${destination}/error.json`), {
+          error: String(e),
+          status:
+            e instanceof GeneratedArtError ? "ART_FAILURE" : "PROVIDER_FAILURE",
+        });
+        a.iteration = next;
+        a.status = "NEEDS_HUMAN_REVIEW";
+        save();
+        console.log(
+          `NEEDS_HUMAN_REVIEW: semantic-mask-only attempt failed; artwork preserved. ${String(e)}. No automatic HTTP retry.`,
+        );
+      }
+      return;
+    }
     if (!(await recover(a)))
       throw Error(
         "No safely recoverable mask-only failure, or iteration limit reached.",
@@ -1102,7 +1288,11 @@ async function main() {
     return;
   }
   if (command === "publish") {
-    if (a.status !== "APPROVED" || !a.target || !a.mask_target)
+    if (
+      a.status !== "APPROVED" ||
+      !a.target ||
+      (!a.mask_target && a.contract?.mask.strategy !== "none")
+    )
       throw Error("Only approved bound assets can be published.");
     if (
       hash(path(`art/approved/${a.asset_id}/atlas.png`)) !== a.source_hash ||
@@ -1114,6 +1304,7 @@ async function main() {
     mkdirSync(archive);
     const targets = [a.target, a.mask_target];
     for (let i = 0; i < targets.length; i++) {
+      if (!targets[i]) continue;
       const dest = path(`apps/client/public/${targets[i]}`);
       if (existsSync(dest))
         copyFileSync(dest, join(archive, i === 0 ? "atlas.png" : "mask.png"));

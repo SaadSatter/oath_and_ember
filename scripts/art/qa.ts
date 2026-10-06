@@ -1,3 +1,6 @@
+import { resolveContract } from "./contracts.js";
+import { paletteLabel } from "../../apps/client/src/assets/palettes.js";
+import { heroNames } from "../../apps/client/src/assets/heroNames.js";
 import type { chromium as Chromium } from "@playwright/test";
 import { spawn } from "node:child_process";
 import {
@@ -18,6 +21,8 @@ export async function capture(
   dir: string,
   a: Asset,
 ): Promise<Finding[]> {
+  const contract = resolveContract(a, root);
+  const defense = contract.qa.mechanism === "defense";
   const preview = join(dir, "preview");
   mkdirSync(join(preview, "dist"), { recursive: true });
   cpSync(join(root, "dist/client"), join(preview, "dist/client"), {
@@ -27,7 +32,8 @@ export async function capture(
     [a.runtime_files[0], a.target!],
     [a.runtime_files[1], a.mask_target!],
   ])
-    copyFileSync(join(root, file), join(preview, "dist/client", target));
+    if (target)
+      copyFileSync(join(root, file), join(preview, "dist/client", target));
   // Contact sheet preserves exact frame pixels, without flattening transparency.
   const atlas = PNG.sync.read(readFileSync(join(root, a.runtime_files[0])));
   writeFileSync(join(dir, "contact-sheet.png"), PNG.sync.write(atlas));
@@ -44,7 +50,11 @@ export async function capture(
     [join(root, "scripts/art/fixture.mjs")],
     {
       cwd: preview,
-      env: { ...process.env, ART_QA_PORT: String(port) },
+      env: {
+        ...process.env,
+        ART_QA_PORT: String(port),
+        ART_QA_ROLE: contract.qa.role,
+      },
       stdio: ["ignore", "pipe", "pipe"],
     },
   );
@@ -75,6 +85,8 @@ export async function capture(
       "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
     browser = await chromium.launch({
       headless: true,
+      args:
+        process.env.ART_QA_SOFTWARE_RENDERING === "1" ? ["--disable-gpu"] : [],
       executablePath:
         process.env.ART_QA_BROWSER_EXECUTABLE ||
         (existsSync(systemChrome) ? systemChrome : undefined),
@@ -102,7 +114,8 @@ export async function capture(
         }),
       ]);
       // Plain browser JavaScript avoids tsx/esbuild's injected __name helper.
-      for (const context of contexts) await context.addInitScript(`
+      for (const context of contexts)
+        await context.addInitScript(`
         let wardPending = null;
         window.__artWardEvidence = {samples: [], truncated: false};
         window.__artWardUpdate = sample => {wardPending = sample;};
@@ -153,7 +166,13 @@ export async function capture(
         await pages[0].locator("#oath").click();
         await pages[1]
           .getByRole("button", {
-            name: "Coco Magic: Emerald Green",
+            name: `${heroNames.EMBER} Magic: ${paletteLabel("emerald", "EMBER")}`,
+            exact: true,
+          })
+          .click();
+        await pages[0]
+          .getByRole("button", {
+            name: `${heroNames.OATH} Scarf: ${paletteLabel("blue", "OATH")}`,
             exact: true,
           })
           .click();
@@ -173,32 +192,56 @@ export async function capture(
               dir,
               `${width}x${height}-client-${i + 1}-${label}.png`,
             );
-            const before = await pages[i].locator("#art-ward-sync").getAttribute("data-render-id");
+            const before = await pages[i]
+              .locator("#art-ward-sync")
+              .getAttribute("data-render-id");
             await pages[i].screenshot({ path: file });
-            const after = await pages[i].locator("#art-ward-sync").getAttribute("data-render-id");
-            writeFileSync(file.replace(/\.png$/, "-sync.json"), JSON.stringify({screenshot: relative(root, file), beforeRenderId: Number(before), afterRenderId: Number(after),
-              correlation: "Read the visible QA F marker in the screenshot/video and look up that exact renderId in client presentation samples; bracketing IDs alone do not claim atomic capture."}, null, 2));
+            const after = await pages[i]
+              .locator("#art-ward-sync")
+              .getAttribute("data-render-id");
+            writeFileSync(
+              file.replace(/\.png$/, "-sync.json"),
+              JSON.stringify(
+                {
+                  screenshot: relative(root, file),
+                  beforeRenderId: Number(before),
+                  afterRenderId: Number(after),
+                  correlation:
+                    "Read the visible QA F marker in the screenshot/video and look up that exact renderId in client presentation samples; bracketing IDs alone do not claim atomic capture.",
+                },
+                null,
+                2,
+              ),
+            );
             evidence.push(relative(root, file));
           }
         };
-        const markPhase = async (phase: string) => Promise.all(pages.map(p => p.evaluate((phase) => {
-          const telemetry = (window as unknown as {__artCadence: {phases: {phase: string; atMs: number}[]}}).__artCadence;
-          telemetry.phases.push({phase, atMs: performance.now()});
-        }, phase)));
+        const markPhase = async (phase: string) =>
+          Promise.all(
+            pages.map((p) =>
+              p.evaluate((phase) => {
+                const telemetry = (
+                  window as unknown as {
+                    __artCadence: { phases: { phase: string; atMs: number }[] };
+                  }
+                ).__artCadence;
+                telemetry.phases.push({ phase, atMs: performance.now() });
+              }, phase),
+            ),
+          );
         await markPhase("idle-request");
         phaseEvents.push({ phase: "idle", atMs: performance.now() - started });
         await fetch(`${url}/__art/phase/idle`, { method: "POST" });
         await pages[0].waitForTimeout(800);
         await shots("idle");
-        await markPhase(a.animation === "ward" ? "held-request" : "projectile-request");
+        await markPhase(defense ? "held-request" : "projectile-request");
         phaseEvents.push({
-          phase: a.animation === "ward" ? "held" : "projectile",
+          phase: defense ? "held" : "projectile",
           atMs: performance.now() - started,
         });
-        await fetch(
-          `${url}/__art/phase/${a.animation === "ward" ? "held" : "projectile"}`,
-          { method: "POST" },
-        );
+        await fetch(`${url}/__art/phase/${defense ? "held" : "projectile"}`, {
+          method: "POST",
+        });
         for (const [delay, label] of [
           [100, "start"],
           [250, "start-mid"],
@@ -251,9 +294,9 @@ export async function capture(
         const active =
           players.length === 2 &&
           players.every((p) => p.connected) &&
-          (a.animation === "ward"
+          (defense
             ? players.some(
-                (p) => p.role === "EMBER" && p.actionState === "guard",
+                (p) => p.role === contract.qa.role && p.actionState === "guard",
               )
             : Object.keys(current?.projectiles || {}).length > 0);
         checks.push({
@@ -272,18 +315,65 @@ export async function capture(
         });
       } finally {
         for (let i = 0; i < pages.length; i++) {
-          const telemetry = await pages[i].evaluate(() => (window as unknown as {__artCadence?: {timestamps: number[]; phases: {phase: string; atMs: number}[]; visibility: {state: string; atMs: number}[]; truncated: boolean}}).__artCadence).catch(() => undefined);
-          if (telemetry) writeFileSync(join(dir, "temporal", `${width}x${height}-client-${i + 1}-cadence.json`), JSON.stringify({
-            ...telemetry, summary: cadence(telemetry.timestamps),
-            clock: "Browser performance time origin; phase-request markers share RAF clock, but are not video PTS or confirmed rendered phase transitions",
-            limitations: "Headless instrumented capture including screenshots; scheduling and capture overhead affect callback cadence. No render-completion/FPS assertion or automatic pacing PASS.",
-          }, null, 2));
+          const telemetry = await pages[i]
+            .evaluate(
+              () =>
+                (
+                  window as unknown as {
+                    __artCadence?: {
+                      timestamps: number[];
+                      phases: { phase: string; atMs: number }[];
+                      visibility: { state: string; atMs: number }[];
+                      truncated: boolean;
+                    };
+                  }
+                ).__artCadence,
+            )
+            .catch(() => undefined);
+          if (telemetry)
+            writeFileSync(
+              join(
+                dir,
+                "temporal",
+                `${width}x${height}-client-${i + 1}-cadence.json`,
+              ),
+              JSON.stringify(
+                {
+                  ...telemetry,
+                  summary: cadence(telemetry.timestamps),
+                  clock:
+                    "Browser performance time origin; phase-request markers share RAF clock, but are not video PTS or confirmed rendered phase transitions",
+                  limitations:
+                    "Headless instrumented capture including screenshots; scheduling and capture overhead affect callback cadence. No render-completion/FPS assertion or automatic pacing PASS.",
+                },
+                null,
+                2,
+              ),
+            );
         }
         for (let i = 0; i < pages.length; i++) {
-          const wardEvidence = await pages[i].evaluate(() => (window as unknown as {__artWardEvidence: unknown}).__artWardEvidence);
-          writeFileSync(join(dir, "temporal", `${width}x${height}-client-${i + 1}-presentation.json`), JSON.stringify(wardEvidence, null, 2));
+          const wardEvidence = await pages[i].evaluate(
+            () =>
+              (window as unknown as { __artWardEvidence: unknown })
+                .__artWardEvidence,
+          );
+          writeFileSync(
+            join(
+              dir,
+              "temporal",
+              `${width}x${height}-client-${i + 1}-presentation.json`,
+            ),
+            JSON.stringify(wardEvidence, null, 2),
+          );
         }
-        writeFileSync(join(dir, "temporal", `${width}x${height}-authority.json`), JSON.stringify(await (await fetch(`${url}/__art/history`)).json(), null, 2));
+        writeFileSync(
+          join(dir, "temporal", `${width}x${height}-authority.json`),
+          JSON.stringify(
+            await (await fetch(`${url}/__art/history`)).json(),
+            null,
+            2,
+          ),
+        );
         await Promise.all(contexts.map((c) => c.close()));
         for (let i = 0; i < pages.length; i++) {
           const video = pages[i].video();
@@ -323,6 +413,9 @@ export async function capture(
       JSON.stringify(
         {
           recordings,
+          captureEnvironment: {
+            softwareRendering: process.env.ART_QA_SOFTWARE_RENDERING === "1",
+          },
           limitations:
             "Videos are continuous human-review evidence. Current Responses adapter consumes PNG inputs, not WebM. Use art:temporal to extract ordered PNG evidence with native timestamps. Browser callback cadence telemetry is separate from video FPS; no automatic animation PASS inferred.",
         },

@@ -1,3 +1,4 @@
+import { contractRegistry } from "./contracts.js";
 import { spawnSync } from "node:child_process";
 import {
   existsSync,
@@ -62,6 +63,7 @@ export function runAgent(
     text,
     options.assetId,
     previous.assetId,
+    Object.keys(contractRegistry(root)),
   );
   if (parsed.clarification) return { clarification: parsed.clarification };
   const cli = join(root, "scripts/art/cli.ts");
@@ -204,9 +206,10 @@ export function runAgent(
       if (
         !a.target ||
         digest(join(root, "apps/client/public", a.target)) !== a.source_hash ||
-        !a.mask_target ||
-        digest(join(root, "apps/client/public", a.mask_target)) !==
-          a.integration_hash
+        (a.mask_target
+          ? digest(join(root, "apps/client/public", a.mask_target)) !==
+            a.integration_hash
+          : a.contract?.mask.strategy !== "none")
       )
         throw Error(
           "Previously published runtime changed; explicit investigation required",
@@ -338,6 +341,15 @@ export function runAgent(
       if (asset().status === "NEEDS_HUMAN_REVIEW") return card();
     }
     a = asset();
+    if (a.capability_handoff || (a.iteration === 0 && !a.target)) {
+      call(["run", id, "--no-artist", "--defer-vision"], providerIntent);
+      a = asset();
+      if (a.capability_handoff)
+        return {
+          ...card(),
+          clarification: `Game Engineer: ${a.capability_handoff.reason} Request preserved; RESUME rechecks the same contract.`,
+        };
+    }
     if (a.status === "WAITING_FOR_IMPLEMENTATION") {
       const baseline = a.pending_revision
         ? json(join(root, a.pending_revision.request_file))

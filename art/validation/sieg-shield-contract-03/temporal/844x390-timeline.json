@@ -1,0 +1,18 @@
+{
+  "phaseEvents": [
+    {
+      "phase": "idle",
+      "atMs": 3522.8165420000005
+    },
+    {
+      "phase": "held",
+      "atMs": 4545.6126670000085
+    },
+    {
+      "phase": "idle",
+      "atMs": 7388.138208000004
+    }
+  ],
+  "durationMs": 11612.2935,
+  "clock": "Node performance.now relative to browser setup; approximate request timing, not video presentation timestamps"
+}

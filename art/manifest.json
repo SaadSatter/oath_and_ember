@@ -247,9 +247,11 @@
       "status": "NEEDS_HUMAN_REVIEW",
       "character": "sieg",
       "animation": "shield",
-      "source_file": "art/incoming/sieg_shield_v1",
+      "source_file": "art/incoming/sieg_shield_v1/human-revisions/iteration-05",
       "canonical_references": [
-        "Images/Character Concept art.png"
+        "Images/Character Concept art.png",
+        "Images/Sprites/Defense Basic Sprites.png",
+        "docs/DEFENSE_ASSET_PROVENANCE.json"
       ],
       "runtime_files": [],
       "directions": [
@@ -258,7 +260,111 @@
         "up",
         "down"
       ],
-      "frame_count": 4,
+      "frame_count": 47,
+      "frame_dimensions": [
+        128,
+        128
+      ],
+      "anchor": [
+        64,
+        96
+      ],
+      "palette_behavior": {
+        "source": "Canonical dark armor, dark hair, crimson scarf/cape, unchanged skin and shield/sword metal.",
+        "runtime_recolor": true,
+        "mask_strategy": "semantic_external",
+        "channels": [
+          "red"
+        ]
+      },
+      "qa_status": "FAIL",
+      "iteration": 5,
+      "approved_at": null,
+      "target": "assets/characters/oath/defense.png",
+      "mask_target": "assets/characters/oath/defense-mask.png",
+      "reports": [
+        "art/qa/sieg_shield_v1/iteration-01/generation-report.json",
+        "art/qa/sieg_shield_v1/iteration-02/generation-report.json",
+        "art/qa/sieg_shield_v1/iteration-03/generation-report.json",
+        "art/qa/sieg_shield_v1/iteration-04/generation-report.json",
+        "art/qa/sieg_shield_v1/iteration-05/generation-report.json"
+      ],
+      "contract": {
+        "schema_version": 1,
+        "asset_type": "character_animation",
+        "pixel_content": "character_equipment",
+        "normalization": "fixed_grid_v1",
+        "frame_dimensions": [
+          128,
+          128
+        ],
+        "frame_count": 47,
+        "columns": 8,
+        "anchor": [
+          64,
+          96
+        ],
+        "directions": [
+          "right",
+          "left",
+          "up",
+          "down"
+        ],
+        "mask": {
+          "strategy": "semantic_external",
+          "channels": [
+            "red"
+          ]
+        },
+        "target": "assets/characters/oath/defense.png",
+        "mask_target": "assets/characters/oath/defense-mask.png",
+        "canonical_references": [
+          "Images/Character Concept art.png",
+          "Images/Sprites/Defense Basic Sprites.png",
+          "docs/DEFENSE_ASSET_PROVENANCE.json"
+        ],
+        "source_palette": "Canonical dark armor, dark hair, crimson scarf/cape, unchanged skin and shield/sword metal.",
+        "behavior": "Existing Guard replaces the body with character-and-shield poses. Row-major indices 0-7 start right, 8-15 held right (runtime holds frame 8), 16-23 recovery right, 24-31 start down (hold 31), 32-39 start up (hold 39), 40-46 impact. Last cell remains transparent. Left mirrors right. Keep 12fps clips and authoritative Guard unchanged.",
+        "requirements": [
+          "Preserve canonical identity, dark hair/armor, crimson scarf/cape and sword/shield design in every frame.",
+          "Preserve ground anchor (64,96), existing pose proportions and sequence. Shield is embedded equipment, not a separate magic effect.",
+          "Semantic red mask covers scarf/cape only. Never recolor skin, hair, eyes, armor, sword or shield metal. Mask must be reviewed against the new atlas; alpha-derived masks are forbidden."
+        ],
+        "qa": {
+          "mechanism": "defense",
+          "role": "OATH"
+        }
+      },
+      "generation_attempts": 5,
+      "generation_history": [
+        "art/incoming/sieg_shield_v1/generated/attempt-01",
+        "art/incoming/sieg_shield_v1/generated/attempt-02",
+        "art/incoming/sieg_shield_v1/generated/attempt-03",
+        "art/incoming/sieg_shield_v1/generated/attempt-04",
+        "art/incoming/sieg_shield_v1/generated/attempt-05"
+      ],
+      "human_decisions": [
+        "art/qa/sieg_shield_v1/iteration-04/human-request.json",
+        "art/qa/sieg_shield_v1/iteration-05/human-request.json"
+      ],
+      "authorized_iteration_limit": 5,
+      "authorized_generation_limit": 5
+    },
+    "forest_map_v1": {
+      "asset_id": "forest_map_v1",
+      "version": 1,
+      "status": "WAITING_FOR_IMPLEMENTATION",
+      "character": "forest",
+      "animation": "map",
+      "source_file": "art/incoming/forest_map_v1",
+      "canonical_references": [
+        "Images/Character Concept art.png"
+      ],
+      "runtime_files": [],
+      "directions": [
+        "unspecified"
+      ],
+      "frame_count": 1,
       "frame_dimensions": [
         64,
         64
@@ -267,17 +373,126 @@
         32,
         32
       ],
-      "palette_behavior": {
-        "source": "canonical_ember_magic",
-        "runtime_recolor": true,
-        "mask_channel": "green"
-      },
+      "palette_behavior": {},
       "qa_status": "NOT_RUN",
       "iteration": 0,
       "approved_at": null,
       "target": null,
       "mask_target": null,
-      "reports": []
+      "reports": [],
+      "capability_handoff": {
+        "reason": "Error: Missing asset contract: Game Engineer must declare pixel content, fixed grid/anchor, safe mask strategy, runtime binding and QA mechanism in art/contracts.json. No provider request made.",
+        "previous_status": "WAITING_FOR_ART",
+        "request_file": "art/handoffs/forest_map_v1/capability-request.json"
+      }
+    },
+    "mossling_sprites_v1": {
+      "asset_id": "mossling_sprites_v1",
+      "version": 1,
+      "status": "WAITING_FOR_IMPLEMENTATION",
+      "character": "mossling",
+      "animation": "sprites",
+      "source_file": "art/incoming/mossling_sprites_v1",
+      "canonical_references": [
+        "Images/Character Concept art.png"
+      ],
+      "runtime_files": [],
+      "directions": [
+        "unspecified"
+      ],
+      "frame_count": 1,
+      "frame_dimensions": [
+        64,
+        64
+      ],
+      "anchor": [
+        32,
+        32
+      ],
+      "palette_behavior": {},
+      "qa_status": "NOT_RUN",
+      "iteration": 0,
+      "approved_at": null,
+      "target": null,
+      "mask_target": null,
+      "reports": [],
+      "capability_handoff": {
+        "reason": "Error: Missing asset contract: Game Engineer must declare pixel content, fixed grid/anchor, safe mask strategy, runtime binding and QA mechanism in art/contracts.json. No provider request made.",
+        "previous_status": "WAITING_FOR_ART",
+        "request_file": "art/handoffs/mossling_sprites_v1/capability-request.json"
+      }
+    },
+    "cinder_wisp_sprites_v1": {
+      "asset_id": "cinder_wisp_sprites_v1",
+      "version": 1,
+      "status": "WAITING_FOR_IMPLEMENTATION",
+      "character": "cinder_wisp",
+      "animation": "sprites",
+      "source_file": "art/incoming/cinder_wisp_sprites_v1",
+      "canonical_references": [
+        "Images/Character Concept art.png"
+      ],
+      "runtime_files": [],
+      "directions": [
+        "unspecified"
+      ],
+      "frame_count": 1,
+      "frame_dimensions": [
+        64,
+        64
+      ],
+      "anchor": [
+        32,
+        32
+      ],
+      "palette_behavior": {},
+      "qa_status": "NOT_RUN",
+      "iteration": 0,
+      "approved_at": null,
+      "target": null,
+      "mask_target": null,
+      "reports": [],
+      "capability_handoff": {
+        "reason": "Error: Missing asset contract: Game Engineer must declare pixel content, fixed grid/anchor, safe mask strategy, runtime binding and QA mechanism in art/contracts.json. No provider request made.",
+        "previous_status": "WAITING_FOR_ART",
+        "request_file": "art/handoffs/cinder_wisp_sprites_v1/capability-request.json"
+      }
+    },
+    "ironbound_sentinel_sprites_v1": {
+      "asset_id": "ironbound_sentinel_sprites_v1",
+      "version": 1,
+      "status": "WAITING_FOR_IMPLEMENTATION",
+      "character": "ironbound_sentinel",
+      "animation": "sprites",
+      "source_file": "art/incoming/ironbound_sentinel_sprites_v1",
+      "canonical_references": [
+        "Images/Character Concept art.png"
+      ],
+      "runtime_files": [],
+      "directions": [
+        "unspecified"
+      ],
+      "frame_count": 1,
+      "frame_dimensions": [
+        64,
+        64
+      ],
+      "anchor": [
+        32,
+        32
+      ],
+      "palette_behavior": {},
+      "qa_status": "NOT_RUN",
+      "iteration": 0,
+      "approved_at": null,
+      "target": null,
+      "mask_target": null,
+      "reports": [],
+      "capability_handoff": {
+        "reason": "Error: Missing asset contract: Game Engineer must declare pixel content, fixed grid/anchor, safe mask strategy, runtime binding and QA mechanism in art/contracts.json. No provider request made.",
+        "previous_status": "WAITING_FOR_ART",
+        "request_file": "art/handoffs/ironbound_sentinel_sprites_v1/capability-request.json"
+      }
     }
   }
 }

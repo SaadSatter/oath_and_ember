@@ -1,16 +1,16 @@
 # Visual QA rubric
 
-Objective validation and screenshots are evidence, not artistic approval. An optional AI reviewer may produce structured findings, subject to evidence and confidence validation. Explicit human approval remains required. Every applicable item must be reviewed; mark inapplicable items with a PASS and explanation. Review both clients across all four viewports, contact sheet and sequential frames. Ward body is unchanged; inspect its separate rim and envelope.
+Objective validation and screenshots are evidence, not artistic approval. An optional AI reviewer may produce structured findings, subject to evidence and confidence validation. Explicit human approval remains required. Every applicable item must be reviewed; mark inapplicable items with a PASS and explanation. Review both clients across all four viewports, contact sheet and sequential frames. Use the asset contract to identify the candidate owner and mechanic. Ward body is unchanged; inspect its separate rim/envelope. Guard contains character-and-shield animation; inspect every pose and scarf-only semantic mask.
 
-| Review ID             | Criteria                                                                                                                                            |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| character_consistency | Canonical clothing, equipment, recognizable silhouette, proportions; staff/hat consistency across frames.                                           |
-| animation             | Smooth ordered sequence, stable anchor/feet, appropriate timing, no restart on snapshots; inspect start/held/end sequences, not one still.          |
-| rendering             | Transparency, no source or runtime clipping/background artifacts, crisp pixels, layer order, expected scale. Compare to brief and existing asset.   |
-| vfx                   | Readable scale/orientation; effect does not obscure gameplay; hollow Ward leaves body visible.                                                      |
-| palette               | Only intended regions change; preserved shading and identity; emerald captures use runtime recoloring from the single canonical source.             |
-| multiplayer           | Coco local on client 2 and remote on client 1; both see identical intended presentation. Server snapshots show skill/mechanic, not client outcomes. |
-| responsive            | Desktop 1920×1080, laptop 1440×900, portrait 390×844 and landscape 844×390 are readable.                                                            |
+| Review ID             | Criteria                                                                                                                                                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| character_consistency | Canonical clothing, equipment, recognizable silhouette, proportions; staff/hat consistency across frames.                                                                                         |
+| animation             | Smooth ordered sequence, stable anchor/feet, appropriate timing, no restart on snapshots; inspect start/held/end sequences, not one still.                                                        |
+| rendering             | Transparency, no source or runtime clipping/background artifacts, crisp pixels, layer order, expected scale. Compare to brief and existing asset.                                                 |
+| vfx                   | Readable scale/orientation; effect does not obscure gameplay; hollow Ward leaves body visible.                                                                                                    |
+| palette               | Only intended regions change; preserved shading and identity; emerald captures use runtime recoloring from the single canonical source.                                                           |
+| multiplayer           | Contract role is local on client 1 for OATH, client 2 for EMBER, remote on the other client; both see identical intended presentation. Server snapshots show skill/mechanic, not client outcomes. |
+| responsive            | Desktop 1920×1080, laptop 1440×900, portrait 390×844 and landscape 844×390 are readable.                                                                                                          |
 
 ## Classification
 
@@ -30,7 +30,7 @@ Sampled temporal screenshots do not prove continuous smooth motion; return REVIE
 
 ## Mask coverage and temporal evidence
 
-Mask coverage is an objective pixel measurement: green coverage at every atlas alpha > 0 pixel, no nontransparent mask outside the effect. Do not infer missing halo coverage solely from image brightness. Isolated effect masks may be deterministically rebuilt from a positively reviewed effect atlas; retain atlas bytes and create a fresh QA iteration. Complete coverage still requires semantic and runtime palette review. When model feedback conflicts with measured coverage, preserve both and seek human adjudication if the conflict persists.
+For alpha_effect contracts only, mask coverage is an objective pixel measurement: green coverage at every atlas alpha > 0 pixel, no nontransparent mask outside the effect. Do not infer missing halo coverage solely from image brightness. Isolated effect masks may be deterministically rebuilt from a positively reviewed effect atlas; retain atlas bytes and create a fresh QA iteration. Complete coverage still requires semantic and runtime palette review. When model feedback conflicts with measured coverage, preserve both and seek human adjudication if the conflict persists.
 
 `temporal/` includes continuous both-client WebM recordings and approximate phase-request timelines. Review videos for motion, holds and resets. After `art:temporal`, vision receives real decoded PNG frames in timestamp order, with client/viewport/sequence metadata. The current desktop windows carry approximate phase-request hints; they do not establish exact Ward phase transitions or uninterrupted holds across gaps. Recorded video availability alone is insufficient for animation PASS. New browser callback-cadence telemetry is engineering evidence, not proof of render FPS. True pacing QA still needs synchronized render-completion/presentation-state instrumentation. Return REVIEW for animation claims outside the supplied temporal coverage.
 
@@ -45,3 +45,5 @@ The Ward investigation checks sustained guard after 30 authoritative ticks, requ
 ## Human decisions
 
 An explicit `art:approve` may accept remaining REVIEW findings after complete objective/browser QA and all seven visual criteria have been reviewed. Preserve the model's REVIEW and record separate human acceptance; never rewrite it as AI PASS. Objective failures, unresolved classified FAIL, incomplete review and changed candidates remain blocked. Human art/code revision feedback and rejection are separate versioned decisions. Explicit human revision can authorize an iteration beyond the automatic retry cap without resetting history or enabling unbounded agent retries.
+
+Semantic masks must use declared channels on visible pixels, but geometry alone does not validate region meaning. Inspect scarf/cape masks for skin/hair/eyes/armor/metal leakage across all frames. Never require complete alpha coverage for character/equipment semantic masks or repair them from alpha. No-mask contracts still require protected-color and runtime identity review. Coco Ward render markers do not claim synchronized Sieg shield presentation state.

@@ -1,0 +1,9 @@
+{
+  "source": "art/incoming/sieg_shield_v1/generated/attempt-02/raw.png",
+  "strategy": "reserved_padding_alpha_1_v1",
+  "clearedPixels": 217,
+  "sourceSha256": "8376af44b798f1b311c56aad3fa94b9589afb492dd905e352a4590bb47e6cede",
+  "activePixelsChanged": 0,
+  "status": "WAITING_FOR_SEMANTIC_MASK",
+  "note": "Diagnostic artifact only; no submission, QA approval, or runtime replacement."
+}

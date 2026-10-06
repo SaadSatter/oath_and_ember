@@ -1,0 +1,6 @@
+{
+  "screenshot": "art/validation/sieg-shield-contract-03/844x390-client-2-end-mid.png",
+  "beforeRenderId": 211,
+  "afterRenderId": 218,
+  "correlation": "Read the visible QA F marker in the screenshot/video and look up that exact renderId in client presentation samples; bracketing IDs alone do not claim atomic capture."
+}

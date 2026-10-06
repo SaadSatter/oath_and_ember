@@ -1,0 +1,17 @@
+{
+  "prompt": "Create the SEMANTIC MASK for the first reference atlas, not artwork. Preserve its exact 1024x1024 grid, 8 columns, 47 frames, scale 1, all transparent padding. Mark ONLY these regions: [\"Preserve canonical identity, dark hair/armor, crimson scarf/cape and sword/shield design in every frame.\",\"Preserve ground anchor (64,96), existing pose proportions and sequence. Shield is embedded equipment, not a separate magic effect.\",\"Semantic red mask covers scarf/cape only. Never recolor skin, hair, eyes, armor, sword or shield metal. Mask must be reviewed against the new atlas; alpha-derived masks are forbidden.\"]. Allowed pure RGBA channels: red (red=cloth/scarf/cape, green=magic). Each selected pixel must have alpha 255; all other pixels fully transparent. No shading, antialiasing, text, character silhouettes or metal masks. This asset contains character_equipment; do NOT mask all nontransparent pixels. Preserve coordinates exactly. Source mask reference is guidance only; mask the new atlas regions. Human/vision review will validate semantic correctness.",
+  "atlas_sha256": "9704b8b567c7cb4e1d34220a26e40a9e6632f4a809e7b102de2582d0c26a81f9",
+  "model": "gpt-image-2.5-sunburst",
+  "quality": "medium",
+  "references": [
+    {
+      "path": "art/incoming/sieg_shield_v1/generated/attempt-04/raw.png",
+      "sha256": "9704b8b567c7cb4e1d34220a26e40a9e6632f4a809e7b102de2582d0c26a81f9"
+    },
+    {
+      "path": "apps/client/public/assets/characters/oath/defense-mask.png",
+      "sha256": "d5d79953f52490ab7fbc05867c0623083f23975f7bcd7a21ca6df83156457d6a"
+    }
+  ],
+  "status": "REQUESTING"
+}

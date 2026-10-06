@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "project_id": "prj_ns7ajke2xjtg8f9anqnma777xx8fspwx",
+  "canvas_url": "https://app.flora.ai/projects/ns7ajke2xjtg8f9anqnma777xx8fspwx",
+  "skill": "flora-batch-generate",
+  "skill_run_id": "oath-ember-forest-monsters-v1-20261006",
+  "total_cost_usd": 0.07,
+  "settings": {
+    "resolution": "1k",
+    "quality": "medium"
+  },
+  "status": "GENERATED_CANDIDATES_PENDING_REVIEW",
+  "items": [
+    {
+      "name": "Forest map — Mosslight Ruins",
+      "asset": "forest_map_v1",
+      "prompt": "Whole first-level map, exact 2:1 composition corresponding to 1800x900 world. Left-to-right progression across three connected zones. Spawn clearing centered (120,450). Thin vertical forest-and-ruin barriers x450–485 and x1050–1085 extend from y35–370 and y530–865, leaving wide traversable openings y370–530. Bramble/rune gate opening at first barrier: melee bramble interaction (410,400), arcane rune (410,505). Middle zone: movable crate (790,430), counterweight plate (945,430), orange arcane crystal (920,520); short counterweight bridge through second opening. Final forest ruin clearing leads to exit (1670,450). Coordinates are design instructions, never drawn text. Keep playable ground unobstructed and walkable, decoration concentrated along boundary/barrier footprints. No additional water gaps, walls or misleading blocked paths. Static terrain background candidate: reserve interaction locations as clear ground; gate, crate, plate, crystal and bridge mechanisms must be separate runtime overlays and must not be baked into the art. No heroes or monsters. Direction A: ancient peaceful-but-dangerous woodland, mossy ruin walls, fern banks, sparse luminous mushrooms, sunlit amber clearings beneath dark pine canopy. Original Oath & Ember game art. Cohesive crisp pixel art, restrained moss green, deep pine, muted indigo shadow, weathered gray stone and warm amber accents #ff9b32. Top-down RPG view with visible front faces, orthographic, no isometric perspective, no copyrighted characters or assets, no text, UI, labels or watermarks. Readable at small gameplay scale, sharp pixel clusters, no painterly blur.",
+      "aspect": "2:1",
+      "node_id": "8cc34a1b-d421-423b-8403-ba86482d7ed4",
+      "run_id": "run_m17bxmwtkxe22nwps75vmz3p8n8fswvh",
+      "status": "completed",
+      "progress": 100,
+      "created_at": 1791317598586.0737,
+      "completed_at": 1791317642991,
+      "charged_cost": 0.014,
+      "outputs": [
+        {
+          "output_id": "output_0",
+          "type": "imageUrl",
+          "url": "https://media.flora.ai/node-inputs/2026/10/6/anonymous/7c55444d-5bdc-44e2-9f21-395803226a09.png"
+        }
+      ],
+      "poll_url": "https://app.flora.ai/api/v1/runs/run_m17bxmwtkxe22nwps75vmz3p8n8fswvh",
+      "generation_id": "run_m17bxmwtkxe22nwps75vmz3p8n8fswvh",
+      "workspace_id": "ws_qd79c48t3nna3s5900kfdd89p58frnky",
+      "project_id": "prj_ns7ajke2xjtg8f9anqnma777xx8fspwx",
+      "model": {
+        "model_id": "t2i-gpt-image-2-5-flare"
+      }
+    },
+    {
+      "name": "Forest map — Twilight Brambles",
+      "asset": "forest_map_v1",
+      "prompt": "Whole first-level map, exact 2:1 composition corresponding to 1800x900 world. Left-to-right progression across three connected zones. Spawn clearing centered (120,450). Thin vertical forest-and-ruin barriers x450–485 and x1050–1085 extend from y35–370 and y530–865, leaving wide traversable openings y370–530. Bramble/rune gate opening at first barrier: melee bramble interaction (410,400), arcane rune (410,505). Middle zone: movable crate (790,430), counterweight plate (945,430), orange arcane crystal (920,520); short counterweight bridge through second opening. Final forest ruin clearing leads to exit (1670,450). Coordinates are design instructions, never drawn text. Keep playable ground unobstructed and walkable, decoration concentrated along boundary/barrier footprints. No additional water gaps, walls or misleading blocked paths. Static terrain background candidate: reserve interaction locations as clear ground; gate, crate, plate, crystal and bridge mechanisms must be separate runtime overlays and must not be baked into the art. No heroes or monsters. Direction B: same exact layout, mysterious twilight forest, indigo atmosphere, dense edge brambles, silver-gray ruined masonry, sparse amber rune-like accents in boundary stones. Gameplay ground stays bright and readable. Original Oath & Ember game art. Cohesive crisp pixel art, restrained moss green, deep pine, muted indigo shadow, weathered gray stone and warm amber accents #ff9b32. Top-down RPG view with visible front faces, orthographic, no isometric perspective, no copyrighted characters or assets, no text, UI, labels or watermarks. Readable at small gameplay scale, sharp pixel clusters, no painterly blur.",
+      "aspect": "2:1",
+      "node_id": "df85a162-8cf8-4f7b-a517-8717cf0e1964",
+      "run_id": "run_m17fy5bfgwstw8cmg3mq83nx958fsjxa",
+      "status": "completed",
+      "progress": 100,
+      "created_at": 1791317598586.7998,
+      "completed_at": 1791317676920,
+      "charged_cost": 0.014,
+      "outputs": [
+        {
+          "output_id": "output_0",
+          "type": "imageUrl",
+          "url": "https://media.flora.ai/node-inputs/2026/10/6/anonymous/b340d055-3b41-4b5b-a5c4-6cd0a52d064a.png"
+        }
+      ],
+      "poll_url": "https://app.flora.ai/api/v1/runs/run_m17fy5bfgwstw8cmg3mq83nx958fsjxa",
+      "generation_id": "run_m17fy5bfgwstw8cmg3mq83nx958fsjxa",
+      "workspace_id": "ws_qd79c48t3nna3s5900kfdd89p58frnky",
+      "project_id": "prj_ns7ajke2xjtg8f9anqnma777xx8fspwx",
+      "model": {
+        "model_id": "t2i-gpt-image-2-5-flare"
+      }
+    },
+    {
+      "name": "Mossling — directional walk sheet",
+      "asset": "mossling_sprites_v1",
+      "prompt": "Mossling: small squat forest creature made of moss-covered roots and bark, rounded moss tuft crown, two short root legs and branch arms, tiny warm amber eyes, mischievous menacing silhouette. Simple weak melee enemy already present in the game. Sprite sheet candidate, one original enemy only, evenly spaced 4 columns x 4 rows, 16 equal square untrimmed cells, four walking poses per direction; rows south, north, west, east. Stable anatomical ground anchor at 50% cell width, 87.5% cell height. Full body and equipment entirely inside every cell with transparent padding. Same creature design, size and lighting in every frame. True transparent background requested, no checkerboard, floor, scenery, text, cell borders or cast ground shadow. Clear silhouette and restrained animation. Grid dimensions and alpha will require later objective validation; preserve pixels. Original Oath & Ember game art. Cohesive crisp pixel art, restrained moss green, deep pine, muted indigo shadow, weathered gray stone and warm amber accents #ff9b32. Top-down RPG view with visible front faces, orthographic, no isometric perspective, no copyrighted characters or assets, no text, UI, labels or watermarks. Readable at small gameplay scale, sharp pixel clusters, no painterly blur.",
+      "aspect": "1:1",
+      "node_id": "f85a1e53-b42d-411a-a8e8-b79efebbc9d1",
+      "run_id": "run_m17bmpnatp6639mwr94pk6100s8frbpf",
+      "status": "completed",
+      "progress": 100,
+      "created_at": 1791317598589.7988,
+      "completed_at": 1791317710052,
+      "charged_cost": 0.014,
+      "outputs": [
+        {
+          "output_id": "output_0",
+          "type": "imageUrl",
+          "url": "https://media.flora.ai/node-inputs/2026/10/6/anonymous/6281d73d-4393-48cb-8cce-e057cbc768b3.png"
+        }
+      ],
+      "poll_url": "https://app.flora.ai/api/v1/runs/run_m17bmpnatp6639mwr94pk6100s8frbpf",
+      "generation_id": "run_m17bmpnatp6639mwr94pk6100s8frbpf",
+      "workspace_id": "ws_qd79c48t3nna3s5900kfdd89p58frnky",
+      "project_id": "prj_ns7ajke2xjtg8f9anqnma777xx8fspwx",
+      "model": {
+        "model_id": "t2i-gpt-image-2-5-flare"
+      }
+    },
+    {
+      "name": "Cinder Wisp — directional float sheet",
+      "asset": "cinder_wisp_sprites_v1",
+      "prompt": "Cinder Wisp: planned forest ranged enemy, floating amber ember core #ff9b32 with a broken charred twig-and-stone outer cage, two eye slits and compact curling flame tail. Distinct from hero magic, readable dark outer silhouette. Four gentle hover poses per direction instead of walking. Sprite sheet candidate, one original enemy only, evenly spaced 4 columns x 4 rows, 16 equal square untrimmed cells, four walking poses per direction; rows south, north, west, east. Stable anatomical ground anchor at 50% cell width, 87.5% cell height. Full body and equipment entirely inside every cell with transparent padding. Same creature design, size and lighting in every frame. True transparent background requested, no checkerboard, floor, scenery, text, cell borders or cast ground shadow. Clear silhouette and restrained animation. Grid dimensions and alpha will require later objective validation; preserve pixels. Original Oath & Ember game art. Cohesive crisp pixel art, restrained moss green, deep pine, muted indigo shadow, weathered gray stone and warm amber accents #ff9b32. Top-down RPG view with visible front faces, orthographic, no isometric perspective, no copyrighted characters or assets, no text, UI, labels or watermarks. Readable at small gameplay scale, sharp pixel clusters, no painterly blur.",
+      "aspect": "1:1",
+      "node_id": "91db63b5-2719-4544-87fb-bc759bf0a212",
+      "run_id": "run_m17c139vexw4n2ssjd0jszddxd8frn4w",
+      "status": "completed",
+      "progress": 100,
+      "created_at": 1791317598580.7366,
+      "completed_at": 1791317619775,
+      "charged_cost": 0.014,
+      "outputs": [
+        {
+          "output_id": "output_0",
+          "type": "imageUrl",
+          "url": "https://media.flora.ai/node-inputs/2026/10/6/anonymous/88411306-9ea2-466b-a3d1-7ee8901bcb09.png"
+        }
+      ],
+      "poll_url": "https://app.flora.ai/api/v1/runs/run_m17c139vexw4n2ssjd0jszddxd8frn4w",
+      "generation_id": "run_m17c139vexw4n2ssjd0jszddxd8frn4w",
+      "workspace_id": "ws_qd79c48t3nna3s5900kfdd89p58frnky",
+      "project_id": "prj_ns7ajke2xjtg8f9anqnma777xx8fspwx",
+      "model": {
+        "model_id": "t2i-gpt-image-2-5-flare"
+      }
+    },
+    {
+      "name": "Ironbound Sentinel — directional walk sheet",
+      "asset": "ironbound_sentinel_sprites_v1",
+      "prompt": "Ironbound Sentinel: planned forest ruin armored enemy, broad squat ancient stone-and-dark-iron automaton, angular shoulder plates, moss-filled cracks, one restrained amber rune core, heavy forearms, no weapon needed, visibly heavier than Mossling. Sprite sheet candidate, one original enemy only, evenly spaced 4 columns x 4 rows, 16 equal square untrimmed cells, four walking poses per direction; rows south, north, west, east. Stable anatomical ground anchor at 50% cell width, 87.5% cell height. Full body and equipment entirely inside every cell with transparent padding. Same creature design, size and lighting in every frame. True transparent background requested, no checkerboard, floor, scenery, text, cell borders or cast ground shadow. Clear silhouette and restrained animation. Grid dimensions and alpha will require later objective validation; preserve pixels. Original Oath & Ember game art. Cohesive crisp pixel art, restrained moss green, deep pine, muted indigo shadow, weathered gray stone and warm amber accents #ff9b32. Top-down RPG view with visible front faces, orthographic, no isometric perspective, no copyrighted characters or assets, no text, UI, labels or watermarks. Readable at small gameplay scale, sharp pixel clusters, no painterly blur.",
+      "aspect": "1:1",
+      "node_id": "665246b1-bbc6-4da6-8142-e0b9da342eaa",
+      "run_id": "run_m17ap0zmzhhdperhs7cbr6nrch8fsx0s",
+      "status": "completed",
+      "progress": 100,
+      "created_at": 1791317598591.6995,
+      "completed_at": 1791317740934,
+      "charged_cost": 0.014,
+      "outputs": [
+        {
+          "output_id": "output_0",
+          "type": "imageUrl",
+          "url": "https://media.flora.ai/node-inputs/2026/10/6/anonymous/ccf8dfb5-6d8b-4f73-8b31-7552f898f412.png"
+        }
+      ],
+      "poll_url": "https://app.flora.ai/api/v1/runs/run_m17ap0zmzhhdperhs7cbr6nrch8fsx0s",
+      "generation_id": "run_m17ap0zmzhhdperhs7cbr6nrch8fsx0s",
+      "workspace_id": "ws_qd79c48t3nna3s5900kfdd89p58frnky",
+      "project_id": "prj_ns7ajke2xjtg8f9anqnma777xx8fspwx",
+      "model": {
+        "model_id": "t2i-gpt-image-2-5-flare"
+      }
+    }
+  ],
+  "checks": [
+    {
+      "id": "character_consistency",
+      "result": "REVIEW",
+      "category": "DESIGN",
+      "evidence": "FLORA output URLs in this report; art/handoffs/*/capability-request.json",
+      "feedback": "Generation completed, but image pixels and runtime evidence have not been reviewed. No visual PASS or production readiness asserted."
+    },
+    {
+      "id": "animation",
+      "result": "REVIEW",
+      "category": "DESIGN",
+      "evidence": "FLORA output URLs in this report; art/handoffs/*/capability-request.json",
+      "feedback": "Generation completed, but image pixels and runtime evidence have not been reviewed. No visual PASS or production readiness asserted."
+    },
+    {
+      "id": "rendering",
+      "result": "REVIEW",
+      "category": "DESIGN",
+      "evidence": "FLORA output URLs in this report; art/handoffs/*/capability-request.json",
+      "feedback": "Generation completed, but image pixels and runtime evidence have not been reviewed. No visual PASS or production readiness asserted."
+    },
+    {
+      "id": "vfx",
+      "result": "REVIEW",
+      "category": "DESIGN",
+      "evidence": "FLORA output URLs in this report; art/handoffs/*/capability-request.json",
+      "feedback": "Generation completed, but image pixels and runtime evidence have not been reviewed. No visual PASS or production readiness asserted."
+    },
+    {
+      "id": "palette",
+      "result": "REVIEW",
+      "category": "DESIGN",
+      "evidence": "FLORA output URLs in this report; art/handoffs/*/capability-request.json",
+      "feedback": "Generation completed, but image pixels and runtime evidence have not been reviewed. No visual PASS or production readiness asserted."
+    },
+    {
+      "id": "multiplayer",
+      "result": "REVIEW",
+      "category": "DESIGN",
+      "evidence": "FLORA output URLs in this report; art/handoffs/*/capability-request.json",
+      "feedback": "Generation completed, but image pixels and runtime evidence have not been reviewed. No visual PASS or production readiness asserted."
+    },
+    {
+      "id": "responsive",
+      "result": "REVIEW",
+      "category": "DESIGN",
+      "evidence": "FLORA output URLs in this report; art/handoffs/*/capability-request.json",
+      "feedback": "Generation completed, but image pixels and runtime evidence have not been reviewed. No visual PASS or production readiness asserted."
+    }
+  ],
+  "handoff": "Environment/enemy runtime contracts, loaders, grid/alpha/anchor validation and isolated multiplayer/responsive QA required before human art:approve and art:publish. Cinder Wisp and Ironbound Sentinel are planned gameplay only."
+}

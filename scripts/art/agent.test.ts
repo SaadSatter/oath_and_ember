@@ -92,7 +92,10 @@ function fixture(animation = "ward", iteration = 3) {
     source_file: `${dir}/candidate`,
     canonical_references: [],
     runtime_files: [`${dir}/candidate/atlas.png`, `${dir}/candidate/mask.png`],
-    directions: [],
+    directions:
+      animation === "projectile"
+        ? ["right", "left", "up", "down"]
+        : ["omnidirectional"],
     frame_count: animation === "projectile" ? 4 : 1,
     frame_dimensions: animation === "projectile" ? [64, 64] : [128, 128],
     anchor: animation === "projectile" ? [32, 32] : [64, 70],

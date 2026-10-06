@@ -1,0 +1,4 @@
+{
+  "error": "Error: Art extends outside the declared atlas region. Keep unused canvas transparent (only up to 1024 padding pixels at alpha 1/255 can be repaired).",
+  "status": "ART_FAILURE"
+}

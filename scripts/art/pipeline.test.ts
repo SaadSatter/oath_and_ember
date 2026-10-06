@@ -65,6 +65,14 @@ describe("visual asset workflow", () => {
   it("resumes manual handoff, stages immutable candidate, rejects early approval and retains failed iteration", () => {
     const temp = mkdtempSync(join(tmpdir(), "art-pipeline-test-"));
     mkdirSync(join(temp, "art"));
+    mkdirSync(join(temp, "apps/client/public/assets/characters/ember"), {
+      recursive: true,
+    });
+    for (const file of ["defense.png", "defense-mask.png"])
+      copyFileSync(
+        join(root, "apps/client/public/assets/characters/ember", file),
+        join(temp, "apps/client/public/assets/characters/ember", file),
+      );
     copyFileSync(join(root, "art/ART_SPEC.md"), join(temp, "art/ART_SPEC.md"));
     const cli = (...args: string[]) =>
       spawnSync(

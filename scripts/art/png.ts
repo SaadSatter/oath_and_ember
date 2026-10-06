@@ -1,15 +1,20 @@
 import { PNG } from "pngjs";
 import { readFileSync } from "node:fs";
+import type { AssetContract } from "./contracts.js";
 import type { Finding } from "./model.js";
 export function inspectAtlas(
   imagePath: string,
   maskPath: string,
   dimensions: [number, number],
   count: number,
+  contract?: AssetContract,
 ): Finding[] {
   const p = PNG.sync.read(readFileSync(imagePath)),
     m = PNG.sync.read(readFileSync(maskPath));
   const [w, h] = dimensions;
+  const columns = contract?.columns ?? count;
+  const strategy = contract?.mask.strategy ?? "alpha_effect";
+  const channels = contract?.mask.channels ?? ["green"];
   const checks: Finding[] = [];
   const check = (id: string, ok: boolean, feedback: string) =>
     checks.push({
@@ -21,8 +26,8 @@ export function inspectAtlas(
     });
   check(
     "atlas_grid",
-    p.width === w * count && p.height === h,
-    "Supply a horizontal atlas matching the brief frame dimensions/count.",
+    p.width === w * columns && p.height === h * Math.ceil(count / columns),
+    "Supply an atlas matching the declared columns, frame dimensions/count and transparent padded cells.",
   );
   check(
     "mask_dimensions",
@@ -40,11 +45,25 @@ export function inspectAtlas(
     if (a === 0) transparent++;
     if (a > 0) {
       visible++;
-      frames.add(Math.floor(((i / 4) % p.width) / w));
+      frames.add(
+        Math.floor(Math.floor(i / 4 / p.width) / h) * columns +
+          Math.floor(((i / 4) % p.width) / w),
+      );
     }
     if (
       m.data[i + 3] &&
-      (!a || m.data[i] !== 0 || m.data[i + 1] !== 255 || m.data[i + 2] !== 0)
+      (!a ||
+        m.data[i + 3] !== 255 ||
+        !(
+          (channels.includes("red") &&
+            m.data[i] === 255 &&
+            m.data[i + 1] === 0 &&
+            m.data[i + 2] === 0) ||
+          (channels.includes("green") &&
+            m.data[i] === 0 &&
+            m.data[i + 1] === 255 &&
+            m.data[i + 2] === 0)
+        ))
     )
       invalidMask++;
   }
@@ -55,14 +74,17 @@ export function inspectAtlas(
   );
   check(
     "missing_frames",
-    frames.size === count,
+    frames.size === count && [...frames].every((f) => f < count),
     "One or more frames are empty or outside the expected grid.",
   );
   check(
-    "effect_mask",
-    masked > 0 && invalidMask === 0,
-    "Coco effect masks must use green only on visible effect pixels.",
+    strategy === "alpha_effect" ? "effect_mask" : "semantic_mask",
+    strategy === "none" ? masked === 0 : masked > 0 && invalidMask === 0,
+    strategy === "none"
+      ? "Non-recolorable assets must have an empty auxiliary mask; never bind it at runtime."
+      : "Mask must use declared channels only on visible pixels; semantic regions require palette rubric review.",
   );
+  if (strategy !== "alpha_effect") return checks;
   const coverage = effectMaskDiagnostics(p, m);
   checks.push({
     id: "effect_mask_coverage",

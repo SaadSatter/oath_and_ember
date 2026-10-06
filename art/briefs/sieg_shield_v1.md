@@ -1,16 +1,18 @@
 # Generation brief: sieg_shield_v1
 
-See the JSON contract and art/ART_SPEC.md.
+Resolved asset contract; original brief retained in art/handoffs/sieg_shield_v1/.
 
 {
   "asset_id": "sieg_shield_v1",
   "version": 1,
-  "status": "BRIEF",
+  "status": "NEEDS_HUMAN_REVIEW",
   "character": "sieg",
   "animation": "shield",
   "source_file": "art/incoming/sieg_shield_v1",
   "canonical_references": [
-    "Images/Character Concept art.png"
+    "Images/Character Concept art.png",
+    "Images/Sprites/Defense Basic Sprites.png",
+    "docs/DEFENSE_ASSET_PROVENANCE.json"
   ],
   "runtime_files": [],
   "directions": [
@@ -19,50 +21,57 @@ See the JSON contract and art/ART_SPEC.md.
     "up",
     "down"
   ],
-  "frame_count": 4,
+  "frame_count": 47,
   "frame_dimensions": [
-    64,
-    64
+    128,
+    128
   ],
   "anchor": [
-    32,
-    32
+    64,
+    96
   ],
   "palette_behavior": {
-    "source": "canonical_ember_magic",
+    "source": "Canonical dark armor, dark hair, crimson scarf/cape, unchanged skin and shield/sword metal.",
     "runtime_recolor": true,
-    "mask_channel": "green"
+    "mask_strategy": "semantic_external",
+    "channels": [
+      "red"
+    ]
   },
   "qa_status": "NOT_RUN",
   "iteration": 0,
   "approved_at": null,
-  "target": null,
-  "mask_target": null,
+  "target": "assets/characters/oath/defense.png",
+  "mask_target": "assets/characters/oath/defense-mask.png",
   "reports": [],
   "art_spec": {
     "path": "art/ART_SPEC.md",
-    "sha256": "d16aaee905c5d9b27d5ddf8aeba905214cd4cd2d66ad9558749d197ec1b2809a"
+    "sha256": "32a3ff42dbe2bb6e83b365d4f1dfbb411679badd1ca86aaf64efe38a1bb856a3"
   },
   "canonical_reference_hashes": {
-    "Images/Character Concept art.png": "d6cb8715f3f8d8630079b1a29cb97238482c2338c10096a351a424ed11ebce8d"
+    "Images/Character Concept art.png": "d6cb8715f3f8d8630079b1a29cb97238482c2338c10096a351a424ed11ebce8d",
+    "Images/Sprites/Defense Basic Sprites.png": "54ff7a00f227ece98054e5b2ffe5cd94511ef8b38d7e3d6196fe3697b3bffd5f",
+    "docs/DEFENSE_ASSET_PROVENANCE.json": "327c9d35e78a2afad961e9a03329f193fbc4b42a5c3e40885ada855c868b54da"
   },
-  "approved_runtime_hash": null,
-  "asset_type": "requires_engineer_binding",
+  "approved_runtime_hash": "a12eedddbec46328937e702b1f4bd1a33560fac76df31113e55fce6cb93c39f1",
+  "asset_type": "character_animation",
   "perspective": "top_down",
-  "frame_count_target": 4,
+  "frame_count_target": 47,
   "frame_dimensions_target": [
-    64,
-    64
+    128,
+    128
   ],
   "ground_anchor": [
-    32,
-    32
+    64,
+    96
   ],
   "canonical_reference": [
-    "Images/Character Concept art.png"
+    "Images/Character Concept art.png",
+    "Images/Sprites/Defense Basic Sprites.png",
+    "docs/DEFENSE_ASSET_PROVENANCE.json"
   ],
-  "approved_runtime_reference": null,
-  "effect_behavior": "Existing flight animation and authoritative projectile movement",
+  "approved_runtime_reference": "apps/client/public/assets/characters/oath/defense.png",
+  "effect_behavior": "Existing Guard replaces the body with character-and-shield poses. Row-major indices 0-7 start right, 8-15 held right (runtime holds frame 8), 16-23 recovery right, 24-31 start down (hold 31), 32-39 start up (hold 39), 40-46 impact. Last cell remains transparent. Left mirrors right. Keep 12fps clips and authoritative Guard unchanged.",
   "must_preserve": [
     "canonical silhouette",
     "equipment",
@@ -84,5 +93,51 @@ See the JSON contract and art/ART_SPEC.md.
     "local/remote visibility",
     "four responsive viewports"
   ],
-  "previous_feedback": []
+  "previous_feedback": [],
+  "contract": {
+    "schema_version": 1,
+    "asset_type": "character_animation",
+    "pixel_content": "character_equipment",
+    "normalization": "fixed_grid_v1",
+    "frame_dimensions": [
+      128,
+      128
+    ],
+    "frame_count": 47,
+    "columns": 8,
+    "anchor": [
+      64,
+      96
+    ],
+    "directions": [
+      "right",
+      "left",
+      "up",
+      "down"
+    ],
+    "mask": {
+      "strategy": "semantic_external",
+      "channels": [
+        "red"
+      ]
+    },
+    "target": "assets/characters/oath/defense.png",
+    "mask_target": "assets/characters/oath/defense-mask.png",
+    "canonical_references": [
+      "Images/Character Concept art.png",
+      "Images/Sprites/Defense Basic Sprites.png",
+      "docs/DEFENSE_ASSET_PROVENANCE.json"
+    ],
+    "source_palette": "Canonical dark armor, dark hair, crimson scarf/cape, unchanged skin and shield/sword metal.",
+    "behavior": "Existing Guard replaces the body with character-and-shield poses. Row-major indices 0-7 start right, 8-15 held right (runtime holds frame 8), 16-23 recovery right, 24-31 start down (hold 31), 32-39 start up (hold 39), 40-46 impact. Last cell remains transparent. Left mirrors right. Keep 12fps clips and authoritative Guard unchanged.",
+    "requirements": [
+      "Preserve canonical identity, dark hair/armor, crimson scarf/cape and sword/shield design in every frame.",
+      "Preserve ground anchor (64,96), existing pose proportions and sequence. Shield is embedded equipment, not a separate magic effect.",
+      "Semantic red mask covers scarf/cape only. Never recolor skin, hair, eyes, armor, sword or shield metal. Mask must be reviewed against the new atlas; alpha-derived masks are forbidden."
+    ],
+    "qa": {
+      "mechanism": "defense",
+      "role": "OATH"
+    }
+  }
 }

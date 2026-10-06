@@ -1,0 +1,16 @@
+{
+  "assetId": "sieg_shield_v1",
+  "iteration": 1,
+  "result": "FAIL",
+  "status": "QA_FAILED_ART",
+  "route": "SPRITE_ARTIST",
+  "checks": [
+    {
+      "id": "generated_art",
+      "result": "FAIL",
+      "category": "ART",
+      "evidence": "art/incoming/sieg_shield_v1/generated/attempt-01",
+      "feedback": "Error: Art extends outside the declared atlas region. Keep unused canvas transparent."
+    }
+  ]
+}
