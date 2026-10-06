@@ -128,7 +128,7 @@ npm run art:approve -- coco_ward_v1
 npm run art:publish -- coco_ward_v1
 ```
 
-Approval verifies candidate hashes and archives source/brief/provenance. Publish is a separate explicit action that replaces the bound runtime slot and first archives the previous atlas/mask. The demonstration is deliberately not approved or published. Always rerun relevant checks after production publishing.
+Approval verifies candidate hashes and archives source/brief/provenance. Once approval succeeds, earlier QA iteration folders are deleted automatically, including their candidates, screenshots and recordings. The approved iteration remains available; small historical JSON reports and decisions are retained under `art/approved/<asset>/history/`, with cleanup records explaining that their old media paths were deleted. `npm run art:cleanup -- <asset>` applies the same cleanup to an already approved asset or retries an interrupted cleanup. Pending assets cannot be cleaned this way. Publish is a separate explicit action that replaces the bound runtime slot and first archives the previous atlas/mask. Always rerun relevant checks after production publishing.
 
 ## State machine and resume
 

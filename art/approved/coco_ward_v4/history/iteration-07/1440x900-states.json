@@ -1,0 +1,1514 @@
+[
+  {
+    "label": "idle",
+    "state": [
+      {
+        "roomCode": "QF2K6M",
+        "phase": "PLAYING",
+        "sceneId": "FOREST_RUINS",
+        "serverTick": 1852,
+        "worldRevision": 2,
+        "players": {
+          "2b3d55cf-7014-4261-a4ed-0c1c04c6d07d": {
+            "id": "2b3d55cf-7014-4261-a4ed-0c1c04c6d07d",
+            "role": "OATH",
+            "ready": true,
+            "connected": false,
+            "x": 120,
+            "y": 430,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "guard"
+            ],
+            "lastProcessedInputSeq": 1645,
+            "appearance": {
+              "primaryPalette": "crimson"
+            }
+          },
+          "e49e0da2-9588-41bd-9b5f-3fd301da4134": {
+            "id": "e49e0da2-9588-41bd-9b5f-3fd301da4134",
+            "role": "EMBER",
+            "ready": true,
+            "connected": false,
+            "x": 120,
+            "y": 480,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "ward"
+            ],
+            "lastProcessedInputSeq": 1644,
+            "appearance": {
+              "primaryPalette": "purple",
+              "effectPalette": "emerald"
+            }
+          }
+        },
+        "enemies": {},
+        "projectiles": {},
+        "puzzles": {
+          "gate": {
+            "id": "gate",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "bridge": {
+            "id": "bridge",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "engine": {
+            "id": "engine",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          }
+        },
+        "interactables": {
+          "crate": {
+            "x": 790,
+            "y": 430
+          }
+        },
+        "boss": null,
+        "checkpoint": "Clearing",
+        "projectileImpacts": []
+      },
+      {
+        "roomCode": "AH7K9K",
+        "phase": "PLAYING",
+        "sceneId": "FOREST_RUINS",
+        "serverTick": 70,
+        "worldRevision": 2,
+        "players": {
+          "e9b2e650-e628-4269-a441-9bcf38ff1550": {
+            "id": "e9b2e650-e628-4269-a441-9bcf38ff1550",
+            "role": "OATH",
+            "ready": true,
+            "connected": true,
+            "x": 120,
+            "y": 430,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "guard"
+            ],
+            "lastProcessedInputSeq": 31,
+            "appearance": {
+              "primaryPalette": "crimson"
+            }
+          },
+          "323c329e-a77c-42c4-bda6-9ff3d49a16ee": {
+            "id": "323c329e-a77c-42c4-bda6-9ff3d49a16ee",
+            "role": "EMBER",
+            "ready": true,
+            "connected": true,
+            "x": 120,
+            "y": 480,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "ward"
+            ],
+            "lastProcessedInputSeq": 31,
+            "appearance": {
+              "primaryPalette": "purple",
+              "effectPalette": "emerald"
+            }
+          }
+        },
+        "enemies": {},
+        "projectiles": {},
+        "puzzles": {
+          "gate": {
+            "id": "gate",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "bridge": {
+            "id": "bridge",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "engine": {
+            "id": "engine",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          }
+        },
+        "interactables": {
+          "crate": {
+            "x": 790,
+            "y": 430
+          }
+        },
+        "boss": null,
+        "checkpoint": "Clearing",
+        "projectileImpacts": []
+      }
+    ]
+  },
+  {
+    "label": "start",
+    "state": [
+      {
+        "roomCode": "QF2K6M",
+        "phase": "PLAYING",
+        "sceneId": "FOREST_RUINS",
+        "serverTick": 1884,
+        "worldRevision": 2,
+        "players": {
+          "2b3d55cf-7014-4261-a4ed-0c1c04c6d07d": {
+            "id": "2b3d55cf-7014-4261-a4ed-0c1c04c6d07d",
+            "role": "OATH",
+            "ready": true,
+            "connected": false,
+            "x": 120,
+            "y": 430,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "guard"
+            ],
+            "lastProcessedInputSeq": 1645,
+            "appearance": {
+              "primaryPalette": "crimson"
+            }
+          },
+          "e49e0da2-9588-41bd-9b5f-3fd301da4134": {
+            "id": "e49e0da2-9588-41bd-9b5f-3fd301da4134",
+            "role": "EMBER",
+            "ready": true,
+            "connected": false,
+            "x": 120,
+            "y": 480,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "ward"
+            ],
+            "lastProcessedInputSeq": 1644,
+            "appearance": {
+              "primaryPalette": "purple",
+              "effectPalette": "emerald"
+            }
+          }
+        },
+        "enemies": {},
+        "projectiles": {},
+        "puzzles": {
+          "gate": {
+            "id": "gate",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "bridge": {
+            "id": "bridge",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "engine": {
+            "id": "engine",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          }
+        },
+        "interactables": {
+          "crate": {
+            "x": 790,
+            "y": 430
+          }
+        },
+        "boss": null,
+        "checkpoint": "Clearing",
+        "projectileImpacts": []
+      },
+      {
+        "roomCode": "AH7K9K",
+        "phase": "PLAYING",
+        "sceneId": "FOREST_RUINS",
+        "serverTick": 102,
+        "worldRevision": 2,
+        "players": {
+          "e9b2e650-e628-4269-a441-9bcf38ff1550": {
+            "id": "e9b2e650-e628-4269-a441-9bcf38ff1550",
+            "role": "OATH",
+            "ready": true,
+            "connected": true,
+            "x": 120,
+            "y": 430,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "guard",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "guard"
+            ],
+            "lastProcessedInputSeq": 62,
+            "appearance": {
+              "primaryPalette": "crimson"
+            }
+          },
+          "323c329e-a77c-42c4-bda6-9ff3d49a16ee": {
+            "id": "323c329e-a77c-42c4-bda6-9ff3d49a16ee",
+            "role": "EMBER",
+            "ready": true,
+            "connected": true,
+            "x": 120,
+            "y": 480,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "guard",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "ward"
+            ],
+            "lastProcessedInputSeq": 62,
+            "appearance": {
+              "primaryPalette": "purple",
+              "effectPalette": "emerald"
+            }
+          }
+        },
+        "enemies": {},
+        "projectiles": {},
+        "puzzles": {
+          "gate": {
+            "id": "gate",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "bridge": {
+            "id": "bridge",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "engine": {
+            "id": "engine",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          }
+        },
+        "interactables": {
+          "crate": {
+            "x": 790,
+            "y": 430
+          }
+        },
+        "boss": null,
+        "checkpoint": "Clearing",
+        "projectileImpacts": []
+      }
+    ]
+  },
+  {
+    "label": "start-mid",
+    "state": [
+      {
+        "roomCode": "QF2K6M",
+        "phase": "PLAYING",
+        "sceneId": "FOREST_RUINS",
+        "serverTick": 1953,
+        "worldRevision": 2,
+        "players": {
+          "2b3d55cf-7014-4261-a4ed-0c1c04c6d07d": {
+            "id": "2b3d55cf-7014-4261-a4ed-0c1c04c6d07d",
+            "role": "OATH",
+            "ready": true,
+            "connected": false,
+            "x": 120,
+            "y": 430,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "guard"
+            ],
+            "lastProcessedInputSeq": 1645,
+            "appearance": {
+              "primaryPalette": "crimson"
+            }
+          },
+          "e49e0da2-9588-41bd-9b5f-3fd301da4134": {
+            "id": "e49e0da2-9588-41bd-9b5f-3fd301da4134",
+            "role": "EMBER",
+            "ready": true,
+            "connected": false,
+            "x": 120,
+            "y": 480,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "ward"
+            ],
+            "lastProcessedInputSeq": 1644,
+            "appearance": {
+              "primaryPalette": "purple",
+              "effectPalette": "emerald"
+            }
+          }
+        },
+        "enemies": {},
+        "projectiles": {},
+        "puzzles": {
+          "gate": {
+            "id": "gate",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "bridge": {
+            "id": "bridge",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "engine": {
+            "id": "engine",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          }
+        },
+        "interactables": {
+          "crate": {
+            "x": 790,
+            "y": 430
+          }
+        },
+        "boss": null,
+        "checkpoint": "Clearing",
+        "projectileImpacts": []
+      },
+      {
+        "roomCode": "AH7K9K",
+        "phase": "PLAYING",
+        "sceneId": "FOREST_RUINS",
+        "serverTick": 171,
+        "worldRevision": 2,
+        "players": {
+          "e9b2e650-e628-4269-a441-9bcf38ff1550": {
+            "id": "e9b2e650-e628-4269-a441-9bcf38ff1550",
+            "role": "OATH",
+            "ready": true,
+            "connected": true,
+            "x": 120,
+            "y": 430,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "guard",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "guard"
+            ],
+            "lastProcessedInputSeq": 130,
+            "appearance": {
+              "primaryPalette": "crimson"
+            }
+          },
+          "323c329e-a77c-42c4-bda6-9ff3d49a16ee": {
+            "id": "323c329e-a77c-42c4-bda6-9ff3d49a16ee",
+            "role": "EMBER",
+            "ready": true,
+            "connected": true,
+            "x": 120,
+            "y": 480,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "guard",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "ward"
+            ],
+            "lastProcessedInputSeq": 132,
+            "appearance": {
+              "primaryPalette": "purple",
+              "effectPalette": "emerald"
+            }
+          }
+        },
+        "enemies": {},
+        "projectiles": {},
+        "puzzles": {
+          "gate": {
+            "id": "gate",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "bridge": {
+            "id": "bridge",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "engine": {
+            "id": "engine",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          }
+        },
+        "interactables": {
+          "crate": {
+            "x": 790,
+            "y": 430
+          }
+        },
+        "boss": null,
+        "checkpoint": "Clearing",
+        "projectileImpacts": []
+      }
+    ]
+  },
+  {
+    "label": "loop",
+    "state": [
+      {
+        "roomCode": "QF2K6M",
+        "phase": "PLAYING",
+        "sceneId": "FOREST_RUINS",
+        "serverTick": 1999,
+        "worldRevision": 2,
+        "players": {
+          "2b3d55cf-7014-4261-a4ed-0c1c04c6d07d": {
+            "id": "2b3d55cf-7014-4261-a4ed-0c1c04c6d07d",
+            "role": "OATH",
+            "ready": true,
+            "connected": false,
+            "x": 120,
+            "y": 430,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "guard"
+            ],
+            "lastProcessedInputSeq": 1645,
+            "appearance": {
+              "primaryPalette": "crimson"
+            }
+          },
+          "e49e0da2-9588-41bd-9b5f-3fd301da4134": {
+            "id": "e49e0da2-9588-41bd-9b5f-3fd301da4134",
+            "role": "EMBER",
+            "ready": true,
+            "connected": false,
+            "x": 120,
+            "y": 480,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "ward"
+            ],
+            "lastProcessedInputSeq": 1644,
+            "appearance": {
+              "primaryPalette": "purple",
+              "effectPalette": "emerald"
+            }
+          }
+        },
+        "enemies": {},
+        "projectiles": {},
+        "puzzles": {
+          "gate": {
+            "id": "gate",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "bridge": {
+            "id": "bridge",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "engine": {
+            "id": "engine",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          }
+        },
+        "interactables": {
+          "crate": {
+            "x": 790,
+            "y": 430
+          }
+        },
+        "boss": null,
+        "checkpoint": "Clearing",
+        "projectileImpacts": []
+      },
+      {
+        "roomCode": "AH7K9K",
+        "phase": "PLAYING",
+        "sceneId": "FOREST_RUINS",
+        "serverTick": 217,
+        "worldRevision": 2,
+        "players": {
+          "e9b2e650-e628-4269-a441-9bcf38ff1550": {
+            "id": "e9b2e650-e628-4269-a441-9bcf38ff1550",
+            "role": "OATH",
+            "ready": true,
+            "connected": true,
+            "x": 120,
+            "y": 430,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "guard",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "guard"
+            ],
+            "lastProcessedInputSeq": 177,
+            "appearance": {
+              "primaryPalette": "crimson"
+            }
+          },
+          "323c329e-a77c-42c4-bda6-9ff3d49a16ee": {
+            "id": "323c329e-a77c-42c4-bda6-9ff3d49a16ee",
+            "role": "EMBER",
+            "ready": true,
+            "connected": true,
+            "x": 120,
+            "y": 480,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "guard",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "ward"
+            ],
+            "lastProcessedInputSeq": 179,
+            "appearance": {
+              "primaryPalette": "purple",
+              "effectPalette": "emerald"
+            }
+          }
+        },
+        "enemies": {},
+        "projectiles": {},
+        "puzzles": {
+          "gate": {
+            "id": "gate",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "bridge": {
+            "id": "bridge",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "engine": {
+            "id": "engine",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          }
+        },
+        "interactables": {
+          "crate": {
+            "x": 790,
+            "y": 430
+          }
+        },
+        "boss": null,
+        "checkpoint": "Clearing",
+        "projectileImpacts": []
+      }
+    ]
+  },
+  {
+    "label": "loop-next",
+    "state": [
+      {
+        "roomCode": "QF2K6M",
+        "phase": "PLAYING",
+        "sceneId": "FOREST_RUINS",
+        "serverTick": 2047,
+        "worldRevision": 2,
+        "players": {
+          "2b3d55cf-7014-4261-a4ed-0c1c04c6d07d": {
+            "id": "2b3d55cf-7014-4261-a4ed-0c1c04c6d07d",
+            "role": "OATH",
+            "ready": true,
+            "connected": false,
+            "x": 120,
+            "y": 430,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "guard"
+            ],
+            "lastProcessedInputSeq": 1645,
+            "appearance": {
+              "primaryPalette": "crimson"
+            }
+          },
+          "e49e0da2-9588-41bd-9b5f-3fd301da4134": {
+            "id": "e49e0da2-9588-41bd-9b5f-3fd301da4134",
+            "role": "EMBER",
+            "ready": true,
+            "connected": false,
+            "x": 120,
+            "y": 480,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "ward"
+            ],
+            "lastProcessedInputSeq": 1644,
+            "appearance": {
+              "primaryPalette": "purple",
+              "effectPalette": "emerald"
+            }
+          }
+        },
+        "enemies": {},
+        "projectiles": {},
+        "puzzles": {
+          "gate": {
+            "id": "gate",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "bridge": {
+            "id": "bridge",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "engine": {
+            "id": "engine",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          }
+        },
+        "interactables": {
+          "crate": {
+            "x": 790,
+            "y": 430
+          }
+        },
+        "boss": null,
+        "checkpoint": "Clearing",
+        "projectileImpacts": []
+      },
+      {
+        "roomCode": "AH7K9K",
+        "phase": "PLAYING",
+        "sceneId": "FOREST_RUINS",
+        "serverTick": 265,
+        "worldRevision": 2,
+        "players": {
+          "e9b2e650-e628-4269-a441-9bcf38ff1550": {
+            "id": "e9b2e650-e628-4269-a441-9bcf38ff1550",
+            "role": "OATH",
+            "ready": true,
+            "connected": true,
+            "x": 120,
+            "y": 430,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "guard",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "guard"
+            ],
+            "lastProcessedInputSeq": 225,
+            "appearance": {
+              "primaryPalette": "crimson"
+            }
+          },
+          "323c329e-a77c-42c4-bda6-9ff3d49a16ee": {
+            "id": "323c329e-a77c-42c4-bda6-9ff3d49a16ee",
+            "role": "EMBER",
+            "ready": true,
+            "connected": true,
+            "x": 120,
+            "y": 480,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "guard",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "ward"
+            ],
+            "lastProcessedInputSeq": 227,
+            "appearance": {
+              "primaryPalette": "purple",
+              "effectPalette": "emerald"
+            }
+          }
+        },
+        "enemies": {},
+        "projectiles": {},
+        "puzzles": {
+          "gate": {
+            "id": "gate",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "bridge": {
+            "id": "bridge",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "engine": {
+            "id": "engine",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          }
+        },
+        "interactables": {
+          "crate": {
+            "x": 790,
+            "y": 430
+          }
+        },
+        "boss": null,
+        "checkpoint": "Clearing",
+        "projectileImpacts": []
+      }
+    ]
+  },
+  {
+    "label": "end",
+    "state": [
+      {
+        "roomCode": "QF2K6M",
+        "phase": "PLAYING",
+        "sceneId": "FOREST_RUINS",
+        "serverTick": 2087,
+        "worldRevision": 2,
+        "players": {
+          "2b3d55cf-7014-4261-a4ed-0c1c04c6d07d": {
+            "id": "2b3d55cf-7014-4261-a4ed-0c1c04c6d07d",
+            "role": "OATH",
+            "ready": true,
+            "connected": false,
+            "x": 120,
+            "y": 430,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "guard"
+            ],
+            "lastProcessedInputSeq": 1645,
+            "appearance": {
+              "primaryPalette": "crimson"
+            }
+          },
+          "e49e0da2-9588-41bd-9b5f-3fd301da4134": {
+            "id": "e49e0da2-9588-41bd-9b5f-3fd301da4134",
+            "role": "EMBER",
+            "ready": true,
+            "connected": false,
+            "x": 120,
+            "y": 480,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "ward"
+            ],
+            "lastProcessedInputSeq": 1644,
+            "appearance": {
+              "primaryPalette": "purple",
+              "effectPalette": "emerald"
+            }
+          }
+        },
+        "enemies": {},
+        "projectiles": {},
+        "puzzles": {
+          "gate": {
+            "id": "gate",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "bridge": {
+            "id": "bridge",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "engine": {
+            "id": "engine",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          }
+        },
+        "interactables": {
+          "crate": {
+            "x": 790,
+            "y": 430
+          }
+        },
+        "boss": null,
+        "checkpoint": "Clearing",
+        "projectileImpacts": []
+      },
+      {
+        "roomCode": "AH7K9K",
+        "phase": "PLAYING",
+        "sceneId": "FOREST_RUINS",
+        "serverTick": 305,
+        "worldRevision": 2,
+        "players": {
+          "e9b2e650-e628-4269-a441-9bcf38ff1550": {
+            "id": "e9b2e650-e628-4269-a441-9bcf38ff1550",
+            "role": "OATH",
+            "ready": true,
+            "connected": true,
+            "x": 120,
+            "y": 430,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "guard"
+            ],
+            "lastProcessedInputSeq": 266,
+            "appearance": {
+              "primaryPalette": "crimson"
+            }
+          },
+          "323c329e-a77c-42c4-bda6-9ff3d49a16ee": {
+            "id": "323c329e-a77c-42c4-bda6-9ff3d49a16ee",
+            "role": "EMBER",
+            "ready": true,
+            "connected": true,
+            "x": 120,
+            "y": 480,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "ward"
+            ],
+            "lastProcessedInputSeq": 268,
+            "appearance": {
+              "primaryPalette": "purple",
+              "effectPalette": "emerald"
+            }
+          }
+        },
+        "enemies": {},
+        "projectiles": {},
+        "puzzles": {
+          "gate": {
+            "id": "gate",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "bridge": {
+            "id": "bridge",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "engine": {
+            "id": "engine",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          }
+        },
+        "interactables": {
+          "crate": {
+            "x": 790,
+            "y": 430
+          }
+        },
+        "boss": null,
+        "checkpoint": "Clearing",
+        "projectileImpacts": []
+      }
+    ]
+  },
+  {
+    "label": "end-mid",
+    "state": [
+      {
+        "roomCode": "QF2K6M",
+        "phase": "PLAYING",
+        "sceneId": "FOREST_RUINS",
+        "serverTick": 2141,
+        "worldRevision": 2,
+        "players": {
+          "2b3d55cf-7014-4261-a4ed-0c1c04c6d07d": {
+            "id": "2b3d55cf-7014-4261-a4ed-0c1c04c6d07d",
+            "role": "OATH",
+            "ready": true,
+            "connected": false,
+            "x": 120,
+            "y": 430,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "guard"
+            ],
+            "lastProcessedInputSeq": 1645,
+            "appearance": {
+              "primaryPalette": "crimson"
+            }
+          },
+          "e49e0da2-9588-41bd-9b5f-3fd301da4134": {
+            "id": "e49e0da2-9588-41bd-9b5f-3fd301da4134",
+            "role": "EMBER",
+            "ready": true,
+            "connected": false,
+            "x": 120,
+            "y": 480,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "ward"
+            ],
+            "lastProcessedInputSeq": 1644,
+            "appearance": {
+              "primaryPalette": "purple",
+              "effectPalette": "emerald"
+            }
+          }
+        },
+        "enemies": {},
+        "projectiles": {},
+        "puzzles": {
+          "gate": {
+            "id": "gate",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "bridge": {
+            "id": "bridge",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "engine": {
+            "id": "engine",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          }
+        },
+        "interactables": {
+          "crate": {
+            "x": 790,
+            "y": 430
+          }
+        },
+        "boss": null,
+        "checkpoint": "Clearing",
+        "projectileImpacts": []
+      },
+      {
+        "roomCode": "AH7K9K",
+        "phase": "PLAYING",
+        "sceneId": "FOREST_RUINS",
+        "serverTick": 359,
+        "worldRevision": 2,
+        "players": {
+          "e9b2e650-e628-4269-a441-9bcf38ff1550": {
+            "id": "e9b2e650-e628-4269-a441-9bcf38ff1550",
+            "role": "OATH",
+            "ready": true,
+            "connected": true,
+            "x": 120,
+            "y": 430,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "guard"
+            ],
+            "lastProcessedInputSeq": 319,
+            "appearance": {
+              "primaryPalette": "crimson"
+            }
+          },
+          "323c329e-a77c-42c4-bda6-9ff3d49a16ee": {
+            "id": "323c329e-a77c-42c4-bda6-9ff3d49a16ee",
+            "role": "EMBER",
+            "ready": true,
+            "connected": true,
+            "x": 120,
+            "y": 480,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "ward"
+            ],
+            "lastProcessedInputSeq": 322,
+            "appearance": {
+              "primaryPalette": "purple",
+              "effectPalette": "emerald"
+            }
+          }
+        },
+        "enemies": {},
+        "projectiles": {},
+        "puzzles": {
+          "gate": {
+            "id": "gate",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "bridge": {
+            "id": "bridge",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "engine": {
+            "id": "engine",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          }
+        },
+        "interactables": {
+          "crate": {
+            "x": 790,
+            "y": 430
+          }
+        },
+        "boss": null,
+        "checkpoint": "Clearing",
+        "projectileImpacts": []
+      }
+    ]
+  },
+  {
+    "label": "recovered",
+    "state": [
+      {
+        "roomCode": "QF2K6M",
+        "phase": "PLAYING",
+        "sceneId": "FOREST_RUINS",
+        "serverTick": 2192,
+        "worldRevision": 2,
+        "players": {
+          "2b3d55cf-7014-4261-a4ed-0c1c04c6d07d": {
+            "id": "2b3d55cf-7014-4261-a4ed-0c1c04c6d07d",
+            "role": "OATH",
+            "ready": true,
+            "connected": false,
+            "x": 120,
+            "y": 430,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "guard"
+            ],
+            "lastProcessedInputSeq": 1645,
+            "appearance": {
+              "primaryPalette": "crimson"
+            }
+          },
+          "e49e0da2-9588-41bd-9b5f-3fd301da4134": {
+            "id": "e49e0da2-9588-41bd-9b5f-3fd301da4134",
+            "role": "EMBER",
+            "ready": true,
+            "connected": false,
+            "x": 120,
+            "y": 480,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "ward"
+            ],
+            "lastProcessedInputSeq": 1644,
+            "appearance": {
+              "primaryPalette": "purple",
+              "effectPalette": "emerald"
+            }
+          }
+        },
+        "enemies": {},
+        "projectiles": {},
+        "puzzles": {
+          "gate": {
+            "id": "gate",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "bridge": {
+            "id": "bridge",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "engine": {
+            "id": "engine",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          }
+        },
+        "interactables": {
+          "crate": {
+            "x": 790,
+            "y": 430
+          }
+        },
+        "boss": null,
+        "checkpoint": "Clearing",
+        "projectileImpacts": []
+      },
+      {
+        "roomCode": "AH7K9K",
+        "phase": "PLAYING",
+        "sceneId": "FOREST_RUINS",
+        "serverTick": 410,
+        "worldRevision": 2,
+        "players": {
+          "e9b2e650-e628-4269-a441-9bcf38ff1550": {
+            "id": "e9b2e650-e628-4269-a441-9bcf38ff1550",
+            "role": "OATH",
+            "ready": true,
+            "connected": true,
+            "x": 120,
+            "y": 430,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "guard"
+            ],
+            "lastProcessedInputSeq": 372,
+            "appearance": {
+              "primaryPalette": "crimson"
+            }
+          },
+          "323c329e-a77c-42c4-bda6-9ff3d49a16ee": {
+            "id": "323c329e-a77c-42c4-bda6-9ff3d49a16ee",
+            "role": "EMBER",
+            "ready": true,
+            "connected": true,
+            "x": 120,
+            "y": 480,
+            "vx": 0,
+            "vy": 0,
+            "grounded": false,
+            "hp": 100,
+            "maxHp": 100,
+            "facing": 0,
+            "actionState": "idle",
+            "cooldowns": {},
+            "skillPoints": 1,
+            "unlockedSkills": [
+              "ward"
+            ],
+            "lastProcessedInputSeq": 374,
+            "appearance": {
+              "primaryPalette": "purple",
+              "effectPalette": "emerald"
+            }
+          }
+        },
+        "enemies": {},
+        "projectiles": {},
+        "puzzles": {
+          "gate": {
+            "id": "gate",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "bridge": {
+            "id": "bridge",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          },
+          "engine": {
+            "id": "engine",
+            "physical": false,
+            "arcane": false,
+            "complete": false,
+            "progress": 0
+          }
+        },
+        "interactables": {
+          "crate": {
+            "x": 790,
+            "y": 430
+          }
+        },
+        "boss": null,
+        "checkpoint": "Clearing",
+        "projectileImpacts": []
+      }
+    ]
+  }
+]

@@ -6,6 +6,7 @@ import {
   writeFileSync,
   readFileSync,
   rmSync,
+  existsSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -140,6 +141,38 @@ function fixture(iteration = 3) {
     cleanup: () => rmSync(root, { recursive: true, force: true }),
   };
 }
+it("cleans only superseded iterations after approval, retaining reports and the approved evidence", () => {
+  const f = fixture();
+  try {
+    const old = join(f.root, "art/qa/coco_ward_v1/iteration-01");
+    const future = join(f.root, "art/qa/coco_ward_v1/iteration-04");
+    const other = join(f.root, "art/qa/coco_ward_v2/iteration-01");
+    for (const dir of [old, future, other]) mkdirSync(dir, { recursive: true });
+    writeFileSync(join(old, "capture.webm"), "bulky media");
+    const report = JSON.stringify({
+      checks: [{ id: "animation", result: "REVIEW" }],
+    });
+    writeFileSync(join(old, "vision-report.json"), report);
+    expect(f.cli("cleanup", "coco_ward_v1").status).toBe(1);
+    expect(existsSync(old)).toBe(true);
+    expect(f.cli("approve", "coco_ward_v1").status).toBe(0);
+    expect(existsSync(old)).toBe(false);
+    expect(existsSync(join(f.root, f.atlas))).toBe(true);
+    expect(existsSync(future)).toBe(true);
+    expect(existsSync(other)).toBe(true);
+    const history = join(
+      f.root,
+      "art/approved/coco_ward_v1/history/iteration-01",
+    );
+    expect(readFileSync(join(history, "vision-report.json"), "utf8")).toBe(
+      report,
+    );
+    expect(existsSync(join(history, "capture.webm"))).toBe(false);
+    expect(f.cli("cleanup", "coco_ward_v1").stdout).toContain("Removed 0");
+  } finally {
+    f.cleanup();
+  }
+}, 15000);
 it("explicitly accepts REVIEW separately, preserves AI findings and publishes only after approval", () => {
   const f = fixture();
   try {

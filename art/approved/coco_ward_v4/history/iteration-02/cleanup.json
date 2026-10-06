@@ -1,0 +1,17 @@
+{
+  "source": "art/qa/coco_ward_v4/iteration-02",
+  "reports": [
+    "1440x900-states.json",
+    "1920x1080-states.json",
+    "390x844-states.json",
+    "844x390-states.json",
+    "browser-log.json",
+    "investigation-disposition.json",
+    "qa-report.json",
+    "vision-input-preview.json",
+    "vision-report.json"
+  ],
+  "approvedIteration": 8,
+  "deleted_at": "2026-10-06T00:16:53.498Z",
+  "note": "Superseded media removed after approval; historical evidence paths describe deleted captures."
+}

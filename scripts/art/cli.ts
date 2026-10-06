@@ -43,6 +43,7 @@ import {
 } from "./human-decisions.js";
 import { advanceAsset } from "./runner.js";
 import { qaEnvironment } from "./qa-environment.js";
+import { cleanupApprovedIterations } from "./cleanup.js";
 const root = resolve(
     process.env.ART_WORKSPACE_ROOT || resolve(import.meta.dirname, "../.."),
   ),
@@ -743,6 +744,13 @@ async function main() {
   idSchema.parse(arg);
   const a = manifest.assets[arg];
   if (!a) throw Error("Unknown asset; create a brief first.");
+  if (command === "cleanup") {
+    const removed = cleanupApprovedIterations(root, a);
+    console.log(
+      `Removed ${removed.length} previous QA iterations; approved iteration and historical reports preserved.`,
+    );
+    return;
+  }
   if (command === "run") {
     if (a.pending_revision && a.status === "NEEDS_HUMAN_REVIEW") {
       console.log(
@@ -1084,6 +1092,10 @@ async function main() {
     a.approved_at = new Date().toISOString();
     save();
     write(join(dir, "provenance.json"), a);
+    const removed = cleanupApprovedIterations(root, a);
+    console.log(
+      `Removed ${removed.length} previous QA iterations; approved iteration preserved.`,
+    );
     console.log(
       "APPROVED source preserved. Publish to production explicitly with art:publish.",
     );
