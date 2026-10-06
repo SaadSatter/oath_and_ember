@@ -15,6 +15,7 @@
     "test": "vitest run",
     "build": "vite build --config apps/client/vite.config.ts && tsc -p apps/server/tsconfig.json",
     "start": "node dist/apps/server/src/index.js",
+    "art:agent": "node --env-file-if-exists=.env --import tsx scripts/art/agent.ts",
     "art:brief": "node --env-file-if-exists=.env --import tsx scripts/art/cli.ts brief",
     "art:status": "node --env-file-if-exists=.env --import tsx scripts/art/cli.ts status",
     "art:integrate": "node --env-file-if-exists=.env --import tsx scripts/art/cli.ts integrate",

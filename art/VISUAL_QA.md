@@ -20,7 +20,7 @@ DESIGN → HUMAN: conflicting brief, unclear size or obscuration, technically co
 
 Every failure needs category, actionable feedback and evidence path. Example: “Runtime effect diameter is 140 px versus brief 100 px (40% too large); source atlas matches target, reduce renderer scale” = IMPLEMENTATION. “Frames 4–5 replace Coco's staff head; visible in source contact sheet” = ART. Do not claim numerical size errors without a target and measurement.
 
-Submit all seven review IDs with PASS/FAIL through `art:review`. PASS means a reviewer actually inspected the evidence. A failed objective check cannot be waived with a subjective review. Approval is a separate human command.
+Submit all seven review IDs exactly once with PASS/FAIL/REVIEW through `art:review`. PASS means a reviewer actually inspected the evidence. Preserve unsupported judgments as REVIEW for separate explicit human acceptance. A failed objective check cannot be waived with a subjective review. Approval is a separate human command.
 
 ## AI review contract
 

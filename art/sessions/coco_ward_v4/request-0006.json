@@ -1,0 +1,15 @@
+{
+  "assetId": "coco_ward_v4",
+  "text": "RESUME",
+  "feedback": "RESUME",
+  "classification": {
+    "route": "AMBIGUOUS",
+    "reason": "Insufficient information to choose source art or presentation changes.",
+    "signals": [],
+    "classifier": "explicit-rules-v1"
+  },
+  "decision": "RESUME",
+  "providerUploadsAuthorized": true,
+  "created_at": "2026-10-05T21:28:20.383Z",
+  "iteration": 5
+}

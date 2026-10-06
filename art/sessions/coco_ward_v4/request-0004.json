@@ -1,0 +1,17 @@
+{
+  "assetId": "coco_ward_v4",
+  "text": "IMPROVE: Make the barrier brighter and the runes stronger.",
+  "feedback": "Make the barrier brighter and the runes stronger.",
+  "classification": {
+    "route": "ART",
+    "reason": "Feedback changes source appearance.",
+    "signals": [
+      "source-art"
+    ],
+    "classifier": "explicit-rules-v1"
+  },
+  "decision": "IMPROVE",
+  "providerUploadsAuthorized": true,
+  "created_at": "2026-10-05T21:21:03.277Z",
+  "iteration": 3
+}

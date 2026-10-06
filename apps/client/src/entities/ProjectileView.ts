@@ -1,3 +1,4 @@
+import { effectPresentationProfiles } from "../assets/effectPresentation.js";
 import type Phaser from "phaser";
 import type { World } from "../../../../packages/shared/src/gameTypes.js";
 import { effectColor } from "../assets/palettes.js";
@@ -69,13 +70,21 @@ export class ProjectileView {
             flightFrame(now - flight.start),
           )
           .setVisible(!debug)
-          .setPosition(q.x, q.y)
+          .setScale(effectPresentationProfiles.projectile.scale)
+          .setPosition(
+            q.x + effectPresentationProfiles.projectile.offsetX,
+            q.y + effectPresentationProfiles.projectile.offsetY,
+          )
           .setRotation(angle);
-        // Core never changes animation frame, scale or offset.
+        // Core retains its frame and shares the explicit presentation profile.
         flight.core
           .setTexture(ensureMagicTexture(this.scene, "core", palette), 0)
           .setVisible(!debug)
-          .setPosition(q.x, q.y);
+          .setScale(effectPresentationProfiles.projectile.scale)
+          .setPosition(
+            q.x + effectPresentationProfiles.projectile.offsetX,
+            q.y + effectPresentationProfiles.projectile.offsetY,
+          );
       }
       if (debug || !flight) {
         g.fillStyle(color);

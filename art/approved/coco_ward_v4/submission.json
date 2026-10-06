@@ -1,0 +1,15 @@
+{
+  "kind": "production_atlas",
+  "image": "atlas.png",
+  "mask": "mask.png",
+  "frame_dimensions": [
+    128,
+    128
+  ],
+  "frame_count": 1,
+  "anchor": [
+    64,
+    70
+  ],
+  "provenance": "OpenAI Images edits; model=gpt-image-2.5-sunburst; request=req_7042e02861cf4a5394e979227b7baa64; fixed-cell nearest-neighbor normalization; see request.json, response.json, raw.png. Effect-only green mask derived from alpha; semantic correctness requires vision/human review."
+}

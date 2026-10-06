@@ -1,0 +1,31 @@
+{
+  "adapter": "game-engineer-presentation",
+  "authorization": "art/qa/coco_ward_v4/iteration-07/human-request.json",
+  "feedback": "Make the Ward smallerjust enough to fit Coco inside and instead of rotating make it pulse smoothly.",
+  "operations": [
+    "Ward scale 0.8 (20% smaller)",
+    "Disable rotation",
+    "Continuous scene-clock pulse: 1800ms, 4% scale excursion, alpha 0.84–0.96"
+  ],
+  "candidate_hashes": [
+    "30d02f8384c2c760593f032f0b23e207bd770776b9e9e0fa845883ba33b9938f",
+    "b3c9dd664cd58e534595c5f1c8d98f29abbc38cbcc29a8c50f38e17b238212a0"
+  ],
+  "files": [
+    {
+      "path": "apps/client/src/assets/effectPresentation.ts",
+      "beforeHash": "f2a4de5fcf189d48c92d9b431926bc80cd7cd338e19670965281235ca82bacda",
+      "afterHash": "8c334ccb96215abd501715e483eef8b1dcdf8b1d04bd3e306555bab097b69505"
+    },
+    {
+      "path": "apps/client/src/animation/defense.ts",
+      "beforeHash": "0a57d3e8b7899e32e17e30831cbcc3e4806d1d4447ba64591374723e6c73872f",
+      "afterHash": "9108a17e278c98ab5e0805cab2cd4051b3d77890093b08a8db05e2c393bd43af"
+    },
+    {
+      "path": "apps/client/src/entities/PlayerView.ts",
+      "beforeHash": "e6390ce88f71de24cdc4d5b52eb158d894b9123416ce05354a86e86cefe7b914",
+      "afterHash": "03d74d26c1382bbefb97e8e2671b5f97cd8b3bbe14395bcb768dbfab424e8d32"
+    }
+  ]
+}

@@ -349,13 +349,30 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
     expect(fighter.actionState).toBe("guard");
     expect(mage.actionState).toBe("guard");
     const health = [fighter.hp, mage.hp];
+    const damageTick = room.state.serverTick;
+    // A previously emitted snapshot may still be queued in the socket transport.
+    // Observe the first authoritative tick after damage, not the next arrival.
+    const defendedPromise = Promise.all(
+      clients.slice(0, 2).map(
+        (s) =>
+          new Promise<any>((resolve, reject) => {
+            const timeout = setTimeout(() => {
+              s.off("game:snapshot", observe);
+              reject(new Error("No authoritative post-damage snapshot"));
+            }, 2000);
+            function observe(snapshot: any) {
+              if (snapshot.serverTick <= damageTick) return;
+              clearTimeout(timeout);
+              s.off("game:snapshot", observe);
+              resolve(snapshot);
+            }
+            s.on("game:snapshot", observe);
+          }),
+      ),
+    );
     room.damage(fighter, 12);
     room.damage(mage, 12);
-    const defended = await Promise.all(
-      clients
-        .slice(0, 2)
-        .map((s) => new Promise<any>((res) => s.once("game:snapshot", res))),
-    );
+    const defended = await defendedPromise;
     expect(defended[0]).toEqual(defended[1]);
     for (const [index, p] of [fighter, mage].entries()) {
       expect(defended[0].players[p.id].defensiveHit).toMatchObject({ seq: 1 });

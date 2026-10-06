@@ -1,0 +1,18 @@
+{
+  "assetId": "coco_ward_v4",
+  "text": "IMPROVE: Make the barrier brighter and the runes stronger. Also make the whole ward rotate, right now its just a floating dot rotating.",
+  "feedback": "Make the barrier brighter and the runes stronger. Also make the whole ward rotate, right now its just a floating dot rotating.",
+  "classification": {
+    "route": "AMBIGUOUS",
+    "reason": "Feedback mixes source artwork and runtime presentation; choose ART or IMPLEMENTATION.",
+    "signals": [
+      "source-art",
+      "presentation"
+    ],
+    "classifier": "explicit-rules-v1"
+  },
+  "decision": "IMPROVE",
+  "providerUploadsAuthorized": true,
+  "created_at": "2026-10-05T21:19:52.449Z",
+  "iteration": 3
+}

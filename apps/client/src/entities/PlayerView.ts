@@ -1,4 +1,10 @@
-import { defenseClip, defenseKey, wardEnvelope, wardRotation } from "../animation/defense.js";
+import { effectPresentationProfiles } from "../assets/effectPresentation.js";
+import {
+  defenseClip,
+  defenseKey,
+  wardEnvelope,
+  wardRotation,
+} from "../animation/defense.js";
 import { PlayerPresentation } from "../animation/PlayerPresentation.js";
 import { heavyKey, combatKey, actionClip } from "../animation/combat.js";
 import { ensureAppearanceTexture } from "../assets/appearanceTextures.js";
@@ -226,21 +232,35 @@ export class PlayerView {
         );
       const ward =
         role === "EMBER"
-          ? wardEnvelope(defense.phase, defense.elapsedMs, c.durationMs)
+          ? wardEnvelope(defense.phase, defense.elapsedMs, c.durationMs, now)
           : null;
       this.defenseSprite
         .setRotation(ward ? wardRotation(now) : 0)
         .setAlpha(ward?.alpha ?? 1)
         .setTexture(texture, frame)
         .setVisible(true)
-        .setOrigin(0.5, ward ? 70 / 128 : 96 / 128)
+        .setOrigin(
+          0.5,
+          ward
+            ? effectPresentationProfiles.ward.centerOnCoco
+              ? 0.5
+              : 70 / 128
+            : 96 / 128,
+        )
         .setPosition(
-          position.x + characterVisuals[role].offset.x,
+          position.x +
+            characterVisuals[role].offset.x +
+            (ward ? effectPresentationProfiles.ward.offsetX : 0),
           position.y +
+            (ward ? effectPresentationProfiles.ward.offsetY : 0) +
             characterVisuals[role].offset.y -
             (ward ? 26 * characterVisuals[role].scale : 0),
         )
-        .setScale(characterVisuals[role].scale * (ward?.scale ?? 1))
+        .setScale(
+          characterVisuals[role].scale *
+            (ward?.scale ?? 1) *
+            (ward ? effectPresentationProfiles.ward.scale : 1),
+        )
         .setFlipX(!ward && defense.direction === "left")
         .setDepth((mode === "TOP_DOWN" ? position.y : 10) + (ward ? 0.5 : 0));
       if (role === "OATH") this.sprite?.setVisible(false);
@@ -359,16 +379,19 @@ export class PlayerView {
       36 * Math.max(0, Math.min(1, player.hp / player.maxHp)),
       4,
     );
-    if (observeWard && role === "EMBER") observeWard({
-      kind: presentation.kind, phase: defense?.phase ?? null,
-      elapsedMs: defense?.elapsedMs ?? null,
-      visible: this.defenseSprite?.visible ?? false,
-      alpha: this.defenseSprite?.alpha ?? 0,
-      x: this.defenseSprite?.x ?? null, y: this.defenseSprite?.y ?? null,
-      scaleX: this.defenseSprite?.scaleX ?? null,
-      texture: this.defenseSprite?.texture.key ?? null,
-      frame: this.defenseSprite?.frame.name ?? null,
-    });
+    if (observeWard && role === "EMBER")
+      observeWard({
+        kind: presentation.kind,
+        phase: defense?.phase ?? null,
+        elapsedMs: defense?.elapsedMs ?? null,
+        visible: this.defenseSprite?.visible ?? false,
+        alpha: this.defenseSprite?.alpha ?? 0,
+        x: this.defenseSprite?.x ?? null,
+        y: this.defenseSprite?.y ?? null,
+        scaleX: this.defenseSprite?.scaleX ?? null,
+        texture: this.defenseSprite?.texture.key ?? null,
+        frame: this.defenseSprite?.frame.name ?? null,
+      });
   }
   private applyAppearance() {
     if (
@@ -387,7 +410,14 @@ export class PlayerView {
 }
 
 export interface WardObservation {
-  kind: string; phase: string | null; elapsedMs: number | null;
-  visible: boolean; alpha: number; x: number | null; y: number | null;
-  scaleX: number | null; texture: string | null; frame: string | number | null;
+  kind: string;
+  phase: string | null;
+  elapsedMs: number | null;
+  visible: boolean;
+  alpha: number;
+  x: number | null;
+  y: number | null;
+  scaleX: number | null;
+  texture: string | null;
+  frame: string | number | null;
 }

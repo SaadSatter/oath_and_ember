@@ -2,6 +2,34 @@
 
 This framework coordinates four roles through files. Optional OpenAI API adapters now provide image generation and vision critique inside the same bounded filesystem pipeline. Manual mode remains the default; no continuously running agent services are introduced. Read `agents/*.md`, `ART_SPEC.md` and `VISUAL_QA.md` before performing a stage. No gameplay changes are permitted to accommodate art.
 
+## Recommended conversational workflow
+
+Use `art:agent` as the normal interface. It resolves the named asset, invokes the existing pipeline stages, extracts temporal frames before configured vision QA, and returns a Review Card with specific evidence paths. It does not replace the lower-level commands or invent a visual PASS.
+
+```sh
+# Explicitly authorizes source/reference and QA image uploads for this asset workflow.
+npm run art:agent -- --allow-provider-upload "Make Coco's Ward brighter and the runes stronger."
+# Inspect the video and review.html printed in the Review Card before deciding.
+npm run art:agent -- "IMPROVE: Make the barrier brighter. Render the Ward 20% smaller and rotate the whole Ward smoothly once every 4 seconds."
+npm run art:agent -- "APPROVE"
+# Alternatively, terminate the candidate while preserving its history:
+# npm run art:agent -- "REJECT: The overall direction is not right."
+```
+
+`APPROVE` records the existing explicit human approval and then publishes; machine `REVIEW` remains recorded separately. Objective failures still block approval. `IMPROVE` revises the same version and can authorize exactly one additional iteration beyond the current budget. Each completed revision returns to human review. Use `--asset coco_ward_v4` to avoid relying on the active conversation, `REVIEW` to refresh evidence links, and `RESUME` to continue a stopped stage. One prompt may contain multiple presentation changes or both art and presentation changes. Clear clauses become a combined plan: art revision → integration → presentation changes → QA, within one same-version iteration. The original full prompt and task breakdown are preserved. Unclear/conflicting clauses ask for clarification within that same prompt; you do not need to submit each change separately. `--route art` or `--route implementation` remains available for explicit single-role intent.
+
+Automatic presentation engineering supports percentage scale changes up to 50% per request and pixel offsets up to 16px for bound Ward/projectile effects, with cumulative bounds, plus “center the Ward around Coco” (canvas center aligned to Coco’s visual midpoint), whole Ward rotation from 1–12 seconds per revolution and gentle Ward pulsing from 0.5–6 seconds per cycle. “Instead of rotating, pulse smoothly” disables rotation and uses a 1.8-second pulse by default. “Smaller just enough to fit Coco inside” selects a recorded 20% reduction for visual review; QA must still verify clearance. These operations can share one prompt. “Too big/small” uses a recorded 20% size reduction/increase; unspecified smooth/choppy rotation uses a recorded four-second constant scene-clock revolution. Specify percentages and seconds when you want precise values. These are presentation settings, not claims that FPS/jank has been fixed. It edits only presentation profiles, preserves atlas/mask bytes, and delegates integration and the normal tests/build/browser QA to the existing pipeline. Other fade/animation timing, broad code changes and unknown instructions produce a recorded `WAITING_FOR_IMPLEMENTATION` handoff without pretending code was changed. An engineer can complete that change and use `RESUME`. Combined requests are preflighted before generation; unsupported clauses stop before spending an artist call or applying a partial change. These source-code changes remain subject to normal repository review; art publication copies approved images, not code.
+
+If QA stopped with `qa_execution` (for example, a failing test), fix the cause and use `npm run art:agent -- --asset ASSET_ID --retry-qa "RESUME"`. Add `--local-qa-only` to disable both artist calls and vision uploads while collecting local evidence. This explicitly authorizes one new QA iteration with the same atlas/mask, preserves the failed report, and performs no artist call. It does not waive visual or objective failures.
+
+Provider attempts are never silently repeated after an interruption or uncertain billed failure. Inspect saved attempt errors before explicitly using `RESUME --retry-provider`. Provider upload authorization is scoped to the active asset; a different asset needs its own authorization. Manual providers remain supported, but pause for incoming art or rubric review. The explicit keyword classifier is intentionally conservative, not an autonomous language-model engineer.
+
+Review Cards include clickable terminal hyperlinks and a macOS `open` command for the review page. Pending handoffs explicitly say there is no new improvement preview, label older evidence by iteration, and offer RESUME after engineering/art work is complete.
+
+Each request/classification is recorded in `art/sessions/<asset_id>/request-NNNN.json`; `art/agent-session.json` remembers the active asset and upload authorization. Revision requests link that journal in immutable iteration evidence. Completed QA produces `art/qa/<asset_id>/iteration-NN/review.html`, a derived local page containing local/remote videos, contact sheet, atlas, mask, responsive images, previous iteration evidence and QA findings. Open that file directly in a browser. The page displays CLI decisions; it cannot publish by itself. Animation evidence can remain `REVIEW` where temporal support is insufficient.
+
+New named Coco Ward/projectile requests use the existing bound Director briefs. Existing manifest assets can be selected explicitly; adding other runtime slots still requires the existing adapter work. For a new direction after rejection, explicitly request a “new creative direction” or “new version” rather than an ordinary improvement.
+
 ## Storage
 
 - `references/index.json`: canonical paths, reusing existing large references in Images and approved runtime/provenance documents.
@@ -14,7 +42,7 @@ This framework coordinates four roles through files. Optional OpenAI API adapter
 
 Generated screenshots/preview builds are ignored by Git. Keep reports and useful evidence together when archiving/sharing a run. The CLI writes atomically and permits one command at a time. After a crashed process, inspect `.pipeline-lock/owner.json`, confirm its PID is gone, then remove the stale lock. `ART_WORKSPACE_ROOT` isolates filesystem tests; ordinary use needs no configuration.
 
-## Commands and Coco Ward example
+## Advanced/manual commands and Coco Ward example
 
 ```sh
 npm run art:brief -- coco ward

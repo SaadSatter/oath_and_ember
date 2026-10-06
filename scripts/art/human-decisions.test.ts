@@ -13,6 +13,7 @@ import { spawnSync } from "node:child_process";
 import { digest } from "./generation.js";
 import { iterationLimit } from "./human-decisions.js";
 import { route } from "./model.js";
+import { qaEnvironment } from "./qa-environment.js";
 import type { Asset } from "./model.js";
 const repo = resolve(import.meta.dirname, "../..");
 function fixture(iteration = 3) {
@@ -166,6 +167,45 @@ it("explicitly accepts REVIEW separately, preserves AI findings and publishes on
         join(f.root, "apps/client/public/assets/characters/ember/defense.png"),
       ),
     ).toEqual(readFileSync(join(f.root, f.atlas)));
+  } finally {
+    f.cleanup();
+  }
+}, 15000);
+it("records complete local review without forcing REVIEW to PASS and rejects duplicate criteria", () => {
+  const f = fixture();
+  try {
+    const original = readFileSync(join(f.root, f.reviewPath));
+    const review = JSON.parse(original.toString());
+    const input = join(f.root, "local-review.json");
+    writeFileSync(
+      input,
+      JSON.stringify({ checks: [...review.checks, review.checks[0]] }),
+    );
+    expect(f.cli("review", "coco_ward_v1", input).stderr).toContain(
+      "exactly once",
+    );
+    writeFileSync(input, JSON.stringify({ checks: review.checks.slice(1) }));
+    expect(f.cli("review", "coco_ward_v1", input).status).toBe(1);
+    writeFileSync(
+      input,
+      JSON.stringify({ ...review, reviewer: "Local assistant inspection" }),
+    );
+    expect(f.cli("review", "coco_ward_v1", input).status).toBe(0);
+    const local = JSON.parse(
+      readFileSync(join(f.root, f.dir, "human-report.json"), "utf8"),
+    );
+    expect(local.reviewSource.reviewer).toBe("Local assistant inspection");
+    expect(local.reviewSource.sha256).toBe(digest(input));
+    expect(f.asset().status).toBe("NEEDS_HUMAN_REVIEW");
+    expect(f.asset().qa_status).toBe("REVIEW");
+    expect(f.cli("approve", "coco_ward_v1").status).toBe(0);
+    const approval = JSON.parse(
+      readFileSync(join(f.root, f.asset().human_approval!), "utf8"),
+    );
+    expect(approval.acceptedFindings.map((c: { id: string }) => c.id)).toEqual([
+      "animation",
+    ]);
+    expect(readFileSync(join(f.root, f.reviewPath))).toEqual(original);
   } finally {
     f.cleanup();
   }
@@ -334,3 +374,73 @@ it("respects the latest human disposition instead of resurrecting an earlier mac
     f.cleanup();
   }
 }, 15000);
+
+it("QA isolation prevents an outer ART journal from rejecting an unrelated implementation revision", () => {
+  const f = fixture();
+  try {
+    const journal = join(f.root, "outer-art-request.json");
+    writeFileSync(
+      journal,
+      JSON.stringify({ classification: { route: "ART" } }),
+    );
+    const outer = {
+      ...process.env,
+      ART_AGENT_INTENT_FILE: journal,
+      ART_WORKSPACE_ROOT: f.root,
+      OPENAI_API_KEY: "",
+    };
+    const run = (env: NodeJS.ProcessEnv) =>
+      spawnSync(
+        process.execPath,
+        [
+          "--import",
+          "tsx",
+          join(repo, "scripts/art/cli.ts"),
+          "revise",
+          "coco_ward_v1",
+          "--implementation",
+          "Increase size 15%",
+        ],
+        { cwd: repo, env, encoding: "utf8" },
+      );
+    const leaked = run(outer);
+    expect(leaked.status).toBe(1);
+    expect(leaked.stderr).toContain(
+      "Classification and revision route disagree",
+    );
+    const isolated = run(qaEnvironment(outer));
+    expect(isolated.status).toBe(0);
+    expect(f.asset().status).toBe("WAITING_FOR_IMPLEMENTATION");
+    expect(outer.ART_AGENT_INTENT_FILE).toBe(journal);
+  } finally {
+    f.cleanup();
+  }
+});
+it("retries failed QA in a new iteration without artist calls or changed artwork", () => {
+  const f = fixture();
+  try {
+    const original = readFileSync(join(f.root, f.atlas));
+    const failedPath = join(f.root, f.dir, "qa-report.json");
+    writeFileSync(
+      failedPath,
+      JSON.stringify({
+        checks: [
+          { id: "qa_execution", result: "FAIL", category: "IMPLEMENTATION" },
+        ],
+      }),
+    );
+    const failed = readFileSync(failedPath);
+    const result = f.cli("retry-qa", "coco_ward_v1");
+    expect(result.stderr || result.stdout).toContain("artwork preserved");
+    expect(result.status).toBe(0);
+    expect(f.asset().iteration).toBe(4);
+    expect(f.asset().status).toBe("READY_FOR_QA");
+    expect(f.asset().generation_attempts).toBe(3);
+    expect(readFileSync(join(f.root, f.asset().runtime_files[0]))).toEqual(
+      original,
+    );
+    expect(readFileSync(failedPath)).toEqual(failed);
+  } finally {
+    f.cleanup();
+  }
+});

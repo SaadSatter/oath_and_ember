@@ -169,18 +169,18 @@
     "coco_ward_v4": {
       "asset_id": "coco_ward_v4",
       "version": 4,
-      "status": "NEEDS_HUMAN_REVIEW",
+      "status": "APPROVED",
       "character": "coco",
       "animation": "ward",
-      "source_file": "art/qa/coco_ward_v4/iteration-02/candidate",
+      "source_file": "art/qa/coco_ward_v4/iteration-07/candidate",
       "canonical_references": [
         "Images/Character Concept art.png",
         "Images/Sprites/Defense Basic Sprites.png",
         "docs/DEFENSE_ASSET_PROVENANCE.json"
       ],
       "runtime_files": [
-        "art/qa/coco_ward_v4/iteration-03/candidate/atlas.png",
-        "art/qa/coco_ward_v4/iteration-03/candidate/mask.png"
+        "art/qa/coco_ward_v4/iteration-08/candidate/atlas.png",
+        "art/qa/coco_ward_v4/iteration-08/candidate/mask.png"
       ],
       "directions": [
         "omnidirectional"
@@ -200,8 +200,8 @@
         "mask_channel": "green"
       },
       "qa_status": "REVIEW",
-      "iteration": 3,
-      "approved_at": null,
+      "iteration": 8,
+      "approved_at": "2026-10-06T00:11:37.813Z",
       "target": "assets/characters/ember/defense.png",
       "mask_target": "assets/characters/ember/defense-mask.png",
       "reports": [
@@ -211,18 +211,35 @@
         "art/qa/coco_ward_v4/iteration-02/vision-report.json",
         "art/qa/coco_ward_v4/iteration-02/investigation-disposition.json",
         "art/qa/coco_ward_v4/iteration-03/qa-report.json",
-        "art/qa/coco_ward_v4/iteration-03/vision-report.json"
+        "art/qa/coco_ward_v4/iteration-03/vision-report.json",
+        "art/qa/coco_ward_v4/iteration-04/qa-report.json",
+        "art/qa/coco_ward_v4/iteration-05/qa-report.json",
+        "art/qa/coco_ward_v4/iteration-06/qa-report.json",
+        "art/qa/coco_ward_v4/iteration-06/vision-report.json",
+        "art/qa/coco_ward_v4/iteration-07/qa-report.json",
+        "art/qa/coco_ward_v4/iteration-07/vision-report.json",
+        "art/qa/coco_ward_v4/iteration-08/qa-report.json",
+        "art/qa/coco_ward_v4/iteration-08/human-report.json"
       ],
-      "generation_attempts": 1,
+      "generation_attempts": 2,
       "generation_history": [
-        "art/incoming/coco_ward_v4/generated/attempt-01"
+        "art/incoming/coco_ward_v4/generated/attempt-01",
+        "art/incoming/coco_ward_v4/generated/attempt-02"
       ],
-      "source_hash": "f5b7e3d92d1b4dd6566421eb298ecfb5b6caabaac67f7e6f6cc4255d0909cc99",
-      "integration_hash": "742a8b0ac4a2e7639951d9c427fb1c119ba21a0a9a25830c194ce761f0d45d43",
+      "source_hash": "30d02f8384c2c760593f032f0b23e207bd770776b9e9e0fa845883ba33b9938f",
+      "integration_hash": "b3c9dd664cd58e534595c5f1c8d98f29abbc38cbcc29a8c50f38e17b238212a0",
       "human_decisions": [
-        "art/qa/coco_ward_v4/iteration-03/human-request.json"
+        "art/qa/coco_ward_v4/iteration-03/human-request.json",
+        "art/qa/coco_ward_v4/iteration-04/human-request.json",
+        "art/qa/coco_ward_v4/iteration-05/human-request.json",
+        "art/qa/coco_ward_v4/iteration-06/human-request.json",
+        "art/qa/coco_ward_v4/iteration-07/human-request.json",
+        "art/qa/coco_ward_v4/iteration-08/human-request.json",
+        "art/qa/coco_ward_v4/iteration-08/human-approval.json"
       ],
-      "authorized_iteration_limit": 3
+      "authorized_iteration_limit": 8,
+      "authorized_generation_limit": 3,
+      "human_approval": "art/qa/coco_ward_v4/iteration-08/human-approval.json"
     }
   }
 }

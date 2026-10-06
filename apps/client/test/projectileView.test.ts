@@ -33,6 +33,7 @@ function harness() {
           setDepth: chain(),
           setOrigin: chain(),
           setVisible: chain(),
+          setScale: chain(),
           setPosition: chain(),
           setRotation: chain(),
           setTexture: chain(),
@@ -166,4 +167,25 @@ it("ships normalized transparent flight/core/impact sheets matching centralized 
   expect(flightFrame(4000)).toBeLessThan(4);
   expect(magicAssets.flight.loop).toBe(true);
   expect(magicAssets.impact.loop).toBe(false);
+});
+
+import { effectPresentationProfiles } from "../src/assets/effectPresentation.js";
+it("presentation scaling and offsets leave authoritative projectile coordinates unchanged", () => {
+  const profile = effectPresentationProfiles.projectile;
+  const before = { ...profile };
+  const h = harness(),
+    w = world(),
+    original = JSON.stringify(w);
+  try {
+    Object.assign(profile, { scale: 1.15, offsetX: 4, offsetY: -4 });
+    h.view.update(w, () => ({ x: 99, y: 80 }), false);
+    for (const image of h.images) {
+      expect(image.setScale).toHaveBeenLastCalledWith(1.15);
+      expect(image.setPosition).toHaveBeenLastCalledWith(103, 76);
+    }
+    expect(JSON.stringify(w)).toBe(original);
+  } finally {
+    Object.assign(profile, before);
+    h.view.destroy();
+  }
 });

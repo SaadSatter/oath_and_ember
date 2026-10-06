@@ -9,6 +9,7 @@ vi.mock("../src/assets/appearanceTextures.js", () => ({
 }));
 import { PlayerView } from "../src/entities/PlayerView.js";
 import { heroAssets, animationKey } from "../src/animation/definitions.js";
+import { effectPresentationProfiles } from "../src/assets/effectPresentation.js";
 import { characterVisuals } from "../src/assets/characterVisuals.js";
 import type { Player } from "../../../packages/shared/src/gameTypes.js";
 import { readFileSync } from "node:fs";
@@ -289,7 +290,7 @@ it("keeps Coco's clean body visible while animating only the isolated Ward layer
   h.scene.time.now = 1000;
   h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 30 });
   expect(ward.setTexture.mock.calls.at(-1)?.[1]).toBe(0);
-  expect(ward.setRotation).toHaveBeenLastCalledWith((1000 * Math.PI * 2) / 2400);
+  expect(ward.setRotation).toHaveBeenLastCalledWith(0);
   expect(h.sprite.setScale).toHaveBeenLastCalledWith(1);
   expect(h.sprite.setTint).not.toHaveBeenCalled();
   h.view.update(p, p, p, "TOP_DOWN", "geometric", { serverTick: 30 });
@@ -299,6 +300,31 @@ it("keeps Coco's clean body visible while animating only the isolated Ward layer
   expect(ward.setVisible).toHaveBeenLastCalledWith(true);
   expect(h.sprite.setVisible).toHaveBeenLastCalledWith(true);
   expect(h.sprite.play).toHaveBeenCalledTimes(1);
+});
+it("centers Ward on Coco's visual midpoint without changing body or authoritative coordinates", () => {
+  const profile = effectPresentationProfiles.ward,
+    before = { ...profile };
+  const h = harness(),
+    p = { ...player("EMBER"), actionState: "guard" };
+  const original = JSON.stringify(p);
+  try {
+    Object.assign(profile, { centerOnCoco: true, offsetX: 0, offsetY: 0 });
+    for (const now of [0, 900, 1800, 2700]) {
+      h.scene.time.now = now;
+      h.view.update(p, p, p, "TOP_DOWN", "sprite", {
+        serverTick: Math.round(now * 0.03),
+      });
+      const ward = h.scene.add.image.mock.results[0].value;
+      expect(ward.setOrigin).toHaveBeenLastCalledWith(0.5, 0.5);
+      expect(ward.setPosition).toHaveBeenLastCalledWith(p.x, p.y + 13 - 26);
+      expect(h.sprite.setPosition).toHaveBeenLastCalledWith(p.x, p.y + 13);
+      expect(h.sprite.setScale).toHaveBeenLastCalledWith(1);
+    }
+    expect(JSON.stringify(p)).toBe(original);
+  } finally {
+    Object.assign(profile, before);
+    if (before.centerOnCoco === undefined) delete profile.centerOnCoco;
+  }
 });
 it("holds Sieg's Guard body on one anchored pose across loop cycles", () => {
   const h = harness(),
@@ -323,18 +349,39 @@ it("holds Sieg's Guard body on one anchored pose across loop cycles", () => {
 
 it("reports the actual Ward layer without mutating authoritative state or changing presentation", () => {
   const h = harness();
-  const image = Object.assign(h.scene.add.image(), {visible: false, alpha: 0, x: 0, y: 0, scaleX: 1});
-  image.setVisible.mockImplementation(function (this: any, value: boolean) {this.visible = value; return this;});
-  image.setAlpha.mockImplementation(function (this: any, value: number) {this.alpha = value; return this;});
+  const image = Object.assign(h.scene.add.image(), {
+    visible: false,
+    alpha: 0,
+    x: 0,
+    y: 0,
+    scaleX: 1,
+  });
+  image.setVisible.mockImplementation(function (this: any, value: boolean) {
+    this.visible = value;
+    return this;
+  });
+  image.setAlpha.mockImplementation(function (this: any, value: number) {
+    this.alpha = value;
+    return this;
+  });
   h.scene.add.image.mockReturnValue(image);
-  const p = Object.freeze({...player("EMBER"), actionState: "guard"});
+  const p = Object.freeze({ ...player("EMBER"), actionState: "guard" });
   const observe = vi.fn();
-  h.view.update(p, p, p, "TOP_DOWN", "sprite", {serverTick: 10}, observe);
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 10 }, observe);
   h.scene.time.now = 1000;
-  h.view.update(p, p, p, "TOP_DOWN", "sprite", {serverTick: 40}, observe);
-  expect(observe).toHaveBeenLastCalledWith(expect.objectContaining({kind: "defense", phase: "loop", visible: true, alpha: image.alpha}));
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 40 }, observe);
+  expect(observe).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      kind: "defense",
+      phase: "loop",
+      visible: true,
+      alpha: image.alpha,
+    }),
+  );
   expect(image.alpha).toBeGreaterThan(0);
   expect(p.actionState).toBe("guard");
-  h.view.update(p, p, p, "TOP_DOWN", "geometric", {serverTick: 40}, observe);
-  expect(observe).toHaveBeenLastCalledWith(expect.objectContaining({visible: false}));
+  h.view.update(p, p, p, "TOP_DOWN", "geometric", { serverTick: 40 }, observe);
+  expect(observe).toHaveBeenLastCalledWith(
+    expect.objectContaining({ visible: false }),
+  );
 });

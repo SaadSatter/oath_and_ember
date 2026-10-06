@@ -1,0 +1,117 @@
+{
+  "reviewer": "Codex assistant — local source/runtime visual inspection (not OpenAI provider review or human signoff)",
+  "created_at": "2026-10-06T00:10:34.223Z",
+  "checks": [
+    {
+      "id": "character_consistency",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-08/candidate/atlas.png",
+      "evidence_paths": [
+        "art/qa/coco_ward_v4/iteration-08/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1920x1080-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1440x900-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1440x900-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/390x844-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/390x844-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/844x390-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/844x390-client-2-loop.png"
+      ],
+      "feedback": "Local Codex visual inspection: the separate hollow effect contains no character body. Both clients retain Coco's hat, hair, purple clothing and staff across the inspected viewports."
+    },
+    {
+      "id": "animation",
+      "result": "REVIEW",
+      "category": "DESIGN",
+      "evidence": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-15640.png",
+      "evidence_paths": [
+        "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-START_REQUEST/frame-8360.png",
+        "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-15640.png",
+        "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-END_REQUEST/frame-22560.png",
+        "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-START_REQUEST/frame-8360.png",
+        "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-HELD_REQUEST/frame-15640.png",
+        "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-END_REQUEST/frame-22560.png"
+      ],
+      "feedback": "Local Codex visual inspection: ordered desktop samples show visible held Ward and eventual remote release, with a stable center. START/END request hints compare different server ticks across clients; sparse samples and approximate phase alignment cannot prove exact timing, continuous smoothness, FPS or absence of flicker. Preserve REVIEW for explicit human acceptance."
+    },
+    {
+      "id": "rendering",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-2-loop.png",
+      "evidence_paths": [
+        "art/qa/coco_ward_v4/iteration-08/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1920x1080-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1440x900-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1440x900-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/390x844-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/390x844-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/844x390-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/844x390-client-2-loop.png"
+      ],
+      "feedback": "Local Codex visual inspection: transparent surroundings, visible body layering and crisp effect edges; no rectangular background or viewport clipping in either client. The reduced hollow rim is centered around Coco."
+    },
+    {
+      "id": "vfx",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-2-loop.png",
+      "evidence_paths": [
+        "art/qa/coco_ward_v4/iteration-08/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1920x1080-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1440x900-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1440x900-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/390x844-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/390x844-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/844x390-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/844x390-client-2-loop.png"
+      ],
+      "feedback": "Local Codex visual inspection: readable circular rune rim leaves Coco visible through the center, without hiding the body or nearby gameplay."
+    },
+    {
+      "id": "palette",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-08/candidate/mask.png",
+      "evidence_paths": [
+        "art/qa/coco_ward_v4/iteration-08/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1920x1080-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1440x900-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1440x900-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/390x844-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/390x844-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/844x390-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/844x390-client-2-loop.png"
+      ],
+      "feedback": "Local Codex visual inspection: ember source becomes emerald effect only in runtime; Coco's protected colors remain intact. Exact coverage diagnostics report all 8,558 alpha-bearing atlas pixels covered, with zero missing, extra or invalid mask pixels."
+    },
+    {
+      "id": "multiplayer",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-1-loop.png",
+      "evidence_paths": [
+        "art/qa/coco_ward_v4/iteration-08/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1920x1080-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1440x900-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1440x900-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/390x844-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/390x844-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/844x390-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/844x390-client-2-loop.png"
+      ],
+      "feedback": "Local Codex visual inspection: client 1 remote Coco and client 2 local Coco show the same intended hollow emerald Ward in held-state captures at all four viewports. Unequal video PTS/server ticks are not treated as simultaneous samples."
+    },
+    {
+      "id": "responsive",
+      "result": "PASS",
+      "evidence": "art/qa/coco_ward_v4/iteration-08/390x844-client-1-loop.png",
+      "evidence_paths": [
+        "art/qa/coco_ward_v4/iteration-08/1920x1080-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1920x1080-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1440x900-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/1440x900-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/390x844-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/390x844-client-2-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/844x390-client-1-loop.png",
+        "art/qa/coco_ward_v4/iteration-08/844x390-client-2-loop.png"
+      ],
+      "feedback": "Local Codex visual inspection: desktop, laptop, portrait and landscape show a readable Ward and Coco on both clients without viewport clipping."
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "screenshot": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-1-start.png",
+  "beforeRenderId": 133,
+  "afterRenderId": 190,
+  "correlation": "Read the visible QA F marker in the screenshot/video and look up that exact renderId in client presentation samples; bracketing IDs alone do not claim atomic capture."
+}

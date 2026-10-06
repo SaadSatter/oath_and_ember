@@ -42,6 +42,7 @@ import {
   requireDecisionState,
 } from "./human-decisions.js";
 import { advanceAsset } from "./runner.js";
+import { qaEnvironment } from "./qa-environment.js";
 const root = resolve(
     process.env.ART_WORKSPACE_ROOT || resolve(import.meta.dirname, "../.."),
   ),
@@ -74,7 +75,12 @@ const save = () => {
   write(manifestFile + ".tmp", manifest);
   renameSync(manifestFile + ".tmp", manifestFile);
 };
-function report(a: Asset, checks: Finding[], stage: string) {
+function report(
+  a: Asset,
+  checks: Finding[],
+  stage: string,
+  reviewSource?: { reviewer: string; input: string; sha256: string },
+) {
   const dir = path(
     `art/qa/${a.asset_id}/iteration-${String(a.iteration).padStart(2, "0")}`,
   );
@@ -107,6 +113,7 @@ function report(a: Asset, checks: Finding[], stage: string) {
             ? "HUMAN"
             : null,
     checks,
+    ...(reviewSource ? { reviewSource } : {}),
   };
   write(file, value);
   writeFileSync(
@@ -378,7 +385,9 @@ async function generate(a: Asset) {
       humanFeedback:
         a.pending_revision?.kind === "art"
           ? a.pending_revision.feedback
-          : undefined,
+          : process.env.ART_AGENT_INTENT_FILE
+            ? json(process.env.ART_AGENT_INTENT_FILE).feedback
+            : undefined,
       editSource:
         a.pending_revision?.kind === "art"
           ? a.pending_revision.reference_atlas
@@ -691,6 +700,7 @@ async function qa(a: Asset) {
     for (const command of ["typecheck", "test", "build"]) {
       const r = spawnSync("npm", ["run", command], {
         cwd: root,
+        env: qaEnvironment(),
         stdio: "inherit",
       });
       if (r.status !== 0) throw Error(`${command} failed`);
@@ -769,8 +779,12 @@ async function main() {
       }
     }
     await advanceAsset(a, {
-      artistEnabled: config.sprite_artist.provider === "openai",
-      visionEnabled: config.visual_qa.provider === "openai",
+      artistEnabled:
+        config.sprite_artist.provider === "openai" &&
+        !process.argv.includes("--no-artist"),
+      visionEnabled:
+        config.visual_qa.provider === "openai" &&
+        !process.argv.includes("--defer-vision"),
       maxIterations: iterationLimit(a, manifest.max_iterations),
       hasSubmission: (a) =>
         existsSync(path(`${a.source_file}/submission.json`)),
@@ -801,6 +815,52 @@ async function main() {
   }
   if (command === "vision") return vision(a);
   if (command === "integrate") return integrate(a);
+  if (command === "retry-qa") {
+    requireDecisionState(a);
+    const previous = `art/qa/${a.asset_id}/iteration-${String(a.iteration).padStart(2, "0")}`;
+    const failed = json(path(`${previous}/qa-report.json`));
+    if (
+      !failed.checks.some(
+        (c: Finding) => c.id === "qa_execution" && c.result === "FAIL",
+      )
+    )
+      throw Error(
+        "QA retry requires an execution failure, not a visual failure",
+      );
+    if (
+      a.runtime_files.some(
+        (p, i) => hash(path(p)) !== [a.source_hash, a.integration_hash][i],
+      )
+    )
+      throw Error("QA retry must preserve candidate artwork");
+    const next = a.iteration + 1;
+    const request = `art/qa/${a.asset_id}/iteration-${String(next).padStart(2, "0")}/human-request.json`;
+    if (existsSync(path(request))) throw Error("Revision already requested");
+    write(path(request), {
+      assetId: a.asset_id,
+      decision: "retry_qa",
+      from_iteration: a.iteration,
+      to_iteration: next,
+      previous_report: `${previous}/qa-report.json`,
+      authorized_iterations: 1,
+      candidate_hashes: [a.source_hash, a.integration_hash],
+      created_at: new Date().toISOString(),
+    });
+    (a.human_decisions ||= []).push(request);
+    a.authorized_iteration_limit = Math.max(
+      iterationLimit(a, manifest.max_iterations),
+      next,
+    );
+    a.source_file = relative(root, resolve(path(a.runtime_files[0]), ".."));
+    a.pending_revision = undefined;
+    a.status = "READY_FOR_INTEGRATION";
+    save();
+    await integrate(a);
+    console.log(
+      "QA retry staged; artwork preserved. Resume the existing workflow.",
+    );
+    return;
+  }
   if (command === "capture") return qa(a);
   if (command === "qa") {
     await qa(a);
@@ -821,8 +881,6 @@ async function main() {
       throw Error("Complete browser QA before visual review.");
     const review = json(resolve(arg2));
     const checks = findingSchema.array().min(1).parse(review.checks);
-    if (checks.some((c) => c.result === "REVIEW"))
-      throw Error("Resolve all review items with PASS or classified FAIL.");
     const original = json(path(latest));
     if (original.checks.some((c: Finding) => c.result === "FAIL"))
       throw Error("Fix objective failures in a new iteration.");
@@ -846,9 +904,15 @@ async function main() {
       "multiplayer",
       "responsive",
     ])
-      if (!checks.some((c) => c.id === required))
-        throw Error(`Missing review criterion: ${required}`);
-    report(a, checks, "human");
+      if (checks.filter((c) => c.id === required).length !== 1)
+        throw Error(`Review criterion must appear exactly once: ${required}`);
+    report(a, checks, "human", {
+      reviewer: typeof review.reviewer === "string" ? review.reviewer : "human",
+      input: relative(root, resolve(arg2)),
+      sha256: createHash("sha256")
+        .update(readFileSync(resolve(arg2)))
+        .digest("hex"),
+    });
     return;
   }
   if (command === "reject") {
@@ -902,8 +966,25 @@ async function main() {
           .filter((p) => /\.(ts|css)$/.test(p) && !p.startsWith("net/"))
           .map((p) => `${codeRoot}/${p}`)
       : [];
+    const agentIntent = process.env.ART_AGENT_INTENT_FILE
+      ? json(process.env.ART_AGENT_INTENT_FILE)
+      : undefined;
+    if (
+      agentIntent &&
+      agentIntent.classification.route !== kind.toUpperCase() &&
+      !(
+        kind === "art" &&
+        agentIntent.classification.route === "COMBINED" &&
+        agentIntent.classification.tasks?.art === feedback
+      )
+    )
+      throw Error("Classification and revision route disagree");
     write(path(file), {
       ...request,
+      classification: agentIntent?.classification,
+      original_feedback: agentIntent?.feedback,
+      tasks: agentIntent?.classification.tasks,
+      conversation_request: process.env.ART_AGENT_INTENT_FILE,
       assetId: a.asset_id,
       decision: `revise_${kind}`,
       created_at: new Date().toISOString(),

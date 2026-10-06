@@ -1,3 +1,4 @@
+import { effectPresentationProfiles } from "../assets/effectPresentation.js";
 import type { Role } from "../../../../packages/shared/src/gameTypes.js";
 import type { CombatDirection } from "./combat.js";
 export type DefensePhase = "start" | "loop" | "end" | "impact";
@@ -30,7 +31,10 @@ export function defenseClip(
               ? 500
               : phase === "start" && direction === "up"
                 ? (7 * 1000) / 12
-                : (8 * 1000) / 12) / 1.5,
+                : (8 * 1000) / 12) /
+        (phase === "end"
+          ? effectPresentationProfiles.ward.endRate
+          : effectPresentationProfiles.ward.startRate),
     };
   // Only start poses exist vertically. Hold their final pose; recovery uses right art.
   const vertical = direction === "up" || direction === "down";
@@ -80,17 +84,35 @@ export function wardEnvelope(
   phase: DefensePhase,
   elapsedMs: number,
   durationMs: number,
+  sceneNowMs = elapsedMs,
 ) {
   const progress = Math.min(1, Math.max(0, elapsedMs / durationMs));
   const strength =
     phase === "start" ? progress : phase === "end" ? 1 - progress : 1;
+  const profile = effectPresentationProfiles.ward;
+  if (profile.pulseScale || profile.pulseDepth) {
+    // One continuous scene clock avoids pulse restarts at phase/snapshot changes.
+    const pulse = (1 - Math.cos(sceneNowMs / profile.pulseMs)) / 2;
+    return {
+      alpha: strength * (0.96 - (profile.pulseDepth ?? 0) * pulse),
+      scale:
+        (0.9 + 0.1 * strength) *
+        (1 - (profile.pulseScale ?? 0) * strength * pulse),
+    };
+  }
   return {
     alpha:
       strength *
-      (phase === "loop" ? 0.9 + Math.sin(elapsedMs / 210) * 0.06 : 0.96),
+      (phase === "loop"
+        ? 0.9 +
+          Math.sin(elapsedMs / effectPresentationProfiles.ward.pulseMs) * 0.06
+        : 0.96),
     scale: 0.9 + 0.1 * strength,
   };
 }
 
 // Continuous scene clock keeps rotation stable across phase changes and snapshots.
-export const wardRotation = (nowMs: number) => (nowMs * Math.PI * 2) / 2400;
+export const wardRotation = (nowMs: number) =>
+  effectPresentationProfiles.ward.rotationMs
+    ? (nowMs * Math.PI * 2) / effectPresentationProfiles.ward.rotationMs
+    : 0;

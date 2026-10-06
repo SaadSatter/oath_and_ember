@@ -1,0 +1,1136 @@
+{
+  "destination": "OpenAI Responses API",
+  "model": "gpt-5.6",
+  "images": [
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/candidate/atlas.png",
+      "role": "source",
+      "sha256": "30d02f8384c2c760593f032f0b23e207bd770776b9e9e0fa845883ba33b9938f"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/candidate/mask.png",
+      "role": "source",
+      "sha256": "b3c9dd664cd58e534595c5f1c8d98f29abbc38cbcc29a8c50f38e17b238212a0"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/contact-sheet.png",
+      "role": "source",
+      "sha256": "30d02f8384c2c760593f032f0b23e207bd770776b9e9e0fa845883ba33b9938f"
+    },
+    {
+      "path": "Images/Character Concept art.png",
+      "role": "reference",
+      "sha256": "d6cb8715f3f8d8630079b1a29cb97238482c2338c10096a351a424ed11ebce8d"
+    },
+    {
+      "path": "Images/Sprites/Defense Basic Sprites.png",
+      "role": "reference",
+      "sha256": "54ff7a00f227ece98054e5b2ffe5cd94511ef8b38d7e3d6196fe3697b3bffd5f"
+    },
+    {
+      "path": "apps/client/public/assets/characters/ember/defense.png",
+      "role": "reference",
+      "sha256": "6a5a037623ea305949419dc09b01656807938f48226b64b8fe6d7b2ca142233d"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-1-idle.png",
+      "role": "runtime",
+      "sha256": "79df49824950efcd7f9970935e96625c7324e03b476ba8e48e7e411768bd3898"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-1-start.png",
+      "role": "runtime",
+      "sha256": "3617d72fc2367d54bf727247fea6c48065ce40c9e206790981f3d8e412f8f0fd"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-1-start-mid.png",
+      "role": "runtime",
+      "sha256": "80b3bcadc51f16037911702f1b990378a72d60849fed643fb13d4cd933e8660b"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-1-loop.png",
+      "role": "runtime",
+      "sha256": "edc0beadfb8d00d909e34d1b9192f4282e64bd75f553e173a6daac88e737861d"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-1-loop-next.png",
+      "role": "runtime",
+      "sha256": "7f5fbb34d279e7e023eb7755ce34794ebaaedce6f36da830c4a3043dd1940486"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-1-end.png",
+      "role": "runtime",
+      "sha256": "d7017dcf706534f633c5960eaeb316c5992dcb5096f323f1018ecc9732844366"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-1-end-mid.png",
+      "role": "runtime",
+      "sha256": "afa6043788801d4d935370ab2d2576db5b9252604a973e8046d25478ecbde4eb"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-1-recovered.png",
+      "role": "runtime",
+      "sha256": "9d0efce491ac602d7fe4e3ffb16d5f5745f34d6829a191e42025fdf5db12fe98"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-2-idle.png",
+      "role": "runtime",
+      "sha256": "2bd212fc191f690f0dab9728d31f209b41d233667abc839a07eb2f855c3eac27"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-2-start.png",
+      "role": "runtime",
+      "sha256": "bdb41e1cbab59367ba7b40deb89b1f99db0c23023f8b6a3f970db4807ca863df"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-2-start-mid.png",
+      "role": "runtime",
+      "sha256": "20d77391661197e58d7853595c98355853d227185cefd46438ffeb9374477285"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-2-loop.png",
+      "role": "runtime",
+      "sha256": "8c7c15f6fb14972eab11101c6535981d6c57c84dd34a3622ea716b175148730f"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-2-loop-next.png",
+      "role": "runtime",
+      "sha256": "c0d8808c5612b644011f46c7e156a667d40cfeea0c78ae903b846b6f90099215"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-2-end.png",
+      "role": "runtime",
+      "sha256": "19b4ff8be69a0c58e02ef563454f5f1153c015ec0a1234d577c112debd96abbe"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-2-end-mid.png",
+      "role": "runtime",
+      "sha256": "91c3faad62fbe758f78225b4b19031d5c8392d9da5c2e85472a34f20a3417a3b"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1920x1080-client-2-recovered.png",
+      "role": "runtime",
+      "sha256": "e013b77822fa1ebbdae68e54540028ccd2d8d87aeee15a3ac69557794c7fd76e"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1440x900-client-1-idle.png",
+      "role": "runtime",
+      "sha256": "3f93d0969623ff0c6ff4ab2faf22377d9107e13e62695a6fda8d82525b96a448"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1440x900-client-1-start.png",
+      "role": "runtime",
+      "sha256": "050ced4bacae44b64577269bc03cf46bf29c9978889a27dd786694760172b58a"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1440x900-client-1-start-mid.png",
+      "role": "runtime",
+      "sha256": "9ae71cc4f3e7d2489b231a79f51b5fa56b6a18ba54440832bd3642bc0baf501e"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1440x900-client-1-loop.png",
+      "role": "runtime",
+      "sha256": "764d01eab48a2646943c07df7588674b7c9bcce19b67398c90a49bc716769e66"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1440x900-client-1-loop-next.png",
+      "role": "runtime",
+      "sha256": "b8bae45907271b82544e789092338d859584378740d4cbe213263b92f1fd2a08"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1440x900-client-1-end.png",
+      "role": "runtime",
+      "sha256": "7209a81877bd2788a00d1d7d4388f4910b269d1fab0715283eaf810c28f09cbc"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1440x900-client-1-end-mid.png",
+      "role": "runtime",
+      "sha256": "4bacd871dc1b12e0f3061616b9dda44e39d74593b8a503309baae94b964c5bd1"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1440x900-client-1-recovered.png",
+      "role": "runtime",
+      "sha256": "acea947a92dcb3a859eb91176d3f14362d1019a2b350fbafe4e8640e544ba8b3"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1440x900-client-2-idle.png",
+      "role": "runtime",
+      "sha256": "36c10df144981194fa95d6178cd91be229260d09b0403763745af101e4b33847"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1440x900-client-2-start.png",
+      "role": "runtime",
+      "sha256": "5511999567e3174881f42821d9714d7596904588e3e85603812e7bf3302992f6"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1440x900-client-2-start-mid.png",
+      "role": "runtime",
+      "sha256": "67f1c50c24eb68200ed77c8c8c2440627754e5a9de81de7914203679340d52ff"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1440x900-client-2-loop.png",
+      "role": "runtime",
+      "sha256": "e9c16811104fca0ce563a3e6fa8f93acd065b42e700f92695859f159995df3a9"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1440x900-client-2-loop-next.png",
+      "role": "runtime",
+      "sha256": "a128b35f507b94095234a75831f755d0054ba3ca83742938a1906760ad37dd1f"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1440x900-client-2-end.png",
+      "role": "runtime",
+      "sha256": "62623ece98eb5240c2b25f2989d30ac6d876f89a5d85532c130ede74addb492c"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1440x900-client-2-end-mid.png",
+      "role": "runtime",
+      "sha256": "5a2a04980b79ec8dab7074b3a5d0c23e9d256b854a02f1307695155fbc41b8d5"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/1440x900-client-2-recovered.png",
+      "role": "runtime",
+      "sha256": "18cf124099257d84a3d95cdd19b4c08eb3a8e996413fa709c8f4476c6d6407d9"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/390x844-client-1-idle.png",
+      "role": "runtime",
+      "sha256": "81a7e16df1b5f0965e4a95d2fc3f177524bd44b9a3c3bfedd2459a8d476204ff"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/390x844-client-1-start.png",
+      "role": "runtime",
+      "sha256": "260052fe36ccb48d8b10b4402bb4cd90b67bed4b4628d8e8645b0436479d288c"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/390x844-client-1-start-mid.png",
+      "role": "runtime",
+      "sha256": "cbf34aa5da64d9043ccf6705b3155b32989af7779875ad72a6335aa3d3794b8f"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/390x844-client-1-loop.png",
+      "role": "runtime",
+      "sha256": "2df76fcec84e3aca3db5b32e77e9edd0f7a03adb2c8e1f6994fe22f83aa27f31"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/390x844-client-1-loop-next.png",
+      "role": "runtime",
+      "sha256": "c84ef0769e19047afb26d31850ad001a953933747f7657ca431e5296e606aab6"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/390x844-client-1-end.png",
+      "role": "runtime",
+      "sha256": "a904c637fbe75bc281d3e84d10b8829a92114d6724469ddf17bd9fea3532615d"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/390x844-client-1-end-mid.png",
+      "role": "runtime",
+      "sha256": "cd0c94625c08f283cef8c9494b7292ff6e0e3818fc012f7d5ed296aa8114ce48"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/390x844-client-1-recovered.png",
+      "role": "runtime",
+      "sha256": "f9685e49ff9ccf05607e226b2beee3aac3fd812bd1aa99e8c290f2d71c122257"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/390x844-client-2-idle.png",
+      "role": "runtime",
+      "sha256": "c2a023a679f8f87b5da87093a4ece43567860ff96b6388b13e965a99911b61e8"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/390x844-client-2-start.png",
+      "role": "runtime",
+      "sha256": "85e77a7f639e1e97e0d1c91fc495eef0727fd125e02431c54be902af490fd6ea"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/390x844-client-2-start-mid.png",
+      "role": "runtime",
+      "sha256": "406d18e1bbff104195d203a4fec7947ca4b066ee11842f38083b32b74fd901ad"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/390x844-client-2-loop.png",
+      "role": "runtime",
+      "sha256": "4bc903681d4f4935fdfe457fc3121d299c56465256276401c543bbefe0ce199c"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/390x844-client-2-loop-next.png",
+      "role": "runtime",
+      "sha256": "c5e206843947e0f09ab3139e96e3e3dba45793248f96debfec7d786d8bf9b353"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/390x844-client-2-end.png",
+      "role": "runtime",
+      "sha256": "466c49965667769043ee9d50eb2bd3b56d38b1456be2c6c78b59b0a921cc2e87"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/390x844-client-2-end-mid.png",
+      "role": "runtime",
+      "sha256": "506edee13e6e8b9ced87d77f2bc9d8001954c18befa61d560cca004a03365d0f"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/390x844-client-2-recovered.png",
+      "role": "runtime",
+      "sha256": "09fb5f50f76d53a067d24cf7e8767066636ec17cb1fb24c927335a7749f1ddba"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/844x390-client-1-idle.png",
+      "role": "runtime",
+      "sha256": "b7c3c7c1efb2f303e416443abfe885e2bce8dd5d33fc8ee4092bb0527a930800"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/844x390-client-1-start.png",
+      "role": "runtime",
+      "sha256": "37c3884e6728594a50a4b2c32693f2ba15913f1fb848d1d036d60efb5a006c0e"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/844x390-client-1-start-mid.png",
+      "role": "runtime",
+      "sha256": "247a68bb5a761902d19e7cf89f74200c5a62dbc2eeb28ffbd26cab030043cbca"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/844x390-client-1-loop.png",
+      "role": "runtime",
+      "sha256": "e2d1095c0d68c07bf5739907e0e1e422face81134f0eb41b710d3c4bf7ec82d7"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/844x390-client-1-loop-next.png",
+      "role": "runtime",
+      "sha256": "c6436e0fc4de9a754db4f382320ba05427e94d4f0f46f5b8f0a5ea1cabf298f1"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/844x390-client-1-end.png",
+      "role": "runtime",
+      "sha256": "bf47c48ec6839a0959ec4124107ab0a0b335a2eb4e6c57c92d542ed5615de622"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/844x390-client-1-end-mid.png",
+      "role": "runtime",
+      "sha256": "4ed9a3a89b9f199d95b2add3d1f59c1d8cb42dc4acfd9b5264e76d1fef732f61"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/844x390-client-1-recovered.png",
+      "role": "runtime",
+      "sha256": "099209fb008102a0953d35a1a40cffcab6293c550c2f5b46147b65130d41d445"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/844x390-client-2-idle.png",
+      "role": "runtime",
+      "sha256": "12da3cc32375f77fa2bbe387552d896207c46544aafa66b2e88bc0700bc20770"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/844x390-client-2-start.png",
+      "role": "runtime",
+      "sha256": "f6564209d52ce0a450369116fa30ee3096bc92b0585460a6cd1856dc2fdbbec9"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/844x390-client-2-start-mid.png",
+      "role": "runtime",
+      "sha256": "c8761de8efdf09c5da8103d594a423150cac2e961ec5987c03bb777bdad106b1"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/844x390-client-2-loop.png",
+      "role": "runtime",
+      "sha256": "0ecf7529b9799d7104aee0e7c3258f9f4258099ce773f782c70ae0b2c7b3123a"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/844x390-client-2-loop-next.png",
+      "role": "runtime",
+      "sha256": "c5677c1a6f0cf5d63fed57ff6e35e55f8cc5f8e832852aa57bb4929bdfb1a9fb"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/844x390-client-2-end.png",
+      "role": "runtime",
+      "sha256": "13623548e7cb36aa2d81bb04674fabaace21facc26ff6260c3b880cc7f1fa331"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/844x390-client-2-end-mid.png",
+      "role": "runtime",
+      "sha256": "3ff82cf282b86962bc9eb470dd8a285439e1d5c7bce124da53cbb58aa751099d"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/844x390-client-2-recovered.png",
+      "role": "runtime",
+      "sha256": "150a15e4b8b4c7efad6c073ce85e3ea0c612fc5fe91be2ddfd108089b4681d9f"
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-START_REQUEST/frame-8360.png",
+      "sha256": "ade62d72c8cc1a09aade01b06049cbf49a374085404e6146e1c896d7d7b8dd00",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 8360,
+        "sequence": "1920x1080-client-1-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-START_REQUEST/frame-8440.png",
+      "sha256": "b1bcaac2db7c287daf1f9cc47c1cb1c77c5c510deddb11fc1429478f9d055980",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 8440,
+        "sequence": "1920x1080-client-1-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-START_REQUEST/frame-8520.png",
+      "sha256": "b1bcaac2db7c287daf1f9cc47c1cb1c77c5c510deddb11fc1429478f9d055980",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 8520,
+        "sequence": "1920x1080-client-1-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-START_REQUEST/frame-8600.png",
+      "sha256": "b1bcaac2db7c287daf1f9cc47c1cb1c77c5c510deddb11fc1429478f9d055980",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 8600,
+        "sequence": "1920x1080-client-1-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-START_REQUEST/frame-8680.png",
+      "sha256": "d706e9840c6af3c13676e3077fa7049956003bd7ed39e06123b24523b8ae37d2",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 8680,
+        "sequence": "1920x1080-client-1-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-START_REQUEST/frame-8760.png",
+      "sha256": "7097e2de5b8984252248e27e8acd5ae1791a9eabad60b645a6b7c6042fe5dd96",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 8760,
+        "sequence": "1920x1080-client-1-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-START_REQUEST/frame-8840.png",
+      "sha256": "7ab3577f474711b6c63ba32d7eca470889babb66984f6823a3cf9c3666946407",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 8840,
+        "sequence": "1920x1080-client-1-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-START_REQUEST/frame-8920.png",
+      "sha256": "9088f2caac781e444c218487c4e7817d5219e4254ab9a50b643a68e8bdd0c9ee",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 8920,
+        "sequence": "1920x1080-client-1-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-START_REQUEST/frame-9000.png",
+      "sha256": "6e79f1d691f67dfb52549bf1bde1e474cc26e5e3f0bb37b98cf3fedf11b19824",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 9000,
+        "sequence": "1920x1080-client-1-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-START_REQUEST/frame-9080.png",
+      "sha256": "fc5e7aba102529ee2ec07e8cd89f3f65b4043c01626a3a4c2c6681dd163e7daa",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 9080,
+        "sequence": "1920x1080-client-1-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-15640.png",
+      "sha256": "8f8a3a5fdbc5fda8c15e2403cf9fe7f668a8b11eb2880771d954e3f8b1f017b9",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 15640,
+        "sequence": "1920x1080-client-1-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-15720.png",
+      "sha256": "5321d60169b44978e6d9f2d0d2a88eaae0ae28f92961a5af407548146684e480",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 15720,
+        "sequence": "1920x1080-client-1-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-15800.png",
+      "sha256": "52479be79142e33b7375a795809c98f1a82f267e8b92f43b24b60a0466c69e36",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 15800,
+        "sequence": "1920x1080-client-1-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-15880.png",
+      "sha256": "b5cef83d860273abd8d55fd18676423709634265f2d3d351eafaa2ca05af7990",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 15880,
+        "sequence": "1920x1080-client-1-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-15960.png",
+      "sha256": "9447cd43d2469bf373719cdc2d5c6137f556c4019146ae4523dfe1a5c21b4e27",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 15960,
+        "sequence": "1920x1080-client-1-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-16040.png",
+      "sha256": "81fb56eb472b7bfe145416897b6c31a8bebe0a05726e785a18d0fb4231f61903",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 16040,
+        "sequence": "1920x1080-client-1-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-16120.png",
+      "sha256": "1c445e4c617d3e899e9f88e81b7724af4c502d4c2f1d03ec8fc0ccf4a687be3f",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 16120,
+        "sequence": "1920x1080-client-1-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-16200.png",
+      "sha256": "dc79b969cd1687f7425083bdb90cc5f6b47e6c3897aec3dea1c77dfa0c11aedf",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 16200,
+        "sequence": "1920x1080-client-1-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-16280.png",
+      "sha256": "14c72e5c6a9a07ac2be5d5d09dcfa99a49170f35cd71705f5d65b6f7b88ba3e9",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 16280,
+        "sequence": "1920x1080-client-1-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-HELD_REQUEST/frame-16360.png",
+      "sha256": "dc421ecf752f220a65ab97bd2d604358678a792515b437bf878b7439758edb0c",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 16360,
+        "sequence": "1920x1080-client-1-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-END_REQUEST/frame-22560.png",
+      "sha256": "0808b7a5be513d9c27d343a535938e5d1cde63ceea0e0e067bf8ac0d67dfe606",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 22560,
+        "sequence": "1920x1080-client-1-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-END_REQUEST/frame-22640.png",
+      "sha256": "26c8de1f63a4e3648ef211afc2a7174cc3702011c4b73d4edaf452da9c382bd4",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 22640,
+        "sequence": "1920x1080-client-1-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-END_REQUEST/frame-22720.png",
+      "sha256": "1dd2300203101308d4944b8c6f884f530788717c1a520fbc851d771fb69197d2",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 22720,
+        "sequence": "1920x1080-client-1-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-END_REQUEST/frame-22800.png",
+      "sha256": "1dd2300203101308d4944b8c6f884f530788717c1a520fbc851d771fb69197d2",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 22800,
+        "sequence": "1920x1080-client-1-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-END_REQUEST/frame-22880.png",
+      "sha256": "ec730b0dffc8e8f10cf499d160883903d6f66ceee52ce6b295bfbd1b28501f17",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 22880,
+        "sequence": "1920x1080-client-1-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-END_REQUEST/frame-22960.png",
+      "sha256": "928cfcfd9c36fa1a3cd2687b56fedafbd41bd256d6fb1220f02896cb3c2d5425",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 22960,
+        "sequence": "1920x1080-client-1-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-END_REQUEST/frame-23040.png",
+      "sha256": "28891ed5c43e22a00a9585938485b5d12b0d3f6a8c27885c637908a01e8e999d",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 23040,
+        "sequence": "1920x1080-client-1-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-END_REQUEST/frame-23120.png",
+      "sha256": "73b95bcb9bc8dd87f757aa7f23ae5282e035c33ae07c52aa2b4ea7d057432810",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 23120,
+        "sequence": "1920x1080-client-1-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-END_REQUEST/frame-23200.png",
+      "sha256": "9efe6807039c85db4feacc9fd6398b7d3fe9bcd65bb5cc7e0dc670cf72607205",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 23200,
+        "sequence": "1920x1080-client-1-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-1-END_REQUEST/frame-23280.png",
+      "sha256": "6d2e7d34b1c4c94b40e54cd486ae1359696837137b696d5b227e232471ac2e27",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 23280,
+        "sequence": "1920x1080-client-1-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 1,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-START_REQUEST/frame-8360.png",
+      "sha256": "ddbf82efd5040e0e966d32ce8c580600bbe4733cbcba2d62687026e0abcffba6",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 8360,
+        "sequence": "1920x1080-client-2-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-START_REQUEST/frame-8440.png",
+      "sha256": "e9633156c2e19cd0a03ed64a823e1918f45901ddf8c0cd7538df985b19ecc80d",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 8440,
+        "sequence": "1920x1080-client-2-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-START_REQUEST/frame-8520.png",
+      "sha256": "c92b69baead4736534867cb5c3095bc0b6638f7c38f79326e51612dac5ea2f7d",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 8520,
+        "sequence": "1920x1080-client-2-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-START_REQUEST/frame-8600.png",
+      "sha256": "8c0e7eec5454da51c169535befe0fb8c4b0dabfa4d2bba2477ebed09d0cf1272",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 8600,
+        "sequence": "1920x1080-client-2-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-START_REQUEST/frame-8680.png",
+      "sha256": "3ea62604ac1ae292acc95ae0cebad7a2438a63527d83642981b6cb41ce4cc936",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 8680,
+        "sequence": "1920x1080-client-2-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-START_REQUEST/frame-8760.png",
+      "sha256": "3ea62604ac1ae292acc95ae0cebad7a2438a63527d83642981b6cb41ce4cc936",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 8760,
+        "sequence": "1920x1080-client-2-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-START_REQUEST/frame-8840.png",
+      "sha256": "f1ddae34c333e618e2e9a4c4ce3022b4bd6768196a85d175a8462327bf8d2b78",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 8840,
+        "sequence": "1920x1080-client-2-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-START_REQUEST/frame-8920.png",
+      "sha256": "0a94bc81371488e5cbeabf5aee82ff8e22963e128046258ca64c8b12573d4ce3",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 8920,
+        "sequence": "1920x1080-client-2-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-START_REQUEST/frame-9000.png",
+      "sha256": "70f8a65755bc786d726105dfa959b84ba3a598f3826780ac951622999edd9fcf",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 9000,
+        "sequence": "1920x1080-client-2-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-START_REQUEST/frame-9080.png",
+      "sha256": "83c0fd16905f9a47840c3b162f2f40b6ee5fe99cc16aa6dfb73f0a626d90cf31",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 9080,
+        "sequence": "1920x1080-client-2-START_REQUEST",
+        "phaseHint": "START_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-HELD_REQUEST/frame-15640.png",
+      "sha256": "575c7c0b8f1e82dc29f073aac97f00058ed56cc724750cdd9dfe2770323e5d40",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 15640,
+        "sequence": "1920x1080-client-2-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-HELD_REQUEST/frame-15720.png",
+      "sha256": "73d263acaf8bed5a36517d6a7059a70e394693b4dd68d10d0b948095074e12db",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 15720,
+        "sequence": "1920x1080-client-2-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-HELD_REQUEST/frame-15800.png",
+      "sha256": "73d263acaf8bed5a36517d6a7059a70e394693b4dd68d10d0b948095074e12db",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 15800,
+        "sequence": "1920x1080-client-2-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-HELD_REQUEST/frame-15880.png",
+      "sha256": "0c7e730b51d0f76d308c50928fb00055002c57522726854f06324f63d7c90c02",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 15880,
+        "sequence": "1920x1080-client-2-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-HELD_REQUEST/frame-15960.png",
+      "sha256": "c3bff27c483e53c1fe76219a5a5ecfae1f7cd8b116bb3df2a324414bb84012d8",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 15960,
+        "sequence": "1920x1080-client-2-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-HELD_REQUEST/frame-16040.png",
+      "sha256": "e560ed501dc97df290f247d05dbb0f3a44e55a8766bc769c8b1c77a8563bf4fb",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 16040,
+        "sequence": "1920x1080-client-2-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-HELD_REQUEST/frame-16120.png",
+      "sha256": "b0181d28e48aa64dabf0cd6832e87be4599c4ecdaac1952b826edd32ff3a8c3c",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 16120,
+        "sequence": "1920x1080-client-2-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-HELD_REQUEST/frame-16200.png",
+      "sha256": "6c86747493de0d7678672948da15d6ac5c724c57d5c04980a4d327f757ff682a",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 16200,
+        "sequence": "1920x1080-client-2-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-HELD_REQUEST/frame-16280.png",
+      "sha256": "f4e56166be6cd1c53cfb62c4972098f84b43e152e74d06f2b9f0cf7197035894",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 16280,
+        "sequence": "1920x1080-client-2-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-HELD_REQUEST/frame-16360.png",
+      "sha256": "b11ed3a0538dfc68e3cf21c560313b03a696771de7805836c9e746c85068169b",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 16360,
+        "sequence": "1920x1080-client-2-HELD_REQUEST",
+        "phaseHint": "HELD_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-END_REQUEST/frame-22560.png",
+      "sha256": "e0055ae5d21d2c28b4f1bf2f84826359f45c138d8333a33d15bc55b07cf882c4",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 22560,
+        "sequence": "1920x1080-client-2-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-END_REQUEST/frame-22640.png",
+      "sha256": "8c8fa5fe06d09ebb55fb1c9fbb1955d66f74f860344453500e29f33e7c94b2d9",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 22640,
+        "sequence": "1920x1080-client-2-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-END_REQUEST/frame-22720.png",
+      "sha256": "50c6cba39c279e236739a9a6f3dfb4fba137797b59b3e6485c97606fc06d32ab",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 22720,
+        "sequence": "1920x1080-client-2-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-END_REQUEST/frame-22800.png",
+      "sha256": "f3810043dae5c29dfb3ca2799611a8c3cf5aaf650c43ed209f64f2a3a2cbb01d",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 22800,
+        "sequence": "1920x1080-client-2-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-END_REQUEST/frame-22880.png",
+      "sha256": "815616b6dc1db6d42b51650f2fd8ba5d879abaa9bdad1b2c053e2270f49a995e",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 22880,
+        "sequence": "1920x1080-client-2-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-END_REQUEST/frame-22960.png",
+      "sha256": "3c66993b29a4ec926a4ddad059b893e94dce2bc1ca1944d88887c686c14b667c",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 22960,
+        "sequence": "1920x1080-client-2-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-END_REQUEST/frame-23040.png",
+      "sha256": "64af9f108bae869adede8cb693a959169d0cd17c75025a53412070d17b0561f8",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 23040,
+        "sequence": "1920x1080-client-2-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-END_REQUEST/frame-23120.png",
+      "sha256": "298dee7ddd91893f16586fe0315246d4d5100ed20a8f58a481ee0a8cb39b9ddf",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 23120,
+        "sequence": "1920x1080-client-2-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-END_REQUEST/frame-23200.png",
+      "sha256": "4addd152ab2e89b4eef6839094cfe224d21f30a61185611c736d315bfbd4a785",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 23200,
+        "sequence": "1920x1080-client-2-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    },
+    {
+      "path": "art/qa/coco_ward_v4/iteration-08/temporal/frames-v1/1920x1080-client-2-END_REQUEST/frame-23280.png",
+      "sha256": "d7b9043f36d9a45d5bb4f94c70998ec20c8e5e09870112ebd9f1898ff64b37a7",
+      "role": "runtime",
+      "temporal": {
+        "ptsMs": 23280,
+        "sequence": "1920x1080-client-2-END_REQUEST",
+        "phaseHint": "END_REQUEST",
+        "phaseAlignment": "approximate",
+        "client": 2,
+        "viewport": "1920x1080"
+      }
+    }
+  ]
+}

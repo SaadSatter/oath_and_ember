@@ -1,0 +1,15 @@
+{
+  "assetId": "coco_ward_v4",
+  "text": "IMPROVE: Make the Ward center around Coco",
+  "feedback": "Make the Ward center around Coco",
+  "classification": {
+    "route": "AMBIGUOUS",
+    "reason": "Insufficient information to choose source art or presentation changes.",
+    "signals": [],
+    "classifier": "explicit-rules-v1"
+  },
+  "decision": "IMPROVE",
+  "providerUploadsAuthorized": true,
+  "created_at": "2026-10-05T23:58:35.148Z",
+  "iteration": 7
+}

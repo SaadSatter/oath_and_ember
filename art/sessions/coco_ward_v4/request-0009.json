@@ -1,0 +1,15 @@
+{
+  "assetId": "coco_ward_v4",
+  "text": "REVIEW",
+  "feedback": "REVIEW",
+  "classification": {
+    "route": "AMBIGUOUS",
+    "reason": "Insufficient information to choose source art or presentation changes.",
+    "signals": [],
+    "classifier": "explicit-rules-v1"
+  },
+  "decision": "REVIEW",
+  "providerUploadsAuthorized": true,
+  "created_at": "2026-10-05T23:14:23.176Z",
+  "iteration": 6
+}

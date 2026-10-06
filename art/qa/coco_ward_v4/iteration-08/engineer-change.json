@@ -1,0 +1,37 @@
+{
+  "adapter": "presentation-profiles-v1",
+  "file": "apps/client/src/assets/effectPresentation.ts",
+  "beforeHash": "a88009ceb90c31416885d7009966056359a1a541b48061ec6272c55dc57c9259",
+  "afterHash": "9b59b2eb4ed0774b953f27c5f539596da6ec1e05ce8219288d04eb2907c48daf",
+  "operations": [
+    "center Ward canvas on Coco's visual midpoint; reset presentation offsets, preserve gameplay anchor and pulse"
+  ],
+  "before": {
+    "scale": 0.8,
+    "offsetX": 0,
+    "offsetY": 0,
+    "startRate": 1.5,
+    "endRate": 1.5,
+    "pulseMs": 286.4788975654116,
+    "rotationMs": 0,
+    "pulseScale": 0.04,
+    "pulseDepth": 0.12
+  },
+  "after": {
+    "scale": 0.8,
+    "offsetX": 0,
+    "offsetY": 0,
+    "startRate": 1.5,
+    "endRate": 1.5,
+    "pulseMs": 286.4788975654116,
+    "rotationMs": 0,
+    "pulseScale": 0.04,
+    "pulseDepth": 0.12,
+    "centerOnCoco": true
+  },
+  "artifactHashes": [
+    "30d02f8384c2c760593f032f0b23e207bd770776b9e9e0fa845883ba33b9938f",
+    "b3c9dd664cd58e534595c5f1c8d98f29abbc38cbcc29a8c50f38e17b238212a0"
+  ],
+  "authorization": "art/qa/coco_ward_v4/iteration-08/human-request.json"
+}

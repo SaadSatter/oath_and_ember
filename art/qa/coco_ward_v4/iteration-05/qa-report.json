@@ -1,0 +1,20 @@
+{
+  "assetId": "coco_ward_v4",
+  "iteration": 5,
+  "result": "FAIL",
+  "status": "NEEDS_HUMAN_REVIEW",
+  "route": "HUMAN",
+  "checks": [
+    {
+      "id": "typecheck",
+      "result": "PASS"
+    },
+    {
+      "id": "qa_execution",
+      "result": "FAIL",
+      "category": "IMPLEMENTATION",
+      "evidence": "art/qa/coco_ward_v4/iteration-05",
+      "feedback": "Error: test failed"
+    }
+  ]
+}
