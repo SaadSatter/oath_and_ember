@@ -2,6 +2,7 @@ import { PNG } from "pngjs";
 import { readFileSync } from "node:fs";
 import type { AssetContract } from "./contracts.js";
 import type { Finding } from "./model.js";
+import { requireTransparentExternalSource } from "./external-source.js";
 export function inspectAtlas(
   imagePath: string,
   maskPath: string,
@@ -9,6 +10,11 @@ export function inspectAtlas(
   count: number,
   contract?: AssetContract,
 ): Finding[] {
+  requireTransparentExternalSource(readFileSync(imagePath), {
+    columns: contract?.columns ?? count,
+    rows: Math.ceil(count / (contract?.columns ?? count)),
+    frame_count: count,
+  });
   const p = PNG.sync.read(readFileSync(imagePath)),
     m = PNG.sync.read(readFileSync(maskPath));
   const [w, h] = dimensions;

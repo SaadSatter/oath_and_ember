@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "status": "BLOCKED_TRANSPARENT_SOURCE",
+  "asset_id": "ironbound_sentinel_sprites_v1",
+  "registry_key": "ironbound_sentinel:sprites",
+  "asset_type": "enemy_directional_sprite",
+  "source": {
+    "path": "art/incoming/flora_forest_monsters_v1/ironbound_sentinel_sprites.jpg",
+    "sha256": "2d956e6ad384424b6fa9bb7bd6854106067aee3ce92bbcc9eeaf4321091914fd",
+    "type": "Flora MCP / externally supplied"
+  },
+  "source_grid": {
+    "columns": 4,
+    "rows": 4,
+    "frame_count": 16,
+    "frame_dimensions": [
+      256,
+      256
+    ],
+    "verification": "16 separate poses visually confirmed; equal-cell grid verified by divisibility; alpha/anchor pending"
+  },
+  "directions": [
+    "south/down",
+    "north/up",
+    "west/left",
+    "east/right"
+  ],
+  "animation": {
+    "mode": "walk",
+    "order": "row-major, four poses per row",
+    "fps": null,
+    "repeat": -1,
+    "validation": "pending directional/temporal review; mixed Mossling final pose and Wisp turning poses must be reviewed"
+  },
+  "anchor": null,
+  "normalization": {
+    "strategy": "external_fixed_grid_preserve_v1",
+    "implemented": false,
+    "requirements": [
+      "Require transparent original PNG before normalization",
+      "No checkerboard removal",
+      "Preserve frame order and source pixel structure",
+      "Any crop/repack/padding must be explicitly declared and hashed; no bounding-box recentering"
+    ]
+  },
+  "target": "assets/enemies/ironbound_sentinel/top-down.png",
+  "mask": {
+    "strategy": "none",
+    "channels": []
+  },
+  "mask_target": null,
+  "runtime_scale": null,
+  "runtime_animation_names": [],
+  "qa": {
+    "status": "BLOCKED_SOURCE",
+    "requirements": [
+      "source alpha/grid/ground-anchor validation",
+      "all three beside Sieg/Coco at gameplay camera",
+      "per-creature temporal/video evidence",
+      "both-client evidence if network-visible",
+      "1920x1080,1440x900,390x844,844x390",
+      "all seven visual rubric checks",
+      "explicit human approval"
+    ]
+  },
+  "environment_references": [
+    "art/incoming/flora_forest_monsters_v1/forest_mosslight_ruins.jpg",
+    "art/incoming/flora_forest_monsters_v1/forest_twilight_brambles.jpg"
+  ],
+  "runtime_binding": "Not registered. Current runtime contract schema only supports defense/projectile. Enemy loader and encounter QA remain engineering work after source gate."
+}

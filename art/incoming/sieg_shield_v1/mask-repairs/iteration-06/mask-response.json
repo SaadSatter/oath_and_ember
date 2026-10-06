@@ -1,0 +1,17 @@
+{
+  "requestId": "req_c164cea1f7884ecd90fa4613cf482a33",
+  "usage": {
+    "input_tokens": 2048,
+    "input_tokens_details": {
+      "image_tokens": 1792,
+      "text_tokens": 256
+    },
+    "output_tokens": 439,
+    "output_tokens_details": {
+      "image_tokens": 439,
+      "text_tokens": 0
+    },
+    "total_tokens": 2487
+  },
+  "raw_sha256": "b07dddbad665e45c1474fe1ee9fc225373bffc628df01dc1b40d01fcaa795d4a"
+}

@@ -1,8 +1,26 @@
 {
   "characters": {
-    "sieg": ["Images/Character Concept art.png", "apps/client/public/assets/characters/oath"],
-    "coco": ["Images/Character Concept art.png", "apps/client/public/assets/characters/ember"]
+    "sieg": [
+      "Images/Character Concept art.png",
+      "apps/client/public/assets/characters/oath"
+    ],
+    "coco": [
+      "Images/Character Concept art.png",
+      "apps/client/public/assets/characters/ember"
+    ]
   },
-  "effects": ["Images/Sprites/Defense Basic Sprites.png", "Images/Sprites/Magic Basic Spell.png"],
-  "provenance": ["docs/DEFENSE_ASSET_PROVENANCE.json", "docs/MAGIC_PROJECTILE_PROVENANCE.json"]
+  "effects": [
+    "Images/Sprites/Defense Basic Sprites.png",
+    "Images/Sprites/Magic Basic Spell.png"
+  ],
+  "provenance": [
+    "docs/DEFENSE_ASSET_PROVENANCE.json",
+    "docs/MAGIC_PROJECTILE_PROVENANCE.json"
+  ],
+  "environments": {
+    "forest": [
+      "art/incoming/flora_forest_monsters_v1/forest_mosslight_ruins.jpg",
+      "art/incoming/flora_forest_monsters_v1/forest_twilight_brambles.jpg"
+    ]
+  }
 }

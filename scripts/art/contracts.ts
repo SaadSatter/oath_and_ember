@@ -26,6 +26,7 @@ export const assetContractSchema = z
       .object({
         strategy: z.enum(["alpha_effect", "none", "semantic_external"]),
         channels: z.array(z.enum(["red", "green"])),
+        normalization: z.literal("semantic_labels_v1").optional(),
       })
       .strict(),
     target: runtimePath,
@@ -54,6 +55,8 @@ export const assetContractSchema = z
       issue("Mask strategy and runtime mask binding disagree");
     if (c.mask.strategy !== "none" && !c.mask.channels.length)
       issue("Recolor mask channels are required");
+    if (c.mask.normalization && c.mask.strategy !== "semantic_external")
+      issue("Semantic label normalization requires an external semantic mask");
     if (c.columns > c.frame_count) issue("Grid columns exceed frame count");
     if (
       c.anchor[0] > c.frame_dimensions[0] ||

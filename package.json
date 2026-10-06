@@ -28,6 +28,7 @@
     "art:cleanup": "node --env-file-if-exists=.env --import tsx scripts/art/cli.ts cleanup",
     "art:publish": "node --env-file-if-exists=.env --import tsx scripts/art/cli.ts publish",
     "art:test": "vitest run scripts/art",
+    "art:inspect": "node --import tsx scripts/art/inspect-source.ts",
     "art:generate": "node --env-file-if-exists=.env --import tsx scripts/art/cli.ts generate",
     "art:temporal": "node --env-file-if-exists=.env --import tsx scripts/art/cli.ts temporal",
     "art:vision": "node --env-file-if-exists=.env --import tsx scripts/art/cli.ts vision",

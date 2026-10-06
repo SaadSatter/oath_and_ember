@@ -1,0 +1,610 @@
+{
+  "status": "BLOCKED_TRANSPARENT_SOURCE",
+  "sources": [
+    {
+      "path": "art/incoming/flora_forest_monsters_v1/mossling_sprites.jpg",
+      "type": "Flora MCP / externally supplied",
+      "sha256": "f3019178f8596a89721862d97448a2559ca4cd3e97fe363a5baf8ae13de2a420",
+      "format": "jpeg",
+      "width": 1024,
+      "height": 1024,
+      "transparent_pixels": 0,
+      "visible_pixels": 1048576,
+      "frames": [
+        {
+          "index": 0,
+          "estimated_local_rgb_foreground_bounds": [
+            45,
+            53,
+            220,
+            228
+          ]
+        },
+        {
+          "index": 1,
+          "estimated_local_rgb_foreground_bounds": [
+            37,
+            49,
+            217,
+            236
+          ]
+        },
+        {
+          "index": 2,
+          "estimated_local_rgb_foreground_bounds": [
+            42,
+            58,
+            209,
+            235
+          ]
+        },
+        {
+          "index": 3,
+          "estimated_local_rgb_foreground_bounds": [
+            47,
+            56,
+            211,
+            232
+          ]
+        },
+        {
+          "index": 4,
+          "estimated_local_rgb_foreground_bounds": [
+            45,
+            46,
+            216,
+            220
+          ]
+        },
+        {
+          "index": 5,
+          "estimated_local_rgb_foreground_bounds": [
+            42,
+            43,
+            219,
+            220
+          ]
+        },
+        {
+          "index": 6,
+          "estimated_local_rgb_foreground_bounds": [
+            42,
+            44,
+            209,
+            223
+          ]
+        },
+        {
+          "index": 7,
+          "estimated_local_rgb_foreground_bounds": [
+            39,
+            43,
+            214,
+            223
+          ]
+        },
+        {
+          "index": 8,
+          "estimated_local_rgb_foreground_bounds": [
+            54,
+            37,
+            207,
+            216
+          ]
+        },
+        {
+          "index": 9,
+          "estimated_local_rgb_foreground_bounds": [
+            50,
+            43,
+            208,
+            223
+          ]
+        },
+        {
+          "index": 10,
+          "estimated_local_rgb_foreground_bounds": [
+            57,
+            44,
+            209,
+            224
+          ]
+        },
+        {
+          "index": 11,
+          "estimated_local_rgb_foreground_bounds": [
+            50,
+            44,
+            206,
+            219
+          ]
+        },
+        {
+          "index": 12,
+          "estimated_local_rgb_foreground_bounds": [
+            44,
+            23,
+            202,
+            206
+          ]
+        },
+        {
+          "index": 13,
+          "estimated_local_rgb_foreground_bounds": [
+            42,
+            28,
+            199,
+            209
+          ]
+        },
+        {
+          "index": 14,
+          "estimated_local_rgb_foreground_bounds": [
+            44,
+            26,
+            209,
+            210
+          ]
+        },
+        {
+          "index": 15,
+          "estimated_local_rgb_foreground_bounds": [
+            51,
+            26,
+            208,
+            207
+          ]
+        }
+      ],
+      "issues": [
+        "Transparent source PNG required; JPEG/unknown formats cannot supply sprite alpha. Re-export the original source, never remove a baked checkerboard automatically."
+      ],
+      "ready": false,
+      "decoded_pixel_bounds": [
+        0,
+        0,
+        1024,
+        1024
+      ],
+      "checkerboard": "BAKED_IN",
+      "apparent_grid": {
+        "columns": 4,
+        "rows": 4,
+        "count": 16,
+        "cell": [
+          256,
+          256
+        ]
+      },
+      "row_directions": [
+        "south/down",
+        "north/up",
+        "west/left",
+        "east/right except frame 15 is west-facing"
+      ],
+      "animation_order": "Columns 1–4 are apparent walk/hover pose sequence; timing and seamless loop not validated.",
+      "anchor": "Not verified: estimated silhouette bottoms drift by row and pose; do not auto-recenter.",
+      "spacing": "Cell divisions uniform at 256px; silhouettes and ground baselines are not uniform.",
+      "bounds_method": "RGB diagnostic only: min channel <170 or channel spread >55 on a temporary JPEG decode. These are approximate bounds, NOT alpha bounds or a removal mask. No normalized image produced.",
+      "normalization_performed": "none",
+      "runtime_atlas_hash": null
+    },
+    {
+      "path": "art/incoming/flora_forest_monsters_v1/cinder_wisp_sprites.jpg",
+      "type": "Flora MCP / externally supplied",
+      "sha256": "ac8c660279cc0740c76d6d646245afef07d45fdbd43ccd48535fd770fca38edb",
+      "format": "jpeg",
+      "width": 1024,
+      "height": 1024,
+      "transparent_pixels": 0,
+      "visible_pixels": 1048576,
+      "frames": [
+        {
+          "index": 0,
+          "estimated_local_rgb_foreground_bounds": [
+            72,
+            33,
+            199,
+            247
+          ]
+        },
+        {
+          "index": 1,
+          "estimated_local_rgb_foreground_bounds": [
+            63,
+            27,
+            193,
+            250
+          ]
+        },
+        {
+          "index": 2,
+          "estimated_local_rgb_foreground_bounds": [
+            62,
+            35,
+            192,
+            248
+          ]
+        },
+        {
+          "index": 3,
+          "estimated_local_rgb_foreground_bounds": [
+            55,
+            27,
+            183,
+            255
+          ]
+        },
+        {
+          "index": 4,
+          "estimated_local_rgb_foreground_bounds": [
+            72,
+            23,
+            194,
+            239
+          ]
+        },
+        {
+          "index": 5,
+          "estimated_local_rgb_foreground_bounds": [
+            66,
+            24,
+            192,
+            243
+          ]
+        },
+        {
+          "index": 6,
+          "estimated_local_rgb_foreground_bounds": [
+            62,
+            24,
+            192,
+            253
+          ]
+        },
+        {
+          "index": 7,
+          "estimated_local_rgb_foreground_bounds": [
+            57,
+            24,
+            184,
+            251
+          ]
+        },
+        {
+          "index": 8,
+          "estimated_local_rgb_foreground_bounds": [
+            55,
+            36,
+            206,
+            210
+          ]
+        },
+        {
+          "index": 9,
+          "estimated_local_rgb_foreground_bounds": [
+            42,
+            33,
+            198,
+            211
+          ]
+        },
+        {
+          "index": 10,
+          "estimated_local_rgb_foreground_bounds": [
+            36,
+            40,
+            191,
+            220
+          ]
+        },
+        {
+          "index": 11,
+          "estimated_local_rgb_foreground_bounds": [
+            40,
+            34,
+            189,
+            224
+          ]
+        },
+        {
+          "index": 12,
+          "estimated_local_rgb_foreground_bounds": [
+            77,
+            26,
+            234,
+            203
+          ]
+        },
+        {
+          "index": 13,
+          "estimated_local_rgb_foreground_bounds": [
+            57,
+            24,
+            185,
+            221
+          ]
+        },
+        {
+          "index": 14,
+          "estimated_local_rgb_foreground_bounds": [
+            57,
+            26,
+            210,
+            203
+          ]
+        },
+        {
+          "index": 15,
+          "estimated_local_rgb_foreground_bounds": [
+            50,
+            21,
+            180,
+            221
+          ]
+        }
+      ],
+      "issues": [
+        "Transparent source PNG required; JPEG/unknown formats cannot supply sprite alpha. Re-export the original source, never remove a baked checkerboard automatically."
+      ],
+      "ready": false,
+      "decoded_pixel_bounds": [
+        0,
+        0,
+        1024,
+        1024
+      ],
+      "checkerboard": "BAKED_IN",
+      "apparent_grid": {
+        "columns": 4,
+        "rows": 4,
+        "count": 16,
+        "cell": [
+          256,
+          256
+        ]
+      },
+      "row_directions": [
+        "south/down",
+        "north/up",
+        "east/right with changing yaw",
+        "west/left with changing yaw"
+      ],
+      "animation_order": "Columns 1–4 are apparent walk/hover pose sequence; timing and seamless loop not validated.",
+      "anchor": "Not verified: estimated silhouette bottoms drift by row and pose; do not auto-recenter.",
+      "spacing": "Cell divisions uniform at 256px; silhouettes and ground baselines are not uniform.",
+      "bounds_method": "RGB diagnostic only: min channel <170 or channel spread >55 on a temporary JPEG decode. These are approximate bounds, NOT alpha bounds or a removal mask. No normalized image produced.",
+      "normalization_performed": "none",
+      "runtime_atlas_hash": null
+    },
+    {
+      "path": "art/incoming/flora_forest_monsters_v1/ironbound_sentinel_sprites.jpg",
+      "type": "Flora MCP / externally supplied",
+      "sha256": "2d956e6ad384424b6fa9bb7bd6854106067aee3ce92bbcc9eeaf4321091914fd",
+      "format": "jpeg",
+      "width": 1024,
+      "height": 1024,
+      "transparent_pixels": 0,
+      "visible_pixels": 1048576,
+      "frames": [
+        {
+          "index": 0,
+          "estimated_local_rgb_foreground_bounds": [
+            27,
+            38,
+            226,
+            236
+          ]
+        },
+        {
+          "index": 1,
+          "estimated_local_rgb_foreground_bounds": [
+            28,
+            37,
+            226,
+            230
+          ]
+        },
+        {
+          "index": 2,
+          "estimated_local_rgb_foreground_bounds": [
+            27,
+            38,
+            226,
+            237
+          ]
+        },
+        {
+          "index": 3,
+          "estimated_local_rgb_foreground_bounds": [
+            28,
+            38,
+            226,
+            237
+          ]
+        },
+        {
+          "index": 4,
+          "estimated_local_rgb_foreground_bounds": [
+            27,
+            26,
+            226,
+            244
+          ]
+        },
+        {
+          "index": 5,
+          "estimated_local_rgb_foreground_bounds": [
+            28,
+            26,
+            227,
+            244
+          ]
+        },
+        {
+          "index": 6,
+          "estimated_local_rgb_foreground_bounds": [
+            28,
+            26,
+            226,
+            232
+          ]
+        },
+        {
+          "index": 7,
+          "estimated_local_rgb_foreground_bounds": [
+            28,
+            26,
+            228,
+            232
+          ]
+        },
+        {
+          "index": 8,
+          "estimated_local_rgb_foreground_bounds": [
+            64,
+            20,
+            184,
+            232
+          ]
+        },
+        {
+          "index": 9,
+          "estimated_local_rgb_foreground_bounds": [
+            62,
+            20,
+            194,
+            228
+          ]
+        },
+        {
+          "index": 10,
+          "estimated_local_rgb_foreground_bounds": [
+            64,
+            20,
+            190,
+            232
+          ]
+        },
+        {
+          "index": 11,
+          "estimated_local_rgb_foreground_bounds": [
+            64,
+            24,
+            202,
+            228
+          ]
+        },
+        {
+          "index": 12,
+          "estimated_local_rgb_foreground_bounds": [
+            60,
+            20,
+            188,
+            228
+          ]
+        },
+        {
+          "index": 13,
+          "estimated_local_rgb_foreground_bounds": [
+            62,
+            18,
+            188,
+            227
+          ]
+        },
+        {
+          "index": 14,
+          "estimated_local_rgb_foreground_bounds": [
+            62,
+            18,
+            188,
+            227
+          ]
+        },
+        {
+          "index": 15,
+          "estimated_local_rgb_foreground_bounds": [
+            62,
+            20,
+            188,
+            228
+          ]
+        }
+      ],
+      "issues": [
+        "Transparent source PNG required; JPEG/unknown formats cannot supply sprite alpha. Re-export the original source, never remove a baked checkerboard automatically."
+      ],
+      "ready": false,
+      "decoded_pixel_bounds": [
+        0,
+        0,
+        1024,
+        1024
+      ],
+      "checkerboard": "BAKED_IN",
+      "apparent_grid": {
+        "columns": 4,
+        "rows": 4,
+        "count": 16,
+        "cell": [
+          256,
+          256
+        ]
+      },
+      "row_directions": [
+        "south/down",
+        "north/up",
+        "west/left",
+        "east/right"
+      ],
+      "animation_order": "Columns 1–4 are apparent walk/hover pose sequence; timing and seamless loop not validated.",
+      "anchor": "Not verified: estimated silhouette bottoms drift by row and pose; do not auto-recenter.",
+      "spacing": "Cell divisions uniform at 256px; silhouettes and ground baselines are not uniform.",
+      "bounds_method": "RGB diagnostic only: min channel <170 or channel spread >55 on a temporary JPEG decode. These are approximate bounds, NOT alpha bounds or a removal mask. No normalized image produced.",
+      "normalization_performed": "none",
+      "runtime_atlas_hash": null
+    },
+    {
+      "path": "art/incoming/flora_forest_monsters_v1/forest_mosslight_ruins.jpg",
+      "sha256": "4523d7b49c10332a8c074b174c4b1260939ae1349307af557df090d0e2259dfe",
+      "format": "jpeg",
+      "width": 1280,
+      "height": 640,
+      "usage": "canonical environment art-direction reference only; no map background, collision inference or tile slicing",
+      "transparency_required": false
+    },
+    {
+      "path": "art/incoming/flora_forest_monsters_v1/forest_twilight_brambles.jpg",
+      "sha256": "8aadc5c99bdca9321000698d279792fdd2f119e4f0e915ee13d7700f015f21d1",
+      "format": "jpeg",
+      "width": 1280,
+      "height": 640,
+      "usage": "canonical environment art-direction reference only; no map background, collision inference or tile slicing",
+      "transparency_required": false
+    }
+  ],
+  "hero_comparison": {
+    "sieg": {
+      "frame": [
+        48,
+        64
+      ],
+      "visible_idle_height": 50,
+      "runtime_scale": 1
+    },
+    "coco": {
+      "frame": [
+        48,
+        64
+      ],
+      "visible_idle_height": 51,
+      "runtime_scale": 1
+    },
+    "finding": "Raw creature visible heights about 174–229px vs heroes 50–51px; direct 1x use is inappropriate. Final separate scale hierarchy requires transparent-source gameplay rendering."
+  },
+  "normalization": "none",
+  "runtime_changes": "none",
+  "video": "NOT_CREATED_SOURCE_GATE",
+  "source_files_preserved": true
+}

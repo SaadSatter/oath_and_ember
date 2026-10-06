@@ -288,6 +288,30 @@ describe("declarative asset capabilities", () => {
           a.contract,
         ).every((c) => c.result === "PASS"),
       ).toBe(true);
+      const repair = join(root, "mask-repair");
+      mkdirSync(repair);
+      writeFileSync(join(repair, "raw.png"), raw);
+      const repairedMask = await new OpenAISpriteProvider(
+        root,
+        a,
+        repair,
+        settings,
+        "test-key",
+        fetcher,
+      ).generateSemanticMask(raw);
+      expect(calls).toHaveLength(3);
+      expect(calls[2].get("prompt")).toContain("SEMANTIC MASK");
+      expect(readFileSync(join(repair, "raw.png")).equals(raw)).toBe(true);
+      expect(
+        normalizeGeneratedAsset(raw, a, repairedMask).atlas.equals(
+          readFileSync(join(destination, "atlas.png")),
+        ),
+      ).toBe(true);
+      const defective = PNG.sync.read(mask);
+      defective.data.set([255, 0, 0, 14], (900 * 1024 + 20) * 4);
+      expect(() =>
+        normalizeGeneratedAsset(raw, a, PNG.sync.write(defective)),
+      ).toThrow("Semantic mask validation failed");
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

@@ -509,7 +509,9 @@ async function generate(a: Asset) {
         a,
         [
           {
-            id: "generated_art",
+            id: /semantic mask/i.test(String(e))
+              ? "generated_semantic_mask"
+              : "generated_art",
             result: "FAIL",
             category: "ART",
             evidence: destination,
@@ -908,6 +910,10 @@ async function main() {
       requireDecisionState(a);
       if (a.pending_revision) throw Error("A revision is already pending");
       if (!prepareCapabilities(a)) return;
+      if (resolveContract(a, root).mask.strategy !== "semantic_external")
+        throw Error(
+          "Mask-only provider recovery requires a semantic_external contract",
+        );
       const attempt = Number(process.argv[5]);
       if (!Number.isSafeInteger(attempt) || attempt < 1)
         throw Error("Supply a positive saved attempt number");
@@ -987,6 +993,20 @@ async function main() {
         a.iteration = next;
         a.status = "NEEDS_HUMAN_REVIEW";
         save();
+        if (e instanceof GeneratedArtError)
+          report(
+            a,
+            [
+              {
+                id: "generated_semantic_mask",
+                result: "FAIL",
+                category: "ART",
+                evidence: `${destination}/mask-raw.png`,
+                feedback: String(e),
+              },
+            ],
+            "mask-recovery",
+          );
         console.log(
           `NEEDS_HUMAN_REVIEW: semantic-mask-only attempt failed; artwork preserved. ${String(e)}. No automatic HTTP retry.`,
         );

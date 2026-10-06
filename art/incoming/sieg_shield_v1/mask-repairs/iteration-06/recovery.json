@@ -1,0 +1,10 @@
+{
+  "kind": "human_authorized_semantic_mask_retry",
+  "original": "art/incoming/sieg_shield_v1/generated/attempt-05",
+  "originalArtworkHash": "d5db89477acd400f1df2b59dd6f952413f97823708b814f2cedaf608b40659aa",
+  "normalizedArtworkHash": "822d487d6eecdbfde54c27c44e66a67e1f3c58c94b21fd6394b1142a14f0e52d",
+  "from_iteration": 5,
+  "to_iteration": 6,
+  "authorized_mask_requests": 1,
+  "artwork_requests": 0
+}

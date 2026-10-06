@@ -278,7 +278,7 @@
         ]
       },
       "qa_status": "FAIL",
-      "iteration": 5,
+      "iteration": 6,
       "approved_at": null,
       "target": "assets/characters/oath/defense.png",
       "mask_target": "assets/characters/oath/defense-mask.png",
@@ -347,7 +347,7 @@
         "art/qa/sieg_shield_v1/iteration-04/human-request.json",
         "art/qa/sieg_shield_v1/iteration-05/human-request.json"
       ],
-      "authorized_iteration_limit": 5,
+      "authorized_iteration_limit": 6,
       "authorized_generation_limit": 5
     },
     "forest_map_v1": {

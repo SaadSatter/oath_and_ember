@@ -1,5 +1,10 @@
 # Visual development workflow
 
+## External sprite source gate
+
+Run `npm run art:inspect -- SOURCE [COLUMNS ROWS FRAME_COUNT]` before external sprite normalization. It reads actual image signatures, SHA-256, dimensions, alpha and declared per-cell bounds without editing source bytes. Exit 2 blocks ingestion. JPEG files, JPEGs renamed to PNG, opaque PNG conversions, empty frames and opaque individual frames cannot supply a usable transparent sprite background. Never automatically remove a baked checkerboard or derive a creature mask from it. Require original alpha-bearing PNG exports and preserve every source file. This rule is provider-independent; `inspectAtlas` enforces the same gate before integration. Grid inspection does not establish direction order, animation quality or semantic anchor correctness: those require visual review.
+
+
 This framework coordinates four roles through files. Optional OpenAI API adapters now provide image generation and vision critique inside the same bounded filesystem pipeline. Manual mode remains the default; no continuously running agent services are introduced. Read `agents/*.md`, `ART_SPEC.md` and `VISUAL_QA.md` before performing a stage. No gameplay changes are permitted to accommodate art.
 
 ## Recommended conversational workflow
@@ -270,6 +275,14 @@ Implementation revisions enter `WAITING_FOR_IMPLEMENTATION`. This is a real arti
 `art:approve` can explicitly accept remaining subjective `REVIEW` findings after a complete seven-item visual review. It cannot waive objective failures, unresolved classified `FAIL` findings, missing visual review or changed candidate bytes. `human-approval.json` records the accepted findings, source review/hash and candidate hashes separately, and is preserved with the approved asset. AI findings and `qa_status: REVIEW` remain intact; only human approval changes status to `APPROVED`. Rejection is terminal for this candidate: evidence is kept and run/generate/approve/publish stop. Approved or rejected versions are immutable.
 
 ## Reserved canvas noise
+
+For a saved artwork attempt with a defective semantic mask, explicitly authorize
+one mask-only request with `npm run art:recover -- ASSET_ID --mask-from-attempt N`.
+This preserves the original attempt and artwork, records a new recovery directory
+and authorizes one additional QA iteration. It makes no artwork generation call.
+On success run `art:run` for integration and QA. Invalid masks or ambiguous provider
+errors stop without HTTP retries; inspect the preserved recovery error before
+requesting another iteration. Semantic masks are never reconstructed from alpha.
 
 Fixed-grid artwork normalization can clear at most 1,024 pixels at exactly alpha
 1/255 in declared unused canvas or padding cells. Active frame pixels are never

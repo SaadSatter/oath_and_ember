@@ -1,0 +1,14 @@
+{
+  "assetId": "sieg_shield_v1",
+  "iteration": 6,
+  "status": "NEEDS_HUMAN_REVIEW",
+  "original_attempt": 5,
+  "artwork_requests": 0,
+  "mask_requests": 1,
+  "artwork_preserved": true,
+  "mask_opaque_pixels": 0,
+  "padding_nontransparent_pixels": 16707,
+  "padding_max_alpha": 13,
+  "evidence": "art/incoming/sieg_shield_v1/mask-repairs/iteration-06/mask-raw.png",
+  "error": "Invalid semantic mask; no unsafe alpha-derived fallback, thresholding, or additional billed retry. Browser/vision QA not run because the mask cannot be staged safely."
+}
