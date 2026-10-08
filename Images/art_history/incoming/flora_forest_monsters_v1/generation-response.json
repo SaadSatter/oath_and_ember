@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"generations\":[{\"run_id\":\"run_m17bxmwtkxe22nwps75vmz3p8n8fswvh\",\"type\":\"generation\",\"model\":{\"model_id\":\"t2i-gpt-image-2-5-flare\"},\"estimated_seconds\":25,\"charged_cost\":0,\"poll_url\":\"https://app.flora.ai/api/v1/runs/run_m17bxmwtkxe22nwps75vmz3p8n8fswvh\",\"project_id\":\"prj_ns7ajke2xjtg8f9anqnma777xx8fspwx\",\"canvas_url\":\"https://app.flora.ai/projects/ns7ajke2xjtg8f9anqnma777xx8fspwx\",\"node_id\":\"8cc34a1b-d421-423b-8403-ba86482d7ed4\",\"index\":0,\"ok\":true},{\"run_id\":\"run_m17fy5bfgwstw8cmg3mq83nx958fsjxa\",\"type\":\"generation\",\"model\":{\"model_id\":\"t2i-gpt-image-2-5-flare\"},\"estimated_seconds\":25,\"charged_cost\":0,\"poll_url\":\"https://app.flora.ai/api/v1/runs/run_m17fy5bfgwstw8cmg3mq83nx958fsjxa\",\"project_id\":\"prj_ns7ajke2xjtg8f9anqnma777xx8fspwx\",\"canvas_url\":\"https://app.flora.ai/projects/ns7ajke2xjtg8f9anqnma777xx8fspwx\",\"node_id\":\"df85a162-8cf8-4f7b-a517-8717cf0e1964\",\"index\":1,\"ok\":true},{\"run_id\":\"run_m17bmpnatp6639mwr94pk6100s8frbpf\",\"type\":\"generation\",\"model\":{\"model_id\":\"t2i-gpt-image-2-5-flare\"},\"estimated_seconds\":25,\"charged_cost\":0,\"poll_url\":\"https://app.flora.ai/api/v1/runs/run_m17bmpnatp6639mwr94pk6100s8frbpf\",\"project_id\":\"prj_ns7ajke2xjtg8f9anqnma777xx8fspwx\",\"canvas_url\":\"https://app.flora.ai/projects/ns7ajke2xjtg8f9anqnma777xx8fspwx\",\"node_id\":\"f85a1e53-b42d-411a-a8e8-b79efebbc9d1\",\"index\":2,\"ok\":true},{\"run_id\":\"run_m17c139vexw4n2ssjd0jszddxd8frn4w\",\"type\":\"generation\",\"model\":{\"model_id\":\"t2i-gpt-image-2-5-flare\"},\"estimated_seconds\":25,\"charged_cost\":0,\"poll_url\":\"https://app.flora.ai/api/v1/runs/run_m17c139vexw4n2ssjd0jszddxd8frn4w\",\"project_id\":\"prj_ns7ajke2xjtg8f9anqnma777xx8fspwx\",\"canvas_url\":\"https://app.flora.ai/projects/ns7ajke2xjtg8f9anqnma777xx8fspwx\",\"node_id\":\"91db63b5-2719-4544-87fb-bc759bf0a212\",\"index\":3,\"ok\":true},{\"run_id\":\"run_m17ap0zmzhhdperhs7cbr6nrch8fsx0s\",\"type\":\"generation\",\"model\":{\"model_id\":\"t2i-gpt-image-2-5-flare\"},\"estimated_seconds\":25,\"charged_cost\":0,\"poll_url\":\"https://app.flora.ai/api/v1/runs/run_m17ap0zmzhhdperhs7cbr6nrch8fsx0s\",\"project_id\":\"prj_ns7ajke2xjtg8f9anqnma777xx8fspwx\",\"canvas_url\":\"https://app.flora.ai/projects/ns7ajke2xjtg8f9anqnma777xx8fspwx\",\"node_id\":\"665246b1-bbc6-4da6-8142-e0b9da342eaa\",\"index\":4,\"ok\":true}]}",
+      "annotations": {
+        "audience": [
+          "assistant"
+        ]
+      }
+    },
+    {
+      "type": "text",
+      "text": "Usage amounts: charged_cost=$0.00 USD. These are dollar amounts, never credits. Preserve sub-cent precision when reporting them.",
+      "annotations": {
+        "audience": [
+          "assistant"
+        ]
+      }
+    }
+  ]
+}

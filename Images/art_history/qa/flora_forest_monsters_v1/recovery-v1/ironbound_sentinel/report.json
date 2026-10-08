@@ -1,0 +1,59 @@
+{
+  "algorithm": "spatial_checkerboard_conservative_v1",
+  "regular_pattern": false,
+  "horizontal_fit": [
+    72.155029296875,
+    8.009999999999957,
+    1.0,
+    [
+      253.0,
+      233.0
+    ]
+  ],
+  "vertical_fit": [
+    3.10498046875,
+    7.999999999999957,
+    0.0,
+    [
+      253.0,
+      234.0
+    ]
+  ],
+  "background_levels_rgb": [
+    [
+      253.0,
+      253.0,
+      253.0
+    ],
+    [
+      234.0,
+      234.0,
+      234.0
+    ]
+  ],
+  "checker_contrast": 19.0,
+  "border_pattern_match_fraction": 0.8602328431372549,
+  "removed_pixels": 0,
+  "uncertain_retained_pixels": 677129,
+  "visible_rgb_modified": 0,
+  "status": "UNSAFE_TO_RECOVER",
+  "pipeline_state": "BLOCKED_TRANSPARENT_SOURCE",
+  "production_ready": false,
+  "limitations": "Conservative binary alpha retains uncertain edge/background pixels. JPEG foreground RGB remains contaminated; no original alpha can be inferred for blended pixels. Human review is required; do not promote this diagnostic candidate automatically.",
+  "source_path": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/art/incoming/flora_forest_monsters_v1/ironbound_sentinel_sprites.jpg",
+  "source_sha256": "2d956e6ad384424b6fa9bb7bd6854106067aee3ce92bbcc9eeaf4321091914fd",
+  "source_format": "JPEG",
+  "dimensions": [
+    1024,
+    1024
+  ],
+  "grid": [
+    4,
+    4
+  ],
+  "decoder": "Pillow 12.3.0",
+  "derived_png_sha256": null,
+  "suspected_edge_residual_pixels": 66205,
+  "edge_residual_count_interpretation": "Model mismatch confounds this diagnostic count; not a confirmed number of damaged foreground pixels.",
+  "diagnostic_interpretation": "No extraction produced. Alpha is entirely white (opaque); contrast/contact panels retain the source because the pattern gate failed."
+}

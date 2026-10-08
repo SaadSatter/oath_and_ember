@@ -1,0 +1,59 @@
+{
+  "algorithm": "spatial_checkerboard_conservative_v1",
+  "regular_pattern": false,
+  "horizontal_fit": [
+    104.930908203125,
+    8.489999999999947,
+    1.5,
+    [
+      252.5,
+      231.0
+    ]
+  ],
+  "vertical_fit": [
+    63.264404296875,
+    7.999999999999957,
+    0.0,
+    [
+      253.0,
+      231.0
+    ]
+  ],
+  "background_levels_rgb": [
+    [
+      252.0,
+      252.0,
+      252.0
+    ],
+    [
+      232.0,
+      232.0,
+      232.0
+    ]
+  ],
+  "checker_contrast": 20.0,
+  "border_pattern_match_fraction": 0.7362132352941176,
+  "removed_pixels": 0,
+  "uncertain_retained_pixels": 774628,
+  "visible_rgb_modified": 0,
+  "status": "UNSAFE_TO_RECOVER",
+  "pipeline_state": "BLOCKED_TRANSPARENT_SOURCE",
+  "production_ready": false,
+  "limitations": "Conservative binary alpha retains uncertain edge/background pixels. JPEG foreground RGB remains contaminated; no original alpha can be inferred for blended pixels. Human review is required; do not promote this diagnostic candidate automatically.",
+  "source_path": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/art/incoming/flora_forest_monsters_v1/cinder_wisp_sprites.jpg",
+  "source_sha256": "ac8c660279cc0740c76d6d646245afef07d45fdbd43ccd48535fd770fca38edb",
+  "source_format": "JPEG",
+  "dimensions": [
+    1024,
+    1024
+  ],
+  "grid": [
+    4,
+    4
+  ],
+  "decoder": "Pillow 12.3.0",
+  "derived_png_sha256": null,
+  "suspected_edge_residual_pixels": 220076,
+  "edge_residual_count_interpretation": "Model mismatch confounds this diagnostic count; not a confirmed number of damaged foreground pixels.",
+  "diagnostic_interpretation": "No extraction produced. Alpha is entirely white (opaque); contrast/contact panels retain the source because the pattern gate failed."
+}

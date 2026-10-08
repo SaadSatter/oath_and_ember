@@ -1,0 +1,44 @@
+{
+  "authorization": "Human request: turn locked approved monsters into actual multiplayer gameplay enemies",
+  "assets": [
+    {
+      "type": "mossling",
+      "asset_id": "mossling_sprites_v2",
+      "approved_at": "2026-10-07T06:52:38.889Z",
+      "source": "art/approved/mossling_sprites_v2",
+      "atlas_sha256": "76177726fa362c6cedfae40005f00cb1b4d519a8c61437e7628ed37f3ab9a39b",
+      "contract_sha256": "5dec5a8fe9300729e26b7ebe7165183fa57be932660b8fa46e431bce5729d365",
+      "runtime": "apps/client/public/assets/enemies/mossling/top-down.png",
+      "operations": [
+        "byte-for-byte copy of human-approved atlas",
+        "runtime URL binding; no normalization or pixel edits"
+      ]
+    },
+    {
+      "type": "cinder_wisp",
+      "asset_id": "cinder_wisp_sprites_v1",
+      "approved_at": "2026-10-06T21:25:20.201Z",
+      "source": "art/approved/cinder_wisp_sprites_v1",
+      "atlas_sha256": "b84bb21ab7432f47f26d40c76626bf9cded7f7bc7189016611ad2849d39e7766",
+      "contract_sha256": "317235aee1025a881732e9f27a45c46deefaaf5dddb585c5fd973aa5223ca490",
+      "runtime": "apps/client/public/assets/enemies/cinder_wisp/top-down.png",
+      "operations": [
+        "byte-for-byte copy of human-approved atlas",
+        "runtime URL binding; no normalization or pixel edits"
+      ]
+    },
+    {
+      "type": "ironbound_sentinel",
+      "asset_id": "ironbound_sentinel_sprites_v2",
+      "approved_at": "2026-10-07T06:52:44.546Z",
+      "source": "art/approved/ironbound_sentinel_sprites_v2",
+      "atlas_sha256": "eaf481504955a00cf29b014e7f9f150ce0aa53ef8591cc20c938f20710521ad2",
+      "contract_sha256": "b5fba6c2596aa6bd491b6c87661007933a15277d9bd81e0db7c62e16540027b9",
+      "runtime": "apps/client/public/assets/enemies/ironbound_sentinel/top-down.png",
+      "operations": [
+        "byte-for-byte copy of human-approved atlas",
+        "runtime URL binding; no normalization or pixel edits"
+      ]
+    }
+  ]
+}

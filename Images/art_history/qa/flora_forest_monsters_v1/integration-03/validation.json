@@ -1,0 +1,15 @@
+{
+  "art_tests": 75,
+  "full_tests": 138,
+  "typecheck": "PASS",
+  "build": "PASS",
+  "browser": "PASS",
+  "cinder_west_selection": [
+    12,
+    14
+  ],
+  "all_192_fixed_frame_checks": "PASS; selected west frames 12,14,12,14; other animations unchanged",
+  "human_approval": "Recorded for all three via art:approve with human-decision.json",
+  "source_and_atlas_pixels": "Unchanged",
+  "scope": "Approved controlled presentation encounter"
+}

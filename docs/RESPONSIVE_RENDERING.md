@@ -39,7 +39,7 @@ The client input sampler remains 30Hz, and server simulation/snapshot frequencie
 
 Author heroes and environments at a consistent world-pixel density, not at the user's device resolution. A 32-world-unit object should occupy about 32 source pixels at asset scale 1, regardless of desktop or phone. Use transparent sprite cells, integer source dimensions, consistent pivots, and preferably integer visual scale in the centralized manifest. Keep tiled environment edges aligned to integer world coordinates to avoid seams. Export PNG assets without baked device scaling or screen-space HUD text; retain nearest-neighbor filtering.
 
-The sprite-sheet grid and semantic animations remain as documented in `ART_PIPELINE.md`. Large padded weapon/cast frames are presentation only; never infer collision or damage areas from sprite bounds. Future environment views should follow the same rule. Keep UI icons and labels in screen space where their readable size can respond independently of the world.
+The sprite-sheet grid and semantic animations remain as documented in `SPRITE_ASSETS.md`. Large padded weapon/cast frames are presentation only; never infer collision or damage areas from sprite bounds. Future environment views should follow the same rule. Keep UI icons and labels in screen space where their readable size can respond independently of the world.
 
 ## Verification
 

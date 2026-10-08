@@ -1,0 +1,40 @@
+[
+  {
+    "path": "art/incoming/flora_forest_monsters_v1/walk-source-04/Mossling walk.png",
+    "sha256": "456c60a6c6f2a4592bb942944060365283a6f58969ba85b80346621f8afc9384",
+    "dimensions": [
+      1024,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha_bounds_half_open": [
+      42,
+      548,
+      979,
+      980
+    ],
+    "transparent_pixels": 897555,
+    "partial_alpha_pixels": 55173,
+    "opaque_pixels": 95848,
+    "normalization": "none; source retained unchanged"
+  },
+  {
+    "path": "art/incoming/flora_forest_monsters_v1/walk-source-04/Sentinel west and east walk.png",
+    "sha256": "317951f16318761c254331a1f3e2c5a28890dc9cd90a3601928cdb6b34a12374",
+    "dimensions": [
+      1024,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha_bounds_half_open": [
+      59,
+      29,
+      960,
+      997
+    ],
+    "transparent_pixels": 823909,
+    "partial_alpha_pixels": 38307,
+    "opaque_pixels": 186360,
+    "normalization": "none; source retained unchanged"
+  }
+]

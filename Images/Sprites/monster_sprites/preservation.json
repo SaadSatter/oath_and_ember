@@ -1,0 +1,34 @@
+{
+  "assets": [
+    {
+      "creature": "mossling",
+      "asset_id": "mossling_sprites_v2",
+      "preserved_atlas": "Images/Sprites/monster_sprites/mossling/atlas.png",
+      "runtime_atlas": "apps/client/public/assets/enemies/mossling/top-down.png",
+      "sha256": "76177726fa362c6cedfae40005f00cb1b4d519a8c61437e7628ed37f3ab9a39b",
+      "operations": "Byte-for-byte preservation; no image edits or normalization"
+    },
+    {
+      "creature": "cinder_wisp",
+      "asset_id": "cinder_wisp_sprites_v1",
+      "preserved_atlas": "Images/Sprites/monster_sprites/cinder_wisp/atlas.png",
+      "runtime_atlas": "apps/client/public/assets/enemies/cinder_wisp/top-down.png",
+      "sha256": "b84bb21ab7432f47f26d40c76626bf9cded7f7bc7189016611ad2849d39e7766",
+      "operations": "Byte-for-byte preservation; no image edits or normalization"
+    },
+    {
+      "creature": "ironbound_sentinel",
+      "asset_id": "ironbound_sentinel_sprites_v2",
+      "preserved_atlas": "Images/Sprites/monster_sprites/ironbound_sentinel/atlas.png",
+      "runtime_atlas": "apps/client/public/assets/enemies/ironbound_sentinel/top-down.png",
+      "sha256": "eaf481504955a00cf29b014e7f9f150ce0aa53ef8591cc20c938f20710521ad2",
+      "operations": "Byte-for-byte preservation; no image edits or normalization"
+    }
+  ],
+  "source_folder": "sources",
+  "historical_path_mapping": {
+    "art/": "Images/art_history/",
+    "art/incoming/flora_forest_monsters_v1/": "Images/Sprites/monster_sprites/sources/"
+  },
+  "note": "Historical contract/provenance paths retained as recorded. Runtime bindings remain in apps/client/public/assets/enemies."
+}

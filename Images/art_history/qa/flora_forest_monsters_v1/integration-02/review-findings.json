@@ -1,0 +1,242 @@
+{
+  "status": "NEEDS_HUMAN_REVIEW",
+  "source_dimensions": [
+    2172,
+    724
+  ],
+  "alpha": {
+    "zero": 735670,
+    "nonzero": 836858,
+    "partial": 835847,
+    "opaque": 1011
+  },
+  "identity": "Recognizable silhouettes, leafy crown/branch limbs, flame core/vine cage and stone armor/orange chest accents match the approved Flora designs. The replacement is not pixel-identical: altered saturation and alpha fringes require human review. No identity repair or color editing was performed. Conceptual identity is preserved; exact proportions/pose details differ from the JPEG references, especially the Sentinel helmet/torso. This is a human REVIEW finding, not a claim of a lossless JPEG-to-alpha conversion.",
+  "normalization": "external_crop_grid_v1: fixed declared source cells, per-column/per-row translation into stable frame boxes. All 836858 visible RGBA pixels transferred exactly once; zero RGB/alpha edits, no resampling. Transparent RGB padding discarded only where alpha is zero.",
+  "environment": "Both forest scenes preserved as art-direction only. Forest green/stone palettes and orange emissions fit references; current geometric forest fixture is a scale/compositing evaluation, not a completed forest map. Directional lighting generally top/front; creature shading is more detailed than Sieg/Coco.",
+  "network_visible": false,
+  "qa_scope": "Two independent clients verified deterministic fixed-time presentation; not network entity QA. Four responsive viewports captured; portrait preserves full scene but details/text become small.",
+  "primary_video": "browser/PRIMARY-REVIEW.webm",
+  "raw_primary_video": "browser/primary-all-creatures.webm",
+  "video_preparation": "Primary review is a conventional video transcode of raw capture seconds 3\u201321, excluding startup and later fixed-frame capture. Original raw videos retained.",
+  "assets": [
+    {
+      "id": "mossling_sprites_v1",
+      "source_region": [
+        0,
+        0,
+        750,
+        724
+      ],
+      "x_edges": [
+        0,
+        194,
+        372,
+        552,
+        750
+      ],
+      "y_edges": [
+        0,
+        181,
+        350,
+        523,
+        724
+      ],
+      "source_column_anchors": [
+        106,
+        284,
+        465,
+        648
+      ],
+      "source_row_anchors": [
+        178,
+        343,
+        519,
+        697
+      ],
+      "directions": [
+        "south",
+        "north",
+        "west",
+        "east"
+      ],
+      "frame_dimensions": [
+        272,
+        288
+      ],
+      "atlas_dimensions": [
+        1088,
+        1152
+      ],
+      "frame_count": 16,
+      "anchor": [
+        136,
+        260
+      ],
+      "scale": 0.25,
+      "animation_names": [
+        "mossling_sprites_v1:walk_south",
+        "mossling_sprites_v1:walk_north",
+        "mossling_sprites_v1:walk_west",
+        "mossling_sprites_v1:walk_east"
+      ],
+      "fps": 8,
+      "core_bottom_variation_per_row": [
+        6,
+        4,
+        6,
+        1
+      ],
+      "source_sha256": "c2e578bdb280fc83fe175d165528e3191b266c93a9b60ece006892a9d462a809",
+      "atlas_sha256": "ecf545d88820e7fc005f366bb70729f3178ec84861ea22849af8f75f3ad5d3b3",
+      "mask": "none",
+      "recommendation": "IMPROVE: east row frame 4 faces west. Leaves/branches survive intact, but small details shimmer when reduced; review red edge specks and fractional display sampling.",
+      "decision_recommendation": "IMPROVE"
+    },
+    {
+      "id": "cinder_wisp_sprites_v1",
+      "source_region": [
+        750,
+        0,
+        675,
+        724
+      ],
+      "x_edges": [
+        750,
+        935,
+        1085,
+        1250,
+        1425
+      ],
+      "y_edges": [
+        0,
+        179,
+        355,
+        516,
+        724
+      ],
+      "source_column_anchors": [
+        855,
+        1014,
+        1167,
+        1322
+      ],
+      "source_row_anchors": [
+        175,
+        351,
+        502,
+        693
+      ],
+      "directions": [
+        "south",
+        "north",
+        "east",
+        "west"
+      ],
+      "frame_dimensions": [
+        272,
+        288
+      ],
+      "atlas_dimensions": [
+        1088,
+        1152
+      ],
+      "frame_count": 16,
+      "anchor": [
+        136,
+        260
+      ],
+      "scale": 0.1875,
+      "animation_names": [
+        "cinder_wisp_sprites_v1:hover_south",
+        "cinder_wisp_sprites_v1:hover_north",
+        "cinder_wisp_sprites_v1:hover_east",
+        "cinder_wisp_sprites_v1:hover_west"
+      ],
+      "fps": 8,
+      "core_bottom_variation_per_row": [
+        1,
+        1,
+        9,
+        21
+      ],
+      "source_sha256": "c2e578bdb280fc83fe175d165528e3191b266c93a9b60ece006892a9d462a809",
+      "atlas_sha256": "b84bb21ab7432f47f26d40c76626bf9cded7f7bc7189016611ad2849d39e7766",
+      "mask": "none",
+      "recommendation": "IMPROVE: west row frames 2 and 4 turn toward east; side poses change yaw. Flame-tail swing produces up to 21 source-pixel bottom variation (3.94 world pixels). Body floats convincingly, but tail/branch detail is small in portrait.",
+      "decision_recommendation": "IMPROVE"
+    },
+    {
+      "id": "ironbound_sentinel_sprites_v1",
+      "source_region": [
+        1425,
+        0,
+        747,
+        724
+      ],
+      "x_edges": [
+        1425,
+        1644,
+        1818,
+        1994,
+        2172
+      ],
+      "y_edges": [
+        0,
+        183,
+        355,
+        528,
+        724
+      ],
+      "source_column_anchors": [
+        1553,
+        1732,
+        1903,
+        2073
+      ],
+      "source_row_anchors": [
+        179,
+        352,
+        526,
+        704
+      ],
+      "directions": [
+        "south",
+        "north",
+        "west",
+        "east"
+      ],
+      "frame_dimensions": [
+        272,
+        288
+      ],
+      "atlas_dimensions": [
+        1088,
+        1152
+      ],
+      "frame_count": 16,
+      "anchor": [
+        136,
+        260
+      ],
+      "scale": 0.375,
+      "animation_names": [
+        "ironbound_sentinel_sprites_v1:walk_south",
+        "ironbound_sentinel_sprites_v1:walk_north",
+        "ironbound_sentinel_sprites_v1:walk_west",
+        "ironbound_sentinel_sprites_v1:walk_east"
+      ],
+      "fps": 8,
+      "core_bottom_variation_per_row": [
+        2,
+        4,
+        0,
+        0
+      ],
+      "source_sha256": "c2e578bdb280fc83fe175d165528e3191b266c93a9b60ece006892a9d462a809",
+      "atlas_sha256": "2830f820271788012961d5e9cc89b3f27207036deffddcfdf2da075b01dedeef",
+      "mask": "none",
+      "recommendation": "REVIEW: heavy silhouette and hierarchy read clearly; rows are directionally consistent. Foot bounds vary at most 4 source pixels (1.5 world pixels), but fine shaded stone/armor is denser than the heroes.",
+      "decision_recommendation": "APPROVE, subject to human acceptance of density/source identity differences"
+    }
+  ]
+}

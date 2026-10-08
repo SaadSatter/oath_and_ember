@@ -1,0 +1,261 @@
+I now have improved transparent walking frames for the Mossling and Ironbound Sentinel.
+
+These are replacement artwork specifically for the problematic LEFT/RIGHT walking animations. They are NOT new character designs.
+
+Use these new sprites to continue the existing `flora_forest_monsters_v1` workflow.
+
+## Goal
+
+Replace only the bad side-walking animation frames for:
+
+* Mossling
+* Ironbound Sentinel
+
+Preserve the previously accepted front/back artwork and the existing Cinder Wisp artwork.
+
+Do not regenerate any artwork and do not call FLORA or another image provider.
+
+## First inspect the new source
+
+Programmatically inspect the supplied replacement image(s) before integration.
+
+Verify:
+
+* genuine alpha transparency;
+* actual foreground bounds;
+* number of frames;
+* frame ordering;
+* consistent character identity;
+* consistent pixel density;
+* foot/ground positions;
+* whether each sequence actually contains articulated walking rather than horizontal sprite translation.
+
+The intended animation is a four-frame walk cycle:
+
+1. contact;
+2. passing;
+3. opposite contact;
+4. opposite passing.
+
+The important acceptance criterion is:
+
+**If the character's world position is held fixed, its legs/body should visibly walk in place.**
+
+Do not treat horizontal movement of pixels across the canvas as locomotion.
+
+## Prefer one canonical side cycle + runtime mirroring
+
+Inspect the artwork and existing Phaser animation architecture.
+
+Unless there is a real asymmetric design reason preventing it, use ONE clean canonical side-facing four-frame animation and horizontally flip it at runtime for the opposite direction.
+
+For example:
+
+`walk_right`
+→ canonical source frames
+
+`walk_left`
+→ same frames with runtime `flipX`
+
+Do NOT create a second duplicated/mirrored atlas unless the existing rendering architecture genuinely requires one.
+
+This gives left and right movement identical:
+
+* timing;
+* stride;
+* ground anchoring;
+* silhouette;
+* animation quality.
+
+Record this decision in the asset contract.
+
+If the artwork contains genuinely different asymmetric details that make runtime mirroring visually incorrect, stop and report that rather than silently discarding them.
+
+## Extract the replacement frames
+
+The supplied image is source/reference artwork, not automatically a production-ready atlas.
+
+Deterministically extract the four appropriate frames for each character.
+
+Do not guess frame boundaries from silhouette bounds if a reliable grid/layout is available.
+
+Normalize each four-frame sequence so that:
+
+* every frame has identical cell dimensions;
+* ground/foot anchor is consistent;
+* the character does not jump horizontally because of inconsistent cropping;
+* vertical bob caused by the walk itself is preserved;
+* transparent padding is used instead of stretching/rescaling;
+* original pixels are preserved wherever possible;
+* nearest-neighbor behavior is maintained.
+
+Do not rescale individual frames independently.
+
+## Mossling
+
+Use the improved Mossling side-walk frames as the canonical side animation.
+
+Preserve its:
+
+* foliage/head design;
+* glowing orange eye;
+* branch arms;
+* root legs;
+* stone/body details;
+* proportions.
+
+The new animation should visibly show alternating legs/root-feet and corresponding body/arm motion.
+
+Do not modify the existing north/south frames during this task.
+
+## Ironbound Sentinel
+
+Use the improved Sentinel side-walk frames as the canonical side animation.
+
+The animation should preserve its heavy character:
+
+* clear alternating planted foot;
+* opposite leg passing;
+* subtle opposing arm movement;
+* weight transfer;
+* small vertical body movement appropriate for a massive stone creature.
+
+Do not convert the heavy walk into sliding movement by changing sprite offsets.
+
+Do not modify the existing north/south frames during this task.
+
+## Provenance
+
+Preserve the previous Flora source images and failed transparency/recovery attempts.
+
+These new transparent side-walk frames should become replacement source evidence, not overwrite historical evidence.
+
+Record:
+
+original Flora design
+→ side-animation replacement
+→ normalized runtime frames
+
+with hashes for each stage.
+
+The character design should continue to reference the original Flora artwork as canonical visual direction.
+
+## Resume existing asset contracts
+
+Do not create entirely new character versions simply because side-walk frames were replaced.
+
+Update/resume the existing Mossling and Sentinel candidates within `flora_forest_monsters_v1`.
+
+The source revision should be recorded as a human-authorized ART replacement.
+
+Preserve the existing:
+
+* forest references;
+* character contracts;
+* mask: none behavior;
+* provenance;
+* source inspection evidence.
+
+## Runtime integration
+
+After normalization, integrate the side animations into the game.
+
+Direction behavior should be:
+
+RIGHT movement
+→ play canonical side walk normally
+
+LEFT movement
+→ play the same canonical side walk with horizontal flip
+
+UP movement
+→ existing north/back animation
+
+DOWN movement
+→ existing south/front animation
+
+When movement stops, use the appropriate existing idle/standing behavior rather than freezing on an arbitrary passing frame if the current animation architecture supports this.
+
+Do not change authoritative movement/gameplay behavior.
+
+## QA
+
+The critical test is animation, not merely sprite-sheet validity.
+
+Create temporal/video QA showing:
+
+Mossling:
+
+* walking right continuously;
+* walking left continuously;
+* right → left direction change;
+* stopping after movement.
+
+Sentinel:
+
+* walking right continuously;
+* walking left continuously;
+* right → left direction change;
+* stopping after movement.
+
+Include Sieg or Coco in at least one gameplay capture so I can judge relative scale.
+
+For multiplayer-visible enemies, confirm both clients see the same authoritative enemy position/state.
+
+Do not compare independent video PTS as synchronized game time; use authoritative tick/state alignment consistent with the existing multiplayer QA approach.
+
+## Human review
+
+When everything passes objective QA, STOP at human review.
+
+Give me ONE primary video to watch first that clearly shows:
+
+Mossling walking right → left
+
+and
+
+Sentinel walking right → left.
+
+Then provide the individual evidence paths.
+
+The Review Card should specifically answer:
+
+* Does the Mossling actually walk rather than slide?
+* Does the Sentinel actually walk rather than slide?
+* Are feet grounded consistently?
+* Is horizontal mirroring visually acceptable?
+* Does either character visibly jump when changing direction?
+* Is character identity preserved from the Flora reference?
+* Does the Sentinel feel appropriately heavier than the Mossling?
+
+Then ask:
+
+APPROVE
+
+IMPROVE: <feedback>
+
+REJECT: <reason>
+
+Do not publish automatically.
+
+## Important
+
+Do not solve animation problems by moving individual frames around during playback.
+
+World movement belongs to gameplay.
+
+Sprite animation should animate the character **in place around a stable ground anchor**.
+
+The runtime movement system moves that anchored animated sprite through the world.
+
+At completion, report:
+
+1. which four source frames were selected for Mossling;
+2. which four were selected for Sentinel;
+3. normalized cell dimensions;
+4. ground anchors;
+5. runtime animation names;
+6. whether `flipX` is used for left/right;
+7. any pixel transformations performed;
+8. exact primary review video path;
+9. your recommendation for Mossling and Sentinel separately.

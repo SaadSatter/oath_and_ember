@@ -1,0 +1,54 @@
+{
+  "files": [
+    {
+      "name": "Forest map \u2014 Mosslight Ruins",
+      "file": "forest_mosslight_ruins.jpg",
+      "source_url": "https://media.flora.ai/node-inputs/2026/10/6/anonymous/7c55444d-5bdc-44e2-9f21-395803226a09.png",
+      "run_id": "run_m17bxmwtkxe22nwps75vmz3p8n8fswvh",
+      "sha256": "4523d7b49c10332a8c074b174c4b1260939ae1349307af557df090d0e2259dfe",
+      "bytes": 322474,
+      "format": "jpg"
+    },
+    {
+      "name": "Forest map \u2014 Twilight Brambles",
+      "file": "forest_twilight_brambles.jpg",
+      "source_url": "https://media.flora.ai/node-inputs/2026/10/6/anonymous/b340d055-3b41-4b5b-a5c4-6cd0a52d064a.png",
+      "run_id": "run_m17fy5bfgwstw8cmg3mq83nx958fsjxa",
+      "sha256": "8aadc5c99bdca9321000698d279792fdd2f119e4f0e915ee13d7700f015f21d1",
+      "bytes": 269333,
+      "format": "jpg"
+    },
+    {
+      "name": "Mossling \u2014 directional walk sheet",
+      "file": "mossling_sprites.jpg",
+      "source_url": "https://media.flora.ai/node-inputs/2026/10/6/anonymous/6281d73d-4393-48cb-8cce-e057cbc768b3.png",
+      "run_id": "run_m17bmpnatp6639mwr94pk6100s8frbpf",
+      "sha256": "f3019178f8596a89721862d97448a2559ca4cd3e97fe363a5baf8ae13de2a420",
+      "bytes": 251172,
+      "format": "jpg"
+    },
+    {
+      "name": "Cinder Wisp \u2014 directional float sheet",
+      "file": "cinder_wisp_sprites.jpg",
+      "source_url": "https://media.flora.ai/node-inputs/2026/10/6/anonymous/88411306-9ea2-466b-a3d1-7ee8901bcb09.png",
+      "run_id": "run_m17c139vexw4n2ssjd0jszddxd8frn4w",
+      "sha256": "ac8c660279cc0740c76d6d646245afef07d45fdbd43ccd48535fd770fca38edb",
+      "bytes": 233645,
+      "format": "jpg"
+    },
+    {
+      "name": "Ironbound Sentinel \u2014 directional walk sheet",
+      "file": "ironbound_sentinel_sprites.jpg",
+      "source_url": "https://media.flora.ai/node-inputs/2026/10/6/anonymous/ccf8dfb5-6d8b-4f73-8b31-7552f898f412.png",
+      "run_id": "run_m17ap0zmzhhdperhs7cbr6nrch8fsx0s",
+      "sha256": "2d956e6ad384424b6fa9bb7bd6854106067aee3ce92bbcc9eeaf4321091914fd",
+      "bytes": 261641,
+      "format": "jpg"
+    }
+  ],
+  "human_decision": {
+    "date": "2026-10-06",
+    "request": "I approve of all of these can you save them to some folder in art?",
+    "scope": "Visual direction approved and original downloaded files saved. Runtime QA, atlas validation and art:approve/art:publish remain separate."
+  }
+}

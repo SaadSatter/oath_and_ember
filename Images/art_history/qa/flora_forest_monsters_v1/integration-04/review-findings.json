@@ -1,0 +1,107 @@
+{
+  "status": "NEEDS_HUMAN_REVIEW",
+  "source_dimensions": {
+    "Mossling walk.png": [
+      1024,
+      1024
+    ],
+    "Sentinel west and east walk.png": [
+      1024,
+      1024
+    ]
+  },
+  "source_alpha": {
+    "Mossling walk.png": {
+      "zero": 897555,
+      "partial": 55173,
+      "opaque": 95848
+    },
+    "Sentinel west and east walk.png": {
+      "zero": 823909,
+      "partial": 38307,
+      "opaque": 186360
+    }
+  },
+  "layout": "Both lower halves contain four columns with verified 256-wide cells. Mossling has two lower rows (west,east); east frame4 actually west. Sentinel contains four supplemental east-facing poses in two upper rows; use lower complete west/east rows only.",
+  "source_regions": {
+    "mossling": [
+      0,
+      512,
+      1024,
+      512
+    ],
+    "sentinel": [
+      0,
+      512,
+      1024,
+      512
+    ]
+  },
+  "normalization": "Only deterministic crop/translation/padding and exact directional row copies; no alpha/RGB edits or resampling. North/south copied from approved canonical source unchanged.",
+  "presentation": "Nearest-neighbor, same controlled encounter, no AI/combat/gameplay changes. Per-direction scales preserve apparent hierarchy.",
+  "mossling": {
+    "west_frames": [
+      8,
+      9,
+      10,
+      11
+    ],
+    "east_frames": [
+      12,
+      13,
+      14
+    ],
+    "side_scale": 0.2,
+    "north_south_scale": 0.25,
+    "recommendation": "REVIEW: leg/foot pose changes exist but stride is subtle; the east source frame4 is wrong-facing and excluded. Three-frame east cadence is shorter than four-frame west at 8 FPS.",
+    "atlas_sha256": "e46498d80e026eef855d4700570cdd7755e5bd9c305a02359724193f3bee03a1",
+    "composed_source_sha256": "e46498d80e026eef855d4700570cdd7755e5bd9c305a02359724193f3bee03a1",
+    "core_bottom_variation_per_row": [
+      6,
+      4,
+      7,
+      5
+    ],
+    "approval": "PENDING_NEW_HUMAN_REVIEW"
+  },
+  "sentinel": {
+    "west_frames": [
+      8,
+      9,
+      10,
+      11
+    ],
+    "east_frames": [
+      12,
+      13,
+      14,
+      15
+    ],
+    "side_scale": 0.3,
+    "north_south_scale": 0.375,
+    "recommendation": "REVIEW: clearer foot placement/knee changes than previous rocking rows; source texture/pose angle differs slightly. Human judgment of convincing gait remains required.",
+    "atlas_sha256": "07e4838d488f27fbb499ab14ac1725d8258b7b06530916d9463e33aa35aeac8b",
+    "composed_source_sha256": "07e4838d488f27fbb499ab14ac1725d8258b7b06530916d9463e33aa35aeac8b",
+    "core_bottom_variation_per_row": [
+      2,
+      4,
+      2,
+      4
+    ],
+    "approval": "PENDING_NEW_HUMAN_REVIEW"
+  },
+  "retained": "Cinder Wisp approved two-frame west loop unchanged; original v1 approved creature assets and all earlier QA preserved.",
+  "frame_dimensions": [
+    272,
+    288
+  ],
+  "anchor": [
+    136,
+    260
+  ],
+  "fps": 8,
+  "sources": [
+    "art/qa/flora_forest_monsters_v1/walk-preparation-04/mossling/composition.json",
+    "art/qa/flora_forest_monsters_v1/walk-preparation-04/ironbound_sentinel/composition.json"
+  ]
+}

@@ -1,0 +1,366 @@
+{
+  "strategy": "semantic_labels_v1",
+  "ready": false,
+  "counts": {
+    "selected": 17049,
+    "background": 929905,
+    "unselected": 64397,
+    "ambiguous": 37225,
+    "outsideArtwork": 0,
+    "paddingViolations": 0,
+    "unsupportedChannel": 0
+  },
+  "perFrame": [
+    {
+      "selected": 233,
+      "ambiguous": 868,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 269,
+      "ambiguous": 808,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 236,
+      "ambiguous": 765,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 218,
+      "ambiguous": 790,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 256,
+      "ambiguous": 774,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 236,
+      "ambiguous": 824,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 238,
+      "ambiguous": 818,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 190,
+      "ambiguous": 886,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 264,
+      "ambiguous": 785,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 259,
+      "ambiguous": 775,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 235,
+      "ambiguous": 745,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 276,
+      "ambiguous": 711,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 273,
+      "ambiguous": 730,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 268,
+      "ambiguous": 760,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 263,
+      "ambiguous": 716,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 269,
+      "ambiguous": 718,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 244,
+      "ambiguous": 809,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 249,
+      "ambiguous": 798,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 247,
+      "ambiguous": 768,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 248,
+      "ambiguous": 677,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 225,
+      "ambiguous": 750,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 257,
+      "ambiguous": 728,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 262,
+      "ambiguous": 741,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 196,
+      "ambiguous": 837,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 970,
+      "ambiguous": 818,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 1007,
+      "ambiguous": 753,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 998,
+      "ambiguous": 763,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 976,
+      "ambiguous": 757,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 1015,
+      "ambiguous": 813,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 1060,
+      "ambiguous": 754,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 1048,
+      "ambiguous": 741,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 1005,
+      "ambiguous": 831,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 159,
+      "ambiguous": 865,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 150,
+      "ambiguous": 797,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 168,
+      "ambiguous": 825,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 88,
+      "ambiguous": 640,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 83,
+      "ambiguous": 639,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 73,
+      "ambiguous": 650,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 100,
+      "ambiguous": 632,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 81,
+      "ambiguous": 661,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 356,
+      "ambiguous": 810,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 279,
+      "ambiguous": 974,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 301,
+      "ambiguous": 914,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 345,
+      "ambiguous": 1011,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 241,
+      "ambiguous": 977,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 361,
+      "ambiguous": 945,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 274,
+      "ambiguous": 1074,
+      "outsideArtwork": 0
+    }
+  ],
+  "examples": [
+    {
+      "x": 193,
+      "y": 45,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 194,
+      "y": 45,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 320,
+      "y": 45,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 321,
+      "y": 45,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 322,
+      "y": 45,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 448,
+      "y": 45,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 449,
+      "y": 45,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 705,
+      "y": 45,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 706,
+      "y": 45,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 961,
+      "y": 45,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 962,
+      "y": 45,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 64,
+      "y": 46,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 65,
+      "y": 46,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 66,
+      "y": 46,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 67,
+      "y": 46,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 68,
+      "y": 46,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 192,
+      "y": 46,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 193,
+      "y": 46,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 194,
+      "y": 46,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 195,
+      "y": 46,
+      "reason": "ambiguous"
+    }
+  ],
+  "policy": {
+    "backgroundAlphaMax": 16,
+    "labelAlphaMin": 192,
+    "primaryMin": 240,
+    "otherMax": 15
+  },
+  "inputMaskSha256": "5ed4cac7b5fd130c064ab515261c010b5154b71567bde376566d3423c7f641cb",
+  "atlasSha256": "822d487d6eecdbfde54c27c44e66a67e1f3c58c94b21fd6394b1142a14f0e52d",
+  "atlasPixelsChanged": 0,
+  "semanticReview": "REQUIRED: labels do not prove cloth-only coverage or protected-color safety",
+  "assetId": "sieg_shield_v1",
+  "inputMask": "art/incoming/sieg_shield_v1/generated/attempt-05/mask-raw.png",
+  "sourceArtwork": "art/incoming/sieg_shield_v1/generated/attempt-05/raw.png",
+  "providerCalls": 0
+}

@@ -1,0 +1,80 @@
+{
+  "cost_usd": 0.069,
+  "items": [
+    {
+      "name": "mossling",
+      "run_id": "run_m17ct62wg5ejx0w94p2hbx3w698fsx5f",
+      "status": "completed",
+      "progress": 100,
+      "created_at": 1791319103491.8398,
+      "completed_at": 1791319181236,
+      "charged_cost": 0.023,
+      "outputs": [
+        {
+          "output_id": "output_0",
+          "type": "imageUrl",
+          "url": "https://media.flora.ai/node-inputs/2026/10/6/anonymous/970f27f6-0408-4a46-989c-f06b349aaf17.png"
+        }
+      ],
+      "poll_url": "https://app.flora.ai/api/v1/runs/run_m17ct62wg5ejx0w94p2hbx3w698fsx5f",
+      "generation_id": "run_m17ct62wg5ejx0w94p2hbx3w698fsx5f",
+      "workspace_id": "ws_qd79c48t3nna3s5900kfdd89p58frnky",
+      "project_id": "prj_ns7ajke2xjtg8f9anqnma777xx8fspwx",
+      "model": {
+        "model_id": "i2i-gpt-image-2-5-flare"
+      },
+      "local_path": "art/incoming/flora_forest_monsters_v1/transparent-attempt-01/mossling.jpg",
+      "download_sha256": "efc93b93f4c6337bac9ebc0d8ff76a67a37c71047efd7a2b1ee52544f8057f4a"
+    },
+    {
+      "name": "cinder_wisp",
+      "run_id": "run_m17ann5fyd5nv6774dzwdr7zah8fr70y",
+      "status": "completed",
+      "progress": 100,
+      "created_at": 1791319103487.1816,
+      "completed_at": 1791319148872,
+      "charged_cost": 0.023,
+      "outputs": [
+        {
+          "output_id": "output_0",
+          "type": "imageUrl",
+          "url": "https://media.flora.ai/node-inputs/2026/10/6/anonymous/94fccec9-cb58-43c3-9039-c063cc6fcbc6.png"
+        }
+      ],
+      "poll_url": "https://app.flora.ai/api/v1/runs/run_m17ann5fyd5nv6774dzwdr7zah8fr70y",
+      "generation_id": "run_m17ann5fyd5nv6774dzwdr7zah8fr70y",
+      "workspace_id": "ws_qd79c48t3nna3s5900kfdd89p58frnky",
+      "project_id": "prj_ns7ajke2xjtg8f9anqnma777xx8fspwx",
+      "model": {
+        "model_id": "i2i-gpt-image-2-5-flare"
+      },
+      "local_path": "art/incoming/flora_forest_monsters_v1/transparent-attempt-01/cinder_wisp.jpg",
+      "download_sha256": "b47137fbbda56d5ad7e69df53512cd1d4a404c0744b9e6dd5fc0b04f6718c3ce"
+    },
+    {
+      "name": "ironbound_sentinel",
+      "run_id": "run_m170qc4qnqfhf2dw5c6b9v5ag58frxh7",
+      "status": "completed",
+      "progress": 100,
+      "created_at": 1791319103487.093,
+      "completed_at": 1791319121877,
+      "charged_cost": 0.023,
+      "outputs": [
+        {
+          "output_id": "output_0",
+          "type": "imageUrl",
+          "url": "https://media.flora.ai/node-inputs/2026/10/6/anonymous/aad97d67-2955-41f5-9592-cb4347e9bd7e.png"
+        }
+      ],
+      "poll_url": "https://app.flora.ai/api/v1/runs/run_m170qc4qnqfhf2dw5c6b9v5ag58frxh7",
+      "generation_id": "run_m170qc4qnqfhf2dw5c6b9v5ag58frxh7",
+      "workspace_id": "ws_qd79c48t3nna3s5900kfdd89p58frnky",
+      "project_id": "prj_ns7ajke2xjtg8f9anqnma777xx8fspwx",
+      "model": {
+        "model_id": "i2i-gpt-image-2-5-flare"
+      },
+      "local_path": "art/incoming/flora_forest_monsters_v1/transparent-attempt-01/ironbound_sentinel.jpg",
+      "download_sha256": "515e031d3d0f0f4c2600411027c1d22dcdb534f79ca1ccee3edf62155bb750d2"
+    }
+  ]
+}

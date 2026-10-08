@@ -60,6 +60,9 @@ export class NetworkClient {
       this.onchange();
       return;
     }
+    (
+      window as unknown as { __enemySnapshot?: (world: World) => void }
+    ).__enemySnapshot?.(structuredClone(w));
     const old = this.world;
     this.world = w;
     const p = w.players[this.session?.playerId || ""];

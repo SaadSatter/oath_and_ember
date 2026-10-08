@@ -1,0 +1,34 @@
+{
+  "asset_id": "cinder_wisp_sprites_v1",
+  "url": "/assets/enemies/cinder_wisp/top-down.png",
+  "frame_dimensions": [
+    272,
+    288
+  ],
+  "anchor": [
+    136,
+    260
+  ],
+  "directions": [
+    "south",
+    "north",
+    "east",
+    "west"
+  ],
+  "x_edges": [
+    750,
+    935,
+    1085,
+    1250,
+    1425
+  ],
+  "animation_frames": {
+    "west": [
+      0,
+      2
+    ]
+  },
+  "scale": 0.1875,
+  "fps": 8,
+  "motion": "hover"
+}

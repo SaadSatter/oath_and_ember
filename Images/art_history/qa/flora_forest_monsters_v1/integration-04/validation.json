@@ -1,0 +1,14 @@
+{
+  "art_tests": {
+    "passed": 77
+  },
+  "full_tests": {
+    "passed": 140
+  },
+  "typecheck": "PASS",
+  "build": "PASS; existing Phaser bundle-size warning",
+  "browser": "PASS; 192 frame checks, four responsive viewports, independent presentation clients agree",
+  "temporal": "Recorded individual and combined continuous animations; decoded PNG evidence inspected",
+  "source_integrity": "Both original PNGs preserved unchanged; approved v1 artwork remains preserved",
+  "human_approval": "PENDING for new Mossling/Sentinel v2; Wisp remains approved"
+}

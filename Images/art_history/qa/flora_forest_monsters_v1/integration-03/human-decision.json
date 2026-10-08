@@ -1,0 +1,23 @@
+{
+  "author": "human",
+  "decision": "APPROVE",
+  "assets": [
+    "mossling_sprites_v1",
+    "cinder_wisp_sprites_v1",
+    "ironbound_sentinel_sprites_v1"
+  ],
+  "user_statement": "Sounds good, otherwise I approve",
+  "context": "User accepted the proposed temporary Cinder Wisp west loop using source frames 1 and 3; otherwise approves the presented creatures.",
+  "accepted_reviews": [
+    "Remaining source-art/pixel-density/scale findings in integration-02 review card accepted by user. Mossling source frame ordering remains unchanged."
+  ],
+  "required_correction": {
+    "asset": "cinder_wisp_sprites_v1",
+    "animation": "hover_west",
+    "row_relative_frames_zero_based": [
+      0,
+      2
+    ]
+  },
+  "presentation_candidate": "art/qa/flora_forest_monsters_v1/integration-03"
+}

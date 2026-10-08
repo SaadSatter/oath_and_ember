@@ -1,0 +1,16 @@
+{
+  "art_tests": {
+    "passed": 74,
+    "command": "ART_PREPARE_PYTHON=<bundled-python> npm run art:test -- --maxWorkers=1"
+  },
+  "full_tests": {
+    "passed": 137,
+    "command": "ART_PREPARE_PYTHON=<bundled-python> npm test -- --maxWorkers=1"
+  },
+  "typecheck": "PASS",
+  "build": "PASS; existing large Phaser chunk warning",
+  "browser": "PASS; no page errors, 4 responsive sizes, 2 independent presentation clients",
+  "human_review": "PENDING",
+  "initial_concurrent_test_runs": "Timeouts under concurrent video encoding and duplicated suites; sequential reruns passed without increasing timeouts.",
+  "fixed_frame_assertions": "PASS: 64 samples; all 3 sprites match row*4+col, independent states equal"
+}

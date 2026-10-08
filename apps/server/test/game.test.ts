@@ -1,3 +1,4 @@
+import { spawnEnemy } from "../../../packages/shared/src/enemies.js";
 import { describe, it, expect } from "vitest";
 import { io } from "socket.io-client";
 import { GameRoom } from "../src/GameRoom.js";
@@ -320,10 +321,12 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
     clients[1].emit("player:input", neutral(11));
     const missile = Object.values(room.state.projectiles)[0];
     room.state.enemies.target = {
+      ...spawnEnemy("target", "mossling", 0, 0),
       id: "target",
       x: missile.x + 14,
       y: missile.y,
       hp: 60,
+      nextAttackTick: 999999,
       cooldown: 999,
     };
     const impacts = await Promise.all(
@@ -504,7 +507,15 @@ describe("authoritative Heavy Break", () => {
     const { r, a, b } = pair();
     a.unlockedSkills.push("heavy");
     r.state.enemies = {
-      target: { id: "target", x: a.x + 65, y: a.y, hp: 100, cooldown: 999 },
+      target: {
+        ...spawnEnemy("target", "mossling", 0, 0),
+        id: "target",
+        x: a.x + 65,
+        y: a.y,
+        hp: 100,
+        nextAttackTick: 999999,
+        cooldown: 999,
+      },
     };
     for (let n = 0; n < ticks; n++) {
       input(r, a.id, { primaryHeld: true });
@@ -574,10 +585,12 @@ it("server records projectile collision impacts once, never expiry bursts", () =
   };
   r.state.projectiles.hit = q;
   r.state.enemies.target = {
+    ...spawnEnemy("target", "mossling", 0, 0),
     id: "target",
     x: b.x + 14,
     y: b.y,
     hp: 60,
+    nextAttackTick: 999999,
     cooldown: 999,
   };
   r.tick();

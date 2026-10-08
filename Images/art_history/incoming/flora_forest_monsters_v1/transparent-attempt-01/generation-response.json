@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"generations\":[{\"run_id\":\"run_m17ct62wg5ejx0w94p2hbx3w698fsx5f\",\"type\":\"generation\",\"model\":{\"model_id\":\"i2i-gpt-image-2-5-flare\"},\"estimated_seconds\":25,\"charged_cost\":0,\"poll_url\":\"https://app.flora.ai/api/v1/runs/run_m17ct62wg5ejx0w94p2hbx3w698fsx5f\",\"project_id\":\"prj_ns7ajke2xjtg8f9anqnma777xx8fspwx\",\"canvas_url\":\"https://app.flora.ai/projects/ns7ajke2xjtg8f9anqnma777xx8fspwx\",\"node_id\":\"56292716-4341-4133-a1b2-e36c0e406bec\",\"index\":0,\"ok\":true},{\"run_id\":\"run_m17ann5fyd5nv6774dzwdr7zah8fr70y\",\"type\":\"generation\",\"model\":{\"model_id\":\"i2i-gpt-image-2-5-flare\"},\"estimated_seconds\":25,\"charged_cost\":0,\"poll_url\":\"https://app.flora.ai/api/v1/runs/run_m17ann5fyd5nv6774dzwdr7zah8fr70y\",\"project_id\":\"prj_ns7ajke2xjtg8f9anqnma777xx8fspwx\",\"canvas_url\":\"https://app.flora.ai/projects/ns7ajke2xjtg8f9anqnma777xx8fspwx\",\"node_id\":\"66365810-543d-4cc6-98e0-c284412301c8\",\"index\":1,\"ok\":true},{\"run_id\":\"run_m170qc4qnqfhf2dw5c6b9v5ag58frxh7\",\"type\":\"generation\",\"model\":{\"model_id\":\"i2i-gpt-image-2-5-flare\"},\"estimated_seconds\":25,\"charged_cost\":0,\"poll_url\":\"https://app.flora.ai/api/v1/runs/run_m170qc4qnqfhf2dw5c6b9v5ag58frxh7\",\"project_id\":\"prj_ns7ajke2xjtg8f9anqnma777xx8fspwx\",\"canvas_url\":\"https://app.flora.ai/projects/ns7ajke2xjtg8f9anqnma777xx8fspwx\",\"node_id\":\"852d4973-f4de-4e9e-8f7d-ad7c2f71276d\",\"index\":2,\"ok\":true}]}",
+      "annotations": {
+        "audience": [
+          "assistant"
+        ]
+      }
+    },
+    {
+      "type": "text",
+      "text": "Usage amounts: charged_cost=$0.00 USD. These are dollar amounts, never credits. Preserve sub-cent precision when reporting them.",
+      "annotations": {
+        "audience": [
+          "assistant"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "asset_type": "enemy_directional_sprite",
+  "normalization": "external_crop_grid_v1",
+  "asset_id": "cinder_wisp_sprites_v1",
+  "source": {
+    "path": "art/incoming/flora_forest_monsters_v1/transparent-source-02/Pixel Forest Spirit Sprite Sheet.png",
+    "sha256": "c2e578bdb280fc83fe175d165528e3191b266c93a9b60ece006892a9d462a809",
+    "provenance": "User supplied transparent replacement; canonical creature designs from Flora MCP"
+  },
+  "x_edges": [
+    750,
+    935,
+    1085,
+    1250,
+    1425
+  ],
+  "y_edges": [
+    0,
+    179,
+    355,
+    516,
+    724
+  ],
+  "column_anchors": [
+    855,
+    1014,
+    1167,
+    1322
+  ],
+  "row_anchors": [
+    175,
+    351,
+    502,
+    693
+  ],
+  "frame_dimensions": [
+    272,
+    288
+  ],
+  "anchor": [
+    136,
+    260
+  ],
+  "directions": [
+    "south",
+    "north",
+    "east",
+    "west"
+  ],
+  "fps": 8,
+  "motion": "hover",
+  "scale": 0.1875,
+  "label": "Cinder Wisp",
+  "mask": {
+    "strategy": "none",
+    "channels": []
+  },
+  "target": "assets/enemies/cinder_wisp/top-down.png",
+  "canonical_references": [
+    "art/incoming/flora_forest_monsters_v1/cinder_wisp_sprites.jpg",
+    "art/incoming/flora_forest_monsters_v1/forest_mosslight_ruins.jpg",
+    "art/incoming/flora_forest_monsters_v1/forest_twilight_brambles.jpg"
+  ],
+  "analysis": {
+    "core_alpha": 128,
+    "minimum_component_pixels": 500
+  },
+  "requirements": [
+    "Preserve all decoded visible RGBA pixels within verified region, without resampling",
+    "Verify alpha>=128 core components remain intact in source cells; retain faint alpha as-is",
+    "Fixed column/row anchors, no per-frame recentering",
+    "Human review of source direction errors/red fringes and temporal stability",
+    "QA-only isolated overlay; no production publish until explicit approval"
+  ]
+}

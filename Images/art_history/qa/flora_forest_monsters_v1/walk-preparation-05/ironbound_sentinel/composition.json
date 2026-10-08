@@ -1,0 +1,989 @@
+{
+  "algorithm": "external_directional_row_composition_v1",
+  "sources": [
+    {
+      "source": {
+        "path": "art/incoming/flora_forest_monsters_v1/transparent-source-02/Pixel Forest Spirit Sprite Sheet.png",
+        "sha256": "c2e578bdb280fc83fe175d165528e3191b266c93a9b60ece006892a9d462a809",
+        "provenance": "User supplied transparent replacement; canonical creature designs from Flora MCP"
+      },
+      "contract": {
+        "schema_version": 1,
+        "asset_type": "enemy_directional_sprite",
+        "normalization": "external_crop_grid_v1",
+        "asset_id": "ironbound_sentinel_sprites_v1",
+        "source": {
+          "path": "art/incoming/flora_forest_monsters_v1/transparent-source-02/Pixel Forest Spirit Sprite Sheet.png",
+          "sha256": "c2e578bdb280fc83fe175d165528e3191b266c93a9b60ece006892a9d462a809",
+          "provenance": "User supplied transparent replacement; canonical creature designs from Flora MCP"
+        },
+        "x_edges": [
+          1425,
+          1644,
+          1818,
+          1994,
+          2172
+        ],
+        "y_edges": [
+          0,
+          183,
+          355,
+          528,
+          724
+        ],
+        "column_anchors": [
+          1553,
+          1732,
+          1903,
+          2073
+        ],
+        "row_anchors": [
+          179,
+          352,
+          526,
+          704
+        ],
+        "frame_dimensions": [
+          352,
+          352
+        ],
+        "anchor": [
+          176,
+          312
+        ],
+        "directions": [
+          "south",
+          "north",
+          "west",
+          "east"
+        ],
+        "fps": 8,
+        "motion": "walk",
+        "scale": 0.375,
+        "label": "Ironbound Sentinel",
+        "mask": {
+          "strategy": "none",
+          "channels": []
+        },
+        "target": "assets/enemies/ironbound_sentinel/top-down.png",
+        "canonical_references": [
+          "art/incoming/flora_forest_monsters_v1/ironbound_sentinel_sprites.jpg",
+          "art/incoming/flora_forest_monsters_v1/forest_mosslight_ruins.jpg",
+          "art/incoming/flora_forest_monsters_v1/forest_twilight_brambles.jpg"
+        ],
+        "analysis": {
+          "core_alpha": 128,
+          "minimum_component_pixels": 500
+        },
+        "requirements": [
+          "Preserve all decoded visible RGBA pixels within verified region, without resampling",
+          "Verify alpha>=128 core components remain intact in source cells; retain faint alpha as-is",
+          "Fixed column/row anchors, no per-frame recentering",
+          "Human review of source direction errors/red fringes and temporal stability",
+          "QA-only isolated overlay; no production publish until explicit approval"
+        ]
+      },
+      "normalization": {
+        "algorithm": "external_crop_grid_v1",
+        "source_sha256": "c2e578bdb280fc83fe175d165528e3191b266c93a9b60ece006892a9d462a809",
+        "atlas_sha256": "bf67d3325b355d81e9b50acfa4adf09991abb5c8ed27e35498fc805035d7f223",
+        "source_region": [
+          1425,
+          0,
+          747,
+          724
+        ],
+        "frame_dimensions": [
+          352,
+          352
+        ],
+        "anchor": [
+          176,
+          312
+        ],
+        "frames": [
+          {
+            "index": 0,
+            "row": 0,
+            "col": 0,
+            "direction": "south",
+            "source_rect": [
+              1425,
+              0,
+              219,
+              183
+            ],
+            "translation": [
+              -1377,
+              133
+            ],
+            "alpha_bounds": [
+              88,
+              149,
+              267,
+              316
+            ],
+            "core_alpha_bounds": [
+              95,
+              152,
+              259,
+              311
+            ],
+            "visible_pixels": 22273
+          },
+          {
+            "index": 1,
+            "row": 0,
+            "col": 1,
+            "direction": "south",
+            "source_rect": [
+              1644,
+              0,
+              174,
+              183
+            ],
+            "translation": [
+              -1556,
+              133
+            ],
+            "alpha_bounds": [
+              88,
+              149,
+              262,
+              316
+            ],
+            "core_alpha_bounds": [
+              97,
+              152,
+              257,
+              311
+            ],
+            "visible_pixels": 22109
+          },
+          {
+            "index": 2,
+            "row": 0,
+            "col": 2,
+            "direction": "south",
+            "source_rect": [
+              1818,
+              0,
+              176,
+              183
+            ],
+            "translation": [
+              -1727,
+              133
+            ],
+            "alpha_bounds": [
+              91,
+              150,
+              267,
+              316
+            ],
+            "core_alpha_bounds": [
+              102,
+              155,
+              263,
+              312
+            ],
+            "visible_pixels": 21495
+          },
+          {
+            "index": 3,
+            "row": 0,
+            "col": 3,
+            "direction": "south",
+            "source_rect": [
+              1994,
+              0,
+              178,
+              183
+            ],
+            "translation": [
+              -1897,
+              133
+            ],
+            "alpha_bounds": [
+              97,
+              150,
+              259,
+              316
+            ],
+            "core_alpha_bounds": [
+              110,
+              155,
+              256,
+              310
+            ],
+            "visible_pixels": 19518
+          },
+          {
+            "index": 4,
+            "row": 1,
+            "col": 0,
+            "direction": "north",
+            "source_rect": [
+              1425,
+              183,
+              219,
+              172
+            ],
+            "translation": [
+              -1377,
+              -40
+            ],
+            "alpha_bounds": [
+              88,
+              143,
+              267,
+              315
+            ],
+            "core_alpha_bounds": [
+              97,
+              149,
+              258,
+              308
+            ],
+            "visible_pixels": 22178
+          },
+          {
+            "index": 5,
+            "row": 1,
+            "col": 1,
+            "direction": "north",
+            "source_rect": [
+              1644,
+              183,
+              174,
+              172
+            ],
+            "translation": [
+              -1556,
+              -40
+            ],
+            "alpha_bounds": [
+              88,
+              143,
+              262,
+              315
+            ],
+            "core_alpha_bounds": [
+              95,
+              147,
+              256,
+              312
+            ],
+            "visible_pixels": 21643
+          },
+          {
+            "index": 6,
+            "row": 1,
+            "col": 2,
+            "direction": "north",
+            "source_rect": [
+              1818,
+              183,
+              176,
+              172
+            ],
+            "translation": [
+              -1727,
+              -40
+            ],
+            "alpha_bounds": [
+              91,
+              143,
+              267,
+              315
+            ],
+            "core_alpha_bounds": [
+              98,
+              149,
+              256,
+              310
+            ],
+            "visible_pixels": 21378
+          },
+          {
+            "index": 7,
+            "row": 1,
+            "col": 3,
+            "direction": "north",
+            "source_rect": [
+              1994,
+              183,
+              178,
+              172
+            ],
+            "translation": [
+              -1897,
+              -40
+            ],
+            "alpha_bounds": [
+              97,
+              143,
+              260,
+              315
+            ],
+            "core_alpha_bounds": [
+              100,
+              149,
+              257,
+              310
+            ],
+            "visible_pixels": 21130
+          },
+          {
+            "index": 8,
+            "row": 2,
+            "col": 0,
+            "direction": "west",
+            "source_rect": [
+              1425,
+              355,
+              219,
+              173
+            ],
+            "translation": [
+              -1377,
+              -214
+            ],
+            "alpha_bounds": [
+              113,
+              141,
+              234,
+              314
+            ],
+            "core_alpha_bounds": [
+              117,
+              146,
+              231,
+              312
+            ],
+            "visible_pixels": 16825
+          },
+          {
+            "index": 9,
+            "row": 2,
+            "col": 1,
+            "direction": "west",
+            "source_rect": [
+              1644,
+              355,
+              174,
+              173
+            ],
+            "translation": [
+              -1556,
+              -214
+            ],
+            "alpha_bounds": [
+              102,
+              141,
+              246,
+              314
+            ],
+            "core_alpha_bounds": [
+              111,
+              145,
+              237,
+              312
+            ],
+            "visible_pixels": 16986
+          },
+          {
+            "index": 10,
+            "row": 2,
+            "col": 2,
+            "direction": "west",
+            "source_rect": [
+              1818,
+              355,
+              176,
+              173
+            ],
+            "translation": [
+              -1727,
+              -214
+            ],
+            "alpha_bounds": [
+              104,
+              141,
+              266,
+              314
+            ],
+            "core_alpha_bounds": [
+              109,
+              145,
+              235,
+              312
+            ],
+            "visible_pixels": 17599
+          },
+          {
+            "index": 11,
+            "row": 2,
+            "col": 3,
+            "direction": "west",
+            "source_rect": [
+              1994,
+              355,
+              178,
+              173
+            ],
+            "translation": [
+              -1897,
+              -214
+            ],
+            "alpha_bounds": [
+              105,
+              141,
+              243,
+              314
+            ],
+            "core_alpha_bounds": [
+              113,
+              145,
+              236,
+              312
+            ],
+            "visible_pixels": 17902
+          },
+          {
+            "index": 12,
+            "row": 3,
+            "col": 0,
+            "direction": "east",
+            "source_rect": [
+              1425,
+              528,
+              219,
+              196
+            ],
+            "translation": [
+              -1377,
+              -392
+            ],
+            "alpha_bounds": [
+              104,
+              136,
+              262,
+              316
+            ],
+            "core_alpha_bounds": [
+              112,
+              139,
+              233,
+              312
+            ],
+            "visible_pixels": 17263
+          },
+          {
+            "index": 13,
+            "row": 3,
+            "col": 1,
+            "direction": "east",
+            "source_rect": [
+              1644,
+              528,
+              174,
+              196
+            ],
+            "translation": [
+              -1556,
+              -392
+            ],
+            "alpha_bounds": [
+              99,
+              136,
+              232,
+              316
+            ],
+            "core_alpha_bounds": [
+              107,
+              138,
+              229,
+              312
+            ],
+            "visible_pixels": 17762
+          },
+          {
+            "index": 14,
+            "row": 3,
+            "col": 2,
+            "direction": "east",
+            "source_rect": [
+              1818,
+              528,
+              176,
+              196
+            ],
+            "translation": [
+              -1727,
+              -392
+            ],
+            "alpha_bounds": [
+              108,
+              136,
+              264,
+              318
+            ],
+            "core_alpha_bounds": [
+              111,
+              139,
+              234,
+              312
+            ],
+            "visible_pixels": 17803
+          },
+          {
+            "index": 15,
+            "row": 3,
+            "col": 3,
+            "direction": "east",
+            "source_rect": [
+              1994,
+              528,
+              178,
+              196
+            ],
+            "translation": [
+              -1897,
+              -392
+            ],
+            "alpha_bounds": [
+              106,
+              136,
+              245,
+              315
+            ],
+            "core_alpha_bounds": [
+              112,
+              138,
+              236,
+              312
+            ],
+            "visible_pixels": 17684
+          }
+        ],
+        "core_component_verification": [
+          {
+            "bounds": [
+              1472,
+              19,
+              1636,
+              178
+            ],
+            "pixels": 18006
+          },
+          {
+            "bounds": [
+              1653,
+              19,
+              1813,
+              178
+            ],
+            "pixels": 17707
+          },
+          {
+            "bounds": [
+              1829,
+              22,
+              1990,
+              179
+            ],
+            "pixels": 16887
+          },
+          {
+            "bounds": [
+              2007,
+              22,
+              2153,
+              177
+            ],
+            "pixels": 15888
+          },
+          {
+            "bounds": [
+              1651,
+              187,
+              1812,
+              352
+            ],
+            "pixels": 17304
+          },
+          {
+            "bounds": [
+              1474,
+              189,
+              1635,
+              348
+            ],
+            "pixels": 17250
+          },
+          {
+            "bounds": [
+              1825,
+              189,
+              1983,
+              350
+            ],
+            "pixels": 16903
+          },
+          {
+            "bounds": [
+              1997,
+              189,
+              2154,
+              350
+            ],
+            "pixels": 17199
+          },
+          {
+            "bounds": [
+              1667,
+              359,
+              1793,
+              526
+            ],
+            "pixels": 13392
+          },
+          {
+            "bounds": [
+              1836,
+              359,
+              1962,
+              526
+            ],
+            "pixels": 13725
+          },
+          {
+            "bounds": [
+              2010,
+              359,
+              2133,
+              526
+            ],
+            "pixels": 13936
+          },
+          {
+            "bounds": [
+              1494,
+              360,
+              1608,
+              526
+            ],
+            "pixels": 13152
+          },
+          {
+            "bounds": [
+              1663,
+              530,
+              1785,
+              704
+            ],
+            "pixels": 13971
+          },
+          {
+            "bounds": [
+              2009,
+              530,
+              2133,
+              704
+            ],
+            "pixels": 14079
+          },
+          {
+            "bounds": [
+              1489,
+              531,
+              1610,
+              704
+            ],
+            "pixels": 13766
+          },
+          {
+            "bounds": [
+              1838,
+              531,
+              1961,
+              704
+            ],
+            "pixels": 14007
+          }
+        ],
+        "transferred_visible_pixels": 311548,
+        "rgb_changes": 0,
+        "alpha_changes": 0,
+        "resampling": "none",
+        "status": "NEEDS_HUMAN_REVIEW"
+      }
+    },
+    {
+      "source": {
+        "path": "art/incoming/flora_forest_monsters_v1/walk-source-05/ChatGPT Image Oct 7, 2026, 01_19_12 AM.png",
+        "sha256": "720d360c0c78c005df22b19e4b3ca5e08adfc61736470891e068ed4ecf08da0c",
+        "provenance": "User supplied replacement side-walk PNG; Flora design remains canonical reference"
+      },
+      "contract": {
+        "schema_version": 1,
+        "asset_type": "enemy_directional_sprite",
+        "normalization": "external_crop_grid_v1",
+        "asset_id": "ironbound_sentinel_canonical_side",
+        "source": {
+          "path": "art/incoming/flora_forest_monsters_v1/walk-source-05/ChatGPT Image Oct 7, 2026, 01_19_12 AM.png",
+          "sha256": "720d360c0c78c005df22b19e4b3ca5e08adfc61736470891e068ed4ecf08da0c",
+          "provenance": "User supplied replacement side-walk PNG; Flora design remains canonical reference"
+        },
+        "x_edges": [
+          324,
+          620,
+          916,
+          1212,
+          1508
+        ],
+        "y_edges": [
+          0,
+          234
+        ],
+        "column_anchors": [
+          472,
+          768,
+          1064,
+          1360
+        ],
+        "row_anchors": [
+          232
+        ],
+        "frame_dimensions": [
+          352,
+          352
+        ],
+        "anchor": [
+          176,
+          312
+        ],
+        "directions": [
+          "east"
+        ],
+        "fps": 8,
+        "motion": "walk",
+        "scale": 0.375,
+        "label": "Ironbound Sentinel",
+        "mask": {
+          "strategy": "none",
+          "channels": []
+        },
+        "target": "assets/enemies/ironbound_sentinel/top-down.png",
+        "canonical_references": [
+          "art/incoming/flora_forest_monsters_v1/transparent-source-02/Pixel Forest Spirit Sprite Sheet.png"
+        ],
+        "analysis": {
+          "core_alpha": 128,
+          "minimum_component_pixels": 500
+        },
+        "requirements": [
+          "Preserve all decoded visible RGBA pixels within verified region, without resampling",
+          "Verify alpha>=128 core components remain intact in source cells; retain faint alpha as-is",
+          "Fixed column/row anchors, no per-frame recentering",
+          "Human review of source direction errors/red fringes and temporal stability",
+          "QA-only isolated overlay; no production publish until explicit approval"
+        ]
+      },
+      "normalization": {
+        "algorithm": "external_crop_grid_v1",
+        "source_sha256": "720d360c0c78c005df22b19e4b3ca5e08adfc61736470891e068ed4ecf08da0c",
+        "atlas_sha256": "fbd2e66b255f86d3a3cc3430959129c325c0ef5d533c1d8b2813bb9d2de471b5",
+        "source_region": [
+          324,
+          0,
+          1184,
+          234
+        ],
+        "frame_dimensions": [
+          352,
+          352
+        ],
+        "anchor": [
+          176,
+          312
+        ],
+        "frames": [
+          {
+            "index": 0,
+            "row": 0,
+            "col": 0,
+            "direction": "east",
+            "source_rect": [
+              324,
+              0,
+              296,
+              234
+            ],
+            "translation": [
+              -296,
+              80
+            ],
+            "alpha_bounds": [
+              76,
+              80,
+              321,
+              314
+            ],
+            "core_alpha_bounds": [
+              83,
+              87,
+              279,
+              311
+            ],
+            "visible_pixels": 36655
+          },
+          {
+            "index": 1,
+            "row": 0,
+            "col": 1,
+            "direction": "east",
+            "source_rect": [
+              620,
+              0,
+              296,
+              234
+            ],
+            "translation": [
+              -592,
+              80
+            ],
+            "alpha_bounds": [
+              30,
+              80,
+              282,
+              314
+            ],
+            "core_alpha_bounds": [
+              73,
+              88,
+              276,
+              308
+            ],
+            "visible_pixels": 35288
+          },
+          {
+            "index": 2,
+            "row": 0,
+            "col": 2,
+            "direction": "east",
+            "source_rect": [
+              916,
+              0,
+              296,
+              234
+            ],
+            "translation": [
+              -888,
+              80
+            ],
+            "alpha_bounds": [
+              34,
+              80,
+              320,
+              314
+            ],
+            "core_alpha_bounds": [
+              73,
+              87,
+              282,
+              311
+            ],
+            "visible_pixels": 37003
+          },
+          {
+            "index": 3,
+            "row": 0,
+            "col": 3,
+            "direction": "east",
+            "source_rect": [
+              1212,
+              0,
+              296,
+              234
+            ],
+            "translation": [
+              -1184,
+              80
+            ],
+            "alpha_bounds": [
+              51,
+              80,
+              268,
+              314
+            ],
+            "core_alpha_bounds": [
+              95,
+              88,
+              256,
+              311
+            ],
+            "visible_pixels": 32097
+          }
+        ],
+        "core_component_verification": [
+          {
+            "bounds": [
+              379,
+              7,
+              575,
+              231
+            ],
+            "pixels": 31661
+          },
+          {
+            "bounds": [
+              961,
+              7,
+              1170,
+              231
+            ],
+            "pixels": 31095
+          },
+          {
+            "bounds": [
+              665,
+              8,
+              868,
+              228
+            ],
+            "pixels": 30314
+          },
+          {
+            "bounds": [
+              1279,
+              8,
+              1440,
+              231
+            ],
+            "pixels": 27381
+          }
+        ],
+        "transferred_visible_pixels": 141043,
+        "rgb_changes": 0,
+        "alpha_changes": 0,
+        "resampling": "none",
+        "status": "NEEDS_HUMAN_REVIEW"
+      }
+    }
+  ],
+  "operations": [
+    {
+      "direction": "east",
+      "source_row": 0,
+      "destination_row": 3,
+      "source_part": 1
+    }
+  ],
+  "output_sha256": "eaf481504955a00cf29b014e7f9f150ce0aa53ef8591cc20c938f20710521ad2",
+  "rgb_changes": 0,
+  "alpha_changes": 0,
+  "resampling": "none",
+  "status": "NEEDS_HUMAN_REVIEW"
+}

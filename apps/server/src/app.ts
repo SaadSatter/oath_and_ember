@@ -20,10 +20,10 @@ const inputSchema = z
     interactHeld: z.boolean(),
   })
   .strict();
-export function createApp() {
+export function createApp(options: { encounter?: boolean } = {}) {
   const app = express(),
     http = createServer(app),
-    manager = new RoomManager();
+    manager = new RoomManager(options.encounter);
   const io = new Server<ClientEvents, ServerEvents>(http);
   app.get("/healthz", (_req, res) =>
     res.json({ ok: true, rooms: manager.rooms.size }),

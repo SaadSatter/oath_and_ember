@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "asset_type": "enemy_directional_sprite",
+  "normalization": "external_crop_grid_v1",
+  "asset_id": "ironbound_sentinel_sprites_v2",
+  "source": {
+    "path": "art/qa/flora_forest_monsters_v1/walk-preparation-04/ironbound_sentinel/composed.png",
+    "sha256": "07e4838d488f27fbb499ab14ac1725d8258b7b06530916d9463e33aa35aeac8b",
+    "provenance": "Deterministic external row composition; original user PNGs and approved canonical PNG traced in composition.json"
+  },
+  "x_edges": [
+    0,
+    272,
+    544,
+    816,
+    1088
+  ],
+  "y_edges": [
+    0,
+    288,
+    576,
+    864,
+    1152
+  ],
+  "column_anchors": [
+    136,
+    408,
+    680,
+    952
+  ],
+  "row_anchors": [
+    260,
+    548,
+    836,
+    1124
+  ],
+  "frame_dimensions": [
+    272,
+    288
+  ],
+  "anchor": [
+    136,
+    260
+  ],
+  "directions": [
+    "south",
+    "north",
+    "west",
+    "east"
+  ],
+  "direction_scales": {
+    "west": 0.3,
+    "east": 0.3
+  },
+  "fps": 8,
+  "motion": "walk",
+  "scale": 0.375,
+  "label": "Ironbound Sentinel",
+  "mask": {
+    "strategy": "none",
+    "channels": []
+  },
+  "target": "assets/enemies/ironbound_sentinel/top-down.png",
+  "canonical_references": [
+    "art/incoming/flora_forest_monsters_v1/ironbound_sentinel_sprites.jpg",
+    "art/incoming/flora_forest_monsters_v1/forest_mosslight_ruins.jpg",
+    "art/incoming/flora_forest_monsters_v1/forest_twilight_brambles.jpg",
+    "art/qa/flora_forest_monsters_v1/walk-preparation-04/ironbound_sentinel/composition.json",
+    "art/approved/ironbound_sentinel_sprites_v1/atlas.png"
+  ],
+  "requirements": [
+    "Preserve all decoded visible RGBA pixels within verified region, without resampling",
+    "Verify alpha>=128 core components remain intact in source cells; retain faint alpha as-is",
+    "Fixed column/row anchors, no per-frame recentering",
+    "Human review of source direction errors/red fringes and temporal stability",
+    "QA-only isolated overlay; no production publish until explicit approval"
+  ]
+}

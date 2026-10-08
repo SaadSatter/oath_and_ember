@@ -3,13 +3,11 @@ dist/
 .env
 *.log
 
-# Reproducible art QA build and bulky browser evidence (reports remain tracked)
-art/.pipeline-lock/
-art/manifest.json.tmp
-art/qa/**/preview/
-art/qa/**/*.png
-art/qa/**/*-states.json
-art/qa/**/*.webm
-
-art/.agent-lock/
-art/agent-session.json.tmp
+# Archived visual evidence and reproducible gameplay QA builds
+Images/art_history/qa/**/preview/
+Images/art_history/qa/**/*.png
+Images/art_history/qa/**/*-states.json
+Images/art_history/qa/**/*.webm
+qa/**/raw-videos/
+qa/**/*.png
+qa/**/*.webm

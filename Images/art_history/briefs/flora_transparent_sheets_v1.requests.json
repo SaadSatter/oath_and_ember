@@ -1,0 +1,51 @@
+{
+  "generations": [
+    {
+      "workspace_id": "ws_qd79c48t3nna3s5900kfdd89p58frnky",
+      "project_id": "prj_ns7ajke2xjtg8f9anqnma777xx8fspwx",
+      "type": "image",
+      "model": "i2i-gpt-image-2-5-flare",
+      "reference_node_ids": [
+        "f85a1e53-b42d-411a-a8e8-b79efebbc9d1"
+      ],
+      "params": {
+        "aspect_ratio": "1:1",
+        "quality": "medium",
+        "resolution": "1k"
+      },
+      "prompt": "Edit the provided Mossling sprite sheet solely to supply genuine transparent RGBA PNG background. Preserve the approved creature design, all 16 poses, their exact row-major order, pixel shapes, colors, equipment, 1024x1024 canvas, and 4x4 grid of 256x256 untrimmed cells. Replace only the baked light gray/white checkerboard background with true alpha=0, including gaps between limbs. Do not draw a checkerboard or white/colored backdrop. No redesign, new poses, recentering, rescaling, antialiasing, outline changes or text. Keep visible sprite pixels unchanged wherever possible. Return an actual alpha-bearing PNG, not a JPEG with a PNG filename."
+    },
+    {
+      "workspace_id": "ws_qd79c48t3nna3s5900kfdd89p58frnky",
+      "project_id": "prj_ns7ajke2xjtg8f9anqnma777xx8fspwx",
+      "type": "image",
+      "model": "i2i-gpt-image-2-5-flare",
+      "reference_node_ids": [
+        "91db63b5-2719-4544-87fb-bc759bf0a212"
+      ],
+      "params": {
+        "aspect_ratio": "1:1",
+        "quality": "medium",
+        "resolution": "1k"
+      },
+      "prompt": "Edit the provided Cinder Wisp sprite sheet solely to supply genuine transparent RGBA PNG background. Preserve the approved creature design, all 16 poses, their exact row-major order, pixel shapes, colors, equipment, 1024x1024 canvas, and 4x4 grid of 256x256 untrimmed cells. Replace only the baked light gray/white checkerboard background with true alpha=0, including gaps between limbs. Do not draw a checkerboard or white/colored backdrop. No redesign, new poses, recentering, rescaling, antialiasing, outline changes or text. Keep visible sprite pixels unchanged wherever possible. Return an actual alpha-bearing PNG, not a JPEG with a PNG filename."
+    },
+    {
+      "workspace_id": "ws_qd79c48t3nna3s5900kfdd89p58frnky",
+      "project_id": "prj_ns7ajke2xjtg8f9anqnma777xx8fspwx",
+      "type": "image",
+      "model": "i2i-gpt-image-2-5-flare",
+      "reference_node_ids": [
+        "665246b1-bbc6-4da6-8142-e0b9da342eaa"
+      ],
+      "params": {
+        "aspect_ratio": "1:1",
+        "quality": "medium",
+        "resolution": "1k"
+      },
+      "prompt": "Edit the provided Ironbound Sentinel sprite sheet solely to supply genuine transparent RGBA PNG background. Preserve the approved creature design, all 16 poses, their exact row-major order, pixel shapes, colors, equipment, 1024x1024 canvas, and 4x4 grid of 256x256 untrimmed cells. Replace only the baked light gray/white checkerboard background with true alpha=0, including gaps between limbs. Do not draw a checkerboard or white/colored backdrop. No redesign, new poses, recentering, rescaling, antialiasing, outline changes or text. Keep visible sprite pixels unchanged wherever possible. Return an actual alpha-bearing PNG, not a JPEG with a PNG filename."
+    }
+  ],
+  "skill": "flora-batch-generate",
+  "skill_run_id": "oath-ember-transparent-sheets-v1-20261006"
+}

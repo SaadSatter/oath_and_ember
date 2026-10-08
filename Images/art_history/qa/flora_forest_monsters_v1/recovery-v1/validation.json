@@ -1,0 +1,11 @@
+{
+  "art_tests": {"status": "PASS", "tests": 72, "files": 10},
+  "typecheck": "PASS",
+  "full_tests": {"status": "PASS", "tests": 135, "files": 20, "note": "Initial sandbox run blocked localhost Socket.IO listen with EPERM; authorized rerun passed."},
+  "build": {"status": "PASS", "note": "Existing Vite large bundle warning."},
+  "source_hashes": "Original sprite hashes and transparent-attempt-01 download hashes verified unchanged",
+  "runtime_integration": "NOT_RUN: all sources UNSAFE_TO_RECOVER under conservative pattern separation",
+  "providers_called": false,
+  "recovered_candidate_count": 0,
+  "production_gate": "BLOCKED_TRANSPARENT_SOURCE"
+}

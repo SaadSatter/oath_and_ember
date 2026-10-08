@@ -1,0 +1,20 @@
+{
+  "author": "human",
+  "decision": "APPROVE",
+  "assets": [
+    "mossling_sprites_v2",
+    "ironbound_sentinel_sprites_v2"
+  ],
+  "user_statement": "Perfect I approve of these",
+  "source_revision": "05",
+  "scope": "Controlled presentation encounter; no production publication",
+  "review_card": "art/qa/flora_forest_monsters_v1/integration-05/REVIEW-CARD.html",
+  "primary_video": "art/qa/flora_forest_monsters_v1/integration-05/browser/PRIMARY-right-left-stop.webm",
+  "asset_id": "ironbound_sentinel_sprites_v2",
+  "approved_at": "2026-10-07T06:52:44.546Z",
+  "atlas_sha256": "eaf481504955a00cf29b014e7f9f150ce0aa53ef8591cc20c938f20710521ad2",
+  "contract_sha256": "b5fba6c2596aa6bd491b6c87661007933a15277d9bd81e0db7c62e16540027b9",
+  "source_sha256": "eaf481504955a00cf29b014e7f9f150ce0aa53ef8591cc20c938f20710521ad2",
+  "candidate_directory": "art/qa/flora_forest_monsters_v1/integration-05",
+  "qa": "art/qa/flora_forest_monsters_v1/integration-05/browser/qa.json"
+}

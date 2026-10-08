@@ -1,0 +1,1861 @@
+{
+  "status": "NEEDS_HUMAN_REVIEW",
+  "errors": [],
+  "videoFiles": [
+    "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/art/qa/flora_forest_monsters_v1/integration-01/browser/primary-all-creatures.webm",
+    "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/art/qa/flora_forest_monsters_v1/integration-01/browser/mossling_sprites_v1.webm",
+    "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/art/qa/flora_forest_monsters_v1/integration-01/browser/cinder_wisp_sprites_v1.webm",
+    "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/art/qa/flora_forest_monsters_v1/integration-01/browser/ironbound_sentinel_sprites_v1.webm"
+  ],
+  "screenshots": [
+    "responsive-1920x1080.png",
+    "responsive-1440x900.png",
+    "responsive-390x844.png",
+    "responsive-844x390.png"
+  ],
+  "samples": [
+    {
+      "target": "primary-all-creatures",
+      "row": 0,
+      "col": 0,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 0,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 0,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 0,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "primary-all-creatures",
+      "row": 0,
+      "col": 1,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 1,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 1,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 1,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "primary-all-creatures",
+      "row": 0,
+      "col": 2,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 2,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 2,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 2,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "primary-all-creatures",
+      "row": 0,
+      "col": 3,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 3,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 3,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 3,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "primary-all-creatures",
+      "row": 1,
+      "col": 0,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 4,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 4,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 4,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "primary-all-creatures",
+      "row": 1,
+      "col": 1,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 5,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 5,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 5,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "primary-all-creatures",
+      "row": 1,
+      "col": 2,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 6,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 6,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 6,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "primary-all-creatures",
+      "row": 1,
+      "col": 3,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 7,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 7,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 7,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "primary-all-creatures",
+      "row": 2,
+      "col": 0,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 8,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 8,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 8,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "primary-all-creatures",
+      "row": 2,
+      "col": 1,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 9,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 9,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 9,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "primary-all-creatures",
+      "row": 2,
+      "col": 2,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 10,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 10,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 10,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "primary-all-creatures",
+      "row": 2,
+      "col": 3,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 11,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 11,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 11,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "primary-all-creatures",
+      "row": 3,
+      "col": 0,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 12,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 12,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 12,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "primary-all-creatures",
+      "row": 3,
+      "col": 1,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 13,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 13,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 13,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "primary-all-creatures",
+      "row": 3,
+      "col": 2,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 14,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 14,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 14,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "primary-all-creatures",
+      "row": 3,
+      "col": 3,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 15,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 15,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 15,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "mossling_sprites_v1",
+      "row": 0,
+      "col": 0,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 0,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 0,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 0,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "mossling_sprites_v1",
+      "row": 0,
+      "col": 1,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 1,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 1,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 1,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "mossling_sprites_v1",
+      "row": 0,
+      "col": 2,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 2,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 2,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 2,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "mossling_sprites_v1",
+      "row": 0,
+      "col": 3,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 3,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 3,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 3,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "mossling_sprites_v1",
+      "row": 1,
+      "col": 0,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 4,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 4,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 4,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "mossling_sprites_v1",
+      "row": 1,
+      "col": 1,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 5,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 5,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 5,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "mossling_sprites_v1",
+      "row": 1,
+      "col": 2,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 6,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 6,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 6,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "mossling_sprites_v1",
+      "row": 1,
+      "col": 3,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 7,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 7,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 7,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "mossling_sprites_v1",
+      "row": 2,
+      "col": 0,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 8,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 8,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 8,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "mossling_sprites_v1",
+      "row": 2,
+      "col": 1,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 9,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 9,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 9,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "mossling_sprites_v1",
+      "row": 2,
+      "col": 2,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 10,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 10,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 10,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "mossling_sprites_v1",
+      "row": 2,
+      "col": 3,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 11,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 11,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 11,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "mossling_sprites_v1",
+      "row": 3,
+      "col": 0,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 12,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 12,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 12,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "mossling_sprites_v1",
+      "row": 3,
+      "col": 1,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 13,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 13,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 13,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "mossling_sprites_v1",
+      "row": 3,
+      "col": 2,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 14,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 14,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 14,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "mossling_sprites_v1",
+      "row": 3,
+      "col": 3,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 15,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 15,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 15,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "cinder_wisp_sprites_v1",
+      "row": 0,
+      "col": 0,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 0,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 0,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 0,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "cinder_wisp_sprites_v1",
+      "row": 0,
+      "col": 1,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 1,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 1,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 1,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "cinder_wisp_sprites_v1",
+      "row": 0,
+      "col": 2,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 2,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 2,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 2,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "cinder_wisp_sprites_v1",
+      "row": 0,
+      "col": 3,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 3,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 3,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 3,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "cinder_wisp_sprites_v1",
+      "row": 1,
+      "col": 0,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 4,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 4,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 4,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "cinder_wisp_sprites_v1",
+      "row": 1,
+      "col": 1,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 5,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 5,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 5,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "cinder_wisp_sprites_v1",
+      "row": 1,
+      "col": 2,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 6,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 6,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 6,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "cinder_wisp_sprites_v1",
+      "row": 1,
+      "col": 3,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 7,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 7,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 7,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "cinder_wisp_sprites_v1",
+      "row": 2,
+      "col": 0,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 8,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 8,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 8,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "cinder_wisp_sprites_v1",
+      "row": 2,
+      "col": 1,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 9,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 9,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 9,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "cinder_wisp_sprites_v1",
+      "row": 2,
+      "col": 2,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 10,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 10,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 10,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "cinder_wisp_sprites_v1",
+      "row": 2,
+      "col": 3,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 11,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 11,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 11,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "cinder_wisp_sprites_v1",
+      "row": 3,
+      "col": 0,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 12,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 12,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 12,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "cinder_wisp_sprites_v1",
+      "row": 3,
+      "col": 1,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 13,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 13,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 13,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "cinder_wisp_sprites_v1",
+      "row": 3,
+      "col": 2,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 14,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 14,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 14,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "cinder_wisp_sprites_v1",
+      "row": 3,
+      "col": 3,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 15,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 15,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 15,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "ironbound_sentinel_sprites_v1",
+      "row": 0,
+      "col": 0,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 0,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 0,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 0,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "ironbound_sentinel_sprites_v1",
+      "row": 0,
+      "col": 1,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 1,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 1,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 1,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "ironbound_sentinel_sprites_v1",
+      "row": 0,
+      "col": 2,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 2,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 2,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 2,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "ironbound_sentinel_sprites_v1",
+      "row": 0,
+      "col": 3,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 3,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 3,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 3,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "ironbound_sentinel_sprites_v1",
+      "row": 1,
+      "col": 0,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 4,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 4,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 4,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "ironbound_sentinel_sprites_v1",
+      "row": 1,
+      "col": 1,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 5,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 5,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 5,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "ironbound_sentinel_sprites_v1",
+      "row": 1,
+      "col": 2,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 6,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 6,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 6,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "ironbound_sentinel_sprites_v1",
+      "row": 1,
+      "col": 3,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 7,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 7,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 7,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "ironbound_sentinel_sprites_v1",
+      "row": 2,
+      "col": 0,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 8,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 8,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 8,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "ironbound_sentinel_sprites_v1",
+      "row": 2,
+      "col": 1,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 9,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 9,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 9,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "ironbound_sentinel_sprites_v1",
+      "row": 2,
+      "col": 2,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 10,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 10,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 10,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "ironbound_sentinel_sprites_v1",
+      "row": 2,
+      "col": 3,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 11,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 11,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 11,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "ironbound_sentinel_sprites_v1",
+      "row": 3,
+      "col": 0,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 12,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 12,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 12,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "ironbound_sentinel_sprites_v1",
+      "row": 3,
+      "col": 1,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 13,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 13,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 13,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "ironbound_sentinel_sprites_v1",
+      "row": 3,
+      "col": 2,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 14,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 14,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 14,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    },
+    {
+      "target": "ironbound_sentinel_sprites_v1",
+      "row": 3,
+      "col": 3,
+      "state": [
+        {
+          "id": "mossling_sprites_v1",
+          "frame": 15,
+          "x": 300,
+          "y": 225,
+          "scale": 0.25
+        },
+        {
+          "id": "cinder_wisp_sprites_v1",
+          "frame": 15,
+          "x": 410,
+          "y": 225,
+          "scale": 0.1875
+        },
+        {
+          "id": "ironbound_sentinel_sprites_v1",
+          "frame": 15,
+          "x": 520,
+          "y": 225,
+          "scale": 0.375
+        }
+      ]
+    }
+  ],
+  "independent_client_states": [
+    [
+      {
+        "id": "mossling_sprites_v1",
+        "frame": 11,
+        "x": 300,
+        "y": 225,
+        "scale": 0.25
+      },
+      {
+        "id": "cinder_wisp_sprites_v1",
+        "frame": 11,
+        "x": 410,
+        "y": 225,
+        "scale": 0.1875
+      },
+      {
+        "id": "ironbound_sentinel_sprites_v1",
+        "frame": 11,
+        "x": 520,
+        "y": 225,
+        "scale": 0.375
+      }
+    ],
+    [
+      {
+        "id": "mossling_sprites_v1",
+        "frame": 11,
+        "x": 300,
+        "y": 225,
+        "scale": 0.25
+      },
+      {
+        "id": "cinder_wisp_sprites_v1",
+        "frame": 11,
+        "x": 410,
+        "y": 225,
+        "scale": 0.1875
+      },
+      {
+        "id": "ironbound_sentinel_sprites_v1",
+        "frame": 11,
+        "x": 520,
+        "y": 225,
+        "scale": 0.375
+      }
+    ]
+  ],
+  "network_visible": false,
+  "scope": "Isolated client presentation fixture; no gameplay authority or server entities",
+  "primary_video": "primary-all-creatures.webm"
+}

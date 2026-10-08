@@ -5,9 +5,10 @@
     "moduleResolution": "NodeNext",
     "strict": true,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["node"]
   },
-  "include": ["packages/**/*.ts", "apps/**/*.ts", "scripts/art/**/*.ts"]
+  "include": ["packages/**/*.ts", "apps/**/*.ts"]
 }

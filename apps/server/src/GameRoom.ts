@@ -1,4 +1,9 @@
 import {
+  forestEncounter,
+  spawnEnemy,
+} from "../../../packages/shared/src/enemies.js";
+import { damageEnemy, tickEnemies, segmentHits } from "./enemySimulation.js";
+import {
   defaultAppearance,
   validAppearance,
 } from "../../../packages/shared/src/appearance.js";
@@ -29,7 +34,10 @@ export class GameRoom {
       primaryEdges?: boolean[];
     }
   >();
-  constructor(code: string) {
+  constructor(
+    code: string,
+    readonly encounter = false,
+  ) {
     this.state = {
       roomCode: code,
       phase: "LOBBY",
@@ -198,13 +206,19 @@ export class GameRoom {
     w.projectiles = {};
     w.projectileImpacts = [];
     this.primaryWasHeld.clear();
-    w.enemies = { moss: { id: "moss", x: 710, y: 380, hp: 60, cooldown: 0 } };
-    w.checkpoint = "Clearing";
+    w.enemies = Object.fromEntries(
+      forestEncounter.map((e) => [e.id, spawnEnemy(e.id, e.type, e.x, e.y)]),
+    );
+    if (this.encounter) {
+      for (const key of ["gate", "bridge"]) w.puzzles[key].complete = true;
+      w.checkpoint = "Enemy validation encounter";
+    }
+    w.checkpoint = this.encounter ? "Enemy validation encounter" : "Clearing";
     Object.values(w.players).forEach((p, i) => {
       delete p.combat;
       delete p.heavyCharge;
       Object.assign(p, {
-        x: 120,
+        x: this.encounter ? 550 : 120,
         y: 430 + i * 50,
         vx: 0,
         vy: 0,
@@ -344,7 +358,14 @@ export class GameRoom {
         if (p.role === "OATH") {
           const damage = strike === "heavy" ? 40 : 25;
           for (const e of Object.values(w.enemies))
-            if (near(p, e, 85)) e.hp -= damage;
+            if (
+              e.state !== "DEAD" &&
+              near(p, e, 85) &&
+              !collisionRects(w.sceneId, w.puzzles).some((r) =>
+                segmentHits(p.x, p.y, e.x, e.y, r),
+              )
+            )
+              damageEnemy(e, damage, w.serverTick);
           if (
             w.boss &&
             near(p, map.points.boss, 95) &&
@@ -392,26 +413,53 @@ export class GameRoom {
       }
     }
     for (const q of Object.values(w.projectiles)) {
+      const ox = q.x,
+        oy = q.y;
       q.x += q.vx * DT;
       q.y += q.vy * DT;
       q.life -= DT;
-      let collided = false;
-      for (const e of Object.values(w.enemies))
-        if (near(q, e, 28)) {
-          collided = true;
-          e.hp -= 20;
-          q.life = 0;
+      let collided = collisionRects(w.sceneId, w.puzzles).some((r) =>
+        segmentHits(ox, oy, q.x, q.y, r, q.radius ?? 4),
+      );
+      if (!collided) {
+        const targets =
+          q.faction === "enemies"
+            ? Object.values(w.players).filter((p) => p.connected && p.hp > 0)
+            : Object.values(w.enemies).filter((e) => e.state !== "DEAD");
+        for (const target of targets) {
+          const radius = q.faction === "enemies" ? 17 : 28;
+          if (
+            segmentHits(ox, oy, q.x, q.y, {
+              x: target.x - radius,
+              y: target.y - radius,
+              w: radius * 2,
+              h: radius * 2,
+            })
+          ) {
+            collided = true;
+            if (q.faction === "enemies")
+              this.damage(target as Player, q.damage ?? 12);
+            else
+              damageEnemy(
+                target as import("../../../packages/shared/src/gameTypes.js").Enemy,
+                q.damage ?? 20,
+                w.serverTick,
+              );
+            break;
+          }
         }
+      }
       if (
+        !collided &&
+        q.faction !== "enemies" &&
         w.boss &&
         w.boss.phase === "VULNERABLE" &&
         near(q, map.points.boss, 45)
       ) {
         collided = true;
         w.boss.hp -= 10;
-        q.life = 0;
       }
-      if (collided)
+      if (collided) {
         w.projectileImpacts!.push({
           id: q.id,
           x: q.x,
@@ -419,28 +467,11 @@ export class GameRoom {
           owner: q.owner,
           tick: w.serverTick,
         });
+        q.life = 0;
+      }
       if (q.life <= 0) delete w.projectiles[q.id];
     }
-    for (const e of Object.values(w.enemies)) {
-      if (e.hp <= 0) {
-        delete w.enemies[e.id];
-        continue;
-      }
-      const p = Object.values(w.players).sort(
-        (a, b) =>
-          Math.hypot(a.x - e.x, a.y - e.y) - Math.hypot(b.x - e.x, b.y - e.y),
-      )[0];
-      const d = Math.hypot(p.x - e.x, p.y - e.y);
-      if (d < 330 && d > 32) {
-        e.x += ((p.x - e.x) / d) * 65 * DT;
-        e.y += ((p.y - e.y) / d) * 65 * DT;
-      }
-      e.cooldown -= DT;
-      if (d < 45 && e.cooldown <= 0) {
-        this.damage(p, 10);
-        e.cooldown = 1;
-      }
-    }
+    tickEnemies(w, (p, n) => this.damage(p, n));
     if (w.sceneId === "FOREST_RUINS") {
       w.puzzles.bridge.physical = near(
         w.interactables.crate,
@@ -510,6 +541,10 @@ export class GameRoom {
     if (p.hp <= 0) {
       p.hp = 100;
       Object.assign(p, maps[this.state.sceneId].spawn);
+      if (this.encounter && this.state.sceneId === "FOREST_RUINS") {
+        p.x = 550;
+        p.y = 450;
+      }
       p.vx = p.vy = 0;
     }
   }

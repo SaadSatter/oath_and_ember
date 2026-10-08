@@ -1,0 +1,989 @@
+{
+  "algorithm": "external_directional_row_composition_v1",
+  "sources": [
+    {
+      "source": {
+        "path": "art/incoming/flora_forest_monsters_v1/transparent-source-02/Pixel Forest Spirit Sprite Sheet.png",
+        "sha256": "c2e578bdb280fc83fe175d165528e3191b266c93a9b60ece006892a9d462a809",
+        "provenance": "User supplied transparent replacement; canonical creature designs from Flora MCP"
+      },
+      "contract": {
+        "schema_version": 1,
+        "asset_type": "enemy_directional_sprite",
+        "normalization": "external_crop_grid_v1",
+        "asset_id": "mossling_sprites_v1",
+        "source": {
+          "path": "art/incoming/flora_forest_monsters_v1/transparent-source-02/Pixel Forest Spirit Sprite Sheet.png",
+          "sha256": "c2e578bdb280fc83fe175d165528e3191b266c93a9b60ece006892a9d462a809",
+          "provenance": "User supplied transparent replacement; canonical creature designs from Flora MCP"
+        },
+        "x_edges": [
+          0,
+          194,
+          372,
+          552,
+          750
+        ],
+        "y_edges": [
+          0,
+          181,
+          350,
+          523,
+          724
+        ],
+        "column_anchors": [
+          106,
+          284,
+          465,
+          648
+        ],
+        "row_anchors": [
+          178,
+          343,
+          519,
+          697
+        ],
+        "frame_dimensions": [
+          352,
+          352
+        ],
+        "anchor": [
+          176,
+          312
+        ],
+        "directions": [
+          "south",
+          "north",
+          "west",
+          "east"
+        ],
+        "fps": 8,
+        "motion": "walk",
+        "scale": 0.25,
+        "label": "Mossling",
+        "mask": {
+          "strategy": "none",
+          "channels": []
+        },
+        "target": "assets/enemies/mossling/top-down.png",
+        "canonical_references": [
+          "art/incoming/flora_forest_monsters_v1/mossling_sprites.jpg",
+          "art/incoming/flora_forest_monsters_v1/forest_mosslight_ruins.jpg",
+          "art/incoming/flora_forest_monsters_v1/forest_twilight_brambles.jpg"
+        ],
+        "analysis": {
+          "core_alpha": 128,
+          "minimum_component_pixels": 500
+        },
+        "requirements": [
+          "Preserve all decoded visible RGBA pixels within verified region, without resampling",
+          "Verify alpha>=128 core components remain intact in source cells; retain faint alpha as-is",
+          "Fixed column/row anchors, no per-frame recentering",
+          "Human review of source direction errors/red fringes and temporal stability",
+          "QA-only isolated overlay; no production publish until explicit approval"
+        ]
+      },
+      "normalization": {
+        "algorithm": "external_crop_grid_v1",
+        "source_sha256": "c2e578bdb280fc83fe175d165528e3191b266c93a9b60ece006892a9d462a809",
+        "atlas_sha256": "2c8773bef70f344cac091a0e71ead7e4804d057ee7a77034aeb30355541292ef",
+        "source_region": [
+          0,
+          0,
+          750,
+          724
+        ],
+        "frame_dimensions": [
+          352,
+          352
+        ],
+        "anchor": [
+          176,
+          312
+        ],
+        "frames": [
+          {
+            "index": 0,
+            "row": 0,
+            "col": 0,
+            "direction": "south",
+            "source_rect": [
+              0,
+              0,
+              194,
+              181
+            ],
+            "translation": [
+              70,
+              134
+            ],
+            "alpha_bounds": [
+              101,
+              155,
+              264,
+              315
+            ],
+            "core_alpha_bounds": [
+              104,
+              165,
+              253,
+              307
+            ],
+            "visible_pixels": 17938
+          },
+          {
+            "index": 1,
+            "row": 0,
+            "col": 1,
+            "direction": "south",
+            "source_rect": [
+              194,
+              0,
+              178,
+              181
+            ],
+            "translation": [
+              -108,
+              134
+            ],
+            "alpha_bounds": [
+              86,
+              159,
+              264,
+              315
+            ],
+            "core_alpha_bounds": [
+              99,
+              162,
+              251,
+              313
+            ],
+            "visible_pixels": 18649
+          },
+          {
+            "index": 2,
+            "row": 0,
+            "col": 2,
+            "direction": "south",
+            "source_rect": [
+              372,
+              0,
+              180,
+              181
+            ],
+            "translation": [
+              -289,
+              134
+            ],
+            "alpha_bounds": [
+              83,
+              165,
+              260,
+              315
+            ],
+            "core_alpha_bounds": [
+              103,
+              168,
+              245,
+              313
+            ],
+            "visible_pixels": 17382
+          },
+          {
+            "index": 3,
+            "row": 0,
+            "col": 3,
+            "direction": "south",
+            "source_rect": [
+              552,
+              0,
+              198,
+              181
+            ],
+            "translation": [
+              -472,
+              134
+            ],
+            "alpha_bounds": [
+              80,
+              163,
+              242,
+              315
+            ],
+            "core_alpha_bounds": [
+              102,
+              167,
+              238,
+              313
+            ],
+            "visible_pixels": 16780
+          },
+          {
+            "index": 4,
+            "row": 1,
+            "col": 0,
+            "direction": "north",
+            "source_rect": [
+              0,
+              181,
+              194,
+              169
+            ],
+            "translation": [
+              70,
+              -31
+            ],
+            "alpha_bounds": [
+              100,
+              150,
+              264,
+              319
+            ],
+            "core_alpha_bounds": [
+              104,
+              156,
+              252,
+              310
+            ],
+            "visible_pixels": 19071
+          },
+          {
+            "index": 5,
+            "row": 1,
+            "col": 1,
+            "direction": "north",
+            "source_rect": [
+              194,
+              181,
+              178,
+              169
+            ],
+            "translation": [
+              -108,
+              -31
+            ],
+            "alpha_bounds": [
+              86,
+              150,
+              264,
+              319
+            ],
+            "core_alpha_bounds": [
+              99,
+              156,
+              253,
+              309
+            ],
+            "visible_pixels": 19143
+          },
+          {
+            "index": 6,
+            "row": 1,
+            "col": 2,
+            "direction": "north",
+            "source_rect": [
+              372,
+              181,
+              180,
+              169
+            ],
+            "translation": [
+              -289,
+              -31
+            ],
+            "alpha_bounds": [
+              83,
+              150,
+              263,
+              319
+            ],
+            "core_alpha_bounds": [
+              101,
+              159,
+              250,
+              313
+            ],
+            "visible_pixels": 19249
+          },
+          {
+            "index": 7,
+            "row": 1,
+            "col": 3,
+            "direction": "north",
+            "source_rect": [
+              552,
+              181,
+              198,
+              169
+            ],
+            "translation": [
+              -472,
+              -31
+            ],
+            "alpha_bounds": [
+              87,
+              150,
+              262,
+              319
+            ],
+            "core_alpha_bounds": [
+              91,
+              158,
+              243,
+              310
+            ],
+            "visible_pixels": 18786
+          },
+          {
+            "index": 8,
+            "row": 2,
+            "col": 0,
+            "direction": "west",
+            "source_rect": [
+              0,
+              350,
+              194,
+              173
+            ],
+            "translation": [
+              70,
+              -207
+            ],
+            "alpha_bounds": [
+              97,
+              143,
+              250,
+              316
+            ],
+            "core_alpha_bounds": [
+              103,
+              149,
+              245,
+              306
+            ],
+            "visible_pixels": 20429
+          },
+          {
+            "index": 9,
+            "row": 2,
+            "col": 1,
+            "direction": "west",
+            "source_rect": [
+              194,
+              350,
+              178,
+              173
+            ],
+            "translation": [
+              -108,
+              -207
+            ],
+            "alpha_bounds": [
+              100,
+              143,
+              264,
+              316
+            ],
+            "core_alpha_bounds": [
+              107,
+              153,
+              255,
+              312
+            ],
+            "visible_pixels": 20254
+          },
+          {
+            "index": 10,
+            "row": 2,
+            "col": 2,
+            "direction": "west",
+            "source_rect": [
+              372,
+              350,
+              180,
+              173
+            ],
+            "translation": [
+              -289,
+              -207
+            ],
+            "alpha_bounds": [
+              83,
+              143,
+              260,
+              316
+            ],
+            "core_alpha_bounds": [
+              112,
+              154,
+              253,
+              311
+            ],
+            "visible_pixels": 20198
+          },
+          {
+            "index": 11,
+            "row": 2,
+            "col": 3,
+            "direction": "west",
+            "source_rect": [
+              552,
+              350,
+              198,
+              173
+            ],
+            "translation": [
+              -472,
+              -207
+            ],
+            "alpha_bounds": [
+              92,
+              143,
+              254,
+              316
+            ],
+            "core_alpha_bounds": [
+              105,
+              153,
+              247,
+              311
+            ],
+            "visible_pixels": 21105
+          },
+          {
+            "index": 12,
+            "row": 3,
+            "col": 0,
+            "direction": "east",
+            "source_rect": [
+              0,
+              523,
+              194,
+              201
+            ],
+            "translation": [
+              70,
+              -385
+            ],
+            "alpha_bounds": [
+              95,
+              138,
+              264,
+              319
+            ],
+            "core_alpha_bounds": [
+              100,
+              143,
+              253,
+              311
+            ],
+            "visible_pixels": 21132
+          },
+          {
+            "index": 13,
+            "row": 3,
+            "col": 1,
+            "direction": "east",
+            "source_rect": [
+              194,
+              523,
+              178,
+              201
+            ],
+            "translation": [
+              -108,
+              -385
+            ],
+            "alpha_bounds": [
+              86,
+              138,
+              264,
+              323
+            ],
+            "core_alpha_bounds": [
+              99,
+              147,
+              249,
+              312
+            ],
+            "visible_pixels": 21283
+          },
+          {
+            "index": 14,
+            "row": 3,
+            "col": 2,
+            "direction": "east",
+            "source_rect": [
+              372,
+              523,
+              180,
+              201
+            ],
+            "translation": [
+              -289,
+              -385
+            ],
+            "alpha_bounds": [
+              83,
+              138,
+              260,
+              320
+            ],
+            "core_alpha_bounds": [
+              90,
+              146,
+              247,
+              312
+            ],
+            "visible_pixels": 21050
+          },
+          {
+            "index": 15,
+            "row": 3,
+            "col": 3,
+            "direction": "east",
+            "source_rect": [
+              552,
+              523,
+              198,
+              201
+            ],
+            "translation": [
+              -472,
+              -385
+            ],
+            "alpha_bounds": [
+              94,
+              138,
+              278,
+              321
+            ],
+            "core_alpha_bounds": [
+              99,
+              147,
+              248,
+              312
+            ],
+            "visible_pixels": 20966
+          }
+        ],
+        "core_component_verification": [
+          {
+            "bounds": [
+              207,
+              28,
+              359,
+              179
+            ],
+            "pixels": 12572
+          },
+          {
+            "bounds": [
+              34,
+              31,
+              183,
+              173
+            ],
+            "pixels": 12171
+          },
+          {
+            "bounds": [
+              574,
+              33,
+              710,
+              179
+            ],
+            "pixels": 12045
+          },
+          {
+            "bounds": [
+              392,
+              34,
+              534,
+              179
+            ],
+            "pixels": 12247
+          },
+          {
+            "bounds": [
+              34,
+              187,
+              182,
+              341
+            ],
+            "pixels": 12979
+          },
+          {
+            "bounds": [
+              207,
+              187,
+              361,
+              340
+            ],
+            "pixels": 13069
+          },
+          {
+            "bounds": [
+              563,
+              189,
+              715,
+              341
+            ],
+            "pixels": 13272
+          },
+          {
+            "bounds": [
+              390,
+              190,
+              539,
+              344
+            ],
+            "pixels": 13224
+          },
+          {
+            "bounds": [
+              33,
+              356,
+              175,
+              513
+            ],
+            "pixels": 13459
+          },
+          {
+            "bounds": [
+              215,
+              360,
+              363,
+              519
+            ],
+            "pixels": 13636
+          },
+          {
+            "bounds": [
+              577,
+              360,
+              719,
+              518
+            ],
+            "pixels": 14142
+          },
+          {
+            "bounds": [
+              401,
+              361,
+              542,
+              518
+            ],
+            "pixels": 13367
+          },
+          {
+            "bounds": [
+              30,
+              528,
+              183,
+              696
+            ],
+            "pixels": 15141
+          },
+          {
+            "bounds": [
+              379,
+              531,
+              536,
+              697
+            ],
+            "pixels": 14704
+          },
+          {
+            "bounds": [
+              207,
+              532,
+              357,
+              697
+            ],
+            "pixels": 14559
+          },
+          {
+            "bounds": [
+              571,
+              532,
+              720,
+              697
+            ],
+            "pixels": 14776
+          }
+        ],
+        "transferred_visible_pixels": 313415,
+        "rgb_changes": 0,
+        "alpha_changes": 0,
+        "resampling": "none",
+        "status": "NEEDS_HUMAN_REVIEW"
+      }
+    },
+    {
+      "source": {
+        "path": "art/incoming/flora_forest_monsters_v1/walk-source-05/ChatGPT Image Oct 7, 2026, 01_19_12 AM.png",
+        "sha256": "720d360c0c78c005df22b19e4b3ca5e08adfc61736470891e068ed4ecf08da0c",
+        "provenance": "User supplied replacement side-walk PNG; Flora design remains canonical reference"
+      },
+      "contract": {
+        "schema_version": 1,
+        "asset_type": "enemy_directional_sprite",
+        "normalization": "external_crop_grid_v1",
+        "asset_id": "mossling_canonical_side",
+        "source": {
+          "path": "art/incoming/flora_forest_monsters_v1/walk-source-05/ChatGPT Image Oct 7, 2026, 01_19_12 AM.png",
+          "sha256": "720d360c0c78c005df22b19e4b3ca5e08adfc61736470891e068ed4ecf08da0c",
+          "provenance": "User supplied replacement side-walk PNG; Flora design remains canonical reference"
+        },
+        "x_edges": [
+          324,
+          620,
+          916,
+          1212,
+          1508
+        ],
+        "y_edges": [
+          468,
+          681
+        ],
+        "column_anchors": [
+          456,
+          752,
+          1048,
+          1344
+        ],
+        "row_anchors": [
+          678
+        ],
+        "frame_dimensions": [
+          352,
+          352
+        ],
+        "anchor": [
+          176,
+          312
+        ],
+        "directions": [
+          "east"
+        ],
+        "fps": 8,
+        "motion": "walk",
+        "scale": 0.25,
+        "label": "Mossling",
+        "mask": {
+          "strategy": "none",
+          "channels": []
+        },
+        "target": "assets/enemies/mossling/top-down.png",
+        "canonical_references": [
+          "art/incoming/flora_forest_monsters_v1/transparent-source-02/Pixel Forest Spirit Sprite Sheet.png"
+        ],
+        "analysis": {
+          "core_alpha": 128,
+          "minimum_component_pixels": 500
+        },
+        "requirements": [
+          "Preserve all decoded visible RGBA pixels within verified region, without resampling",
+          "Verify alpha>=128 core components remain intact in source cells; retain faint alpha as-is",
+          "Fixed column/row anchors, no per-frame recentering",
+          "Human review of source direction errors/red fringes and temporal stability",
+          "QA-only isolated overlay; no production publish until explicit approval"
+        ]
+      },
+      "normalization": {
+        "algorithm": "external_crop_grid_v1",
+        "source_sha256": "720d360c0c78c005df22b19e4b3ca5e08adfc61736470891e068ed4ecf08da0c",
+        "atlas_sha256": "136ad4f016680b41aaae40bfa8a4adde2f3225f2fd4a480805a27d9b392ae11b",
+        "source_region": [
+          324,
+          468,
+          1184,
+          213
+        ],
+        "frame_dimensions": [
+          352,
+          352
+        ],
+        "anchor": [
+          176,
+          312
+        ],
+        "frames": [
+          {
+            "index": 0,
+            "row": 0,
+            "col": 0,
+            "direction": "east",
+            "source_rect": [
+              324,
+              468,
+              296,
+              213
+            ],
+            "translation": [
+              -280,
+              -366
+            ],
+            "alpha_bounds": [
+              72,
+              102,
+              340,
+              315
+            ],
+            "core_alpha_bounds": [
+              76,
+              115,
+              272,
+              312
+            ],
+            "visible_pixels": 32676
+          },
+          {
+            "index": 1,
+            "row": 0,
+            "col": 1,
+            "direction": "east",
+            "source_rect": [
+              620,
+              468,
+              296,
+              213
+            ],
+            "translation": [
+              -576,
+              -366
+            ],
+            "alpha_bounds": [
+              44,
+              102,
+              339,
+              315
+            ],
+            "core_alpha_bounds": [
+              84,
+              113,
+              273,
+              312
+            ],
+            "visible_pixels": 33630
+          },
+          {
+            "index": 2,
+            "row": 0,
+            "col": 2,
+            "direction": "east",
+            "source_rect": [
+              916,
+              468,
+              296,
+              213
+            ],
+            "translation": [
+              -872,
+              -366
+            ],
+            "alpha_bounds": [
+              44,
+              102,
+              324,
+              315
+            ],
+            "core_alpha_bounds": [
+              79,
+              113,
+              280,
+              312
+            ],
+            "visible_pixels": 33054
+          },
+          {
+            "index": 3,
+            "row": 0,
+            "col": 3,
+            "direction": "east",
+            "source_rect": [
+              1212,
+              468,
+              296,
+              213
+            ],
+            "translation": [
+              -1168,
+              -366
+            ],
+            "alpha_bounds": [
+              67,
+              102,
+              271,
+              315
+            ],
+            "core_alpha_bounds": [
+              79,
+              111,
+              268,
+              312
+            ],
+            "visible_pixels": 31952
+          }
+        ],
+        "core_component_verification": [
+          {
+            "bounds": [
+              1247,
+              477,
+              1436,
+              678
+            ],
+            "pixels": 24263
+          },
+          {
+            "bounds": [
+              660,
+              479,
+              849,
+              678
+            ],
+            "pixels": 24512
+          },
+          {
+            "bounds": [
+              951,
+              479,
+              1152,
+              678
+            ],
+            "pixels": 24597
+          },
+          {
+            "bounds": [
+              356,
+              481,
+              552,
+              678
+            ],
+            "pixels": 24294
+          }
+        ],
+        "transferred_visible_pixels": 131312,
+        "rgb_changes": 0,
+        "alpha_changes": 0,
+        "resampling": "none",
+        "status": "NEEDS_HUMAN_REVIEW"
+      }
+    }
+  ],
+  "operations": [
+    {
+      "direction": "east",
+      "source_row": 0,
+      "destination_row": 3,
+      "source_part": 1
+    }
+  ],
+  "output_sha256": "76177726fa362c6cedfae40005f00cb1b4d519a8c61437e7628ed37f3ab9a39b",
+  "rgb_changes": 0,
+  "alpha_changes": 0,
+  "resampling": "none",
+  "status": "NEEDS_HUMAN_REVIEW"
+}

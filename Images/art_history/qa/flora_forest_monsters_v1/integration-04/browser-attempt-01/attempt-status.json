@@ -1,0 +1,1 @@
+{"status":"COMPLETED_SLOW_CAPTURE","reason":"Parallel capture completed successfully immediately before the attempted restart. All evidence preserved; a sequential capture will provide cleaner temporal evidence. Original qa.json paths reflect the directory before archival."}

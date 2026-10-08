@@ -1,0 +1,151 @@
+{
+  "base": {
+    "schema_version": 1,
+    "asset_type": "enemy_directional_sprite",
+    "normalization": "external_crop_grid_v1",
+    "asset_id": "ironbound_sentinel_sprites_v1",
+    "source": {
+      "path": "art/incoming/flora_forest_monsters_v1/transparent-source-02/Pixel Forest Spirit Sprite Sheet.png",
+      "sha256": "c2e578bdb280fc83fe175d165528e3191b266c93a9b60ece006892a9d462a809",
+      "provenance": "User supplied transparent replacement; canonical creature designs from Flora MCP"
+    },
+    "x_edges": [
+      1425,
+      1644,
+      1818,
+      1994,
+      2172
+    ],
+    "y_edges": [
+      0,
+      183,
+      355,
+      528,
+      724
+    ],
+    "column_anchors": [
+      1553,
+      1732,
+      1903,
+      2073
+    ],
+    "row_anchors": [
+      179,
+      352,
+      526,
+      704
+    ],
+    "frame_dimensions": [
+      272,
+      288
+    ],
+    "anchor": [
+      136,
+      260
+    ],
+    "directions": [
+      "south",
+      "north",
+      "west",
+      "east"
+    ],
+    "fps": 8,
+    "motion": "walk",
+    "scale": 0.375,
+    "label": "Ironbound Sentinel",
+    "mask": {
+      "strategy": "none",
+      "channels": []
+    },
+    "target": "assets/enemies/ironbound_sentinel/top-down.png",
+    "canonical_references": [
+      "art/incoming/flora_forest_monsters_v1/ironbound_sentinel_sprites.jpg",
+      "art/incoming/flora_forest_monsters_v1/forest_mosslight_ruins.jpg",
+      "art/incoming/flora_forest_monsters_v1/forest_twilight_brambles.jpg"
+    ],
+    "analysis": {
+      "core_alpha": 128,
+      "minimum_component_pixels": 500
+    },
+    "requirements": [
+      "Preserve all decoded visible RGBA pixels within verified region, without resampling",
+      "Verify alpha>=128 core components remain intact in source cells; retain faint alpha as-is",
+      "Fixed column/row anchors, no per-frame recentering",
+      "Human review of source direction errors/red fringes and temporal stability",
+      "QA-only isolated overlay; no production publish until explicit approval"
+    ]
+  },
+  "replacements": [
+    {
+      "contract": {
+        "schema_version": 1,
+        "asset_type": "enemy_directional_sprite",
+        "normalization": "external_crop_grid_v1",
+        "asset_id": "ironbound_sentinel_sides_v2",
+        "source": {
+          "path": "art/incoming/flora_forest_monsters_v1/walk-source-04/Sentinel west and east walk.png",
+          "sha256": "317951f16318761c254331a1f3e2c5a28890dc9cd90a3601928cdb6b34a12374",
+          "provenance": "User supplied walking replacement"
+        },
+        "x_edges": [
+          0,
+          256,
+          512,
+          768,
+          1024
+        ],
+        "y_edges": [
+          512,
+          768,
+          1024
+        ],
+        "column_anchors": [
+          128,
+          384,
+          640,
+          896
+        ],
+        "row_anchors": [
+          750,
+          1000
+        ],
+        "frame_dimensions": [
+          272,
+          288
+        ],
+        "anchor": [
+          136,
+          260
+        ],
+        "directions": [
+          "west",
+          "east"
+        ],
+        "fps": 8,
+        "motion": "walk",
+        "scale": 0.375,
+        "label": "Ironbound Sentinel",
+        "mask": {
+          "strategy": "none",
+          "channels": []
+        },
+        "target": "assets/enemies/ironbound_sentinel/top-down.png",
+        "canonical_references": [
+          "art/incoming/flora_forest_monsters_v1/transparent-source-02/Pixel Forest Spirit Sprite Sheet.png"
+        ],
+        "analysis": {
+          "core_alpha": 128,
+          "minimum_component_pixels": 500
+        },
+        "requirements": [
+          "Inspect directions and gait; fixed anchors; no pixel edits; human approval required"
+        ]
+      },
+      "directions": [
+        "west",
+        "east"
+      ]
+    }
+  ],
+  "output": "art/qa/flora_forest_monsters_v1/walk-preparation-04/ironbound_sentinel"
+}

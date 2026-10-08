@@ -1,10 +1,8 @@
-// Optional read-only hooks are installed only by the local art QA browser harness.
-declare global {
-  interface Window {
-    __artWardUpdate?: (sample: unknown) => void;
-    __artWardRendered?: () => void;
-  }
-}
+import {
+  EnemyView,
+  preloadEnemies,
+  registerEnemies,
+} from "./entities/EnemyView.js";
 import { renderAppearanceLobby } from "./ui/appearanceLobby.js";
 import { preloadMagic, warmMagicTextures } from "./assets/magicTextures.js";
 import { ProjectileView } from "./entities/ProjectileView.js";
@@ -264,27 +262,30 @@ class Adventure extends Phaser.Scene {
   rendered = { x: 0, y: 0 };
   playerViews = new Map<string, PlayerView>();
   projectileView!: ProjectileView;
+  enemyViews = new Map<string, EnemyView>();
+  clearEnemyViews() {
+    for (const view of this.enemyViews.values()) view.destroy();
+    this.enemyViews.clear();
+  }
   preload() {
     preloadHeroes(this);
     preloadMagic(this);
+    preloadEnemies(this);
   }
   clearPlayerViews() {
     for (const view of this.playerViews.values()) view.destroy();
     this.playerViews.clear();
   }
   create() {
-    if (window.__artWardRendered) {
-      const rendered = () => window.__artWardRendered?.();
-      this.game.events.on(Phaser.Core.Events.POST_RENDER, rendered);
-      this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.game.events.off(Phaser.Core.Events.POST_RENDER, rendered));
-    }
     registerHeroes(this);
+    registerEnemies(this);
     warmMagicTextures(this);
     const detachResponsive = attachResponsiveRenderer(this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, detachResponsive);
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
-      this.clearPlayerViews(),
-    );
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.clearPlayerViews();
+      this.clearEnemyViews();
+    });
     this.gfx = this.add.graphics();
     this.projectileView = new ProjectileView(this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
@@ -297,6 +298,7 @@ class Adventure extends Phaser.Scene {
       this.gfx.clear();
       this.projectileView.clear();
       this.clearPlayerViews();
+      this.clearEnemyViews();
       return;
     }
     const map = maps[w.sceneId],
@@ -306,6 +308,7 @@ class Adventure extends Phaser.Scene {
     const local = net.prediction.player || me;
     if (this.sceneKey !== w.sceneId) {
       this.clearPlayerViews();
+      this.clearEnemyViews();
       this.projectileView.destroy();
       this.projectileView = new ProjectileView(this);
       this.sceneKey = w.sceneId;
@@ -380,11 +383,7 @@ class Adventure extends Phaser.Scene {
           !skillOpen &&
           net.socket.connected &&
           Object.values(w.players).every((hero) => hero.connected),
-      }, window.__artWardUpdate && p.role === "EMBER" ? visual => window.__artWardUpdate?.({
-        roomCode: w.roomCode, serverTick: w.serverTick, playerId: p.id,
-        local: p.id === me.id, actionState: p.actionState, combat: p.combat ?? null,
-        hp: p.hp, ward: visual,
-      }) : undefined);
+      });
     }
     for (const [id, view] of this.playerViews) {
       if (!w.players[id]) {
@@ -393,12 +392,19 @@ class Adventure extends Phaser.Scene {
       }
     }
     for (const e of Object.values(w.enemies)) {
-      const q = net.interpolation.position(e.id, "enemies") || e;
-      g.fillStyle(0x88b477);
-      g.fillCircle(q.x, q.y, 18);
-      g.fillStyle(0xeb6175);
-      g.fillRect(q.x - 18, q.y - 28, (e.hp / 60) * 36, 4);
+      const pos = net.interpolation.position(e.id, "enemies") || e;
+      let view = this.enemyViews.get(e.id);
+      if (!view) {
+        view = new EnemyView(this, e);
+        this.enemyViews.set(e.id, view);
+      }
+      view.update(e, pos, w.serverTick, debug);
     }
+    for (const [id, view] of this.enemyViews)
+      if (!w.enemies[id]) {
+        view.destroy();
+        this.enemyViews.delete(id);
+      }
     this.projectileView.update(
       w,
       (id) => net.interpolation.position(id, "projectiles"),
@@ -448,8 +454,30 @@ class Adventure extends Phaser.Scene {
       debugPanel.textContent = `F3 · ${characterRendering} (F4) · tick ${w.serverTick} · seq ${net.seq} / ack ${me.lastProcessedInputSeq}\npending ${net.prediction.pending.length} · correction ${net.prediction.error.toFixed(1)}px · buffer ${net.interpolation.buffer.length} · viewport ${this.scale.width}×${this.scale.height}`;
     const root = document.querySelector<HTMLDivElement>("#game")!;
     root.dataset.playerId = me.id;
+    if (new URLSearchParams(location.search).has("enemyQA")) {
+      root.dataset.enemyState = JSON.stringify({
+        serverTick: w.serverTick,
+        enemies: w.enemies,
+        projectiles: w.projectiles,
+        players: w.players,
+      });
+      root.dataset.enemyVisuals = JSON.stringify(
+        Object.fromEntries(
+          [...this.enemyViews].map(([id, v]) => [id, v.inspect()]),
+        ),
+      );
+    }
     root.dataset.worldPosition = `${me.x},${me.y}`;
     root.dataset.scene = w.sceneId;
+    (
+      window as unknown as { __enemyRendered?: (sample: unknown) => void }
+    ).__enemyRendered?.({
+      serverTick: w.serverTick,
+      enemies: w.enemies,
+      visuals: Object.fromEntries(
+        [...this.enemyViews].map(([id, v]) => [id, v.inspect()]),
+      ),
+    });
     root.dataset.projectileVisuals = JSON.stringify(
       this.projectileView.inspect(),
     );

@@ -1,0 +1,366 @@
+{
+  "strategy": "semantic_labels_v1",
+  "ready": false,
+  "counts": {
+    "selected": 13599,
+    "background": 938285,
+    "unselected": 35584,
+    "ambiguous": 59966,
+    "outsideArtwork": 1142,
+    "paddingViolations": 0,
+    "unsupportedChannel": 0
+  },
+  "perFrame": [
+    {
+      "selected": 217,
+      "ambiguous": 1201,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 219,
+      "ambiguous": 1136,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 188,
+      "ambiguous": 1295,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 170,
+      "ambiguous": 1336,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 239,
+      "ambiguous": 1202,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 228,
+      "ambiguous": 1339,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 212,
+      "ambiguous": 1294,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 177,
+      "ambiguous": 1377,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 217,
+      "ambiguous": 1304,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 198,
+      "ambiguous": 1250,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 191,
+      "ambiguous": 1260,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 198,
+      "ambiguous": 1244,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 226,
+      "ambiguous": 1240,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 205,
+      "ambiguous": 1255,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 213,
+      "ambiguous": 1247,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 199,
+      "ambiguous": 1234,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 192,
+      "ambiguous": 1057,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 173,
+      "ambiguous": 1239,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 193,
+      "ambiguous": 1227,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 190,
+      "ambiguous": 1169,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 184,
+      "ambiguous": 1218,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 195,
+      "ambiguous": 1096,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 190,
+      "ambiguous": 1087,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 173,
+      "ambiguous": 1116,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 702,
+      "ambiguous": 1243,
+      "outsideArtwork": 99
+    },
+    {
+      "selected": 675,
+      "ambiguous": 1207,
+      "outsideArtwork": 103
+    },
+    {
+      "selected": 755,
+      "ambiguous": 1119,
+      "outsideArtwork": 97
+    },
+    {
+      "selected": 721,
+      "ambiguous": 1115,
+      "outsideArtwork": 86
+    },
+    {
+      "selected": 712,
+      "ambiguous": 1059,
+      "outsideArtwork": 97
+    },
+    {
+      "selected": 790,
+      "ambiguous": 956,
+      "outsideArtwork": 32
+    },
+    {
+      "selected": 752,
+      "ambiguous": 1019,
+      "outsideArtwork": 81
+    },
+    {
+      "selected": 769,
+      "ambiguous": 1116,
+      "outsideArtwork": 91
+    },
+    {
+      "selected": 173,
+      "ambiguous": 1460,
+      "outsideArtwork": 10
+    },
+    {
+      "selected": 178,
+      "ambiguous": 1235,
+      "outsideArtwork": 17
+    },
+    {
+      "selected": 131,
+      "ambiguous": 1308,
+      "outsideArtwork": 5
+    },
+    {
+      "selected": 151,
+      "ambiguous": 1338,
+      "outsideArtwork": 3
+    },
+    {
+      "selected": 167,
+      "ambiguous": 1262,
+      "outsideArtwork": 10
+    },
+    {
+      "selected": 151,
+      "ambiguous": 1275,
+      "outsideArtwork": 5
+    },
+    {
+      "selected": 169,
+      "ambiguous": 1245,
+      "outsideArtwork": 14
+    },
+    {
+      "selected": 167,
+      "ambiguous": 1289,
+      "outsideArtwork": 7
+    },
+    {
+      "selected": 229,
+      "ambiguous": 1318,
+      "outsideArtwork": 100
+    },
+    {
+      "selected": 143,
+      "ambiguous": 1504,
+      "outsideArtwork": 56
+    },
+    {
+      "selected": 269,
+      "ambiguous": 1748,
+      "outsideArtwork": 64
+    },
+    {
+      "selected": 286,
+      "ambiguous": 1680,
+      "outsideArtwork": 31
+    },
+    {
+      "selected": 214,
+      "ambiguous": 1593,
+      "outsideArtwork": 0
+    },
+    {
+      "selected": 287,
+      "ambiguous": 1749,
+      "outsideArtwork": 74
+    },
+    {
+      "selected": 221,
+      "ambiguous": 1705,
+      "outsideArtwork": 60
+    }
+  ],
+  "examples": [
+    {
+      "x": 578,
+      "y": 48,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 707,
+      "y": 48,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 65,
+      "y": 49,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 66,
+      "y": 49,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 67,
+      "y": 49,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 68,
+      "y": 49,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 193,
+      "y": 49,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 194,
+      "y": 49,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 195,
+      "y": 49,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 196,
+      "y": 49,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 320,
+      "y": 49,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 321,
+      "y": 49,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 322,
+      "y": 49,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 323,
+      "y": 49,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 324,
+      "y": 49,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 449,
+      "y": 49,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 450,
+      "y": 49,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 451,
+      "y": 49,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 452,
+      "y": 49,
+      "reason": "ambiguous"
+    },
+    {
+      "x": 577,
+      "y": 49,
+      "reason": "ambiguous"
+    }
+  ],
+  "policy": {
+    "backgroundAlphaMax": 16,
+    "labelAlphaMin": 192,
+    "primaryMin": 240,
+    "otherMax": 15
+  },
+  "inputMaskSha256": "b07dddbad665e45c1474fe1ee9fc225373bffc628df01dc1b40d01fcaa795d4a",
+  "atlasSha256": "822d487d6eecdbfde54c27c44e66a67e1f3c58c94b21fd6394b1142a14f0e52d",
+  "atlasPixelsChanged": 0,
+  "semanticReview": "REQUIRED: labels do not prove cloth-only coverage or protected-color safety",
+  "assetId": "sieg_shield_v1",
+  "inputMask": "art/incoming/sieg_shield_v1/mask-repairs/iteration-06/mask-raw.png",
+  "sourceArtwork": "art/incoming/sieg_shield_v1/mask-repairs/iteration-06/raw.png",
+  "providerCalls": 0
+}

@@ -1,0 +1,13 @@
+{
+  "author": "human",
+  "decision": "APPROVE",
+  "assets": [
+    "mossling_sprites_v2",
+    "ironbound_sentinel_sprites_v2"
+  ],
+  "user_statement": "Perfect I approve of these",
+  "source_revision": "05",
+  "scope": "Controlled presentation encounter; no production publication",
+  "review_card": "art/qa/flora_forest_monsters_v1/integration-05/REVIEW-CARD.html",
+  "primary_video": "art/qa/flora_forest_monsters_v1/integration-05/browser/PRIMARY-right-left-stop.webm"
+}

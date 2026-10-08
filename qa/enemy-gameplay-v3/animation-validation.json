@@ -1,0 +1,100 @@
+{
+  "description": "Native animation frames during authoritative movement; samples explicitly matched to same-client received authoritative tick. Interpolated render positions intentionally lag authority.",
+  "clients": [
+    {
+      "client": 1,
+      "presentation_samples": 191,
+      "matched_authority_samples": 191,
+      "moving_frames": {
+        "mossling": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          12,
+          13,
+          14,
+          15
+        ],
+        "cinder_wisp": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          14
+        ],
+        "ironbound_sentinel": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          12,
+          13,
+          14,
+          15
+        ]
+      }
+    },
+    {
+      "client": 2,
+      "presentation_samples": 193,
+      "matched_authority_samples": 193,
+      "moving_frames": {
+        "mossling": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          12,
+          13,
+          14,
+          15
+        ],
+        "cinder_wisp": [
+          0,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          11,
+          12,
+          14
+        ],
+        "ironbound_sentinel": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          12,
+          13,
+          14,
+          15
+        ]
+      }
+    }
+  ],
+  "errors": []
+}

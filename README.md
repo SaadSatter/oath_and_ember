@@ -60,13 +60,13 @@ Docker configuration has been supplied but the image has not been built in this 
 
 `packages/shared` owns types, map geometry, skills and deterministic movement. `apps/server` owns simulation and sessions. `apps/client` owns Phaser presentation, DOM menus, touch input, prediction and remote interpolation. See `docs/NETWORKING.md` and `docs/GAMEPLAY.md`.
 
-This is the first technical slice, not the finished 15–25 minute game. It uses one Phaser presentation scene to handle all three map modes, and DOM overlays for menu/lobby/skills. Art is generated geometry. No paid or proprietary assets are required. Only the Mossling enemy archetype is implemented. Additional puzzle types and full art/audio remain future work. Enemy seeking is deliberately simple; it does not pathfind around obstacles. Ember channels the gate rune instantly; engine channeling is timed. Interpolation holds the last remote state on stalls. Prediction uses latest-input server acknowledgement, so packet jitter can still cause correction; F3 exposes the error.
+This is the first technical slice, not the finished 15–25 minute game. It uses one Phaser presentation scene to handle all three map modes, and DOM overlays for menu/lobby/skills. The environment uses geometric placeholders; heroes and monsters use approved sprites. No paid or proprietary assets are required. Mossling, Cinder Wisp and Ironbound Sentinel use server-authoritative enemy definitions. Additional puzzle types and full art/audio remain future work. Enemy seeking is deliberately simple; it does not pathfind around obstacles. Ember channels the gate rune instantly; engine channeling is timed. Interpolation holds the last remote state on stalls. Prediction uses latest-input server acknowledgement, so packet jitter can still cause correction; F3 exposes the error.
 
 Validation on the host used Node 26.9.0, while Docker and Render target Node 24. Mobile input is implemented but has not been exercised on physical devices. The automated network test uses real Socket.IO connections; it does not substitute for a full two-person playtest.
 
-## Hero art pipeline
+## Sprite assets
 
-See [docs/ART_PIPELINE.md](docs/ART_PIPELINE.md) for sprite-sheet layout and final-art replacement. F4 toggles sprites/geometric debug heroes; `?characters=geometric` starts in debug mode. Approved-reference directional idles are presentation-only; missing animations use directional idles, and side-view maps keep geometric rendering. See [docs/HERO_REFERENCE_INTEGRATION.md](docs/HERO_REFERENCE_INTEGRATION.md) for asset provenance and visual-scale configuration.
+See [docs/SPRITE_ASSETS.md](docs/SPRITE_ASSETS.md) for sprite-sheet layout and final-art replacement. F4 toggles sprites/geometric debug heroes; `?characters=geometric` starts in debug mode. Approved-reference directional idles are presentation-only; missing animations use directional idles, and side-view maps keep geometric rendering. See [docs/HERO_REFERENCE_INTEGRATION.md](docs/HERO_REFERENCE_INTEGRATION.md) for asset provenance and visual-scale configuration.
 
 ## Responsive display
 
@@ -79,3 +79,5 @@ Directional sword attacks and projectile casts use approved reference artwork wi
 Heavy Break now charges on hold and strikes on release; Coco’s traveling blast uses approved effect art and authoritative collision bursts. See [charge/projectile behavior and validation](docs/COMBAT_CHARGE_AND_PROJECTILES.md).
 
 Coco's projectile now loops normalized magical ribbons around a stable core at 14 FPS, with palette recoloring and a separate one-shot impact. See [twirling projectile assets and validation](docs/TWIRLING_MAGIC_PROJECTILES.md).
+
+Monster designs and original source sheets are preserved in [Images/Sprites/monster_sprites](Images/Sprites/monster_sprites/README.md). The former multi-role art workflow has been retired. The existing multiplayer enemy encounter remains available with `npm run enemy:encounter`; see [enemy gameplay documentation](docs/ENEMY_GAMEPLAY.md).

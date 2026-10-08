@@ -45,6 +45,18 @@ export interface Player {
   lastProcessedInputSeq: number;
 }
 export interface Enemy {
+  type: import("./enemies.js").EnemyType;
+  maxHp: number;
+  state: "IDLE" | "CHASE" | "ATTACK" | "DEAD";
+  facing: number;
+  targetId: string | null;
+  vx: number;
+  vy: number;
+  attackSeq: number;
+  attackStartedTick: number | null;
+  attackFacing: number;
+  nextAttackTick: number;
+  deadTick: number | null;
   id: string;
   x: number;
   y: number;
@@ -52,6 +64,9 @@ export interface Enemy {
   cooldown: number;
 }
 export interface Projectile {
+  faction?: "players" | "enemies";
+  damage?: number;
+  radius?: number;
   id: string;
   x: number;
   y: number;

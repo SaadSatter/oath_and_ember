@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "asset_type": "enemy_directional_sprite",
+  "normalization": "external_crop_grid_v1",
+  "asset_id": "mossling_sprites_v2",
+  "source": {
+    "path": "art/qa/flora_forest_monsters_v1/walk-preparation-05/mossling/composed.png",
+    "sha256": "76177726fa362c6cedfae40005f00cb1b4d519a8c61437e7628ed37f3ab9a39b",
+    "provenance": "Human-authorized ART source revision 05; canonical east rows extracted from supplied PNG. composition.json binds original Flora designs and all source hashes."
+  },
+  "x_edges": [
+    0,
+    352,
+    704,
+    1056,
+    1408
+  ],
+  "y_edges": [
+    0,
+    352,
+    704,
+    1056,
+    1408
+  ],
+  "column_anchors": [
+    176,
+    528,
+    880,
+    1232
+  ],
+  "row_anchors": [
+    312,
+    664,
+    1016,
+    1368
+  ],
+  "frame_dimensions": [
+    352,
+    352
+  ],
+  "anchor": [
+    176,
+    312
+  ],
+  "directions": [
+    "south",
+    "north",
+    "west",
+    "east"
+  ],
+  "fps": 8,
+  "motion": "walk",
+  "scale": 0.25,
+  "label": "Mossling",
+  "mask": {
+    "strategy": "none",
+    "channels": []
+  },
+  "target": "assets/enemies/mossling/top-down.png",
+  "canonical_references": [
+    "art/incoming/flora_forest_monsters_v1/mossling_sprites.jpg",
+    "art/incoming/flora_forest_monsters_v1/forest_mosslight_ruins.jpg",
+    "art/incoming/flora_forest_monsters_v1/forest_twilight_brambles.jpg",
+    "art/qa/flora_forest_monsters_v1/walk-preparation-05/mossling/composition.json",
+    "art/incoming/flora_forest_monsters_v1/walk-source-05/ChatGPT Image Oct 7, 2026, 01_19_12 AM.png"
+  ],
+  "requirements": [
+    "Preserve all decoded visible RGBA pixels within verified region, without resampling",
+    "Verify alpha>=128 core components remain intact in source cells; retain faint alpha as-is",
+    "Fixed column/row anchors, no per-frame recentering",
+    "Human review of source direction errors/red fringes and temporal stability",
+    "QA-only isolated overlay; no production publish until explicit approval",
+    "West uses east canonical row with runtime flipX, not a duplicate mirrored atlas",
+    "Standing uses canonical contact frame 0, never a passing pose",
+    "Fixed-world-position right-left-stop temporal QA before human review"
+  ],
+  "direction_scales": {
+    "east": 0.18,
+    "west": 0.18
+  },
+  "direction_aliases": {
+    "west": {
+      "source_direction": "east",
+      "flip_x": true
+    }
+  },
+  "standing_frames": {
+    "east": 0,
+    "west": 0,
+    "north": 0,
+    "south": 0
+  }
+}

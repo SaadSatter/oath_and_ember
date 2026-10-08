@@ -1,4 +1,4 @@
-// Presentation-only profiles. The art engineer adapter edits this data, never simulation.
+// Presentation-only effect settings; never used by the authoritative simulation.
 export interface EffectPresentation {
   scale: number;
   offsetX: number;

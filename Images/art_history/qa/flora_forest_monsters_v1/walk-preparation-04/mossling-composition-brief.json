@@ -1,0 +1,151 @@
+{
+  "base": {
+    "schema_version": 1,
+    "asset_type": "enemy_directional_sprite",
+    "normalization": "external_crop_grid_v1",
+    "asset_id": "mossling_sprites_v1",
+    "source": {
+      "path": "art/incoming/flora_forest_monsters_v1/transparent-source-02/Pixel Forest Spirit Sprite Sheet.png",
+      "sha256": "c2e578bdb280fc83fe175d165528e3191b266c93a9b60ece006892a9d462a809",
+      "provenance": "User supplied transparent replacement; canonical creature designs from Flora MCP"
+    },
+    "x_edges": [
+      0,
+      194,
+      372,
+      552,
+      750
+    ],
+    "y_edges": [
+      0,
+      181,
+      350,
+      523,
+      724
+    ],
+    "column_anchors": [
+      106,
+      284,
+      465,
+      648
+    ],
+    "row_anchors": [
+      178,
+      343,
+      519,
+      697
+    ],
+    "frame_dimensions": [
+      272,
+      288
+    ],
+    "anchor": [
+      136,
+      260
+    ],
+    "directions": [
+      "south",
+      "north",
+      "west",
+      "east"
+    ],
+    "fps": 8,
+    "motion": "walk",
+    "scale": 0.25,
+    "label": "Mossling",
+    "mask": {
+      "strategy": "none",
+      "channels": []
+    },
+    "target": "assets/enemies/mossling/top-down.png",
+    "canonical_references": [
+      "art/incoming/flora_forest_monsters_v1/mossling_sprites.jpg",
+      "art/incoming/flora_forest_monsters_v1/forest_mosslight_ruins.jpg",
+      "art/incoming/flora_forest_monsters_v1/forest_twilight_brambles.jpg"
+    ],
+    "analysis": {
+      "core_alpha": 128,
+      "minimum_component_pixels": 500
+    },
+    "requirements": [
+      "Preserve all decoded visible RGBA pixels within verified region, without resampling",
+      "Verify alpha>=128 core components remain intact in source cells; retain faint alpha as-is",
+      "Fixed column/row anchors, no per-frame recentering",
+      "Human review of source direction errors/red fringes and temporal stability",
+      "QA-only isolated overlay; no production publish until explicit approval"
+    ]
+  },
+  "replacements": [
+    {
+      "contract": {
+        "schema_version": 1,
+        "asset_type": "enemy_directional_sprite",
+        "normalization": "external_crop_grid_v1",
+        "asset_id": "mossling_sides_v2",
+        "source": {
+          "path": "art/incoming/flora_forest_monsters_v1/walk-source-04/Mossling walk.png",
+          "sha256": "456c60a6c6f2a4592bb942944060365283a6f58969ba85b80346621f8afc9384",
+          "provenance": "User supplied walking replacement"
+        },
+        "x_edges": [
+          0,
+          256,
+          512,
+          768,
+          1024
+        ],
+        "y_edges": [
+          512,
+          768,
+          1024
+        ],
+        "column_anchors": [
+          128,
+          384,
+          640,
+          896
+        ],
+        "row_anchors": [
+          740,
+          984
+        ],
+        "frame_dimensions": [
+          272,
+          288
+        ],
+        "anchor": [
+          136,
+          260
+        ],
+        "directions": [
+          "west",
+          "east"
+        ],
+        "fps": 8,
+        "motion": "walk",
+        "scale": 0.25,
+        "label": "Mossling",
+        "mask": {
+          "strategy": "none",
+          "channels": []
+        },
+        "target": "assets/enemies/mossling/top-down.png",
+        "canonical_references": [
+          "art/incoming/flora_forest_monsters_v1/transparent-source-02/Pixel Forest Spirit Sprite Sheet.png"
+        ],
+        "analysis": {
+          "core_alpha": 128,
+          "minimum_component_pixels": 500
+        },
+        "requirements": [
+          "Inspect directions and gait; fixed anchors; no pixel edits; human approval required"
+        ]
+      },
+      "directions": [
+        "west",
+        "east"
+      ]
+    }
+  ],
+  "output": "art/qa/flora_forest_monsters_v1/walk-preparation-04/mossling"
+}

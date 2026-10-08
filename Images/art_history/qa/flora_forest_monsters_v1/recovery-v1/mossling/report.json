@@ -1,0 +1,59 @@
+{
+  "algorithm": "spatial_checkerboard_conservative_v1",
+  "regular_pattern": false,
+  "horizontal_fit": [
+    85.035400390625,
+    8.519999999999946,
+    2.0,
+    [
+      253.0,
+      230.75
+    ]
+  ],
+  "vertical_fit": [
+    14.292724609375,
+    7.999999999999957,
+    0.0,
+    [
+      253.5,
+      231.0
+    ]
+  ],
+  "background_levels_rgb": [
+    [
+      253.0,
+      253.0,
+      253.0
+    ],
+    [
+      231.0,
+      231.0,
+      231.0
+    ]
+  ],
+  "checker_contrast": 22.0,
+  "border_pattern_match_fraction": 0.7885416666666667,
+  "removed_pixels": 0,
+  "uncertain_retained_pixels": 720530,
+  "visible_rgb_modified": 0,
+  "status": "UNSAFE_TO_RECOVER",
+  "pipeline_state": "BLOCKED_TRANSPARENT_SOURCE",
+  "production_ready": false,
+  "limitations": "Conservative binary alpha retains uncertain edge/background pixels. JPEG foreground RGB remains contaminated; no original alpha can be inferred for blended pixels. Human review is required; do not promote this diagnostic candidate automatically.",
+  "source_path": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/art/incoming/flora_forest_monsters_v1/mossling_sprites.jpg",
+  "source_sha256": "f3019178f8596a89721862d97448a2559ca4cd3e97fe363a5baf8ae13de2a420",
+  "source_format": "JPEG",
+  "dimensions": [
+    1024,
+    1024
+  ],
+  "grid": [
+    4,
+    4
+  ],
+  "decoder": "Pillow 12.3.0",
+  "derived_png_sha256": null,
+  "suspected_edge_residual_pixels": 238532,
+  "edge_residual_count_interpretation": "Model mismatch confounds this diagnostic count; not a confirmed number of damaged foreground pixels.",
+  "diagnostic_interpretation": "No extraction produced. Alpha is entirely white (opaque); contrast/contact panels retain the source because the pattern gate failed."
+}

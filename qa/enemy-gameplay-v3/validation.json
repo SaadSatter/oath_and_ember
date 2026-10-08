@@ -1,0 +1,13 @@
+{
+  "typecheck": "PASS",
+  "tests": "157 passed; 24 files; includes 78 art tests",
+  "build": "PASS; existing large Phaser chunk warning",
+  "browser": "PASS",
+  "matched_server_ticks": 297,
+  "mismatches": 0,
+  "visual_review": "Human-approved art preserved; runtime screenshots and decoded temporal frames inspected. Continuous videos retained for human gameplay review.",
+  "source_integrity": "Three runtime atlases byte-for-byte equal to immutable human-approved snapshots",
+  "primary_video": "PRIMARY-gameplay.webm",
+  "raw_video": "client-1.webm",
+  "primary_derivation": "Non-generative video trim: client-1.webm from PTS6 for24 seconds. No PTS equality used to establish authority synchronization."
+}

@@ -1,0 +1,13 @@
+{
+  "art_tests": 78,
+  "full_tests": 141,
+  "typecheck": "PASS",
+  "build": "PASS; existing Phaser chunk-size warning",
+  "browser": "PASS; 192 row/frame samples, 128 walker direction/stop checks, all four native frames observed per walker in every recording",
+  "independent_clients": "Exact state equality at deterministic local review time; no network entities or video PTS synchronization claims",
+  "accepted_front_back": "16 RGBA frames verified exactly preserved after common padding",
+  "cinder_wisp": "Approved atlas SHA unchanged",
+  "human_review": "PENDING; no publish or automatic approval",
+  "primary_video": "browser/PRIMARY-right-left-stop.webm",
+  "media_preparation": "Ordinary non-generative video transcode: raw recording 0.3s start, 14s duration. Raw videos retained."
+}

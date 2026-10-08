@@ -1,0 +1,554 @@
+{
+  "coco:ward": {
+    "schema_version": 1,
+    "normalization": "fixed_grid_v1",
+    "asset_type": "effect",
+    "pixel_content": "effect_only",
+    "mask": {
+      "strategy": "alpha_effect",
+      "channels": [
+        "green"
+      ]
+    },
+    "source_palette": "canonical ember magic (#ff9b32)",
+    "canonical_references": [
+      "Images/Character Concept art.png",
+      "Images/Sprites/Defense Basic Sprites.png",
+      "docs/DEFENSE_ASSET_PROVENANCE.json"
+    ],
+    "requirements": [
+      "Effect pixels only; no character, equipment, scenery, text or opaque background."
+    ],
+    "qa": {
+      "mechanism": "defense",
+      "role": "EMBER"
+    },
+    "frame_dimensions": [
+      128,
+      128
+    ],
+    "frame_count": 1,
+    "columns": 1,
+    "anchor": [
+      64,
+      70
+    ],
+    "directions": [
+      "omnidirectional"
+    ],
+    "target": "assets/characters/ember/defense.png",
+    "mask_target": "assets/characters/ember/defense-mask.png",
+    "behavior": "Separate hollow rim; existing start/held/end envelope; body unchanged. One-frame art cannot add animation phases."
+  },
+  "coco:projectile": {
+    "schema_version": 1,
+    "normalization": "fixed_grid_v1",
+    "asset_type": "effect",
+    "pixel_content": "effect_only",
+    "mask": {
+      "strategy": "alpha_effect",
+      "channels": [
+        "green"
+      ]
+    },
+    "source_palette": "canonical ember magic (#ff9b32)",
+    "canonical_references": [
+      "Images/Character Concept art.png",
+      "Images/Sprites/Magic Basic Spell.png",
+      "docs/MAGIC_PROJECTILE_PROVENANCE.json"
+    ],
+    "requirements": [
+      "Effect pixels only; no character, equipment, scenery, text or opaque background."
+    ],
+    "qa": {
+      "mechanism": "projectile",
+      "role": "EMBER"
+    },
+    "frame_dimensions": [
+      64,
+      64
+    ],
+    "frame_count": 4,
+    "columns": 4,
+    "anchor": [
+      32,
+      32
+    ],
+    "directions": [
+      "right",
+      "left",
+      "up",
+      "down"
+    ],
+    "target": "assets/effects/coco/flight.png",
+    "mask_target": "assets/effects/coco/flight-mask.png",
+    "behavior": "Existing four-frame flight sequence and authoritative projectile movement; core/impact remain separate."
+  },
+  "sieg:shield": {
+    "schema_version": 1,
+    "normalization": "fixed_grid_v1",
+    "asset_type": "character_animation",
+    "pixel_content": "character_equipment",
+    "frame_dimensions": [
+      128,
+      128
+    ],
+    "frame_count": 47,
+    "columns": 8,
+    "anchor": [
+      64,
+      96
+    ],
+    "directions": [
+      "right",
+      "left",
+      "up",
+      "down"
+    ],
+    "target": "assets/characters/oath/defense.png",
+    "mask_target": "assets/characters/oath/defense-mask.png",
+    "mask": {
+      "strategy": "semantic_external",
+      "channels": [
+        "red"
+      ],
+      "normalization": "semantic_labels_v1"
+    },
+    "source_palette": "Canonical dark armor, dark hair, crimson scarf/cape, unchanged skin and shield/sword metal.",
+    "canonical_references": [
+      "Images/Character Concept art.png",
+      "Images/Sprites/Defense Basic Sprites.png",
+      "docs/DEFENSE_ASSET_PROVENANCE.json"
+    ],
+    "behavior": "Existing Guard replaces the body with character-and-shield poses. Row-major indices 0-7 start right, 8-15 held right (runtime holds frame 8), 16-23 recovery right, 24-31 start down (hold 31), 32-39 start up (hold 39), 40-46 impact. Last cell remains transparent. Left mirrors right. Keep 12fps clips and authoritative Guard unchanged.",
+    "requirements": [
+      "Preserve canonical identity, dark hair/armor, crimson scarf/cape and sword/shield design in every frame.",
+      "Preserve ground anchor (64,96), existing pose proportions and sequence. Shield is embedded equipment, not a separate magic effect.",
+      "Semantic red mask covers scarf/cape only. Never recolor skin, hair, eyes, armor, sword or shield metal. Mask must be reviewed against the new atlas; alpha-derived masks are forbidden."
+    ],
+    "qa": {
+      "mechanism": "defense",
+      "role": "OATH"
+    }
+  },
+  "mossling:sprites": {
+    "schema_version": 1,
+    "asset_type": "enemy_directional_sprite",
+    "normalization": "external_crop_grid_v1",
+    "asset_id": "mossling_sprites_v1",
+    "source": {
+      "path": "art/incoming/flora_forest_monsters_v1/transparent-source-02/Pixel Forest Spirit Sprite Sheet.png",
+      "sha256": "c2e578bdb280fc83fe175d165528e3191b266c93a9b60ece006892a9d462a809",
+      "provenance": "User supplied transparent replacement; canonical creature designs from Flora MCP"
+    },
+    "x_edges": [
+      0,
+      194,
+      372,
+      552,
+      750
+    ],
+    "y_edges": [
+      0,
+      181,
+      350,
+      523,
+      724
+    ],
+    "column_anchors": [
+      106,
+      284,
+      465,
+      648
+    ],
+    "row_anchors": [
+      178,
+      343,
+      519,
+      697
+    ],
+    "frame_dimensions": [
+      272,
+      288
+    ],
+    "anchor": [
+      136,
+      260
+    ],
+    "directions": [
+      "south",
+      "north",
+      "west",
+      "east"
+    ],
+    "fps": 8,
+    "scale": 0.25,
+    "label": "Mossling",
+    "mask": {
+      "strategy": "none",
+      "channels": []
+    },
+    "target": "assets/enemies/mossling/top-down.png",
+    "canonical_references": [
+      "art/incoming/flora_forest_monsters_v1/mossling_sprites.jpg",
+      "art/incoming/flora_forest_monsters_v1/forest_mosslight_ruins.jpg",
+      "art/incoming/flora_forest_monsters_v1/forest_twilight_brambles.jpg"
+    ],
+    "requirements": [
+      "Preserve all decoded visible RGBA pixels within verified region, without resampling",
+      "Verify alpha>=128 core components remain intact in source cells; retain faint alpha as-is",
+      "Fixed column/row anchors, no per-frame recentering",
+      "Human review of source direction errors/red fringes and temporal stability",
+      "QA-only isolated overlay; no production publish until explicit approval"
+    ],
+    "analysis": {
+      "core_alpha": 128,
+      "minimum_component_pixels": 500
+    },
+    "motion": "walk"
+  },
+  "cinder_wisp:sprites": {
+    "schema_version": 1,
+    "asset_type": "enemy_directional_sprite",
+    "normalization": "external_crop_grid_v1",
+    "asset_id": "cinder_wisp_sprites_v1",
+    "source": {
+      "path": "art/incoming/flora_forest_monsters_v1/transparent-source-02/Pixel Forest Spirit Sprite Sheet.png",
+      "sha256": "c2e578bdb280fc83fe175d165528e3191b266c93a9b60ece006892a9d462a809",
+      "provenance": "User supplied transparent replacement; canonical creature designs from Flora MCP"
+    },
+    "x_edges": [
+      750,
+      935,
+      1085,
+      1250,
+      1425
+    ],
+    "y_edges": [
+      0,
+      179,
+      355,
+      516,
+      724
+    ],
+    "column_anchors": [
+      855,
+      1014,
+      1167,
+      1322
+    ],
+    "row_anchors": [
+      175,
+      351,
+      502,
+      693
+    ],
+    "frame_dimensions": [
+      272,
+      288
+    ],
+    "anchor": [
+      136,
+      260
+    ],
+    "directions": [
+      "south",
+      "north",
+      "east",
+      "west"
+    ],
+    "fps": 8,
+    "scale": 0.1875,
+    "label": "Cinder Wisp",
+    "mask": {
+      "strategy": "none",
+      "channels": []
+    },
+    "target": "assets/enemies/cinder_wisp/top-down.png",
+    "canonical_references": [
+      "art/incoming/flora_forest_monsters_v1/cinder_wisp_sprites.jpg",
+      "art/incoming/flora_forest_monsters_v1/forest_mosslight_ruins.jpg",
+      "art/incoming/flora_forest_monsters_v1/forest_twilight_brambles.jpg"
+    ],
+    "requirements": [
+      "Preserve all decoded visible RGBA pixels within verified region, without resampling",
+      "Verify alpha>=128 core components remain intact in source cells; retain faint alpha as-is",
+      "Fixed column/row anchors, no per-frame recentering",
+      "Human review of source direction errors/red fringes and temporal stability",
+      "QA-only isolated overlay; no production publish until explicit approval"
+    ],
+    "analysis": {
+      "core_alpha": 128,
+      "minimum_component_pixels": 500
+    },
+    "motion": "hover",
+    "animation_frames": {
+      "west": [
+        0,
+        2
+      ]
+    }
+  },
+  "ironbound_sentinel:sprites": {
+    "schema_version": 1,
+    "asset_type": "enemy_directional_sprite",
+    "normalization": "external_crop_grid_v1",
+    "asset_id": "ironbound_sentinel_sprites_v1",
+    "source": {
+      "path": "art/incoming/flora_forest_monsters_v1/transparent-source-02/Pixel Forest Spirit Sprite Sheet.png",
+      "sha256": "c2e578bdb280fc83fe175d165528e3191b266c93a9b60ece006892a9d462a809",
+      "provenance": "User supplied transparent replacement; canonical creature designs from Flora MCP"
+    },
+    "x_edges": [
+      1425,
+      1644,
+      1818,
+      1994,
+      2172
+    ],
+    "y_edges": [
+      0,
+      183,
+      355,
+      528,
+      724
+    ],
+    "column_anchors": [
+      1553,
+      1732,
+      1903,
+      2073
+    ],
+    "row_anchors": [
+      179,
+      352,
+      526,
+      704
+    ],
+    "frame_dimensions": [
+      272,
+      288
+    ],
+    "anchor": [
+      136,
+      260
+    ],
+    "directions": [
+      "south",
+      "north",
+      "west",
+      "east"
+    ],
+    "fps": 8,
+    "scale": 0.375,
+    "label": "Ironbound Sentinel",
+    "mask": {
+      "strategy": "none",
+      "channels": []
+    },
+    "target": "assets/enemies/ironbound_sentinel/top-down.png",
+    "canonical_references": [
+      "art/incoming/flora_forest_monsters_v1/ironbound_sentinel_sprites.jpg",
+      "art/incoming/flora_forest_monsters_v1/forest_mosslight_ruins.jpg",
+      "art/incoming/flora_forest_monsters_v1/forest_twilight_brambles.jpg"
+    ],
+    "requirements": [
+      "Preserve all decoded visible RGBA pixels within verified region, without resampling",
+      "Verify alpha>=128 core components remain intact in source cells; retain faint alpha as-is",
+      "Fixed column/row anchors, no per-frame recentering",
+      "Human review of source direction errors/red fringes and temporal stability",
+      "QA-only isolated overlay; no production publish until explicit approval"
+    ],
+    "analysis": {
+      "core_alpha": 128,
+      "minimum_component_pixels": 500
+    },
+    "motion": "walk"
+  },
+  "mossling:sprites_v2": {
+    "schema_version": 1,
+    "asset_type": "enemy_directional_sprite",
+    "normalization": "external_crop_grid_v1",
+    "asset_id": "mossling_sprites_v2",
+    "source": {
+      "path": "art/qa/flora_forest_monsters_v1/walk-preparation-05/mossling/composed.png",
+      "sha256": "76177726fa362c6cedfae40005f00cb1b4d519a8c61437e7628ed37f3ab9a39b",
+      "provenance": "Human-authorized ART source revision 05; canonical east rows extracted from supplied PNG. composition.json binds original Flora designs and all source hashes."
+    },
+    "x_edges": [
+      0,
+      352,
+      704,
+      1056,
+      1408
+    ],
+    "y_edges": [
+      0,
+      352,
+      704,
+      1056,
+      1408
+    ],
+    "column_anchors": [
+      176,
+      528,
+      880,
+      1232
+    ],
+    "row_anchors": [
+      312,
+      664,
+      1016,
+      1368
+    ],
+    "frame_dimensions": [
+      352,
+      352
+    ],
+    "anchor": [
+      176,
+      312
+    ],
+    "directions": [
+      "south",
+      "north",
+      "west",
+      "east"
+    ],
+    "fps": 8,
+    "motion": "walk",
+    "scale": 0.25,
+    "label": "Mossling",
+    "mask": {
+      "strategy": "none",
+      "channels": []
+    },
+    "target": "assets/enemies/mossling/top-down.png",
+    "canonical_references": [
+      "art/incoming/flora_forest_monsters_v1/mossling_sprites.jpg",
+      "art/incoming/flora_forest_monsters_v1/forest_mosslight_ruins.jpg",
+      "art/incoming/flora_forest_monsters_v1/forest_twilight_brambles.jpg",
+      "art/qa/flora_forest_monsters_v1/walk-preparation-05/mossling/composition.json",
+      "art/incoming/flora_forest_monsters_v1/walk-source-05/ChatGPT Image Oct 7, 2026, 01_19_12 AM.png"
+    ],
+    "requirements": [
+      "Preserve all decoded visible RGBA pixels within verified region, without resampling",
+      "Verify alpha>=128 core components remain intact in source cells; retain faint alpha as-is",
+      "Fixed column/row anchors, no per-frame recentering",
+      "Human review of source direction errors/red fringes and temporal stability",
+      "QA-only isolated overlay; no production publish until explicit approval",
+      "West uses east canonical row with runtime flipX, not a duplicate mirrored atlas",
+      "Standing uses canonical contact frame 0, never a passing pose",
+      "Fixed-world-position right-left-stop temporal QA before human review"
+    ],
+    "direction_scales": {
+      "east": 0.18,
+      "west": 0.18
+    },
+    "direction_aliases": {
+      "west": {
+        "source_direction": "east",
+        "flip_x": true
+      }
+    },
+    "standing_frames": {
+      "east": 0,
+      "west": 0,
+      "north": 0,
+      "south": 0
+    }
+  },
+  "ironbound_sentinel:sprites_v2": {
+    "schema_version": 1,
+    "asset_type": "enemy_directional_sprite",
+    "normalization": "external_crop_grid_v1",
+    "asset_id": "ironbound_sentinel_sprites_v2",
+    "source": {
+      "path": "art/qa/flora_forest_monsters_v1/walk-preparation-05/ironbound_sentinel/composed.png",
+      "sha256": "eaf481504955a00cf29b014e7f9f150ce0aa53ef8591cc20c938f20710521ad2",
+      "provenance": "Human-authorized ART source revision 05; canonical east rows extracted from supplied PNG. composition.json binds original Flora designs and all source hashes."
+    },
+    "x_edges": [
+      0,
+      352,
+      704,
+      1056,
+      1408
+    ],
+    "y_edges": [
+      0,
+      352,
+      704,
+      1056,
+      1408
+    ],
+    "column_anchors": [
+      176,
+      528,
+      880,
+      1232
+    ],
+    "row_anchors": [
+      312,
+      664,
+      1016,
+      1368
+    ],
+    "frame_dimensions": [
+      352,
+      352
+    ],
+    "anchor": [
+      176,
+      312
+    ],
+    "directions": [
+      "south",
+      "north",
+      "west",
+      "east"
+    ],
+    "fps": 8,
+    "motion": "walk",
+    "scale": 0.375,
+    "label": "Ironbound Sentinel",
+    "mask": {
+      "strategy": "none",
+      "channels": []
+    },
+    "target": "assets/enemies/ironbound_sentinel/top-down.png",
+    "canonical_references": [
+      "art/incoming/flora_forest_monsters_v1/ironbound_sentinel_sprites.jpg",
+      "art/incoming/flora_forest_monsters_v1/forest_mosslight_ruins.jpg",
+      "art/incoming/flora_forest_monsters_v1/forest_twilight_brambles.jpg",
+      "art/qa/flora_forest_monsters_v1/walk-preparation-05/ironbound_sentinel/composition.json",
+      "art/incoming/flora_forest_monsters_v1/walk-source-05/ChatGPT Image Oct 7, 2026, 01_19_12 AM.png"
+    ],
+    "requirements": [
+      "Preserve all decoded visible RGBA pixels within verified region, without resampling",
+      "Verify alpha>=128 core components remain intact in source cells; retain faint alpha as-is",
+      "Fixed column/row anchors, no per-frame recentering",
+      "Human review of source direction errors/red fringes and temporal stability",
+      "QA-only isolated overlay; no production publish until explicit approval",
+      "West uses east canonical row with runtime flipX, not a duplicate mirrored atlas",
+      "Standing uses canonical contact frame 0, never a passing pose",
+      "Fixed-world-position right-left-stop temporal QA before human review"
+    ],
+    "direction_scales": {
+      "east": 0.28,
+      "west": 0.28
+    },
+    "direction_aliases": {
+      "west": {
+        "source_direction": "east",
+        "flip_x": true
+      }
+    },
+    "standing_frames": {
+      "east": 0,
+      "west": 0,
+      "north": 0,
+      "south": 0
+    }
+  }
+}
