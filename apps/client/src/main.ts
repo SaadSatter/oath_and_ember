@@ -1,4 +1,8 @@
 import {
+  EnvironmentView,
+  preloadEnvironment,
+} from "./environment/EnvironmentView.js";
+import {
   EnemyView,
   preloadEnemies,
   registerEnemies,
@@ -257,6 +261,7 @@ function submitInput(reliable = false) {
 setInterval(() => submitInput(), 1000 / 30);
 class Adventure extends Phaser.Scene {
   gfx!: Phaser.GameObjects.Graphics;
+  environment!: EnvironmentView;
   labels: Phaser.GameObjects.Text[] = [];
   sceneKey = "";
   rendered = { x: 0, y: 0 };
@@ -271,6 +276,7 @@ class Adventure extends Phaser.Scene {
     preloadHeroes(this);
     preloadMagic(this);
     preloadEnemies(this);
+    preloadEnvironment(this);
   }
   clearPlayerViews() {
     for (const view of this.playerViews.values()) view.destroy();
@@ -287,6 +293,10 @@ class Adventure extends Phaser.Scene {
       this.clearEnemyViews();
     });
     this.gfx = this.add.graphics();
+    this.environment = new EnvironmentView(this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
+      this.environment.clear(),
+    );
     this.projectileView = new ProjectileView(this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
       this.projectileView.destroy(),
@@ -296,6 +306,8 @@ class Adventure extends Phaser.Scene {
     const w = net.world;
     if (!w || w.phase === "LOBBY") {
       this.gfx.clear();
+      this.environment.clear();
+      this.sceneKey = "";
       this.projectileView.clear();
       this.clearPlayerViews();
       this.clearEnemyViews();
@@ -304,7 +316,13 @@ class Adventure extends Phaser.Scene {
     const map = maps[w.sceneId],
       me = w.players[net.session?.playerId || ""];
     if (!me) return;
-    this.cameras.main.setBounds(0, 0, map.width, map.height);
+    if (w.sceneId === "MAIN_HOUSE") this.cameras.main.removeBounds();
+    else this.cameras.main.setBounds(0, 0, map.width, map.height);
+    // Keep environment and character pixels at the same scale across maps.
+    this.cameras.main.setZoom(1);
+    this.cameras.main.setBackgroundColor(
+      w.sceneId === "MAIN_HOUSE" ? 0x29432c : 0x10202b,
+    );
     const local = net.prediction.player || me;
     if (this.sceneKey !== w.sceneId) {
       this.clearPlayerViews();
@@ -312,6 +330,7 @@ class Adventure extends Phaser.Scene {
       this.projectileView.destroy();
       this.projectileView = new ProjectileView(this);
       this.sceneKey = w.sceneId;
+      this.environment.show(w.sceneId);
       this.rendered = { x: local.x, y: local.y };
     }
     const err = Math.hypot(
@@ -321,27 +340,31 @@ class Adventure extends Phaser.Scene {
     const a = err > 100 ? 1 : smoothingFactor(delta);
     this.rendered.x += (local.x - this.rendered.x) * a;
     this.rendered.y += (local.y - this.rendered.y) * a;
-    this.cameras.main.centerOn(this.rendered.x, this.rendered.y);
+    if (w.sceneId === "MAIN_HOUSE") {
+      const halfX = this.scale.width / (2 * this.cameras.main.zoom),
+        halfY = this.scale.height / (2 * this.cameras.main.zoom);
+      const center = (position: number, size: number, half: number) =>
+        size < half * 2
+          ? size / 2
+          : Phaser.Math.Clamp(position, half, size - half);
+      this.cameras.main.centerOn(
+        center(this.rendered.x, map.width, halfX),
+        center(this.rendered.y, map.height, halfY),
+      );
+    } else this.cameras.main.centerOn(this.rendered.x, this.rendered.y);
     const g = this.gfx;
     g.clear();
-    g.fillStyle(w.sceneId === "FOREST_RUINS" ? 0x152c2b : 0x182338);
-    g.fillRect(0, 0, map.width, map.height);
-    g.lineStyle(1, 0xffffff, 0.04);
-    for (let x = 0; x < map.width; x += 60) g.lineBetween(x, 0, x, map.height);
-    for (let y = 0; y < map.height; y += 60) g.lineBetween(0, y, map.width, y);
-    if (w.sceneId === "FOREST_RUINS") {
-      for (let n = 0; n < 50; n++) {
-        const x = 70 + ((n * 137) % 1650),
-          y = 80 + ((n * 241) % 730);
-        if (Math.abs(y - 450) > 130) {
-          g.fillStyle(0x284840);
-          g.fillCircle(x, y, 25);
-          g.fillStyle(0x35564b);
-          g.fillTriangle(x - 24, y, x, y - 45, x + 24, y);
-        }
-      }
+    if (w.sceneId !== "MAIN_HOUSE") {
+      g.fillStyle(w.sceneId === "FOREST_RUINS" ? 0x152c2b : 0x182338);
+      g.fillRect(0, 0, map.width, map.height);
+      g.lineStyle(1, 0xffffff, 0.04);
+      for (let x = 0; x < map.width; x += 60)
+        g.lineBetween(x, 0, x, map.height);
+      for (let y = 0; y < map.height; y += 60)
+        g.lineBetween(0, y, map.width, y);
     }
     for (const r of collisionRects(w.sceneId, w.puzzles)) {
+      if (w.sceneId === "MAIN_HOUSE" && !debug) continue;
       g.fillStyle(0x52656c);
       g.fillRoundedRect(r.x, r.y, r.w, r.h, 5);
       g.lineStyle(2, 0x839194);
@@ -436,15 +459,17 @@ class Adventure extends Phaser.Scene {
     if (stats)
       stats.textContent = `${me.role ? heroNames[me.role] : "Choosing"} · HP ${Math.round(me.hp)} · ${me.skillPoints} points · Room ${w.roomCode} · ${net.socket.connected ? "Connected" : "Reconnecting"}`;
     let goal =
-      w.sceneId === "FOREST_RUINS"
-        ? !w.puzzles.gate.complete
-          ? "Sieg: J at bramble. Coco: hold E at rune."
-          : !w.puzzles.bridge.complete
-            ? "Sieg: hold E at crate to push to plate. Coco: E at crystal."
-            : "Both gates open. Explore east to board the airship."
-        : w.sceneId === "AIRSHIP"
-          ? `Hold E together: Sieg at crank, Coco at core. Engine ${Math.min(100, Math.round((w.puzzles.engine.progress / 3) * 100))}%`
-          : `Coco: hold E at anchor. Sieg: J near Warden. Shield: ${w.boss?.phase}`;
+      w.sceneId === "MAIN_HOUSE"
+        ? "Explore the house grounds. Follow the path east and press E to enter the forest."
+        : w.sceneId === "FOREST_RUINS"
+          ? !w.puzzles.gate.complete
+            ? "Sieg: J at bramble. Coco: hold E at rune."
+            : !w.puzzles.bridge.complete
+              ? "Sieg: hold E at crate to push to plate. Coco: E at crystal."
+              : "Both gates open. Explore east to board the airship."
+          : w.sceneId === "AIRSHIP"
+            ? `Hold E together: Sieg at crank, Coco at core. Engine ${Math.min(100, Math.round((w.puzzles.engine.progress / 3) * 100))}%`
+            : `Coco: hold E at anchor. Sieg: J near Warden. Shield: ${w.boss?.phase}`;
     if (Object.values(w.players).some((p) => !p.connected))
       goal = "Partner disconnected. Game paused for up to 30 seconds.";
     document.querySelector<HTMLDivElement>("#objective")!.textContent = goal;

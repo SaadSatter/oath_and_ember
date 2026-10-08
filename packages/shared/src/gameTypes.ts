@@ -1,6 +1,7 @@
 import type { CharacterAppearance } from "./appearance.js";
 export type Role = "OATH" | "EMBER";
-export type SceneId = "FOREST_RUINS" | "AIRSHIP" | "AIRSHIP_BOSS";
+export type SceneId =
+  "MAIN_HOUSE" | "FOREST_RUINS" | "AIRSHIP" | "AIRSHIP_BOSS";
 export interface InputFrame {
   seq: number;
   moveX: number;

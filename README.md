@@ -34,6 +34,8 @@ Production serves the game and Socket.IO together at http://localhost:3000. `POR
 
 ## Playthrough
 
+Start at the main house exterior, follow the path east, and press E by the exit to enter the forest together. See [house/tree assets](docs/HOUSE_AND_TREES.md).
+
 1. Oath attacks the bramble with J; Ember holds E near the rune. Both conditions open the first gate.
 2. Oath stays near the moving crate and holds E to push it east onto the plate. Ember uses the crystal. The second gate opens.
 3. Reach the boarding marker at the eastern edge to move both heroes to the airship.

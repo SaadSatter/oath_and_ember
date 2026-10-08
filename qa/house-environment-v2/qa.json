@@ -1,0 +1,14 @@
+{
+  "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "starting_scene": "MAIN_HOUSE",
+  "transition": "Both clients observed server-authoritative forest transition after browser movement/E input",
+  "source": "Authored Exterior.tmx; integer2x tiled rendering; source forest tree PNGs unchanged",
+  "viewports": [
+    "1920x1080",
+    "1440x900",
+    "390x844",
+    "844x390"
+  ]
+}

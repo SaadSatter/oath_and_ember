@@ -9,6 +9,25 @@ export interface MapDefinition {
   points: Record<string, { x: number; y: number }>;
 }
 export const maps: Record<SceneId, MapDefinition> = {
+  MAIN_HOUSE: {
+    id: "MAIN_HOUSE",
+    mode: "TOP_DOWN",
+    width: 864,
+    height: 640,
+    spawn: { x: 560, y: 500 },
+    walls: [
+      { x: 0, y: 0, w: 864, h: 16 },
+      { x: 0, y: 624, w: 864, h: 16 },
+      { x: 0, y: 0, w: 16, h: 640 },
+      { x: 848, y: 0, w: 16, h: 640 },
+      { x: 280, y: 250, w: 264, h: 130 },
+      { x: 212, y: 200, w: 8, h: 240 },
+      { x: 616, y: 200, w: 8, h: 240 },
+      { x: 212, y: 432, w: 180, h: 8 },
+      { x: 488, y: 432, w: 136, h: 8 },
+    ],
+    points: { exit: { x: 810, y: 500 } },
+  },
   FOREST_RUINS: {
     id: "FOREST_RUINS",
     mode: "TOP_DOWN",

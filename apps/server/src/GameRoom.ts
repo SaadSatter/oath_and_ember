@@ -16,6 +16,7 @@ import {
   type Role,
   type InputFrame,
   type Player,
+  type SceneId,
 } from "../../../packages/shared/src/gameTypes.js";
 import { maps, collisionRects } from "../../../packages/shared/src/maps.js";
 import { move } from "../../../packages/shared/src/movement.js";
@@ -37,6 +38,7 @@ export class GameRoom {
   constructor(
     code: string,
     readonly encounter = false,
+    readonly startingScene: SceneId = "MAIN_HOUSE",
   ) {
     this.state = {
       roomCode: code,
@@ -175,7 +177,7 @@ export class GameRoom {
   }
   reset() {
     const w = this.state;
-    w.sceneId = "FOREST_RUINS";
+    w.sceneId = this.encounter ? "FOREST_RUINS" : this.startingScene;
     w.phase = "LOBBY";
     w.worldRevision++;
     w.puzzles = {
@@ -209,17 +211,24 @@ export class GameRoom {
     w.enemies = Object.fromEntries(
       forestEncounter.map((e) => [e.id, spawnEnemy(e.id, e.type, e.x, e.y)]),
     );
+    if (w.sceneId === "MAIN_HOUSE") w.enemies = {};
     if (this.encounter) {
       for (const key of ["gate", "bridge"]) w.puzzles[key].complete = true;
       w.checkpoint = "Enemy validation encounter";
     }
-    w.checkpoint = this.encounter ? "Enemy validation encounter" : "Clearing";
+    w.checkpoint = this.encounter
+      ? "Enemy validation encounter"
+      : w.sceneId === "MAIN_HOUSE"
+        ? "Main house"
+        : "Clearing";
     Object.values(w.players).forEach((p, i) => {
       delete p.combat;
       delete p.heavyCharge;
       Object.assign(p, {
-        x: this.encounter ? 550 : 120,
-        y: 430 + i * 50,
+        x: this.encounter
+          ? 550
+          : maps[w.sceneId].spawn.x + (w.sceneId === "MAIN_HOUSE" ? i * 50 : 0),
+        y: w.sceneId === "MAIN_HOUSE" ? maps.MAIN_HOUSE.spawn.y : 430 + i * 50,
         vx: 0,
         vy: 0,
         hp: 100,
@@ -237,13 +246,27 @@ export class GameRoom {
   }
   transition(scene: World["sceneId"]) {
     const w = this.state;
+    const previous = w.sceneId;
     w.sceneId = scene;
     w.worldRevision++;
-    w.checkpoint = scene === "AIRSHIP" ? "Airship deck" : "Stormbound Warden";
+    w.checkpoint =
+      scene === "FOREST_RUINS"
+        ? "Clearing"
+        : scene === "AIRSHIP"
+          ? "Airship deck"
+          : "Stormbound Warden";
     w.projectiles = {};
     w.projectileImpacts = [];
     this.primaryWasHeld.clear();
-    w.enemies = {};
+    w.enemies =
+      scene === "FOREST_RUINS"
+        ? Object.fromEntries(
+            forestEncounter.map((e) => [
+              e.id,
+              spawnEnemy(e.id, e.type, e.x, e.y),
+            ]),
+          )
+        : {};
     if (scene === "AIRSHIP_BOSS")
       w.boss = { hp: 220, phase: "SHIELDED", shieldReturned: false };
     Object.values(w.players).forEach((p, i) => {
@@ -261,7 +284,7 @@ export class GameRoom {
         vy: 0,
         hp: 100,
       });
-      p.skillPoints++;
+      if (previous !== "MAIN_HOUSE") p.skillPoints++;
     });
   }
   tick() {
@@ -388,6 +411,10 @@ export class GameRoom {
         }
       }
       if (i.interactHeld) {
+        if (w.sceneId === "MAIN_HOUSE" && near(p, map.points.exit, 50)) {
+          this.transition("FOREST_RUINS");
+          return;
+        }
         if (w.sceneId === "FOREST_RUINS") {
           if (p.role === "EMBER" && near(p, map.points.rune))
             w.puzzles.gate.arcane = true;

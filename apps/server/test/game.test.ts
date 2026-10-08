@@ -8,7 +8,7 @@ import { move } from "../../../packages/shared/src/movement.js";
 import { maps } from "../../../packages/shared/src/maps.js";
 import { neutral } from "../../../packages/shared/src/gameTypes.js";
 function pair() {
-  const r = new GameRoom("ABC234"),
+  const r = new GameRoom("ABC234", false, "FOREST_RUINS"),
     a = r.add("a"),
     b = r.add("b");
   r.select(a.playerId, "OATH");
@@ -37,7 +37,7 @@ describe("room invariants", () => {
     expect(() => r.select([...r.sessions.keys()][1], "OATH")).toThrow("taken");
   });
   it("reserves disconnected slot and validates resume secrets and expiry", () => {
-    const r = new GameRoom("ABC234"),
+    const r = new GameRoom("ABC234", false, "FOREST_RUINS"),
       s = r.add("a");
     r.disconnect(s.playerId);
     expect(() => r.resume(s.playerId, "bad", "b")).toThrow();
