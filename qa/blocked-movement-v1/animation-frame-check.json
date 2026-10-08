@@ -1,0 +1,7 @@
+{
+  "unique_character_crops": {
+    "1": 3,
+    "2": 4
+  },
+  "note": "Crops from real browser capture frames; no generated animation frames"
+}

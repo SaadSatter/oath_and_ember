@@ -1,5 +1,5 @@
 {
-  "map_source": "Images/Sprites/Main House/Tiled_files/Exterior.tmx",
+  "map_source": "Images/Sprites/Map Sprites, Top Down/Main House/Tiled_files/Exterior.tmx",
   "map_sha256": "e019ff367dabeb9f49e9cd8ec2c3cf718cff9a25763280a7357c122939b46757",
   "operations": [
     "Flatten infinite TMX chunks to finite27x20 grid at original tile size16; preserve layer order and Tiled flip flags",
@@ -40,82 +40,82 @@
   ],
   "sources": [
     {
-      "source": "Images/Sprites/Main House/Tiled_files/ground_grass_details.png",
+      "source": "Images/Sprites/Map Sprites, Top Down/Main House/Tiled_files/ground_grass_details.png",
       "runtime": "apps/client/public/assets/environment/main-house/ground_grass_details.png",
       "sha256": "bc44c68c955a6e6f12786cc1290fca9e9b248130c658806b40d06095c48fa5aa"
     },
     {
-      "source": "Images/Sprites/Main House/Tiled_files/ground_grass_details.png",
+      "source": "Images/Sprites/Map Sprites, Top Down/Main House/Tiled_files/ground_grass_details.png",
       "runtime": "apps/client/public/assets/environment/main-house/ground_grass_details.png",
       "sha256": "bc44c68c955a6e6f12786cc1290fca9e9b248130c658806b40d06095c48fa5aa"
     },
     {
-      "source": "Images/Sprites/Main House/Tiled_files/exterior.png",
+      "source": "Images/Sprites/Map Sprites, Top Down/Main House/Tiled_files/exterior.png",
       "runtime": "apps/client/public/assets/environment/main-house/exterior.png",
       "sha256": "2e512aa0fd58d93077c274ec1f593d618781a1cf613d9ab5b5a0fb068b75cfdc"
     },
     {
-      "source": "Images/Sprites/Main House/Tiled_files/house_details.png",
+      "source": "Images/Sprites/Map Sprites, Top Down/Main House/Tiled_files/house_details.png",
       "runtime": "apps/client/public/assets/environment/main-house/house_details.png",
       "sha256": "94ee7111c45712ffe58f3d07bceb450cef9b8fa46a4de92203acc1a7e7295f63"
     },
     {
-      "source": "Images/Sprites/Main House/Tiled_files/Smoke_animation.png",
+      "source": "Images/Sprites/Map Sprites, Top Down/Main House/Tiled_files/Smoke_animation.png",
       "runtime": "apps/client/public/assets/environment/main-house/Smoke_animation.png",
       "sha256": "0f0059deff87ba3a3bc43dd4a0935350a23c39ad86457a1ceb66aff7a0e8eab0"
     },
     {
-      "source": "Images/Sprites/Main House/Tiled_files/Doors_windows_animation.png",
+      "source": "Images/Sprites/Map Sprites, Top Down/Main House/Tiled_files/Doors_windows_animation.png",
       "runtime": "apps/client/public/assets/environment/main-house/Doors_windows_animation.png",
       "sha256": "70de625ff0987d7444370f237f35c4aec757bc190c75f971313415863ee3db96"
     },
     {
-      "source": "Images/Sprites/Main House/Tiled_files/bird_jump_animation.png",
+      "source": "Images/Sprites/Map Sprites, Top Down/Main House/Tiled_files/bird_jump_animation.png",
       "runtime": "apps/client/public/assets/environment/main-house/bird_jump_animation.png",
       "sha256": "0e0fa420822c759c93027ed5d598134e1953fffb3acd79c6e874cc68cf28293d"
     },
     {
-      "source": "Images/Sprites/Main House/Tiled_files/bird_fly_animation.png",
+      "source": "Images/Sprites/Map Sprites, Top Down/Main House/Tiled_files/bird_fly_animation.png",
       "runtime": "apps/client/public/assets/environment/main-house/bird_fly_animation.png",
       "sha256": "08af458902c820e6fb486458fa76f30ab94675f3980f9dbb4ac01af1e92779ab"
     },
     {
-      "source": "Images/Sprites/Main House/Tiled_files/Trees_animation.png",
+      "source": "Images/Sprites/Map Sprites, Top Down/Main House/Tiled_files/Trees_animation.png",
       "runtime": "apps/client/public/assets/environment/main-house/Trees_animation.png",
       "sha256": "c31bc73f6cafd103514771d8146b7472099baac4f0143c90f4f07edfab8034a4"
     },
     {
-      "source": "Images/Sprites/Main House/Tiled_files/cat_animation.png",
+      "source": "Images/Sprites/Map Sprites, Top Down/Main House/Tiled_files/cat_animation.png",
       "runtime": "apps/client/public/assets/environment/main-house/cat_animation.png",
       "sha256": "96da9eb0ac360ceccf8abdca71c37fd3d0d6ecf4ba9c66b2bf528cf1a60ff50f"
     },
     {
-      "source": "Images/Sprites/forest tree art/PNG/Assets_separately/Trees/Tree1.png",
+      "source": "Images/Sprites/Map Sprites, Top Down/forest tree art/PNG/Assets_separately/Trees/Tree1.png",
       "runtime": "apps/client/public/assets/environment/trees/Tree1.png",
       "sha256": "6a7b68916009962d8096d57c3a0c82f0536cd8a82c217e4270b944689e1d2034"
     },
     {
-      "source": "Images/Sprites/forest tree art/PNG/Assets_separately/Trees/Tree2.png",
+      "source": "Images/Sprites/Map Sprites, Top Down/forest tree art/PNG/Assets_separately/Trees/Tree2.png",
       "runtime": "apps/client/public/assets/environment/trees/Tree2.png",
       "sha256": "629f32ed4ef79404b94b930cb9e10a0247c573ba6318de03d5699ba9dfe4daca"
     },
     {
-      "source": "Images/Sprites/forest tree art/PNG/Assets_separately/Trees/Tree3.png",
+      "source": "Images/Sprites/Map Sprites, Top Down/forest tree art/PNG/Assets_separately/Trees/Tree3.png",
       "runtime": "apps/client/public/assets/environment/trees/Tree3.png",
       "sha256": "b285a9276b7fe4dd4cb9ba7cf98f607884039d5abd32b6413cb780062ed79e7c"
     },
     {
-      "source": "Images/Sprites/forest tree art/PNG/Assets_separately/Trees/Moss_tree1.png",
+      "source": "Images/Sprites/Map Sprites, Top Down/forest tree art/PNG/Assets_separately/Trees/Moss_tree1.png",
       "runtime": "apps/client/public/assets/environment/trees/Moss_tree1.png",
       "sha256": "1a758bfffc65f30a116c23e332b84f924c0d3d67fc99b002cda06d709bb42919"
     },
     {
-      "source": "Images/Sprites/forest tree art/PNG/Assets_separately/Trees/Moss_tree2.png",
+      "source": "Images/Sprites/Map Sprites, Top Down/forest tree art/PNG/Assets_separately/Trees/Moss_tree2.png",
       "runtime": "apps/client/public/assets/environment/trees/Moss_tree2.png",
       "sha256": "9d9aec3ebacbd21e3e9ef6fd26297f8b831c80f2033ce31be861a474eff9acdb"
     },
     {
-      "source": "Images/Sprites/forest tree art/PNG/Assets_separately/Trees/Moss_tree3.png",
+      "source": "Images/Sprites/Map Sprites, Top Down/forest tree art/PNG/Assets_separately/Trees/Moss_tree3.png",
       "runtime": "apps/client/public/assets/environment/trees/Moss_tree3.png",
       "sha256": "68089080b038e9bbb78768df2834590dc91bd14c70e0b7adb5aa036d6b6fd266"
     }

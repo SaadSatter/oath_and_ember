@@ -313,24 +313,25 @@ class Adventure extends Phaser.Scene {
       this.clearEnemyViews();
       return;
     }
-    const map = maps[w.sceneId],
-      me = w.players[net.session?.playerId || ""];
+    const me = w.players[net.session?.playerId || ""];
     if (!me) return;
-    if (w.sceneId === "MAIN_HOUSE") this.cameras.main.removeBounds();
+    const sceneId = me.sceneId ?? w.sceneId;
+    const house = sceneId === "MAIN_HOUSE" || sceneId === "HOUSE_INTERIOR";
+    const map = maps[sceneId];
+    if (house) this.cameras.main.removeBounds();
     else this.cameras.main.setBounds(0, 0, map.width, map.height);
-    // Keep environment and character pixels at the same scale across maps.
     this.cameras.main.setZoom(1);
     this.cameras.main.setBackgroundColor(
-      w.sceneId === "MAIN_HOUSE" ? 0x29432c : 0x10202b,
+      sceneId === "HOUSE_INTERIOR" ? 0x2d2827 : house ? 0x29432c : 0x10202b,
     );
     const local = net.prediction.player || me;
-    if (this.sceneKey !== w.sceneId) {
+    if (this.sceneKey !== sceneId) {
       this.clearPlayerViews();
       this.clearEnemyViews();
       this.projectileView.destroy();
       this.projectileView = new ProjectileView(this);
-      this.sceneKey = w.sceneId;
-      this.environment.show(w.sceneId);
+      this.sceneKey = sceneId;
+      this.environment.show(sceneId);
       this.rendered = { x: local.x, y: local.y };
     }
     const err = Math.hypot(
@@ -340,22 +341,33 @@ class Adventure extends Phaser.Scene {
     const a = err > 100 ? 1 : smoothingFactor(delta);
     this.rendered.x += (local.x - this.rendered.x) * a;
     this.rendered.y += (local.y - this.rendered.y) * a;
-    if (w.sceneId === "MAIN_HOUSE") {
+    if (house) {
       const halfX = this.scale.width / (2 * this.cameras.main.zoom),
         halfY = this.scale.height / (2 * this.cameras.main.zoom);
-      const center = (position: number, size: number, half: number) =>
+      const bounds = map.cameraBounds ?? {
+        x: 0,
+        y: 0,
+        w: map.width,
+        h: map.height,
+      };
+      const center = (
+        position: number,
+        start: number,
+        size: number,
+        half: number,
+      ) =>
         size < half * 2
-          ? size / 2
-          : Phaser.Math.Clamp(position, half, size - half);
+          ? start + size / 2
+          : Phaser.Math.Clamp(position, start + half, start + size - half);
       this.cameras.main.centerOn(
-        center(this.rendered.x, map.width, halfX),
-        center(this.rendered.y, map.height, halfY),
+        center(this.rendered.x, bounds.x, bounds.w, halfX),
+        center(this.rendered.y, bounds.y, bounds.h, halfY),
       );
     } else this.cameras.main.centerOn(this.rendered.x, this.rendered.y);
     const g = this.gfx;
     g.clear();
-    if (w.sceneId !== "MAIN_HOUSE") {
-      g.fillStyle(w.sceneId === "FOREST_RUINS" ? 0x152c2b : 0x182338);
+    if (!house) {
+      g.fillStyle(sceneId === "FOREST_RUINS" ? 0x152c2b : 0x182338);
       g.fillRect(0, 0, map.width, map.height);
       g.lineStyle(1, 0xffffff, 0.04);
       for (let x = 0; x < map.width; x += 60)
@@ -363,15 +375,15 @@ class Adventure extends Phaser.Scene {
       for (let y = 0; y < map.height; y += 60)
         g.lineBetween(0, y, map.width, y);
     }
-    for (const r of collisionRects(w.sceneId, w.puzzles)) {
-      if (w.sceneId === "MAIN_HOUSE" && !debug) continue;
+    for (const r of collisionRects(sceneId, w.puzzles)) {
+      if (house && !debug) continue;
       g.fillStyle(0x52656c);
       g.fillRoundedRect(r.x, r.y, r.w, r.h, 5);
       g.lineStyle(2, 0x839194);
       g.strokeRect(r.x, r.y, r.w, r.h);
     }
     for (const [id, q] of Object.entries(map.points)) {
-      if (id === "boss" || id === "crate") continue;
+      if (id === "boss" || id === "crate" || (house && id === "door")) continue;
       g.fillStyle(
         ["rune", "crystal", "core", "anchor"].includes(id)
           ? 0xbd93f9
@@ -382,12 +394,13 @@ class Adventure extends Phaser.Scene {
       g.lineStyle(2, 0xf6e6bf, 0.6);
       g.strokeCircle(q.x, q.y, 30);
     }
-    if (w.sceneId === "FOREST_RUINS") {
+    if (sceneId === "FOREST_RUINS") {
       const q = w.interactables.crate;
       g.fillStyle(0xad8656);
       g.fillRect(q.x - 20, q.y - 20, 40, 40);
     }
     for (const p of Object.values(w.players)) {
+      if ((p.sceneId ?? w.sceneId) !== sceneId) continue;
       const pos =
         p.id === me.id
           ? this.rendered
@@ -409,12 +422,12 @@ class Adventure extends Phaser.Scene {
       });
     }
     for (const [id, view] of this.playerViews) {
-      if (!w.players[id]) {
+      if (!w.players[id] || (w.players[id].sceneId ?? w.sceneId) !== sceneId) {
         view.destroy();
         this.playerViews.delete(id);
       }
     }
-    for (const e of Object.values(w.enemies)) {
+    for (const e of Object.values(sceneId === w.sceneId ? w.enemies : {})) {
       const pos = net.interpolation.position(e.id, "enemies") || e;
       let view = this.enemyViews.get(e.id);
       if (!view) {
@@ -424,16 +437,26 @@ class Adventure extends Phaser.Scene {
       view.update(e, pos, w.serverTick, debug);
     }
     for (const [id, view] of this.enemyViews)
-      if (!w.enemies[id]) {
+      if (sceneId !== w.sceneId || !w.enemies[id]) {
         view.destroy();
         this.enemyViews.delete(id);
       }
     this.projectileView.update(
-      w,
+      {
+        ...w,
+        projectiles: Object.fromEntries(
+          Object.entries(w.projectiles).filter(
+            ([, q]) => (q.sceneId ?? w.sceneId) === sceneId,
+          ),
+        ),
+        projectileImpacts: w.projectileImpacts?.filter(
+          (q) => (q.sceneId ?? w.sceneId) === sceneId,
+        ),
+      },
       (id) => net.interpolation.position(id, "projectiles"),
       characterRendering === "geometric",
     );
-    if (w.boss) {
+    if (w.boss && sceneId === w.sceneId) {
       const p = map.points.boss;
       g.fillStyle(w.boss.phase === "SHIELDED" ? 0x7898bf : 0xe26b65);
       g.fillRoundedRect(p.x - 40, p.y - 55, 80, 90, 15);
@@ -445,6 +468,7 @@ class Adventure extends Phaser.Scene {
     this.labels.forEach((t) => t.destroy());
     this.labels = [];
     for (const [id, q] of Object.entries(map.points)) {
+      if (house && id === "door") continue;
       this.labels.push(
         this.add
           .text(q.x, q.y + 34, id.toUpperCase(), {
@@ -459,17 +483,19 @@ class Adventure extends Phaser.Scene {
     if (stats)
       stats.textContent = `${me.role ? heroNames[me.role] : "Choosing"} · HP ${Math.round(me.hp)} · ${me.skillPoints} points · Room ${w.roomCode} · ${net.socket.connected ? "Connected" : "Reconnecting"}`;
     let goal =
-      w.sceneId === "MAIN_HOUSE"
-        ? "Explore the house grounds. Follow the path east and press E to enter the forest."
-        : w.sceneId === "FOREST_RUINS"
-          ? !w.puzzles.gate.complete
-            ? "Sieg: J at bramble. Coco: hold E at rune."
-            : !w.puzzles.bridge.complete
-              ? "Sieg: hold E at crate to push to plate. Coco: E at crystal."
-              : "Both gates open. Explore east to board the airship."
-          : w.sceneId === "AIRSHIP"
-            ? `Hold E together: Sieg at crank, Coco at core. Engine ${Math.min(100, Math.round((w.puzzles.engine.progress / 3) * 100))}%`
-            : `Coco: hold E at anchor. Sieg: J near Warden. Shield: ${w.boss?.phase}`;
+      sceneId === "MAIN_HOUSE"
+        ? "E by the front door: enter house. Follow the path east to the forest."
+        : sceneId === "HOUSE_INTERIOR"
+          ? "Explore the house. E near the lower-right doorway: return outside."
+          : sceneId === "FOREST_RUINS"
+            ? !w.puzzles.gate.complete
+              ? "Sieg: J at bramble. Coco: hold E at rune."
+              : !w.puzzles.bridge.complete
+                ? "Sieg: hold E at crate to push to plate. Coco: E at crystal."
+                : "Both gates open. Explore east to board the airship."
+            : sceneId === "AIRSHIP"
+              ? `Hold E together: Sieg at crank, Coco at core. Engine ${Math.min(100, Math.round((w.puzzles.engine.progress / 3) * 100))}%`
+              : `Coco: hold E at anchor. Sieg: J near Warden. Shield: ${w.boss?.phase}`;
     if (Object.values(w.players).some((p) => !p.connected))
       goal = "Partner disconnected. Game paused for up to 30 seconds.";
     document.querySelector<HTMLDivElement>("#objective")!.textContent = goal;
@@ -493,7 +519,7 @@ class Adventure extends Phaser.Scene {
       );
     }
     root.dataset.worldPosition = `${me.x},${me.y}`;
-    root.dataset.scene = w.sceneId;
+    root.dataset.scene = sceneId;
     (
       window as unknown as { __enemyRendered?: (sample: unknown) => void }
     ).__enemyRendered?.({
@@ -510,6 +536,9 @@ class Adventure extends Phaser.Scene {
       projectiles: w.projectiles,
       impacts: w.projectileImpacts,
     });
+    if (new URLSearchParams(location.search).has("siegQA"))
+      root.dataset.playerVisuals = JSON.stringify(Object.fromEntries(
+        [...this.playerViews].map(([id, view]) => [id, view.inspectCombat()])));
     root.dataset.combatActions = JSON.stringify(
       Object.values(w.players).map((p) => ({
         id: p.id,

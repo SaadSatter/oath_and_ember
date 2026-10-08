@@ -1,3 +1,8 @@
+import {
+  siegBasicAsset,
+  siegBasicKey,
+  siegBasicClip,
+} from "../animation/siegAttack.js";
 import { defenseAsset, defenseKey } from "../animation/defense.js";
 import {
   heavyAsset,
@@ -15,6 +20,7 @@ import {
   animationSets,
 } from "../animation/definitions.js";
 export function preloadHeroes(scene: Phaser.Scene) {
+  scene.load.spritesheet(siegBasicKey, siegBasicAsset.url, siegBasicAsset);
   scene.load.spritesheet(heavyKey, heavyAsset.url, {
     frameWidth: 128,
     frameHeight: 128,
@@ -44,6 +50,22 @@ export function preloadHeroes(scene: Phaser.Scene) {
   }
 }
 export function registerHeroes(scene: Phaser.Scene) {
+  for (const direction of ["right", "left", "up", "down"] as const) {
+    const clip = siegBasicClip(direction),
+      key = combatKey("OATH", direction);
+    if (!scene.anims.exists(key))
+      scene.anims.create({
+        key,
+        frames: clip.durations.map((duration, i) => ({
+          key: siegBasicKey,
+          frame: clip.start + i,
+          duration: duration - 1,
+        })),
+        // Phaser adds per-frame duration to its 1 ms base delay.
+        frameRate: 1000,
+        repeat: 0,
+      });
+  }
   if (scene.textures.exists(heavyKey) && !scene.anims.exists(heavyKey))
     scene.anims.create({
       key: heavyKey,
@@ -71,7 +93,7 @@ export function registerHeroes(scene: Phaser.Scene) {
     for (const direction of combatAssets[role].directions) {
       const c = combatClip(role, direction),
         key = combatTextureKey(role),
-        name = combatKey(role, direction);
+        name = combatKey(role, direction, role === "OATH" ? "heavy" : "cast");
       if (scene.textures.exists(key) && !scene.anims.exists(name))
         scene.anims.create({
           key: name,

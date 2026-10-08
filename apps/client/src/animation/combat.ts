@@ -1,3 +1,4 @@
+import { siegBasicClip, siegBasicKey } from "./siegAttack.js";
 import type { Role } from "../../../../packages/shared/src/gameTypes.js";
 export type CombatDirection = "down" | "up" | "left" | "right";
 export const combatDirection = (facing: number): CombatDirection =>
@@ -28,8 +29,12 @@ export const combatAssets = {
 };
 export const combatTextureKey = (role: Role, effects = false) =>
   `hero:${role}:combat${effects ? ":effects" : ""}`;
-export const combatKey = (role: Role, direction: CombatDirection) =>
-  `${combatTextureKey(role)}:${direction}`;
+export const combatKey = (
+  role: Role,
+  direction: CombatDirection,
+  kind = "sword",
+) =>
+  `${role === "OATH" && kind === "sword" ? siegBasicKey : combatTextureKey(role)}:${direction}`;
 export function combatClip(role: Role, direction: CombatDirection) {
   const a = combatAssets[role],
     row = a.directions.indexOf(direction),
@@ -53,6 +58,7 @@ export function actionClip(
   direction: CombatDirection,
   kind: string,
 ) {
+  if (role === "OATH" && kind === "sword") return siegBasicClip(direction);
   return role === "OATH" &&
     kind === "heavy" &&
     (direction === "right" || direction === "left")

@@ -15,6 +15,8 @@ it("starts both heroes at the house, transitions only on server-accepted nearby 
   expect(r.state.enemies).toEqual({});
   const p = r.state.players[a.playerId],
     session = r.sessions.get(p.id)!;
+  p.x = 700;
+  p.y = 500;
   session.input = { ...neutral(1), interactHeld: true };
   session.received = Date.now();
   r.tick();
@@ -37,7 +39,7 @@ it("shares house collision with prediction and leaves the exit reachable", () =>
     s = r.add("a"),
     p = r.state.players[s.playerId];
   p.x = 432;
-  p.y = 410;
+  p.y = 350;
   move(
     p,
     { ...neutral(), moveY: -1 },
@@ -45,7 +47,7 @@ it("shares house collision with prediction and leaves the exit reachable", () =>
     collisionRects("MAIN_HOUSE", {}),
     0.2,
   );
-  expect(p.y).toBe(393);
+  expect(p.y).toBe(327);
   p.x = 780;
   p.y = 500;
   move(

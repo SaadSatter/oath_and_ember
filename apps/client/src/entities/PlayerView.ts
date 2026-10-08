@@ -1,3 +1,4 @@
+import { actionFrame } from "../animation/siegAttack.js";
 import { effectPresentationProfiles } from "../assets/effectPresentation.js";
 import {
   defenseClip,
@@ -82,6 +83,7 @@ export class PlayerView {
     const defense = presentation.kind === "defense" ? presentation : null;
     const charge = presentation.kind === "charge" ? presentation : null;
     const direction = combat?.direction || charge?.direction;
+    const basic = role === "OATH" && combat?.action.kind === "sword";
     const horizontalHeavy =
       role === "OATH" &&
       (direction === "right" || direction === "left") &&
@@ -121,7 +123,7 @@ export class PlayerView {
         ? `${heavyKey}:charge`
         : heavyKey
       : role && combat
-        ? combatKey(role, combat.direction)
+        ? combatKey(role, combat.direction, combat.action.kind)
         : role && resolved
           ? animationKey(role, bodyMode, resolved)
           : "";
@@ -136,7 +138,13 @@ export class PlayerView {
         this.scene,
         role,
         player.appearance,
-        horizontalHeavy ? "heavy" : combat ? "combat" : "base",
+        basic
+          ? "basic"
+          : horizontalHeavy
+            ? "heavy"
+            : combat
+              ? "combat"
+              : "base",
       );
       if (!this.sprite) {
         this.sprite = this.scene.add
@@ -152,7 +160,7 @@ export class PlayerView {
         .setOrigin(0.5, combat || horizontalHeavy ? 96 / 128 : visual.origin.y)
         .setScale(visual.scale)
         .setFlipX(
-          horizontalHeavy
+          horizontalHeavy || basic
             ? direction === "left"
             : mode === "PLATFORMER" && Math.cos(motion.facing) < 0,
         )
@@ -168,13 +176,7 @@ export class PlayerView {
       }
       if (combat) {
         const c = actionClip(role, combat.direction, combat.action.kind);
-        this.sprite.setFrame(
-          c.start +
-            Math.min(
-              c.end - c.start,
-              Math.floor((combat.elapsedMs * c.fps) / 1000),
-            ),
-        );
+        this.sprite.setFrame(actionFrame(c, combat.elapsedMs));
       }
       if (horizontalHeavy && charge)
         this.sprite.setFrame(charge.ticks < 4 ? 0 : 1);
@@ -392,6 +394,23 @@ export class PlayerView {
         texture: this.defenseSprite?.texture.key ?? null,
         frame: this.defenseSprite?.frame.name ?? null,
       });
+  }
+  inspectCombat() {
+    const s = this.sprite;
+    return s
+      ? {
+          texture: s.texture.key,
+          frame: s.frame.name,
+          animation: s.anims.currentAnim?.key,
+          flipX: s.flipX,
+          x: s.x,
+          y: s.y,
+          originX: s.originX,
+          originY: s.originY,
+          scale: s.scaleX,
+          visible: s.visible,
+        }
+      : null;
   }
   private applyAppearance() {
     if (

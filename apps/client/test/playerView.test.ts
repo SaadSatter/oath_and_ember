@@ -73,7 +73,7 @@ function harness() {
     textures: { exists: () => true },
     anims: {
       exists: (key: string) =>
-        /(TOP_DOWN:(idle_(down|up|left|right)|walk_(north|south|east|west))|combat:(down|up|left|right)|OATH:heavy(:charge)?)$/.test(
+        /(TOP_DOWN:(idle_(down|up|left|right)|walk_(north|south|east|west))|(combat|basic):(down|up|left|right)|OATH:heavy(:charge)?)$/.test(
           key,
         ),
     },
@@ -206,7 +206,7 @@ it("plays accepted combat once, locks direction and restores locomotion after re
       combat: { seq: 1, startedTick: 1, facing: 0, kind: "sword" as const },
     };
   h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 1 });
-  expect(h.sprite.play).toHaveBeenLastCalledWith("hero:OATH:combat:right");
+  expect(h.sprite.play).toHaveBeenLastCalledWith("hero:OATH:basic:right");
   h.scene.time.now = 200;
   h.view.update(
     { ...p, facing: Math.PI },
@@ -384,4 +384,27 @@ it("reports the actual Ward layer without mutating authoritative state or changi
   expect(observe).toHaveBeenLastCalledWith(
     expect.objectContaining({ visible: false }),
   );
+});
+
+it("mirrors only LEFT basic attacks and uses the same fixed ground anchor in all directions", () => {
+  for (const [direction, facing, frame] of [
+    ["right", 0, 0],
+    ["left", Math.PI, 0],
+    ["up", -Math.PI / 2, 12],
+    ["down", Math.PI / 2, 24],
+  ] as const) {
+    const h = harness(),
+      p = {
+        ...player(),
+        combat: { seq: 1, startedTick: 1, facing, kind: "sword" as const },
+      };
+    h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 1 });
+    expect(h.sprite.play).toHaveBeenLastCalledWith(
+      `hero:OATH:basic:${direction}`,
+    );
+    expect(h.sprite.setFrame).toHaveBeenLastCalledWith(frame);
+    expect(h.sprite.setFlipX).toHaveBeenLastCalledWith(direction === "left");
+    expect(h.sprite.setOrigin).toHaveBeenLastCalledWith(0.5, 96 / 128);
+    expect(h.sprite.setPosition).toHaveBeenLastCalledWith(p.x, p.y + 13);
+  }
 });

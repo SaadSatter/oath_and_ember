@@ -1,7 +1,7 @@
 import type { CharacterAppearance } from "./appearance.js";
 export type Role = "OATH" | "EMBER";
 export type SceneId =
-  "MAIN_HOUSE" | "FOREST_RUINS" | "AIRSHIP" | "AIRSHIP_BOSS";
+  "HOUSE_INTERIOR" | "MAIN_HOUSE" | "FOREST_RUINS" | "AIRSHIP" | "AIRSHIP_BOSS";
 export interface InputFrame {
   seq: number;
   moveX: number;
@@ -18,6 +18,10 @@ export interface CombatAction {
   startedTick: number;
 }
 export interface Player {
+  /** Clamped movement intent drives locomotion even when collision stops velocity. */
+  movementIntent?: { x: number; y: number };
+  /** Authoritative local location; absent legacy fixtures use the room scene. */
+  sceneId?: SceneId;
   id: string;
   role: Role | null;
   appearance?: CharacterAppearance;
@@ -65,6 +69,7 @@ export interface Enemy {
   cooldown: number;
 }
 export interface Projectile {
+  sceneId?: SceneId;
   faction?: "players" | "enemies";
   damage?: number;
   radius?: number;
@@ -98,6 +103,7 @@ export interface World {
     y: number;
     owner: string;
     tick: number;
+    sceneId?: SceneId;
   }[];
   puzzles: Record<string, Puzzle>;
   interactables: Record<string, { x: number; y: number }>;

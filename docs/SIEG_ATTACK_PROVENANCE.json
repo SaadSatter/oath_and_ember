@@ -1,0 +1,475 @@
+{
+  "canvas": [
+    128,
+    128
+  ],
+  "groundAnchor": [
+    64,
+    96
+  ],
+  "scale": 0.2,
+  "sampling": "nearest",
+  "alpha": "original RGBA unchanged; no background removal",
+  "directions": {
+    "right": {
+      "source": "Images/Sprites/Sieg/Sieg Right attack.png",
+      "sha256": "a89f548e98405da5e35b04de59da8dd9adbd112615ff605c922aaa9d52920786",
+      "frames": [
+        {
+          "frame": 0,
+          "bounds": [
+            20,
+            20,
+            380,
+            390
+          ],
+          "groundAnchor": [
+            196,
+            358
+          ]
+        },
+        {
+          "frame": 1,
+          "bounds": [
+            395,
+            10,
+            760,
+            390
+          ],
+          "groundAnchor": [
+            581,
+            358
+          ]
+        },
+        {
+          "frame": 2,
+          "bounds": [
+            775,
+            15,
+            1135,
+            390
+          ],
+          "groundAnchor": [
+            957,
+            358
+          ]
+        },
+        {
+          "frame": 3,
+          "bounds": [
+            1140,
+            15,
+            1520,
+            390
+          ],
+          "groundAnchor": [
+            1324,
+            358
+          ]
+        },
+        {
+          "frame": 4,
+          "bounds": [
+            30,
+            400,
+            375,
+            715
+          ],
+          "groundAnchor": [
+            207,
+            684
+          ]
+        },
+        {
+          "frame": 5,
+          "bounds": [
+            395,
+            405,
+            750,
+            715
+          ],
+          "groundAnchor": [
+            533,
+            684
+          ]
+        },
+        {
+          "frame": 6,
+          "bounds": [
+            750,
+            405,
+            1150,
+            715
+          ],
+          "groundAnchor": [
+            895,
+            684
+          ]
+        },
+        {
+          "frame": 7,
+          "bounds": [
+            1155,
+            410,
+            1510,
+            715
+          ],
+          "groundAnchor": [
+            1298,
+            684
+          ]
+        },
+        {
+          "frame": 8,
+          "bounds": [
+            15,
+            725,
+            400,
+            1024
+          ],
+          "groundAnchor": [
+            206,
+            971
+          ]
+        },
+        {
+          "frame": 9,
+          "bounds": [
+            402,
+            725,
+            765,
+            1024
+          ],
+          "groundAnchor": [
+            579,
+            971
+          ]
+        },
+        {
+          "frame": 10,
+          "bounds": [
+            775,
+            725,
+            1135,
+            1024
+          ],
+          "groundAnchor": [
+            968,
+            971
+          ]
+        },
+        {
+          "frame": 11,
+          "bounds": [
+            1150,
+            725,
+            1525,
+            1024
+          ],
+          "groundAnchor": [
+            1342,
+            971
+          ]
+        }
+      ]
+    },
+    "up": {
+      "source": "Images/Sprites/Sieg/Sieg up swing.png",
+      "sha256": "2ac6c29a57eee1ba54725cd09dd68e93628b5ff4077d11bb84d33cd712cb52cb",
+      "frames": [
+        {
+          "frame": 12,
+          "bounds": [
+            35,
+            25,
+            400,
+            355
+          ],
+          "groundAnchor": [
+            167,
+            320
+          ]
+        },
+        {
+          "frame": 13,
+          "bounds": [
+            440,
+            20,
+            775,
+            355
+          ],
+          "groundAnchor": [
+            570,
+            330
+          ]
+        },
+        {
+          "frame": 14,
+          "bounds": [
+            15,
+            355,
+            400,
+            695
+          ],
+          "groundAnchor": [
+            172,
+            660
+          ]
+        },
+        {
+          "frame": 15,
+          "bounds": [
+            410,
+            355,
+            795,
+            695
+          ],
+          "groundAnchor": [
+            605,
+            660
+          ]
+        },
+        {
+          "frame": 16,
+          "bounds": [
+            800,
+            355,
+            1145,
+            695
+          ],
+          "groundAnchor": [
+            974,
+            660
+          ]
+        },
+        {
+          "frame": 17,
+          "bounds": [
+            1160,
+            355,
+            1536,
+            695
+          ],
+          "groundAnchor": [
+            1360,
+            660
+          ]
+        },
+        {
+          "frame": 18,
+          "bounds": [
+            20,
+            695,
+            405,
+            1024
+          ],
+          "groundAnchor": [
+            208,
+            919
+          ]
+        },
+        {
+          "frame": 19,
+          "bounds": [
+            435,
+            695,
+            795,
+            1024
+          ],
+          "groundAnchor": [
+            606,
+            919
+          ]
+        },
+        {
+          "frame": 20,
+          "bounds": [
+            805,
+            695,
+            1150,
+            1024
+          ],
+          "groundAnchor": [
+            977,
+            919
+          ]
+        },
+        {
+          "frame": 21,
+          "bounds": [
+            1170,
+            695,
+            1536,
+            1024
+          ],
+          "groundAnchor": [
+            1338,
+            919
+          ]
+        }
+      ]
+    },
+    "down": {
+      "source": "Images/Sprites/Sieg/Sieg down swing.png",
+      "sha256": "a822ea8b9e39d0203da3129ffccbaf362b34b125dffad5aa6592dda6f72878e0",
+      "frames": [
+        {
+          "frame": 24,
+          "bounds": [
+            15,
+            45,
+            395,
+            365
+          ],
+          "groundAnchor": [
+            174,
+            300
+          ]
+        },
+        {
+          "frame": 25,
+          "bounds": [
+            420,
+            45,
+            775,
+            365
+          ],
+          "groundAnchor": [
+            590,
+            300
+          ]
+        },
+        {
+          "frame": 26,
+          "bounds": [
+            800,
+            45,
+            1140,
+            365
+          ],
+          "groundAnchor": [
+            966,
+            300
+          ]
+        },
+        {
+          "frame": 27,
+          "bounds": [
+            1160,
+            45,
+            1536,
+            365
+          ],
+          "groundAnchor": [
+            1331,
+            300
+          ]
+        },
+        {
+          "frame": 28,
+          "bounds": [
+            10,
+            365,
+            395,
+            680
+          ],
+          "groundAnchor": [
+            205,
+            586
+          ]
+        },
+        {
+          "frame": 29,
+          "bounds": [
+            405,
+            365,
+            785,
+            680
+          ],
+          "groundAnchor": [
+            598,
+            586
+          ]
+        },
+        {
+          "frame": 30,
+          "bounds": [
+            790,
+            365,
+            1145,
+            680
+          ],
+          "groundAnchor": [
+            960,
+            586
+          ]
+        },
+        {
+          "frame": 31,
+          "bounds": [
+            1150,
+            365,
+            1536,
+            680
+          ],
+          "groundAnchor": [
+            1335,
+            586
+          ]
+        },
+        {
+          "frame": 32,
+          "bounds": [
+            20,
+            680,
+            405,
+            1024
+          ],
+          "groundAnchor": [
+            205,
+            885
+          ]
+        },
+        {
+          "frame": 33,
+          "bounds": [
+            410,
+            680,
+            795,
+            1024
+          ],
+          "groundAnchor": [
+            599,
+            885
+          ]
+        },
+        {
+          "frame": 34,
+          "bounds": [
+            800,
+            680,
+            1145,
+            1024
+          ],
+          "groundAnchor": [
+            974,
+            885
+          ]
+        },
+        {
+          "frame": 35,
+          "bounds": [
+            1160,
+            680,
+            1536,
+            1024
+          ],
+          "groundAnchor": [
+            1364,
+            885
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -155,6 +155,9 @@ describe("deterministic authoritative enemy architecture", () => {
     session.input = { ...neutral(1), primaryHeld: true };
     session.received = Date.now();
     f.r.tick();
+    expect(f.e.hp).toBe(60);
+    session.input = neutral(2);
+    for (let n = 0; n < 7; n++) f.r.tick();
     expect(f.e.hp).toBe(35);
   });
   it("Coco projectile hits once and cannot damage players", () => {

@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import type { SceneId } from "../../../../packages/shared/src/gameTypes.js";
+import { ENVIRONMENT_SCALE } from "../../../../packages/shared/src/maps.js";
 import houseTrees from "../../public/assets/environment/main-house/trees.json" with { type: "json" };
 const treeNames = [
   "Tree1",
@@ -27,11 +28,17 @@ const sheets = [
   "bird_fly_animation",
   "Trees_animation",
   "cat_animation",
+  "walls_floor",
+  "Interior",
 ];
 export function preloadEnvironment(scene: Phaser.Scene) {
   scene.load.tilemapTiledJSON(
     "main-house",
     "/assets/environment/main-house/exterior-map.json",
+  );
+  scene.load.tilemapTiledJSON(
+    "house-interior",
+    "/assets/environment/main-house/interior-map.json",
   );
   for (const name of sheets)
     scene.load.image(
@@ -50,27 +57,105 @@ export class EnvironmentView {
     for (const key of [
       ...sheets.map((name) => `house:${name}`),
       ...treeNames.map((name) => `tree:${name}`),
-    ]) scene.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+    ])
+      scene.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
   }
   show(id: SceneId) {
     this.clear();
-    if (id === "MAIN_HOUSE") {
-      this.map = this.scene.make.tilemap({ key: "main-house" });
+    if (id === "MAIN_HOUSE" || id === "HOUSE_INTERIOR") {
+      this.map = this.scene.make.tilemap({
+        key: id === "MAIN_HOUSE" ? "main-house" : "house-interior",
+      });
       const sets = this.map.tilesets.map((t) =>
         this.map!.addTilesetImage(t.name, `house:${t.name.split(":")[0]}`)!,
       );
       this.map.layers.forEach((l, i) => {
-        const layer = this.map!.createLayer(i, sets, 0, 0)!;
-        layer.setScale(2).setDepth(l.name === "House_roof" ? 380 : -100 + i);
+        const layer = this.map!.createLayer(
+          i,
+          sets,
+          0,
+          0,
+          false,
+        )! as Phaser.Tilemaps.TilemapLayer;
+        layer
+          .setScale(ENVIRONMENT_SCALE)
+          .setDepth(l.name === "House_roof" ? 260 : -100 + i);
         this.objects.push(layer);
+        if (
+          id === "HOUSE_INTERIOR" &&
+          ["Objects1", "Objects2", "Boxes"].includes(l.name)
+        )
+          this.sortFurniture(layer);
       });
-      houseTrees.forEach((p, i) => this.tree(p.x, p.y, i, 2));
+      if (id === "MAIN_HOUSE")
+        houseTrees.forEach((p, i) => this.tree(p.x, p.y, i, 2));
     }
     if (id === "FOREST_RUINS") {
       for (let n = 0; n < 50; n++) {
         const x = 70 + ((n * 137) % 1650),
           y = 80 + ((n * 241) % 730);
         if (Math.abs(y - 450) > 130) this.tree(x, y, n, 2);
+      }
+    }
+  }
+  private sortFurniture(layer: Phaser.Tilemaps.TilemapLayer) {
+    const candidates = new Map<string, Phaser.Tilemaps.Tile>();
+    layer.forEachTile((tile) => {
+      const set = tile.tileset;
+      if (!set || !set.name.startsWith("Interior:")) return;
+      const n = tile.index - set.firstgid;
+      // Furniture occupies the upper 256px of the supplied Interior atlas;
+      // rugs and scattered floor details remain in their authored ground layer.
+      if (Math.floor(n / set.columns) * 16 < 256 && tile.index >= 0)
+        candidates.set(`${tile.x},${tile.y}`, tile);
+    });
+    while (candidates.size) {
+      const first = candidates.values().next().value!;
+      const queue = [first],
+        group: Phaser.Tilemaps.Tile[] = [];
+      candidates.delete(`${first.x},${first.y}`);
+      while (queue.length) {
+        const tile = queue.pop()!;
+        group.push(tile);
+        for (const [x, y] of [
+          [tile.x - 1, tile.y],
+          [tile.x + 1, tile.y],
+          [tile.x, tile.y - 1],
+          [tile.x, tile.y + 1],
+        ]) {
+          const key = `${x},${y}`,
+            neighbor = candidates.get(key);
+          if (neighbor) {
+            candidates.delete(key);
+            queue.push(neighbor);
+          }
+        }
+      }
+      const depth = Math.max(...group.map((t) => (t.y + 1) * 32)) - 13;
+      for (const tile of group) {
+        const set = tile.tileset!,
+          n = tile.index - set.firstgid;
+        const texture = this.scene.textures.get(
+          `house:${set.name.split(":")[0]}`,
+        );
+        const frame = `tile:${n}`;
+        if (!texture.has(frame))
+          texture.add(
+            frame,
+            0,
+            (n % set.columns) * 16,
+            Math.floor(n / set.columns) * 16,
+            16,
+            16,
+          );
+        const image = this.scene.add
+          .image(tile.x * 32, tile.y * 32, texture.key, frame)
+          .setOrigin(0)
+          .setScale(ENVIRONMENT_SCALE)
+          .setDepth(depth);
+        image.setFlip(tile.flipX, tile.flipY).setRotation(tile.rotation);
+        tile.visible = false;
+        this.objects.push(image);
       }
     }
   }

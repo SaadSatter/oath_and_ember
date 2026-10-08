@@ -1,0 +1,22 @@
+{
+  "errors": [
+    "404 http://127.0.0.1:64722/assets/environment/main-house/ground_grass_details.png",
+    "404 http://127.0.0.1:64722/assets/environment/main-house/exterior.png",
+    "404 http://127.0.0.1:64722/assets/environment/main-house/house_details.png",
+    "404 http://127.0.0.1:64722/assets/environment/main-house/Smoke_animation.png",
+    "404 http://127.0.0.1:64722/assets/environment/main-house/Doors_windows_animation.png",
+    "404 http://127.0.0.1:64722/assets/environment/main-house/bird_jump_animation.png",
+    "404 http://127.0.0.1:64722/assets/environment/main-house/bird_fly_animation.png",
+    "404 http://127.0.0.1:64722/assets/environment/main-house/Trees_animation.png",
+    "404 http://127.0.0.1:64722/assets/environment/main-house/cat_animation.png",
+    "404 http://127.0.0.1:64722/assets/environment/main-house/walls_floor.png",
+    "404 http://127.0.0.1:64722/assets/environment/main-house/Interior.png",
+    "404 http://127.0.0.1:64722/assets/environment/trees/Tree2.png",
+    "404 http://127.0.0.1:64722/assets/environment/trees/Tree3.png",
+    "404 http://127.0.0.1:64722/assets/environment/trees/Moss_tree1.png",
+    "404 http://127.0.0.1:64722/assets/environment/trees/Tree1.png",
+    "404 http://127.0.0.1:64722/assets/environment/trees/Moss_tree2.png",
+    "404 http://127.0.0.1:64722/assets/environment/trees/Moss_tree3.png",
+    "TimeoutError: page.waitForFunction: Timeout 30000ms exceeded."
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "unique_character_crops": {
+    "1": 5,
+    "2": 5
+  },
+  "note": "Crops from real browser captures; no synthesized frames"
+}

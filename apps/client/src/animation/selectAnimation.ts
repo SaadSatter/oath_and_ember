@@ -22,15 +22,16 @@ export function selectAnimation(
     return "secondary_ability";
   if (hints.interacting || ["interact", "channel"].includes(player.actionState))
     return "interact_channel";
+  const vx = player.movementIntent?.x ?? player.vx;
+  const vy = player.movementIntent?.y ?? player.vy;
   if (mode === "PLATFORMER") {
     if (!player.grounded) return player.vy < 0 ? "jump" : "fall";
-    return Math.abs(player.vx) > 1 ? "run" : "idle";
+    return Math.abs(vx) > (player.movementIntent ? 0 : 1) ? "run" : "idle";
   }
-  if (Math.hypot(player.vx, player.vy) <= 1)
+  if (Math.hypot(vx, vy) <= (player.movementIntent ? 0 : 1))
     return directionalIdle(player.facing);
-  if (Math.abs(player.vy) > Math.abs(player.vx))
-    return player.vy < 0 ? "walk_north" : "walk_south";
-  return player.vx < 0 ? "walk_west" : "walk_east";
+  if (Math.abs(vy) > Math.abs(vx)) return vy < 0 ? "walk_north" : "walk_south";
+  return vx < 0 ? "walk_west" : "walk_east";
 }
 
 // Facing is already carried by authoritative snapshots and by local prediction.

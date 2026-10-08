@@ -21,8 +21,8 @@ export class Prediction {
     move(
       this.player,
       i,
-      maps[w.sceneId],
-      collisionRects(w.sceneId, w.puzzles),
+      maps[this.player.sceneId ?? w.sceneId],
+      collisionRects(this.player.sceneId ?? w.sceneId, w.puzzles),
       DT,
     );
   }
@@ -35,8 +35,8 @@ export class Prediction {
       move(
         this.player,
         i,
-        maps[w.sceneId],
-        collisionRects(w.sceneId, w.puzzles),
+        maps[this.player.sceneId ?? w.sceneId],
+        collisionRects(this.player.sceneId ?? w.sceneId, w.puzzles),
         DT,
       );
     this.error = old

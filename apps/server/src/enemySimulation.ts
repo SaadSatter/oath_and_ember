@@ -93,7 +93,11 @@ export function tickEnemies(w: World, damage: (p: Player, n: number) => void) {
     const d = enemyDefinitions[e.type];
     const choices = Object.values(w.players)
       .filter(
-        (p) => p.connected && p.hp > 0 && distance(e, p) <= d.detectionRange,
+        (p) =>
+          (p.sceneId ?? w.sceneId) === w.sceneId &&
+          p.connected &&
+          p.hp > 0 &&
+          distance(e, p) <= d.detectionRange,
       )
       .sort(
         (a, b) => distance(e, a) - distance(e, b) || a.id.localeCompare(b.id),
@@ -108,7 +112,12 @@ export function tickEnemies(w: World, damage: (p: Player, n: number) => void) {
     if (e.state === "ATTACK" && e.attackStartedTick !== null) {
       if (w.serverTick - e.attackStartedTick >= d.windupTicks) {
         const p = w.players[e.targetId ?? ""];
-        if (p && p.connected && p.hp > 0) {
+        if (
+          p &&
+          (p.sceneId ?? w.sceneId) === w.sceneId &&
+          p.connected &&
+          p.hp > 0
+        ) {
           if (d.attack === "melee") {
             if (distance(e, p) <= d.attackRange && lineClear(e, p, walls))
               damage(p, d.damage);
@@ -116,6 +125,7 @@ export function tickEnemies(w: World, damage: (p: Player, n: number) => void) {
             const id = `${e.id}:attack:${e.attackSeq}`;
             w.projectiles[id] = {
               id,
+              sceneId: w.sceneId,
               x: e.x,
               y: e.y,
               vx: Math.cos(e.attackFacing) * d.projectileSpeed,
@@ -128,6 +138,7 @@ export function tickEnemies(w: World, damage: (p: Player, n: number) => void) {
             };
           }
         }
+        if (!p || (p.sceneId ?? w.sceneId) !== w.sceneId) e.targetId = null;
         e.attackStartedTick = null;
         e.state = "CHASE";
         e.nextAttackTick = w.serverTick + d.cooldownTicks;

@@ -1,0 +1,249 @@
+{
+  "errors": [],
+  "checks": [
+    {
+      "direction": "right",
+      "client": 1,
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "anchor": {
+        "texture": "hero:OATH:basic",
+        "frame": 0,
+        "animation": "hero:OATH:basic:right",
+        "flipX": false,
+        "x": 420.00000042240094,
+        "y": 452.99999899093103,
+        "originX": 0.5,
+        "originY": 0.75,
+        "scale": 1,
+        "visible": true
+      },
+      "sequence": 83
+    },
+    {
+      "direction": "right",
+      "client": 2,
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "anchor": {
+        "texture": "hero:OATH:basic",
+        "frame": 0,
+        "animation": "hero:OATH:basic:right",
+        "flipX": false,
+        "x": 420,
+        "y": 453,
+        "originX": 0.5,
+        "originY": 0.75,
+        "scale": 1,
+        "visible": true
+      },
+      "sequence": 83
+    },
+    {
+      "direction": "left",
+      "client": 1,
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "anchor": {
+        "texture": "hero:OATH:basic",
+        "frame": 0,
+        "animation": "hero:OATH:basic:left",
+        "flipX": true,
+        "x": 420.00000000000006,
+        "y": 452.99999999999994,
+        "originX": 0.5,
+        "originY": 0.75,
+        "scale": 1,
+        "visible": true
+      },
+      "sequence": 160
+    },
+    {
+      "direction": "left",
+      "client": 2,
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "anchor": {
+        "texture": "hero:OATH:basic",
+        "frame": 0,
+        "animation": "hero:OATH:basic:left",
+        "flipX": true,
+        "x": 420,
+        "y": 453,
+        "originX": 0.5,
+        "originY": 0.75,
+        "scale": 1,
+        "visible": true
+      },
+      "sequence": 160
+    },
+    {
+      "direction": "up",
+      "client": 1,
+      "frames": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21
+      ],
+      "anchor": {
+        "texture": "hero:OATH:basic",
+        "frame": 12,
+        "animation": "hero:OATH:basic:up",
+        "flipX": false,
+        "x": 420.00000000000006,
+        "y": 452.99999999999994,
+        "originX": 0.5,
+        "originY": 0.75,
+        "scale": 1,
+        "visible": true
+      },
+      "sequence": 225
+    },
+    {
+      "direction": "up",
+      "client": 2,
+      "frames": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21
+      ],
+      "anchor": {
+        "texture": "hero:OATH:basic",
+        "frame": 12,
+        "animation": "hero:OATH:basic:up",
+        "flipX": false,
+        "x": 420,
+        "y": 453,
+        "originX": 0.5,
+        "originY": 0.75,
+        "scale": 1,
+        "visible": true
+      },
+      "sequence": 225
+    },
+    {
+      "direction": "down",
+      "client": 1,
+      "frames": [
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "anchor": {
+        "texture": "hero:OATH:basic",
+        "frame": 24,
+        "animation": "hero:OATH:basic:down",
+        "flipX": false,
+        "x": 420.00000000000006,
+        "y": 452.99999999999994,
+        "originX": 0.5,
+        "originY": 0.75,
+        "scale": 1,
+        "visible": true
+      },
+      "sequence": 288
+    },
+    {
+      "direction": "down",
+      "client": 2,
+      "frames": [
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "anchor": {
+        "texture": "hero:OATH:basic",
+        "frame": 24,
+        "animation": "hero:OATH:basic:down",
+        "flipX": false,
+        "x": 420,
+        "y": 453,
+        "originX": 0.5,
+        "originY": 0.75,
+        "scale": 1,
+        "visible": true
+      },
+      "sequence": 288
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 """Import the supplied Tiled exterior as finite presentation data; originals are untouched."""
 from pathlib import Path
 import json,xml.etree.ElementTree as E,shutil,hashlib
-src=Path('Images/Sprites/Main House/Tiled_files');dest=Path('apps/client/public/assets/environment/main-house');r=E.parse(src/'Exterior.tmx').getroot()
+src=Path('Images/Sprites/Map Sprites, Top Down/Main House/Tiled_files');dest=Path('apps/client/public/assets/environment/main-house');r=E.parse(src/'Exterior.tmx').getroot()
 layers=[];cells_all=[]
 for l in r.findall('layer'):
  cells=[]
@@ -42,6 +42,6 @@ for t in r.findall('tileset'):
 placements.sort(key=lambda p:(p['y'],p['x']))
 (dest/'trees.json').write_text(json.dumps(placements,indent=2)+'\n')
 for name in ['Tree1','Tree2','Tree3','Moss_tree1','Moss_tree2','Moss_tree3']:
- p=Path('Images/Sprites/forest tree art/PNG/Assets_separately/Trees')/(name+'.png');target=Path('apps/client/public/assets/environment/trees')/p.name;shutil.copy2(p,target);sources.append({'source':str(p),'runtime':str(target),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()})
+ p=Path('Images/Sprites/Map Sprites, Top Down/forest tree art/PNG/Assets_separately/Trees')/(name+'.png');target=Path('apps/client/public/assets/environment/trees')/p.name;shutil.copy2(p,target);sources.append({'source':str(p),'runtime':str(target),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()})
 Path('docs/ENVIRONMENT_ASSET_PROVENANCE.json').write_text(json.dumps({'map_source':str(src/'Exterior.tmx'),'map_sha256':hashlib.sha256((src/'Exterior.tmx').read_bytes()).hexdigest(),'operations':['Flatten infinite TMX chunks to finite27x20 grid at original tile size16; preserve layer order and Tiled flip flags','Remove verified tree tiles; replace at declared ground positions using supplied forest tree sprites','Runtime map uses integer2x scale; collision is independently authored in shared/maps.ts, not inferred from rendered art'],'tree_atlas_regions':rects,'sources':sources},indent=2)+'\n')
 print(width,height,'tree placements',len(placements))

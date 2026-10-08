@@ -29,6 +29,24 @@ export class Interpolation {
     const p = a.world[kind][id],
       q = b.world[kind][id];
     if (!p || !q) return q ?? p ?? null;
+    if (kind === "players") {
+      const latest = this.buffer.at(-1)?.world.players[id];
+      if (
+        latest &&
+        latest.sceneId !==
+          (p as import("../../../../packages/shared/src/gameTypes.js").Player)
+            .sceneId
+      )
+        return latest;
+    }
+    if (
+      kind === "players" &&
+      (p as import("../../../../packages/shared/src/gameTypes.js").Player)
+        .sceneId !==
+        (q as import("../../../../packages/shared/src/gameTypes.js").Player)
+          .sceneId
+    )
+      return q;
     const f = Math.max(0, Math.min(1, (t - a.time) / (b.time - a.time || 1)));
     return { x: p.x + (q.x - p.x) * f, y: p.y + (q.y - p.y) * f };
   }

@@ -50,7 +50,7 @@ it("uses accepted markers, locks facing and completes through movement/input rel
 it("queues accepted repeats without cutting recovery and prioritizes hurt/defeat", () => {
   const m = new PlayerPresentation();
   m.update(hero(), "TOP_DOWN", 0, 1, false);
-  expect(m.update(hero(14, Math.PI), "TOP_DOWN", 450, 14, false)).toMatchObject(
+  expect(m.update(hero(14, Math.PI), "TOP_DOWN", 430, 14, false)).toMatchObject(
     { direction: "right" },
   );
   expect(m.update(hero(14, Math.PI), "TOP_DOWN", 501, 16, false)).toMatchObject(

@@ -115,7 +115,7 @@ describe("authoritative gameplay", () => {
     b.x = 410;
     b.y = 505;
     input(r, b.id, { interactHeld: true });
-    r.tick();
+    for (let n = 0; n < 7; n++) r.tick();
     expect(r.state.puzzles.gate.complete).toBe(true);
     r.tick();
     expect(a.skillPoints).toBe(2);
@@ -164,6 +164,8 @@ describe("authoritative gameplay", () => {
     r.state.boss!.shieldReturned = true;
     a.cooldowns.attack = 0;
     r.tick();
+    input(r, a.id, {});
+    for (let n = 0; n < 7; n++) r.tick();
     expect(r.state.phase).toBe("COMPLETE");
   });
 });
@@ -304,6 +306,8 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
     expect(fighter.combat!.kind).toBe("sword");
     expect(fighter.heavyCharge).toBeUndefined();
     const mage = room.state.players[sb.playerId];
+    // The combat fixture starts clear of the house walls/furniture.
+    room.transition("FOREST_RUINS");
     room.state.enemies = {};
     clients[1].emit("player:input", { ...neutral(10), primaryHeld: true });
     await new Promise((res) => setTimeout(res, 70)); // Wait for the accepted cast before observing a snapshot.
@@ -532,6 +536,8 @@ describe("authoritative Heavy Break", () => {
     r.tick();
     expect(a.heavyCharge).toBeUndefined();
     expect(a.combat).toMatchObject({ kind: "sword", facing: 0 });
+    expect(r.state.enemies.target.hp).toBe(100);
+    for (let n = 0; n < 7; n++) r.tick();
     expect(r.state.enemies.target.hp).toBe(75);
     const seq = a.combat!.seq;
     r.tick();
@@ -597,7 +603,14 @@ it("server records projectile collision impacts once, never expiry bursts", () =
   expect(r.state.enemies.target.hp).toBe(40);
   expect(r.state.projectiles.hit).toBeUndefined();
   expect(r.state.projectileImpacts).toEqual([
-    { id: "hit", x: b.x + 14, y: b.y, owner: b.id, tick: 1 },
+    {
+      id: "hit",
+      x: b.x + 14,
+      y: b.y,
+      owner: b.id,
+      tick: 1,
+      sceneId: "FOREST_RUINS",
+    },
   ]);
   r.tick();
   expect(r.state.projectileImpacts).toHaveLength(1);
@@ -612,4 +625,58 @@ it("server records projectile collision impacts once, never expiry bursts", () =
   expect(r.state.projectileImpacts).toHaveLength(1);
   for (let n = 0; n < 31; n++) r.tick();
   expect(r.state.projectileImpacts).toHaveLength(0);
+});
+
+it("resolves basic sword contact once, at server-owned positions, then stops damaging during recovery", () => {
+  for (const facing of [0, Math.PI, Math.PI / 2, -Math.PI / 2]) {
+    const { r, a } = pair();
+    a.x = 550;
+    a.y = 450;
+    a.facing = facing;
+    const e = (r.state.enemies.target = {
+      ...spawnEnemy("target", "mossling", 610, 450),
+      hp: 100,
+      cooldown: 999,
+      nextAttackTick: 999999,
+    });
+    input(r, a.id, { primaryHeld: true });
+    r.tick();
+    input(r, a.id, {});
+    expect(e.hp).toBe(100);
+    const delay =
+      Math.abs(Math.cos(facing)) >= Math.abs(Math.sin(facing))
+        ? 7
+        : facing < 0
+          ? 5
+          : 3;
+    for (let n = 1; n < delay; n++) {
+      r.tick();
+      expect(e.hp).toBe(100);
+    }
+    r.tick();
+    expect(e.hp).toBe(75);
+    for (let n = 0; n < 10; n++) r.tick();
+    expect(e.hp).toBe(75);
+  }
+});
+it("cancels delayed contact after hurt/scene changes and rejects targets that leave range", () => {
+  for (const cancel of ["hurt", "transition", "range"] as const) {
+    const { r, a } = pair();
+    a.x = 550;
+    a.y = 450;
+    const e = (r.state.enemies.target = {
+      ...spawnEnemy("target", "mossling", 610, 450),
+      hp: 100,
+      cooldown: 999,
+      nextAttackTick: 999999,
+    });
+    input(r, a.id, { primaryHeld: true });
+    r.tick();
+    input(r, a.id, {});
+    if (cancel === "hurt") r.damage(a, 1);
+    if (cancel === "transition") r.transition("AIRSHIP");
+    if (cancel === "range") e.x = 1100;
+    for (let n = 0; n < 8; n++) r.tick();
+    expect(e.hp).toBe(100);
+  }
 });

@@ -1,0 +1,14 @@
+{
+  "errors": [],
+  "starting_scene": "MAIN_HOUSE",
+  "blocked_movement": "12 samples per client: Sieg stationary against table at400,475 and Coco against right boundary at659,480 while directional keys held; six animation evidence frames each",
+  "transition": "Independent held-E entry, co-location, split exit, interior movement, responsive scale, and shared forest progression verified through two browser clients",
+  "source": "Authored Exterior.tmx; integer2x tiled rendering; source forest tree PNGs unchanged",
+  "rendering": "1x camera; nearest texture filtering; equal X/Y canvas scale verified at every responsive viewport",
+  "viewports": [
+    "1920x1080",
+    "1440x900",
+    "390x844",
+    "844x390"
+  ]
+}

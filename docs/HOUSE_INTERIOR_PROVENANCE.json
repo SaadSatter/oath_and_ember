@@ -1,0 +1,36 @@
+{
+  "source": "Images/Sprites/Map Sprites, Top Down/Main House/Tiled_files/Interior1.tmx",
+  "sha256": "51b2a09ef41596cc0f7393321177fa88be8aee2818d028182f80a4f55811a820",
+  "source_tile_origin": [
+    -17,
+    -10
+  ],
+  "tile_grid": [
+    26,
+    22
+  ],
+  "tile_size": 16,
+  "world_scale": 2,
+  "operations": [
+    "Flatten authored chunks; preserve GIDs/flip flags/layer order; no pixel edits",
+    "No viewport-dependent environment scaling; static initial animation poses"
+  ],
+  "runtime_sha256": "652acebe2c8688a69fe024a6d7b2e9516715a716828cd703aa2f6988a3037378",
+  "sources": [
+    {
+      "source": "Images/Sprites/Map Sprites, Top Down/Main House/Tiled_files/walls_floor.png",
+      "runtime": "apps/client/public/assets/environment/main-house/walls_floor.png",
+      "sha256": "247db2e3430bf7f915e29f61c0a38116d87f6d8ff39905f1163f823ca365b270"
+    },
+    {
+      "source": "Images/Sprites/Map Sprites, Top Down/Main House/Tiled_files/Interior.png",
+      "runtime": "apps/client/public/assets/environment/main-house/Interior.png",
+      "sha256": "4c4f218796762746ba7c0e29cfd1092ca0ae061b0ddece02117066cce1166747"
+    },
+    {
+      "source": "Images/Sprites/Map Sprites, Top Down/Main House/Tiled_files/Doors_windows_animation.png",
+      "runtime": "apps/client/public/assets/environment/main-house/Doors_windows_animation.png",
+      "sha256": "70de625ff0987d7444370f237f35c4aec757bc190c75f971313415863ee3db96"
+    }
+  ]
+}

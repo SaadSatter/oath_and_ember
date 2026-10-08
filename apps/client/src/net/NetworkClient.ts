@@ -66,7 +66,11 @@ export class NetworkClient {
     const old = this.world;
     this.world = w;
     const p = w.players[this.session?.playerId || ""];
-    if (full || old?.sceneId !== w.sceneId) {
+    if (
+      full ||
+      old?.sceneId !== w.sceneId ||
+      old?.players[this.session?.playerId || ""]?.sceneId !== p?.sceneId
+    ) {
       this.interpolation.clear();
       if (p) this.prediction.reset(p);
     } else if (p) this.prediction.reconcile(p, w);

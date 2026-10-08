@@ -1,3 +1,4 @@
+import { siegBasicKey, siegBasicAsset } from "../animation/siegAttack.js";
 import { defenseAsset, defenseKey } from "../animation/defense.js";
 import {
   heavyAsset,
@@ -18,15 +19,17 @@ const sources = new Map<
   Promise<[HTMLImageElement, HTMLImageElement]>
 >();
 export type AppearanceLayer =
-  "base" | "combat" | "effects" | "heavy" | "defense";
+  "base" | "combat" | "effects" | "heavy" | "defense" | "basic";
 const layerKey = (role: Role, layer: AppearanceLayer) =>
-  layer === "defense"
-    ? defenseKey(role)
-    : layer === "heavy"
-      ? heavyKey
-      : layer === "base"
-        ? textureKey(role)
-        : combatTextureKey(role, layer === "effects");
+  layer === "basic"
+    ? siegBasicKey
+    : layer === "defense"
+      ? defenseKey(role)
+      : layer === "heavy"
+        ? heavyKey
+        : layer === "base"
+          ? textureKey(role)
+          : combatTextureKey(role, layer === "effects");
 const cache = new Map<string, HTMLCanvasElement>();
 function image(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -50,6 +53,15 @@ export async function appearanceCanvas(
   const a = appearance || defaultAppearance(role),
     key = appearanceKey(role, a, layer);
   if (cache.has(key)) return cache.get(key)!;
+  if (layer === "basic") {
+    const source = await image(siegBasicAsset.url);
+    const canvas = document.createElement("canvas");
+    canvas.width = source.width;
+    canvas.height = source.height;
+    canvas.getContext("2d")!.drawImage(source, 0, 0);
+    cache.set(key, canvas);
+    return canvas;
+  }
   const sourceKey = layerKey(role, layer);
   const asset =
     layer === "defense"
@@ -113,6 +125,8 @@ export function ensureAppearanceTexture(
   appearance?: CharacterAppearance,
   layer: AppearanceLayer = "base",
 ): string {
+  // Supplied basic artwork and red VFX retain their authored colors.
+  if (layer === "basic") return siegBasicKey;
   const a = appearance || defaultAppearance(role),
     key = appearanceKey(role, a, layer);
   if (

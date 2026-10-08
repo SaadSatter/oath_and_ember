@@ -5,28 +5,71 @@ export interface MapDefinition {
   width: number;
   height: number;
   walls: Rect[];
+  /** Presentation framing only; never used by movement. */
+  cameraBounds?: Rect;
   spawn: { x: number; y: number };
   points: Record<string, { x: number; y: number }>;
 }
+export const ENVIRONMENT_SCALE = 2;
+export const ENVIRONMENT_TILE_SIZE = 16;
 export const maps: Record<SceneId, MapDefinition> = {
   MAIN_HOUSE: {
     id: "MAIN_HOUSE",
     mode: "TOP_DOWN",
     width: 864,
     height: 640,
-    spawn: { x: 560, y: 500 },
+    spawn: { x: 456, y: 354 },
     walls: [
       { x: 0, y: 0, w: 864, h: 16 },
       { x: 0, y: 624, w: 864, h: 16 },
       { x: 0, y: 0, w: 16, h: 640 },
       { x: 848, y: 0, w: 16, h: 640 },
-      { x: 280, y: 250, w: 264, h: 130 },
+      { x: 280, y: 250, w: 184, h: 64 },
+      { x: 496, y: 250, w: 48, h: 64 },
+      { x: 464, y: 250, w: 32, h: 48 },
+      { x: 276, y: 314, w: 44, h: 42 },
+      { x: 540, y: 322, w: 28, h: 36 },
+      { x: 346, y: 534, w: 188, h: 90 },
+      { x: 590, y: 524, w: 44, h: 80 },
       { x: 212, y: 200, w: 8, h: 240 },
       { x: 616, y: 200, w: 8, h: 240 },
-      { x: 212, y: 432, w: 180, h: 8 },
-      { x: 488, y: 432, w: 136, h: 8 },
+      { x: 212, y: 432, w: 252, h: 8 },
+      { x: 496, y: 432, w: 128, h: 8 },
     ],
-    points: { exit: { x: 810, y: 500 } },
+    points: { door: { x: 480, y: 326 }, exit: { x: 810, y: 500 } },
+  },
+  HOUSE_INTERIOR: {
+    id: "HOUSE_INTERIOR",
+    mode: "TOP_DOWN",
+    width: 832,
+    height: 704,
+    spawn: { x: 608, y: 454 },
+    cameraBounds: { x: 160, y: 160, w: 512, h: 352 },
+    // Manually reviewed solid footprints in normalized TMX coordinates ×2.
+    // Walls block their bases, not the decorative vertical artwork above them.
+    walls: [
+      { x: 0, y: 0, w: 832, h: 192 },
+      { x: 0, y: 192, w: 160, h: 512 },
+      { x: 672, y: 192, w: 160, h: 512 },
+      { x: 160, y: 512, w: 512, h: 192 },
+      { x: 160, y: 192, w: 128, h: 64 },
+      { x: 160, y: 344, w: 128, h: 96 },
+      { x: 280, y: 352, w: 16, h: 160 },
+      { x: 504, y: 192, w: 16, h: 222 },
+      { x: 520, y: 320, w: 152, h: 24 },
+      { x: 520, y: 344, w: 72, h: 70 },
+      { x: 624, y: 344, w: 48, h: 70 },
+      { x: 296, y: 226, w: 42, h: 72 },
+      { x: 344, y: 240, w: 24, h: 34 },
+      { x: 456, y: 192, w: 48, h: 86 },
+      { x: 472, y: 274, w: 32, h: 60 },
+      { x: 340, y: 356, w: 122, h: 106 },
+      { x: 164, y: 440, w: 60, h: 54 },
+      { x: 250, y: 454, w: 28, h: 42 },
+      { x: 200, y: 256, w: 48, h: 70 },
+      { x: 568, y: 214, w: 88, h: 62 },
+    ],
+    points: { door: { x: 608, y: 430 } },
   },
   FOREST_RUINS: {
     id: "FOREST_RUINS",
