@@ -1,0 +1,153 @@
+{
+  "checks": [
+    {
+      "direction": "right",
+      "count": 12,
+      "view": {
+        "texture": "hero:OATH:basic:palette:ivory:",
+        "frame": "4",
+        "animation": "hero:OATH:basic:right",
+        "flipX": false,
+        "x": 400,
+        "y": 313,
+        "originX": 0.5,
+        "originY": 0.75,
+        "scale": 1,
+        "visible": true,
+        "direction": "right",
+        "acceptedSeq": 1,
+        "serverTick": 72,
+        "elapsedMs": 350,
+        "playbackRate": 1,
+        "sourceRect": [
+          30,
+          400,
+          375,
+          715
+        ],
+        "sourcePivot": [
+          207,
+          684
+        ],
+        "canvasPivot": [
+          64,
+          96
+        ],
+        "durationMs": 765,
+        "frameIndex": 4
+      }
+    },
+    {
+      "direction": "left",
+      "count": 12,
+      "view": {
+        "texture": "hero:OATH:basic:palette:ivory:",
+        "frame": "4",
+        "animation": "hero:OATH:basic:left",
+        "flipX": true,
+        "x": 400,
+        "y": 313,
+        "originX": 0.5,
+        "originY": 0.75,
+        "scale": 1,
+        "visible": true,
+        "direction": "left",
+        "acceptedSeq": 2,
+        "serverTick": 118,
+        "elapsedMs": 333.2000000000003,
+        "playbackRate": 1,
+        "sourceRect": [
+          30,
+          400,
+          375,
+          715
+        ],
+        "sourcePivot": [
+          207,
+          684
+        ],
+        "canvasPivot": [
+          64,
+          96
+        ],
+        "durationMs": 765,
+        "frameIndex": 4
+      }
+    },
+    {
+      "direction": "up",
+      "count": 10,
+      "view": {
+        "texture": "hero:OATH:basic:palette:ivory:",
+        "frame": "16",
+        "animation": "hero:OATH:basic:up",
+        "flipX": false,
+        "x": 400,
+        "y": 313,
+        "originX": 0.5,
+        "originY": 0.75,
+        "scale": 1,
+        "visible": true,
+        "direction": "up",
+        "acceptedSeq": 3,
+        "serverTick": 173,
+        "elapsedMs": 250.1333333333332,
+        "playbackRate": 1,
+        "sourceRect": [
+          800,
+          355,
+          1145,
+          695
+        ],
+        "sourcePivot": [
+          974,
+          660
+        ],
+        "canvasPivot": [
+          64,
+          96
+        ],
+        "durationMs": 655,
+        "frameIndex": 4
+      }
+    },
+    {
+      "direction": "down",
+      "count": 12,
+      "view": {
+        "texture": "hero:OATH:basic:palette:ivory:",
+        "frame": "32",
+        "animation": "hero:OATH:basic:down",
+        "flipX": false,
+        "x": 400,
+        "y": 313,
+        "originX": 0.5,
+        "originY": 0.75,
+        "scale": 1,
+        "visible": true,
+        "direction": "down",
+        "acceptedSeq": 4,
+        "serverTick": 223,
+        "elapsedMs": 466.6333333333332,
+        "playbackRate": 1,
+        "sourceRect": [
+          20,
+          680,
+          405,
+          1024
+        ],
+        "sourcePivot": [
+          205,
+          885
+        ],
+        "canvasPivot": [
+          64,
+          96
+        ],
+        "durationMs": 710,
+        "frameIndex": 8
+      }
+    }
+  ],
+  "errors": []
+}

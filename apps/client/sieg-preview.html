@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><title>Sieg attack animation preview</title>
+<style>
+body{background:#192525;color:#eee;font:16px system-ui;margin:20px}button,label{margin:5px}button{padding:10px;background:#a63c38;color:white;border:0;border-radius:4px;cursor:pointer}#game{width:800px;height:450px}pre{white-space:pre-wrap}canvas{image-rendering:pixelated}
+</style></head><body>
+<h1>Sieg attack preview</h1><p>Development presentation fixture. Buttons simulate a confirmed marker; this page connects to no gameplay service.</p>
+<div id="controls"><label>Scarf <select id="palette"><option value="crimson">Crimson</option><option value="ivory">Ivory / white</option><option value="blue">Royal blue</option><option value="green">Green</option><option value="charcoal">Charcoal</option></select></label><button data-direction="right">RIGHT</button><button data-direction="left">LEFT</button><button data-direction="up">UP</button><button data-direction="down">DOWN</button>
+<button id="turn">Change facing mid-attack</button><label><input type="checkbox" id="repeat"> Repeat selected direction</label><label><input type="checkbox" id="walk"> Return to walk</label></div>
+<div id="game"></div><pre id="readout"></pre>
+<script type="module" src="/src/dev/siegPreview.ts"></script>
+</body></html>

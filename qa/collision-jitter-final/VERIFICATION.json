@@ -1,0 +1,226 @@
+{
+  "errors": [],
+  "stages": [
+    {
+      "stage": "exterior-cardinal-1",
+      "samples": 272,
+      "positions": {
+        "authoritative": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        }
+      }
+    },
+    {
+      "stage": "exterior-cardinal-2",
+      "samples": 298,
+      "positions": {
+        "authoritative": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        }
+      }
+    },
+    {
+      "stage": "exterior-corners-1",
+      "samples": 1218,
+      "positions": {
+        "authoritative": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        }
+      }
+    },
+    {
+      "stage": "exterior-corners-2",
+      "samples": 1445,
+      "positions": {
+        "authoritative": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        }
+      }
+    },
+    {
+      "stage": "exterior-diagonal-1",
+      "samples": 457,
+      "positions": {
+        "authoritative": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "predicted": {
+          "reversals": 2,
+          "max_backward_world_units": 16
+        },
+        "rendered": {
+          "reversals": 8,
+          "max_backward_world_units": 4.717545746223777
+        }
+      }
+    },
+    {
+      "stage": "exterior-diagonal-2",
+      "samples": 505,
+      "positions": {
+        "authoritative": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        }
+      }
+    },
+    {
+      "stage": "interior-cardinal-1",
+      "samples": 268,
+      "positions": {
+        "authoritative": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        }
+      }
+    },
+    {
+      "stage": "interior-cardinal-2",
+      "samples": 284,
+      "positions": {
+        "authoritative": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        }
+      }
+    },
+    {
+      "stage": "interior-corners-1",
+      "samples": 327,
+      "positions": {
+        "authoritative": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        }
+      }
+    },
+    {
+      "stage": "interior-corners-2",
+      "samples": 374,
+      "positions": {
+        "authoritative": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "predicted": {
+          "reversals": 1,
+          "max_backward_world_units": 0.08662820994072717
+        },
+        "rendered": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        }
+      }
+    },
+    {
+      "stage": "interior-diagonal-1",
+      "samples": 299,
+      "positions": {
+        "authoritative": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "predicted": {
+          "reversals": 3,
+          "max_backward_world_units": 1.6515993673962726
+        },
+        "rendered": {
+          "reversals": 6,
+          "max_backward_world_units": 0.40853986811436016
+        }
+      }
+    },
+    {
+      "stage": "interior-diagonal-2",
+      "samples": 318,
+      "positions": {
+        "authoritative": {
+          "reversals": 0,
+          "max_backward_world_units": 0
+        },
+        "predicted": {
+          "reversals": 1,
+          "max_backward_world_units": 8.956685895029636
+        },
+        "rendered": {
+          "reversals": 1,
+          "max_backward_world_units": 1.5958915771054194
+        }
+      }
+    }
+  ],
+  "reversals": {
+    "authoritative": 0,
+    "predicted": 7,
+    "rendered": 15
+  }
+}

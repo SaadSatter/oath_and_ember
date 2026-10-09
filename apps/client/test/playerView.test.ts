@@ -220,9 +220,9 @@ it("plays accepted combat once, locks direction and restores locomotion after re
   h.view.update(p, p, p, "TOP_DOWN", "geometric", { serverTick: 6 });
   h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 6 });
   expect(h.sprite.play).toHaveBeenCalledTimes(1);
-  h.scene.time.now = 501;
+  h.scene.time.now = 801;
   h.view.update(p, { ...p, vx: 190 }, p, "TOP_DOWN", "sprite", {
-    serverTick: 16,
+    serverTick: 25,
   });
   expect(h.sprite.play).toHaveBeenLastCalledWith(
     "hero:OATH:TOP_DOWN:walk_east",

@@ -43,8 +43,8 @@ it("uses accepted markers, locks facing and completes through movement/input rel
       false,
     ),
   ).toMatchObject({ kind: "combat", direction: "right" });
-  expect(machine.update(p, "TOP_DOWN", 511, 16, false).kind).toBe("locomotion");
-  expect(machine.update(p, "TOP_DOWN", 600, 18, false).kind).toBe("locomotion");
+  expect(machine.update(p, "TOP_DOWN", 796, 25, false).kind).toBe("locomotion");
+  expect(machine.update(p, "TOP_DOWN", 850, 27, false).kind).toBe("locomotion");
   expect(p.combat!.facing).toBe(0);
 });
 it("queues accepted repeats without cutting recovery and prioritizes hurt/defeat", () => {
@@ -53,12 +53,12 @@ it("queues accepted repeats without cutting recovery and prioritizes hurt/defeat
   expect(m.update(hero(14, Math.PI), "TOP_DOWN", 430, 14, false)).toMatchObject(
     { direction: "right" },
   );
-  expect(m.update(hero(14, Math.PI), "TOP_DOWN", 501, 16, false)).toMatchObject(
+  expect(m.update(hero(14, Math.PI), "TOP_DOWN", 786, 25, false)).toMatchObject(
     { direction: "left", action: { seq: 14 } },
   );
-  expect(m.update(hero(14), "TOP_DOWN", 520, 17, true).kind).toBe("hurt");
+  expect(m.update(hero(14), "TOP_DOWN", 820, 26, true).kind).toBe("hurt");
   expect(
-    m.update({ ...hero(20), hp: 0 }, "TOP_DOWN", 550, 20, false).kind,
+    m.update({ ...hero(20), hp: 0 }, "TOP_DOWN", 850, 27, false).kind,
   ).toBe("defeated");
 });
 it("rejects stale replay and top-down playback on platformer maps", () => {
@@ -143,4 +143,39 @@ it("holds charge from authoritative state without input guesses and releases abo
     "locomotion",
   );
   expect(m.update(p, "TOP_DOWN", 1900, 50, true).kind).toBe("hurt");
+});
+
+it("retains every repeated basic marker and starts each full frame sequence after recovery", () => {
+  const m = new PlayerPresentation();
+  m.update(hero(), "TOP_DOWN", 0, 1, false);
+  m.update(hero(15, Math.PI), "TOP_DOWN", 467, 15, false);
+  const second = m.update(hero(15, Math.PI), "TOP_DOWN", 765, 24, false);
+  expect(second).toMatchObject({
+    kind: "combat",
+    action: { seq: 15 },
+    direction: "left",
+    elapsedMs: 0,
+  });
+  m.update(hero(29, -Math.PI / 2), "TOP_DOWN", 934, 29, false);
+  const third = m.update(hero(29), "TOP_DOWN", 1231.667, 38, false);
+  expect(third).toMatchObject({
+    kind: "combat",
+    action: { seq: 29 },
+    direction: "up",
+  });
+  if (third.kind === "combat") expect(third.elapsedMs).toBeLessThan(1);
+});
+it("keeps Coco's existing six-frame cast duration and queue policy", () => {
+  const m = new PlayerPresentation(),
+    p = {
+      ...hero(),
+      role: "EMBER" as const,
+      combat: { ...hero().combat!, kind: "cast" as const },
+    };
+  expect(m.update(p, "TOP_DOWN", 0, 1, false)).toMatchObject({
+    kind: "combat",
+    elapsedMs: 0,
+  });
+  expect(m.update(p, "TOP_DOWN", 499, 15, false).kind).toBe("combat");
+  expect(m.update(p, "TOP_DOWN", 501, 16, false).kind).toBe("locomotion");
 });

@@ -1,0 +1,6 @@
+{
+  "case": "Two client movement samples acknowledged by one server physics tick",
+  "expected_predicted_x": 408.95668589502964,
+  "observed_original_predicted_x": 404.4783429475148,
+  "old_regression_failed": true
+}

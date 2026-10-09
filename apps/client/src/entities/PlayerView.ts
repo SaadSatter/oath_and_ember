@@ -1,4 +1,4 @@
-import { actionFrame } from "../animation/siegAttack.js";
+import { actionFrame, siegAttackMetadata } from "../animation/siegAttack.js";
 import { effectPresentationProfiles } from "../assets/effectPresentation.js";
 import {
   defenseClip,
@@ -28,6 +28,7 @@ export type CharacterRendering = "geometric" | "sprite";
 export class PlayerView {
   private presentation = new PlayerPresentation();
   private combatSequence = -1;
+  private basicObservation: Record<string, unknown> | null = null;
   private defenseSprite: Phaser.GameObjects.Image | null = null;
   private previousHit = 0;
   private effects: Phaser.GameObjects.Image | null = null;
@@ -83,7 +84,12 @@ export class PlayerView {
     const defense = presentation.kind === "defense" ? presentation : null;
     const charge = presentation.kind === "charge" ? presentation : null;
     const direction = combat?.direction || charge?.direction;
+    // Warm the attack palette while idle/walking to avoid a red fallback frame
+    // when an already-customized Sieg starts his next confirmed attack.
+    if (role === "OATH" && rendering === "sprite")
+      ensureAppearanceTexture(this.scene, role, player.appearance, "basic");
     const basic = role === "OATH" && combat?.action.kind === "sword";
+    this.basicObservation = null;
     const horizontalHeavy =
       role === "OATH" &&
       (direction === "right" || direction === "left") &&
@@ -176,7 +182,25 @@ export class PlayerView {
       }
       if (combat) {
         const c = actionClip(role, combat.direction, combat.action.kind);
-        this.sprite.setFrame(actionFrame(c, combat.elapsedMs));
+        const frame = actionFrame(c, combat.elapsedMs);
+        this.sprite.setFrame(frame);
+        if (basic) {
+          const d = combat.direction === "left" ? "right" : combat.direction;
+          const metadata =
+            siegAttackMetadata.directions[d].frames[frame - c.start];
+          this.basicObservation = {
+            direction: combat.direction,
+            acceptedSeq: combat.action.seq,
+            serverTick: hints.serverTick,
+            elapsedMs: combat.elapsedMs,
+            playbackRate: combat.playbackRate ?? 1,
+            sourceRect: metadata.rect,
+            sourcePivot: metadata.pivot,
+            canvasPivot: siegAttackMetadata.pivot,
+            durationMs: c.durationMs,
+            frameIndex: frame - c.start,
+          };
+        }
       }
       if (horizontalHeavy && charge)
         this.sprite.setFrame(charge.ticks < 4 ? 0 : 1);
@@ -409,6 +433,7 @@ export class PlayerView {
           originY: s.originY,
           scale: s.scaleX,
           visible: s.visible,
+          ...this.basicObservation,
         }
       : null;
   }

@@ -1,3 +1,4 @@
+import { constrainMotion } from "../../../packages/shared/src/movement.js";
 import {
   EnvironmentView,
   preloadEnvironment,
@@ -251,10 +252,10 @@ function submitInput(reliable = false) {
     i.moveY = Number(held("s", "arrowdown")) - Number(held("w", "arrowup"));
     i.jumpHeld = held(" ", "w", "arrowup");
     i.primaryHeld = held("j");
-    i.secondaryHeld = held("k", "shift");
+    i.secondaryHeld = held("k");
     i.interactHeld = held("e");
   }
-  net.prediction.push(i, w);
+  net.prediction.push(i, w, !reliable);
   if (reliable) net.socket.emit("player:input", i);
   else net.socket.volatile.emit("player:input", i);
 }
@@ -339,8 +340,18 @@ class Adventure extends Phaser.Scene {
       this.rendered.y - local.y,
     );
     const a = err > 100 ? 1 : smoothingFactor(delta);
-    this.rendered.x += (local.x - this.rendered.x) * a;
-    this.rendered.y += (local.y - this.rendered.y) * a;
+    this.rendered =
+      err > 100
+        ? { x: local.x, y: local.y }
+        : constrainMotion(
+            this.rendered,
+            {
+              x: (local.x - this.rendered.x) * a,
+              y: (local.y - this.rendered.y) * a,
+            },
+            map,
+            collisionRects(sceneId, w.puzzles),
+          );
     if (house) {
       const halfX = this.scale.width / (2 * this.cameras.main.zoom),
         halfY = this.scale.height / (2 * this.cameras.main.zoom);
@@ -518,6 +529,19 @@ class Adventure extends Phaser.Scene {
         ),
       );
     }
+    if (new URLSearchParams(location.search).has("movementQA")) {
+      root.dataset.movementSample = JSON.stringify({
+        tick: w.serverTick,
+        ack: me.lastProcessedInputSeq,
+        pending: net.prediction.pending.length,
+        authoritative: { x: me.x, y: me.y },
+        predicted: { x: local.x, y: local.y },
+        rendered: { ...this.rendered },
+        correction: net.prediction.error,
+        sceneId,
+        intent: local.movementIntent,
+      });
+    }
     root.dataset.worldPosition = `${me.x},${me.y}`;
     root.dataset.scene = sceneId;
     (
@@ -537,8 +561,11 @@ class Adventure extends Phaser.Scene {
       impacts: w.projectileImpacts,
     });
     if (new URLSearchParams(location.search).has("siegQA"))
-      root.dataset.playerVisuals = JSON.stringify(Object.fromEntries(
-        [...this.playerViews].map(([id, view]) => [id, view.inspectCombat()])));
+      root.dataset.playerVisuals = JSON.stringify(
+        Object.fromEntries(
+          [...this.playerViews].map(([id, view]) => [id, view.inspectCombat()]),
+        ),
+      );
     root.dataset.combatActions = JSON.stringify(
       Object.values(w.players).map((p) => ({
         id: p.id,

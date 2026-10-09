@@ -48,11 +48,13 @@ export const maps: Record<SceneId, MapDefinition> = {
     // Manually reviewed solid footprints in normalized TMX coordinates ×2.
     // Walls block their bases, not the decorative vertical artwork above them.
     walls: [
-      { x: 0, y: 0, w: 832, h: 192 },
+      { x: 0, y: 0, w: 832, h: 224 },
       { x: 0, y: 192, w: 160, h: 512 },
       { x: 672, y: 192, w: 160, h: 512 },
       { x: 160, y: 512, w: 512, h: 192 },
-      { x: 160, y: 192, w: 128, h: 64 },
+      // Stair treads are traversable; only the flanking wall faces are solid.
+      { x: 160, y: 224, w: 40, h: 96 },
+      { x: 248, y: 224, w: 40, h: 96 },
       { x: 160, y: 344, w: 128, h: 96 },
       { x: 280, y: 352, w: 16, h: 160 },
       { x: 504, y: 192, w: 16, h: 222 },
@@ -63,10 +65,14 @@ export const maps: Record<SceneId, MapDefinition> = {
       { x: 344, y: 240, w: 24, h: 34 },
       { x: 456, y: 192, w: 48, h: 86 },
       { x: 472, y: 274, w: 32, h: 60 },
-      { x: 340, y: 356, w: 122, h: 106 },
+      // The rug is floor. Separate the table and four chairs from its footprint.
+      { x: 360, y: 384, w: 72, h: 48 },
+      { x: 388, y: 356, w: 24, h: 28 },
+      { x: 340, y: 384, w: 16, h: 44 },
+      { x: 444, y: 384, w: 16, h: 44 },
+      { x: 388, y: 432, w: 24, h: 30 },
       { x: 164, y: 440, w: 60, h: 54 },
       { x: 250, y: 454, w: 28, h: 42 },
-      { x: 200, y: 256, w: 48, h: 70 },
       { x: 568, y: 214, w: 88, h: 62 },
     ],
     points: { door: { x: 608, y: 430 } },

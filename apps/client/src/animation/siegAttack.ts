@@ -1,11 +1,6 @@
-import { swordTiming } from "../../../../packages/shared/src/combat.js";
+import metadata from "./siegAttackFrames.json" with { type: "json" };
 import type { CombatDirection } from "./combat.js";
-// Presentation-only timing: readable wind-up, faster contact, settled recovery.
-const swordFrames = {
-  right: [55, 45, 45, 45, 30, 30, 30, 30, 30, 30, 40, 40],
-  up: [70, 70, 35, 35, 35, 35, 35, 35, 50, 50],
-  down: [65, 35, 35, 35, 30, 30, 30, 30, 35, 35, 45, 45],
-} as const;
+export const siegAttackMetadata = metadata;
 export const siegBasicKey = "hero:OATH:basic";
 export const siegBasicAsset = {
   url: "/assets/characters/oath/basic.png",
@@ -14,13 +9,14 @@ export const siegBasicAsset = {
 };
 export function siegBasicClip(direction: CombatDirection) {
   const d = direction === "left" ? "right" : direction;
-  const durations = swordFrames[d];
-  const start = { right: 0, up: 12, down: 24 }[d];
+  const durations = metadata.directions[d].frames.map((f) => f.durationMs);
+  const durationMs = durations.reduce((sum, ms) => sum + ms, 0);
+  const start = metadata.directions[d].frames[0].frame;
   return {
     start,
     end: start + durations.length - 1,
-    fps: (durations.length * 1000) / swordTiming.durationMs,
-    durationMs: swordTiming.durationMs,
+    fps: (durations.length * 1000) / durationMs,
+    durationMs,
     durations,
   };
 }

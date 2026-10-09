@@ -27,11 +27,30 @@ function sweep(
       // toward the nearest exit, but stop attempts to penetrate further.
       const towardCenter =
         (start < (min + max) / 2 && delta > 0) ||
-        (start >= (min + max) / 2 && delta < 0);
+        (start > (min + max) / 2 && delta < 0);
       if (towardCenter) end = start;
     }
   }
   return end;
+}
+// Also used to keep presentation paths outside solids; does not simulate intent.
+export function constrainMotion(
+  position: { x: number; y: number },
+  delta: { x: number; y: number },
+  map: MapDefinition,
+  walls: Rect[],
+) {
+  const x = Math.max(
+    HALF,
+    Math.min(
+      map.width - HALF,
+      sweep(position.x, position.y, delta.x, walls, "x"),
+    ),
+  );
+  let y = sweep(position.y, x, delta.y, walls, "y");
+  if (map.mode === "TOP_DOWN")
+    y = Math.max(HALF, Math.min(map.height - HALF, y));
+  return { x, y };
 }
 // Shared fixed-step kinematics keep prediction reproducible without browser physics.
 export function move(
@@ -63,14 +82,10 @@ export function move(
     dy = p.vy * dt;
   const ox = p.x,
     oy = p.y;
-  p.x = Math.max(
-    HALF,
-    Math.min(map.width - HALF, sweep(ox, oy, dx, walls, "x")),
-  );
+  const next = constrainMotion(p, { x: dx, y: dy }, map, walls);
+  p.x = next.x;
+  p.y = next.y;
   if (p.x !== ox + dx) p.vx = 0;
-  p.y = sweep(oy, p.x, dy, walls, "y");
-  if (map.mode === "TOP_DOWN")
-    p.y = Math.max(HALF, Math.min(map.height - HALF, p.y));
   p.grounded = map.mode === "PLATFORMER" && dy > 0 && p.y < oy + dy;
   if (p.y !== oy + dy) p.vy = 0;
   if (p.y > map.height + 150) {

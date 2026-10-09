@@ -1,0 +1,15 @@
+{
+  "errors": [
+    "__name is not defined",
+    "__name is not defined"
+  ],
+  "stages": [
+    "exterior-cardinal",
+    "exterior-corners",
+    "exterior-diagonal",
+    "interior-cardinal",
+    "interior-corners",
+    "interior-diagonal"
+  ],
+  "note": "Authoritative setup fixtures; normal keyboard movement; read-only authoritative/predicted/rendered trace"
+}

@@ -22,7 +22,7 @@ All coordinates below are world units after source-origin normalization and2× t
 
 Server-side `Player.sceneId` records individual location independently of `World.sceneId` (shared progression). Server creates all live location fields; optional typing only supports old internal fixtures. Inputs contain only intent, not a requested scene. Collision/prediction use each player's location. Clients render co-located heroes only and reset local prediction/interpolation at transitions; remote interpolation never blends coordinates across locations. Projectiles carry location and impacts are filtered accordingly; enemies cannot target or resolve hits against heroes in another location. Entry preserves health, skills and room progression. Reconnect restores the location. Held E is latched until release to prevent door loops.
 
-Solid house/fence/furniture bases and boundaries are in `packages/shared/src/maps.ts`. Doors remain walkable. Rugs/details remain non-solid. Interior furniture uses unchanged source tile frames, sorted by connected furniture ground footprints, while rugs remain behind heroes. Exterior roof and tree canopies sort against ground position. The staircase and closed decorative rooms retain their authored artwork; this feature adds no upstairs scene or new door layout.
+Solid house/fence/furniture bases and boundaries are in `packages/shared/src/maps.ts`. Doors remain walkable. Rugs/details remain non-solid. Interior furniture uses unchanged source tile frames, sorted by connected furniture ground footprints, while rugs remain behind heroes. Exterior roof and tree canopies sort against ground position. The staircase treads are walkable between their solid flanking walls; there is no upstairs scene or new door layout. The rug is floor with separate table/chair footprints. The upper wall face is blocked through y224. Couch sorting separates its atlas region from adjacent dining-set tiles and uses the visible ground edge (y334), excluding tile padding.
 
 ## Layers and assets
 
@@ -60,3 +60,9 @@ Latest verified evidence: `qa/house-interior-v3/REVIEW.html` links both recordin
 - `docs/HOUSE_INTERIOR_PROVENANCE.json`
 - `docs/ENVIRONMENT_ASSET_PROVENANCE.json`
 - `docs/HOUSE_AND_TREES.md`
+
+## Interior footprint correction
+
+Evidence: `qa/interior-footprints-v3/REVIEW.html`. Regression tests cover rug margins, the stair approach, upper wall contact, table/chair blocking and couch contact. Typecheck, 116 tests and build pass. Supplied TMX and images, tile scale, character dimensions and movement speed remain unchanged.
+
+Final room audit: zero backward steps and zero solid penetrations in authoritative, predicted and rendered traces across all six client/stage combinations, with no browser errors. Recorded v2 and corrected clear-start v3 fixtures are retained. A socket test timed out during concurrent video finalization; the targeted 17-test collision/interior suite passed after QA closed. An earlier timing-sensitive combat assertion also passed on the complete 116-test rerun.

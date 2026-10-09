@@ -21,6 +21,7 @@ import {
 } from "../animation/definitions.js";
 export function preloadHeroes(scene: Phaser.Scene) {
   scene.load.spritesheet(siegBasicKey, siegBasicAsset.url, siegBasicAsset);
+  scene.load.image(`${siegBasicKey}:mask`, "/assets/characters/oath/basic-mask.png");
   scene.load.spritesheet(heavyKey, heavyAsset.url, {
     frameWidth: 128,
     frameHeight: 128,

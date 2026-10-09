@@ -1,0 +1,232 @@
+{
+  "thresholds": {
+    "backwardMeasurement": 0.01,
+    "overlapMeasurement": 1e-7
+  },
+  "totals": {
+    "all:authoritative": {
+      "reversals": 0,
+      "maxBackwardWorldUnits": 0,
+      "penetrations": 0
+    },
+    "all:predicted": {
+      "reversals": 0,
+      "maxBackwardWorldUnits": 0,
+      "penetrations": 0
+    },
+    "all:rendered": {
+      "reversals": 0,
+      "maxBackwardWorldUnits": 0,
+      "penetrations": 0
+    },
+    "after500ms:authoritative": {
+      "reversals": 0,
+      "maxBackwardWorldUnits": 0,
+      "penetrations": 0
+    },
+    "after500ms:predicted": {
+      "reversals": 0,
+      "maxBackwardWorldUnits": 0,
+      "penetrations": 0
+    },
+    "after500ms:rendered": {
+      "reversals": 0,
+      "maxBackwardWorldUnits": 0,
+      "penetrations": 0
+    }
+  },
+  "stages": {
+    "rug-and-couch-1.json": {
+      "all:authoritative": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "all:predicted": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "all:rendered": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:authoritative": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:predicted": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:rendered": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      }
+    },
+    "rug-and-couch-2.json": {
+      "all:authoritative": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "all:predicted": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "all:rendered": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:authoritative": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:predicted": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:rendered": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      }
+    },
+    "stairs-and-wall-1.json": {
+      "all:authoritative": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "all:predicted": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "all:rendered": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:authoritative": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:predicted": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:rendered": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      }
+    },
+    "stairs-and-wall-2.json": {
+      "all:authoritative": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "all:predicted": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "all:rendered": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:authoritative": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:predicted": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:rendered": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      }
+    },
+    "table-and-couch-side-1.json": {
+      "all:authoritative": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "all:predicted": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "all:rendered": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:authoritative": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:predicted": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:rendered": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      }
+    },
+    "table-and-couch-side-2.json": {
+      "all:authoritative": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "all:predicted": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "all:rendered": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:authoritative": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:predicted": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      },
+      "after500ms:rendered": {
+        "reversals": 0,
+        "maxBackwardWorldUnits": 0,
+        "penetrations": 0
+      }
+    }
+  }
+}

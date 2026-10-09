@@ -156,7 +156,8 @@ export function createApp(options: { encounter?: boolean } = {}) {
       )
         return;
       const primaryChanged = parsed.data.primaryHeld !== s.input.primaryHeld;
-      if (!primaryChanged && Date.now() - lastInput < 10) return;
+      // Keep the newest validated intent in a burst. Physics still runs once
+      // per server tick; dropping later packets here retained stale movement.
       if (primaryChanged) {
         s.primaryEdges ||= [];
         if (s.primaryEdges.length >= 8) return;

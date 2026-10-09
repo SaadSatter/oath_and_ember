@@ -52,3 +52,81 @@ it("supports every Coco magic palette while keeping a protected bright core and 
     else expect(result.slice(0, 3)).not.toEqual(source.slice(0, 3));
   }
 });
+
+it("keeps Sieg's chosen cloth palette in every attack frame and leaves sword/slash pixels untouched", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { PNG } = await import("pngjs");
+  const source = PNG.sync.read(
+    readFileSync("apps/client/public/assets/characters/oath/basic.png"),
+  );
+  const mask = PNG.sync.read(
+    readFileSync("apps/client/public/assets/characters/oath/basic-mask.png"),
+  );
+  expect([mask.width, mask.height]).toEqual([source.width, source.height]);
+  const src = new Uint8ClampedArray(source.data),
+    regions = new Uint8ClampedArray(mask.data);
+  expect(
+    Buffer.from(
+      recolorPixels(src, regions, "crimson", undefined, "crimson"),
+    ).equals(Buffer.from(src)),
+  ).toBe(true);
+  const ivory = recolorPixels(src, regions, "ivory", undefined, "crimson");
+  // Front-facing collar beside the hair was previously excluded as face.
+  const collar = ((256 + 67) * source.width + 53) * 4;
+  expect(regions[collar]).toBe(255);
+  expect(ivory[collar + 1]).toBeGreaterThan(ivory[collar] * 0.9);
+  const counts = new Map<number, number>();
+  let alphaChanges = 0,
+    protectedChanges = 0,
+    unlightenedCloth = 0;
+  for (let i = 0; i < src.length; i += 4) {
+    if (ivory[i + 3] !== src[i + 3]) alphaChanges++;
+    if (regions[i]) {
+      const pixel = i / 4,
+        x = pixel % source.width,
+        y = Math.floor(pixel / source.width);
+      const frame = Math.floor(y / 128) * 12 + Math.floor(x / 128);
+      counts.set(frame, (counts.get(frame) ?? 0) + 1);
+      if (ivory[i + 1] <= src[i + 1]) unlightenedCloth++;
+    } else if ([0, 1, 2, 3].some((c) => ivory[i + c] !== src[i + c]))
+      protectedChanges++;
+  }
+  expect({
+    alphaChanges,
+    protectedChanges,
+
+    unlightenedCloth,
+  }).toEqual({
+    alphaChanges: 0,
+    protectedChanges: 0,
+
+    unlightenedCloth: 0,
+  });
+  // Reviewed contact-trail patches: right crescent, back-facing overhead arc,
+  // and front-facing lower arc. They remain red for every cloth palette.
+  for (const [frame, x, y] of [
+    [6, 99, 71],
+    [14, 70, 39],
+    [29, 64, 100],
+  ]) {
+    for (let dy = -2; dy <= 2; dy++)
+      for (let dx = -2; dx <= 2; dx++) {
+        const offset =
+          ((Math.floor(frame / 12) * 128 + y + dy) * source.width +
+            (frame % 12) * 128 +
+            x +
+            dx) *
+          4;
+        expect(regions[offset]).toBe(0);
+        expect([...ivory.slice(offset, offset + 4)]).toEqual([
+          ...src.slice(offset, offset + 4),
+        ]);
+      }
+  }
+  for (const frame of [
+    ...Array.from({ length: 12 }, (_, i) => i),
+    ...Array.from({ length: 10 }, (_, i) => 12 + i),
+    ...Array.from({ length: 12 }, (_, i) => 24 + i),
+  ])
+    expect(counts.get(frame)).toBeGreaterThan(30);
+});

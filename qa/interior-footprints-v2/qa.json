@@ -1,0 +1,9 @@
+{
+  "errors": [],
+  "stages": [
+    "rug-and-couch",
+    "stairs-and-wall",
+    "table-and-couch-side"
+  ],
+  "note": "Authoritative setup fixtures; normal keyboard movement; read-only authoritative/predicted/rendered trace"
+}

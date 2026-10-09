@@ -1,3 +1,5 @@
+import { constrainMotion } from "../../../../packages/shared/src/movement.js";
+import { maps, collisionRects } from "../../../../packages/shared/src/maps.js";
 import type { World } from "../../../../packages/shared/src/gameTypes.js";
 export class Interpolation {
   buffer: { time: number; world: World }[] = [];
@@ -48,6 +50,18 @@ export class Interpolation {
     )
       return q;
     const f = Math.max(0, Math.min(1, (t - a.time) / (b.time - a.time || 1)));
-    return { x: p.x + (q.x - p.x) * f, y: p.y + (q.y - p.y) * f };
+    const delta = { x: (q.x - p.x) * f, y: (q.y - p.y) * f };
+    if (kind === "players") {
+      const player =
+        p as import("../../../../packages/shared/src/gameTypes.js").Player;
+      const scene = player.sceneId ?? a.world.sceneId;
+      return constrainMotion(
+        p,
+        delta,
+        maps[scene],
+        collisionRects(scene, a.world.puzzles),
+      );
+    }
+    return { x: p.x + delta.x, y: p.y + delta.y };
   }
 }

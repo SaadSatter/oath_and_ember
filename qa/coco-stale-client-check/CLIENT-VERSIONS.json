@@ -1,0 +1,10 @@
+{
+  "observedUserTabs": {
+    "cocoBefore": "index-By42JHTQ.js",
+    "siegBefore": "index-BXtXgqut.js",
+    "bothAfterReload": "index-BhaxjBDA.js"
+  },
+  "coco": "Resumed room FWPZNN with current scene framing",
+  "sieg": "Resume request timed out; tab remains at lobby",
+  "source": "Read-only inspection of script elements and visible browser UI"
+}

@@ -1,0 +1,997 @@
+{
+  "canvas": [
+    128,
+    128
+  ],
+  "pivot": [
+    64,
+    96
+  ],
+  "scale": 0.2,
+  "scaleReason": "Side-facing body is approximately 230 source pixels tall, matching the existing approximately 46-pixel idle/walk body at 0.20 scale. All directions use that same factor.",
+  "directions": {
+    "right": {
+      "source": "Images/Sprites/Sieg/Sieg Right attack.png",
+      "frames": [
+        {
+          "frame": 0,
+          "rect": [
+            20,
+            20,
+            380,
+            390
+          ],
+          "pivot": [
+            196,
+            358
+          ],
+          "durationMs": 80,
+          "clothRegion": {
+            "bounds": [
+              45,
+              185,
+              250,
+              327
+            ],
+            "protectedHeadEllipse": [
+              205,
+              173,
+              55,
+              38
+            ]
+          }
+        },
+        {
+          "frame": 1,
+          "rect": [
+            395,
+            10,
+            760,
+            390
+          ],
+          "pivot": [
+            581,
+            358
+          ],
+          "durationMs": 80,
+          "clothRegion": {
+            "bounds": [
+              400,
+              193,
+              635,
+              330
+            ],
+            "protectedHeadEllipse": [
+              590,
+              177,
+              55,
+              38
+            ]
+          }
+        },
+        {
+          "frame": 2,
+          "rect": [
+            775,
+            15,
+            1135,
+            390
+          ],
+          "pivot": [
+            957,
+            358
+          ],
+          "durationMs": 80,
+          "clothRegion": {
+            "bounds": [
+              780,
+              215,
+              1010,
+              337
+            ],
+            "protectedHeadEllipse": [
+              975,
+              188,
+              57,
+              43
+            ]
+          }
+        },
+        {
+          "frame": 3,
+          "rect": [
+            1140,
+            15,
+            1520,
+            390
+          ],
+          "pivot": [
+            1324,
+            358
+          ],
+          "durationMs": 80,
+          "clothRegion": {
+            "bounds": [
+              1130,
+              205,
+              1410,
+              337
+            ],
+            "protectedHeadEllipse": [
+              1352,
+              181,
+              57,
+              43
+            ]
+          }
+        },
+        {
+          "frame": 4,
+          "rect": [
+            30,
+            400,
+            375,
+            715
+          ],
+          "pivot": [
+            207,
+            684
+          ],
+          "durationMs": 45,
+          "clothRegion": {
+            "bounds": [
+              55,
+              545,
+              290,
+              659
+            ],
+            "protectedHeadEllipse": [
+              240,
+              543,
+              55,
+              33
+            ]
+          }
+        },
+        {
+          "frame": 5,
+          "rect": [
+            395,
+            405,
+            750,
+            715
+          ],
+          "pivot": [
+            533,
+            684
+          ],
+          "durationMs": 40,
+          "clothRegion": {
+            "bounds": [
+              395,
+              550,
+              605,
+              660
+            ],
+            "protectedHeadEllipse": [
+              578,
+              537,
+              55,
+              33
+            ]
+          }
+        },
+        {
+          "frame": 6,
+          "rect": [
+            750,
+            405,
+            1150,
+            715
+          ],
+          "pivot": [
+            895,
+            684
+          ],
+          "durationMs": 40,
+          "clothRegion": {
+            "bounds": [
+              750,
+              545,
+              1000,
+              650
+            ],
+            "protectedHeadEllipse": [
+              935,
+              538,
+              55,
+              33
+            ]
+          }
+        },
+        {
+          "frame": 7,
+          "rect": [
+            1155,
+            410,
+            1510,
+            715
+          ],
+          "pivot": [
+            1298,
+            684
+          ],
+          "durationMs": 55,
+          "clothRegion": {
+            "bounds": [
+              1170,
+              545,
+              1420,
+              665
+            ],
+            "protectedHeadEllipse": [
+              1351,
+              539,
+              55,
+              33
+            ]
+          }
+        },
+        {
+          "frame": 8,
+          "rect": [
+            15,
+            725,
+            400,
+            1024
+          ],
+          "pivot": [
+            206,
+            971
+          ],
+          "durationMs": 55,
+          "clothRegion": {
+            "bounds": [
+              45,
+              830,
+              299,
+              954
+            ],
+            "protectedHeadEllipse": [
+              246,
+              825,
+              55,
+              33
+            ]
+          }
+        },
+        {
+          "frame": 9,
+          "rect": [
+            402,
+            725,
+            765,
+            1024
+          ],
+          "pivot": [
+            579,
+            971
+          ],
+          "durationMs": 60,
+          "clothRegion": {
+            "bounds": [
+              425,
+              830,
+              675,
+              955
+            ],
+            "protectedHeadEllipse": [
+              608,
+              822,
+              55,
+              33
+            ]
+          }
+        },
+        {
+          "frame": 10,
+          "rect": [
+            775,
+            725,
+            1135,
+            1024
+          ],
+          "pivot": [
+            968,
+            971
+          ],
+          "durationMs": 70,
+          "clothRegion": {
+            "bounds": [
+              800,
+              830,
+              1070,
+              953
+            ],
+            "protectedHeadEllipse": [
+              997,
+              818,
+              55,
+              33
+            ]
+          }
+        },
+        {
+          "frame": 11,
+          "rect": [
+            1150,
+            725,
+            1525,
+            1024
+          ],
+          "pivot": [
+            1342,
+            971
+          ],
+          "durationMs": 80,
+          "clothRegion": {
+            "bounds": [
+              1170,
+              830,
+              1440,
+              952
+            ],
+            "protectedHeadEllipse": [
+              1362,
+              813,
+              55,
+              33
+            ]
+          }
+        }
+      ]
+    },
+    "up": {
+      "source": "Images/Sprites/Sieg/Sieg up swing.png",
+      "frames": [
+        {
+          "frame": 12,
+          "rect": [
+            35,
+            25,
+            400,
+            355
+          ],
+          "pivot": [
+            167,
+            320
+          ],
+          "durationMs": 80,
+          "clothRegion": {
+            "bounds": [
+              103,
+              198,
+              266,
+              332
+            ],
+            "protectedHeadEllipse": [
+              174,
+              172,
+              55,
+              35
+            ]
+          }
+        },
+        {
+          "frame": 13,
+          "rect": [
+            440,
+            20,
+            775,
+            355
+          ],
+          "pivot": [
+            570,
+            330
+          ],
+          "durationMs": 80,
+          "clothRegion": {
+            "bounds": [
+              524,
+              209,
+              748,
+              351
+            ],
+            "protectedHeadEllipse": [
+              588,
+              192,
+              55,
+              35
+            ]
+          }
+        },
+        {
+          "frame": 14,
+          "rect": [
+            15,
+            355,
+            400,
+            695
+          ],
+          "pivot": [
+            172,
+            660
+          ],
+          "durationMs": 45,
+          "clothRegion": {
+            "bounds": [
+              132,
+              546,
+              355,
+              677
+            ],
+            "protectedHeadEllipse": [
+              183,
+              525,
+              55,
+              35
+            ]
+          }
+        },
+        {
+          "frame": 15,
+          "rect": [
+            410,
+            355,
+            795,
+            695
+          ],
+          "pivot": [
+            605,
+            660
+          ],
+          "durationMs": 45,
+          "clothRegion": {
+            "bounds": [
+              564,
+              546,
+              765,
+              680
+            ],
+            "protectedHeadEllipse": [
+              624,
+              526,
+              55,
+              35
+            ]
+          }
+        },
+        {
+          "frame": 16,
+          "rect": [
+            800,
+            355,
+            1145,
+            695
+          ],
+          "pivot": [
+            974,
+            660
+          ],
+          "durationMs": 55,
+          "clothRegion": {
+            "bounds": [
+              935,
+              547,
+              1142,
+              681
+            ],
+            "protectedHeadEllipse": [
+              993,
+              526,
+              55,
+              35
+            ]
+          }
+        },
+        {
+          "frame": 17,
+          "rect": [
+            1160,
+            355,
+            1536,
+            695
+          ],
+          "pivot": [
+            1360,
+            660
+          ],
+          "durationMs": 60,
+          "clothRegion": {
+            "bounds": [
+              1308,
+              547,
+              1521,
+              681
+            ],
+            "protectedHeadEllipse": [
+              1373,
+              526,
+              55,
+              35
+            ],
+            "protectedVfxRects": [
+              [
+                1480,
+                547,
+                1536,
+                572
+              ]
+            ]
+          }
+        },
+        {
+          "frame": 18,
+          "rect": [
+            20,
+            695,
+            405,
+            1024
+          ],
+          "pivot": [
+            208,
+            919
+          ],
+          "durationMs": 65,
+          "clothRegion": {
+            "bounds": [
+              168,
+              804,
+              379,
+              943
+            ],
+            "protectedHeadEllipse": [
+              223,
+              774,
+              55,
+              35
+            ]
+          }
+        },
+        {
+          "frame": 19,
+          "rect": [
+            435,
+            695,
+            795,
+            1024
+          ],
+          "pivot": [
+            606,
+            919
+          ],
+          "durationMs": 70,
+          "clothRegion": {
+            "bounds": [
+              563,
+              806,
+              768,
+              942
+            ],
+            "protectedHeadEllipse": [
+              622,
+              774,
+              55,
+              35
+            ]
+          }
+        },
+        {
+          "frame": 20,
+          "rect": [
+            805,
+            695,
+            1150,
+            1024
+          ],
+          "pivot": [
+            977,
+            919
+          ],
+          "durationMs": 75,
+          "clothRegion": {
+            "bounds": [
+              940,
+              811,
+              1140,
+              943
+            ],
+            "protectedHeadEllipse": [
+              1000,
+              779,
+              55,
+              35
+            ]
+          }
+        },
+        {
+          "frame": 21,
+          "rect": [
+            1170,
+            695,
+            1536,
+            1024
+          ],
+          "pivot": [
+            1338,
+            919
+          ],
+          "durationMs": 80,
+          "clothRegion": {
+            "bounds": [
+              1250,
+              806,
+              1399,
+              943
+            ],
+            "protectedHeadEllipse": [
+              1338,
+              774,
+              55,
+              35
+            ]
+          }
+        }
+      ]
+    },
+    "down": {
+      "source": "Images/Sprites/Sieg/Sieg down swing.png",
+      "frames": [
+        {
+          "frame": 24,
+          "rect": [
+            15,
+            45,
+            395,
+            365
+          ],
+          "pivot": [
+            174,
+            300
+          ],
+          "durationMs": 80,
+          "clothRegion": {
+            "bounds": [
+              40,
+              141,
+              253,
+              310
+            ],
+            "protectedHeadEllipse": [
+              176,
+              174,
+              45,
+              28
+            ]
+          }
+        },
+        {
+          "frame": 25,
+          "rect": [
+            420,
+            45,
+            775,
+            365
+          ],
+          "pivot": [
+            590,
+            300
+          ],
+          "durationMs": 45,
+          "clothRegion": {
+            "bounds": [
+              450,
+              141,
+              680,
+              313
+            ],
+            "protectedHeadEllipse": [
+              590,
+              174,
+              45,
+              28
+            ]
+          }
+        },
+        {
+          "frame": 26,
+          "rect": [
+            800,
+            45,
+            1140,
+            365
+          ],
+          "pivot": [
+            966,
+            300
+          ],
+          "durationMs": 45,
+          "clothRegion": {
+            "bounds": [
+              810,
+              141,
+              1055,
+              311
+            ],
+            "protectedHeadEllipse": [
+              966,
+              174,
+              45,
+              28
+            ]
+          }
+        },
+        {
+          "frame": 27,
+          "rect": [
+            1160,
+            45,
+            1536,
+            365
+          ],
+          "pivot": [
+            1331,
+            300
+          ],
+          "durationMs": 45,
+          "clothRegion": {
+            "bounds": [
+              1192,
+              141,
+              1440,
+              309
+            ],
+            "protectedHeadEllipse": [
+              1334,
+              174,
+              45,
+              28
+            ]
+          }
+        },
+        {
+          "frame": 28,
+          "rect": [
+            10,
+            365,
+            395,
+            680
+          ],
+          "pivot": [
+            205,
+            586
+          ],
+          "durationMs": 45,
+          "clothRegion": {
+            "bounds": [
+              78,
+              428,
+              345,
+              587
+            ],
+            "protectedHeadEllipse": [
+              205,
+              463,
+              45,
+              28
+            ]
+          }
+        },
+        {
+          "frame": 29,
+          "rect": [
+            405,
+            365,
+            785,
+            680
+          ],
+          "pivot": [
+            598,
+            586
+          ],
+          "durationMs": 45,
+          "clothRegion": {
+            "bounds": [
+              467,
+              428,
+              741,
+              587
+            ],
+            "protectedHeadEllipse": [
+              597,
+              463,
+              45,
+              28
+            ]
+          }
+        },
+        {
+          "frame": 30,
+          "rect": [
+            790,
+            365,
+            1145,
+            680
+          ],
+          "pivot": [
+            960,
+            586
+          ],
+          "durationMs": 55,
+          "clothRegion": {
+            "bounds": [
+              800,
+              428,
+              1080,
+              587
+            ],
+            "protectedHeadEllipse": [
+              961,
+              463,
+              45,
+              28
+            ]
+          }
+        },
+        {
+          "frame": 31,
+          "rect": [
+            1150,
+            365,
+            1536,
+            680
+          ],
+          "pivot": [
+            1335,
+            586
+          ],
+          "durationMs": 60,
+          "clothRegion": {
+            "bounds": [
+              1180,
+              428,
+              1482,
+              587
+            ],
+            "protectedHeadEllipse": [
+              1336,
+              463,
+              45,
+              28
+            ],
+            "protectedVfxRects": [
+              [
+                1460,
+                365,
+                1536,
+                680
+              ]
+            ]
+          }
+        },
+        {
+          "frame": 32,
+          "rect": [
+            20,
+            680,
+            405,
+            1024
+          ],
+          "pivot": [
+            205,
+            885
+          ],
+          "durationMs": 65,
+          "clothRegion": {
+            "bounds": [
+              52,
+              748,
+              299,
+              899
+            ],
+            "protectedHeadEllipse": [
+              207,
+              764,
+              45,
+              28
+            ]
+          }
+        },
+        {
+          "frame": 33,
+          "rect": [
+            410,
+            680,
+            795,
+            1024
+          ],
+          "pivot": [
+            599,
+            885
+          ],
+          "durationMs": 70,
+          "clothRegion": {
+            "bounds": [
+              457,
+              748,
+              700,
+              898
+            ],
+            "protectedHeadEllipse": [
+              599,
+              764,
+              45,
+              28
+            ]
+          }
+        },
+        {
+          "frame": 34,
+          "rect": [
+            800,
+            680,
+            1145,
+            1024
+          ],
+          "pivot": [
+            974,
+            885
+          ],
+          "durationMs": 75,
+          "clothRegion": {
+            "bounds": [
+              850,
+              748,
+              1085,
+              898
+            ],
+            "protectedHeadEllipse": [
+              974,
+              764,
+              45,
+              28
+            ]
+          }
+        },
+        {
+          "frame": 35,
+          "rect": [
+            1160,
+            680,
+            1536,
+            1024
+          ],
+          "pivot": [
+            1364,
+            885
+          ],
+          "durationMs": 80,
+          "clothRegion": {
+            "bounds": [
+              1190,
+              748,
+              1450,
+              900
+            ],
+            "protectedHeadEllipse": [
+              1364,
+              764,
+              45,
+              28
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

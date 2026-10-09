@@ -221,3 +221,47 @@ it("synchronizes independent locations to two real sockets and restores the inte
     await app.close();
   }
 });
+it("keeps the latest movement intent when validated packets arrive in the same burst", async () => {
+  const { createApp } = await import("../src/app.js");
+  const { io } = await import("socket.io-client");
+  const app = createApp();
+  await new Promise<void>((resolve) =>
+    app.http.listen(0, "127.0.0.1", resolve),
+  );
+  const socket = io(
+    `http://127.0.0.1:${(app.http.address() as { port: number }).port}`,
+    { transports: ["websocket"] },
+  );
+  try {
+    await new Promise<void>((resolve) => socket.once("connect", resolve));
+    const reply = await new Promise<any>((resolve) =>
+      socket.emit("room:create", {}, resolve),
+    );
+    const session = reply.data;
+    socket.emit("player:input", neutral(1));
+    socket.emit("player:input", { ...neutral(2), moveX: 1 });
+    socket.emit("player:input", { ...neutral(3), moveX: -1 });
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    const s = app.manager.get(session.roomCode).sessions.get(session.playerId)!;
+    expect(s.input.seq).toBe(3);
+    expect(s.input.moveX).toBe(-1);
+  } finally {
+    socket.disconnect();
+    await app.close();
+  }
+});
+it("allows walking across open rug margins and into stair treads while retaining furniture and wall barriers", () => {
+  const { a } = pair();
+  a.sceneId = "HOUSE_INTERIOR";
+  const m = maps.HOUSE_INTERIOR;
+  const walk = (x: number, y: number, mx: number, my: number, ticks: number) => {
+    Object.assign(a, { x, y });
+    for (let n = 0; n < ticks; n++) move(a, { ...neutral(), moveX: mx, moveY: my }, m, m.walls, 1 / 30);
+    return { x: a.x, y: a.y };
+  };
+  expect(walk(320, 470, 1, 0, 8).x).toBeCloseTo(320 + 8 * 190 / 30);
+  expect(walk(224, 331, 0, -1, 30).y).toBe(237);
+  expect(walk(400, 327, 0, -1, 30).y).toBe(237);
+  expect(walk(400, 475, 0, -1, 30).y).toBe(475);
+  expect(walk(488, 370, 0, -1, 30).y).toBe(347);
+});

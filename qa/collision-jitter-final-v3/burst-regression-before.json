@@ -1,0 +1,11 @@
+{
+  "source": "Original server handler from HEAD, executed in isolated local-socket harness",
+  "expected_latest": {
+    "seq": 3,
+    "moveX": -1
+  },
+  "observed_original": {
+    "seq": 1,
+    "moveX": 0
+  }
+}

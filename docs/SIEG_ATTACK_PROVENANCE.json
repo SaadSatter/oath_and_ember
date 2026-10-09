@@ -8,6 +8,7 @@
     96
   ],
   "scale": 0.2,
+  "metadata": "apps/client/src/animation/siegAttackFrames.json",
   "sampling": "nearest",
   "alpha": "original RGBA unchanged; no background removal",
   "directions": {
@@ -26,7 +27,8 @@
           "groundAnchor": [
             196,
             358
-          ]
+          ],
+          "durationMs": 80
         },
         {
           "frame": 1,
@@ -39,7 +41,8 @@
           "groundAnchor": [
             581,
             358
-          ]
+          ],
+          "durationMs": 80
         },
         {
           "frame": 2,
@@ -52,7 +55,8 @@
           "groundAnchor": [
             957,
             358
-          ]
+          ],
+          "durationMs": 80
         },
         {
           "frame": 3,
@@ -65,7 +69,8 @@
           "groundAnchor": [
             1324,
             358
-          ]
+          ],
+          "durationMs": 80
         },
         {
           "frame": 4,
@@ -78,7 +83,8 @@
           "groundAnchor": [
             207,
             684
-          ]
+          ],
+          "durationMs": 45
         },
         {
           "frame": 5,
@@ -91,7 +97,8 @@
           "groundAnchor": [
             533,
             684
-          ]
+          ],
+          "durationMs": 40
         },
         {
           "frame": 6,
@@ -104,7 +111,8 @@
           "groundAnchor": [
             895,
             684
-          ]
+          ],
+          "durationMs": 40
         },
         {
           "frame": 7,
@@ -117,7 +125,8 @@
           "groundAnchor": [
             1298,
             684
-          ]
+          ],
+          "durationMs": 55
         },
         {
           "frame": 8,
@@ -130,7 +139,8 @@
           "groundAnchor": [
             206,
             971
-          ]
+          ],
+          "durationMs": 55
         },
         {
           "frame": 9,
@@ -143,7 +153,8 @@
           "groundAnchor": [
             579,
             971
-          ]
+          ],
+          "durationMs": 60
         },
         {
           "frame": 10,
@@ -156,7 +167,8 @@
           "groundAnchor": [
             968,
             971
-          ]
+          ],
+          "durationMs": 70
         },
         {
           "frame": 11,
@@ -169,7 +181,8 @@
           "groundAnchor": [
             1342,
             971
-          ]
+          ],
+          "durationMs": 80
         }
       ]
     },
@@ -188,7 +201,8 @@
           "groundAnchor": [
             167,
             320
-          ]
+          ],
+          "durationMs": 80
         },
         {
           "frame": 13,
@@ -201,7 +215,8 @@
           "groundAnchor": [
             570,
             330
-          ]
+          ],
+          "durationMs": 80
         },
         {
           "frame": 14,
@@ -214,7 +229,8 @@
           "groundAnchor": [
             172,
             660
-          ]
+          ],
+          "durationMs": 45
         },
         {
           "frame": 15,
@@ -227,7 +243,8 @@
           "groundAnchor": [
             605,
             660
-          ]
+          ],
+          "durationMs": 45
         },
         {
           "frame": 16,
@@ -240,7 +257,8 @@
           "groundAnchor": [
             974,
             660
-          ]
+          ],
+          "durationMs": 55
         },
         {
           "frame": 17,
@@ -253,7 +271,8 @@
           "groundAnchor": [
             1360,
             660
-          ]
+          ],
+          "durationMs": 60
         },
         {
           "frame": 18,
@@ -266,7 +285,8 @@
           "groundAnchor": [
             208,
             919
-          ]
+          ],
+          "durationMs": 65
         },
         {
           "frame": 19,
@@ -279,7 +299,8 @@
           "groundAnchor": [
             606,
             919
-          ]
+          ],
+          "durationMs": 70
         },
         {
           "frame": 20,
@@ -292,7 +313,8 @@
           "groundAnchor": [
             977,
             919
-          ]
+          ],
+          "durationMs": 75
         },
         {
           "frame": 21,
@@ -305,7 +327,8 @@
           "groundAnchor": [
             1338,
             919
-          ]
+          ],
+          "durationMs": 80
         }
       ]
     },
@@ -324,7 +347,8 @@
           "groundAnchor": [
             174,
             300
-          ]
+          ],
+          "durationMs": 80
         },
         {
           "frame": 25,
@@ -337,7 +361,8 @@
           "groundAnchor": [
             590,
             300
-          ]
+          ],
+          "durationMs": 45
         },
         {
           "frame": 26,
@@ -350,7 +375,8 @@
           "groundAnchor": [
             966,
             300
-          ]
+          ],
+          "durationMs": 45
         },
         {
           "frame": 27,
@@ -363,7 +389,8 @@
           "groundAnchor": [
             1331,
             300
-          ]
+          ],
+          "durationMs": 45
         },
         {
           "frame": 28,
@@ -376,7 +403,8 @@
           "groundAnchor": [
             205,
             586
-          ]
+          ],
+          "durationMs": 45
         },
         {
           "frame": 29,
@@ -389,7 +417,8 @@
           "groundAnchor": [
             598,
             586
-          ]
+          ],
+          "durationMs": 45
         },
         {
           "frame": 30,
@@ -402,7 +431,8 @@
           "groundAnchor": [
             960,
             586
-          ]
+          ],
+          "durationMs": 55
         },
         {
           "frame": 31,
@@ -415,7 +445,8 @@
           "groundAnchor": [
             1335,
             586
-          ]
+          ],
+          "durationMs": 60
         },
         {
           "frame": 32,
@@ -428,7 +459,8 @@
           "groundAnchor": [
             205,
             885
-          ]
+          ],
+          "durationMs": 65
         },
         {
           "frame": 33,
@@ -441,7 +473,8 @@
           "groundAnchor": [
             599,
             885
-          ]
+          ],
+          "durationMs": 70
         },
         {
           "frame": 34,
@@ -454,7 +487,8 @@
           "groundAnchor": [
             974,
             885
-          ]
+          ],
+          "durationMs": 75
         },
         {
           "frame": 35,
@@ -467,7 +501,8 @@
           "groundAnchor": [
             1364,
             885
-          ]
+          ],
+          "durationMs": 80
         }
       ]
     }

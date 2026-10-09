@@ -26,7 +26,7 @@ Production serves the game and Socket.IO together at http://localhost:3000. `POR
 
 - WASD or arrow keys: move.
 - J: primary attack (Oath slash / Ember bolt).
-- K or Shift: defense after unlocking Guard/Ward; later Dash/Blink.
+- K: defense after unlocking Guard/Ward; later Dash/Blink.
 - E: hold to interact, push, or channel.
 - Space, W, or Up: jump in side view.
 - Tab: skill tree. F3: networking diagnostics.

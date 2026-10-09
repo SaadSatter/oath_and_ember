@@ -72,7 +72,7 @@ export class NetworkClient {
       old?.players[this.session?.playerId || ""]?.sceneId !== p?.sceneId
     ) {
       this.interpolation.clear();
-      if (p) this.prediction.reset(p);
+      if (p) this.prediction.reset(p, w.serverTick);
     } else if (p) this.prediction.reconcile(p, w);
     if (p) this.seq = Math.max(this.seq, p.lastProcessedInputSeq);
     this.interpolation.push(w);

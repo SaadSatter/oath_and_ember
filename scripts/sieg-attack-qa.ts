@@ -148,6 +148,11 @@ try {
         frames.every((f) => f >= start && f < start + count),
         `${direction}: wrong directional frame`,
       );
+      assert.equal(
+        frames.length,
+        count,
+        `${direction}: omitted a supplied frame`,
+      );
       assert(
         frames.includes(start + count - 1),
         `${direction}: missing recovery`,
@@ -188,6 +193,26 @@ try {
       sequences[1],
       "clients saw different accepted attacks",
     );
+    const byTick = samples.map(
+      (trace: any[]) =>
+        new Map(
+          trace
+            .filter((s) => s.visuals[hero.id]?.direction === direction)
+            .map((s) => [s.visuals[hero.id].serverTick, s.visuals[hero.id]]),
+        ),
+    );
+    let matched = 0;
+    for (const [tick, left] of byTick[0]) {
+      const right = byTick[1].get(tick);
+      if (right && left.acceptedSeq === right.acceptedSeq) {
+        assert(
+          Math.abs(Number(left.elapsedMs) - Number(right.elapsedMs)) < 100,
+          `${direction}: client phase diverged`,
+        );
+        matched++;
+      }
+    }
+    assert(matched > 0, "no matched server ticks to compare phases");
     writeFileSync(
       `${dir}/${direction}-traces.json`,
       JSON.stringify(samples, null, 2),

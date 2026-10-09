@@ -109,6 +109,14 @@ export class EnvironmentView {
       if (Math.floor(n / set.columns) * 16 < 256 && tile.index >= 0)
         candidates.set(`${tile.x},${tile.y}`, tile);
     });
+    // Separate authored objects even when their placed tiles touch. The couch
+    // touches the dining set in this TMX, but must not inherit its ground depth.
+    const isCouch = (tile: Phaser.Tilemaps.Tile) => {
+      const set = tile.tileset!;
+      const n = tile.index - set.firstgid;
+      const col = n % set.columns, row = Math.floor(n / set.columns);
+      return col >= 1 && col <= 2 && row >= 10 && row <= 12;
+    };
     while (candidates.size) {
       const first = candidates.values().next().value!;
       const queue = [first],
@@ -125,13 +133,16 @@ export class EnvironmentView {
         ]) {
           const key = `${x},${y}`,
             neighbor = candidates.get(key);
-          if (neighbor) {
+          if (neighbor && isCouch(neighbor) === isCouch(first)) {
             candidates.delete(key);
             queue.push(neighbor);
           }
         }
       }
-      const depth = Math.max(...group.map((t) => (t.y + 1) * 32)) - 13;
+      // The couch atlas includes empty padding below its feet. Tile-box
+      // depth incorrectly occludes heroes standing on the floor in front.
+      const couch = isCouch(first);
+      const depth = (couch ? 334 : Math.max(...group.map((t) => (t.y + 1) * 32))) - 13;
       for (const tile of group) {
         const set = tile.tileset!,
           n = tile.index - set.firstgid;
