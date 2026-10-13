@@ -54,3 +54,21 @@ export const skills = [
         ]
       : [],
 }));
+
+/** Server-selected fireball strength; level one is Coco's starting spell. */
+export function fireballLevel(unlockedSkills: readonly string[]): number {
+  for (let level = 4; level >= 2; level--)
+    if (unlockedSkills.includes(`fireball_${level}`)) return level;
+  return 1;
+}
+export const fireballDamage = (level: number) =>
+  20 + (Math.max(1, Math.min(4, level)) - 1) * 10;
+for (let level = 2; level <= 4; level++)
+  skills.push({
+    id: `fireball_${level}`,
+    role: "EMBER",
+    name: `Fireball ${level}`,
+    description: `Upgrade Coco's fireball to ${fireballDamage(level)} damage.`,
+    cost: 1,
+    prerequisites: level === 2 ? [] : [`fireball_${level - 1}`],
+  });

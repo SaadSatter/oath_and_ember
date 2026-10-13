@@ -189,3 +189,25 @@ it("presentation scaling and offsets leave authoritative projectile coordinates 
     h.view.destroy();
   }
 });
+
+it("uses the server-captured fireball tier, loops its nine frames and hides the old core", () => {
+  const h = harness();
+  for (const level of [1, 2, 3, 4]) {
+    const w = world();
+    w.projectiles.p.fireballLevel = level;
+    w.projectiles.p.damage = 20 + (level - 1) * 10;
+    h.scene.time.now = 0;
+    h.view.update(w, () => ({ x: 90, y: 100 }), false);
+    for (const time of [0, 80, 650, 1100]) {
+      h.scene.time.now = time;
+      h.view.update(w, () => ({ x: 90, y: 100 }), false);
+      expect(h.images[0].setTexture).toHaveBeenLastCalledWith(
+        "coco:magic:fireball:palette:arcane",
+        (level - 1) * 9 + (Math.floor(time / 130) % 9),
+      );
+      expect(h.images[1].setVisible).toHaveBeenLastCalledWith(false);
+    }
+    h.view.update({ ...w, projectiles: {} }, () => null, false);
+    h.images.length = 0;
+  }
+});

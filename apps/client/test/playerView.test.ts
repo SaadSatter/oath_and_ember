@@ -154,12 +154,12 @@ it("allows visual scale changes without changing coordinates or restarting the c
     characterVisuals.OATH.scale = before;
   }
 });
-it("ships transparent normalized PNG sheets whose 28 frames match the manifest", () => {
+it("ships transparent normalized PNG sheets whose frames match each hero manifest", () => {
   for (const role of ["OATH", "EMBER"] as const) {
     const a = heroAssets[role];
     const png = readFileSync(`apps/client/public${a.url}`);
     expect(png.subarray(1, 4).toString()).toBe("PNG");
-    expect(png.readUInt32BE(16)).toBe(a.frameWidth * 28);
+    expect(png.readUInt32BE(16)).toBe(a.frameWidth * 36);
     expect(png.readUInt32BE(20)).toBe(a.frameHeight);
     expect(png[25]).toBe(6); // RGBA PNG, not a flattened matte.
     expect(characterVisuals[role].origin).toEqual({ x: 0.5, y: 60 / 64 });

@@ -3,20 +3,50 @@ import { maps, collisionRects } from "../../../../packages/shared/src/maps.js";
 import type { World } from "../../../../packages/shared/src/gameTypes.js";
 export class Interpolation {
   buffer: { time: number; world: World }[] = [];
+  private playbackTime: number | null = null;
+  private renderTime = 0;
+  private origin: { tick: number; time: number } | null = null;
   clear() {
     this.buffer = [];
+    this.origin = null;
+    this.playbackTime = null;
   }
-  push(world: World) {
+  push(world: World, now = performance.now()) {
+    const last = this.buffer.at(-1)?.world;
+    if (last && world.serverTick <= last.serverTick) return;
+    if (!this.origin) {
+      this.origin = { tick: world.serverTick, time: now };
+      this.playbackTime = now - 100;
+      this.renderTime = now;
+    }
     this.buffer.push({
-      time: performance.now(),
+      time:
+        this.origin.time + ((world.serverTick - this.origin.tick) * 1000) / 30,
       world: structuredClone(world),
     });
     if (this.buffer.length > 20) this.buffer.shift();
   }
-  // Render remote entities 100ms behind receipt time. When packets stall, hold
+  // Render remote entities on simulation time, 100ms behind the initial clock.
+  // Receipt bursts do not compress several physics ticks into one frame. Hold
   // the latest state rather than inventing unbounded remote movement.
-  position(id: string, kind: "players" | "enemies" | "projectiles") {
-    const t = performance.now() - 100;
+  position(
+    id: string,
+    kind: "players" | "enemies" | "projectiles",
+    now = performance.now(),
+  ) {
+    if (!this.buffer.length) return null;
+    if (this.playbackTime === null) {
+      this.playbackTime = now - 100;
+      this.renderTime = now;
+    }
+    // Pause the playhead when the buffer runs dry. Absolute wall time used to
+    // run beyond available snapshots, then jump across a whole receipt burst.
+    this.playbackTime = Math.min(
+      this.playbackTime + Math.max(0, now - this.renderTime),
+      this.buffer.at(-1)!.time,
+    );
+    this.renderTime = Math.max(this.renderTime, now);
+    const t = this.playbackTime;
     let a = this.buffer[0],
       b = a;
     for (const s of this.buffer) {
@@ -35,18 +65,25 @@ export class Interpolation {
       const latest = this.buffer.at(-1)?.world.players[id];
       if (
         latest &&
-        latest.sceneId !==
+        (latest.sceneId !==
           (p as import("../../../../packages/shared/src/gameTypes.js").Player)
-            .sceneId
+            .sceneId ||
+          latest.movementEpoch !==
+            (p as import("../../../../packages/shared/src/gameTypes.js").Player)
+              .movementEpoch)
       )
         return latest;
     }
     if (
       kind === "players" &&
-      (p as import("../../../../packages/shared/src/gameTypes.js").Player)
+      ((p as import("../../../../packages/shared/src/gameTypes.js").Player)
         .sceneId !==
         (q as import("../../../../packages/shared/src/gameTypes.js").Player)
-          .sceneId
+          .sceneId ||
+        (p as import("../../../../packages/shared/src/gameTypes.js").Player)
+          .movementEpoch !==
+          (q as import("../../../../packages/shared/src/gameTypes.js").Player)
+            .movementEpoch)
     )
       return q;
     const f = Math.max(0, Math.min(1, (t - a.time) / (b.time - a.time || 1)));

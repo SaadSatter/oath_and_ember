@@ -1,0 +1,177 @@
+{
+  "revision": 3,
+  "authorization": "User requested replacement with supplied Mossling walking GIFs and idle export on 2026-10-12.",
+  "source": "Images/Sprites/monster_sprites/sources/mossling-user-export-v3",
+  "files": [
+    {
+      "path": "animations/Walking/south/frame_000.png",
+      "sha256": "8bd6cb1550a9c2c50ce8b0a365bdb164f95aaecbea275b9aa881e808aa89a33b"
+    },
+    {
+      "path": "animations/Walking/south/frame_001.png",
+      "sha256": "1e232853c18e1c6f53e6c70bb30cdf679fdc46129ec43703997cabb319c04d71"
+    },
+    {
+      "path": "animations/Walking/south/frame_002.png",
+      "sha256": "dad0f610fe9863e81990c28f3a4151180a1b81ced4abb8b276ab3817c6d5aad6"
+    },
+    {
+      "path": "animations/Walking/south/frame_003.png",
+      "sha256": "7a2c80568df08b25c5f3f21916c8ff33d9b365edf4ca5ab4d4d92a1f426ef4da"
+    },
+    {
+      "path": "animations/Walking/south/frame_004.png",
+      "sha256": "349ceb37fb6f86345f5dec9c6f2a74ac4604f217c80197244c3c79cd83d101bc"
+    },
+    {
+      "path": "animations/Walking/south/frame_005.png",
+      "sha256": "d10a74d950a54435a83767395c4f788b3aaed2b5ac4838c24c0c5b26151b1758"
+    },
+    {
+      "path": "animations/Walking/south/frame_006.png",
+      "sha256": "186e0dcd0ada8e5b22faa7de1c33d32700257ca7a02b82c0fcc98f91af4c6bf7"
+    },
+    {
+      "path": "animations/Walking/south/frame_007.png",
+      "sha256": "c7b7e47ae0944d68fb07657021592417af82f65d89ff6110084016dc49608db4"
+    },
+    {
+      "path": "rotations/south.png",
+      "sha256": "7fceb4085fa61db0cba6470e89e7638a817fb6d737194e8d93b5415b5577d546"
+    },
+    {
+      "path": "animations/Walking/north/frame_000.png",
+      "sha256": "d20eab0b81f2bab453f4ed17243a13489a940f5c0076bc6824fb1793e5322d15"
+    },
+    {
+      "path": "animations/Walking/north/frame_001.png",
+      "sha256": "3123bb28469f5400bb5ce1f2fc553310a29c86dc42c85c4e095fa147061153ff"
+    },
+    {
+      "path": "animations/Walking/north/frame_002.png",
+      "sha256": "b63174806a97f430c9353d89455d962fe18e1929ba883816f21877908d2741d4"
+    },
+    {
+      "path": "animations/Walking/north/frame_003.png",
+      "sha256": "b16d34a8225cbdd3c86c20719d1b2258c54433a1f63110a83c45df79233fb5fa"
+    },
+    {
+      "path": "animations/Walking/north/frame_004.png",
+      "sha256": "664c6008e63236f85ec539e5315c1e8494b874094f4fc9bef96d985a4c9e6b97"
+    },
+    {
+      "path": "animations/Walking/north/frame_005.png",
+      "sha256": "c70faeef5d5bcf263a2ee6988940626d3e8bcdd27e41ad6e9c6902809a6a8a7c"
+    },
+    {
+      "path": "animations/Walking/north/frame_006.png",
+      "sha256": "67bc4a58047207a5ae84fcbab1396a669ddacd96abb6bd86b91dc29199970fb2"
+    },
+    {
+      "path": "animations/Walking/north/frame_007.png",
+      "sha256": "d108fce25375424c277ba6f373119df4540e5dd782a5830a867a9315cefc0889"
+    },
+    {
+      "path": "rotations/north.png",
+      "sha256": "7871b5581e92d88a82160df117f37ab9d3720b1ac3a840e3ff542da4bbdfccd6"
+    },
+    {
+      "path": "animations/Walking/west/frame_000.png",
+      "sha256": "432b498d06b851bb4315ccd6225183fa0c824a376f7f4e158d60677ce0de53f0"
+    },
+    {
+      "path": "animations/Walking/west/frame_001.png",
+      "sha256": "505aa483d5d816d6796a40a740dd7c2f8821547291df9948831d04b32302ae7c"
+    },
+    {
+      "path": "animations/Walking/west/frame_002.png",
+      "sha256": "ffe717c8fd183856d73d6b58a2d9757833b3ae96251eaee4ac5161a2fde37f98"
+    },
+    {
+      "path": "animations/Walking/west/frame_003.png",
+      "sha256": "e097a5cad46428ffff43f46ab6ad633a3db0bd4529ee2f98c09d2f473c45a53d"
+    },
+    {
+      "path": "animations/Walking/west/frame_004.png",
+      "sha256": "7f3b0c511948ad63456dde10ce188e0c7934251e598075a92324986a94a3f42f"
+    },
+    {
+      "path": "animations/Walking/west/frame_005.png",
+      "sha256": "fca02ab4220ee9f05e4da37745699bb10035ec87753808d2fd6a82739e4726ff"
+    },
+    {
+      "path": "animations/Walking/west/frame_006.png",
+      "sha256": "4239b2f6f08e23b6bc10ea761cd850a31ed9eb5a4e16b765cd18b2d01e95444b"
+    },
+    {
+      "path": "animations/Walking/west/frame_007.png",
+      "sha256": "442cd0c76801a07a874342b742939619c3e304d301d1eecd82ff82aaae5d763f"
+    },
+    {
+      "path": "rotations/west.png",
+      "sha256": "b0f9c3de7cc14a80a9dfef20e2f94e58d9897426784a83cc696bc38f8dc38347"
+    },
+    {
+      "path": "animations/Walking/east/frame_000.png",
+      "sha256": "677afc4b8e6c2674663f1668f71e93b115f76c8cf48cab702565196aa4fbc806"
+    },
+    {
+      "path": "animations/Walking/east/frame_001.png",
+      "sha256": "c5e4d785fbe0536475e3e5ff467e5a8488975e85697cc2924b9ceb5e8140622f"
+    },
+    {
+      "path": "animations/Walking/east/frame_002.png",
+      "sha256": "0f3ff572bc138f60c1bbf7e0d091930720a331d16fc38900d8a39f980ef9900c"
+    },
+    {
+      "path": "animations/Walking/east/frame_003.png",
+      "sha256": "438affe5157d54adcb8ab888a4dcaa80ba76795ffe9620e403b8135107fb73b3"
+    },
+    {
+      "path": "animations/Walking/east/frame_004.png",
+      "sha256": "85f2243ee02c6139fe6627c3f46b7017c40b2a2db4d01d06aea7e80fe7f887a0"
+    },
+    {
+      "path": "animations/Walking/east/frame_005.png",
+      "sha256": "16f9cf7eb39e99c9d333b3e7ad0b304edf347782b16b2c01d9d362c513cb3862"
+    },
+    {
+      "path": "animations/Walking/east/frame_006.png",
+      "sha256": "761e04067ab4b61e483e204f78e92cf9029c2b01cdf9217d1a972ef6d2c9b115"
+    },
+    {
+      "path": "animations/Walking/east/frame_007.png",
+      "sha256": "894e681343cc13335644eb99f1218203389118ae43a600eb10b969a86afa3af7"
+    },
+    {
+      "path": "rotations/east.png",
+      "sha256": "84f08c83b847c4db3b555f44459983ae0a851250fa50d57b9096b2c9bb2bf9a4"
+    }
+  ],
+  "atlas_sha256": "3c3380d08f3643a7f0c8cab81d67a090698f67d873107ffd7162dcace8283c5a",
+  "idle_offsets": {
+    "south": [
+      24,
+      22
+    ],
+    "north": [
+      28,
+      28
+    ],
+    "west": [
+      13,
+      16
+    ],
+    "east": [
+      32,
+      16
+    ]
+  },
+  "operations": [
+    "Lossless PNG packing: eight walk frames then one idle pose per direction. North 252px canvases padded by 2px on each side.",
+    "Idle translated once per direction to match the first walk footprint; no scaling or pixel edits.",
+    "Original GIFs retained for reference; transparent PNG walking export used at runtime."
+  ],
+  "runtime_key": "mossling_sprites_v2 retained to avoid changing shared gameplay definitions",
+  "previous_approved": "Images/Sprites/monster_sprites/mossling/atlas.png"
+}

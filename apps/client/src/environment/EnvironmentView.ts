@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { classifyMapTile, mapElementDepth } from "./mapClassification.js";
 import type { SceneId } from "../../../../packages/shared/src/gameTypes.js";
 import { ENVIRONMENT_SCALE } from "../../../../packages/shared/src/maps.js";
 import houseTrees from "../../public/assets/environment/main-house/trees.json" with { type: "json" };
@@ -77,15 +78,9 @@ export class EnvironmentView {
           0,
           false,
         )! as Phaser.Tilemaps.TilemapLayer;
-        layer
-          .setScale(ENVIRONMENT_SCALE)
-          .setDepth(l.name === "House_roof" ? 260 : -100 + i);
+        layer.setScale(ENVIRONMENT_SCALE).setDepth(-100 + i);
         this.objects.push(layer);
-        if (
-          id === "HOUSE_INTERIOR" &&
-          ["Objects1", "Objects2", "Boxes"].includes(l.name)
-        )
-          this.sortFurniture(layer);
+        this.sortElements(layer, id, l.name, i);
       });
       if (id === "MAIN_HOUSE")
         houseTrees.forEach((p, i) => this.tree(p.x, p.y, i, 2));
@@ -98,77 +93,42 @@ export class EnvironmentView {
       }
     }
   }
-  private sortFurniture(layer: Phaser.Tilemaps.TilemapLayer) {
-    const candidates = new Map<string, Phaser.Tilemaps.Tile>();
+  private sortElements(
+    layer: Phaser.Tilemaps.TilemapLayer,
+    id: SceneId,
+    name: string,
+    layerIndex: number,
+  ) {
     layer.forEachTile((tile) => {
-      const set = tile.tileset;
-      if (!set || !set.name.startsWith("Interior:")) return;
-      const n = tile.index - set.firstgid;
-      // Furniture occupies the upper 256px of the supplied Interior atlas;
-      // rugs and scattered floor details remain in their authored ground layer.
-      if (Math.floor(n / set.columns) * 16 < 256 && tile.index >= 0)
-        candidates.set(`${tile.x},${tile.y}`, tile);
-    });
-    // Separate authored objects even when their placed tiles touch. The couch
-    // touches the dining set in this TMX, but must not inherit its ground depth.
-    const isCouch = (tile: Phaser.Tilemaps.Tile) => {
-      const set = tile.tileset!;
-      const n = tile.index - set.firstgid;
-      const col = n % set.columns, row = Math.floor(n / set.columns);
-      return col >= 1 && col <= 2 && row >= 10 && row <= 12;
-    };
-    while (candidates.size) {
-      const first = candidates.values().next().value!;
-      const queue = [first],
-        group: Phaser.Tilemaps.Tile[] = [];
-      candidates.delete(`${first.x},${first.y}`);
-      while (queue.length) {
-        const tile = queue.pop()!;
-        group.push(tile);
-        for (const [x, y] of [
-          [tile.x - 1, tile.y],
-          [tile.x + 1, tile.y],
-          [tile.x, tile.y - 1],
-          [tile.x, tile.y + 1],
-        ]) {
-          const key = `${x},${y}`,
-            neighbor = candidates.get(key);
-          if (neighbor && isCouch(neighbor) === isCouch(first)) {
-            candidates.delete(key);
-            queue.push(neighbor);
-          }
-        }
-      }
-      // The couch atlas includes empty padding below its feet. Tile-box
-      // depth incorrectly occludes heroes standing on the floor in front.
-      const couch = isCouch(first);
-      const depth = (couch ? 334 : Math.max(...group.map((t) => (t.y + 1) * 32))) - 13;
-      for (const tile of group) {
-        const set = tile.tileset!,
-          n = tile.index - set.firstgid;
-        const texture = this.scene.textures.get(
-          `house:${set.name.split(":")[0]}`,
+      if (tile.index < 0 || !tile.tileset) return;
+      const element = classifyMapTile(id, name, tile.x, tile.y);
+      if (element.category === "path") return;
+      const depth = mapElementDepth(element, layerIndex);
+
+      const set = tile.tileset!,
+        n = tile.index - set.firstgid;
+      const texture = this.scene.textures.get(
+        `house:${set.name.split(":")[0]}`,
+      );
+      const frame = `tile:${n}`;
+      if (!texture.has(frame))
+        texture.add(
+          frame,
+          0,
+          (n % set.columns) * 16,
+          Math.floor(n / set.columns) * 16,
+          16,
+          16,
         );
-        const frame = `tile:${n}`;
-        if (!texture.has(frame))
-          texture.add(
-            frame,
-            0,
-            (n % set.columns) * 16,
-            Math.floor(n / set.columns) * 16,
-            16,
-            16,
-          );
-        const image = this.scene.add
-          .image(tile.x * 32, tile.y * 32, texture.key, frame)
-          .setOrigin(0)
-          .setScale(ENVIRONMENT_SCALE)
-          .setDepth(depth);
-        image.setFlip(tile.flipX, tile.flipY).setRotation(tile.rotation);
-        tile.visible = false;
-        this.objects.push(image);
-      }
-    }
+      const image = this.scene.add
+        .image(tile.x * 32, tile.y * 32, texture.key, frame)
+        .setOrigin(0)
+        .setScale(ENVIRONMENT_SCALE)
+        .setDepth(depth);
+      image.setFlip(tile.flipX, tile.flipY).setRotation(tile.rotation);
+      tile.visible = false;
+      this.objects.push(image);
+    });
   }
   private tree(x: number, y: number, index: number, scale: number) {
     const key = `tree:${treeNames[index % treeNames.length]}`,

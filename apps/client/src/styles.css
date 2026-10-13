@@ -346,3 +346,6 @@ body[data-touch="true"][data-playing="true"] #notice {
 .color-swatch[aria-pressed=true] { outline:3px solid #fff; outline-offset:2px; }
 .color-swatch:disabled { opacity:1; cursor:default; }
 @media (pointer:coarse) { .palette-group .color-swatch { width:44px; height:44px; min-width:44px; } }
+
+.fireball-skill-icon { width: 48px; height: 40px; object-fit: contain; image-rendering: pixelated; vertical-align: middle; margin-right: 12px; }
+.fireball-base-skill { padding: 10px; color: #ffdfac; }

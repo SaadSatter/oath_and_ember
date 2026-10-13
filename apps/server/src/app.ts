@@ -11,6 +11,13 @@ import type {
 import type { GameRoom } from "./GameRoom.js";
 const inputSchema = z
   .object({
+    targetTick: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER).optional(),
+    movementEpoch: z
+      .number()
+      .int()
+      .min(0)
+      .max(Number.MAX_SAFE_INTEGER)
+      .optional(),
     seq: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER),
     moveX: z.number().int().min(-1).max(1),
     moveY: z.number().int().min(-1).max(1),
@@ -20,6 +27,10 @@ const inputSchema = z
     interactHeld: z.boolean(),
   })
   .strict();
+const inputPacketSchema = z.union([
+  inputSchema,
+  z.object({ frames: z.array(inputSchema).min(1).max(6) }).strict(),
+]);
 export function createApp(options: { encounter?: boolean } = {}) {
   const app = express(),
     http = createServer(app),
@@ -32,7 +43,6 @@ export function createApp(options: { encounter?: boolean } = {}) {
   io.on("connection", (socket) => {
     let room: GameRoom | undefined,
       id = "";
-    let lastInput = 0;
     const sync = () => {
       if (room) io.to(room.state.roomCode).emit("state:sync", room.state);
     };
@@ -72,7 +82,6 @@ export function createApp(options: { encounter?: boolean } = {}) {
         else io.to(r.state.roomCode).emit("state:sync", r.state);
         room = undefined;
         id = "";
-        lastInput = 0;
       }),
     );
     socket.on("room:create", (_p, ack) =>
@@ -146,27 +155,16 @@ export function createApp(options: { encounter?: boolean } = {}) {
       }),
     );
     socket.on("player:input", (data) => {
-      const parsed = inputSchema.safeParse(data);
+      const parsed = inputPacketSchema.safeParse(data);
       if (!parsed.success || !room) return;
-      const s = room.sessions.get(id);
-      if (
-        !s ||
-        parsed.data.seq <=
-          Math.max(s.input.seq, room.state.players[id].lastProcessedInputSeq)
-      )
-        return;
-      const primaryChanged = parsed.data.primaryHeld !== s.input.primaryHeld;
-      // Keep the newest validated intent in a burst. Physics still runs once
-      // per server tick; dropping later packets here retained stale movement.
-      if (primaryChanged) {
-        s.primaryEdges ||= [];
-        if (s.primaryEdges.length >= 8) return;
-        s.primaryEdges.push(parsed.data.primaryHeld);
-      }
-      lastInput = Date.now();
-      s.input = parsed.data;
-      s.received = lastInput;
+      for (const frame of "frames" in parsed.data
+        ? parsed.data.frames
+        : [parsed.data])
+        room.receiveInput(id, frame);
     });
+    socket.on("clock:probe", (_p, ack) =>
+      request(ack, () => ({ serverTick: requireRoom().state.serverTick })),
+    );
     socket.on("disconnect", () => {
       if (room) {
         room.disconnect(id);

@@ -1,0 +1,7 @@
+{
+  "errors": [],
+  "views": [
+    "{\"moss\":{\"x\":664.5076996149903,\"y\":399.2467492342812,\"frame\":8,\"flipX\":false,\"animation\":\"mossling_sprites_v2:walk_west\",\"playing\":false,\"visible\":true},\"moss-2\":{\"x\":695.8425602587132,\"y\":514.8936425541928,\"frame\":17,\"flipX\":false,\"animation\":\"mossling_sprites_v2:walk_north\",\"playing\":false,\"visible\":true},\"wisp\":{\"x\":863.6019346063439,\"y\":394.41770527628836,\"frame\":12,\"flipX\":false,\"animation\":\"cinder_wisp_sprites_v1:hover_west\",\"playing\":true,\"visible\":true},\"sentinel\":{\"x\":869.4482219175305,\"y\":514.4612226412466,\"frame\":15,\"flipX\":true,\"animation\":\"ironbound_sentinel_sprites_v2:walk_east\",\"playing\":true,\"visible\":true}}",
+    "{\"moss\":{\"x\":664.5076996149903,\"y\":399.2467492342812,\"frame\":8,\"flipX\":false,\"animation\":\"mossling_sprites_v2:walk_west\",\"playing\":false,\"visible\":true},\"moss-2\":{\"x\":695.8425602587132,\"y\":514.8936425541928,\"frame\":17,\"flipX\":false,\"animation\":\"mossling_sprites_v2:walk_north\",\"playing\":false,\"visible\":true},\"wisp\":{\"x\":863.6019346063439,\"y\":394.41770527628836,\"frame\":14,\"flipX\":false,\"animation\":\"cinder_wisp_sprites_v1:hover_west\",\"playing\":true,\"visible\":true},\"sentinel\":{\"x\":867.4878263481116,\"y\":514.0988827514485,\"frame\":12,\"flipX\":true,\"animation\":\"ironbound_sentinel_sprites_v2:walk_east\",\"playing\":true,\"visible\":true}}"
+  ]
+}

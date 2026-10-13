@@ -1,0 +1,357 @@
+{
+  "errors": [],
+  "reversalEpsilon": 0.01,
+  "penetrationEpsilon": 1e-7,
+  "results": [
+    {
+      "stage": "continuous-release",
+      "client": 1,
+      "samples": 595,
+      "durationMs": 12165.900000095367,
+      "maxCorrection": 12.666666666666657,
+      "maxLead": 7,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 3,
+          "maxBackwardStep": 6.333333333333371,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 1,
+          "maxBackwardStep": 0.6873314207464745,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "continuous-release",
+      "client": 2,
+      "samples": 597,
+      "durationMs": 12155.099999904633,
+      "maxCorrection": 12.666666666666742,
+      "maxLead": 6,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 1,
+          "maxBackwardStep": 12.666666666666657,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 1,
+          "maxBackwardStep": 1.8321581419333626,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "rapid-directions",
+      "client": 1,
+      "samples": 317,
+      "durationMs": 5466.300000190735,
+      "maxCorrection": 25.333333333333258,
+      "maxLead": 6,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "rapid-directions",
+      "client": 2,
+      "samples": 317,
+      "durationMs": 5466.300000190735,
+      "maxCorrection": 25.333333333333485,
+      "maxLead": 6,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "walls",
+      "client": 1,
+      "samples": 634,
+      "durationMs": 11033.400000095367,
+      "maxCorrection": 0,
+      "maxLead": 10,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "walls",
+      "client": 2,
+      "samples": 635,
+      "durationMs": 11056.799999952316,
+      "maxCorrection": 0,
+      "maxLead": 10,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "furniture-slide",
+      "client": 1,
+      "samples": 331,
+      "durationMs": 5700,
+      "maxCorrection": 4.478342947514818,
+      "maxLead": 6,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "furniture-slide",
+      "client": 2,
+      "samples": 331,
+      "durationMs": 5700,
+      "maxCorrection": 6.333333333333358,
+      "maxLead": 6,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 2,
+          "maxBackwardStep": 6.333333333333357,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 1,
+          "maxBackwardStep": 0.7496784715636893,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "tree-contact",
+      "client": 1,
+      "samples": 343,
+      "durationMs": 5923.200000047684,
+      "maxCorrection": 8.956685895029608,
+      "maxLead": 6,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 20
+        },
+        "predicted": {
+          "reversals": 2,
+          "maxBackwardStep": 3.1666666666666785,
+          "penetrations": 20
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 21
+        }
+      }
+    },
+    {
+      "stage": "tree-contact",
+      "client": 2,
+      "samples": 345,
+      "durationMs": 5933.099999904633,
+      "maxCorrection": 8.956685895029636,
+      "maxLead": 7,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 113
+        },
+        "predicted": {
+          "reversals": 2,
+          "maxBackwardStep": 12.666666666666742,
+          "penetrations": 113
+        },
+        "rendered": {
+          "reversals": 4,
+          "maxBackwardStep": 2.188761163662889,
+          "penetrations": 114
+        }
+      }
+    },
+    {
+      "stage": "corners",
+      "client": 1,
+      "samples": 347,
+      "durationMs": 6015.899999856949,
+      "maxCorrection": 0,
+      "maxLead": 7,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "corners",
+      "client": 2,
+      "samples": 339,
+      "durationMs": 5882.600000143051,
+      "maxCorrection": 8.956685895029636,
+      "maxLead": 7,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 1,
+          "maxBackwardStep": 6.333333333333357,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 2,
+          "maxBackwardStep": 1.0943327605635123,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "abilities",
+      "client": 1,
+      "samples": 393,
+      "durationMs": 6864.5,
+      "maxCorrection": 6.333333333333371,
+      "maxLead": 7,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 2,
+          "maxBackwardStep": 6.333333333333314,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "abilities",
+      "client": 2,
+      "samples": 395,
+      "durationMs": 6815.699999809265,
+      "maxCorrection": 19,
+      "maxLead": 6,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 1,
+          "maxBackwardStep": 6.333333333333314,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    }
+  ]
+}

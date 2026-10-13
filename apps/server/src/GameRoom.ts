@@ -12,7 +12,10 @@ import {
   heavyTiming,
   swordContactTicks,
 } from "../../../packages/shared/src/combat.js";
-import { DT } from "../../../packages/shared/src/constants.js";
+import {
+  DT,
+  MAX_PREDICTION_LEAD,
+} from "../../../packages/shared/src/constants.js";
 import {
   neutral,
   type World,
@@ -22,8 +25,8 @@ import {
   type SceneId,
 } from "../../../packages/shared/src/gameTypes.js";
 import { maps, collisionRects } from "../../../packages/shared/src/maps.js";
-import { move } from "../../../packages/shared/src/movement.js";
-import { skills } from "../../../packages/shared/src/abilities.js";
+import { stepMovement } from "../../../packages/shared/src/movement.js";
+import { skills, fireballLevel, fireballDamage } from "../../../packages/shared/src/abilities.js";
 export class GameRoom {
   state: World;
   private interactWasHeld = new Map<string, boolean>();
@@ -37,7 +40,10 @@ export class GameRoom {
       expires: number;
       input: InputFrame;
       received: number;
+      receivedTick?: number;
       primaryEdges?: boolean[];
+      movementQueue?: Map<number, InputFrame>;
+      movementInput?: InputFrame;
     }
   >();
   constructor(
@@ -159,6 +165,13 @@ export class GameRoom {
     s.socketId = socketId;
     s.expires = Infinity;
     s.input = neutral();
+    s.movementQueue?.clear();
+    s.movementInput = neutral(this.state.players[id].lastProcessedInputSeq);
+    this.state.players[id].movementEpoch =
+      (this.state.players[id].movementEpoch ?? 0) + 1;
+    this.state.players[id].movementInput = neutral(
+      this.state.players[id].lastProcessedInputSeq,
+    );
     s.primaryEdges = [];
     delete this.state.players[id].heavyCharge;
     this.primaryWasHeld.delete(id);
@@ -175,6 +188,8 @@ export class GameRoom {
       s.socketId = null;
       s.expires = Date.now() + 30000;
       s.input = neutral();
+      s.movementQueue?.clear();
+      s.movementInput = neutral(this.state.players[id].lastProcessedInputSeq);
       s.primaryEdges = [];
       delete this.state.players[id].heavyCharge;
       this.primaryWasHeld.delete(id);
@@ -234,6 +249,8 @@ export class GameRoom {
       delete p.heavyCharge;
       Object.assign(p, {
         movementIntent: { x: 0, y: 0 },
+        movementEpoch: (p.movementEpoch ?? 0) + 1,
+        movementInput: neutral(),
         sceneId: w.sceneId,
         x: this.encounter
           ? 550
@@ -250,6 +267,8 @@ export class GameRoom {
       const s = this.sessions.get(p.id);
       if (s) {
         s.input = neutral();
+        s.movementQueue?.clear();
+        s.movementInput = neutral();
         s.primaryEdges = [];
       }
     });
@@ -287,11 +306,15 @@ export class GameRoom {
       const session = this.sessions.get(p.id);
       if (session) {
         session.input = neutral(session.input.seq);
+        session.movementQueue?.clear();
+        session.movementInput = neutral(p.lastProcessedInputSeq);
         session.primaryEdges = [];
       }
       Object.assign(p, {
         movementIntent: { x: 0, y: 0 },
         sceneId: scene,
+        movementEpoch: (p.movementEpoch ?? 0) + 1,
+        movementInput: neutral(p.lastProcessedInputSeq),
         ...maps[scene].spawn,
         x: maps[scene].spawn.x + i * 50,
         vx: 0,
@@ -329,6 +352,8 @@ export class GameRoom {
         ) ?? spawn;
     Object.assign(p, arrival, {
       sceneId,
+      movementEpoch: (p.movementEpoch ?? 0) + 1,
+      movementInput: neutral(p.lastProcessedInputSeq),
       vx: 0,
       vy: 0,
       movementIntent: { x: 0, y: 0 },
@@ -343,9 +368,47 @@ export class GameRoom {
       interactHeld: session.input.interactHeld,
     };
     session.primaryEdges = [];
+    session.movementQueue?.clear();
+    session.movementInput = neutral(p.lastProcessedInputSeq);
     // Retain the interaction latch until E is released: no held-key door loops.
     for (const [id, q] of Object.entries(this.state.projectiles))
       if (q.owner === p.id) delete this.state.projectiles[id];
+  }
+  // Input tick is a scheduling request, never permission for additional movement.
+  receiveInput(id: string, input: InputFrame) {
+    const s = this.sessions.get(id),
+      p = this.state.players[id];
+    if (!s || !p || input.seq <= Math.max(s.input.seq, p.lastProcessedInputSeq))
+      return false;
+    if (
+      (input.movementEpoch !== undefined || input.targetTick !== undefined) &&
+      input.movementEpoch !== (p.movementEpoch ?? 0)
+    )
+      return false;
+    if (
+      input.targetTick !== undefined &&
+      input.targetTick > this.state.serverTick + MAX_PREDICTION_LEAD
+    )
+      return false;
+    if (input.primaryHeld !== s.input.primaryHeld) {
+      s.primaryEdges ||= [];
+      if (s.primaryEdges.length < 8) s.primaryEdges.push(input.primaryHeld);
+    }
+    s.input = { ...input };
+    s.received = Date.now();
+    s.receivedTick = Math.max(
+      this.state.serverTick,
+      input.targetTick ?? this.state.serverTick,
+    );
+    if (input.targetTick !== undefined) {
+      s.movementQueue ||= new Map();
+      const tick = Math.max(this.state.serverTick + 1, input.targetTick);
+      s.movementQueue.set(tick, { ...input, targetTick: tick });
+    } else {
+      // Legacy intent senders still receive exactly one movement step per tick.
+      s.movementQueue = undefined;
+    }
+    return true;
   }
   tick() {
     const w = this.state;
@@ -365,7 +428,10 @@ export class GameRoom {
     ) => Math.hypot(p.x - q.x, p.y - q.y) < d;
     for (const p of Object.values(w.players)) {
       const s = this.sessions.get(p.id)!;
-      const fresh = Date.now() - s.received < 250;
+      const fresh =
+        s.receivedTick === undefined
+          ? Date.now() - s.received < 250
+          : w.serverTick <= s.receivedTick + Math.ceil(0.25 / DT);
       const i = fresh
         ? {
             ...s.input,
@@ -377,30 +443,31 @@ export class GameRoom {
       const map = maps[sceneId];
       const interactEdge = i.interactHeld && !this.interactWasHeld.get(p.id);
       this.interactWasHeld.set(p.id, i.interactHeld);
-      p.lastProcessedInputSeq = i.seq;
-      move(p, i, map, collisionRects(sceneId, w.puzzles), DT);
+      let movement = i;
+      if (s.movementQueue) {
+        if (!fresh) s.movementQueue.clear();
+        for (const [tick, command] of [...s.movementQueue].sort(
+          (a, b) => a[0] - b[0],
+        )) {
+          if (tick > w.serverTick) continue;
+          if (command.seq > (s.movementInput?.seq ?? -1))
+            s.movementInput = command;
+          s.movementQueue.delete(tick);
+        }
+        movement = fresh
+          ? (s.movementInput ?? neutral(p.lastProcessedInputSeq))
+          : neutral(p.lastProcessedInputSeq);
+      }
+      p.lastProcessedInputSeq = movement.seq;
+      p.movementInput = { ...movement };
+      stepMovement(p, movement, map, collisionRects(sceneId, w.puzzles), DT);
       for (const k in p.cooldowns)
-        p.cooldowns[k] = Math.max(0, p.cooldowns[k] - DT);
+        if (k !== "dash") p.cooldowns[k] = Math.max(0, p.cooldowns[k] - DT);
       p.actionState = i.secondaryHeld
         ? "guard"
         : i.primaryHeld
           ? "attack"
           : "idle";
-      if (
-        i.secondaryHeld &&
-        (p.unlockedSkills.includes("dash") ||
-          p.unlockedSkills.includes("blink")) &&
-        !p.cooldowns.dash
-      ) {
-        move(
-          p,
-          { ...i, moveX: Math.cos(p.facing), moveY: Math.sin(p.facing) },
-          map,
-          collisionRects(sceneId, w.puzzles),
-          DT * 3,
-        );
-        p.cooldowns.dash = 2;
-      }
       let strike: "sword" | "heavy" | "cast" | null = null;
       let strikeFacing = p.facing;
       const heavyEnabled =
@@ -429,7 +496,7 @@ export class GameRoom {
             delete p.heavyCharge;
           }
         }
-      } else if (i.primaryHeld && !p.cooldowns.attack && p.hp > 0) {
+      } else if (i.primaryHeld && (p.role !== "EMBER" || !wasHeld) && !p.cooldowns.attack && p.hp > 0) {
         strike = p.role === "OATH" ? "sword" : "cast";
       }
       this.primaryWasHeld.set(p.id, i.primaryHeld);
@@ -451,13 +518,16 @@ export class GameRoom {
         } else {
           const id = randomUUID();
           w.projectiles[id] = {
+            fireballLevel: fireballLevel(p.unlockedSkills),
+            damage: fireballDamage(fireballLevel(p.unlockedSkills)),
             id,
             sceneId,
             x: p.x,
             y: p.y,
-            vx: Math.cos(strikeFacing) * 420,
-            vy: Math.sin(strikeFacing) * 420,
-            life: 1.6,
+            vx: Math.cos(strikeFacing) * 180,
+            vy: Math.sin(strikeFacing) * 180,
+            // Slower travel makes the nine-frame animation readable; retain the 672px range.
+            life: 672 / 180,
             owner: p.id,
           };
         }
@@ -479,7 +549,11 @@ export class GameRoom {
       if (
         interactEdge &&
         sceneId === "HOUSE_INTERIOR" &&
-        near(p, map.points.door, 42)
+        map.doorInteractionBounds &&
+        p.x >= map.doorInteractionBounds.x &&
+        p.x <= map.doorInteractionBounds.x + map.doorInteractionBounds.w &&
+        p.y >= map.doorInteractionBounds.y &&
+        p.y <= map.doorInteractionBounds.y + map.doorInteractionBounds.h
       ) {
         this.relocate(p, "MAIN_HOUSE", { x: 480, y: 344 });
         continue;
@@ -567,7 +641,7 @@ export class GameRoom {
         near(q, maps[w.sceneId].points.boss, 45)
       ) {
         collided = true;
-        w.boss.hp -= 10;
+        w.boss.hp -= (q.damage ?? 20) / 2;
       }
       if (collided) {
         w.projectileImpacts!.push({
@@ -687,6 +761,11 @@ export class GameRoom {
         p.y = 450;
       }
       p.vx = p.vy = 0;
+      p.movementEpoch = (p.movementEpoch ?? 0) + 1;
+      p.movementInput = neutral(p.lastProcessedInputSeq);
+      const session = this.sessions.get(p.id)!;
+      session.movementQueue?.clear();
+      session.movementInput = neutral(p.lastProcessedInputSeq);
     }
   }
 }

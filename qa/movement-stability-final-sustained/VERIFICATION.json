@@ -1,0 +1,121 @@
+{
+  "errors": [],
+  "transport": [
+    {
+      "inputs": 1228,
+      "dropped": 111,
+      "snapshots": 473,
+      "maxInputDelayMs": 292.7000000476837
+    },
+    {
+      "inputs": 1230,
+      "dropped": 111,
+      "snapshots": 467,
+      "maxInputDelayMs": 203.10000014305115
+    }
+  ],
+  "reversalEpsilon": 0.01,
+  "penetrationEpsilon": 1e-7,
+  "results": [
+    {
+      "stage": "continuous-release",
+      "client": 1,
+      "samples": 465,
+      "durationMs": 12820.799999952316,
+      "maxCorrection": 12.666666666666742,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "continuous-release",
+      "client": 2,
+      "samples": 463,
+      "durationMs": 12720.299999952316,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "continuous-loop-release",
+      "client": 1,
+      "samples": 511,
+      "durationMs": 14217.799999952316,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "continuous-loop-release",
+      "client": 2,
+      "samples": 531,
+      "durationMs": 14679.5,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "source_sha256": "0d70c54c7a070c458ed115aa238a857d5dfb9738bd3dc32d2421146661bbee21",
+  "icon_source_sha256": "af33c46e32add4b85846092ef0dac438e4f079e323dbf5abde93d60b4c6fe3bc",
+  "frame_durations_ms": [
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130
+  ],
+  "levels": 4,
+  "frames_per_level": 9,
+  "operations": [
+    "Decode composited GIF frames; crop each strength type and pad without rescaling",
+    "Remove edge-connected background, including opaque first-frame backdrop",
+    "Crop icons from user-supplied four-level portrait strip"
+  ],
+  "previous_source": "../v1"
+}

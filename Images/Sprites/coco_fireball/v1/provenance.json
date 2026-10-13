@@ -1,0 +1,12 @@
+{
+  "source_sha256": "5982a68aed87e28c7c403687b9b1649cbd51f23b6958f388b9a9a66666c1b725",
+  "levels": 4,
+  "frames_per_level": 9,
+  "order": "Same position within each four-sprite group, groups left to right then top to bottom",
+  "operations": [
+    "Crop and pad without rescaling",
+    "Remove edge-connected neutral backdrop",
+    "Protect bright cores in palette mask"
+  ],
+  "authorization": "User supplied PNG and GIF and specified four strength levels, one per frame position."
+}

@@ -42,7 +42,7 @@ export interface HeroAsset {
   frameHeight: number;
   clips: Record<MovementMode, Partial<Record<AnimationState, Clip>>>;
 }
-function directionalClips(): HeroAsset["clips"] {
+function directionalClips(walkFrames = 6): HeroAsset["clips"] {
   return {
     TOP_DOWN: {
       ...Object.fromEntries(
@@ -57,7 +57,7 @@ function directionalClips(): HeroAsset["clips"] {
         ["walk_south", "walk_north", "walk_east", "walk_west"].map(
           (state, row) => [
             state,
-            { start: 4 + row * 6, end: 9 + row * 6, fps: 8, repeat: -1 },
+            { start: 4 + row * walkFrames, end: 3 + (row + 1) * walkFrames, fps: 8, repeat: -1 },
           ],
         ),
       ),
@@ -68,17 +68,17 @@ function directionalClips(): HeroAsset["clips"] {
 export const heroAssets: Record<Role, HeroAsset> = {
   OATH: {
     source: "file",
-    url: "/assets/characters/oath/top-down.png",
+    url: "/assets/characters/oath/top-down-user-v1.png",
     frameWidth: 48,
     frameHeight: 64,
-    clips: directionalClips(),
+    clips: directionalClips(8),
   },
   EMBER: {
     source: "file",
-    url: "/assets/characters/ember/top-down.png",
+    url: "/assets/characters/ember/top-down-user-v1.png",
     frameWidth: 48,
     frameHeight: 64,
-    clips: directionalClips(),
+    clips: directionalClips(8),
   },
 };
 export const textureKey = (role: Role) => `hero:${role}`;

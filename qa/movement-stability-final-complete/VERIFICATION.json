@@ -1,0 +1,507 @@
+{
+  "errors": [],
+  "reversalEpsilon": 0.01,
+  "penetrationEpsilon": 1e-7,
+  "results": [
+    {
+      "stage": "continuous-release",
+      "client": 1,
+      "samples": 439,
+      "durationMs": 11761.599999904633,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "continuous-release",
+      "client": 2,
+      "samples": 435,
+      "durationMs": 11727.299999952316,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "rapid-directions",
+      "client": 1,
+      "samples": 512,
+      "durationMs": 8915.899999856949,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "rapid-directions",
+      "client": 2,
+      "samples": 514,
+      "durationMs": 8882.600000143051,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "walls",
+      "client": 1,
+      "samples": 627,
+      "durationMs": 11416.299999952316,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "walls",
+      "client": 2,
+      "samples": 634,
+      "durationMs": 11450.800000190735,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "furniture-slide",
+      "client": 1,
+      "samples": 357,
+      "durationMs": 6249.299999952316,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "furniture-slide",
+      "client": 2,
+      "samples": 357,
+      "durationMs": 6249,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "tree-contact",
+      "client": 1,
+      "samples": 475,
+      "durationMs": 8314.700000047684,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "tree-contact",
+      "client": 2,
+      "samples": 473,
+      "durationMs": 8266.5,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "corners",
+      "client": 1,
+      "samples": 449,
+      "durationMs": 7766.299999952316,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "corners",
+      "client": 2,
+      "samples": 435,
+      "durationMs": 7633,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "abilities",
+      "client": 1,
+      "samples": 482,
+      "durationMs": 8332.399999856949,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "abilities",
+      "client": 2,
+      "samples": 468,
+      "durationMs": 8183.299999952316,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "furniture-circuit",
+      "client": 1,
+      "samples": 685,
+      "durationMs": 11949.700000047684,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "furniture-circuit",
+      "client": 2,
+      "samples": 676,
+      "durationMs": 11915.799999952316,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "tree-circuit",
+      "client": 1,
+      "samples": 251,
+      "durationMs": 4367.700000047684,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "tree-circuit",
+      "client": 2,
+      "samples": 251,
+      "durationMs": 4355.200000047684,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "shift-unbound",
+      "client": 1,
+      "samples": 207,
+      "durationMs": 3534.0999999046326,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "shift-unbound",
+      "client": 2,
+      "samples": 198,
+      "durationMs": 3484,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    }
+  ]
+}

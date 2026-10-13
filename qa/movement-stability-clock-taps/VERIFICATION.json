@@ -1,0 +1,161 @@
+{
+  "errors": [],
+  "transport": [
+    null,
+    null
+  ],
+  "reversalEpsilon": 0.01,
+  "penetrationEpsilon": 1e-7,
+  "results": [
+    {
+      "stage": "continuous-release",
+      "client": 1,
+      "samples": 422,
+      "durationMs": 12461,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "continuous-release",
+      "client": 2,
+      "samples": 411,
+      "durationMs": 12048.300000190735,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "continuous-loop-release",
+      "client": 1,
+      "samples": 422,
+      "durationMs": 12157.600000143051,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 1,
+          "maxBackwardStep": 6.3333333333332575,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "continuous-loop-release",
+      "client": 2,
+      "samples": 423,
+      "durationMs": 12185.600000143051,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "long-idle-small-taps",
+      "client": 1,
+      "samples": 2232,
+      "durationMs": 37216.09999990463,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "long-idle-small-taps",
+      "client": 2,
+      "samples": 2227,
+      "durationMs": 37149.09999990463,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    }
+  ]
+}

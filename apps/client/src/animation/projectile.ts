@@ -1,4 +1,12 @@
 export const magicAssets = {
+  fireball: {
+    url: "/assets/effects/coco/fireball.png",
+    width: 48,
+    height: 40,
+    count: 36,
+    fps: 1000 / 130,
+    loop: true,
+  },
   flight: {
     url: "/assets/effects/coco/flight.png",
     width: 64,
@@ -36,3 +44,7 @@ export const impactFrame = (elapsedMs: number) =>
     magicAssets.impact.count - 1,
     Math.floor((Math.max(0, elapsedMs) * magicAssets.impact.fps) / 1000),
   );
+
+export const fireballFrame = (level: number, elapsedMs: number) =>
+  (Math.max(1, Math.min(4, level)) - 1) * 9 +
+  (Math.floor(Math.max(0, elapsedMs) / 130) % 9);

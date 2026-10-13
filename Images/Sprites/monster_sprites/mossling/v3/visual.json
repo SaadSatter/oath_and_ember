@@ -1,0 +1,81 @@
+{
+  "asset_id": "mossling_sprites_v2",
+  "url": "/assets/enemies/mossling/top-down-v3.png",
+  "frame_dimensions": [
+    256,
+    256
+  ],
+  "anchor": [
+    128,
+    214
+  ],
+  "directions": [
+    "south",
+    "north",
+    "west",
+    "east"
+  ],
+  "x_edges": [
+    0,
+    256,
+    512,
+    768,
+    1024,
+    1280,
+    1536,
+    1792,
+    2048,
+    2304
+  ],
+  "animation_frames": {
+    "south": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "north": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "west": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "east": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ]
+  },
+  "standing_frames": {
+    "south": 8,
+    "north": 8,
+    "west": 8,
+    "east": 8
+  },
+  "scale": 0.32,
+  "fps": 8,
+  "motion": "walk"
+}

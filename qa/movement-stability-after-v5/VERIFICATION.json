@@ -1,0 +1,357 @@
+{
+  "errors": [],
+  "reversalEpsilon": 0.01,
+  "penetrationEpsilon": 1e-7,
+  "results": [
+    {
+      "stage": "continuous-release",
+      "client": 1,
+      "samples": 417,
+      "durationMs": 12785.300000190735,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "continuous-release",
+      "client": 2,
+      "samples": 416,
+      "durationMs": 12786.099999904633,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "rapid-directions",
+      "client": 1,
+      "samples": 514,
+      "durationMs": 8849.400000095367,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "rapid-directions",
+      "client": 2,
+      "samples": 508,
+      "durationMs": 8821.700000047684,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "walls",
+      "client": 1,
+      "samples": 644,
+      "durationMs": 11116.099999904633,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "walls",
+      "client": 2,
+      "samples": 643,
+      "durationMs": 11099.900000095367,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "furniture-slide",
+      "client": 1,
+      "samples": 324,
+      "durationMs": 5583,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "furniture-slide",
+      "client": 2,
+      "samples": 327,
+      "durationMs": 5650.099999904633,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "tree-contact",
+      "client": 1,
+      "samples": 315,
+      "durationMs": 5516.400000095367,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "tree-contact",
+      "client": 2,
+      "samples": 317,
+      "durationMs": 5499.5,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "corners",
+      "client": 1,
+      "samples": 335,
+      "durationMs": 5759.5,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "corners",
+      "client": 2,
+      "samples": 330,
+      "durationMs": 5682.799999952316,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "abilities",
+      "client": 1,
+      "samples": 375,
+      "durationMs": 6516.5,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    },
+    {
+      "stage": "abilities",
+      "client": 2,
+      "samples": 377,
+      "durationMs": 6516.399999856949,
+      "maxCorrection": 0,
+      "maxLead": 11,
+      "paths": {
+        "authoritative": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "predicted": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        },
+        "rendered": {
+          "reversals": 0,
+          "maxBackwardStep": 0,
+          "penetrations": 0
+        }
+      }
+    }
+  ]
+}

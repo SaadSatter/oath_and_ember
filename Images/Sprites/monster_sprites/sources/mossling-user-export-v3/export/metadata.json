@@ -1,0 +1,75 @@
+{
+  "group_id": "882cf212-6992-40fd-be5e-bba881aec6be",
+  "states": [
+    {
+      "character": {
+        "id": "8663d670-45bb-43c7-bb66-1c4c02b5d820",
+        "name": "Idle",
+        "prompt": "A Mossling is a small, squat forest creature formed from moss, roots, leaves, and damp earth. Its body has a rounded, slightly hunched silhouette, roughly half to two-thirds of Sieg\u2019s height, making it clearly a minor creature rather than a humanoid enemy.\n\nIts body should look like a compact mass of dark brown soil/wood covered by thick, uneven green moss. Moss hangs from parts of its head, shoulders, arms, and back in irregular clumps, almost like natural fur. Small leaves, tiny sprouts, mushrooms, or twigs can occasionally protrude from it, but these should be subtle enough that the silhouette stays readable at gameplay scale.\n\nThe Mossling has short, root-like arms and legs with oversized, irregular hands and feet. Its limbs should feel organic and crooked rather than anatomically human. When standing still, its posture is slightly hunched forward with its arms hanging low.\n\nIts head blends naturally into the torso rather than sitting on a clearly defined neck. Give it two small glowing amber/yellow eyes recessed beneath the moss. Avoid a prominent human-like mouth or nose. The eyes should provide most of its personality.\n\nThe overall shape should be cute at first glance but slightly eerie, like something that could remain completely motionless beside a tree and be mistaken for vegetation until it suddenly moves.\n\nUse an earthy palette: deep forest greens, olive/moss greens, dark browns, muted tan roots, with warm amber eyes as the primary contrasting color.\n\nMatch the detailed painterly pixel-art / high-resolution sprite aesthetic of Sieg and Coco. It should belong naturally in the same world, with detailed texture and lighting, but remain visually simpler than the heroes.",
+        "size": {
+          "width": 200,
+          "height": 204
+        },
+        "template_id": "mannequin",
+        "directions": 4,
+        "view": "low top-down",
+        "created_at": "2026-10-10T01:54:34.148823+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "west": "Idle/rotations/west.png",
+          "east": "Idle/rotations/east.png",
+          "north": "Idle/rotations/north.png"
+        },
+        "animations": {
+          "Walking": {
+            "north": [
+              "Idle/animations/Walking/north/frame_000.png",
+              "Idle/animations/Walking/north/frame_001.png",
+              "Idle/animations/Walking/north/frame_002.png",
+              "Idle/animations/Walking/north/frame_003.png",
+              "Idle/animations/Walking/north/frame_004.png",
+              "Idle/animations/Walking/north/frame_005.png",
+              "Idle/animations/Walking/north/frame_006.png",
+              "Idle/animations/Walking/north/frame_007.png"
+            ],
+            "south": [
+              "Idle/animations/Walking/south/frame_000.png",
+              "Idle/animations/Walking/south/frame_001.png",
+              "Idle/animations/Walking/south/frame_002.png",
+              "Idle/animations/Walking/south/frame_003.png",
+              "Idle/animations/Walking/south/frame_004.png",
+              "Idle/animations/Walking/south/frame_005.png",
+              "Idle/animations/Walking/south/frame_006.png",
+              "Idle/animations/Walking/south/frame_007.png"
+            ],
+            "west": [
+              "Idle/animations/Walking/west/frame_000.png",
+              "Idle/animations/Walking/west/frame_001.png",
+              "Idle/animations/Walking/west/frame_002.png",
+              "Idle/animations/Walking/west/frame_003.png",
+              "Idle/animations/Walking/west/frame_004.png",
+              "Idle/animations/Walking/west/frame_005.png",
+              "Idle/animations/Walking/west/frame_006.png",
+              "Idle/animations/Walking/west/frame_007.png"
+            ],
+            "east": [
+              "Idle/animations/Walking/east/frame_000.png",
+              "Idle/animations/Walking/east/frame_001.png",
+              "Idle/animations/Walking/east/frame_002.png",
+              "Idle/animations/Walking/east/frame_003.png",
+              "Idle/animations/Walking/east/frame_004.png",
+              "Idle/animations/Walking/east/frame_005.png",
+              "Idle/animations/Walking/east/frame_006.png",
+              "Idle/animations/Walking/east/frame_007.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-12T18:57:12.744507"
+}

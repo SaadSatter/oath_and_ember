@@ -49,3 +49,12 @@ A second timing case accumulated a permanent client lead when the input sampler 
 The sustained-movement regression uses a real GameRoom, three-tick input delay, snapshots every two ticks, periodic extra client samples, six seconds of unobstructed walking, and four seconds after release. It fails against the previous predictor and passes with the bounded horizon. Shift has been removed from the secondary action binding; K remains the defense key.
 
 Follow-up validation: typecheck, all 118 tests, production build, and diff whitespace checks passed. Batched two-client browser evidence is in `qa/sieg-recoil-check-browser/VERIFICATION.json`: no wall penetrations or rendered reversals after the first 500ms. Across startup there were two rendered backward steps, at most 1.07 world units; one later predicted correction was 4.48 units without a rendered reversal. This fixes accumulating lead, while preserving authoritative corrections under delayed delivery.
+
+
+## Current replacement (October 9: sustained movement, abilities and environmental solids)
+
+The earlier fixes above addressed particular captures; their pending-count horizon and receipt-time interpolation are superseded by the explicit tick scheduling described in [MOVEMENT_STABILITY_REPORT.md](MOVEMENT_STABILITY_REPORT.md). The final predictor keeps command sequence IDs separate from fixed simulation ticks and reserves one tick within the server's twelve-tick scheduling window. Shared movement now includes dash/blink. A simulation-tick input lease survives server catch-up, local epochs invalidate pre-arrival commands, and partner full syncs preserve local pending movement. Remote playback pauses at an empty buffer instead of jumping on the next receipt burst.
+
+The existing nearest-contact swept-axis collision solver and 26×26 foot-level player box are retained. Valid movement does not push out, reverse or teleport at overlapping solid rectangles. Ground-level tree trunk solids have been added to exterior/forest geometry; canopies remain traversable. Existing house/furniture/fence coordinates, spawning, rendering, artwork and SPEED=190 are unchanged. Shift is unbound.
+
+See the report for controlled baseline/final measurements, recorded two-client scenarios, regression coverage and the remaining limits under prolonged delivery outages.

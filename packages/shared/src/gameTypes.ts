@@ -3,6 +3,10 @@ export type Role = "OATH" | "EMBER";
 export type SceneId =
   "HOUSE_INTERIOR" | "MAIN_HOUSE" | "FOREST_RUINS" | "AIRSHIP" | "AIRSHIP_BOSS";
 export interface InputFrame {
+  /** Desired simulation tick for intent; server validates and bounds scheduling. */
+  targetTick?: number;
+  /** Server-issued location generation rejects inputs from a previous arrival. */
+  movementEpoch?: number;
   seq: number;
   moveX: number;
   moveY: number;
@@ -18,6 +22,9 @@ export interface CombatAction {
   startedTick: number;
 }
 export interface Player {
+  /** Authoritative last movement intent, including timeout-neutral buttons. */
+  movementInput?: InputFrame;
+  movementEpoch?: number;
   /** Clamped movement intent drives locomotion even when collision stops velocity. */
   movementIntent?: { x: number; y: number };
   /** Authoritative local location; absent legacy fixtures use the room scene. */
@@ -69,6 +76,8 @@ export interface Enemy {
   cooldown: number;
 }
 export interface Projectile {
+  /** Strength captured by the server at cast time (Coco only). */
+  fireballLevel?: number;
   sceneId?: SceneId;
   faction?: "players" | "enemies";
   damage?: number;

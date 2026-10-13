@@ -149,10 +149,25 @@ function renderUI() {
     panel.className = "card skills";
     panel.innerHTML =
       "<h2>Your path</h2><p>Spend points earned at cooperative checkpoints.</p>";
+    if (me?.role === "EMBER") {
+      const base = document.createElement("div");
+      base.className = "fireball-base-skill";
+      base.innerHTML = '<img class="fireball-skill-icon" src="/assets/effects/coco/fireball-level-1.png" alt="Fireball 1"> Fireball 1 · Starting spell · 20 damage';
+      panel.append(base);
+    }
     for (const s of skills.filter((s) => s.role === me?.role)) {
       const b = document.createElement("button");
       b.textContent = `${s.name} · ${me?.unlockedSkills.includes(s.id) ? "Unlocked" : "1 point"} — ${s.description}`;
-      b.disabled = !!me?.unlockedSkills.includes(s.id);
+      if (s.id.startsWith("fireball_")) {
+        const icon = document.createElement("img");
+        icon.src = `/assets/effects/coco/fireball-level-${s.id.split("_")[1]}.png`;
+        icon.alt = s.name;
+        icon.className = "fireball-skill-icon";
+        b.prepend(icon);
+      }
+      b.disabled = !!me?.unlockedSkills.includes(s.id) ||
+        s.prerequisites.some(id => !me?.unlockedSkills.includes(id)) ||
+        (me?.skillPoints ?? 0) < s.cost;
       b.onclick = () => void request("skill:unlock", { nodeId: s.id });
       panel.append(b);
     }
@@ -191,7 +206,24 @@ window.addEventListener("keydown", (e) => {
     tell(`Characters: ${characterRendering}`);
   }
   keys.add(e.key.toLowerCase());
-  if (!e.repeat && e.key.toLowerCase() === "j") submitInput(true);
+  if (
+    !e.repeat &&
+    [
+      "w",
+      "a",
+      "s",
+      "d",
+      "arrowup",
+      "arrowdown",
+      "arrowleft",
+      "arrowright",
+      " ",
+      "j",
+      "k",
+      "e",
+    ].includes(e.key.toLowerCase())
+  )
+    submitInput(true);
   if (!e.repeat && e.key === "Tab") {
     skillOpen = !skillOpen;
     renderUI();
@@ -203,7 +235,23 @@ window.addEventListener("keydown", (e) => {
 });
 window.addEventListener("keyup", (e) => {
   keys.delete(e.key.toLowerCase());
-  if (e.key.toLowerCase() === "j") submitInput(true);
+  if (
+    [
+      "w",
+      "a",
+      "s",
+      "d",
+      "arrowup",
+      "arrowdown",
+      "arrowleft",
+      "arrowright",
+      " ",
+      "j",
+      "k",
+      "e",
+    ].includes(e.key.toLowerCase())
+  )
+    submitInput(true);
 });
 window.addEventListener("blur", () => {
   keys.clear();
@@ -225,14 +273,16 @@ for (const b of document.querySelectorAll<HTMLButtonElement>("[data-key]")) {
     e.preventDefault();
     b.setPointerCapture(e.pointerId);
     keys.add(key);
-    if (key === "j") submitInput(true);
+    if (["w", "a", "s", "d", " ", "j", "k", "e"].includes(key))
+      submitInput(true);
   };
   b.onpointerup =
     b.onpointercancel =
     b.onlostpointercapture =
       () => {
         keys.delete(key);
-        if (key === "j") submitInput(true);
+        if (["w", "a", "s", "d", " ", "j", "k", "e"].includes(key))
+          submitInput(true);
       };
 }
 function submitInput(reliable = false) {
@@ -247,6 +297,7 @@ function submitInput(reliable = false) {
     return;
   const held = (...names: string[]) => names.some((k) => keys.has(k));
   const i = neutral(++net.seq);
+  i.targetTick = net.clock.target(w.serverTick, performance.now());
   if (!skillOpen) {
     i.moveX = Number(held("d", "arrowright")) - Number(held("a", "arrowleft"));
     i.moveY = Number(held("s", "arrowdown")) - Number(held("w", "arrowup"));
@@ -256,8 +307,7 @@ function submitInput(reliable = false) {
     i.interactHeld = held("e");
   }
   net.prediction.push(i, w, !reliable);
-  if (reliable) net.socket.emit("player:input", i);
-  else net.socket.volatile.emit("player:input", i);
+  net.sendInput(i, reliable);
 }
 setInterval(() => submitInput(), 1000 / 30);
 class Adventure extends Phaser.Scene {
@@ -266,6 +316,8 @@ class Adventure extends Phaser.Scene {
   labels: Phaser.GameObjects.Text[] = [];
   sceneKey = "";
   rendered = { x: 0, y: 0 };
+  movementTrace: string[] = [];
+  lastMovementTrace = 0;
   playerViews = new Map<string, PlayerView>();
   projectileView!: ProjectileView;
   enemyViews = new Map<string, EnemyView>();
@@ -529,11 +581,40 @@ class Adventure extends Phaser.Scene {
         ),
       );
     }
-    if (new URLSearchParams(location.search).has("movementQA")) {
+    if (debug || new URLSearchParams(location.search).has("movementQA")) {
       root.dataset.movementSample = JSON.stringify({
+        delta,
+        keys: [...keys],
+        time: performance.now(),
         tick: w.serverTick,
         ack: me.lastProcessedInputSeq,
         pending: net.prediction.pending.length,
+        predictionTick: net.prediction.simulationTick,
+        predictionLead: net.prediction.simulationTick - w.serverTick,
+        estimatedServerTick: net.clock.estimate(performance.now()),
+        serverMovementInput: me.movementInput,
+        commands: net.prediction.pending.slice(-6).map((i) => ({
+          seq: i.seq,
+          tick: i.targetTick,
+          x: i.moveX,
+          y: i.moveY,
+        })),
+        remotes: Object.fromEntries(
+          Object.values(w.players)
+            .filter(
+              (p) => p.id !== me.id && (p.sceneId ?? w.sceneId) === sceneId,
+            )
+            .map((p) => [
+              p.id,
+              {
+                authoritative: { x: p.x, y: p.y },
+                rendered: net.interpolation.position(p.id, "players") ?? {
+                  x: p.x,
+                  y: p.y,
+                },
+              },
+            ]),
+        ),
         authoritative: { x: me.x, y: me.y },
         predicted: { x: local.x, y: local.y },
         rendered: { ...this.rendered },
@@ -541,6 +622,24 @@ class Adventure extends Phaser.Scene {
         sceneId,
         intent: local.movementIntent,
       });
+      if (debug && performance.now() - this.lastMovementTrace >= 50) {
+        this.lastMovementTrace = performance.now();
+        this.movementTrace.push(
+          JSON.stringify({
+            time: performance.now(),
+            tick: w.serverTick,
+            lead: net.prediction.simulationTick - w.serverTick,
+            keys: [...keys],
+            intent: local.movementIntent,
+            authoritative: { x: me.x, y: me.y },
+            predicted: { x: local.x, y: local.y },
+            rendered: { ...this.rendered },
+            correction: net.prediction.error,
+          }),
+        );
+        if (this.movementTrace.length > 90) this.movementTrace.shift();
+        root.dataset.movementTrace = `[${this.movementTrace.join(",")}]`;
+      }
     }
     root.dataset.worldPosition = `${me.x},${me.y}`;
     root.dataset.scene = sceneId;

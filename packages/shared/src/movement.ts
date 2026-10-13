@@ -94,3 +94,33 @@ export function move(
     p.vy = 0;
   }
 }
+
+// Movement abilities are part of the same deterministic step on both peers.
+// Combat cooldowns remain server-owned; only the movement cooldown is predicted.
+export function stepMovement(
+  p: Player,
+  i: InputFrame,
+  map: MapDefinition,
+  walls: Rect[],
+  dt: number,
+) {
+  move(p, i, map, walls, dt);
+  if (p.cooldowns.dash !== undefined)
+    p.cooldowns.dash = Math.max(0, p.cooldowns.dash - dt);
+  if (
+    i.secondaryHeld &&
+    (p.unlockedSkills.includes("dash") || p.unlockedSkills.includes("blink")) &&
+    !p.cooldowns.dash
+  ) {
+    const intent = p.movementIntent;
+    move(
+      p,
+      { ...i, moveX: Math.cos(p.facing), moveY: Math.sin(p.facing) },
+      map,
+      walls,
+      dt * 3,
+    );
+    p.movementIntent = intent;
+    p.cooldowns.dash = 2;
+  }
+}

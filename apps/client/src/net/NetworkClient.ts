@@ -4,8 +4,12 @@ import type {
   ServerEvents,
   Session,
 } from "../../../../packages/shared/src/protocol.js";
-import type { World } from "../../../../packages/shared/src/gameTypes.js";
+import type {
+  InputFrame,
+  World,
+} from "../../../../packages/shared/src/gameTypes.js";
 import { Prediction } from "./prediction.js";
+import { SimulationClock } from "./simulationClock.js";
 import { Interpolation } from "./interpolation.js";
 export class NetworkClient {
   socket: Socket<ServerEvents, ClientEvents> = io();
@@ -13,6 +17,9 @@ export class NetworkClient {
   world: World | null = null;
   prediction = new Prediction();
   interpolation = new Interpolation();
+  clock = new SimulationClock();
+  private clockTimer: ReturnType<typeof setInterval> | undefined;
+  private sentInputs: InputFrame[] = [];
   seq = 0;
   private leaving = false;
   onchange = () => {};
@@ -40,6 +47,9 @@ export class NetworkClient {
     });
     this.socket.on("disconnect", () => {
       this.prediction.pending = [];
+      this.sentInputs = [];
+      clearInterval(this.clockTimer);
+      this.clockTimer = undefined;
       this.onchange();
     });
     this.socket.on("connect_error", () => {
@@ -52,6 +62,14 @@ export class NetworkClient {
   }
   accept(w: World, full: boolean) {
     if (this.leaving) return;
+    if (this.world && w.worldRevision < this.world.worldRevision) return;
+    if (
+      this.world &&
+      w.worldRevision === this.world.worldRevision &&
+      (w.serverTick < this.world.serverTick ||
+        (!full && w.serverTick === this.world.serverTick))
+    )
+      return;
     if (this.session && !w.players[this.session.playerId]) {
       this.session = null;
       this.world = null;
@@ -67,16 +85,31 @@ export class NetworkClient {
     this.world = w;
     const p = w.players[this.session?.playerId || ""];
     if (
-      full ||
+      !this.prediction.player ||
+      this.prediction.player.id !== p?.id ||
+      old?.players[this.session?.playerId || ""]?.movementEpoch !==
+        p?.movementEpoch ||
+      old?.players[this.session?.playerId || ""]?.connected !== p?.connected ||
       old?.sceneId !== w.sceneId ||
       old?.players[this.session?.playerId || ""]?.sceneId !== p?.sceneId
     ) {
       this.interpolation.clear();
-      if (p) this.prediction.reset(p, w.serverTick);
+      if (p) {
+        this.sentInputs = [];
+        this.prediction.reset(p, w.serverTick);
+        this.clock.reset(w.serverTick, performance.now());
+      }
     } else if (p) this.prediction.reconcile(p, w);
     if (p) this.seq = Math.max(this.seq, p.lastProcessedInputSeq);
     this.interpolation.push(w);
     this.onchange();
+  }
+  sendInput(input: InputFrame, reliable: boolean) {
+    this.sentInputs.push({ ...input });
+    if (this.sentInputs.length > 6) this.sentInputs.shift();
+    const packet = { frames: this.sentInputs };
+    if (reliable) this.socket.emit("player:input", packet);
+    else this.socket.volatile.emit("player:input", packet);
   }
   async leaveRoom() {
     this.leaving = true;
@@ -84,7 +117,10 @@ export class NetworkClient {
       await this.request("room:leave", {});
       this.session = null;
       this.world = null;
+      clearInterval(this.clockTimer);
+      this.clockTimer = undefined;
       this.seq = 0;
+      this.sentInputs = [];
       this.prediction.player = null;
       this.prediction.pending = [];
       this.prediction.error = 0;
@@ -99,6 +135,24 @@ export class NetworkClient {
     this.session = s;
     sessionStorage.setItem("oath-session", JSON.stringify(s));
     if (this.world) this.accept(this.world, true);
+    if (!this.clockTimer) {
+      const probe = () => {
+        if (!this.socket.connected || !this.session) return;
+        const sent = performance.now();
+        void this.request("clock:probe", {})
+          .then((value) => {
+            if (this.world)
+              this.clock.sample(
+                (value as { serverTick: number }).serverTick,
+                sent,
+                performance.now(),
+              );
+          })
+          .catch(() => {});
+      };
+      probe();
+      this.clockTimer = setInterval(probe, 500);
+    }
     this.onchange();
   }
   // Acks have a deadline; a missing response never leaves the UI stuck forever.

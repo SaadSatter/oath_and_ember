@@ -1,0 +1,442 @@
+{
+  "authorization": "User requested replacement Sieg idle and walks with supplied sprite export and GIFs.",
+  "operations": [
+    "Nearest-neighbor normalization at 0.9 source scale",
+    "Stable ground anchor at (24,60); preserve walk bobbing",
+    "Red cloth palette mask; existing combat art retained because export contains idle and walk only"
+  ],
+  "frames": [
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/rotations/south.png",
+      "sha256": "7c9e906ccdeb2e03387b74c51c5de134929045abdf106c4117319c2c632a5abc",
+      "offset": [
+        -5,
+        5
+      ],
+      "source_anchor": [
+        32.0,
+        61
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/rotations/north.png",
+      "sha256": "58be0bd8973d8bfc55d5e5d36514f495b2b0d09b2571597cd0d1d4f8e6f6f4fc",
+      "offset": [
+        -5,
+        5
+      ],
+      "source_anchor": [
+        32.0,
+        61
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/rotations/west.png",
+      "sha256": "5ddcc2e82ef352d766e132118774e3ba2045671773cf120a0ff52fac23178d6f",
+      "offset": [
+        -5,
+        5
+      ],
+      "source_anchor": [
+        32.0,
+        61
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/rotations/east.png",
+      "sha256": "008aa882b82b4efea47299a454b92f1887dda1e3b24d5b8f2df24f008f2d45e1",
+      "offset": [
+        -5,
+        5
+      ],
+      "source_anchor": [
+        32.0,
+        61
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/south/frame_000.png",
+      "sha256": "7d859bafef63b518ac4375efe8f7c9cba7f58b228a2e0ae1755b3575ff762b2e",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/south/frame_001.png",
+      "sha256": "01c4df904ad96b51c972fdd84756e21be19d314087d5b52de86dbf2b92f6b90b",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/south/frame_002.png",
+      "sha256": "c77cbf586285ab1c4b37ae8c864f9fcf466f6377683a9291deec13afd2e86682",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/south/frame_003.png",
+      "sha256": "19a1a457dd1bf2f7089b2baded8d105d17aceec42c520bdd0f126342f80b945a",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/south/frame_004.png",
+      "sha256": "6167f9a2dff139458583a13743ecba926febbe285195b98d7452622a91d233c7",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/south/frame_005.png",
+      "sha256": "c138a402f2405694e2d76a9fd76b4dd6d3bb342d87b21f474bb20d645d909d5a",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/south/frame_006.png",
+      "sha256": "971dca889de8e38a977048d78a3f68915f601b280ac557128585e8993532766a",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/south/frame_007.png",
+      "sha256": "044036d364d95759a4fabfac580ccbd62921c34494fcc6b395d1c12998166d65",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/north/frame_000.png",
+      "sha256": "60c6ce486f7bb99229f1955dc6f6f3ac09f8d9ce5597a892d88b2c72d2497c46",
+      "offset": [
+        -16,
+        -9
+      ],
+      "source_anchor": [
+        44.0,
+        77
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/north/frame_001.png",
+      "sha256": "97c6bef9606de19171a656d6a0f20422e2614b018db791fe244f8d9059db954e",
+      "offset": [
+        -16,
+        -9
+      ],
+      "source_anchor": [
+        44.0,
+        77
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/north/frame_002.png",
+      "sha256": "a52ec2e101eeee220eddfda5ea1ab35e1cb281d5b0add36377cff2084c400d45",
+      "offset": [
+        -16,
+        -9
+      ],
+      "source_anchor": [
+        44.0,
+        77
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/north/frame_003.png",
+      "sha256": "6b07e582af022230955e6bed93b47e2f3d11778693a0dfefb5bba3d08c74ca75",
+      "offset": [
+        -16,
+        -9
+      ],
+      "source_anchor": [
+        44.0,
+        77
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/north/frame_004.png",
+      "sha256": "c272fb7c65375810c8ad74bb411f49abf8b06374d352c848e499eef266b7e32f",
+      "offset": [
+        -16,
+        -9
+      ],
+      "source_anchor": [
+        44.0,
+        77
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/north/frame_005.png",
+      "sha256": "dcc1481aa23a9f8ae932a53763080f6431d8c4c5fc678c25be3e7da69d1728a7",
+      "offset": [
+        -16,
+        -9
+      ],
+      "source_anchor": [
+        44.0,
+        77
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/north/frame_006.png",
+      "sha256": "b0cc84edd29061262dbfba540fcdcfbf78136e134205d18c0bb65fa1288d46a9",
+      "offset": [
+        -16,
+        -9
+      ],
+      "source_anchor": [
+        44.0,
+        77
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/north/frame_007.png",
+      "sha256": "79da3781a11377a0a5ed4f509b1d65c5b83a1290f0895ffb78e94390697d9886",
+      "offset": [
+        -16,
+        -9
+      ],
+      "source_anchor": [
+        44.0,
+        77
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/east/frame_000.png",
+      "sha256": "1132edf01e5d760b14b25b8fe349b9f56deda0bcaca84e64425861cb324a8451",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/east/frame_001.png",
+      "sha256": "ca10169bcf338649cfe9b81be866175b8c8dfb1ad77165ca25b91b8954766235",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/east/frame_002.png",
+      "sha256": "facd057ddfa53a376184f8933aa22672439805d182c3e1689ceee7a26f8a2303",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/east/frame_003.png",
+      "sha256": "d27160ba77a41770914c0665a6b71e4483a1972bad59c94e1766760557b6869c",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/east/frame_004.png",
+      "sha256": "3aba920dd437fd2a773a247d35c8e0c46422d33090e4b896d5b01614d3292573",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/east/frame_005.png",
+      "sha256": "294d0bb3b7dc81cd7484d121bcec8a0223670149a5dfd5f0f1771de4e92fefa9",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/east/frame_006.png",
+      "sha256": "7d5a784bd3e4c9be57c389f487cbec30eecdd5d42ad2e20c5d047eb51934b2da",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/east/frame_007.png",
+      "sha256": "b74489fa966234be61aa4b7d67ff2e0852e984922b3dea47ac0b0fd30491ceee",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/west/frame_000.png",
+      "sha256": "29ba9c14f6d8ced378d1f6a276174b577afa72cf347fb8f036ae6ed023859909",
+      "offset": [
+        -14,
+        -6
+      ],
+      "source_anchor": [
+        42.0,
+        73
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/west/frame_001.png",
+      "sha256": "711d3b3cb17e385578b61c0d2f824e4a956b1efc1aee87063ebed901d5236b9a",
+      "offset": [
+        -14,
+        -6
+      ],
+      "source_anchor": [
+        42.0,
+        73
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/west/frame_002.png",
+      "sha256": "112c462703beee2c7e8f4a708b29aff385f974c06dc0f59792cb2847d9c9349b",
+      "offset": [
+        -14,
+        -6
+      ],
+      "source_anchor": [
+        42.0,
+        73
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/west/frame_003.png",
+      "sha256": "24cff5813dccf60d7b81712d415edbc239f46c42de5f1d144e6ed17758f796f7",
+      "offset": [
+        -14,
+        -6
+      ],
+      "source_anchor": [
+        42.0,
+        73
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/west/frame_004.png",
+      "sha256": "4b388fde4b3519b9112992ca930c59bcd8538b43fedf62b876b7dc53181208a0",
+      "offset": [
+        -14,
+        -6
+      ],
+      "source_anchor": [
+        42.0,
+        73
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/west/frame_005.png",
+      "sha256": "3ceaf8877d8d095b6fe698d8e878b82d33281e3f8a6ac992eb3ac1412cf1f8e6",
+      "offset": [
+        -14,
+        -6
+      ],
+      "source_anchor": [
+        42.0,
+        73
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/west/frame_006.png",
+      "sha256": "85376f1dd7256963695b6d221b529fdf4cd15d315145da1eed43647ffe0cef1f",
+      "offset": [
+        -14,
+        -6
+      ],
+      "source_anchor": [
+        42.0,
+        73
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Idle/Idle/animations/Walking/west/frame_007.png",
+      "sha256": "0f5ccd561bd5465a492ca37841949f82b6a159d3b91453232ee6232fba0c64fc",
+      "offset": [
+        -14,
+        -6
+      ],
+      "source_anchor": [
+        42.0,
+        73
+      ]
+    }
+  ]
+}

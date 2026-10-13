@@ -5,6 +5,7 @@ import { effectColor } from "../assets/palettes.js";
 import { ensureMagicTexture } from "../assets/magicTextures.js";
 import {
   flightFrame,
+  fireballFrame,
   impactFrame,
   impactDuration,
   magicKey,
@@ -66,11 +67,19 @@ export class ProjectileView {
       if (flight) {
         flight.ribbons
           .setTexture(
-            ensureMagicTexture(this.scene, "flight", palette),
-            flightFrame(now - flight.start),
+            ensureMagicTexture(
+              this.scene,
+              p.fireballLevel ? "fireball" : "flight",
+              palette,
+            ),
+            p.fireballLevel
+              ? fireballFrame(p.fireballLevel, now - flight.start)
+              : flightFrame(now - flight.start),
           )
           .setVisible(!debug)
-          .setScale(effectPresentationProfiles.projectile.scale)
+          .setScale(
+            p.fireballLevel ? 1 : effectPresentationProfiles.projectile.scale,
+          )
           .setPosition(
             q.x + effectPresentationProfiles.projectile.offsetX,
             q.y + effectPresentationProfiles.projectile.offsetY,
@@ -79,7 +88,7 @@ export class ProjectileView {
         // Core retains its frame and shares the explicit presentation profile.
         flight.core
           .setTexture(ensureMagicTexture(this.scene, "core", palette), 0)
-          .setVisible(!debug)
+          .setVisible(!debug && !p.fireballLevel)
           .setScale(effectPresentationProfiles.projectile.scale)
           .setPosition(
             q.x + effectPresentationProfiles.projectile.offsetX,

@@ -18,7 +18,11 @@ export interface ClientEvents {
   "role:select": (p: { role: Role }, ack: Ack) => void;
   "appearance:select": (p: CharacterAppearance, ack: Ack) => void;
   "lobby:ready": (p: { ready: boolean }, ack: Ack) => void;
-  "player:input": (p: InputFrame) => void;
+  "clock:probe": (
+    p: Record<string, never>,
+    ack: Ack<{ serverTick: number }>,
+  ) => void;
+  "player:input": (p: InputFrame | { frames: InputFrame[] }) => void;
   "skill:unlock": (p: { nodeId: string }, ack: Ack) => void;
   "game:restart": (p: Record<string, never>, ack: Ack) => void;
 }

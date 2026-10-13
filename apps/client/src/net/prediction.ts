@@ -4,93 +4,95 @@ import type {
   InputFrame,
   World,
 } from "../../../../packages/shared/src/gameTypes.js";
-import { move } from "../../../../packages/shared/src/movement.js";
+import { stepMovement } from "../../../../packages/shared/src/movement.js";
 import { maps, collisionRects } from "../../../../packages/shared/src/maps.js";
-import { DT } from "../../../../packages/shared/src/constants.js";
+import {
+  DT,
+  MAX_PREDICTION_LEAD,
+} from "../../../../packages/shared/src/constants.js";
 export class Prediction {
   player: Player | null = null;
   pending: InputFrame[] = [];
   error = 0;
   private tick = 0;
-  private commandTicks = new Map<number, number>();
+  get simulationTick() {
+    return this.tick;
+  }
   private appliedInput: InputFrame = neutral();
   reset(p: Player, serverTick = 0) {
     this.player = structuredClone(p);
     this.pending = [];
     this.tick = serverTick;
-    this.commandTicks.clear();
-    this.appliedInput = {
+    this.error = 0;
+    this.appliedInput = p.movementInput ?? {
       ...neutral(p.lastProcessedInputSeq),
       moveX: p.movementIntent?.x ?? 0,
       moveY: p.movementIntent?.y ?? 0,
     };
   }
+  private simulate(until: number, w: World) {
+    if (!this.player) return;
+    let input = this.appliedInput;
+    for (const i of this.pending)
+      if (i.targetTick! <= this.tick && i.seq > input.seq) input = i;
+    while (this.tick < until) {
+      this.tick++;
+      for (const i of this.pending)
+        if (i.targetTick! <= this.tick && i.seq > input.seq) input = i;
+      const scene = this.player.sceneId ?? w.sceneId;
+      stepMovement(
+        this.player,
+        input,
+        maps[scene],
+        collisionRects(scene, w.puzzles),
+        DT,
+      );
+    }
+  }
   push(i: InputFrame, w: World, advance = true) {
     if (!this.player) return;
-    this.tick = Math.max(this.tick, w.serverTick);
-    this.commandTicks.set(i.seq, this.tick + 1);
-    this.pending.push(i);
-    if (this.pending.length > 120)
-      this.commandTicks.delete(this.pending.shift()!.seq);
-    // Immediate action packets change intent, but are not extra physics ticks.
-    if (!advance) return;
-    this.tick++;
-    move(
-      this.player,
-      i,
-      maps[this.player.sceneId ?? w.sceneId],
-      collisionRects(this.player.sceneId ?? w.sceneId, w.puzzles),
-      DT,
+    const goal = Math.max(
+      this.tick,
+      Math.min(
+        i.targetTick ?? this.tick + 1,
+        w.serverTick + MAX_PREDICTION_LEAD - 1,
+      ),
     );
+    // Reserve the next tick for changed intent even while prediction is at its
+    // ceiling. Otherwise commands were sent beyond the server acceptance window.
+    // Sending a packet never adds simulation time.
+    i.targetTick = Math.max(this.tick + 1, goal);
+    i.movementEpoch = this.player.movementEpoch;
+    this.pending.push({ ...i });
+    if (this.pending.length > 120) this.pending.shift();
+    if (advance) this.simulate(goal, w);
   }
-  // Restore truth, then replay future physics ticks using the held intent.
   reconcile(p: Player, w: World) {
     const old = this.player;
     for (const i of this.pending)
       if (i.seq <= p.lastProcessedInputSeq) this.appliedInput = i;
-    this.pending = this.pending.filter((i) => {
-      if (i.seq > p.lastProcessedInputSeq) return true;
-      this.commandTicks.delete(i.seq);
-      return false;
-    });
-    this.player = structuredClone(p);
-    // A command the server has not acknowledged cannot be treated as a past
-    // server tick. Keep its relative spacing while rebasing pending commands.
-    const firstPendingTick = this.pending.length
-      ? this.commandTicks.get(this.pending[0].seq)
-      : undefined;
-    if (firstPendingTick !== undefined && firstPendingTick <= w.serverTick) {
-      const shift = w.serverTick + 1 - firstPendingTick;
-      for (const i of this.pending)
-        this.commandTicks.set(i.seq, this.commandTicks.get(i.seq)! + shift);
-      this.tick = Math.max(this.tick, w.serverTick + 1);
+    this.pending = this.pending.filter((i) => i.seq > p.lastProcessedInputSeq);
+    this.appliedInput = p.movementInput ?? this.appliedInput;
+    if (
+      w.phase !== "PLAYING" ||
+      Object.values(w.players).some((q) => !q.connected)
+    ) {
+      this.pending = [];
+      this.player = structuredClone(p);
+      this.tick = w.serverTick;
+      this.error = old ? Math.hypot(old.x - p.x, old.y - p.y) : 0;
+      return;
     }
-    // Timer skew must not accumulate acknowledged steps into a permanent lead.
-    // Retain a single in-flight step for batched acknowledgements, plus enough
-    // time for outstanding intent. Only new samples advance the local clock.
-    this.tick = Math.min(
-      Math.max(this.tick, w.serverTick),
-      w.serverTick + Math.max(1, this.pending.length),
-    );
+    // Late commands become next-tick intent, never a shifted replay horizon.
     for (const i of this.pending)
-      this.commandTicks.set(
-        i.seq,
-        Math.min(this.commandTicks.get(i.seq)!, this.tick),
-      );
-    // Sequence acknowledges intent, not elapsed physics. Replay the future
-    // simulation ticks, holding the latest intent just as the server does.
-    let input = this.appliedInput;
-    for (let tick = w.serverTick + 1; tick <= this.tick; tick++) {
-      for (const i of this.pending)
-        if ((this.commandTicks.get(i.seq) ?? tick) <= tick) input = i;
-      move(
-        this.player,
-        input,
-        maps[this.player.sceneId ?? w.sceneId],
-        collisionRects(this.player.sceneId ?? w.sceneId, w.puzzles),
-        DT,
-      );
-    }
+      i.targetTick = Math.max(w.serverTick + 1, i.targetTick!);
+    const horizon = Math.min(
+      Math.max(this.tick, w.serverTick + (this.pending.length ? 1 : 0)),
+      w.serverTick + MAX_PREDICTION_LEAD - 1,
+    );
+    this.player = structuredClone(p);
+    this.tick = w.serverTick;
+    this.simulate(horizon, w);
     this.error = old
       ? Math.hypot(old.x - this.player.x, old.y - this.player.y)
       : 0;

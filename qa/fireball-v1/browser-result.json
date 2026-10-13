@@ -1,0 +1,90 @@
+{
+  "errors": [],
+  "evidence": [
+    {
+      "level": 1,
+      "projectiles": [
+        {
+          "fireballLevel": 1,
+          "damage": 20,
+          "id": "ff127473-97da-4e0f-8140-072af988d7e5",
+          "sceneId": "FOREST_RUINS",
+          "x": 1222,
+          "y": 480,
+          "vx": 420,
+          "vy": 0,
+          "life": -1.457167719820518e-15,
+          "owner": "90a13fa1-81db-452d-a5f0-71312b629f04"
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "projectiles": [
+        {
+          "fireballLevel": 1,
+          "damage": 20,
+          "id": "ff127473-97da-4e0f-8140-072af988d7e5",
+          "sceneId": "FOREST_RUINS",
+          "x": 1222,
+          "y": 480,
+          "vx": 420,
+          "vy": 0,
+          "life": -1.457167719820518e-15,
+          "owner": "90a13fa1-81db-452d-a5f0-71312b629f04"
+        },
+        {
+          "fireballLevel": 2,
+          "damage": 30,
+          "id": "8a7575bb-af4c-427d-8215-df6feb812abd",
+          "sceneId": "FOREST_RUINS",
+          "x": 1222,
+          "y": 480,
+          "vx": 420,
+          "vy": 0,
+          "life": -1.457167719820518e-15,
+          "owner": "90a13fa1-81db-452d-a5f0-71312b629f04"
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "projectiles": [
+        {
+          "fireballLevel": 2,
+          "damage": 30,
+          "id": "8a7575bb-af4c-427d-8215-df6feb812abd",
+          "sceneId": "FOREST_RUINS",
+          "x": 1222,
+          "y": 480,
+          "vx": 420,
+          "vy": 0,
+          "life": -1.457167719820518e-15,
+          "owner": "90a13fa1-81db-452d-a5f0-71312b629f04"
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "projectiles": []
+    }
+  ],
+  "icons": [
+    {
+      "loaded": true,
+      "width": 48
+    },
+    {
+      "loaded": true,
+      "width": 48
+    },
+    {
+      "loaded": true,
+      "width": 48
+    },
+    {
+      "loaded": true,
+      "width": 48
+    }
+  ]
+}

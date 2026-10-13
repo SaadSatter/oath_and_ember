@@ -70,7 +70,7 @@ describe("presentation animation selection", () => {
       ).toBe("interact_channel");
     }
   });
-  it("registers the approved idles and six-frame walks per hero and no side-view artwork", () => {
+  it("registers four idles and the supplied directional walk lengths per hero", () => {
     for (const role of ["OATH", "EMBER"] as const) {
       expect(Object.keys(heroAssets[role].clips.TOP_DOWN)).toEqual([
         "idle_down",
@@ -93,8 +93,8 @@ describe("presentation animation selection", () => {
       );
       expect(new Set(keys).size).toBe(4);
       for (const clip of Object.values(heroAssets[role].clips.TOP_DOWN)) {
-        expect(clip!.end - clip!.start).toBe(clip!.start < 4 ? 0 : 5);
-        expect(clip!.end).toBeLessThan(28);
+        expect(clip!.end - clip!.start).toBe(clip!.start < 4 ? 0 : 7);
+        expect(clip!.end).toBeLessThan(36);
         expect(clip!.repeat).toBe(-1);
       }
     }

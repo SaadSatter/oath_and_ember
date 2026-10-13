@@ -1,0 +1,442 @@
+{
+  "authorization": "User requested replacement Coco idle and walks with supplied sprite export and GIFs.",
+  "operations": [
+    "Nearest-neighbor normalization at 0.9 source scale",
+    "Stable ground anchor at (24,60); preserve walk bobbing",
+    "Purple cloth palette mask; existing combat art retained because export contains idle and walk only"
+  ],
+  "frames": [
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/rotations/south.png",
+      "sha256": "dcb4e2991e9c821713fab421208d429e0d988f5e9a6a94508f0664dc53d6e962",
+      "offset": [
+        -5,
+        5
+      ],
+      "source_anchor": [
+        32.0,
+        61
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/rotations/north.png",
+      "sha256": "1cb624bac49b80cafb8e4675178317d20316ea225065b6df9045985cae4b62d1",
+      "offset": [
+        -5,
+        5
+      ],
+      "source_anchor": [
+        32.0,
+        61
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/rotations/west.png",
+      "sha256": "e8cab10ebab6b9bbf6a60d274802bb1efa2956a0248e50a30036e32029e2504e",
+      "offset": [
+        -5,
+        5
+      ],
+      "source_anchor": [
+        32.0,
+        61
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/rotations/east.png",
+      "sha256": "29ed26bf34cd22696b6c360d4b2f71b166ab36dda4755f441ca1e7e780c60bb0",
+      "offset": [
+        -5,
+        5
+      ],
+      "source_anchor": [
+        32.0,
+        61
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/south/frame_000.png",
+      "sha256": "dec7a8bd0ea61b88d9fd4f2d0c1da45901f546f7ada036fc30f6ee580e6e69b1",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/south/frame_001.png",
+      "sha256": "c80da636f18c8de07097924f21cc93422472a935ebf67375d7c51a178c79bfbb",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/south/frame_002.png",
+      "sha256": "8c08b9ccfb52708e7fcb61345599774b988c4a6ee773846e90363ab14d68cb37",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/south/frame_003.png",
+      "sha256": "7ddcdb4f5edd134422e2fbb0bd204fa56eed133a094b987db245fa93851ccb47",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/south/frame_004.png",
+      "sha256": "11e6f3bbbb01e1822cd81f3e3213984dbf2ab5b425502b733de2473d70d6e12e",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/south/frame_005.png",
+      "sha256": "a38d81b066911ee848c0717565798638c9b13fc634a335229b10e41b2cb17cb4",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/south/frame_006.png",
+      "sha256": "0a77ef65d73ab78ab52292c5baea96218d14bd92450c10c8b68c8ce85c2730dc",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/south/frame_007.png",
+      "sha256": "b85b24e4e8e7a0340f7b7d2100c640e1cff71aefd4b794b22217c46bfcc209a3",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/north/frame_000.png",
+      "sha256": "ac580c0ba28b26182b4d127b574765ce4ceb5233caeb9f2752a8e84260e95d58",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/north/frame_001.png",
+      "sha256": "b9d541f7c3f012af79521c1e5ca8cda85f64d16e765747d9e12c9918c1d5bb1b",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/north/frame_002.png",
+      "sha256": "930dfe991aada381b31c6bb3eca6416068b3f2fb83c7184c652b53ae63bb77de",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/north/frame_003.png",
+      "sha256": "c48e8790dade91ae56595f23694b18a3b85e10f0b7500a434bfe6350426a1790",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/north/frame_004.png",
+      "sha256": "0741f441548b2fec29ff5fc65b28a76d52edf6727c7c3aed1aacf24f91ac7a1c",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/north/frame_005.png",
+      "sha256": "a200d3b64058e7fc8928f035924edab85c43093684ec0f4ff5d32b8c8af5e69e",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/north/frame_006.png",
+      "sha256": "48ca4b5f2b107317f767ccd7b9e0a375d0396f48417e85f9f49f23bbb977dabe",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/north/frame_007.png",
+      "sha256": "2853201bc5cadab6361ca02249c9aa994fd41524e0b13c7592873a13d84dbb80",
+      "offset": [
+        -14,
+        -5
+      ],
+      "source_anchor": [
+        42.0,
+        72
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/east/frame_000.png",
+      "sha256": "7382004599668ebf89c256ef93a336a56fd1cf250975762d63a8e28bf735b689",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/east/frame_001.png",
+      "sha256": "11713b7c0fdb95811e691f9d03190ad9eede9ecd86db58fa8e9a81c25700afa7",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/east/frame_002.png",
+      "sha256": "b739889ee0d5bcdcca3307a767e25acf491b76738ff0c919a33d896fcf3d554d",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/east/frame_003.png",
+      "sha256": "8dcbde27fab799a0400a3b8ee1b98f30d8666d027f866f0e046ca103ecba8025",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/east/frame_004.png",
+      "sha256": "35b2093954111843529d4f01e35e7cc332876ee22a207bb8c378c698b4922c2b",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/east/frame_005.png",
+      "sha256": "5480dcc6191aea842ad197a7b8a1fa14a88294eec6222c1d81048397900f2553",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/east/frame_006.png",
+      "sha256": "d0160bbe295369672d0f1c5491fe6539ec6948a5f47098a08b546124d41ec971",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/east/frame_007.png",
+      "sha256": "8352c7a30e72b44c149c9a74fbcf2e7472ad64647d5e5766811a681c74643e1e",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/west/frame_000.png",
+      "sha256": "a37e2aad95cfaa5f3dd6f21c269ada072c7fd35489db5276f301dc31c80b14da",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/west/frame_001.png",
+      "sha256": "37603d62b66c359dc1dbd424770d1b1f3f234de24d5d25933777795aa8853aca",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/west/frame_002.png",
+      "sha256": "91db406c0b1651eff570dc00bcbe3dc6dda3f44ba86da34f42bce246aeb58014",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/west/frame_003.png",
+      "sha256": "a4fe1df9226ebb15b19fd8a4430789eb2ec9ec49747c787ec1abc5722f129cce",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/west/frame_004.png",
+      "sha256": "189cf739b14ad9883b657754f0e1e586f95e26f83f6a70e5582588083cef6812",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/west/frame_005.png",
+      "sha256": "846cffcdf3ccd414abb9f850efea92d52db789b67d9c629fd1b32a7a5aacaa80",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/west/frame_006.png",
+      "sha256": "d67b2b81d24bc6a2fa7fd94d61380ac49d31dc51f8c5265f1ee3eed585fa8c39",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    },
+    {
+      "path": "Images/Sprites/Coco/Coco_the_main_mage-Idle/Idle/animations/Walking/west/frame_007.png",
+      "sha256": "8a6a6fee34dd081f82f190882159359189517e0f212e19b12836e3de2e68c6f8",
+      "offset": [
+        -14,
+        -4
+      ],
+      "source_anchor": [
+        42.0,
+        71
+      ]
+    }
+  ]
+}

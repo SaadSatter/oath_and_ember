@@ -68,6 +68,35 @@ it("validates door distance, supports independent entry/exit, and requires E rel
   expect(a.sceneId).toBe("MAIN_HOUSE");
   expect(a.skillPoints).toBe(1);
 });
+it("returns outside after walking into the exit arch, without accepting distant interactions", () => {
+  const { r, a, b } = pair();
+  Object.assign(a, { x: 480, y: 344 });
+  input(r, a.id, true);
+  expect(a.sceneId).toBe("HOUSE_INTERIOR");
+  input(r, a.id, false);
+  // Approach through real server movement, rather than teleporting to the trigger.
+  const session = r.sessions.get(a.id)!;
+  for (let tick = 0; tick < 14; tick++) {
+    session.input = { ...neutral(session.input.seq + 1), moveY: -1 };
+    session.received = Date.now();
+    r.tick();
+  }
+  expect(a.y).toBeLessThan(388); // outside the old 42px interaction radius
+  input(r, a.id, true);
+  expect(a.sceneId).toBe("MAIN_HOUSE");
+  expect(b.sceneId).toBe("MAIN_HOUSE");
+  // An occupied arrival may use a nearby safe point beside the outside door.
+  expect(Math.hypot(a.x - 480, a.y - 326)).toBeLessThan(42);
+  input(r, a.id, true);
+  expect(a.sceneId).toBe("MAIN_HOUSE");
+  input(r, a.id, false);
+  input(r, a.id, true);
+  expect(a.sceneId).toBe("HOUSE_INTERIOR");
+  input(r, a.id, false);
+  Object.assign(a, { x: 650, y: 454 });
+  input(r, a.id, true);
+  expect(a.sceneId).toBe("HOUSE_INTERIOR");
+});
 it("blocks interior furniture and boundary bases but permits the door corridor", () => {
   const { a } = pair();
   a.sceneId = "HOUSE_INTERIOR";
@@ -254,12 +283,19 @@ it("allows walking across open rug margins and into stair treads while retaining
   const { a } = pair();
   a.sceneId = "HOUSE_INTERIOR";
   const m = maps.HOUSE_INTERIOR;
-  const walk = (x: number, y: number, mx: number, my: number, ticks: number) => {
+  const walk = (
+    x: number,
+    y: number,
+    mx: number,
+    my: number,
+    ticks: number,
+  ) => {
     Object.assign(a, { x, y });
-    for (let n = 0; n < ticks; n++) move(a, { ...neutral(), moveX: mx, moveY: my }, m, m.walls, 1 / 30);
+    for (let n = 0; n < ticks; n++)
+      move(a, { ...neutral(), moveX: mx, moveY: my }, m, m.walls, 1 / 30);
     return { x: a.x, y: a.y };
   };
-  expect(walk(320, 470, 1, 0, 8).x).toBeCloseTo(320 + 8 * 190 / 30);
+  expect(walk(320, 470, 1, 0, 8).x).toBeCloseTo(320 + (8 * 190) / 30);
   expect(walk(224, 331, 0, -1, 30).y).toBe(237);
   expect(walk(400, 327, 0, -1, 30).y).toBe(237);
   expect(walk(400, 475, 0, -1, 30).y).toBe(475);

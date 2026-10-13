@@ -123,7 +123,11 @@ it("keeps prediction lead bounded over sustained delayed snapshots and settles o
   let maxCorrection = 0;
   for (let seq = 1; seq <= 300; seq++) {
     // Client timers occasionally run an extra sample before the next server tick.
-    const input = { ...neutral(seq), moveX: seq > 180 ? 0 : 1 };
+    const input = {
+      ...neutral(seq),
+      targetTick: seq + 3,
+      moveX: seq > 180 ? 0 : 1,
+    };
     if (seq % 10 === 0)
       prediction.push({ ...input, seq: seq * 2 - 1 }, snapshot);
     input.seq = seq * 2;
@@ -144,4 +148,36 @@ it("keeps prediction lead bounded over sustained delayed snapshots and settles o
   }
   expect(maxCorrection).toBeLessThanOrEqual((4 * 190) / 30 + 1e-6);
   expect(prediction.player!.x).toBeCloseTo(p.x);
+});
+it("predicts both movement bursts with the same cooldown and swept collision as the server", () => {
+  for (const role of ["OATH", "EMBER"] as const) {
+    const r = new GameRoom("BURST1"),
+      a = r.add("a"),
+      b = r.add("b");
+    r.select(a.playerId, role);
+    r.select(b.playerId, role === "OATH" ? "EMBER" : "OATH");
+    r.ready(a.playerId, true);
+    r.ready(b.playerId, true);
+    const p = r.state.players[a.playerId];
+    Object.assign(p, {
+      sceneId: "HOUSE_INTERIOR",
+      x: 320,
+      y: 480,
+      unlockedSkills: [role === "OATH" ? "dash" : "blink"],
+    });
+    const prediction = new Prediction();
+    prediction.reset(p);
+    for (let seq = 1; seq <= 150; seq++) {
+      const input = { ...neutral(seq), moveX: 1, secondaryHeld: true };
+      prediction.push(input, r.state);
+      const session = r.sessions.get(p.id)!;
+      session.input = input;
+      session.received = Date.now();
+      r.tick();
+      expect(prediction.player!.x).toBeCloseTo(p.x);
+      expect(prediction.player!.cooldowns.dash).toBeCloseTo(p.cooldowns.dash);
+      prediction.reconcile(p, r.state);
+      expect(prediction.error).toBeLessThan(1e-6);
+    }
+  }
 });
