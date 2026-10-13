@@ -1,3 +1,5 @@
+import { siegSprintAsset, siegSprintKey } from "../animation/siegSprint.js";
+import { siegPushAsset, siegPushKey } from "../animation/siegPush.js";
 import { siegBasicKey, siegBasicAsset } from "../animation/siegAttack.js";
 import { defenseAsset, defenseKey } from "../animation/defense.js";
 import {
@@ -19,17 +21,28 @@ const sources = new Map<
   Promise<[HTMLImageElement, HTMLImageElement]>
 >();
 export type AppearanceLayer =
-  "base" | "combat" | "effects" | "heavy" | "defense" | "basic";
+  | "base"
+  | "combat"
+  | "effects"
+  | "heavy"
+  | "defense"
+  | "basic"
+  | "push"
+  | "sprint";
 const layerKey = (role: Role, layer: AppearanceLayer) =>
-  layer === "basic"
-    ? siegBasicKey
-    : layer === "defense"
-      ? defenseKey(role)
-      : layer === "heavy"
-        ? heavyKey
-        : layer === "base"
-          ? textureKey(role)
-          : combatTextureKey(role, layer === "effects");
+  layer === "sprint"
+    ? siegSprintKey
+    : layer === "push"
+      ? siegPushKey
+      : layer === "basic"
+        ? siegBasicKey
+        : layer === "defense"
+          ? defenseKey(role)
+          : layer === "heavy"
+            ? heavyKey
+            : layer === "base"
+              ? textureKey(role)
+              : combatTextureKey(role, layer === "effects");
 const cache = new Map<string, HTMLCanvasElement>();
 function image(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -55,31 +68,39 @@ export async function appearanceCanvas(
   if (cache.has(key)) return cache.get(key)!;
   const sourceKey = layerKey(role, layer);
   const asset =
-    layer === "basic"
-      ? siegBasicAsset
-      : layer === "defense"
-        ? defenseAsset(role)
-        : layer === "heavy"
-          ? heavyAsset
-          : layer === "base"
-            ? heroAssets[role]
-            : combatAssets[role];
+    layer === "sprint"
+      ? siegSprintAsset
+      : layer === "push"
+        ? siegPushAsset
+        : layer === "basic"
+          ? siegBasicAsset
+          : layer === "defense"
+            ? defenseAsset(role)
+            : layer === "heavy"
+              ? heavyAsset
+              : layer === "base"
+                ? heroAssets[role]
+                : combatAssets[role];
   const url =
     layer === "effects"
       ? "/assets/characters/ember/combat-effects.png"
       : asset.url;
   const maskName =
-    layer === "basic"
-      ? "basic-mask"
-      : layer === "defense"
-        ? "defense-mask"
-        : layer === "heavy"
-          ? "heavy-mask"
-          : layer === "base"
-            ? "palette-mask"
-            : layer === "combat"
-              ? "combat-mask"
-              : "combat-effects-mask";
+    layer === "sprint"
+      ? "sprint-mask"
+      : layer === "push"
+        ? "push-mask"
+        : layer === "basic"
+          ? "basic-mask"
+          : layer === "defense"
+            ? "defense-mask"
+            : layer === "heavy"
+              ? "heavy-mask"
+              : layer === "base"
+                ? "palette-mask"
+                : layer === "combat"
+                  ? "combat-mask"
+                  : "combat-effects-mask";
   if (!sources.has(sourceKey))
     sources.set(
       sourceKey,
@@ -142,17 +163,29 @@ export function ensureAppearanceTexture(
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(mask as CanvasImageSource, 0, 0);
     const regions = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    data.data.set(recolorPixels(data.data, regions.data, a.primaryPalette,
-      a.effectPalette, defaultAppearance(role).primaryPalette));
+    data.data.set(
+      recolorPixels(
+        data.data,
+        regions.data,
+        a.primaryPalette,
+        a.effectPalette,
+        defaultAppearance(role).primaryPalette,
+      ),
+    );
     ctx.putImageData(data, 0, 0);
     const texture = scene.textures.addCanvas(key, canvas);
     if (texture) {
       const columns = canvas.width / siegBasicAsset.frameWidth;
-      const count = columns * canvas.height / siegBasicAsset.frameHeight;
+      const count = (columns * canvas.height) / siegBasicAsset.frameHeight;
       for (let n = 0; n < count; n++)
-        texture.add(String(n), 0, (n % columns) * siegBasicAsset.frameWidth,
+        texture.add(
+          String(n),
+          0,
+          (n % columns) * siegBasicAsset.frameWidth,
           Math.floor(n / columns) * siegBasicAsset.frameHeight,
-          siegBasicAsset.frameWidth, siegBasicAsset.frameHeight);
+          siegBasicAsset.frameWidth,
+          siegBasicAsset.frameHeight,
+        );
       return key;
     }
   }
@@ -166,15 +199,19 @@ export function ensureAppearanceTexture(
         const texture = scene.textures.addCanvas(key, canvas);
         if (!texture) return;
         const asset =
-          layer === "basic"
-            ? siegBasicAsset
-            : layer === "defense"
-              ? defenseAsset(role)
-              : layer === "heavy"
-                ? heavyAsset
-                : layer === "base"
-                  ? heroAssets[role]
-                  : combatAssets[role];
+          layer === "sprint"
+            ? siegSprintAsset
+            : layer === "push"
+              ? siegPushAsset
+              : layer === "basic"
+                ? siegBasicAsset
+                : layer === "defense"
+                  ? defenseAsset(role)
+                  : layer === "heavy"
+                    ? heavyAsset
+                    : layer === "base"
+                      ? heroAssets[role]
+                      : combatAssets[role];
         const columns = Math.floor(canvas.width / asset.frameWidth);
         const count = columns * Math.floor(canvas.height / asset.frameHeight);
         for (let n = 0; n < count; n++)

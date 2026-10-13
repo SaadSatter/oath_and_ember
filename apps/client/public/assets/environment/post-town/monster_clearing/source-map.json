@@ -1,0 +1,56 @@
+{
+  "version": "1.0.0",
+  "name": "Monster Map 2",
+  "exportDate": "2026-10-13T07:11:34.850473Z",
+  "engine": "pixellab-map-editor",
+  "mapConfig": {
+    "tileSize": 64,
+    "dimensions": {
+      "width": 16,
+      "height": 12,
+      "pixelWidth": 1024,
+      "pixelHeight": 768
+    },
+    "boundingBox": {
+      "maxX": 14,
+      "maxY": 10,
+      "minX": -1,
+      "minY": -1
+    }
+  },
+  "terrains": [
+    {
+      "id": 1,
+      "name": "A lush forest floor covered in vibrant green grass, patches of moss, scattered fallen leaves, small stones, and occasional wildflowers, creating a natural woodland path.",
+      "color": "#22c55e",
+      "baseTileId": "97309eef-9905-4ff9-81e5-927e06b127b4",
+      "walkable": null
+    },
+    {
+      "id": 2,
+      "name": "A dense forest canopy featuring towering trees, thick leafy bushes, tangled vines, moss-covered rocks, and overlapping foliage that forms a natural boundary around the forest floor.",
+      "color": "#15803d",
+      "baseTileId": "72158dab-09a4-4360-937d-13240933a645",
+      "walkable": null
+    }
+  ],
+  "tilesets": [
+    {
+      "id": "d392ad59-dc7a-4f04-b2cd-ce8dd1ac9106",
+      "filename": "A lush forest floor covered in vibrant green grass, patches of moss, scattered fallen leave-f94911e8.png",
+      "lowerTerrain": "A lush forest floor covered in vibrant green grass, patches of moss, scattered fallen leaves, small stones, and occasional wildflowers, creating a natural woodland path.",
+      "upperTerrain": "A dense forest canopy featuring towering trees, thick leafy bushes, tangled vines, moss-covered rocks, and overlapping foliage that forms a natural boundary around the forest floor.",
+      "lowerTerrainId": 1,
+      "upperTerrainId": 2,
+      "transitionSize": 0,
+      "transitionDescription": "",
+      "tileSize": 64,
+      "gridLayout": "4x4",
+      "wangIndexMapping": "standard",
+      "view": "high top-down"
+    }
+  ],
+  "overlays": [],
+  "background": null,
+  "mapId": "7c61f79a-c0ec-4532-b255-2cf7d68e9174"
+}

@@ -73,7 +73,7 @@ function harness() {
     textures: { exists: () => true },
     anims: {
       exists: (key: string) =>
-        /(TOP_DOWN:(idle_(down|up|left|right)|walk_(north|south|east|west))|(combat|basic):(down|up|left|right)|OATH:heavy(:charge)?)$/.test(
+        /(TOP_DOWN:(idle_(down|up|left|right)|walk_(north|south|east|west))|(combat|basic):(down|up|left|right)|OATH:heavy:(down|up|left|right)(:charge)?)$/.test(
           key,
         ),
     },
@@ -230,7 +230,7 @@ it("plays accepted combat once, locks direction and restores locomotion after re
   expect(h.sprite.setOrigin).toHaveBeenLastCalledWith(0.5, 60 / 64);
 });
 
-it("holds horizontal heavy wind-up, mirrors left, and plays release once without moving the anchor", () => {
+it("holds authored heavy wind-up and plays release once without moving the anchor", () => {
   const h = harness(),
     p = {
       ...player(),
@@ -242,9 +242,9 @@ it("holds horizontal heavy wind-up, mirrors left, and plays release once without
       },
     };
   h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 20 });
-  expect(h.sprite.play).toHaveBeenLastCalledWith("hero:OATH:heavy:charge");
-  expect(h.sprite.setFrame).toHaveBeenLastCalledWith(1);
-  expect(h.sprite.setFlipX).toHaveBeenLastCalledWith(true);
+  expect(h.sprite.play).toHaveBeenLastCalledWith("hero:OATH:heavy:left:charge");
+  expect(h.sprite.setFrame).toHaveBeenLastCalledWith(37);
+  expect(h.sprite.setFlipX).toHaveBeenLastCalledWith(false);
   h.view.update(p, { ...p, vx: 190, facing: 0 }, p, "TOP_DOWN", "sprite", {
     serverTick: 21,
   });
@@ -260,7 +260,7 @@ it("holds horizontal heavy wind-up, mirrors left, and plays release once without
     },
   };
   h.view.update(release, release, p, "TOP_DOWN", "sprite", { serverTick: 22 });
-  expect(h.sprite.play).toHaveBeenLastCalledWith("hero:OATH:heavy");
+  expect(h.sprite.play).toHaveBeenLastCalledWith("hero:OATH:heavy:left");
   expect(h.sprite.setPosition).toHaveBeenLastCalledWith(120, 463);
   expect(h.sprite.setOrigin).toHaveBeenLastCalledWith(0.5, 0.75);
   h.view.update(release, release, p, "TOP_DOWN", "geometric", {
@@ -283,9 +283,8 @@ it("keeps Coco's clean body visible while animating only the isolated Ward layer
   h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 0 });
   const ward = h.scene.add.image.mock.results[0].value;
   expect(h.sprite.setVisible).toHaveBeenLastCalledWith(true);
-  expect(h.sprite.play).toHaveBeenLastCalledWith(
-    "hero:EMBER:TOP_DOWN:idle_right",
-  );
+  expect(h.sprite.play).toHaveBeenLastCalledWith("hero:EMBER:combat:right");
+  expect(h.sprite.setFrame).toHaveBeenLastCalledWith(0);
   expect(ward.setTexture.mock.calls[0][1]).toBe(0);
   h.scene.time.now = 1000;
   h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 30 });
@@ -299,7 +298,7 @@ it("keeps Coco's clean body visible while animating only the isolated Ward layer
   h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 60 });
   expect(ward.setVisible).toHaveBeenLastCalledWith(true);
   expect(h.sprite.setVisible).toHaveBeenLastCalledWith(true);
-  expect(h.sprite.play).toHaveBeenCalledTimes(1);
+  expect(h.sprite.play).toHaveBeenCalledTimes(2);
 });
 it("centers Ward on Coco's visual midpoint without changing body or authoritative coordinates", () => {
   const profile = effectPresentationProfiles.ward,
@@ -341,7 +340,7 @@ it("holds Sieg's Guard body on one anchored pose across loop cycles", () => {
     });
     expect(guard.setTexture.mock.calls.at(-1)?.[1]).toBe(frame);
   }
-  expect(frame).toBe(8);
+  expect(frame).toBe(18);
   expect(guard.setPosition).toHaveBeenLastCalledWith(p.x, p.y + 13);
   expect(guard.setScale).toHaveBeenLastCalledWith(1);
   expect(h.sprite.setVisible).toHaveBeenLastCalledWith(false);
@@ -386,10 +385,10 @@ it("reports the actual Ward layer without mutating authoritative state or changi
   );
 });
 
-it("mirrors only LEFT basic attacks and uses the same fixed ground anchor in all directions", () => {
+it("uses authored LEFT basic attacks and the same fixed ground anchor in all directions", () => {
   for (const [direction, facing, frame] of [
     ["right", 0, 0],
-    ["left", Math.PI, 0],
+    ["left", Math.PI, 36],
     ["up", -Math.PI / 2, 12],
     ["down", Math.PI / 2, 24],
   ] as const) {
@@ -403,8 +402,88 @@ it("mirrors only LEFT basic attacks and uses the same fixed ground anchor in all
       `hero:OATH:basic:${direction}`,
     );
     expect(h.sprite.setFrame).toHaveBeenLastCalledWith(frame);
-    expect(h.sprite.setFlipX).toHaveBeenLastCalledWith(direction === "left");
+    expect(h.sprite.setFlipX).toHaveBeenLastCalledWith(false);
     expect(h.sprite.setOrigin).toHaveBeenLastCalledWith(0.5, 96 / 128);
     expect(h.sprite.setPosition).toHaveBeenLastCalledWith(p.x, p.y + 13);
+  }
+});
+
+it("animates Sieg guarding walks and restores the unmirrored directional pose at rest", () => {
+  const h = harness();
+  const p = { ...player(), actionState: "guard", facing: Math.PI, vx: -60 };
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 0 });
+  const guard = h.scene.add.image.mock.results[0].value;
+  h.scene.time.now = 1000;
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 30 });
+  expect(guard.setTexture.mock.calls.at(-1)?.[1]).toBe(28);
+  h.scene.time.now = 1100;
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 33 });
+  expect(guard.setTexture.mock.calls.at(-1)?.[1]).toBe(29);
+  const stopped = { ...p, vx: 0 };
+  h.view.update(stopped, stopped, stopped, "TOP_DOWN", "sprite", {
+    serverTick: 33,
+  });
+  expect(guard.setTexture.mock.calls.at(-1)?.[1]).toBe(27);
+  expect(guard.setFlipX).toHaveBeenLastCalledWith(false);
+  expect(guard.setPosition).toHaveBeenLastCalledWith(p.x, p.y + 13);
+});
+
+it("uses the supplied directional push atlas on authoritative push state and returns to idle", () => {
+  const h = harness(),
+    p = { ...player(), actionState: "push", facing: Math.PI };
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 0 });
+  const push = h.scene.add.image.mock.results[0].value;
+  expect(push.setTexture.mock.calls.at(-1)?.[1]).toBe(18);
+  expect(push.setFlipX).toHaveBeenLastCalledWith(false);
+  expect(push.setOrigin).toHaveBeenLastCalledWith(0.5, 0.75);
+  h.scene.time.now = 200;
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 6 });
+  expect(push.setTexture.mock.calls.at(-1)?.[1]).toBe(19);
+  const stopped = { ...p, actionState: "idle" };
+  h.view.update(stopped, stopped, stopped, "TOP_DOWN", "sprite", {
+    serverTick: 7,
+  });
+  expect(push.setVisible).toHaveBeenLastCalledWith(false);
+  expect(h.sprite.setVisible).toHaveBeenLastCalledWith(true);
+});
+
+it("shows the directional sprint atlas only during an accepted moving speed boost", () => {
+  const h = harness(),
+    p = { ...player(), sprintRemaining: 3, vx: -380, facing: Math.PI };
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 0 });
+  const sprint = h.scene.add.image.mock.results[0].value;
+  expect(sprint.setTexture.mock.calls.at(-1)?.[1]).toBe(24);
+  expect(sprint.setFlipX).toHaveBeenLastCalledWith(false);
+  h.scene.time.now = 200;
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 6 });
+  expect(sprint.setTexture.mock.calls.at(-1)?.[1]).toBe(25);
+  const expired = { ...p, sprintRemaining: 0 };
+  h.view.update(expired, expired, expired, "TOP_DOWN", "sprite", {
+    serverTick: 7,
+  });
+  expect(sprint.setVisible).toHaveBeenLastCalledWith(false);
+});
+
+it("starts Coco casts and Ward with the same supplied directional pose", () => {
+  for (const [facing, frame] of [
+    [0, 0],
+    [Math.PI, 8],
+    [Math.PI / 2, 16],
+    [-Math.PI / 2, 24],
+  ]) {
+    for (const ward of [true, false]) {
+      const h = harness(),
+        p = {
+          ...player("EMBER"),
+          facing,
+          actionState: ward ? "guard" : "attack",
+          combat: ward
+            ? undefined
+            : { seq: 1, startedTick: 1, facing, kind: "cast" as const },
+        };
+      h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 1 });
+      expect(h.sprite.setFrame).toHaveBeenLastCalledWith(frame);
+      expect(h.sprite.setOrigin).toHaveBeenCalledWith(0.5, 0.75);
+    }
   }
 });

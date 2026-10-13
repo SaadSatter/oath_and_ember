@@ -9,9 +9,9 @@ export function viewportLayout(screenWidth: number, screenHeight: number) {
   const logicalWidth = Math.round(Math.sqrt(TARGET_AREA * aspect));
   const logicalHeight = Math.round(Math.sqrt(TARGET_AREA / aspect));
   const fit = Math.min(width / logicalWidth, height / logicalHeight);
-  // Integer CSS enlargement preserves pixel grids. Tiny windows use uniform
-  // nearest-neighbor reduction rather than cropping or stretching either axis.
-  const scale = fit >= 1 ? Math.floor(fit) : fit;
+  // Use the available space without dropping to the next integer scale.
+  // CSS nearest-neighbor rendering preserves hard pixel edges.
+  const scale = fit;
   return {
     logicalWidth,
     logicalHeight,

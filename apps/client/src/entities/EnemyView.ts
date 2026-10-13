@@ -69,7 +69,9 @@ export class EnemyView {
     pos: { x: number; y: number },
     tick: number,
     debug: boolean,
+    timeScale = 1,
   ) {
+    this.sprite.anims.timeScale = timeScale;
     const c = this.contract(e),
       direction = enemyDirection(e.facing),
       resolved = externalDirection(c, direction);

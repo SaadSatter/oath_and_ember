@@ -8,12 +8,16 @@ function harness() {
   const callbacks: ResizeObserverCallback[] = [];
   const parent = (width: number, height: number) => ({
     dataset: {} as Record<string, string>,
+    style: { top: "", height: "" },
     size: { width, height },
     getBoundingClientRect() {
       return this.size;
     },
   });
-  vi.stubGlobal("document", { querySelector: () => currentParent });
+  vi.stubGlobal("document", {
+    querySelector: (selector: string) =>
+      selector === "#game" ? currentParent : null,
+  });
   vi.stubGlobal("window", {
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
@@ -102,9 +106,8 @@ it("resizes one live presentation without reconnecting, resetting player or rest
     expect(scene.events.emit).not.toHaveBeenCalled();
     expect(scene.cameras.main.setZoom).toHaveBeenLastCalledWith(1);
   }
-  // Portrait and landscape both use zoom=1, but CSS dimensions still need
-  // refreshing on orientation change. A no-op resize must not refresh them.
-  expect(scene.scale.setZoom).toHaveBeenLastCalledWith(1);
+  // Orientation changes refresh the fitted scale; a no-op resize does not.
+  expect(scene.scale.setZoom).toHaveBeenLastCalledWith(390 / 360);
   expect(scene.scale.setZoom).toHaveBeenCalledTimes(4);
   const refreshes = scene.scale.setZoom.mock.calls.length;
   h.resize();
@@ -126,7 +129,7 @@ it("maintains independent logical viewports for simultaneous clients sharing the
   expect(mobile.dataset.logicalSize).toBe("360x640");
   expect(a.player).toEqual(b.player);
   expect(a.scale.zoom).toBe(3);
-  expect(b.scale.zoom).toBe(1);
+  expect(b.scale.zoom).toBeCloseTo(390 / 360);
   mobile.size = { width: 844, height: 390 };
   h.resize();
   expect(mobile.dataset.logicalSize).toBe("640x360");

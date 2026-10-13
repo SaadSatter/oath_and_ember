@@ -1,3 +1,5 @@
+import { siegSprintAsset, siegSprintKey } from "../animation/siegSprint.js";
+import { siegPushAsset, siegPushKey } from "../animation/siegPush.js";
 import {
   siegBasicAsset,
   siegBasicKey,
@@ -5,6 +7,8 @@ import {
 } from "../animation/siegAttack.js";
 import { defenseAsset, defenseKey } from "../animation/defense.js";
 import {
+  heavyAnimationKey,
+  heavyRow,
   heavyAsset,
   heavyKey,
   combatAssets,
@@ -20,8 +24,13 @@ import {
   animationSets,
 } from "../animation/definitions.js";
 export function preloadHeroes(scene: Phaser.Scene) {
+  scene.load.spritesheet(siegSprintKey, siegSprintAsset.url, siegSprintAsset);
+  scene.load.spritesheet(siegPushKey, siegPushAsset.url, siegPushAsset);
   scene.load.spritesheet(siegBasicKey, siegBasicAsset.url, siegBasicAsset);
-  scene.load.image(`${siegBasicKey}:mask`, "/assets/characters/oath/basic-mask.png");
+  scene.load.image(
+    `${siegBasicKey}:mask`,
+    "/assets/characters/oath/basic-mask.png",
+  );
   scene.load.spritesheet(heavyKey, heavyAsset.url, {
     frameWidth: 128,
     frameHeight: 128,
@@ -67,29 +76,21 @@ export function registerHeroes(scene: Phaser.Scene) {
         repeat: 0,
       });
   }
-  if (scene.textures.exists(heavyKey) && !scene.anims.exists(heavyKey))
-    scene.anims.create({
-      key: heavyKey,
-      frames: Array.from({ length: 5 }, (_, i) => ({
-        key: heavyKey,
-        frame: i + 2,
-      })),
-      frameRate: 10,
-      repeat: 0,
-    });
-  if (
-    scene.textures.exists(heavyKey) &&
-    !scene.anims.exists(`${heavyKey}:charge`)
-  )
-    scene.anims.create({
-      key: `${heavyKey}:charge`,
-      frames: [
-        { key: heavyKey, frame: 0 },
-        { key: heavyKey, frame: 1 },
-      ],
-      frameRate: 8,
-      repeat: 0,
-    });
+  for (const direction of ["right", "left", "up", "down"] as const) {
+    for (const charge of [false, true]) {
+      const key = heavyAnimationKey(direction, charge);
+      if (!scene.anims.exists(key))
+        scene.anims.create({
+          key,
+          frames: Array.from({ length: charge ? 2 : 9 }, (_, i) => ({
+            key: heavyKey,
+            frame: heavyRow(direction) + (charge ? i : i + 2),
+          })),
+          frameRate: charge ? 8 : 18,
+          repeat: 0,
+        });
+    }
+  }
   for (const role of ["OATH", "EMBER"] as const) {
     for (const direction of combatAssets[role].directions) {
       const c = combatClip(role, direction),

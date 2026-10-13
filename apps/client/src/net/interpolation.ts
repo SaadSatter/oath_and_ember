@@ -96,7 +96,7 @@ export class Interpolation {
         p,
         delta,
         maps[scene],
-        collisionRects(scene, a.world.puzzles),
+        collisionRects(scene, a.world.puzzles, a.world.pushableOffsets),
       );
     }
     return { x: p.x + delta.x, y: p.y + delta.y };

@@ -6,15 +6,19 @@ import {
 } from "../src/animation/siegAttack.js";
 import { PNG } from "pngjs";
 import { readFileSync } from "node:fs";
-it("uses the exact RIGHT frames for LEFT, and independent back/front rows", () => {
-  expect(siegBasicClip("left")).toEqual(siegBasicClip("right"));
-  expect(siegBasicClip("up")).toMatchObject({ start: 12, end: 21 });
-  expect(siegBasicClip("down")).toMatchObject({ start: 24, end: 35 });
+it("uses independent authored east, west, north and south rows", () => {
+  expect(siegBasicClip("left")).toMatchObject({ start: 36, end: 44 });
+  expect(siegBasicClip("up")).toMatchObject({ start: 12, end: 20 });
+  expect(siegBasicClip("down")).toMatchObject({ start: 24, end: 32 });
   const image = PNG.sync.read(
     readFileSync("apps/client/public/assets/characters/oath/basic.png"),
   );
-  expect([image.width, image.height]).toEqual([1536, 384]);
-  // Frame padding remains transparent, including UP's two empty cells.
+  expect([image.width, image.height]).toEqual([1536, 512]);
+  expect(siegAttackMetadata.directions.right.frames).toHaveLength(9);
+  expect(siegBasicClip("right").durationMs).toBe(765);
+  expect(siegBasicClip("up").durationMs).toBe(655);
+  expect(siegBasicClip("down").durationMs).toBe(710);
+  // Unused atlas cells remain transparent.
   expect(image.data[(128 * image.width + 128 * 10) * 4 + 3]).toBe(0);
 });
 it("seeks variable frame durations by server age and holds recovery without looping", () => {
@@ -32,9 +36,10 @@ it("seeks variable frame durations by server age and holds recovery without loop
 });
 it("stores every explicit source rectangle and anatomical pivot without clipping its logical canvas", () => {
   const { canvas, pivot, scale, directions } = siegAttackMetadata;
-  for (const d of ["right", "up", "down"] as const) {
+  for (const d of ["right", "left", "up", "down"] as const) {
     const source = PNG.sync.read(readFileSync(directions[d].source));
-    expect([source.width, source.height]).toEqual([1536, 1024]);
+    expect(source.width).toBeGreaterThan(700);
+    expect(source.height).toBeLessThanOrEqual(96);
     for (const frame of directions[d].frames) {
       const [x0, y0, x1, y1] = frame.rect,
         [ax, ay] = frame.pivot;
@@ -45,7 +50,7 @@ it("stores every explicit source rectangle and anatomical pivot without clipping
       expect(pivot[0] + (x1 - ax) * scale).toBeLessThanOrEqual(canvas[0]);
       expect(pivot[1] + (y1 - ay) * scale).toBeLessThanOrEqual(canvas[1]);
       expect(frame.durationMs).toBeGreaterThanOrEqual(40);
-      expect(frame.durationMs).toBeLessThanOrEqual(80);
+      expect(frame.durationMs).toBeLessThanOrEqual(100);
     }
   }
 });
@@ -54,7 +59,7 @@ it("does not change authored colors/alpha while sampling each crop at the one gl
     readFileSync("apps/client/public/assets/characters/oath/basic.png"),
   );
   const { pivot, scale, directions } = siegAttackMetadata;
-  for (const d of ["right", "up", "down"] as const) {
+  for (const d of ["right", "left", "up", "down"] as const) {
     const source = PNG.sync.read(readFileSync(directions[d].source));
     for (const frame of directions[d].frames) {
       const [x0, y0, x1, y1] = frame.rect,

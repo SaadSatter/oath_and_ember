@@ -101,3 +101,26 @@ it("pulses the Ward on a continuous scene clock without spinning or disappearing
     Object.assign(profile, before);
   }
 });
+
+import { defenseAsset, defenseClip } from "../src/animation/defense.js";
+it("uses authored defensive directions and walks only while moving", () => {
+  expect(defenseAsset("OATH").url).toContain("defense-user-v1.png");
+  for (const [row, direction] of (
+    ["down", "up", "right", "left"] as const
+  ).entries()) {
+    expect(defenseClip("OATH", "loop", direction)).toMatchObject({
+      start: row * 9,
+      count: 1,
+      heldFrame: row * 9,
+    });
+    expect(defenseClip("OATH", "loop", direction, true)).toMatchObject({
+      start: row * 9 + 1,
+      count: 8,
+      heldFrame: undefined,
+    });
+    for (const phase of ["start", "end", "impact"] as const)
+      expect(defenseClip("OATH", phase, direction, true).heldFrame).toBe(
+        row * 9,
+      );
+  }
+});

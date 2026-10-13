@@ -1,0 +1,57 @@
+{
+  "version": "1.0.0",
+  "totalObjects": 2,
+  "objects": [
+    {
+      "id": "612a93f5-11b1-404a-bc7d-7cc43ab4fc1c",
+      "name": "base",
+      "filename": "612a93f5-11b1-404a-bc7d-7cc43ab4fc1c.png",
+      "boundingBox": {
+        "x": 62,
+        "y": 307,
+        "width": 128,
+        "height": 128
+      },
+      "groundBounds": {
+        "x": 73.0,
+        "y": 392.0,
+        "width": 103.0,
+        "height": 32.0
+      },
+      "layer": 1,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T00:10:42.134Z"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "231a7043-6581-4d24-998e-73c725cf75e7",
+      "name": "base (Copy)",
+      "filename": "231a7043-6581-4d24-998e-73c725cf75e7.png",
+      "boundingBox": {
+        "x": 531,
+        "y": 286,
+        "width": 128,
+        "height": 128
+      },
+      "groundBounds": {
+        "x": 542.0,
+        "y": 371.0,
+        "width": 103.0,
+        "height": 32.0
+      },
+      "layer": 1,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T00:10:49.426Z",
+        "duplicatedFromObjectId": "54eaea38-138d-4d7f-855c-b52bc64cfe5d"
+      },
+      "isProgress": false
+    }
+  ]
+}

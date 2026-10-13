@@ -1,0 +1,63 @@
+{
+  "authorization": "User requested supplied wand-pointing stance as starting frame before Coco spells.",
+  "operations": [
+    "Replace only first frame of each cast direction; remaining animation preserved",
+    "Nearest-neighbor scale 0.9 and ground anchor (64,96)",
+    "Outfit mask; original wand, skin and gold pixels preserved",
+    "Opening frame has no VFX overlay; gameplay timing unchanged"
+  ],
+  "frames": [
+    {
+      "source": "Images/Sprites/Coco/Coco_the_main_mage-She_points_her_wand/She_points_her_wand/rotations/east.png",
+      "sha256": "d5fc41960c4ca86234e7635cc24dfd058811abf0adbd2e00c49ed4fc72dd9714",
+      "frame": 0,
+      "offset": [
+        35,
+        41
+      ],
+      "source_anchor": [
+        32.0,
+        61
+      ]
+    },
+    {
+      "source": "Images/Sprites/Coco/Coco_the_main_mage-She_points_her_wand/She_points_her_wand/rotations/west.png",
+      "sha256": "f29c9ce4c6a5997afe78dc6f6728bbac6582c314a6bd1a4752e8986f8eed3286",
+      "frame": 8,
+      "offset": [
+        35,
+        41
+      ],
+      "source_anchor": [
+        32.0,
+        61
+      ]
+    },
+    {
+      "source": "Images/Sprites/Coco/Coco_the_main_mage-She_points_her_wand/She_points_her_wand/rotations/south.png",
+      "sha256": "79e2e3c16d580e3094bca28b96a9a7dcb44772f8bfb5573a573c02ebe8750009",
+      "frame": 16,
+      "offset": [
+        35,
+        41
+      ],
+      "source_anchor": [
+        32.0,
+        61
+      ]
+    },
+    {
+      "source": "Images/Sprites/Coco/Coco_the_main_mage-She_points_her_wand/She_points_her_wand/rotations/north.png",
+      "sha256": "e168731fefaaf62c5d01d67c8bc55366288cebf9fef044e514bfa7da61537c9d",
+      "frame": 24,
+      "offset": [
+        35,
+        41
+      ],
+      "source_anchor": [
+        32.0,
+        61
+      ]
+    }
+  ]
+}

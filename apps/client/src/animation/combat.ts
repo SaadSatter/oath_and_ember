@@ -53,15 +53,22 @@ export const heavyAsset = {
   frameHeight: 128,
 };
 export const heavyKey = "hero:OATH:heavy";
+export const heavyRow = (direction: CombatDirection) =>
+  ({ right: 0, up: 1, down: 2, left: 3 })[direction] * 12;
+export const heavyAnimationKey = (direction: CombatDirection, charge = false) =>
+  `${heavyKey}:${direction}${charge ? ":charge" : ""}`;
 export function actionClip(
   role: Role,
   direction: CombatDirection,
   kind: string,
 ) {
   if (role === "OATH" && kind === "sword") return siegBasicClip(direction);
-  return role === "OATH" &&
-    kind === "heavy" &&
-    (direction === "right" || direction === "left")
-    ? { start: 2, end: 6, fps: 10, durationMs: 500 }
+  return role === "OATH" && kind === "heavy"
+    ? {
+        start: heavyRow(direction) + 2,
+        end: heavyRow(direction) + 10,
+        fps: 18,
+        durationMs: 500,
+      }
     : combatClip(role, direction);
 }

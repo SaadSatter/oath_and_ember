@@ -20,6 +20,34 @@
       <div id="debug" hidden></div>
     </div>
     <div id="notice" role="status"></div>
+    <div id="special-abilities" aria-label="Special abilities" hidden>
+      <button
+        data-ability="push"
+        aria-label="Push"
+        title="Push · hold to use (E)"
+      >
+        <img src="/assets/ui/abilities/push.png" alt="" /><span>Push</span>
+      </button>
+      <button
+        data-ability="super-speed"
+        aria-label="Super Speed"
+        title="Super Speed"
+      >
+        <span class="speed-icon" aria-hidden="true"
+          ><img src="/assets/ui/abilities/super-speed.png" alt="" /></span
+        ><span>Super Speed</span>
+      </button>
+      <button
+        data-ability="time-stop"
+        aria-label="Slow Time"
+        title="Slow Time · unlock for 1 point"
+        disabled
+      >
+        <span class="speed-icon" aria-hidden="true"
+          ><img src="/assets/ui/abilities/time-stop.png" alt="" /></span
+        ><span>Slow Time</span>
+      </button>
+    </div>
     <div id="touch">
       <div class="pad">
         <button data-key="ArrowUp">↑</button

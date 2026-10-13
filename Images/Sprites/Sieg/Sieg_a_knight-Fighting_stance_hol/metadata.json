@@ -1,0 +1,32 @@
+{
+  "group_id": "a9eef427-695e-4cdb-9e18-a1ec8923f6c3",
+  "states": [
+    {
+      "character": {
+        "id": "9ad0b421-5bea-4915-8149-d529878ece35",
+        "name": "Fighting stance, hol",
+        "prompt": "Sieg a knight",
+        "size": {
+          "width": 64,
+          "height": 64
+        },
+        "template_id": "mannequin",
+        "directions": 4,
+        "view": "high top-down",
+        "created_at": "2026-10-13T18:22:37.924058+00:00"
+      },
+      "folder": "Fighting_stance_hol",
+      "frames": {
+        "rotations": {
+          "south": "Fighting_stance_hol/rotations/south.png",
+          "west": "Fighting_stance_hol/rotations/west.png",
+          "east": "Fighting_stance_hol/rotations/east.png",
+          "north": "Fighting_stance_hol/rotations/north.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-13T19:31:06.712057"
+}

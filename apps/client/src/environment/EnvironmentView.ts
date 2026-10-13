@@ -1,8 +1,12 @@
+import { pushableDefinitions } from "../../../../packages/shared/src/pushables.js";
+import type { World } from "../../../../packages/shared/src/gameTypes.js";
 import Phaser from "phaser";
 import { classifyMapTile, mapElementDepth } from "./mapClassification.js";
 import type { SceneId } from "../../../../packages/shared/src/gameTypes.js";
 import { ENVIRONMENT_SCALE } from "../../../../packages/shared/src/maps.js";
 import houseTrees from "../../public/assets/environment/main-house/trees.json" with { type: "json" };
+import postTownMaps from "./postTownMaps.json" with { type: "json" };
+import { isPostTownScene } from "../../../../packages/shared/src/maps.js";
 const treeNames = [
   "Tree1",
   "Tree2",
@@ -33,6 +37,21 @@ const sheets = [
   "Interior",
 ];
 export function preloadEnvironment(scene: Phaser.Scene) {
+  for (const [id, map] of Object.entries(postTownMaps)) {
+    const base = `/assets/environment/post-town/${map.folder}`;
+    map.textures.forEach((t, i) => {
+      const key = `${id}:terrain:${i}`;
+      if (t.sheet)
+        scene.load.spritesheet(key, `${base}/${t.filename}`, {
+          frameWidth: 64,
+          frameHeight: 64,
+        });
+      else scene.load.image(key, `${base}/${t.filename}`);
+    });
+    map.objects.forEach((o, i) =>
+      scene.load.image(`${id}:object:${i}`, `${base}/${o.filename}`),
+    );
+  }
   scene.load.tilemapTiledJSON(
     "main-house",
     "/assets/environment/main-house/exterior-map.json",
@@ -52,17 +71,84 @@ export function preloadEnvironment(scene: Phaser.Scene) {
 export class EnvironmentView {
   private objects: Phaser.GameObjects.GameObject[] = [];
   private map: Phaser.Tilemaps.Tilemap | null = null;
+  private pushableImages: {
+    id: string;
+    image: Phaser.GameObjects.Image;
+    label: Phaser.GameObjects.Text;
+    x: number;
+    y: number;
+    groundY: number;
+  }[] = [];
   constructor(private scene: Phaser.Scene) {
     // These source sheets use square pixels. Never interpolate their texels,
     // including tilemap sheets, when the renderer or viewport changes size.
     for (const key of [
       ...sheets.map((name) => `house:${name}`),
       ...treeNames.map((name) => `tree:${name}`),
+      ...Object.entries(postTownMaps).flatMap(([id, map]) => [
+        ...map.textures.map((_, i) => `${id}:terrain:${i}`),
+        ...map.objects.map((_, i) => `${id}:object:${i}`),
+      ]),
     ])
       scene.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
   }
+  updatePushables(offsets: World["pushableOffsets"]) {
+    for (const object of this.pushableImages) {
+      const offset = offsets?.[object.id] ?? { x: 0, y: 0 };
+      object.image
+        .setPosition(object.x + offset.x, object.y + offset.y)
+        .setDepth(object.groundY + offset.y - 13);
+      object.label
+        .setPosition(object.x + offset.x + 40, object.groundY + offset.y + 6)
+        .setDepth(object.groundY + offset.y + 1);
+    }
+  }
   show(id: SceneId) {
     this.clear();
+    if (isPostTownScene(id)) {
+      const map = postTownMaps[id];
+      for (const tile of map.tiles) {
+        const image = this.scene.add
+          .image(
+            tile.x,
+            tile.y,
+            `${id}:terrain:${tile.texture}`,
+            map.textures[tile.texture].sheet ? tile.frame : undefined,
+          )
+          .setOrigin(0)
+          .setDepth(-100);
+        this.objects.push(image);
+      }
+      map.objects.forEach((o, i) => {
+        const image = this.scene.add
+          .image(o.x, o.y, `${id}:object:${i}`)
+          .setOrigin(0)
+          .setDepth(o.groundY - 13);
+        this.objects.push(image);
+        const definition = pushableDefinitions.find(
+          (d) => d.scene === id && d.objectIndex === i,
+        );
+        if (definition) {
+          const label = this.scene.add
+            .text(o.x + 40, o.groundY + 6, "↔ Push", {
+              fontSize: "11px",
+              color: "#ffdfac",
+              backgroundColor: "#10202bdd",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(o.groundY + 1);
+          this.objects.push(label);
+          this.pushableImages.push({
+            id: definition.id,
+            image,
+            label,
+            x: o.x,
+            y: o.y,
+            groundY: o.groundY,
+          });
+        }
+      });
+    }
     if (id === "MAIN_HOUSE" || id === "HOUSE_INTERIOR") {
       this.map = this.scene.make.tilemap({
         key: id === "MAIN_HOUSE" ? "main-house" : "house-interior",
@@ -140,6 +226,7 @@ export class EnvironmentView {
     this.objects.push(im);
   }
   clear() {
+    this.pushableImages = [];
     for (const o of this.objects) o.destroy();
     this.objects = [];
     this.map?.destroy();

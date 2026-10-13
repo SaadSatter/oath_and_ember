@@ -11,3 +11,5 @@ export const INTERPOLATION_MS = 100,
 // 267ms of scheduled intent absorbs batched delivery plus a short frame stall.
 export const INPUT_LEAD_TICKS = 8,
   MAX_PREDICTION_LEAD = 12;
+
+export const SLOW_TIME_SCALE = 0.2;

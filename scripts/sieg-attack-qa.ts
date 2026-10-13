@@ -1,5 +1,6 @@
 // Local browser QA: actual J intent, normal room join, authoritative markers,
 // and the real PlayerView on both clients. No gameplay debug path is bundled.
+import { siegBasicClip } from "../apps/client/src/animation/siegAttack.js";
 import { chromium } from "@playwright/test";
 import { createApp } from "../apps/server/src/app.js";
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -48,19 +49,24 @@ try {
     hero = Object.values(room.state.players).find((p) => p.role === "OATH")!;
   // Reviewed empty outdoor location; fixtures affect only this QA server.
   hero.x = 420;
-  hero.y = 440;
+  hero.y = 380;
   const partner = Object.values(room.state.players).find(
     (p) => p.role === "EMBER",
   )!;
   partner.x = 460;
-  partner.y = 440;
+  partner.y = 380;
   const report: any[] = [];
-  const directions = [
-    ["right", 0, 0, 12],
-    ["left", Math.PI, 0, 12],
-    ["up", -Math.PI / 2, 12, 10],
-    ["down", Math.PI / 2, 24, 12],
-  ] as const;
+  const directions = (
+    [
+      ["right", 0],
+      ["left", Math.PI],
+      ["up", -Math.PI / 2],
+      ["down", Math.PI / 2],
+    ] as const
+  ).map(([direction, facing]) => {
+    const clip = siegBasicClip(direction);
+    return [direction, facing, clip.start, clip.durations.length] as const;
+  });
   const repeats = Number(
     process.argv.find((a) => a.startsWith("--repeat="))?.split("=")[1] ?? 1,
   );
@@ -103,8 +109,7 @@ try {
           {
             id: hero.id,
             direction,
-            frame:
-              start + (direction === "right" || direction === "left" ? 5 : 2),
+            frame: start + 2,
           },
           { polling: "raf" },
         ),
@@ -124,7 +129,7 @@ try {
         p.screenshot({ path: `${dir}/${direction}-client-${i + 1}.png` }),
       ),
     );
-    await pages[0].waitForTimeout(550);
+    await pages[0].waitForTimeout(900);
     const samples = await Promise.all(
       pages.map((p) =>
         p.evaluate(() => {
@@ -165,7 +170,7 @@ try {
       for (const s of attack) {
         const v = s.visuals[hero.id];
         assert.equal(v.texture, "hero:OATH:basic");
-        assert.equal(v.flipX, direction === "left");
+        assert.equal(v.flipX, false);
         assert.equal(v.originX, 0.5);
         assert.equal(v.originY, 0.75);
         assert(

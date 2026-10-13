@@ -49,12 +49,26 @@ describe("room invariants", () => {
   it("enforces skill role, prerequisites, points and single payment", () => {
     const { r, a, b } = pair();
     expect(() => r.unlock(b.id, "guard")).toThrow();
-    expect(() => r.unlock(a.id, "heavy")).toThrow();
+    expect(a.unlockedSkills).toContain("guard");
+    expect(b.unlockedSkills).toContain("ward");
     r.unlock(a.id, "guard");
+    expect(a.skillPoints).toBe(1);
+    r.unlock(a.id, "heavy");
     expect(a.skillPoints).toBe(0);
-    expect(() => r.unlock(a.id, "guard")).toThrow();
-    expect(() => r.unlock(a.id, "heavy")).toThrow("points");
+    expect(() => r.unlock(a.id, "heavy")).toThrow("Already unlocked");
+    expect(() => r.unlock(a.id, "dash")).toThrow("points");
   });
+});
+it("buys Super Speed directly for one point without Heavy Break", () => {
+  const { r, a, b } = pair();
+  expect(a.skillPoints).toBe(1);
+  expect(a.unlockedSkills).not.toContain("heavy");
+  expect(() => r.unlock(b.id, "dash")).toThrow();
+  r.unlock(a.id, "dash");
+  expect(a.skillPoints).toBe(0);
+  expect(a.unlockedSkills).toContain("dash");
+  expect(a.unlockedSkills).not.toContain("heavy");
+  expect(() => r.unlock(a.id, "dash")).toThrow("Already unlocked");
 });
 describe("shared movement", () => {
   it("normalizes diagonals and blocks walls", () => {
@@ -204,10 +218,18 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
       (
         await req(clients[1], "appearance:select", {
           primaryPalette: "emerald",
-          effectPalette: "arcane",
+          effectPalette: "ember",
         })
       ).ok,
     ).toBe(true);
+    expect(
+      (
+        await req(clients[1], "appearance:select", {
+          primaryPalette: "blue",
+          effectPalette: "arcane",
+        })
+      ).ok,
+    ).toBe(false);
     for (const invalid of [
       { primaryPalette: "hacked" },
       { primaryPalette: "blue", x: 999 },
@@ -254,7 +276,7 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
     });
     expect(snapshots[1].players[sb.playerId].appearance).toEqual({
       primaryPalette: "emerald",
-      effectPalette: "arcane",
+      effectPalette: "ember",
     });
     const fighter = room.state.players[sa.playerId];
     fighter.skillPoints = 2; // Fixture grants points; unlock still uses validated socket commands.
@@ -398,7 +420,7 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
     expect((await req(clients[2], "session:resume", sb)).ok).toBe(true);
     expect((await resumed).players[sb.playerId].appearance).toEqual({
       primaryPalette: "emerald",
-      effectPalette: "arcane",
+      effectPalette: "ember",
     });
     room.transition("AIRSHIP");
     const transitioned = await new Promise<any>((res) =>
@@ -407,7 +429,7 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
     expect(transitioned.sceneId).toBe("AIRSHIP");
     expect(transitioned.players[sb.playerId].appearance).toEqual({
       primaryPalette: "emerald",
-      effectPalette: "arcane",
+      effectPalette: "ember",
     });
   } finally {
     clients.forEach((s) => s.disconnect());
@@ -434,7 +456,7 @@ describe("cosmetic appearance state", () => {
     r.setAppearance(s.playerId, { primaryPalette: "ivory" });
     r.setAppearance(c.playerId, {
       primaryPalette: "blue",
-      effectPalette: "rose",
+      effectPalette: "ember",
     });
     const after = JSON.parse(JSON.stringify(r.state));
     for (const id of Object.keys(after.players)) {
@@ -445,7 +467,7 @@ describe("cosmetic appearance state", () => {
     expect(() =>
       r.setAppearance(c.playerId, {
         primaryPalette: "ivory",
-        effectPalette: "rose",
+        effectPalette: "ember",
       }),
     ).toThrow();
     expect(() =>
@@ -462,7 +484,7 @@ describe("cosmetic appearance state", () => {
     });
     expect(r.state.players[c.playerId].appearance).toEqual({
       primaryPalette: "blue",
-      effectPalette: "rose",
+      effectPalette: "ember",
     });
     expect(() =>
       r.setAppearance(s.playerId, { primaryPalette: "blue" }),

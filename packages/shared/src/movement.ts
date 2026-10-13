@@ -1,4 +1,4 @@
-import { SPEED, GRAVITY, JUMP, HALF } from "./constants.js";
+import { SPEED, GRAVITY, JUMP, HALF, SLOW_TIME_SCALE } from "./constants.js";
 import type { Player, InputFrame, Rect } from "./gameTypes.js";
 import type { MapDefinition } from "./maps.js";
 // Sweep the requested axis against every obstacle, choosing the nearest contact.
@@ -59,27 +59,29 @@ export function move(
   map: MapDefinition,
   walls: Rect[],
   dt: number,
+  speedMultiplier = 1,
+  verticalTimeScale = 1,
 ) {
   const mx = Math.max(-1, Math.min(1, i.moveX)),
     my = Math.max(-1, Math.min(1, i.moveY));
   p.movementIntent = { x: mx, y: my };
   if (map.mode === "TOP_DOWN") {
     const n = Math.hypot(mx, my) || 1;
-    p.vx = (mx / n) * SPEED;
-    p.vy = (my / n) * SPEED;
+    p.vx = (mx / n) * SPEED * speedMultiplier;
+    p.vy = (my / n) * SPEED * speedMultiplier;
   } else {
-    p.vx = mx * SPEED;
+    p.vx = mx * SPEED * speedMultiplier;
     if (i.jumpHeld && p.grounded) {
       p.vy = -JUMP;
       p.grounded = false;
     }
-    p.vy += GRAVITY * dt;
+    p.vy += GRAVITY * dt * verticalTimeScale;
   }
   if (mx || my)
     p.facing =
       map.mode === "PLATFORMER" ? (mx < 0 ? Math.PI : 0) : Math.atan2(my, mx);
   const dx = p.vx * dt,
-    dy = p.vy * dt;
+    dy = p.vy * dt * (map.mode === "PLATFORMER" ? verticalTimeScale : 1);
   const ox = p.x,
     oy = p.y;
   const next = constrainMotion(p, { x: dx, y: dy }, map, walls);
@@ -103,8 +105,41 @@ export function stepMovement(
   map: MapDefinition,
   walls: Rect[],
   dt: number,
+  slowTime = false,
 ) {
-  move(p, i, map, walls, dt);
+  const remaining = (p.sprintRemaining ?? 0) - dt;
+  p.sprintRemaining = remaining < 1e-9 ? 0 : remaining;
+  p.cooldowns.sprint = Math.max(0, (p.cooldowns.sprint ?? 0) - dt);
+  if (
+    i.sprintHeld &&
+    !p.sprintWasHeld &&
+    p.role === "OATH" &&
+    p.hp > 0 &&
+    p.unlockedSkills.includes("dash") &&
+    !p.cooldowns.sprint
+  ) {
+    p.sprintRemaining = 10;
+    p.cooldowns.sprint = 15;
+  }
+  p.sprintWasHeld = !!i.sprintHeld;
+  if (p.hp <= 0) p.sprintRemaining = 0;
+  move(
+    p,
+    i,
+    map,
+    walls,
+    dt,
+    slowTime
+      ? (p.sprintRemaining ?? 0) > 0 && p.role === "OATH"
+        ? 1
+        : SLOW_TIME_SCALE
+      : (p.sprintRemaining ?? 0) > 0
+        ? 2
+        : 1,
+    slowTime && !(p.role === "OATH" && (p.sprintRemaining ?? 0) > 0)
+      ? SLOW_TIME_SCALE
+      : 1,
+  );
   if (p.cooldowns.dash !== undefined)
     p.cooldowns.dash = Math.max(0, p.cooldowns.dash - dt);
   if (
@@ -119,6 +154,7 @@ export function stepMovement(
       map,
       walls,
       dt * 3,
+      slowTime ? SLOW_TIME_SCALE : 1,
     );
     p.movementIntent = intent;
     p.cooldowns.dash = 2;

@@ -337,15 +337,220 @@ body[data-touch="true"][data-playing="true"] #notice {
   }
 }
 
-.appearance-grid { display:flex; flex-wrap:wrap; gap:12px; margin:12px 0; }
-.appearance-card { flex:1 1 180px; padding:10px; border:1px solid #76654c; border-radius:8px; }
-.hero-preview { display:block; width:96px; height:128px; margin:4px auto; image-rendering:pixelated; }
-.palette-group { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:6px 0; }
-.palette-group span { width:100%; font-size:14px; }
-.palette-group .color-swatch { background:var(--swatch); width:36px; height:36px; min-width:36px; padding:0; border:2px solid #aaa; border-radius:50%; margin:0; }
-.color-swatch[aria-pressed=true] { outline:3px solid #fff; outline-offset:2px; }
-.color-swatch:disabled { opacity:1; cursor:default; }
-@media (pointer:coarse) { .palette-group .color-swatch { width:44px; height:44px; min-width:44px; } }
+.appearance-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0;
+}
+.appearance-card {
+  flex: 1 1 180px;
+  padding: 10px;
+  border: 1px solid #76654c;
+  border-radius: 8px;
+}
+.hero-preview {
+  display: block;
+  width: 96px;
+  height: 128px;
+  margin: 4px auto;
+  image-rendering: pixelated;
+}
+.palette-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin: 6px 0;
+}
+.palette-group span {
+  width: 100%;
+  font-size: 14px;
+}
+.palette-group .color-swatch {
+  background: var(--swatch);
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  padding: 0;
+  border: 2px solid #aaa;
+  border-radius: 50%;
+  margin: 0;
+}
+.color-swatch[aria-pressed="true"] {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.color-swatch:disabled {
+  opacity: 1;
+  cursor: default;
+}
+@media (pointer: coarse) {
+  .palette-group .color-swatch {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+  }
+}
 
-.fireball-skill-icon { width: 48px; height: 40px; object-fit: contain; image-rendering: pixelated; vertical-align: middle; margin-right: 12px; }
-.fireball-base-skill { padding: 10px; color: #ffdfac; }
+.fireball-skill-icon {
+  width: 48px;
+  height: 40px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  vertical-align: middle;
+  margin-right: 12px;
+}
+.fireball-base-skill {
+  padding: 10px;
+  color: #ffdfac;
+}
+
+/* Keep map pixels clear of the HUD and floating ability controls. */
+#game {
+  top: calc(var(--safe-top) + 80px);
+  bottom: calc(var(--safe-bottom) + 80px);
+  height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 160px);
+}
+#special-abilities {
+  position: fixed;
+  z-index: 4;
+  left: calc(var(--safe-left) + var(--edge));
+  bottom: calc(var(--safe-bottom) + 8px);
+  display: flex;
+  gap: 10px;
+}
+#special-abilities[hidden],
+#special-abilities button[hidden] {
+  display: none;
+}
+#special-abilities button {
+  width: 70px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  touch-action: none;
+  filter: drop-shadow(0 3px 4px #000a);
+  font: 11px/1.4 system-ui;
+}
+#special-abilities img {
+  display: block;
+  width: 56px;
+  height: 53px;
+  image-rendering: pixelated;
+}
+#special-abilities button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+#special-abilities button:active:not(:disabled) {
+  transform: translateY(2px);
+}
+#special-abilities button:focus-visible {
+  outline: 2px solid #ffdfac;
+  outline-offset: 3px;
+}
+body[data-touch="true"][data-playing="true"] #touch .pad {
+  margin-bottom: 98px;
+}
+@media (max-height: 500px) {
+  #game {
+    top: calc(var(--safe-top) + 56px);
+    bottom: calc(var(--safe-bottom) + 80px);
+    height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 136px);
+  }
+  #special-abilities button {
+    width: 60px;
+  }
+  #special-abilities img {
+    width: 56px;
+    height: 53px;
+  }
+  body[data-touch="true"][data-playing="true"] #touch .pad {
+    margin-bottom: 76px;
+  }
+}
+#special-abilities span {
+  display: block;
+  white-space: nowrap;
+}
+@media (max-height: 500px) {
+  #game {
+    bottom: calc(var(--safe-bottom) + 80px);
+    height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 152px);
+  }
+  #special-abilities button {
+    width: 70px;
+  }
+  #special-abilities img {
+    margin-inline: auto;
+  }
+}
+
+#screen-ui {
+  gap: 2px;
+}
+#hud span {
+  padding: 2px 6px;
+}
+#hud button {
+  min-height: 36px;
+  padding: 6px 10px;
+}
+#objective,
+#control-hints {
+  padding: 2px 6px;
+}
+#special-abilities img {
+  margin-inline: auto;
+}
+
+@property --speed-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+#special-abilities button[data-ability] {
+  --speed-angle: 0deg;
+  transition: --speed-angle 70ms linear;
+}
+#special-abilities .speed-icon {
+  position: relative;
+  display: block;
+  width: 56px;
+  height: 53px;
+  margin-inline: auto;
+}
+.speed-icon::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: conic-gradient(
+    from 0deg,
+    #000b 0deg var(--speed-angle),
+    transparent var(--speed-angle) 360deg
+  );
+}
+.speed-icon::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: calc(50% - 1px);
+  top: 0;
+  width: 2px;
+  height: 50%;
+  background: #ffdfac;
+  transform-origin: 50% 100%;
+  transform: rotate(var(--speed-angle));
+  pointer-events: none;
+}
+button[data-timer-phase="ready"] .speed-icon::before {
+  display: none;
+}
+
+#special-abilities button[data-timer-phase="active"],
+#special-abilities button[data-timer-phase="cooldown"] {
+  opacity: 1;
+}

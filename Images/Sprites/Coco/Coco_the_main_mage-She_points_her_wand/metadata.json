@@ -1,0 +1,32 @@
+{
+  "group_id": "8c897d24-047a-4853-b095-555f2bbd65f9",
+  "states": [
+    {
+      "character": {
+        "id": "64c3dd06-7814-45e4-9c8b-1f1705986c36",
+        "name": "She points her wand",
+        "prompt": "Coco the main mage",
+        "size": {
+          "width": 64,
+          "height": 64
+        },
+        "template_id": "mannequin",
+        "directions": 4,
+        "view": "high top-down",
+        "created_at": "2026-10-13T21:18:06.295244+00:00"
+      },
+      "folder": "She_points_her_wand",
+      "frames": {
+        "rotations": {
+          "south": "She_points_her_wand/rotations/south.png",
+          "west": "She_points_her_wand/rotations/west.png",
+          "east": "She_points_her_wand/rotations/east.png",
+          "north": "She_points_her_wand/rotations/north.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-13T21:30:45.419368"
+}

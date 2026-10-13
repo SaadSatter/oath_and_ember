@@ -8,6 +8,16 @@ import json, hashlib, colorsys
 ROOT=Path(__file__).resolve().parents[1]
 DEFINITIONS=ROOT/'apps/client/src/animation/siegAttackFrames.json'
 metadata=json.loads(DEFINITIONS.read_text())
+# Current supplied fighting GIFs have their own reproducible import workflow.
+if "fighting-integration-v3" in metadata["directions"]["right"]["source"]:
+ import runpy
+ runpy.run_path(str(ROOT/"scripts/assets/import-sieg-fighting.py"), run_name="__main__")
+ raise SystemExit(0)
+# The previous four-pose sheet has its own import workflow.
+if metadata['directions']['right']['source'].endswith('attack-sheet-integration-v2/source.png'):
+ import runpy
+ runpy.run_path(str(ROOT/'scripts/assets/import-sieg-attack-sheet.py'), run_name='__main__')
+ raise SystemExit(0)
 SIZE=metadata['canvas'][0]
 SCALE=metadata['scale']
 frames={direction:(data['source'], [(*frame['rect'],*frame['pivot']) for frame in data['frames']])

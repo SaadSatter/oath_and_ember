@@ -1,0 +1,9 @@
+{
+  "source": "Images/Sprites/Coco/slow-time-clock/source.gif",
+  "sha256": "07f258a7dd55f244fc5830bc80ca12110f804bc0ba270347a2973eb935ce37af",
+  "authorization": "User supplied looping clock GIF for Coco Slow Time",
+  "operations": [
+    "Lossless RGBA GIF frame extraction; preserve authored timing and transparency"
+  ],
+  "frames": 17
+}

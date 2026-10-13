@@ -1,0 +1,71 @@
+{
+  "version": "1.0.0",
+  "name": "Standard Grass Lands",
+  "exportDate": "2026-10-13T07:11:39.675651Z",
+  "engine": "pixellab-map-editor",
+  "mapConfig": {
+    "tileSize": 64,
+    "dimensions": {
+      "width": 16,
+      "height": 12,
+      "pixelWidth": 1024,
+      "pixelHeight": 768
+    },
+    "boundingBox": {
+      "maxX": 14,
+      "maxY": 10,
+      "minX": -1,
+      "minY": -1
+    }
+  },
+  "terrains": [
+    {
+      "id": 1,
+      "name": "A lush forest floor featuring winding, naturally worn dirt roads surrounded by vibrant green grass, scattered patches of moss, small stones, and occasional wildflowers, with smooth transitions between the earthy paths and grassy areas in a detailed top-down pixel-art style.",
+      "color": "#22c55e",
+      "baseTileId": "c9dde398-b613-4c6c-afe7-492fecb62584",
+      "walkable": null
+    },
+    {
+      "id": 2,
+      "name": "lush grassy field with varied green blades",
+      "color": "#22c55e",
+      "baseTileId": "52718f18-a57e-4b73-bd74-dfdc133ba1d3",
+      "walkable": null
+    }
+  ],
+  "tilesets": [
+    {
+      "id": "8c7cb922-4d7c-427e-90fe-efe8c3e15bcc",
+      "filename": "A lush forest floor featuring winding, naturally worn dirt roads surrounded by vibrant gree-96377049.png",
+      "lowerTerrain": "A lush forest floor featuring winding, naturally worn dirt roads surrounded by vibrant green grass, scattered patches of moss, small stones, and occasional wildflowers, with smooth transitions between the earthy paths and grassy areas in a detailed top-down pixel-art style.",
+      "upperTerrain": "lush grassy field with varied green blades",
+      "lowerTerrainId": 1,
+      "upperTerrainId": 2,
+      "transitionSize": 0,
+      "transitionDescription": "",
+      "tileSize": 64,
+      "gridLayout": "4x4",
+      "wangIndexMapping": "standard",
+      "view": "high top-down"
+    }
+  ],
+  "overlays": [
+    {
+      "id": 0,
+      "filename": "overlay-0.png",
+      "type": "inpainting",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "worldCoordinates": {
+        "x": 576,
+        "y": 512
+      },
+      "layer": "custom"
+    }
+  ],
+  "background": null,
+  "mapId": "01542c27-187b-40af-8362-3ab9584d4277"
+}

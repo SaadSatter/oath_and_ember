@@ -1,0 +1,26 @@
+{
+  "source": "Images/Sprites/ability-icons/source.png",
+  "sha256": "5984dd8fed7fae1400ba3023ec295a6ddcb6598bad5c037b9c2703fc2708a5f6",
+  "authorization": "User supplied special ability UI icons for Sieg push/super speed and Coco time stop.",
+  "operations": "Lossless crops; no artwork modification",
+  "crops": {
+    "push": [
+      14,
+      98,
+      86,
+      166
+    ],
+    "super-speed": [
+      92,
+      98,
+      164,
+      166
+    ],
+    "time-stop": [
+      170,
+      98,
+      242,
+      166
+    ]
+  }
+}

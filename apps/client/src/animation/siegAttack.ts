@@ -8,7 +8,7 @@ export const siegBasicAsset = {
   frameHeight: 128,
 };
 export function siegBasicClip(direction: CombatDirection) {
-  const d = direction === "left" ? "right" : direction;
+  const d = direction;
   const durations = metadata.directions[d].frames.map((f) => f.durationMs);
   const durationMs = durations.reduce((sum, ms) => sum + ms, 0);
   const start = metadata.directions[d].frames[0].frame;

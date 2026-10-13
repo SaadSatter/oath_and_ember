@@ -1,3 +1,4 @@
+import { SLOW_TIME_SCALE } from "../../../packages/shared/src/constants.js";
 import { DT } from "../../../packages/shared/src/constants.js";
 import { enemyDefinitions } from "../../../packages/shared/src/enemies.js";
 import type {
@@ -54,7 +55,7 @@ export const lineClear = (
 function moveEnemy(e: Enemy, dx: number, dy: number, w: World) {
   const d = enemyDefinitions[e.type],
     map = maps[w.sceneId],
-    walls = collisionRects(w.sceneId, w.puzzles),
+    walls = collisionRects(w.sceneId, w.puzzles, w.pushableOffsets),
     n = Math.hypot(dx, dy) || 1;
   const ox = e.x,
     oy = e.y;
@@ -68,12 +69,18 @@ function moveEnemy(e: Enemy, dx: number, dy: number, w: World) {
     );
   const nx = Math.max(
     d.body.halfWidth,
-    Math.min(map.width - d.body.halfWidth, e.x + (dx / n) * d.speed * DT),
+    Math.min(
+      map.width - d.body.halfWidth,
+      e.x + (dx / n) * d.speed * DT * (w.slowTime ? SLOW_TIME_SCALE : 1),
+    ),
   );
   if (!blocked(nx, e.y)) e.x = nx;
   const ny = Math.max(
     d.body.halfHeight,
-    Math.min(map.height - d.body.halfHeight, e.y + (dy / n) * d.speed * DT),
+    Math.min(
+      map.height - d.body.halfHeight,
+      e.y + (dy / n) * d.speed * DT * (w.slowTime ? SLOW_TIME_SCALE : 1),
+    ),
   );
   if (!blocked(e.x, ny)) e.y = ny;
   e.vx = (e.x - ox) / DT;
@@ -81,7 +88,7 @@ function moveEnemy(e: Enemy, dx: number, dy: number, w: World) {
   if (e.vx || e.vy) e.facing = Math.atan2(e.vy, e.vx);
 }
 export function tickEnemies(w: World, damage: (p: Player, n: number) => void) {
-  const walls = collisionRects(w.sceneId, w.puzzles);
+  const walls = collisionRects(w.sceneId, w.puzzles, w.pushableOffsets);
   for (const e of Object.values(w.enemies)) {
     e.vx = e.vy = 0;
     if (e.hp <= 0) damageEnemy(e, 1, w.serverTick);
@@ -91,6 +98,12 @@ export function tickEnemies(w: World, damage: (p: Player, n: number) => void) {
       continue;
     }
     const d = enemyDefinitions[e.type];
+    if (w.slowTime) {
+      if (e.attackStartedTick !== null)
+        e.attackStartedTick += 1 - SLOW_TIME_SCALE;
+      if (e.nextAttackTick > w.serverTick)
+        e.nextAttackTick += 1 - SLOW_TIME_SCALE;
+    }
     const choices = Object.values(w.players)
       .filter(
         (p) =>

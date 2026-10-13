@@ -26,7 +26,9 @@ describe("bounded presentation viewport", () => {
       expect(v.displayWidth / v.logicalWidth).toBeCloseTo(
         v.displayHeight / v.logicalHeight,
       );
-      if (v.scale >= 1) expect(Number.isInteger(v.scale)).toBe(true);
+      expect(
+        Math.min(width - v.displayWidth, height - v.displayHeight),
+      ).toBeCloseTo(0);
     });
   it("gives desktop and ultrawide the same world footprint", () => {
     const normal = viewportLayout(1920, 1080),

@@ -3,7 +3,7 @@ import { GameRoom } from "../src/GameRoom.js";
 import { maps, collisionRects } from "../../../packages/shared/src/maps.js";
 import { neutral } from "../../../packages/shared/src/gameTypes.js";
 import { move } from "../../../packages/shared/src/movement.js";
-it("starts both heroes at the house, transitions only on server-accepted nearby interaction, and spawns the forest encounter", () => {
+it("starts both heroes at the house and transitions only on server-accepted nearby interaction", () => {
   const r = new GameRoom("HOU234"),
     a = r.add("a"),
     b = r.add("b");
@@ -25,10 +25,12 @@ it("starts both heroes at the house, transitions only on server-accepted nearby 
   p.y = maps.MAIN_HOUSE.points.exit.y;
   const revision = r.state.worldRevision;
   r.tick();
-  expect(r.state.sceneId).toBe("FOREST_RUINS");
+  expect(r.state.sceneId).toBe("TRANSITION_TRAIL");
   expect(r.state.worldRevision).toBe(revision + 1);
-  expect(Object.keys(r.state.enemies)).toHaveLength(4);
-  expect(r.state.players[b.playerId].x).toBe(maps.FOREST_RUINS.spawn.x + 50);
+  expect(Object.keys(r.state.enemies)).toHaveLength(0);
+  expect(r.state.players[b.playerId].x).toBe(
+    maps.TRANSITION_TRAIL.spawn.x + 50,
+  );
   expect(p.skillPoints).toBe(1);
   expect(r.state.puzzles.gate.complete).toBe(false);
   r.reset();

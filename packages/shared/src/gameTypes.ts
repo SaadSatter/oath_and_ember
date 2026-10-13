@@ -1,7 +1,15 @@
 import type { CharacterAppearance } from "./appearance.js";
 export type Role = "OATH" | "EMBER";
 export type SceneId =
-  "HOUSE_INTERIOR" | "MAIN_HOUSE" | "FOREST_RUINS" | "AIRSHIP" | "AIRSHIP_BOSS";
+  | "HOUSE_INTERIOR"
+  | "MAIN_HOUSE"
+  | "TRANSITION_TRAIL"
+  | "GRASSLANDS"
+  | "PUZZLE_GLADE"
+  | "MONSTER_CLEARING"
+  | "FOREST_RUINS"
+  | "AIRSHIP"
+  | "AIRSHIP_BOSS";
 export interface InputFrame {
   /** Desired simulation tick for intent; server validates and bounds scheduling. */
   targetTick?: number;
@@ -13,6 +21,9 @@ export interface InputFrame {
   jumpHeld: boolean;
   primaryHeld: boolean;
   secondaryHeld: boolean;
+  /** Super Speed activation intent; never a client-selected speed. */
+  sprintHeld?: boolean;
+  slowTimeHeld?: boolean;
   interactHeld: boolean;
 }
 export interface CombatAction {
@@ -22,6 +33,8 @@ export interface CombatAction {
   startedTick: number;
 }
 export interface Player {
+  sprintRemaining?: number;
+  sprintWasHeld?: boolean;
   /** Authoritative last movement intent, including timeout-neutral buttons. */
   movementInput?: InputFrame;
   movementEpoch?: number;
@@ -98,6 +111,9 @@ export interface Puzzle {
   progress: number;
 }
 export interface World {
+  slowTime?: { owner: string; startedTick: number; endsTick: number };
+  /** Server-owned displacement of reviewed pushable map objects. */
+  pushableOffsets?: Record<string, { x: number; y: number }>;
   roomCode: string;
   phase: "LOBBY" | "PLAYING" | "COMPLETE";
   sceneId: SceneId;

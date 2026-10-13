@@ -44,5 +44,5 @@ export function validAppearance(
     ? siegPalettes.some((p) => p === a.primaryPalette) &&
         !("effectPalette" in a)
     : cocoPalettes.some((p) => p === a.primaryPalette) &&
-        magicPalettes.some((p) => p === a.effectPalette);
+        a.effectPalette === "ember";
 }

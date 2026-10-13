@@ -1,0 +1,443 @@
+{
+  "version": "1.0.0",
+  "totalObjects": 17,
+  "objects": [
+    {
+      "id": "29197f1c-aaf7-47e0-8f88-a786fcd15581",
+      "name": "base",
+      "filename": "29197f1c-aaf7-47e0-8f88-a786fcd15581.png",
+      "boundingBox": {
+        "x": 334,
+        "y": 53,
+        "width": 112,
+        "height": 112
+      },
+      "groundBounds": {
+        "x": 353.0,
+        "y": 136.0,
+        "width": 71.0,
+        "height": 28.0
+      },
+      "layer": 1,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T01:54:18.913Z"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "a3ad0ac7-f50c-4d2b-ad4f-b869917f0cb1",
+      "name": "base (Copy)",
+      "filename": "a3ad0ac7-f50c-4d2b-ad4f-b869917f0cb1.png",
+      "boundingBox": {
+        "x": 450,
+        "y": 468,
+        "width": 112,
+        "height": 112
+      },
+      "groundBounds": {
+        "x": 469.0,
+        "y": 551.0,
+        "width": 71.0,
+        "height": 28.0
+      },
+      "layer": 1,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T01:54:21.223Z",
+        "duplicatedFromObjectId": "51ab38f8-ee82-46ce-84ca-def195d0e661"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "9825c49d-f979-4334-b88f-160efd59f772",
+      "name": "base (Copy 2)",
+      "filename": "9825c49d-f979-4334-b88f-160efd59f772.png",
+      "boundingBox": {
+        "x": 774,
+        "y": 288,
+        "width": 112,
+        "height": 112
+      },
+      "groundBounds": {
+        "x": 793.0,
+        "y": 371.0,
+        "width": 71.0,
+        "height": 28.0
+      },
+      "layer": 1,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T01:54:24.337Z",
+        "duplicatedFromObjectId": "51ab38f8-ee82-46ce-84ca-def195d0e661"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "379c80d1-5c82-4ab8-b14d-98c2e88bb8b4",
+      "name": "base",
+      "filename": "379c80d1-5c82-4ab8-b14d-98c2e88bb8b4.png",
+      "boundingBox": {
+        "x": 335,
+        "y": 187,
+        "width": 112,
+        "height": 112
+      },
+      "groundBounds": {
+        "x": 369.0,
+        "y": 270.0,
+        "width": 55.0,
+        "height": 28.0
+      },
+      "layer": 4,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T01:54:40.081Z"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "ae9fed7f-3924-494b-b586-f41b00abf254",
+      "name": "base (Copy 3)",
+      "filename": "ae9fed7f-3924-494b-b586-f41b00abf254.png",
+      "boundingBox": {
+        "x": 66,
+        "y": 268,
+        "width": 112,
+        "height": 112
+      },
+      "groundBounds": {
+        "x": 100.0,
+        "y": 351.0,
+        "width": 55.0,
+        "height": 28.0
+      },
+      "layer": 4,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T01:54:42.875Z",
+        "duplicatedFromObjectId": "ebf69879-5a61-4c7f-ab0b-ee68110bb0e5"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "e3a6cc04-96d0-427a-a26d-e4a065ceb0f3",
+      "name": "base (Copy 4)",
+      "filename": "e3a6cc04-96d0-427a-a26d-e4a065ceb0f3.png",
+      "boundingBox": {
+        "x": 96,
+        "y": 428,
+        "width": 112,
+        "height": 112
+      },
+      "groundBounds": {
+        "x": 130.0,
+        "y": 511.0,
+        "width": 55.0,
+        "height": 28.0
+      },
+      "layer": 4,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T01:54:46.541Z",
+        "duplicatedFromObjectId": "ebf69879-5a61-4c7f-ab0b-ee68110bb0e5"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "c7dfa167-f9e1-4f97-8153-90d05895a7e5",
+      "name": "base (Copy 5)",
+      "filename": "c7dfa167-f9e1-4f97-8153-90d05895a7e5.png",
+      "boundingBox": {
+        "x": 351,
+        "y": 419,
+        "width": 112,
+        "height": 112
+      },
+      "groundBounds": {
+        "x": 385.0,
+        "y": 502.0,
+        "width": 55.0,
+        "height": 28.0
+      },
+      "layer": 4,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T01:54:49.992Z",
+        "duplicatedFromObjectId": "ebf69879-5a61-4c7f-ab0b-ee68110bb0e5"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "a5777129-f000-4f42-a39a-ef56f5e5ad0f",
+      "name": "base (Copy 6)",
+      "filename": "a5777129-f000-4f42-a39a-ef56f5e5ad0f.png",
+      "boundingBox": {
+        "x": 680,
+        "y": 84,
+        "width": 112,
+        "height": 112
+      },
+      "groundBounds": {
+        "x": 714.0,
+        "y": 167.0,
+        "width": 55.0,
+        "height": 28.0
+      },
+      "layer": 4,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T01:54:57.215Z",
+        "duplicatedFromObjectId": "ebf69879-5a61-4c7f-ab0b-ee68110bb0e5"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "9b0aefdf-77f8-4e1e-a858-764643a77f27",
+      "name": "base (Copy 7)",
+      "filename": "9b0aefdf-77f8-4e1e-a858-764643a77f27.png",
+      "boundingBox": {
+        "x": 743,
+        "y": 425,
+        "width": 112,
+        "height": 112
+      },
+      "groundBounds": {
+        "x": 777.0,
+        "y": 508.0,
+        "width": 55.0,
+        "height": 28.0
+      },
+      "layer": 4,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T01:55:00.248Z",
+        "duplicatedFromObjectId": "ebf69879-5a61-4c7f-ab0b-ee68110bb0e5"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "914fef33-9c7f-42e8-939f-242a5c08702b",
+      "name": "base",
+      "filename": "914fef33-9c7f-42e8-939f-242a5c08702b.png",
+      "boundingBox": {
+        "x": 223,
+        "y": 243,
+        "width": 64,
+        "height": 64
+      },
+      "groundBounds": {
+        "x": 229.0,
+        "y": 289.0,
+        "width": 55.0,
+        "height": 16.0
+      },
+      "layer": 10,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T01:55:27.894Z"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "f54ae4f1-41d4-469d-94cf-81c8b42b45a3",
+      "name": "base (Copy 8)",
+      "filename": "f54ae4f1-41d4-469d-94cf-81c8b42b45a3.png",
+      "boundingBox": {
+        "x": 174,
+        "y": 372,
+        "width": 64,
+        "height": 64
+      },
+      "groundBounds": {
+        "x": 180.0,
+        "y": 418.0,
+        "width": 55.0,
+        "height": 16.0
+      },
+      "layer": 10,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T01:55:30.112Z",
+        "duplicatedFromObjectId": "76cc54d8-ea68-4d04-941f-1942ce01d823"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "5f376abf-d82c-43fe-8bce-26b424481a04",
+      "name": "base",
+      "filename": "5f376abf-d82c-43fe-8bce-26b424481a04.png",
+      "boundingBox": {
+        "x": 650,
+        "y": 24,
+        "width": 64,
+        "height": 64
+      },
+      "groundBounds": {
+        "x": 656.0,
+        "y": 66.0,
+        "width": 51.0,
+        "height": 16.0
+      },
+      "layer": 12,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T01:55:50.665Z"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "514a396f-1df8-47c4-9a28-f994c3f37aa5",
+      "name": "base (Copy 9)",
+      "filename": "514a396f-1df8-47c4-9a28-f994c3f37aa5.png",
+      "boundingBox": {
+        "x": 580,
+        "y": 450,
+        "width": 64,
+        "height": 64
+      },
+      "groundBounds": {
+        "x": 586.0,
+        "y": 492.0,
+        "width": 51.0,
+        "height": 16.0
+      },
+      "layer": 12,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T01:55:52.791Z",
+        "duplicatedFromObjectId": "6bf237b0-4f83-4822-9505-3c4f13ab4cbb"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "aa2a5859-80b6-4a3c-9de4-7d17353fa1ce",
+      "name": "base (Copy 10)",
+      "filename": "aa2a5859-80b6-4a3c-9de4-7d17353fa1ce.png",
+      "boundingBox": {
+        "x": 582,
+        "y": 293,
+        "width": 64,
+        "height": 64
+      },
+      "groundBounds": {
+        "x": 588.0,
+        "y": 335.0,
+        "width": 51.0,
+        "height": 16.0
+      },
+      "layer": 12,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T01:55:56.497Z",
+        "duplicatedFromObjectId": "6bf237b0-4f83-4822-9505-3c4f13ab4cbb"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "fbe813da-71f9-4580-bf52-8751fe279f62",
+      "name": "base (Copy 11)",
+      "filename": "fbe813da-71f9-4580-bf52-8751fe279f62.png",
+      "boundingBox": {
+        "x": 99,
+        "y": 178,
+        "width": 64,
+        "height": 64
+      },
+      "groundBounds": {
+        "x": 105.0,
+        "y": 220.0,
+        "width": 51.0,
+        "height": 16.0
+      },
+      "layer": 12,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T01:56:00.581Z",
+        "duplicatedFromObjectId": "6bf237b0-4f83-4822-9505-3c4f13ab4cbb"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "4a45f030-a29b-4ead-a257-97c8affc4b62",
+      "name": "base (Copy 12)",
+      "filename": "4a45f030-a29b-4ead-a257-97c8affc4b62.png",
+      "boundingBox": {
+        "x": 249,
+        "y": 92,
+        "width": 64,
+        "height": 64
+      },
+      "groundBounds": {
+        "x": 255.0,
+        "y": 134.0,
+        "width": 51.0,
+        "height": 16.0
+      },
+      "layer": 12,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T01:56:05.138Z",
+        "duplicatedFromObjectId": "6bf237b0-4f83-4822-9505-3c4f13ab4cbb"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "fc5c6b38-3499-447f-ae2b-46117b161dc9",
+      "name": "base",
+      "filename": "fc5c6b38-3499-447f-ae2b-46117b161dc9.png",
+      "boundingBox": {
+        "x": -16,
+        "y": -18,
+        "width": 128,
+        "height": 128
+      },
+      "groundBounds": {
+        "x": -2.0,
+        "y": 68.0,
+        "width": 103.0,
+        "height": 32.0
+      },
+      "layer": 17,
+      "visible": true,
+      "locked": false,
+      "description": "Object: base (unknown)",
+      "metadata": {
+        "generatedAt": "2026-10-13T01:56:33.708Z"
+      },
+      "isProgress": false
+    }
+  ]
+}

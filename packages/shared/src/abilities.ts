@@ -16,8 +16,9 @@ export const skills = [
   {
     id: "dash",
     role: "OATH",
-    name: "Dash",
-    description: "K bursts forward after Guard.",
+    name: "Super Speed",
+    description:
+      "Shift grants double movement speed for 10 seconds; recharges for 5 seconds after the boost ends. K still bursts forward after Guard.",
   },
   {
     id: "ward",
@@ -40,19 +41,21 @@ export const skills = [
 ].map((s, index) => ({
   ...s,
   role: s.role as Role,
-  cost: 1,
+  cost: s.id === "guard" || s.id === "ward" ? 0 : 1,
   prerequisites:
-    index % 3
-      ? [
-          index === 1
-            ? "guard"
-            : index === 2
-              ? "heavy"
-              : index === 4
-                ? "ward"
-                : "telekinesis",
-        ]
-      : [],
+    s.id === "dash"
+      ? []
+      : index % 3
+        ? [
+            index === 1
+              ? "guard"
+              : index === 2
+                ? "heavy"
+                : index === 4
+                  ? "ward"
+                  : "telekinesis",
+          ]
+        : [],
 }));
 
 /** Server-selected fireball strength; level one is Coco's starting spell. */
@@ -72,3 +75,13 @@ for (let level = 2; level <= 4; level++)
     cost: 1,
     prerequisites: level === 2 ? [] : [`fireball_${level - 1}`],
   });
+
+skills.push({
+  id: "slow_time",
+  role: "EMBER",
+  name: "Slow Time",
+  description:
+    "T slows movement for everyone for 10 seconds. Super Speed lets Sieg move normally. Recharges in 20 seconds.",
+  cost: 1,
+  prerequisites: [],
+});

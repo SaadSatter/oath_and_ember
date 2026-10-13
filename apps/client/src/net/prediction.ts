@@ -44,8 +44,9 @@ export class Prediction {
         this.player,
         input,
         maps[scene],
-        collisionRects(scene, w.puzzles),
+        collisionRects(scene, w.puzzles, w.pushableOffsets),
         DT,
+        !!w.slowTime && this.tick < w.slowTime.endsTick,
       );
     }
   }

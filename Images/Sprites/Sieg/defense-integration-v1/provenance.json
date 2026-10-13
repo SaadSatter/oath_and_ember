@@ -1,0 +1,479 @@
+{
+  "authorization": "User supplied and requested Sieg defensive poses and walking animation replacement.",
+  "operations": [
+    "Transparent source PNGs from supplied export; GIFs retained as reference",
+    "Nearest-neighbor scale 0.9, matching Sieg locomotion",
+    "Shared directional ground anchor at (64,96)",
+    "Red cloth palette mask; no gameplay changes"
+  ],
+  "frames": [
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/rotations/south.png",
+      "sha256": "3ad2a638c7b4c25a0d6712761c1fb076af1049005eb7b8b20af925b05b3ae68f",
+      "frame": 0,
+      "source_anchor": [
+        32.0,
+        61
+      ],
+      "offset": [
+        35,
+        41
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/south/frame_000.png",
+      "sha256": "79a2c9b97cc65c897c382959d3e1f09e0dad15c5a83f71334a6094bbabd3b947",
+      "frame": 1,
+      "source_anchor": [
+        32.0,
+        73
+      ],
+      "offset": [
+        35,
+        30
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/south/frame_001.png",
+      "sha256": "659501ee9bcd9d954f69c69518c566a414bac897c91a6a497cc39fff8951e3c1",
+      "frame": 2,
+      "source_anchor": [
+        32.0,
+        73
+      ],
+      "offset": [
+        35,
+        30
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/south/frame_002.png",
+      "sha256": "ade986e11cef6843afc584a47489a890e555fa5dfa41fe159e7aa9ef665960eb",
+      "frame": 3,
+      "source_anchor": [
+        32.0,
+        73
+      ],
+      "offset": [
+        35,
+        30
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/south/frame_003.png",
+      "sha256": "131de52b206366d0919b3f213da1a873f3645d6c47c971209e7a14ff4380f5c4",
+      "frame": 4,
+      "source_anchor": [
+        32.0,
+        73
+      ],
+      "offset": [
+        35,
+        30
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/south/frame_004.png",
+      "sha256": "d51c0a96b883888650bff343017820da7e09267f69dee2bfbecc99a938fb685e",
+      "frame": 5,
+      "source_anchor": [
+        32.0,
+        73
+      ],
+      "offset": [
+        35,
+        30
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/south/frame_005.png",
+      "sha256": "97ca4be6eced570d2fd30ca24db5c09f5e2c952f222959baefeb1896ccc6c5d4",
+      "frame": 6,
+      "source_anchor": [
+        32.0,
+        73
+      ],
+      "offset": [
+        35,
+        30
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/south/frame_006.png",
+      "sha256": "a348a8c2e2f4fd3a643c5f8d9690a873d9b91eef86877eb9633edd703c620eb1",
+      "frame": 7,
+      "source_anchor": [
+        32.0,
+        73
+      ],
+      "offset": [
+        35,
+        30
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/south/frame_007.png",
+      "sha256": "8c9d0e8132f99cfbb800e470cd2de2bf2610731ac04359c258b36290b14ddc47",
+      "frame": 8,
+      "source_anchor": [
+        32.0,
+        73
+      ],
+      "offset": [
+        35,
+        30
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/rotations/north.png",
+      "sha256": "7eea263e11e73691f3b9b527d720fc838ba42d9834c990d92e0b08211e933999",
+      "frame": 9,
+      "source_anchor": [
+        32.0,
+        61
+      ],
+      "offset": [
+        35,
+        41
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/north/frame_000.png",
+      "sha256": "d6443e908200f99f7d2839de97e1995e37c90abf42fe11bbc4b22d485da60b67",
+      "frame": 10,
+      "source_anchor": [
+        32.0,
+        75
+      ],
+      "offset": [
+        35,
+        29
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/north/frame_001.png",
+      "sha256": "bdda973cca57bab6017dc639d2080a7e2eb6212a038472606ea6c7e808dc04d6",
+      "frame": 11,
+      "source_anchor": [
+        32.0,
+        75
+      ],
+      "offset": [
+        35,
+        29
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/north/frame_002.png",
+      "sha256": "649bea345a6deb31c1c1445b5ff951f820abf2fea75a43b4d226a54e580519df",
+      "frame": 12,
+      "source_anchor": [
+        32.0,
+        75
+      ],
+      "offset": [
+        35,
+        29
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/north/frame_003.png",
+      "sha256": "3ad4f4ce7057df1f104b919abd7d51215b1fa5e6f8dfa8a45bd28389af340fdb",
+      "frame": 13,
+      "source_anchor": [
+        32.0,
+        75
+      ],
+      "offset": [
+        35,
+        29
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/north/frame_004.png",
+      "sha256": "35b14c7bf830f89e9f353fad02b7a6c9991fbdff75b9127a2f7ec4546a6cd128",
+      "frame": 14,
+      "source_anchor": [
+        32.0,
+        75
+      ],
+      "offset": [
+        35,
+        29
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/north/frame_005.png",
+      "sha256": "67b8982739deca38111fc949b85bf97a889acbfddc90f1f214dcfe2e3fe176c3",
+      "frame": 15,
+      "source_anchor": [
+        32.0,
+        75
+      ],
+      "offset": [
+        35,
+        29
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/north/frame_006.png",
+      "sha256": "29b95f6f4584bc06066483c294b4b43f214e89bd8ea625a562a325d4c1c41665",
+      "frame": 16,
+      "source_anchor": [
+        32.0,
+        75
+      ],
+      "offset": [
+        35,
+        29
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/north/frame_007.png",
+      "sha256": "03e2b2fbb296b808be14443f1540a7501716de49082c3b88360055ff928ea309",
+      "frame": 17,
+      "source_anchor": [
+        32.0,
+        75
+      ],
+      "offset": [
+        35,
+        29
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/rotations/east.png",
+      "sha256": "be54a93af1e3f3926ec449bc4bff0c0961a0bfb983bb8c7f8392a9dc8c439c23",
+      "frame": 18,
+      "source_anchor": [
+        32.0,
+        61
+      ],
+      "offset": [
+        35,
+        41
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/east/frame_000.png",
+      "sha256": "6d786044c4d035ce9c9b816d73f6c1183f7de6154648e55492864e5a4761986c",
+      "frame": 19,
+      "source_anchor": [
+        32.0,
+        72
+      ],
+      "offset": [
+        35,
+        31
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/east/frame_001.png",
+      "sha256": "823b1cfd8f0756f3291751aa0add7663d9574fc83e39159c90ae175516dcd9f0",
+      "frame": 20,
+      "source_anchor": [
+        32.0,
+        72
+      ],
+      "offset": [
+        35,
+        31
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/east/frame_002.png",
+      "sha256": "faf62583b316afd1eac5f18bb042fa04e0f2a1ec9df0878fbf6f2db5bd49ee05",
+      "frame": 21,
+      "source_anchor": [
+        32.0,
+        72
+      ],
+      "offset": [
+        35,
+        31
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/east/frame_003.png",
+      "sha256": "30cbb6ce927a603ee033b06a11f40fb501a1e08575a97c86c3e041976a65e76e",
+      "frame": 22,
+      "source_anchor": [
+        32.0,
+        72
+      ],
+      "offset": [
+        35,
+        31
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/east/frame_004.png",
+      "sha256": "c31e37e93538bf7babece6af6bc4bb2f2478a1ffdf7cd7ef10ca01ff5d3572bf",
+      "frame": 23,
+      "source_anchor": [
+        32.0,
+        72
+      ],
+      "offset": [
+        35,
+        31
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/east/frame_005.png",
+      "sha256": "1fad4d2405452f569866b0a27a50bed9a171b3e7fa588bd7502541d87ea5ae25",
+      "frame": 24,
+      "source_anchor": [
+        32.0,
+        72
+      ],
+      "offset": [
+        35,
+        31
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/east/frame_006.png",
+      "sha256": "fc801f140f347092442462c1058a7f8b746015ea9fc419fe3a74457f1a029d5f",
+      "frame": 25,
+      "source_anchor": [
+        32.0,
+        72
+      ],
+      "offset": [
+        35,
+        31
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/east/frame_007.png",
+      "sha256": "30404dcf1dcee077dd9885b4015df071c6d639d34663290b56a2841dd0d114aa",
+      "frame": 26,
+      "source_anchor": [
+        32.0,
+        72
+      ],
+      "offset": [
+        35,
+        31
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/rotations/west.png",
+      "sha256": "bbb9b1a19c2e271a590ea38fdaaf2fc06ba2494afc9f95afbecad2c1e1c448c2",
+      "frame": 27,
+      "source_anchor": [
+        32.0,
+        61
+      ],
+      "offset": [
+        35,
+        41
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/west/frame_000.png",
+      "sha256": "cfaf5697a9da52b0bff35a5ebe81e62b4bf4c47c3824c3ddace2765c4eeeb116",
+      "frame": 28,
+      "source_anchor": [
+        32.0,
+        72
+      ],
+      "offset": [
+        35,
+        31
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/west/frame_001.png",
+      "sha256": "3572ab6e5c443255ce828653f26c53bb8a42379cad8165f6ddb1a860a034a641",
+      "frame": 29,
+      "source_anchor": [
+        32.0,
+        72
+      ],
+      "offset": [
+        35,
+        31
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/west/frame_002.png",
+      "sha256": "88af400e491fe8eb6c8cf5296d622b33deb8b172b17680cf8d3923596d9ed8ed",
+      "frame": 30,
+      "source_anchor": [
+        32.0,
+        72
+      ],
+      "offset": [
+        35,
+        31
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/west/frame_003.png",
+      "sha256": "46876805227b23be1a2be4bb82176cc2ab70d3a9cd5831e29fdfd8b00918c6e3",
+      "frame": 31,
+      "source_anchor": [
+        32.0,
+        72
+      ],
+      "offset": [
+        35,
+        31
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/west/frame_004.png",
+      "sha256": "3f170e661c6ac2cbfd2f5307562b57f438ae07f8e843fa833f343af25c70fdd4",
+      "frame": 32,
+      "source_anchor": [
+        32.0,
+        72
+      ],
+      "offset": [
+        35,
+        31
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/west/frame_005.png",
+      "sha256": "ab35733ce74a361dcfdae8e4f963550aaf703f7cd0059bc98921bde9178a0d29",
+      "frame": 33,
+      "source_anchor": [
+        32.0,
+        72
+      ],
+      "offset": [
+        35,
+        31
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/west/frame_006.png",
+      "sha256": "201aea3b1a2252ee2550f3a0e0cbe89660e34537785c2f44e14ab7291a8f6907",
+      "frame": 34,
+      "source_anchor": [
+        32.0,
+        72
+      ],
+      "offset": [
+        35,
+        31
+      ]
+    },
+    {
+      "path": "Images/Sprites/Sieg/Sieg_a_knight-Defensive_pose_cove/Defensive_pose_cove/animations/Walking/west/frame_007.png",
+      "sha256": "a3002bc2ec27aec59bf582cd0797d35448d55d02f159cbd52d860c61fff2b326",
+      "frame": 35,
+      "source_anchor": [
+        32.0,
+        72
+      ],
+      "offset": [
+        35,
+        31
+      ]
+    }
+  ]
+}

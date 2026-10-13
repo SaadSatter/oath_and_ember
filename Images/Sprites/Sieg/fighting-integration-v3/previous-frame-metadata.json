@@ -1,0 +1,197 @@
+{
+  "canvas": [
+    128,
+    128
+  ],
+  "pivot": [
+    64,
+    96
+  ],
+  "scale": 0.85,
+  "scaleReason": "Nearest-neighbor sampling matches Sieg locomotion body height; anatomical boot anchors exclude sword and slash bounds.",
+  "directions": {
+    "right": {
+      "source": "Images/Sprites/Sieg/attack-sheet-integration-v2/source.png",
+      "frames": [
+        {
+          "frame": 0,
+          "rect": [
+            0,
+            0,
+            84,
+            84
+          ],
+          "pivot": [
+            43,
+            73
+          ],
+          "durationMs": 180
+        },
+        {
+          "frame": 1,
+          "rect": [
+            84,
+            0,
+            168,
+            84
+          ],
+          "pivot": [
+            126,
+            73
+          ],
+          "durationMs": 180
+        },
+        {
+          "frame": 2,
+          "rect": [
+            168,
+            0,
+            252,
+            84
+          ],
+          "pivot": [
+            208,
+            72
+          ],
+          "durationMs": 200
+        },
+        {
+          "frame": 3,
+          "rect": [
+            252,
+            0,
+            336,
+            84
+          ],
+          "pivot": [
+            294,
+            72
+          ],
+          "durationMs": 205
+        }
+      ]
+    },
+    "up": {
+      "source": "Images/Sprites/Sieg/attack-sheet-integration-v2/source.png",
+      "frames": [
+        {
+          "frame": 12,
+          "rect": [
+            0,
+            84,
+            84,
+            168
+          ],
+          "pivot": [
+            43,
+            156
+          ],
+          "durationMs": 155
+        },
+        {
+          "frame": 13,
+          "rect": [
+            84,
+            84,
+            168,
+            168
+          ],
+          "pivot": [
+            127,
+            156
+          ],
+          "durationMs": 155
+        },
+        {
+          "frame": 14,
+          "rect": [
+            168,
+            84,
+            252,
+            168
+          ],
+          "pivot": [
+            211,
+            156
+          ],
+          "durationMs": 170
+        },
+        {
+          "frame": 15,
+          "rect": [
+            252,
+            84,
+            336,
+            168
+          ],
+          "pivot": [
+            295,
+            156
+          ],
+          "durationMs": 175
+        }
+      ]
+    },
+    "down": {
+      "source": "Images/Sprites/Sieg/attack-sheet-integration-v2/source.png",
+      "frames": [
+        {
+          "frame": 24,
+          "rect": [
+            0,
+            168,
+            84,
+            252
+          ],
+          "pivot": [
+            42,
+            241
+          ],
+          "durationMs": 165
+        },
+        {
+          "frame": 25,
+          "rect": [
+            84,
+            168,
+            168,
+            252
+          ],
+          "pivot": [
+            126,
+            241
+          ],
+          "durationMs": 165
+        },
+        {
+          "frame": 26,
+          "rect": [
+            168,
+            168,
+            252,
+            252
+          ],
+          "pivot": [
+            210,
+            241
+          ],
+          "durationMs": 185
+        },
+        {
+          "frame": 27,
+          "rect": [
+            252,
+            168,
+            336,
+            252
+          ],
+          "pivot": [
+            294,
+            241
+          ],
+          "durationMs": 195
+        }
+      ]
+    }
+  }
+}

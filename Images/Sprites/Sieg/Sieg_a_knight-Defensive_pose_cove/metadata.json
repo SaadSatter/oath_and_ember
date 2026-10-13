@@ -1,0 +1,75 @@
+{
+  "group_id": "a9eef427-695e-4cdb-9e18-a1ec8923f6c3",
+  "states": [
+    {
+      "character": {
+        "id": "1b0533e2-5066-41f1-924a-7040053ffef1",
+        "name": "Defensive pose, cove",
+        "prompt": "Sieg a knight",
+        "size": {
+          "width": 64,
+          "height": 64
+        },
+        "template_id": "mannequin",
+        "directions": 4,
+        "view": "high top-down",
+        "created_at": "2026-10-13T17:47:24.656754+00:00"
+      },
+      "folder": "Defensive_pose_cove",
+      "frames": {
+        "rotations": {
+          "south": "Defensive_pose_cove/rotations/south.png",
+          "west": "Defensive_pose_cove/rotations/west.png",
+          "east": "Defensive_pose_cove/rotations/east.png",
+          "north": "Defensive_pose_cove/rotations/north.png"
+        },
+        "animations": {
+          "Walking": {
+            "north": [
+              "Defensive_pose_cove/animations/Walking/north/frame_000.png",
+              "Defensive_pose_cove/animations/Walking/north/frame_001.png",
+              "Defensive_pose_cove/animations/Walking/north/frame_002.png",
+              "Defensive_pose_cove/animations/Walking/north/frame_003.png",
+              "Defensive_pose_cove/animations/Walking/north/frame_004.png",
+              "Defensive_pose_cove/animations/Walking/north/frame_005.png",
+              "Defensive_pose_cove/animations/Walking/north/frame_006.png",
+              "Defensive_pose_cove/animations/Walking/north/frame_007.png"
+            ],
+            "west": [
+              "Defensive_pose_cove/animations/Walking/west/frame_000.png",
+              "Defensive_pose_cove/animations/Walking/west/frame_001.png",
+              "Defensive_pose_cove/animations/Walking/west/frame_002.png",
+              "Defensive_pose_cove/animations/Walking/west/frame_003.png",
+              "Defensive_pose_cove/animations/Walking/west/frame_004.png",
+              "Defensive_pose_cove/animations/Walking/west/frame_005.png",
+              "Defensive_pose_cove/animations/Walking/west/frame_006.png",
+              "Defensive_pose_cove/animations/Walking/west/frame_007.png"
+            ],
+            "east": [
+              "Defensive_pose_cove/animations/Walking/east/frame_000.png",
+              "Defensive_pose_cove/animations/Walking/east/frame_001.png",
+              "Defensive_pose_cove/animations/Walking/east/frame_002.png",
+              "Defensive_pose_cove/animations/Walking/east/frame_003.png",
+              "Defensive_pose_cove/animations/Walking/east/frame_004.png",
+              "Defensive_pose_cove/animations/Walking/east/frame_005.png",
+              "Defensive_pose_cove/animations/Walking/east/frame_006.png",
+              "Defensive_pose_cove/animations/Walking/east/frame_007.png"
+            ],
+            "south": [
+              "Defensive_pose_cove/animations/Walking/south/frame_000.png",
+              "Defensive_pose_cove/animations/Walking/south/frame_001.png",
+              "Defensive_pose_cove/animations/Walking/south/frame_002.png",
+              "Defensive_pose_cove/animations/Walking/south/frame_003.png",
+              "Defensive_pose_cove/animations/Walking/south/frame_004.png",
+              "Defensive_pose_cove/animations/Walking/south/frame_005.png",
+              "Defensive_pose_cove/animations/Walking/south/frame_006.png",
+              "Defensive_pose_cove/animations/Walking/south/frame_007.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-13T18:05:46.693358"
+}

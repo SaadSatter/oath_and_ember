@@ -6,6 +6,8 @@ import {
 } from "./definitions.js";
 import type { Role } from "../../../../packages/shared/src/gameTypes.js";
 export interface VisualHints {
+  slowTimeStarting?: boolean;
+  timeScale?: number;
   hurt?: boolean;
   serverTick?: number;
   interacting?: boolean;

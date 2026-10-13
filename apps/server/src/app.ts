@@ -24,6 +24,8 @@ const inputSchema = z
     jumpHeld: z.boolean(),
     primaryHeld: z.boolean(),
     secondaryHeld: z.boolean(),
+    sprintHeld: z.boolean().optional(),
+    slowTimeHeld: z.boolean().optional(),
     interactHeld: z.boolean(),
   })
   .strict();

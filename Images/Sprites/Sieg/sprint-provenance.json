@@ -1,0 +1,66 @@
+{
+  "authorization": "User supplied four directional sprint GIFs for Sieg.",
+  "operations": [
+    "Green matte removed; original pixels otherwise retained",
+    "Nearest-neighbor scale 0.9; shared directional ground anchor (64,96)",
+    "Red cloak palette mask"
+  ],
+  "sources": [
+    {
+      "source": "Images/Sprites/Sieg/Idle_v3_full_sprinting_south.gif",
+      "sha256": "441e2cd94c982cec19ba3526faca10af3e39133ef608e4cc1e31c01cb526093e",
+      "durations": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ]
+    },
+    {
+      "source": "Images/Sprites/Sieg/Idle_v3_full_sprinting_north.gif",
+      "sha256": "09c03b1447a3b4aa8afc6312fc60e1ea28fdd140091c7cc0c6413ddea0a628f3",
+      "durations": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ]
+    },
+    {
+      "source": "Images/Sprites/Sieg/Idle_v3_full_sprinting_east.gif",
+      "sha256": "f3408acc592da355454127d6e980d1ce31778a9c0a11e02c127dd78ce73d0ac4",
+      "durations": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ]
+    },
+    {
+      "source": "Images/Sprites/Sieg/Idle_v3_full_sprinting_west.gif",
+      "sha256": "e1038665e011fe50f7932ae2d41689e4b63507a6d9a9ef0e00e95e0346aba999",
+      "durations": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ]
+    }
+  ]
+}

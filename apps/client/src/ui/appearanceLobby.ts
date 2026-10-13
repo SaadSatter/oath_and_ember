@@ -2,7 +2,6 @@ import type { World } from "../../../../packages/shared/src/gameTypes.js";
 import {
   siegPalettes,
   cocoPalettes,
-  magicPalettes,
   defaultAppearance,
   type CharacterAppearance,
 } from "../../../../packages/shared/src/appearance.js";
@@ -43,10 +42,7 @@ export function renderAppearanceLobby(
       .catch(() => {});
     for (const [label, ids, field] of (role === "OATH"
       ? [["Scarf", siegPalettes, "primaryPalette"]]
-      : [
-          ["Outfit", cocoPalettes, "primaryPalette"],
-          ["Magic", magicPalettes, "effectPalette"],
-        ]) as [
+      : [["Outfit", cocoPalettes, "primaryPalette"]]) as [
       string,
       readonly string[],
       "primaryPalette" | "effectPalette",

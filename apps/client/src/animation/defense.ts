@@ -4,7 +4,10 @@ import type { CombatDirection } from "./combat.js";
 export type DefensePhase = "start" | "loop" | "end" | "impact";
 export const defenseKey = (role: Role) => `hero:${role}:defense`;
 export const defenseAsset = (role: Role) => ({
-  url: `/assets/characters/${role.toLowerCase()}/defense.png`,
+  url:
+    role === "OATH"
+      ? "/assets/characters/oath/defense-user-v1.png"
+      : "/assets/characters/ember/defense.png",
   frameWidth: 128,
   frameHeight: 128,
 });
@@ -12,70 +15,38 @@ export function defenseClip(
   role: Role,
   phase: DefensePhase,
   direction: CombatDirection,
+  moving = false,
 ) {
-  const count =
-    role === "EMBER" && phase === "loop" ? 7 : phase === "impact" ? 7 : 8;
-  // Ward is a single isolated VFX texture; its phase envelope never swaps Coco's body.
-  if (role === "EMBER")
+  if (role === "OATH") {
+    const row = { down: 0, up: 1, right: 2, left: 3 }[direction];
+    const walking = phase === "loop" && moving;
     return {
-      start: 0,
-      count: 1,
+      start: row * 9 + (walking ? 1 : 0),
+      count: walking ? 8 : 1,
       fps: 12,
-      heldFrame: 0,
-      durationMs:
-        (phase === "impact"
-          ? 250
-          : phase === "loop"
-            ? (7 * 1000) / 12
-            : phase === "start" && direction === "down"
-              ? 500
-              : phase === "start" && direction === "up"
-                ? (7 * 1000) / 12
-                : (8 * 1000) / 12) /
-        (phase === "end"
-          ? effectPresentationProfiles.ward.endRate
-          : effectPresentationProfiles.ward.startRate),
+      heldFrame: walking ? undefined : row * 9,
+      durationMs: phase === "impact" ? 250 : (8 * 1000) / 12,
     };
-  // Only start poses exist vertically. Hold their final pose; recovery uses right art.
-  const vertical = direction === "up" || direction === "down";
-  const row =
-    phase === "impact"
-      ? role === "OATH"
-        ? 5
-        : 1
-      : phase === "start"
-        ? vertical
-          ? direction === "down"
-            ? 3
-            : 4
-          : 0
-        : phase === "loop" && vertical
-          ? direction === "down"
-            ? 3
-            : 4
-          : phase === "loop"
-            ? 1
-            : 2;
-  const verticalCount = 8;
+  }
+  // Ward is a single isolated VFX texture; its phase envelope never swaps Coco's body.
   return {
-    start: row * 8,
-    count:
-      phase === "loop"
-        ? 1
-        : vertical && phase === "start"
-          ? verticalCount
-          : count,
+    start: 0,
+    count: 1,
     fps: 12,
-    heldFrame:
-      phase === "loop"
-        ? vertical
-          ? row * 8 + verticalCount - 1
-          : 8
-        : undefined,
+    heldFrame: 0,
     durationMs:
-      phase === "impact"
+      (phase === "impact"
         ? 250
-        : ((vertical && phase === "start" ? verticalCount : count) * 1000) / 12,
+        : phase === "loop"
+          ? (7 * 1000) / 12
+          : phase === "start" && direction === "down"
+            ? 500
+            : phase === "start" && direction === "up"
+              ? (7 * 1000) / 12
+              : (8 * 1000) / 12) /
+      (phase === "end"
+        ? effectPresentationProfiles.ward.endRate
+        : effectPresentationProfiles.ward.startRate),
   };
 }
 

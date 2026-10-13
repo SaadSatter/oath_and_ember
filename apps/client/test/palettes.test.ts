@@ -71,10 +71,6 @@ it("keeps Sieg's chosen cloth palette in every attack frame and leaves sword/sla
     ).equals(Buffer.from(src)),
   ).toBe(true);
   const ivory = recolorPixels(src, regions, "ivory", undefined, "crimson");
-  // Front-facing collar beside the hair was previously excluded as face.
-  const collar = ((256 + 67) * source.width + 53) * 4;
-  expect(regions[collar]).toBe(255);
-  expect(ivory[collar + 1]).toBeGreaterThan(ivory[collar] * 0.9);
   const counts = new Map<number, number>();
   let alphaChanges = 0,
     protectedChanges = 0,
@@ -102,31 +98,29 @@ it("keeps Sieg's chosen cloth palette in every attack frame and leaves sword/sla
 
     unlightenedCloth: 0,
   });
-  // Reviewed contact-trail patches: right crescent, back-facing overhead arc,
-  // and front-facing lower arc. They remain red for every cloth palette.
-  for (const [frame, x, y] of [
-    [6, 99, 71],
-    [14, 70, 39],
-    [29, 64, 100],
-  ]) {
-    for (let dy = -2; dy <= 2; dy++)
-      for (let dx = -2; dx <= 2; dx++) {
-        const offset =
-          ((Math.floor(frame / 12) * 128 + y + dy) * source.width +
-            (frame % 12) * 128 +
-            x +
-            dx) *
-          4;
-        expect(regions[offset]).toBe(0);
-        expect([...ivory.slice(offset, offset + 4)]).toEqual([
-          ...src.slice(offset, offset + 4),
-        ]);
-      }
+  // Every pale sword/slash pixel is protected from cloth recoloring.
+  let protectedBladePixels = 0;
+  for (let offset = 0; offset < src.length; offset += 4) {
+    if (
+      src[offset + 3] &&
+      src[offset] > 170 &&
+      src[offset + 1] > 170 &&
+      src[offset + 2] > 170
+    ) {
+      expect(regions[offset]).toBe(0);
+      expect([...ivory.slice(offset, offset + 4)]).toEqual([
+        ...src.slice(offset, offset + 4),
+      ]);
+      protectedBladePixels++;
+    }
   }
+  expect(protectedBladePixels).toBeGreaterThan(100);
+
   for (const frame of [
-    ...Array.from({ length: 12 }, (_, i) => i),
-    ...Array.from({ length: 10 }, (_, i) => 12 + i),
-    ...Array.from({ length: 12 }, (_, i) => 24 + i),
+    ...Array.from({ length: 9 }, (_, i) => i),
+    ...Array.from({ length: 9 }, (_, i) => 12 + i),
+    ...Array.from({ length: 9 }, (_, i) => 24 + i),
+    ...Array.from({ length: 9 }, (_, i) => 36 + i),
   ])
     expect(counts.get(frame)).toBeGreaterThan(30);
 });

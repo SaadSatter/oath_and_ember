@@ -1,3 +1,5 @@
+import { SLOW_TIME_SCALE } from "../../../packages/shared/src/constants.js";
+import { pushNearby } from "../../../packages/shared/src/pushables.js";
 import {
   forestEncounter,
   spawnEnemy,
@@ -24,12 +26,30 @@ import {
   type Player,
   type SceneId,
 } from "../../../packages/shared/src/gameTypes.js";
-import { maps, collisionRects } from "../../../packages/shared/src/maps.js";
-import { stepMovement } from "../../../packages/shared/src/movement.js";
-import { skills, fireballLevel, fireballDamage } from "../../../packages/shared/src/abilities.js";
+import {
+  maps,
+  collisionRects,
+  isPostTownScene,
+  postTownRoute,
+} from "../../../packages/shared/src/maps.js";
+import {
+  constrainMotion,
+  stepMovement,
+} from "../../../packages/shared/src/movement.js";
+import {
+  skills,
+  fireballLevel,
+  fireballDamage,
+} from "../../../packages/shared/src/abilities.js";
 export class GameRoom {
   state: World;
   private interactWasHeld = new Map<string, boolean>();
+  private sprintRequests = new Set<string>();
+  private slowTimeRequests = new Set<string>();
+  private carried = new Map<
+    string,
+    { dx: number; dy: number; targets: Set<string> }
+  >();
   private pendingSwords = new Map<string, { due: number; scene: SceneId }>();
   private primaryWasHeld = new Map<string, boolean>();
   sessions = new Map<
@@ -120,6 +140,9 @@ export class GameRoom {
     )
       this.state.players[id].appearance = defaultAppearance(role);
     this.state.players[id].role = role;
+    this.state.players[id].unlockedSkills = [
+      role === "OATH" ? "guard" : "ward",
+    ];
     this.state.players[id].ready = false;
   }
   setAppearance(id: string, appearance: unknown) {
@@ -150,7 +173,10 @@ export class GameRoom {
       s = skills.find((s) => s.id === nodeId);
     if (!s || s.role !== p.role)
       throw Error("Skill is unavailable for this hero.");
-    if (p.unlockedSkills.includes(nodeId)) throw Error("Already unlocked.");
+    if (p.unlockedSkills.includes(nodeId)) {
+      if (s.cost === 0) return;
+      throw Error("Already unlocked.");
+    }
     if (s.prerequisites.some((n) => !p.unlockedSkills.includes(n)))
       throw Error("Unlock the previous skill first.");
     if (p.skillPoints < s.cost) throw Error("Not enough skill points.");
@@ -225,12 +251,17 @@ export class GameRoom {
         progress: 0,
       },
     };
+    delete w.slowTime;
+    w.pushableOffsets = {};
     w.interactables = { crate: { x: 790, y: 430 } };
     w.boss = null;
     w.projectiles = {};
     w.projectileImpacts = [];
     this.primaryWasHeld.clear();
     this.interactWasHeld.clear();
+    this.sprintRequests.clear();
+    this.carried.clear();
+    this.slowTimeRequests.clear();
     w.enemies = Object.fromEntries(
       forestEncounter.map((e) => [e.id, spawnEnemy(e.id, e.type, e.x, e.y)]),
     );
@@ -248,6 +279,8 @@ export class GameRoom {
       delete p.combat;
       delete p.heavyCharge;
       Object.assign(p, {
+        sprintRemaining: 0,
+        sprintWasHeld: false,
         movementIntent: { x: 0, y: 0 },
         movementEpoch: (p.movementEpoch ?? 0) + 1,
         movementInput: neutral(),
@@ -260,7 +293,8 @@ export class GameRoom {
         vy: 0,
         hp: 100,
         skillPoints: 1,
-        unlockedSkills: [],
+        unlockedSkills:
+          p.role === "OATH" ? ["guard"] : p.role === "EMBER" ? ["ward"] : [],
         cooldowns: {},
         lastProcessedInputSeq: 0,
       });
@@ -279,8 +313,9 @@ export class GameRoom {
     const previous = w.sceneId;
     w.sceneId = scene;
     w.worldRevision++;
-    w.checkpoint =
-      scene === "FOREST_RUINS"
+    w.checkpoint = isPostTownScene(scene)
+      ? postTownRoute[scene].name
+      : scene === "FOREST_RUINS"
         ? "Clearing"
         : scene === "AIRSHIP"
           ? "Airship deck"
@@ -289,6 +324,9 @@ export class GameRoom {
     w.projectileImpacts = [];
     this.primaryWasHeld.clear();
     this.interactWasHeld.clear();
+    this.sprintRequests.clear();
+    this.carried.clear();
+    this.slowTimeRequests.clear();
     w.enemies =
       scene === "FOREST_RUINS"
         ? Object.fromEntries(
@@ -298,6 +336,15 @@ export class GameRoom {
             ]),
           )
         : {};
+    if (scene === "MONSTER_CLEARING")
+      w.enemies = Object.fromEntries([
+        ["clearing-moss", spawnEnemy("clearing-moss", "mossling", 560, 340)],
+        [
+          "clearing-moss-2",
+          spawnEnemy("clearing-moss-2", "mossling", 700, 480),
+        ],
+        ["clearing-wisp", spawnEnemy("clearing-wisp", "cinder_wisp", 820, 360)],
+      ]);
     if (scene === "AIRSHIP_BOSS")
       w.boss = { hp: 220, phase: "SHIELDED", shieldReturned: false };
     Object.values(w.players).forEach((p, i) => {
@@ -321,7 +368,11 @@ export class GameRoom {
         vy: 0,
         hp: 100,
       });
-      if (previous !== "MAIN_HOUSE" && previous !== "HOUSE_INTERIOR")
+      if (
+        previous !== "MAIN_HOUSE" &&
+        previous !== "HOUSE_INTERIOR" &&
+        !isPostTownScene(previous)
+      )
         p.skillPoints++;
     });
   }
@@ -342,7 +393,11 @@ export class GameRoom {
                 (other.sceneId ?? this.state.sceneId) === sceneId &&
                 Math.hypot(other.x - point.x, other.y - point.y) < 30,
             ) &&
-            !collisionRects(sceneId, this.state.puzzles).some(
+            !collisionRects(
+              sceneId,
+              this.state.puzzles,
+              this.state.pushableOffsets,
+            ).some(
               (r) =>
                 point.x + 13 > r.x &&
                 point.x - 13 < r.x + r.w &&
@@ -394,6 +449,9 @@ export class GameRoom {
       s.primaryEdges ||= [];
       if (s.primaryEdges.length < 8) s.primaryEdges.push(input.primaryHeld);
     }
+    if (input.sprintHeld && !s.input.sprintHeld) this.sprintRequests.add(id);
+    if (input.slowTimeHeld && !s.input.slowTimeHeld)
+      this.slowTimeRequests.add(id);
     s.input = { ...input };
     s.received = Date.now();
     s.receivedTick = Math.max(
@@ -418,6 +476,38 @@ export class GameRoom {
       Object.values(w.players).some((p) => !p.connected)
     )
       return;
+    if (w.slowTime && w.serverTick >= w.slowTime.endsTick) delete w.slowTime;
+    for (const id of this.slowTimeRequests) {
+      const p = w.players[id],
+        session = this.sessions.get(id);
+      if (
+        p?.role === "EMBER" &&
+        p.hp > 0 &&
+        p.unlockedSkills.includes("slow_time") &&
+        !p.cooldowns.slow_time &&
+        session &&
+        Date.now() - session.received < 250 &&
+        !w.slowTime
+      ) {
+        w.slowTime = {
+          owner: id,
+          startedTick: w.serverTick,
+          endsTick: w.serverTick + 300,
+        };
+        p.cooldowns.slow_time = 20;
+      }
+    }
+    this.slowTimeRequests.clear();
+    if (w.slowTime)
+      for (const p of Object.values(w.players)) {
+        if (p.role === "OATH" && (p.sprintRemaining ?? 0) > 0) continue;
+        const sword = this.pendingSwords.get(p.id);
+        if (sword) sword.due += 1 - SLOW_TIME_SCALE;
+        if (p.combat) p.combat.startedTick += 1 - SLOW_TIME_SCALE;
+      }
+    const beforeMovement = new Map(
+      Object.values(w.players).map((p) => [p.id, { x: p.x, y: p.y }]),
+    );
     w.projectileImpacts = (w.projectileImpacts || []).filter(
       (e) => w.serverTick - e.tick <= 30,
     );
@@ -458,11 +548,31 @@ export class GameRoom {
           ? (s.movementInput ?? neutral(p.lastProcessedInputSeq))
           : neutral(p.lastProcessedInputSeq);
       }
+      if (fresh && this.sprintRequests.delete(p.id))
+        movement = { ...movement, sprintHeld: true };
+      if (!fresh) this.sprintRequests.delete(p.id);
       p.lastProcessedInputSeq = movement.seq;
       p.movementInput = { ...movement };
-      stepMovement(p, movement, map, collisionRects(sceneId, w.puzzles), DT);
+      stepMovement(
+        p,
+        movement,
+        map,
+        collisionRects(sceneId, w.puzzles, w.pushableOffsets),
+        DT,
+        !!w.slowTime,
+      );
       for (const k in p.cooldowns)
-        if (k !== "dash") p.cooldowns[k] = Math.max(0, p.cooldowns[k] - DT);
+        if (k !== "dash" && k !== "sprint")
+          p.cooldowns[k] = Math.max(
+            0,
+            p.cooldowns[k] -
+              DT *
+                (k === "attack" &&
+                w.slowTime &&
+                !(p.role === "OATH" && (p.sprintRemaining ?? 0) > 0)
+                  ? SLOW_TIME_SCALE
+                  : 1),
+          );
       p.actionState = i.secondaryHeld
         ? "guard"
         : i.primaryHeld
@@ -486,7 +596,13 @@ export class GameRoom {
         if (p.heavyCharge) {
           const charge = p.heavyCharge;
           if (i.primaryHeld) {
-            charge.ticks = Math.min(heavyTiming.capTicks, charge.ticks + 1);
+            charge.ticks = Math.min(
+              heavyTiming.capTicks,
+              charge.ticks +
+                (w.slowTime && !(p.sprintRemaining && p.sprintRemaining > 0)
+                  ? SLOW_TIME_SCALE
+                  : 1),
+            );
             charge.progress = Math.min(1, charge.ticks / heavyTiming.fullTicks);
             p.actionState = "heavyCharge";
           } else {
@@ -496,7 +612,12 @@ export class GameRoom {
             delete p.heavyCharge;
           }
         }
-      } else if (i.primaryHeld && (p.role !== "EMBER" || !wasHeld) && !p.cooldowns.attack && p.hp > 0) {
+      } else if (
+        i.primaryHeld &&
+        (p.role !== "EMBER" || !wasHeld) &&
+        !p.cooldowns.attack &&
+        p.hp > 0
+      ) {
         strike = p.role === "OATH" ? "sword" : "cast";
       }
       this.primaryWasHeld.set(p.id, i.primaryHeld);
@@ -559,9 +680,33 @@ export class GameRoom {
         continue;
       }
       if (i.interactHeld) {
+        if (
+          p.role === "OATH" &&
+          p.hp > 0 &&
+          !i.primaryHeld &&
+          !i.secondaryHeld
+        ) {
+          p.actionState = "push";
+          pushNearby(
+            p,
+            sceneId,
+            w,
+            collisionRects(sceneId, w.puzzles, w.pushableOffsets),
+            DT,
+          );
+        }
         if (sceneId === "MAIN_HOUSE" && near(p, map.points.exit, 50)) {
-          this.transition("FOREST_RUINS");
+          this.transition("TRANSITION_TRAIL");
           return;
+        }
+        if (isPostTownScene(sceneId) && near(p, map.points.exit, 50)) {
+          if (
+            sceneId !== "MONSTER_CLEARING" ||
+            Object.values(w.enemies).every((e) => e.hp <= 0)
+          ) {
+            this.transition(postTownRoute[sceneId].next);
+            return;
+          }
         }
         if (sceneId === "FOREST_RUINS") {
           if (p.role === "EMBER" && near(p, map.points.rune))
@@ -587,15 +732,95 @@ export class GameRoom {
         }
       }
     }
+    if (!w.slowTime) this.carried.clear();
+    if (w.slowTime) {
+      for (const p of Object.values(w.players)) {
+        if (p.role !== "OATH" || p.hp <= 0) continue;
+        const old = beforeMovement.get(p.id)!;
+        const delta = { x: p.x - old.x, y: p.y - old.y },
+          length = Math.hypot(delta.x, delta.y);
+        let carry = this.carried.get(p.id);
+        const directionChanged =
+          !!carry &&
+          length > 0 &&
+          (delta.x / length) * carry.dx + (delta.y / length) * carry.dy < 0.99;
+        if (!length || directionChanged) {
+          this.carried.delete(p.id);
+          carry = undefined;
+        }
+        if (!length || directionChanged) continue;
+        const boosted = (p.sprintRemaining ?? 0) > 0;
+        if (!boosted && !carry) continue;
+        if (!carry) {
+          carry = {
+            dx: delta.x / length,
+            dy: delta.y / length,
+            targets: new Set(),
+          };
+          this.carried.set(p.id, carry);
+        }
+        const scene = p.sceneId ?? w.sceneId;
+        const targets = [
+          ...Object.values(w.players).filter(
+            (q) =>
+              q.id !== p.id && q.hp > 0 && (q.sceneId ?? w.sceneId) === scene,
+          ),
+          ...(scene === w.sceneId
+            ? Object.values(w.enemies).filter((e) => e.hp > 0)
+            : []),
+        ];
+        for (const target of targets) {
+          const t = Math.max(
+            0,
+            Math.min(
+              1,
+              ((target.x - old.x) * delta.x + (target.y - old.y) * delta.y) /
+                (length * length),
+            ),
+          );
+          if (
+            !carry.targets.has(target.id) &&
+            (!boosted ||
+              (target.x - old.x) * delta.x + (target.y - old.y) * delta.y <=
+                0 ||
+              Math.hypot(
+                target.x - old.x - t * delta.x,
+                target.y - old.y - t * delta.y,
+              ) > 26)
+          )
+            continue;
+          carry.targets.add(target.id);
+          // Undo the passenger's independent step so it travels with Sieg, not away from him.
+          const start = beforeMovement.get(target.id) ?? target;
+          const n = constrainMotion(
+            start,
+            delta,
+            maps[scene],
+            collisionRects(scene, w.puzzles, w.pushableOffsets),
+          );
+          target.x = n.x;
+          target.y = n.y;
+          target.vx = (n.x - start.x) / DT;
+          target.vy = (n.y - start.y) / DT;
+          if (
+            Math.abs(n.x - start.x - delta.x) > 1e-6 ||
+            Math.abs(n.y - start.y - delta.y) > 1e-6
+          )
+            carry.targets.delete(target.id);
+        }
+      }
+    }
     for (const q of Object.values(w.projectiles)) {
       const ox = q.x,
         oy = q.y;
-      q.x += q.vx * DT;
-      q.y += q.vy * DT;
-      q.life -= DT;
-      let collided = collisionRects(q.sceneId ?? w.sceneId, w.puzzles).some(
-        (r) => segmentHits(ox, oy, q.x, q.y, r, q.radius ?? 4),
-      );
+      q.x += q.vx * DT * (w.slowTime ? SLOW_TIME_SCALE : 1);
+      q.y += q.vy * DT * (w.slowTime ? SLOW_TIME_SCALE : 1);
+      q.life -= DT * (w.slowTime ? SLOW_TIME_SCALE : 1);
+      let collided = collisionRects(
+        q.sceneId ?? w.sceneId,
+        w.puzzles,
+        w.pushableOffsets,
+      ).some((r) => segmentHits(ox, oy, q.x, q.y, r, q.radius ?? 4));
       if (!collided) {
         const targets =
           q.faction === "enemies"
@@ -726,7 +951,7 @@ export class GameRoom {
       if (
         e.state !== "DEAD" &&
         near(p, e, 85) &&
-        !collisionRects(sceneId, w.puzzles).some((r) =>
+        !collisionRects(sceneId, w.puzzles, w.pushableOffsets).some((r) =>
           segmentHits(p.x, p.y, e.x, e.y, r),
         )
       )
@@ -744,8 +969,7 @@ export class GameRoom {
   damage(p: Player, n: number) {
     if (n > 0) this.pendingSwords.delete(p.id);
     const defended =
-      p.actionState === "guard" &&
-      (p.unlockedSkills.includes("guard") || p.unlockedSkills.includes("ward"));
+      p.actionState === "guard" && (p.role === "OATH" || p.role === "EMBER");
     if (defended && n > 0)
       p.defensiveHit = {
         seq: (p.defensiveHit?.seq ?? 0) + 1,

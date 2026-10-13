@@ -2,9 +2,13 @@ import type Phaser from "phaser";
 import { viewportLayout } from "./viewport.js";
 export function attachResponsiveRenderer(scene: Phaser.Scene) {
   const parent = document.querySelector<HTMLDivElement>("#game")!;
+  const hud = document.querySelector<HTMLDivElement>("#screen-ui");
   let frame = 0;
   const apply = () => {
     frame = 0;
+    // Wrapped objectives and controls need more room on narrow screens.
+    parent.style.top = `${Math.max(8, hud && !hud.hidden ? hud.getBoundingClientRect().bottom + 4 : 0)}px`;
+    parent.style.height = "auto";
     const bounds = parent.getBoundingClientRect();
     const layout = viewportLayout(bounds.width, bounds.height);
     const manager = scene.scale;
@@ -31,6 +35,7 @@ export function attachResponsiveRenderer(scene: Phaser.Scene) {
   };
   const observer = new ResizeObserver(schedule);
   observer.observe(parent);
+  if (hud) observer.observe(hud);
   window.addEventListener("resize", schedule);
   window.addEventListener("orientationchange", schedule);
   window.visualViewport?.addEventListener("resize", schedule);

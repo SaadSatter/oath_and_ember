@@ -1,3 +1,6 @@
+import { siegSprintKey, siegSprintFrame } from "../animation/siegSprint.js";
+import { siegPushKey, siegPushFrame } from "../animation/siegPush.js";
+import { combatDirection } from "../animation/combat.js";
 import { actionFrame, siegAttackMetadata } from "../animation/siegAttack.js";
 import { effectPresentationProfiles } from "../assets/effectPresentation.js";
 import {
@@ -7,7 +10,13 @@ import {
   wardRotation,
 } from "../animation/defense.js";
 import { PlayerPresentation } from "../animation/PlayerPresentation.js";
-import { heavyKey, combatKey, actionClip } from "../animation/combat.js";
+import {
+  heavyKey,
+  heavyAnimationKey,
+  heavyRow,
+  combatKey,
+  actionClip,
+} from "../animation/combat.js";
 import { ensureAppearanceTexture } from "../assets/appearanceTextures.js";
 import { effectColor } from "../assets/palettes.js";
 import type Phaser from "phaser";
@@ -27,6 +36,8 @@ import { characterVisuals } from "../assets/characterVisuals.js";
 export type CharacterRendering = "geometric" | "sprite";
 export class PlayerView {
   private presentation = new PlayerPresentation();
+  private lastPresentationTime: number | null = null;
+  private presentationTime = 0;
   private combatSequence = -1;
   private basicObservation: Record<string, unknown> | null = null;
   private defenseSprite: Phaser.GameObjects.Image | null = null;
@@ -50,7 +61,15 @@ export class PlayerView {
     hints: VisualHints = {},
     observeWard?: (state: WardObservation) => void,
   ) {
-    const now = this.scene.time.now;
+    const realNow = this.scene.time.now;
+    this.presentationTime =
+      this.lastPresentationTime === null
+        ? realNow
+        : this.presentationTime +
+          Math.max(0, realNow - this.lastPresentationTime) *
+            (hints.timeScale ?? 1);
+    this.lastPresentationTime = realNow;
+    const now = this.presentationTime;
     const defensiveHit =
       !!player.defensiveHit && player.defensiveHit.seq > this.previousHit;
     this.previousHit = player.defensiveHit?.seq ?? 0;
@@ -81,19 +100,42 @@ export class PlayerView {
       hurt,
     );
     const combat = presentation.kind === "combat" ? presentation : null;
-    const defense = presentation.kind === "defense" ? presentation : null;
+    const pushing =
+      role === "OATH" &&
+      player.actionState === "push" &&
+      player.hp > 0 &&
+      !hurt &&
+      presentation.kind === "locomotion";
+    const sprinting =
+      role === "OATH" &&
+      (player.sprintRemaining ?? 0) > 0 &&
+      Math.hypot(motion.vx, motion.vy) > 1 &&
+      player.hp > 0 &&
+      !hurt &&
+      presentation.kind === "locomotion";
+    const defense =
+      pushing || sprinting
+        ? {
+            phase: "loop" as const,
+            direction: combatDirection(player.facing),
+            elapsedMs: now,
+            impact: false,
+          }
+        : presentation.kind === "defense"
+          ? presentation
+          : null;
     const charge = presentation.kind === "charge" ? presentation : null;
     const direction = combat?.direction || charge?.direction;
     // Warm the attack palette while idle/walking to avoid a red fallback frame
     // when an already-customized Sieg starts his next confirmed attack.
     if (role === "OATH" && rendering === "sprite")
       ensureAppearanceTexture(this.scene, role, player.appearance, "basic");
+    if (role === "OATH" && rendering === "sprite")
+      ensureAppearanceTexture(this.scene, role, player.appearance, "push");
     const basic = role === "OATH" && combat?.action.kind === "sword";
     this.basicObservation = null;
-    const horizontalHeavy =
-      role === "OATH" &&
-      (direction === "right" || direction === "left") &&
-      (!!charge || combat?.action.kind === "heavy");
+    const siegHeavy =
+      role === "OATH" && (!!charge || combat?.action.kind === "heavy");
 
     const state = selectAnimation(
       {
@@ -111,6 +153,11 @@ export class PlayerView {
       mode,
       { ...hints, hurt },
     );
+    const wardStart =
+      role === "EMBER" &&
+      (defense?.phase === "start" || hints.slowTimeStarting);
+    const spellStartDirection =
+      defense?.direction ?? combatDirection(player.facing);
     const bodyMode = role === "EMBER" && defense ? "TOP_DOWN" : mode;
     const resolved = role
       ? resolveHeroAnimation(
@@ -124,15 +171,15 @@ export class PlayerView {
             : motion.facing,
         )
       : null;
-    const key = horizontalHeavy
-      ? charge
-        ? `${heavyKey}:charge`
-        : heavyKey
-      : role && combat
-        ? combatKey(role, combat.direction, combat.action.kind)
-        : role && resolved
-          ? animationKey(role, bodyMode, resolved)
-          : "";
+    const key = wardStart
+      ? combatKey("EMBER", spellStartDirection, "cast")
+      : siegHeavy
+        ? heavyAnimationKey(direction!, !!charge)
+        : role && combat
+          ? combatKey(role, combat.direction, combat.action.kind)
+          : role && resolved
+            ? animationKey(role, bodyMode, resolved)
+            : "";
     const useSprite =
       rendering === "sprite" &&
       !!role &&
@@ -140,15 +187,16 @@ export class PlayerView {
       this.scene.anims.exists(key);
     if (useSprite && role) {
       const visual = characterVisuals[role];
+      if (this.sprite) this.sprite.anims.timeScale = hints.timeScale ?? 1;
       this.appearanceTexture = ensureAppearanceTexture(
         this.scene,
         role,
         player.appearance,
         basic
           ? "basic"
-          : horizontalHeavy
+          : siegHeavy
             ? "heavy"
-            : combat
+            : combat || wardStart
               ? "combat"
               : "base",
       );
@@ -163,14 +211,18 @@ export class PlayerView {
       this.sprite
         .setVisible(true)
         .setPosition(position.x + visual.offset.x, position.y + visual.offset.y)
-        .setOrigin(0.5, combat || horizontalHeavy ? 96 / 128 : visual.origin.y)
+        .setOrigin(
+          0.5,
+          combat || siegHeavy || wardStart ? 96 / 128 : visual.origin.y,
+        )
         .setScale(visual.scale)
         .setFlipX(
-          horizontalHeavy || basic
-            ? direction === "left"
+          siegHeavy || basic
+            ? false
             : mode === "PLATFORMER" && Math.cos(motion.facing) < 0,
         )
         .setDepth(mode === "TOP_DOWN" ? position.y : 10);
+      this.sprite.anims.timeScale = hints.timeScale ?? 1;
       // Ignore the same animation instead of restarting it each render frame.
       // A completed one-shot stays on its final frame until semantic state changes.
       if (
@@ -185,7 +237,7 @@ export class PlayerView {
         const frame = actionFrame(c, combat.elapsedMs);
         this.sprite.setFrame(frame);
         if (basic) {
-          const d = combat.direction === "left" ? "right" : combat.direction;
+          const d = combat.direction;
           const metadata =
             siegAttackMetadata.directions[d].frames[frame - c.start];
           this.basicObservation = {
@@ -202,8 +254,14 @@ export class PlayerView {
           };
         }
       }
-      if (horizontalHeavy && charge)
-        this.sprite.setFrame(charge.ticks < 4 ? 0 : 1);
+      if (wardStart)
+        this.sprite.setFrame(
+          actionClip("EMBER", spellStartDirection, "cast").start,
+        );
+      if (siegHeavy && charge)
+        this.sprite.setFrame(
+          heavyRow(charge.direction) + (charge.ticks < 4 ? 0 : 1),
+        );
       this.applyAppearance();
       if (hurt) this.sprite.setTint(0xff9999);
       else this.sprite.clearTint();
@@ -232,23 +290,30 @@ export class PlayerView {
       rendering === "sprite" &&
       !!role &&
       !!defense &&
-      this.scene.textures.exists(defenseKey(role));
+      this.scene.textures.exists(
+        sprinting ? siegSprintKey : pushing ? siegPushKey : defenseKey(role),
+      );
     if (defenseArtwork && role && defense) {
-      const c = defenseClip(role, defense.phase, defense.direction);
-      const frame =
-        c.heldFrame ??
-        c.start +
-          (defense.phase === "loop"
-            ? Math.floor((defense.elapsedMs * c.fps) / 1000) % c.count
-            : Math.min(
-                c.count - 1,
-                Math.floor((defense.elapsedMs * c.fps) / 1000),
-              ));
+      const moving =
+        Math.hypot(motion.vx, mode === "TOP_DOWN" ? motion.vy : 0) > 1;
+      const c = defenseClip(role, defense.phase, defense.direction, moving);
+      const frame = sprinting
+        ? siegSprintFrame(defense.direction, now)
+        : pushing
+          ? siegPushFrame(defense.direction, now)
+          : (c.heldFrame ??
+            c.start +
+              (defense.phase === "loop"
+                ? Math.floor((defense.elapsedMs * c.fps) / 1000) % c.count
+                : Math.min(
+                    c.count - 1,
+                    Math.floor((defense.elapsedMs * c.fps) / 1000),
+                  )));
       const texture = ensureAppearanceTexture(
         this.scene,
         role,
         player.appearance,
-        "defense",
+        sprinting ? "sprint" : pushing ? "push" : "defense",
       );
       if (!this.defenseSprite)
         this.defenseSprite = this.scene.add.image(
@@ -287,7 +352,7 @@ export class PlayerView {
             (ward?.scale ?? 1) *
             (ward ? effectPresentationProfiles.ward.scale : 1),
         )
-        .setFlipX(!ward && defense.direction === "left")
+        .setFlipX(false)
         .setDepth((mode === "TOP_DOWN" ? position.y : 10) + (ward ? 0.5 : 0));
       if (role === "OATH") this.sprite?.setVisible(false);
     } else this.defenseSprite?.setVisible(false);
@@ -326,7 +391,7 @@ export class PlayerView {
         );
       }
     }
-    if (combat?.action.kind === "heavy" && !horizontalHeavy) {
+    if (combat?.action.kind === "heavy" && !siegHeavy) {
       // Unsupplied vertical heavy poses retain directional basic art plus a larger visual arc.
       const t = combat.elapsedMs / 500,
         a = combat.action.facing;
@@ -342,7 +407,9 @@ export class PlayerView {
       (!defense ||
         rendering === "geometric" ||
         !role ||
-        !this.scene.textures.exists(defenseKey(role)))
+        !this.scene.textures.exists(
+          sprinting ? siegSprintKey : pushing ? siegPushKey : defenseKey(role),
+        ))
     ) {
       g.lineStyle(
         2,
@@ -354,6 +421,8 @@ export class PlayerView {
     }
     if (
       defenseArtwork &&
+      !pushing &&
+      !sprinting &&
       defense?.phase === "loop" &&
       role === "OATH" &&
       (defense.direction === "left" || defense.direction === "right")
@@ -444,6 +513,26 @@ export class PlayerView {
       this.sprite.texture.key !== this.appearanceTexture
     )
       this.sprite.setTexture(this.appearanceTexture, this.sprite.frame.name);
+  }
+  temporalPose() {
+    const body = this.defenseSprite?.visible
+      ? this.defenseSprite
+      : this.sprite?.visible
+        ? this.sprite
+        : null;
+    return body
+      ? {
+          texture: body.texture.key,
+          frame: body.frame.name,
+          x: body.x,
+          y: body.y,
+          originX: body.originX,
+          originY: body.originY,
+          scaleX: body.scaleX,
+          scaleY: body.scaleY,
+          flipX: body.flipX,
+        }
+      : null;
   }
   destroy() {
     this.defenseSprite?.destroy();

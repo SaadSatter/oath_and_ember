@@ -1,6 +1,19 @@
+import { pushableDefinitions, pushableRect } from "./pushables.js";
+import type { World } from "./gameTypes.js";
 import { interiorElements } from "./mapElements.js";
 import { exteriorTreeSolids, forestTreeSolids } from "./environmentSolids.js";
 import type { SceneId, Rect } from "./gameTypes.js";
+import postTownSolids from "./postTownSolids.json" with { type: "json" };
+export const postTownRoute = {
+  TRANSITION_TRAIL: { name: "Transition trail", next: "GRASSLANDS" },
+  GRASSLANDS: { name: "Grasslands", next: "PUZZLE_GLADE" },
+  PUZZLE_GLADE: { name: "Puzzle glade", next: "MONSTER_CLEARING" },
+  MONSTER_CLEARING: { name: "Monster clearing", next: "FOREST_RUINS" },
+} as const;
+export type PostTownScene = keyof typeof postTownRoute;
+export function isPostTownScene(id: SceneId): id is PostTownScene {
+  return Object.hasOwn(postTownRoute, id);
+}
 export interface MapDefinition {
   id: SceneId;
   mode: "TOP_DOWN" | "PLATFORMER";
@@ -16,7 +29,45 @@ export interface MapDefinition {
 }
 export const ENVIRONMENT_SCALE = 2;
 export const ENVIRONMENT_TILE_SIZE = 16;
+function postTownMap(
+  id: PostTownScene,
+  spawn: { x: number; y: number },
+  exit: { x: number; y: number },
+): MapDefinition {
+  return {
+    id,
+    mode: "TOP_DOWN",
+    width: 1024,
+    height: 768,
+    spawn,
+    // Reviewed static footprints. Art files are never loaded by the server.
+    walls: [
+      { x: 0, y: 0, w: 1024, h: 32 },
+      { x: 0, y: 736, w: 1024, h: 32 },
+      { x: 0, y: 0, w: 32, h: 768 },
+      { x: 992, y: 0, w: 32, h: 768 },
+      ...postTownSolids[id],
+    ],
+    points: { exit },
+  };
+}
 export const maps: Record<SceneId, MapDefinition> = {
+  TRANSITION_TRAIL: postTownMap(
+    "TRANSITION_TRAIL",
+    { x: 100, y: 675 },
+    { x: 940, y: 675 },
+  ),
+  GRASSLANDS: postTownMap("GRASSLANDS", { x: 90, y: 420 }, { x: 940, y: 420 }),
+  PUZZLE_GLADE: postTownMap(
+    "PUZZLE_GLADE",
+    { x: 180, y: 675 },
+    { x: 485, y: 540 },
+  ),
+  MONSTER_CLEARING: postTownMap(
+    "MONSTER_CLEARING",
+    { x: 100, y: 300 },
+    { x: 940, y: 420 },
+  ),
   MAIN_HOUSE: {
     id: "MAIN_HOUSE",
     mode: "TOP_DOWN",
@@ -117,9 +168,20 @@ export const maps: Record<SceneId, MapDefinition> = {
 export function collisionRects(
   scene: SceneId,
   puzzles: Record<string, { complete: boolean }>,
+  offsets?: World["pushableOffsets"],
 ): Rect[] {
   return [
-    ...maps[scene].walls,
+    ...maps[scene].walls.map((rect) => {
+      const d = pushableDefinitions.find(
+        (d) =>
+          d.scene === scene &&
+          d.rect.x === rect.x &&
+          d.rect.y === rect.y &&
+          d.rect.w === rect.w &&
+          d.rect.h === rect.h,
+      );
+      return d ? pushableRect(d, offsets) : rect;
+    }),
     ...(scene === "FOREST_RUINS"
       ? [
           ...(!puzzles.gate?.complete
