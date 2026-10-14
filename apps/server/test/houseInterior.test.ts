@@ -66,7 +66,7 @@ it("validates door distance, supports independent entry/exit, and requires E rel
   expect([a.x, a.y]).toEqual([480, 344]);
   input(r, a.id, true);
   expect(a.sceneId).toBe("MAIN_HOUSE");
-  expect(a.skillPoints).toBe(1);
+  expect(a.skillPoints).toBe(0);
 });
 it("returns outside after walking into the exit arch, without accepting distant interactions", () => {
   const { r, a, b } = pair();

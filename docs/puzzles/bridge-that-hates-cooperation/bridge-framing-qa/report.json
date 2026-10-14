@@ -1,0 +1,294 @@
+{
+  "videoStarts": [
+    0.016,
+    1.152
+  ],
+  "events": [
+    {
+      "label": "Shared southern courtyard",
+      "time": 5.314,
+      "tick": 86,
+      "stage": 1,
+      "trapClock": 1.5000000000000013,
+      "slow": false,
+      "sprint": 0,
+      "boulder": {
+        "id": "bridge-boulder",
+        "x": 288,
+        "y": 1408
+      },
+      "players": [
+        {
+          "x": 464,
+          "y": 1408
+        },
+        {
+          "x": 514,
+          "y": 1408
+        }
+      ]
+    },
+    {
+      "label": "Stage 1: boulder physically pushed onto plate A",
+      "time": 17.724,
+      "tick": 446,
+      "stage": 1,
+      "trapClock": 13.499999999999963,
+      "slow": false,
+      "sprint": 0,
+      "boulder": {
+        "id": "bridge-boulder",
+        "x": 288,
+        "y": 1275.0000000000016
+      },
+      "players": [
+        {
+          "x": 286.6666666666672,
+          "y": 1312.0000000000016
+        },
+        {
+          "x": 729.3333333333346,
+          "y": 1218.0000000000023
+        }
+      ]
+    },
+    {
+      "label": "Stage 1: frontal moving-target hit opens Coco's gate",
+      "time": 20.649,
+      "tick": 533,
+      "stage": 2,
+      "trapClock": 16.399999999999974,
+      "slow": false,
+      "sprint": 0,
+      "boulder": {
+        "id": "bridge-boulder",
+        "x": 288,
+        "y": 1275.0000000000016
+      },
+      "players": [
+        {
+          "x": 286.6666666666672,
+          "y": 1312.0000000000016
+        },
+        {
+          "x": 729.3333333333346,
+          "y": 1218.0000000000023
+        }
+      ]
+    },
+    {
+      "label": "Stage 2: Coco's golden switch opens the spike corridor",
+      "time": 25.373,
+      "tick": 675,
+      "stage": 3,
+      "trapClock": 21.133333333333542,
+      "slow": false,
+      "sprint": 0,
+      "boulder": {
+        "id": "bridge-boulder",
+        "x": 288,
+        "y": 1275.0000000000016
+      },
+      "players": [
+        {
+          "x": 286.6666666666672,
+          "y": 1312.0000000000016
+        },
+        {
+          "x": 678.6666666666677,
+          "y": 1085.0000000000039
+        }
+      ]
+    },
+    {
+      "label": "Same boulder retrieved and pushed to spike-trial start",
+      "time": 29.066,
+      "tick": 778,
+      "stage": 3,
+      "trapClock": 24.566666666667047,
+      "slow": false,
+      "sprint": 0,
+      "boulder": {
+        "id": "bridge-boulder",
+        "x": 288,
+        "y": 1123.0000000000034
+      },
+      "players": [
+        {
+          "x": 286.6666666666672,
+          "y": 1160.0000000000034
+        },
+        {
+          "x": 678.6666666666677,
+          "y": 825.3333333333367
+        }
+      ]
+    },
+    {
+      "label": "Stage 3: push through three sideways spikes with both abilities",
+      "time": 29.373,
+      "tick": 787,
+      "stage": 3,
+      "trapClock": 24.733333333333725,
+      "slow": true,
+      "sprint": 9.966666666666667,
+      "boulder": {
+        "id": "bridge-boulder",
+        "x": 288,
+        "y": 1123.0000000000034
+      },
+      "players": [
+        {
+          "x": 286.6666666666672,
+          "y": 1160.0000000000034
+        },
+        {
+          "x": 678.6666666666677,
+          "y": 825.3333333333367
+        }
+      ]
+    },
+    {
+      "label": "Stage 3: same boulder holds golden plate B and stabilizes bridge 2",
+      "time": 31.804,
+      "tick": 860,
+      "stage": 3,
+      "trapClock": 25.220000000000468,
+      "slow": true,
+      "sprint": 7.533333333333342,
+      "boulder": {
+        "id": "bridge-boulder",
+        "x": 288,
+        "y": 743.0000000000019
+      },
+      "players": [
+        {
+          "x": 286.6666666666672,
+          "y": 780.0000000000035
+        },
+        {
+          "x": 678.6666666666677,
+          "y": 825.3333333333367
+        }
+      ]
+    },
+    {
+      "label": "Long frontal shot from bridge center permanently opens final gates",
+      "time": 44.667,
+      "tick": 1246,
+      "stage": 4,
+      "trapClock": 32.166666666667616,
+      "slow": false,
+      "sprint": 0,
+      "boulder": {
+        "id": "bridge-boulder",
+        "x": 288,
+        "y": 743.0000000000019
+      },
+      "players": [
+        {
+          "x": 286.6666666666672,
+          "y": 780.0000000000035
+        },
+        {
+          "x": 478.5333333333364,
+          "y": 819.0000000000033
+        }
+      ]
+    },
+    {
+      "label": "Final: simultaneous opposite switches",
+      "time": 58.191,
+      "tick": 1652,
+      "stage": 4,
+      "trapClock": 45.70000000000018,
+      "slow": false,
+      "sprint": 0,
+      "boulder": {
+        "id": "bridge-boulder",
+        "x": 288,
+        "y": 743.0000000000019
+      },
+      "players": [
+        {
+          "x": 293.0000000000005,
+          "y": 203.66666666666927
+        },
+        {
+          "x": 674.8666666666705,
+          "y": 211.00000000000216
+        }
+      ]
+    },
+    {
+      "label": "Healthy boundaries: reunited at the temple",
+      "time": 62.23,
+      "tick": 1771,
+      "stage": 4,
+      "trapClock": 49.66666666666662,
+      "slow": false,
+      "sprint": 0,
+      "boulder": {
+        "id": "bridge-boulder",
+        "x": 288,
+        "y": 743.0000000000019
+      },
+      "players": [
+        {
+          "x": 451.33333333333337,
+          "y": 165.66666666666922
+        },
+        {
+          "x": 503.86666666666963,
+          "y": 160.33333333333542
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "state": {
+    "stage": 4,
+    "boulder": {
+      "id": "bridge-boulder",
+      "x": 288,
+      "y": 743.0000000000019
+    },
+    "targetHit": true,
+    "firstGateOpen": true,
+    "goldSwitchOpen": true,
+    "finalTargetHit": true,
+    "trapClock": 52.23333333333314,
+    "spikeProgress": 3,
+    "pendingSpike": false,
+    "bridgeClosedUntil": [
+      0,
+      0
+    ],
+    "holdTicks": 23,
+    "complete": true,
+    "failures": 0,
+    "message": "Congratulations on your healthy boundaries. Reunite at the castle exit."
+  },
+  "players": [
+    {
+      "role": "OATH",
+      "x": 451.33333333333337,
+      "y": 165.66666666666922,
+      "hp": 100,
+      "unlockedSkills": [
+        "guard",
+        "dash"
+      ]
+    },
+    {
+      "role": "EMBER",
+      "x": 503.86666666666963,
+      "y": 160.33333333333542,
+      "hp": 100,
+      "unlockedSkills": [
+        "ward",
+        "slow_time"
+      ]
+    }
+  ]
+}

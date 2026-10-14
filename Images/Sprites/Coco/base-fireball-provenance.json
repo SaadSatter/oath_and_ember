@@ -1,0 +1,29 @@
+{
+  "source": "Images/Sprites/Coco/pixellab-Create-a-sprite-sheet-of-a-fir-1792014114546.gif",
+  "sha256": "2ef7c2193d6f1eb0afe080da1dacc1f5573413a20228607e6d418d97548bd555",
+  "operations": [
+    "Decode supplied transparent GIF and pack without resizing, recoloring or cropping",
+    "Preserve authored frame duration; replace only level-one presentation",
+    "Travel frames 0-6 loop in flight; explosion and smoke frames 7-15 play on impact; upgraded source atlases remain untouched"
+  ],
+  "durations": [
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130
+  ],
+  "frameWidth": 64,
+  "frameHeight": 64
+}

@@ -22,12 +22,9 @@ function fixture() {
     });
   return { room, sieg, coco, input };
 }
-it("buys Slow Time directly for one point and only accepts Coco's unlocked activation", () => {
+it("provides Slow Time from the start and accepts only Coco's activation", () => {
   const { room, sieg, coco, input } = fixture();
-  input(coco.id, { slowTimeHeld: true });
-  room.tick();
-  expect(room.state.slowTime).toBeUndefined();
-  room.unlock(coco.id, "slow_time");
+  expect(coco.unlockedSkills).toContain("slow_time");
   expect(coco.skillPoints).toBe(0);
   expect(() => room.unlock(sieg.id, "slow_time")).toThrow();
   input(coco.id, { slowTimeHeld: false });

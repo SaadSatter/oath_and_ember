@@ -1,3 +1,4 @@
+import { blackHoleFrame } from "../src/animation/blackHole.js";
 import { it, expect, vi } from "vitest";
 import type Phaser from "phaser";
 import type { World } from "../../../packages/shared/src/gameTypes.js";
@@ -8,6 +9,7 @@ vi.mock("../src/assets/magicTextures.js", () => ({
 import { ProjectileView } from "../src/entities/ProjectileView.js";
 import {
   magicAssets,
+  baseFireballFrame,
   flightFrame,
   impactDuration,
 } from "../src/animation/projectile.js";
@@ -20,12 +22,14 @@ function harness() {
     fillStyle: chain(),
     fillCircle: chain(),
     fillRect: chain(),
+    lineStyle: chain(),
+    strokeCircle: chain(),
     destroy: chain(),
   };
   const images: any[] = [];
   const scene = {
     time: { now: 0 },
-    textures: { exists: () => true },
+    textures: { exists: () => true, get: () => ({ setFilter: chain() }) },
     add: {
       graphics: () => graphics,
       image: vi.fn(() => {
@@ -37,6 +41,7 @@ function harness() {
           setPosition: chain(),
           setRotation: chain(),
           setTexture: chain(),
+          setFrame: chain(),
           setAlpha: chain(),
           destroy: chain(),
         };
@@ -190,7 +195,7 @@ it("presentation scaling and offsets leave authoritative projectile coordinates 
   }
 });
 
-it("uses the server-captured fireball tier, loops its nine frames and hides the old core", () => {
+it("uses the server-captured fireball tier, loops the correct artwork and hides the old core", () => {
   const h = harness();
   for (const level of [1, 2, 3, 4]) {
     const w = world();
@@ -202,12 +207,112 @@ it("uses the server-captured fireball tier, loops its nine frames and hides the 
       h.scene.time.now = time;
       h.view.update(w, () => ({ x: 90, y: 100 }), false);
       expect(h.images[0].setTexture).toHaveBeenLastCalledWith(
-        "coco:magic:fireball:palette:arcane",
-        (level - 1) * 9 + (Math.floor(time / 130) % 9),
+        `coco:magic:${level === 1 ? "baseFireball" : "fireball"}:palette:arcane`,
+        level === 1
+          ? baseFireballFrame(time)
+          : (level - 1) * 9 + (Math.floor(time / 130) % 9),
       );
       expect(h.images[1].setVisible).toHaveBeenLastCalledWith(false);
     }
     h.view.update({ ...w, projectiles: {} }, () => null, false);
     h.images.length = 0;
   }
+});
+
+it("uses the supplied sixteen-frame GIF only for Coco's level-one fireball", () => {
+  for (const level of [1, 2, 3, 4]) {
+    const h = harness(),
+      w = world();
+    w.projectiles.p.fireballLevel = level;
+    h.view.update(w, () => null, false);
+    h.scene.time.now = 130 * 12;
+    h.view.update(w, () => null, false);
+    expect(h.images[0].setTexture).toHaveBeenLastCalledWith(
+      `coco:magic:${level === 1 ? "baseFireball" : "fireball"}:palette:arcane`,
+      level === 1 ? 5 : (level - 1) * 9 + 3,
+    );
+  }
+  expect(baseFireballFrame(0)).toBe(0);
+  expect(baseFireballFrame(130 * 6)).toBe(6);
+  expect(baseFireballFrame(130 * 7)).toBe(0);
+});
+
+it("plays the supplied explosion frames on level-one impact rather than exploding in midflight", () => {
+  const h = harness(),
+    w = world();
+  w.projectiles.p.fireballLevel = 1;
+  h.view.update(w, () => null, false);
+  w.projectiles = {};
+  w.projectileImpacts = [
+    { id: "p", x: 40, y: 20, owner: "c", tick: w.serverTick },
+  ];
+  h.view.update(w, () => null, false);
+  expect(h.images[2].setTexture).toHaveBeenLastCalledWith(
+    "coco:magic:baseFireball:palette:arcane",
+    7,
+  );
+  h.scene.time.now = 130 * 8;
+  h.view.update(w, () => null, false);
+  expect(h.images[2].setTexture).toHaveBeenLastCalledWith(
+    "coco:magic:baseFireball:palette:arcane",
+    15,
+  );
+});
+
+it("shows the base explosion even when an immediate hit arrives before a projectile snapshot", () => {
+  const h = harness(),
+    w = world();
+  Object.assign(w.players.c, { role: "EMBER", unlockedSkills: [] });
+  w.projectiles = {};
+  w.projectileImpacts = [
+    { id: "instant", x: 40, y: 20, owner: "c", tick: w.serverTick },
+  ];
+  h.view.update(w, () => null, false);
+  expect(h.images[0].setTexture).toHaveBeenLastCalledWith(
+    "coco:magic:baseFireball:palette:arcane",
+    7,
+  );
+});
+
+it("orients a traveling black hole with its velocity and loops only the last three frames on impact", () => {
+  for (const angle of [0, Math.PI, -Math.PI / 2, Math.PI / 2]) {
+    const h = harness(),
+      w = world();
+    w.projectiles = {};
+    const hole: NonNullable<World["blackHoles"]> = (w.blackHoles = {
+      h: {
+        id: "h",
+        owner: "c",
+        sceneId: "FOREST_RUINS",
+        x: 100,
+        y: 100,
+        vx: Math.cos(angle) * 180,
+        vy: Math.sin(angle) * 180,
+        remainingRange: 192,
+        phase: "travel",
+        startedTick: w.serverTick,
+        life: 4,
+        damaged: [],
+      },
+    });
+    h.view.update(w, () => null, false);
+    expect(h.images[0].setRotation).toHaveBeenLastCalledWith(angle);
+    expect(h.images[0].setFrame).toHaveBeenLastCalledWith(0);
+    hole.h.phase = "vortex";
+    hole.h.vx = hole.h.vy = 0;
+    for (const [life, frame] of [
+      [4, 13],
+      [3.86, 14],
+      [3.73, 15],
+      [3.6, 13],
+    ] as const) {
+      hole.h.life = life;
+      h.view.update(w, () => null, false);
+      expect(h.images[0].setFrame).toHaveBeenLastCalledWith(frame);
+      expect(h.images[0].setRotation).toHaveBeenLastCalledWith(0);
+    }
+  }
+  expect(blackHoleFrame(10000, "travel")).toBe(12);
+  for (let t = 0; t < 4000; t += 17)
+    expect(blackHoleFrame(t, "vortex")).toBeGreaterThanOrEqual(13);
 });

@@ -1,3 +1,4 @@
+import type { SceneId } from "../../../packages/shared/src/gameTypes.js";
 import express from "express";
 import { createServer } from "node:http";
 import { resolve } from "node:path";
@@ -26,6 +27,9 @@ const inputSchema = z
     secondaryHeld: z.boolean(),
     sprintHeld: z.boolean().optional(),
     slowTimeHeld: z.boolean().optional(),
+    flightHeld: z.boolean().optional(),
+    blackHoleHeld: z.boolean().optional(),
+    pushHeld: z.boolean().optional(),
     interactHeld: z.boolean(),
   })
   .strict();
@@ -33,10 +37,12 @@ const inputPacketSchema = z.union([
   inputSchema,
   z.object({ frames: z.array(inputSchema).min(1).max(6) }).strict(),
 ]);
-export function createApp(options: { encounter?: boolean } = {}) {
+export function createApp(
+  options: { encounter?: boolean; startingScene?: SceneId } = {},
+) {
   const app = express(),
     http = createServer(app),
-    manager = new RoomManager(options.encounter);
+    manager = new RoomManager(options.encounter, options.startingScene);
   const io = new Server<ClientEvents, ServerEvents>(http);
   app.get("/healthz", (_req, res) =>
     res.json({ ok: true, rooms: manager.rooms.size }),

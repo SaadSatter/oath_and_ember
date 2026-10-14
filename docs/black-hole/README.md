@@ -1,0 +1,9 @@
+# Coco Black Hole
+
+Available from the start, without skill points. Press 3 (or G), or click the Black Hole icon. Coco's server-owned facing determines the shot direction. The projectile travels at 180 pixels/second for at most 192 pixels (six 32-pixel tiles), stopping at the first enemy or solid obstacle. At that contact, or at maximum range, it becomes a stationary four-second vortex.
+
+The vortex damages each living enemy once for 30 damage when that enemy first enters its 96-pixel / three-tile radius. It pulls enemies toward its center at up to 100 pixels/second, with swept solid collision and line-of-sight checks. It never damages or pulls players. Slow Time slows its travel and pulling speed; it does not extend the six-tile range. The cast has a ten-second cooldown. Its range, damage, duration, targets and movement are all server-owned. Scene changes and owner disconnection remove its effects.
+
+The supplied 16-frame 64×64 transparent GIF is packed losslessly with its authored 130 ms frame durations. Travel artwork rotates to match the server-owned projectile velocity. Once it stops, only the final three GIF frames (13–15) loop, using the authoritative vortex lifetime. The launch sequence does not restart while the vortex is active. Original purple colors and pixel scale are preserved. Its original path, SHA256 and processing record are in `Images/Sprites/Coco/black-hole-provenance.json`. A faint three-tile ring indicates the active pull radius. The ability icon shows the usual circular cooldown shade.
+
+`apps/server/test/blackHole.test.ts` verifies maximum range, first impact, once-per-enemy damage, late arrivals, radius, wall occlusion, collision-safe pull, Slow Time, skill/role/cooldown checks, held-key rejection, transition cleanup, and actual multiplayer protocol validation.

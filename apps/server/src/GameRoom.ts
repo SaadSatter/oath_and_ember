@@ -1,3 +1,16 @@
+import { tickBlackHoles } from "./blackHoles.js";
+import { blackHoleTuning } from "../../../packages/shared/src/blackHole.js";
+import {
+  newBridgePuzzle,
+  tickBridgePuzzle,
+  hitBridgeLock,
+  bridgeGateWalls,
+  bridgeMovingTarget,
+  bridgeEntryTargetVisible,
+  pushBridgeBoulder,
+  bridgePoints,
+  hitBridgeEntryTarget,
+} from "../../../packages/shared/src/bridgePuzzle.js";
 import { SLOW_TIME_SCALE } from "../../../packages/shared/src/constants.js";
 import { pushNearby } from "../../../packages/shared/src/pushables.js";
 import {
@@ -13,6 +26,7 @@ import { randomUUID } from "node:crypto";
 import {
   heavyTiming,
   swordContactTicks,
+  inSwordArc,
 } from "../../../packages/shared/src/combat.js";
 import {
   DT,
@@ -31,6 +45,7 @@ import {
   collisionRects,
   isPostTownScene,
   postTownRoute,
+  previousMap,
 } from "../../../packages/shared/src/maps.js";
 import {
   constrainMotion,
@@ -38,19 +53,35 @@ import {
 } from "../../../packages/shared/src/movement.js";
 import {
   skills,
+  startingSkills,
   fireballLevel,
   fireballDamage,
 } from "../../../packages/shared/src/abilities.js";
 export class GameRoom {
   state: World;
+  private travelReadyTick = 0;
+  private savedMaps = new Map<
+    SceneId,
+    {
+      bridgePuzzle: World["bridgePuzzle"];
+      enemies: World["enemies"];
+      boss: World["boss"];
+    }
+  >();
+
   private interactWasHeld = new Map<string, boolean>();
+  private blackHoleRequests = new Set<string>();
+  private flightRequests = new Set<string>();
   private sprintRequests = new Set<string>();
   private slowTimeRequests = new Set<string>();
   private carried = new Map<
     string,
     { dx: number; dy: number; targets: Set<string> }
   >();
-  private pendingSwords = new Map<string, { due: number; scene: SceneId }>();
+  private pendingSwords = new Map<
+    string,
+    { due: number; scene: SceneId; facing: number }
+  >();
   private primaryWasHeld = new Map<string, boolean>();
   sessions = new Map<
     string,
@@ -115,7 +146,7 @@ export class GameRoom {
       facing: 0,
       actionState: "idle",
       cooldowns: {},
-      skillPoints: 1,
+      skillPoints: 0,
       unlockedSkills: [],
       lastProcessedInputSeq: 0,
     };
@@ -140,9 +171,7 @@ export class GameRoom {
     )
       this.state.players[id].appearance = defaultAppearance(role);
     this.state.players[id].role = role;
-    this.state.players[id].unlockedSkills = [
-      role === "OATH" ? "guard" : "ward",
-    ];
+    this.state.players[id].unlockedSkills = startingSkills(role);
     this.state.players[id].ready = false;
   }
   setAppearance(id: string, appearance: unknown) {
@@ -209,6 +238,9 @@ export class GameRoom {
     };
   }
   disconnect(id: string) {
+    this.blackHoleRequests.delete(id);
+    for (const [key, hole] of Object.entries(this.state.blackHoles ?? {}))
+      if (hole.owner === id) delete this.state.blackHoles![key];
     const s = this.sessions.get(id);
     if (s) {
       s.socketId = null;
@@ -223,9 +255,13 @@ export class GameRoom {
     }
   }
   reset() {
+    this.savedMaps.clear();
+    this.travelReadyTick = 0;
     this.pendingSwords.clear();
     const w = this.state;
     w.sceneId = this.encounter ? "FOREST_RUINS" : this.startingScene;
+    w.bridgePuzzle =
+      w.sceneId === "BRIDGE_RUINS" ? newBridgePuzzle() : undefined;
     w.phase = "LOBBY";
     w.worldRevision++;
     w.puzzles = {
@@ -255,30 +291,40 @@ export class GameRoom {
     w.pushableOffsets = {};
     w.interactables = { crate: { x: 790, y: 430 } };
     w.boss = null;
+    w.blackHoles = {};
     w.projectiles = {};
     w.projectileImpacts = [];
     this.primaryWasHeld.clear();
     this.interactWasHeld.clear();
+    this.blackHoleRequests.clear();
+    this.flightRequests.clear();
     this.sprintRequests.clear();
     this.carried.clear();
     this.slowTimeRequests.clear();
     w.enemies = Object.fromEntries(
       forestEncounter.map((e) => [e.id, spawnEnemy(e.id, e.type, e.x, e.y)]),
     );
-    if (w.sceneId === "MAIN_HOUSE") w.enemies = {};
+    if (w.sceneId === "MAIN_HOUSE" || w.sceneId === "BRIDGE_RUINS")
+      w.enemies = {};
     if (this.encounter) {
       for (const key of ["gate", "bridge"]) w.puzzles[key].complete = true;
       w.checkpoint = "Enemy validation encounter";
     }
     w.checkpoint = this.encounter
       ? "Enemy validation encounter"
-      : w.sceneId === "MAIN_HOUSE"
-        ? "Main house"
-        : "Clearing";
+      : w.sceneId === "BRIDGE_RUINS"
+        ? "The Bridge That Hates Cooperation"
+        : w.sceneId === "MAIN_HOUSE"
+          ? "Main house"
+          : "Clearing";
     Object.values(w.players).forEach((p, i) => {
+      if ((p.flightRemaining ?? 0) > 0) p.cooldowns.flight = 7;
       delete p.combat;
       delete p.heavyCharge;
       Object.assign(p, {
+        flightRemaining: 0,
+        flightWasHeld: false,
+        flightGround: undefined,
         sprintRemaining: 0,
         sprintWasHeld: false,
         movementIntent: { x: 0, y: 0 },
@@ -287,14 +333,19 @@ export class GameRoom {
         sceneId: w.sceneId,
         x: this.encounter
           ? 550
-          : maps[w.sceneId].spawn.x + (w.sceneId === "MAIN_HOUSE" ? i * 50 : 0),
-        y: w.sceneId === "MAIN_HOUSE" ? maps.MAIN_HOUSE.spawn.y : 430 + i * 50,
+          : maps[w.sceneId].spawn.x +
+            (["MAIN_HOUSE", "BRIDGE_RUINS"].includes(w.sceneId) ? i * 50 : 0),
+        y:
+          w.sceneId === "BRIDGE_RUINS"
+            ? maps.BRIDGE_RUINS.spawn.y
+            : w.sceneId === "MAIN_HOUSE"
+              ? maps.MAIN_HOUSE.spawn.y
+              : 430 + i * 50,
         vx: 0,
         vy: 0,
         hp: 100,
-        skillPoints: 1,
-        unlockedSkills:
-          p.role === "OATH" ? ["guard"] : p.role === "EMBER" ? ["ward"] : [],
+        skillPoints: 0,
+        unlockedSkills: startingSkills(p.role),
         cooldowns: {},
         lastProcessedInputSeq: 0,
       });
@@ -307,23 +358,38 @@ export class GameRoom {
       }
     });
   }
-  transition(scene: World["sceneId"]) {
+  transition(scene: World["sceneId"], backwards = false) {
     this.pendingSwords.clear();
     const w = this.state;
     const previous = w.sceneId;
+    this.savedMaps.set(previous, {
+      bridgePuzzle: w.bridgePuzzle,
+      enemies: w.enemies,
+      boss: w.boss,
+    });
+    const saved = this.savedMaps.get(scene);
+    this.travelReadyTick = w.serverTick + 30;
+    delete w.slowTime;
     w.sceneId = scene;
+    w.bridgePuzzle = scene === "BRIDGE_RUINS" ? newBridgePuzzle() : undefined;
     w.worldRevision++;
-    w.checkpoint = isPostTownScene(scene)
-      ? postTownRoute[scene].name
-      : scene === "FOREST_RUINS"
-        ? "Clearing"
-        : scene === "AIRSHIP"
-          ? "Airship deck"
-          : "Stormbound Warden";
+    w.checkpoint =
+      scene === "BRIDGE_RUINS"
+        ? "The Bridge That Hates Cooperation"
+        : isPostTownScene(scene)
+          ? postTownRoute[scene].name
+          : scene === "FOREST_RUINS"
+            ? "Clearing"
+            : scene === "AIRSHIP"
+              ? "Airship deck"
+              : "Stormbound Warden";
+    w.blackHoles = {};
     w.projectiles = {};
     w.projectileImpacts = [];
     this.primaryWasHeld.clear();
     this.interactWasHeld.clear();
+    this.blackHoleRequests.clear();
+    this.flightRequests.clear();
     this.sprintRequests.clear();
     this.carried.clear();
     this.slowTimeRequests.clear();
@@ -347,7 +413,16 @@ export class GameRoom {
       ]);
     if (scene === "AIRSHIP_BOSS")
       w.boss = { hp: 220, phase: "SHIELDED", shieldReturned: false };
+    if (saved) {
+      w.bridgePuzzle = saved.bridgePuzzle;
+      w.enemies = saved.enemies;
+      w.boss = saved.boss;
+    } else if (scene !== "AIRSHIP_BOSS") {
+      w.boss = null;
+    }
+
     Object.values(w.players).forEach((p, i) => {
+      if ((p.flightRemaining ?? 0) > 0) p.cooldowns.flight = 7;
       delete p.combat;
       delete p.heavyCharge;
       const session = this.sessions.get(p.id);
@@ -358,6 +433,9 @@ export class GameRoom {
         session.primaryEdges = [];
       }
       Object.assign(p, {
+        flightRemaining: 0,
+        flightWasHeld: false,
+        flightGround: undefined,
         movementIntent: { x: 0, y: 0 },
         sceneId: scene,
         movementEpoch: (p.movementEpoch ?? 0) + 1,
@@ -368,13 +446,14 @@ export class GameRoom {
         vy: 0,
         hp: 100,
       });
-      if (
-        previous !== "MAIN_HOUSE" &&
-        previous !== "HOUSE_INTERIOR" &&
-        !isPostTownScene(previous)
-      )
-        p.skillPoints++;
     });
+    if (scene === "MAIN_HOUSE") w.checkpoint = "Main house";
+    if (backwards && saved && maps[scene].points.exit) {
+      const exit = maps[scene].points.exit;
+      Object.values(w.players).forEach((p) =>
+        this.relocate(p, scene, { x: exit.x - 96, y: exit.y }),
+      );
+    }
   }
   private relocate(
     p: Player,
@@ -405,7 +484,11 @@ export class GameRoom {
                 point.y - 13 < r.y + r.h,
             ),
         ) ?? spawn;
+    if ((p.flightRemaining ?? 0) > 0) p.cooldowns.flight = 7;
     Object.assign(p, arrival, {
+      flightRemaining: 0,
+      flightWasHeld: false,
+      flightGround: undefined,
       sceneId,
       movementEpoch: (p.movementEpoch ?? 0) + 1,
       movementInput: neutral(p.lastProcessedInputSeq),
@@ -426,6 +509,8 @@ export class GameRoom {
     session.movementQueue?.clear();
     session.movementInput = neutral(p.lastProcessedInputSeq);
     // Retain the interaction latch until E is released: no held-key door loops.
+    for (const [id, hole] of Object.entries(this.state.blackHoles ?? {}))
+      if (hole.owner === p.id) delete this.state.blackHoles![id];
     for (const [id, q] of Object.entries(this.state.projectiles))
       if (q.owner === p.id) delete this.state.projectiles[id];
   }
@@ -449,6 +534,9 @@ export class GameRoom {
       s.primaryEdges ||= [];
       if (s.primaryEdges.length < 8) s.primaryEdges.push(input.primaryHeld);
     }
+    if (input.blackHoleHeld && !s.input.blackHoleHeld)
+      this.blackHoleRequests.add(id);
+    if (input.flightHeld && !s.input.flightHeld) this.flightRequests.add(id);
     if (input.sprintHeld && !s.input.sprintHeld) this.sprintRequests.add(id);
     if (input.slowTimeHeld && !s.input.slowTimeHeld)
       this.slowTimeRequests.add(id);
@@ -548,21 +636,40 @@ export class GameRoom {
           ? (s.movementInput ?? neutral(p.lastProcessedInputSeq))
           : neutral(p.lastProcessedInputSeq);
       }
+      if (fresh && this.flightRequests.delete(p.id))
+        movement = { ...movement, flightHeld: true };
+      if (!fresh) this.flightRequests.delete(p.id);
       if (fresh && this.sprintRequests.delete(p.id))
         movement = { ...movement, sprintHeld: true };
       if (!fresh) this.sprintRequests.delete(p.id);
       p.lastProcessedInputSeq = movement.seq;
       p.movementInput = { ...movement };
+      pushBridgeBoulder(w, p, movement);
+      const beforeFlightEpoch = p.movementEpoch;
       stepMovement(
         p,
         movement,
         map,
-        collisionRects(sceneId, w.puzzles, w.pushableOffsets),
+        collisionRects(
+          sceneId,
+          w.puzzles,
+          w.pushableOffsets,
+          w.bridgePuzzle,
+          w.players,
+          w.serverTick,
+          p.role,
+        ),
         DT,
         !!w.slowTime,
       );
+      if (p.movementEpoch !== beforeFlightEpoch) {
+        s.movementQueue?.clear();
+        s.movementInput = neutral(p.lastProcessedInputSeq);
+        s.input = neutral(s.input.seq);
+        p.movementInput = neutral(p.lastProcessedInputSeq);
+      }
       for (const k in p.cooldowns)
-        if (k !== "dash" && k !== "sprint")
+        if (k !== "dash" && k !== "sprint" && k !== "flight")
           p.cooldowns[k] = Math.max(
             0,
             p.cooldowns[k] -
@@ -633,12 +740,15 @@ export class GameRoom {
           if (strike === "sword")
             this.pendingSwords.set(p.id, {
               due: w.serverTick + swordContactTicks(strikeFacing),
+              facing: strikeFacing,
               scene: sceneId,
             });
-          else this.resolveSword(p, sceneId, 40);
+          else this.resolveSword(p, sceneId, 40, strikeFacing);
         } else {
           const id = randomUUID();
           w.projectiles[id] = {
+            castTick: w.serverTick,
+            castOrigin: { x: p.x, y: p.y },
             fireballLevel: fireballLevel(p.unlockedSkills),
             damage: fireballDamage(fireballLevel(p.unlockedSkills)),
             id,
@@ -653,11 +763,43 @@ export class GameRoom {
           };
         }
       }
+      if (
+        this.blackHoleRequests.delete(p.id) &&
+        fresh &&
+        p.role === "EMBER" &&
+        p.hp > 0 &&
+        p.unlockedSkills.includes("black_hole") &&
+        !p.cooldowns.black_hole
+      ) {
+        const id = randomUUID();
+        w.blackHoles ??= {};
+        w.blackHoles[id] = {
+          id,
+          owner: p.id,
+          sceneId,
+          x: p.x,
+          y: p.y,
+          vx: Math.cos(p.facing) * blackHoleTuning.speed,
+          vy: Math.sin(p.facing) * blackHoleTuning.speed,
+          remainingRange: blackHoleTuning.range,
+          phase: "travel",
+          startedTick: w.serverTick,
+          life: blackHoleTuning.duration,
+          damaged: [],
+        };
+        p.cooldowns.black_hole = blackHoleTuning.cooldown;
+        p.combat = {
+          seq: w.serverTick,
+          startedTick: w.serverTick,
+          kind: "cast",
+          facing: p.facing,
+        };
+      }
       const pendingSword = this.pendingSwords.get(p.id);
       if (pendingSword && w.serverTick >= pendingSword.due) {
         this.pendingSwords.delete(p.id);
         if (p.hp > 0 && sceneId === pendingSword.scene)
-          this.resolveSword(p, sceneId, 25);
+          this.resolveSword(p, sceneId, 25, pendingSword.facing);
       }
       if (
         interactEdge &&
@@ -679,21 +821,54 @@ export class GameRoom {
         this.relocate(p, "MAIN_HOUSE", { x: 480, y: 344 });
         continue;
       }
+      if (
+        interactEdge &&
+        p.hp > 0 &&
+        w.serverTick >= this.travelReadyTick &&
+        previousMap[sceneId] &&
+        map.points.back &&
+        near(p, map.points.back, 42)
+      ) {
+        this.transition(previousMap[sceneId]!, true);
+        return;
+      }
+      if (
+        i.pushHeld &&
+        p.role === "OATH" &&
+        p.hp > 0 &&
+        !i.primaryHeld &&
+        !i.secondaryHeld
+      ) {
+        p.actionState = "push";
+        if (sceneId === "FOREST_RUINS" && near(p, w.interactables.crate))
+          w.interactables.crate.x = Math.min(
+            map.points.plate.x,
+            w.interactables.crate.x + DT * 90,
+          );
+        pushNearby(
+          p,
+          sceneId,
+          w,
+          collisionRects(
+            sceneId,
+            w.puzzles,
+            w.pushableOffsets,
+            w.bridgePuzzle,
+            w.players,
+            w.serverTick,
+            p.role,
+          ),
+          DT,
+        );
+      }
       if (i.interactHeld) {
         if (
-          p.role === "OATH" &&
-          p.hp > 0 &&
-          !i.primaryHeld &&
-          !i.secondaryHeld
+          sceneId === "BRIDGE_RUINS" &&
+          w.bridgePuzzle?.complete &&
+          near(p, map.points.exit, 50)
         ) {
-          p.actionState = "push";
-          pushNearby(
-            p,
-            sceneId,
-            w,
-            collisionRects(sceneId, w.puzzles, w.pushableOffsets),
-            DT,
-          );
+          this.transition("FOREST_RUINS");
+          return;
         }
         if (sceneId === "MAIN_HOUSE" && near(p, map.points.exit, 50)) {
           this.transition("TRANSITION_TRAIL");
@@ -711,15 +886,6 @@ export class GameRoom {
         if (sceneId === "FOREST_RUINS") {
           if (p.role === "EMBER" && near(p, map.points.rune))
             w.puzzles.gate.arcane = true;
-          if (
-            (p.role === "OATH" || p.unlockedSkills.includes("telekinesis")) &&
-            near(p, w.interactables.crate)
-          ) {
-            w.interactables.crate.x = Math.min(
-              map.points.plate.x,
-              w.interactables.crate.x + DT * 90,
-            );
-          }
           if (p.role === "EMBER" && near(p, map.points.crystal))
             w.puzzles.bridge.arcane = true;
         } else if (
@@ -796,7 +962,15 @@ export class GameRoom {
             start,
             delta,
             maps[scene],
-            collisionRects(scene, w.puzzles, w.pushableOffsets),
+            collisionRects(
+              scene,
+              w.puzzles,
+              w.pushableOffsets,
+              w.bridgePuzzle,
+              w.players,
+              w.serverTick,
+              w.players[target.id]?.role,
+            ),
           );
           target.x = n.x;
           target.y = n.y;
@@ -816,11 +990,92 @@ export class GameRoom {
       q.x += q.vx * DT * (w.slowTime ? SLOW_TIME_SCALE : 1);
       q.y += q.vy * DT * (w.slowTime ? SLOW_TIME_SCALE : 1);
       q.life -= DT * (w.slowTime ? SLOW_TIME_SCALE : 1);
-      let collided = collisionRects(
+      // Magic can cross the river, but still respects machinery and stone gates.
+      const projectileWalls = collisionRects(
         q.sceneId ?? w.sceneId,
         w.puzzles,
         w.pushableOffsets,
-      ).some((r) => segmentHits(ox, oy, q.x, q.y, r, q.radius ?? 4));
+        w.bridgePuzzle,
+        w.players,
+        w.serverTick,
+      );
+      let collided =
+        (q.sceneId ?? w.sceneId) === "BRIDGE_RUINS"
+          ? bridgeGateWalls(w.bridgePuzzle, w.players).some((r) =>
+              segmentHits(ox, oy, q.x, q.y, r, q.radius ?? 4),
+            )
+          : projectileWalls.some((r) =>
+              segmentHits(ox, oy, q.x, q.y, r, q.radius ?? 4),
+            );
+      if (
+        !collided &&
+        (q.sceneId ?? w.sceneId) === "BRIDGE_RUINS" &&
+        w.bridgePuzzle &&
+        !w.bridgePuzzle.firstGateOpen &&
+        bridgeEntryTargetVisible(w.bridgePuzzle) &&
+        q.faction !== "enemies"
+      ) {
+        const target = bridgeMovingTarget(w.bridgePuzzle.trapClock);
+        if (
+          segmentHits(
+            ox,
+            oy,
+            q.x,
+            q.y,
+            { x: target.x - 20, y: target.y - 20, w: 40, h: 40 },
+            q.radius ?? 4,
+          )
+        ) {
+          if (
+            segmentHits(
+              ox,
+              oy,
+              q.x,
+              q.y,
+              { x: target.x - 10, y: target.y + 14, w: 20, h: 10 },
+              q.radius ?? 4,
+            )
+          )
+            hitBridgeEntryTarget(w, q.owner, q);
+          collided = true;
+        }
+      }
+      if (
+        !collided &&
+        (q.sceneId ?? w.sceneId) === "BRIDGE_RUINS" &&
+        q.faction !== "enemies" &&
+        segmentHits(
+          ox,
+          oy,
+          q.x,
+          q.y,
+          {
+            x: bridgePoints.target.x - 24,
+            y: bridgePoints.target.y - 24,
+            w: 48,
+            h: 48,
+          },
+          q.radius ?? 4,
+        )
+      ) {
+        if (
+          segmentHits(
+            ox,
+            oy,
+            q.x,
+            q.y,
+            {
+              x: bridgePoints.target.x - 10,
+              y: bridgePoints.target.y + 14,
+              w: 20,
+              h: 10,
+            },
+            q.radius ?? 4,
+          )
+        )
+          hitBridgeLock(w, q.owner, q);
+        collided = true;
+      }
       if (!collided) {
         const targets =
           q.faction === "enemies"
@@ -881,7 +1136,24 @@ export class GameRoom {
       }
       if (q.life <= 0) delete w.projectiles[q.id];
     }
+    const recoveryEpochs = new Map(
+      Object.values(w.players).map((p) => [p.id, p.movementEpoch]),
+    );
+    tickBridgePuzzle(w);
+    for (const p of Object.values(w.players))
+      if (p.movementEpoch !== recoveryEpochs.get(p.id)) {
+        const session = this.sessions.get(p.id);
+        if (session) {
+          session.input = neutral(session.input.seq);
+          session.movementQueue?.clear();
+          session.movementInput = neutral(p.lastProcessedInputSeq);
+          session.primaryEdges = [];
+        }
+        p.movementInput = neutral(p.lastProcessedInputSeq);
+        p.movementIntent = { x: 0, y: 0 };
+      }
     tickEnemies(w, (p, n) => this.damage(p, n));
+    tickBlackHoles(w);
     if (w.sceneId === "FOREST_RUINS") {
       w.puzzles.bridge.physical = near(
         w.interactables.crate,
@@ -893,7 +1165,6 @@ export class GameRoom {
         if (q.physical && q.arcane && !q.complete) {
           q.complete = true;
           w.worldRevision++;
-          Object.values(w.players).forEach((p) => p.skillPoints++);
         }
       }
       if (
@@ -939,31 +1210,39 @@ export class GameRoom {
       }
     }
   }
-  private resolveSword(p: Player, sceneId: SceneId, damage: number) {
+  private resolveSword(
+    p: Player,
+    sceneId: SceneId,
+    damage: number,
+    facing: number,
+  ) {
     const w = this.state,
       map = maps[sceneId];
-    const near = (
-      a: { x: number; y: number },
-      b: { x: number; y: number },
-      d = 75,
-    ) => Math.hypot(a.x - b.x, a.y - b.y) < d;
     for (const e of Object.values(sceneId === w.sceneId ? w.enemies : {}))
       if (
         e.state !== "DEAD" &&
-        near(p, e, 85) &&
-        !collisionRects(sceneId, w.puzzles, w.pushableOffsets).some((r) =>
-          segmentHits(p.x, p.y, e.x, e.y, r),
-        )
+        inSwordArc(p, e, facing, 85) &&
+        !collisionRects(
+          sceneId,
+          w.puzzles,
+          w.pushableOffsets,
+          w.bridgePuzzle,
+          w.players,
+          w.serverTick,
+        ).some((r) => segmentHits(p.x, p.y, e.x, e.y, r))
       )
         damageEnemy(e, damage, w.serverTick);
     if (
       sceneId === w.sceneId &&
       w.boss &&
-      near(p, map.points.boss, 95) &&
+      inSwordArc(p, map.points.boss, facing, 95) &&
       w.boss.phase === "VULNERABLE"
     )
       w.boss.hp -= damage;
-    if (sceneId === "FOREST_RUINS" && near(p, map.points.bramble))
+    if (
+      sceneId === "FOREST_RUINS" &&
+      inSwordArc(p, map.points.bramble, facing, 75)
+    )
       w.puzzles.gate.physical = true;
   }
   damage(p: Player, n: number) {

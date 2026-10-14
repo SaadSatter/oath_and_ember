@@ -1,0 +1,124 @@
+{
+  "name": "The Bridge That Hates Cooperation",
+  "difficulty": 5,
+  "scope": "Playable server-authoritative forest ruins puzzle and real two-client walkthrough",
+  "pixellab": {
+    "mapId": "384ece37-eb6a-4d30-b02a-5c2012fbc730",
+    "tileSize": 32,
+    "cells": [
+      30,
+      48
+    ],
+    "worldPixels": [
+      960,
+      1536
+    ],
+    "seedTilesetId": "a5bd2e92-f30f-4941-9da0-9893d34adad0",
+    "walkwayTilesetId": "a7ff6691-a995-4ec4-b6da-f7990c31f080",
+    "inpaintingUsed": false
+  },
+  "requiredAbilities": {
+    "OATH": "dash",
+    "EMBER": "slow_time",
+    "unlockCostPerHero": 1,
+    "otherRequiredAction": "EMBER starting fireball"
+  },
+  "spawnPixels": {
+    "OATH": [
+      464,
+      1408
+    ],
+    "EMBER": [
+      514,
+      1408
+    ]
+  },
+  "bridges": [
+    {
+      "x": 384,
+      "y": 1184,
+      "width": 192,
+      "height": 64,
+      "capacity": 1
+    },
+    {
+      "x": 384,
+      "y": 768,
+      "width": 192,
+      "height": 64,
+      "capacity": 1
+    }
+  ],
+  "stages": [
+    "Boulder on weight plate A AND Coco frontal moving-target hit latch Gate 1 open.",
+    "Coco golden switch latches spike entry open; Sieg retrieves SAME boulder.",
+    "Physical boosted boulder transport through three sideways spike sleds under Slow Time; boulder-only plate B supports bridge 2.",
+    "Coco shoots front weak point at former bridge 3 from center firing pad, permanently opening both gates; opposite final switches open castle exit."
+  ],
+  "failures": "Actual spike contact with the boulder resets Sieg and the same boulder at trial start; Sieg-only contact resets him without moving the stone. Bridge collapse recovers occupants without moving the boulder or undoing earlier latches.",
+  "movingEntryTarget": {
+    "center": [
+      672,
+      1160
+    ],
+    "horizontalAmplitude": 56,
+    "periodSeconds": 3,
+    "requiredShooter": "EMBER"
+  },
+  "approvedDate": "2026-10-14",
+  "boulder": {
+    "id": "bridge-boulder",
+    "spawn": [
+      288,
+      1312
+    ],
+    "halfExtent": 24,
+    "weightPlateA": [
+      288,
+      1264
+    ],
+    "spikeTrialReset": [
+      288,
+      1120
+    ],
+    "weightPlateB": [
+      288,
+      736
+    ],
+    "autoFollow": false,
+    "plateARetainerUntilFirstGate": true
+  },
+  "spikes": {
+    "ys": [
+      1040,
+      960,
+      880
+    ],
+    "width": 128,
+    "height": 56,
+    "centerXRange": [
+      256,
+      480
+    ],
+    "sidewaysWaterRetraction": true,
+    "periodSeconds": 2.4,
+    "slowTimeScale": 0.2
+  },
+  "finalTarget": {
+    "center": [
+      480,
+      416
+    ],
+    "weakPointFace": "south",
+    "firingPadCenter": [
+      480,
+      800
+    ],
+    "firingPadSize": [
+      40,
+      40
+    ],
+    "distancePixels": 384,
+    "replacesBridge": 3
+  }
+}

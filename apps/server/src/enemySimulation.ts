@@ -55,7 +55,14 @@ export const lineClear = (
 function moveEnemy(e: Enemy, dx: number, dy: number, w: World) {
   const d = enemyDefinitions[e.type],
     map = maps[w.sceneId],
-    walls = collisionRects(w.sceneId, w.puzzles, w.pushableOffsets),
+    walls = collisionRects(
+      w.sceneId,
+      w.puzzles,
+      w.pushableOffsets,
+      w.bridgePuzzle,
+      w.players,
+      w.serverTick,
+    ),
     n = Math.hypot(dx, dy) || 1;
   const ox = e.x,
     oy = e.y;
@@ -88,7 +95,14 @@ function moveEnemy(e: Enemy, dx: number, dy: number, w: World) {
   if (e.vx || e.vy) e.facing = Math.atan2(e.vy, e.vx);
 }
 export function tickEnemies(w: World, damage: (p: Player, n: number) => void) {
-  const walls = collisionRects(w.sceneId, w.puzzles, w.pushableOffsets);
+  const walls = collisionRects(
+    w.sceneId,
+    w.puzzles,
+    w.pushableOffsets,
+    w.bridgePuzzle,
+    w.players,
+    w.serverTick,
+  );
   for (const e of Object.values(w.enemies)) {
     e.vx = e.vy = 0;
     if (e.hp <= 0) damageEnemy(e, 1, w.serverTick);

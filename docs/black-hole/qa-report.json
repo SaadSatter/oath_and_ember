@@ -1,0 +1,29 @@
+{
+  "errors": [],
+  "hole": {
+    "id": "4f3cc9ab-3f53-4eb6-bd8b-712a3a954ef0",
+    "owner": "372abe6f-1d19-4df6-9c30-84b586e3665a",
+    "sceneId": "BRIDGE_RUINS",
+    "x": 706,
+    "y": 1408,
+    "vx": 0,
+    "vy": 0,
+    "remainingRange": 0,
+    "phase": "vortex",
+    "startedTick": 41,
+    "life": 3.6000000000000014,
+    "damaged": []
+  },
+  "visuals": {
+    "blackHoles": [
+      {
+        "id": "4f3cc9ab-3f53-4eb6-bd8b-712a3a954ef0",
+        "frame": 9,
+        "x": 706,
+        "y": 1408
+      }
+    ],
+    "flights": [],
+    "impacts": []
+  }
+}

@@ -31,7 +31,7 @@ it("starts both heroes at the house and transitions only on server-accepted near
   expect(r.state.players[b.playerId].x).toBe(
     maps.TRANSITION_TRAIL.spawn.x + 50,
   );
-  expect(p.skillPoints).toBe(1);
+  expect(p.skillPoints).toBe(0);
   expect(r.state.puzzles.gate.complete).toBe(false);
   r.reset();
   expect(r.state.sceneId).toBe("MAIN_HOUSE");

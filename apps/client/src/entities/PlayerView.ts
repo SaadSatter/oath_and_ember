@@ -1,3 +1,4 @@
+import { cocoFlightKey, cocoFlightFrame } from "../animation/cocoFlight.js";
 import { siegSprintKey, siegSprintFrame } from "../animation/siegSprint.js";
 import { siegPushKey, siegPushFrame } from "../animation/siegPush.js";
 import { combatDirection } from "../animation/combat.js";
@@ -113,8 +114,10 @@ export class PlayerView {
       player.hp > 0 &&
       !hurt &&
       presentation.kind === "locomotion";
+    const flying =
+      role === "EMBER" && (player.flightRemaining ?? 0) > 0 && player.hp > 0;
     const defense =
-      pushing || sprinting
+      pushing || sprinting || flying
         ? {
             phase: "loop" as const,
             direction: combatDirection(player.facing),
@@ -291,29 +294,37 @@ export class PlayerView {
       !!role &&
       !!defense &&
       this.scene.textures.exists(
-        sprinting ? siegSprintKey : pushing ? siegPushKey : defenseKey(role),
+        flying
+          ? cocoFlightKey
+          : sprinting
+            ? siegSprintKey
+            : pushing
+              ? siegPushKey
+              : defenseKey(role),
       );
     if (defenseArtwork && role && defense) {
       const moving =
         Math.hypot(motion.vx, mode === "TOP_DOWN" ? motion.vy : 0) > 1;
       const c = defenseClip(role, defense.phase, defense.direction, moving);
-      const frame = sprinting
-        ? siegSprintFrame(defense.direction, now)
-        : pushing
-          ? siegPushFrame(defense.direction, now)
-          : (c.heldFrame ??
-            c.start +
-              (defense.phase === "loop"
-                ? Math.floor((defense.elapsedMs * c.fps) / 1000) % c.count
-                : Math.min(
-                    c.count - 1,
-                    Math.floor((defense.elapsedMs * c.fps) / 1000),
-                  )));
+      const frame = flying
+        ? cocoFlightFrame(defense.direction, now)
+        : sprinting
+          ? siegSprintFrame(defense.direction, now)
+          : pushing
+            ? siegPushFrame(defense.direction, now)
+            : (c.heldFrame ??
+              c.start +
+                (defense.phase === "loop"
+                  ? Math.floor((defense.elapsedMs * c.fps) / 1000) % c.count
+                  : Math.min(
+                      c.count - 1,
+                      Math.floor((defense.elapsedMs * c.fps) / 1000),
+                    )));
       const texture = ensureAppearanceTexture(
         this.scene,
         role,
         player.appearance,
-        sprinting ? "sprint" : pushing ? "push" : "defense",
+        flying ? "flight" : sprinting ? "sprint" : pushing ? "push" : "defense",
       );
       if (!this.defenseSprite)
         this.defenseSprite = this.scene.add.image(
@@ -322,7 +333,7 @@ export class PlayerView {
           texture,
         );
       const ward =
-        role === "EMBER"
+        role === "EMBER" && !flying
           ? wardEnvelope(defense.phase, defense.elapsedMs, c.durationMs, now)
           : null;
       this.defenseSprite
@@ -354,7 +365,7 @@ export class PlayerView {
         )
         .setFlipX(false)
         .setDepth((mode === "TOP_DOWN" ? position.y : 10) + (ward ? 0.5 : 0));
-      if (role === "OATH") this.sprite?.setVisible(false);
+      if (role === "OATH" || flying) this.sprite?.setVisible(false);
     } else this.defenseSprite?.setVisible(false);
     const g = this.graphics;
     g.clear();
@@ -408,7 +419,13 @@ export class PlayerView {
         rendering === "geometric" ||
         !role ||
         !this.scene.textures.exists(
-          sprinting ? siegSprintKey : pushing ? siegPushKey : defenseKey(role),
+          flying
+            ? cocoFlightKey
+            : sprinting
+              ? siegSprintKey
+              : pushing
+                ? siegPushKey
+                : defenseKey(role),
         ))
     ) {
       g.lineStyle(
@@ -450,16 +467,7 @@ export class PlayerView {
       g.lineStyle(3, effectColor(player.appearance?.effectPalette), 1 - t);
       g.strokeCircle(position.x, position.y - 11, 23 + t * 12);
     }
-    if (hints.interacting) {
-      g.lineStyle(
-        2,
-        role === "EMBER"
-          ? effectColor(player.appearance?.effectPalette)
-          : 0xbd93f9,
-        0.6,
-      );
-      g.strokeCircle(position.x, position.y, 20 + Math.sin(now / 150) * 3);
-    }
+
     g.fillStyle(0xe05260);
     g.fillRect(
       position.x - 18,

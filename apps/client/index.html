@@ -15,7 +15,7 @@
       <div id="hud"></div>
       <div id="objective"></div>
       <div id="control-hints">
-        WASD / arrows · J attack · K defense · E use · Space jump
+        WASD / arrows · J attack · K defense · E interact · Space jump
       </div>
       <div id="debug" hidden></div>
     </div>
@@ -24,9 +24,9 @@
       <button
         data-ability="push"
         aria-label="Push"
-        title="Push · hold to use (E)"
+        title="Push · hold to use (1)"
       >
-        <img src="/assets/ui/abilities/push.png" alt="" /><span>Push</span>
+        <img src="/assets/ui/abilities/push.png" alt="" /><span>1 · Push</span>
       </button>
       <button
         data-ability="super-speed"
@@ -35,17 +35,32 @@
       >
         <span class="speed-icon" aria-hidden="true"
           ><img src="/assets/ui/abilities/super-speed.png" alt="" /></span
-        ><span>Super Speed</span>
+        ><span>2 · Super Speed</span>
       </button>
       <button
         data-ability="time-stop"
         aria-label="Slow Time"
-        title="Slow Time · unlock for 1 point"
+        title="Slow Time"
         disabled
       >
         <span class="speed-icon" aria-hidden="true"
           ><img src="/assets/ui/abilities/time-stop.png" alt="" /></span
-        ><span>Slow Time</span>
+        ><span>1 · Slow Time</span>
+      </button>
+      <button data-ability="flight" aria-label="Flight" title="Flight">
+        <span class="speed-icon" aria-hidden="true"
+          ><img src="/assets/ui/abilities/flight.png" alt="" /></span
+        ><span>2 · Flight</span>
+      </button>
+      <button
+        data-ability="black-hole"
+        aria-label="Black Hole"
+        title="Black Hole"
+        disabled
+      >
+        <span class="speed-icon" aria-hidden="true"
+          ><img src="/assets/ui/abilities/black-hole.png" alt="" /></span
+        ><span>3 · Black Hole</span>
       </button>
     </div>
     <div id="touch">

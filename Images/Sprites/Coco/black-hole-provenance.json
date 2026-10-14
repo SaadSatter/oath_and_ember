@@ -1,0 +1,28 @@
+{
+  "source": "Images/Sprites/Coco/pixellab-Create-a-sprite-sheet-of-a-bla-1792013456958.gif",
+  "sha256": "07c7645ee551202c74da55f2fcd1fc0d285f446476b2e07f6c98e2df7beb0c65",
+  "operations": [
+    "Decode supplied transparent GIF into lossless unscaled atlas",
+    "Preserve authored frame durations and purple colors"
+  ],
+  "durations": [
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130,
+    130
+  ],
+  "frameWidth": 64,
+  "frameHeight": 64
+}

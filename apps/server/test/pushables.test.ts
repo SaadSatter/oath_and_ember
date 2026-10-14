@@ -22,7 +22,7 @@ function fixture() {
   const session = room.sessions.get(player.id)!;
   const tick = () => {
     session.received = Date.now();
-    session.input = { ...neutral(session.input.seq + 1), interactHeld: true };
+    session.input = { ...neutral(session.input.seq + 1), pushHeld: true };
     room.tick();
   };
   return { room, player, tick };
@@ -114,7 +114,7 @@ it("broadcasts identical push positions and presentation state to two real clien
       y: 144,
       facing: 0,
     });
-    clients[0].emit("player:input", { ...neutral(1), interactHeld: true });
+    clients[0].emit("player:input", { ...neutral(1), pushHeld: true });
     await new Promise((resolve) => setTimeout(resolve, 220));
     const shared = [...histories[0].keys()].filter((t) => histories[1].has(t));
     const pushed = shared.filter(
@@ -131,4 +131,48 @@ it("broadcasts identical push positions and presentation state to two real clien
     clients.forEach((client) => client.disconnect());
     await app.close();
   }
+});
+
+it("E interacts for either hero without posing or moving pushable objects; only Sieg's dedicated push intent moves them", () => {
+  for (const role of ["OATH", "EMBER"] as const) {
+    const { room, player } = fixture();
+    player.role = role;
+    room.receiveInput(player.id, { ...neutral(1), interactHeld: true });
+    room.tick();
+    expect(player.actionState).not.toBe("push");
+    expect(room.state.pushableOffsets?.["puzzle-chair"]).toBeUndefined();
+    room.receiveInput(player.id, { ...neutral(2), pushHeld: true });
+    room.tick();
+    if (role === "OATH")
+      expect(room.state.pushableOffsets?.["puzzle-chair"]?.x).toBeGreaterThan(
+        0,
+      );
+    else expect(room.state.pushableOffsets?.["puzzle-chair"]).toBeUndefined();
+  }
+});
+
+it("E plus movement cannot move the persistent boulder", () => {
+  const room = new GameRoom("USE123", false, "BRIDGE_RUINS"),
+    a = room.add("a"),
+    b = room.add("b");
+  room.select(a.playerId, "OATH");
+  room.select(b.playerId, "EMBER");
+  room.ready(a.playerId, true);
+  room.ready(b.playerId, true);
+  const sieg = room.state.players[a.playerId],
+    start = { ...room.state.bridgePuzzle!.boulder };
+  Object.assign(sieg, { x: 288, y: 1448 });
+  for (let seq = 1; seq <= 15; seq++) {
+    room.receiveInput(sieg.id, {
+      ...neutral(seq),
+      moveY: -1,
+      interactHeld: true,
+    });
+    room.tick();
+  }
+  expect(room.state.bridgePuzzle!.boulder).toEqual(start);
+  expect(sieg.actionState).not.toBe("push");
+  room.receiveInput(sieg.id, { ...neutral(16), moveY: -1, pushHeld: true });
+  room.tick();
+  expect(room.state.bridgePuzzle!.boulder.y).toBeLessThan(start.y);
 });

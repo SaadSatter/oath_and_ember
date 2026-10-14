@@ -1,6 +1,7 @@
 import type { CharacterAppearance } from "./appearance.js";
 export type Role = "OATH" | "EMBER";
 export type SceneId =
+  | "BRIDGE_RUINS"
   | "HOUSE_INTERIOR"
   | "MAIN_HOUSE"
   | "TRANSITION_TRAIL"
@@ -24,6 +25,9 @@ export interface InputFrame {
   /** Super Speed activation intent; never a client-selected speed. */
   sprintHeld?: boolean;
   slowTimeHeld?: boolean;
+  flightHeld?: boolean;
+  blackHoleHeld?: boolean;
+  pushHeld?: boolean;
   interactHeld: boolean;
 }
 export interface CombatAction {
@@ -33,6 +37,9 @@ export interface CombatAction {
   startedTick: number;
 }
 export interface Player {
+  flightRemaining?: number;
+  flightWasHeld?: boolean;
+  flightGround?: { x: number; y: number };
   sprintRemaining?: number;
   sprintWasHeld?: boolean;
   /** Authoritative last movement intent, including timeout-neutral buttons. */
@@ -89,6 +96,8 @@ export interface Enemy {
   cooldown: number;
 }
 export interface Projectile {
+  castTick?: number;
+  castOrigin?: { x: number; y: number };
   /** Strength captured by the server at cast time (Coco only). */
   fireballLevel?: number;
   sceneId?: SceneId;
@@ -110,7 +119,23 @@ export interface Puzzle {
   complete: boolean;
   progress: number;
 }
+export interface BlackHole {
+  id: string;
+  owner: string;
+  sceneId: SceneId;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  remainingRange: number;
+  phase: "travel" | "vortex";
+  startedTick: number;
+  life: number;
+  damaged: string[];
+}
 export interface World {
+  blackHoles?: Record<string, BlackHole>;
+  bridgePuzzle?: import("./bridgePuzzle.js").BridgePuzzleState;
   slowTime?: { owner: string; startedTick: number; endsTick: number };
   /** Server-owned displacement of reviewed pushable map objects. */
   pushableOffsets?: Record<string, { x: number; y: number }>;
@@ -140,6 +165,7 @@ export interface World {
   checkpoint: string;
 }
 export interface Rect {
+  terrain?: "water" | "canyon";
   x: number;
   y: number;
   w: number;

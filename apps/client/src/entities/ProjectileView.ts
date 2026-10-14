@@ -1,3 +1,6 @@
+import { fireballLevel } from "../../../../packages/shared/src/abilities.js";
+import { blackHoleKey, blackHoleFrame } from "../animation/blackHole.js";
+import { blackHoleTuning } from "../../../../packages/shared/src/blackHole.js";
 import { effectPresentationProfiles } from "../assets/effectPresentation.js";
 import type Phaser from "phaser";
 import type { World } from "../../../../packages/shared/src/gameTypes.js";
@@ -6,6 +9,9 @@ import { ensureMagicTexture } from "../assets/magicTextures.js";
 import {
   flightFrame,
   fireballFrame,
+  baseFireballFrame,
+  baseFireballImpactFrame,
+  baseFireballImpactDuration,
   impactFrame,
   impactDuration,
   magicKey,
@@ -20,10 +26,17 @@ export class ProjectileView {
       start: number;
     }
   >();
+  private baseShots = new Set<string>();
+  private holes = new Map<string, Phaser.GameObjects.Image>();
   private seen = new Set<string>();
   private bursts = new Map<
     string,
-    { sprite: Phaser.GameObjects.Image; start: number; palette: string }
+    {
+      sprite: Phaser.GameObjects.Image;
+      start: number;
+      palette: string;
+      base?: boolean;
+    }
   >();
   private graphics: Phaser.GameObjects.Graphics;
   constructor(private scene: Phaser.Scene) {
@@ -37,7 +50,40 @@ export class ProjectileView {
     const now = this.scene.time.now,
       g = this.graphics;
     g.clear();
+    for (const hole of Object.values(world.blackHoles ?? {})) {
+      let im = this.holes.get(hole.id);
+      if (!im && this.scene.textures.exists(blackHoleKey)) {
+        this.scene.textures.get(blackHoleKey).setFilter(1);
+        im = this.scene.add.image(hole.x, hole.y, blackHoleKey).setDepth(32);
+        this.holes.set(hole.id, im);
+      }
+      im?.setPosition(hole.x, hole.y)
+        .setRotation(hole.phase === "travel" ? Math.atan2(hole.vy, hole.vx) : 0)
+        .setFrame(
+          blackHoleFrame(
+            hole.phase === "vortex"
+              ? (blackHoleTuning.duration - hole.life) * 1000
+              : ((world.serverTick - hole.startedTick) * 1000) / 30,
+            hole.phase,
+          ),
+        )
+        .setVisible(!debug);
+      if (hole.phase === "vortex") {
+        g.lineStyle(1, 0x8b62d8, 0.25);
+        g.strokeCircle(hole.x, hole.y, blackHoleTuning.pullRadius);
+      }
+      if (debug || !im) {
+        g.fillStyle(0x8b62d8);
+        g.fillCircle(hole.x, hole.y, 8);
+      }
+    }
+    for (const [id, im] of this.holes)
+      if (!world.blackHoles?.[id]) {
+        im.destroy();
+        this.holes.delete(id);
+      }
     for (const p of Object.values(world.projectiles)) {
+      if (p.fireballLevel === 1) this.baseShots.add(p.id);
       const q = position(p.id) || p,
         palette = world.players[p.owner]?.appearance?.effectPalette || "ember",
         color = effectColor(palette);
@@ -69,12 +115,18 @@ export class ProjectileView {
           .setTexture(
             ensureMagicTexture(
               this.scene,
-              p.fireballLevel ? "fireball" : "flight",
+              p.fireballLevel === 1
+                ? "baseFireball"
+                : p.fireballLevel
+                  ? "fireball"
+                  : "flight",
               palette,
             ),
-            p.fireballLevel
-              ? fireballFrame(p.fireballLevel, now - flight.start)
-              : flightFrame(now - flight.start),
+            p.fireballLevel === 1
+              ? baseFireballFrame(now - flight.start)
+              : p.fireballLevel
+                ? fireballFrame(p.fireballLevel, now - flight.start)
+                : flightFrame(now - flight.start),
           )
           .setVisible(!debug)
           .setScale(
@@ -122,8 +174,13 @@ export class ProjectileView {
       if (!this.seen.has(hit.id)) {
         this.seen.add(hit.id);
         const age = Math.max(0, ((world.serverTick - hit.tick) * 1000) / 30);
+        const owner = world.players[hit.owner];
+        const base =
+          this.baseShots.has(hit.id) ||
+          (owner?.role === "EMBER" &&
+            fireballLevel(owner.unlockedSkills) === 1);
         if (
-          age < impactDuration &&
+          age < (base ? baseFireballImpactDuration : impactDuration) &&
           this.scene.textures.exists(magicKey("impact"))
         ) {
           const palette =
@@ -133,6 +190,7 @@ export class ProjectileView {
               .image(hit.x, hit.y, magicKey("impact"))
               .setOrigin(0.5, 0.5)
               .setDepth(32),
+            base,
             start: now - age,
             palette,
           });
@@ -140,27 +198,39 @@ export class ProjectileView {
       }
     const retained = new Set((world.projectileImpacts || []).map((e) => e.id));
     for (const id of this.seen) if (!retained.has(id)) this.seen.delete(id);
+    for (const id of this.baseShots)
+      if (!world.projectiles[id] && !retained.has(id))
+        this.baseShots.delete(id);
     for (const [id, b] of this.bursts) {
+      const duration = b.base ? baseFireballImpactDuration : impactDuration;
       const elapsed = now - b.start;
-      if (elapsed >= impactDuration) {
+      if (elapsed >= duration) {
         b.sprite.destroy();
         this.bursts.delete(id);
         continue;
       }
       b.sprite
         .setTexture(
-          ensureMagicTexture(this.scene, "impact", b.palette),
-          impactFrame(elapsed),
+          ensureMagicTexture(
+            this.scene,
+            b.base ? "baseFireball" : "impact",
+            b.palette,
+          ),
+          b.base ? baseFireballImpactFrame(elapsed) : impactFrame(elapsed),
         )
         .setVisible(!debug)
-        .setAlpha(
-          elapsed > impactDuration - 100 ? (impactDuration - elapsed) / 100 : 1,
-        );
+        .setAlpha(elapsed > duration - 100 ? (duration - elapsed) / 100 : 1);
     }
   }
   // Read-only presentation diagnostics; never consumed by simulation or networking.
   inspect() {
     return {
+      blackHoles: [...this.holes].map(([id, im]) => ({
+        id,
+        frame: Number(im.frame.name),
+        x: im.x,
+        y: im.y,
+      })),
       flights: [...this.flights].map(([id, f]) => ({
         id,
         frame: Number(f.ribbons.frame.name),
@@ -178,6 +248,9 @@ export class ProjectileView {
     };
   }
   clear() {
+    for (const im of this.holes.values()) im.destroy();
+    this.holes.clear();
+    this.baseShots.clear();
     this.graphics.clear();
     for (const f of this.flights.values()) {
       f.ribbons.destroy();

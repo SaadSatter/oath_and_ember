@@ -1,4 +1,7 @@
-import { constrainMotion } from "../../../../packages/shared/src/movement.js";
+import {
+  constrainMotion,
+  flightWalls,
+} from "../../../../packages/shared/src/movement.js";
 import { maps, collisionRects } from "../../../../packages/shared/src/maps.js";
 import type { World } from "../../../../packages/shared/src/gameTypes.js";
 export class Interpolation {
@@ -96,7 +99,19 @@ export class Interpolation {
         p,
         delta,
         maps[scene],
-        collisionRects(scene, a.world.puzzles, a.world.pushableOffsets),
+        flightWalls(
+          collisionRects(
+            scene,
+            a.world.puzzles,
+            a.world.pushableOffsets,
+            a.world.bridgePuzzle,
+            a.world.players,
+            a.world.serverTick,
+            (p as import("../../../../packages/shared/src/gameTypes.js").Player)
+              .role,
+          ),
+          !!player.flightRemaining,
+        ),
       );
     }
     return { x: p.x + delta.x, y: p.y + delta.y };

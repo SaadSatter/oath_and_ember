@@ -1,3 +1,4 @@
+import { blackHoleAsset, blackHoleKey } from "../animation/blackHole.js";
 import type Phaser from "phaser";
 import { magicPalettes } from "../../../../packages/shared/src/appearance.js";
 import {
@@ -21,6 +22,7 @@ function image(url: string) {
   });
 }
 export function preloadMagic(scene: Phaser.Scene) {
+  scene.load.spritesheet(blackHoleKey, blackHoleAsset.url, blackHoleAsset);
   for (const layer of Object.keys(magicAssets) as MagicLayer[]) {
     const a = magicAssets[layer];
     scene.load.spritesheet(magicKey(layer), a.url, {
@@ -36,7 +38,7 @@ export function ensureMagicTexture(
 ) {
   const canonical = magicKey(layer),
     key = `${canonical}:palette:${palette}`;
-  if (palette === "ember") return canonical;
+  if (palette === "ember" || layer === "baseFireball") return canonical;
   if (scene.textures.exists(key)) return key;
   let requests = pending.get(scene.textures);
   if (!requests) pending.set(scene.textures, (requests = new Set()));

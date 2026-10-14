@@ -1,0 +1,204 @@
+{
+  "sourceVideos": [
+    "docs/puzzles/bridge-that-hates-cooperation/recording/page@35c0fb7a57091e29e08b3bc1539f8f3c.webm",
+    "docs/puzzles/bridge-that-hates-cooperation/recording/page@a13e4cf9d79564553d40ef05d349fc1a.webm"
+  ],
+  "duration": 79.805,
+  "trimTimes": [
+    9.792,
+    7.119
+  ],
+  "fps": 24,
+  "captionedEvents": [
+    {
+      "label": "Shared southern courtyard",
+      "time": 9.868,
+      "tick": 91,
+      "stage": 1,
+      "trapClock": 1.5000000000000013,
+      "slow": false,
+      "sprint": 0,
+      "players": [
+        {
+          "x": 464,
+          "y": 1408
+        },
+        {
+          "x": 514,
+          "y": 1408
+        }
+      ]
+    },
+    {
+      "label": "Stage 1: Coco shoots the moving east-bank target",
+      "time": 22.359,
+      "tick": 464,
+      "stage": 1,
+      "trapClock": 13.933333333333294,
+      "slow": false,
+      "sprint": 0,
+      "players": [
+        {
+          "x": 286.6666666666672,
+          "y": 1243.3333333333353
+        },
+        {
+          "x": 723.3333333333331,
+          "y": 1211.666666666669
+        }
+      ]
+    },
+    {
+      "label": "Stage 1: separate routes opened",
+      "time": 28.236,
+      "tick": 641,
+      "stage": 2,
+      "trapClock": 19.833333333333478,
+      "slow": false,
+      "sprint": 0,
+      "players": [
+        {
+          "x": 286.6666666666672,
+          "y": 1154.6666666666697
+        },
+        {
+          "x": 723.3333333333331,
+          "y": 1199.0000000000025
+        }
+      ]
+    },
+    {
+      "label": "Stage 2: Slow Time and Super Speed",
+      "time": 36.254,
+      "tick": 881,
+      "stage": 2,
+      "trapClock": 24.126666666667123,
+      "slow": true,
+      "sprint": 5.800000000000015,
+      "players": [
+        {
+          "x": 205,
+          "y": 1123.0000000000034
+        },
+        {
+          "x": 723.3333333333331,
+          "y": 1199.0000000000025
+        }
+      ]
+    },
+    {
+      "label": "Stage 2: Coco passes the relay gate",
+      "time": 53.711,
+      "tick": 1361,
+      "stage": 3,
+      "trapClock": 35.833333333334075,
+      "slow": false,
+      "sprint": 0,
+      "players": [
+        {
+          "x": 287.3333333333333,
+          "y": 800.0000000000038
+        },
+        {
+          "x": 666.3333333333328,
+          "y": 781.0000000000031
+        }
+      ]
+    },
+    {
+      "label": "Stage 3: false double plate triggers alarm",
+      "time": 61.693,
+      "tick": 1601,
+      "stage": 3,
+      "trapClock": 43.83333333333362,
+      "slow": false,
+      "sprint": 0,
+      "players": [
+        {
+          "x": 356.9999999999998,
+          "y": 426.33333333333564
+        },
+        {
+          "x": 609.3333333333325,
+          "y": 426.3333333333351
+        }
+      ]
+    },
+    {
+      "label": "Stage 3: let go, then fire at the lock",
+      "time": 67.145,
+      "tick": 1764,
+      "stage": 4,
+      "trapClock": 49.266666666666644,
+      "slow": false,
+      "sprint": 0,
+      "players": [
+        {
+          "x": 356.9999999999998,
+          "y": 527.6666666666688
+        },
+        {
+          "x": 596.6666666666657,
+          "y": 426.3333333333351
+        }
+      ]
+    },
+    {
+      "label": "Coco stays on the east bank; temple entrances open",
+      "time": 67.146,
+      "tick": 1764,
+      "stage": 4,
+      "trapClock": 49.266666666666644,
+      "slow": false,
+      "sprint": 0,
+      "players": [
+        {
+          "x": 356.9999999999998,
+          "y": 527.6666666666688
+        },
+        {
+          "x": 596.6666666666657,
+          "y": 426.3333333333351
+        }
+      ]
+    },
+    {
+      "label": "Final: simultaneous opposite switches",
+      "time": 81.325,
+      "tick": 2188,
+      "stage": 4,
+      "trapClock": 63.399999999999174,
+      "slow": false,
+      "sprint": 0,
+      "players": [
+        {
+          "x": 287.3333333333333,
+          "y": 204.66666666666939
+        },
+        {
+          "x": 678.9999999999995,
+          "y": 211.00000000000216
+        }
+      ]
+    },
+    {
+      "label": "Healthy boundaries: reunited at the temple",
+      "time": 87.273,
+      "tick": 2366,
+      "stage": 4,
+      "trapClock": 69.33333333333218,
+      "slow": false,
+      "sprint": 0,
+      "players": [
+        {
+          "x": 451.9999999999995,
+          "y": 166.66666666666933
+        },
+        {
+          "x": 501.66666666666526,
+          "y": 160.33333333333542
+        }
+      ]
+    }
+  ]
+}

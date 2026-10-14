@@ -1,7 +1,11 @@
+import type { SceneId } from "../../../packages/shared/src/gameTypes.js";
 import { randomInt } from "node:crypto";
 import { GameRoom } from "./GameRoom.js";
 export class RoomManager {
-  constructor(readonly encounter = false) {}
+  constructor(
+    readonly encounter = false,
+    readonly startingScene: SceneId = "MAIN_HOUSE",
+  ) {}
   rooms = new Map<string, GameRoom>();
   create() {
     const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -12,7 +16,7 @@ export class RoomManager {
         () => alphabet[randomInt(alphabet.length)],
       ).join("");
     } while (this.rooms.has(code));
-    const room = new GameRoom(code, this.encounter);
+    const room = new GameRoom(code, this.encounter, this.startingScene);
     this.rooms.set(code, room);
     return room;
   }

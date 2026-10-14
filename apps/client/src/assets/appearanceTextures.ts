@@ -1,3 +1,4 @@
+import { cocoFlightAsset, cocoFlightKey } from "../animation/cocoFlight.js";
 import { siegSprintAsset, siegSprintKey } from "../animation/siegSprint.js";
 import { siegPushAsset, siegPushKey } from "../animation/siegPush.js";
 import { siegBasicKey, siegBasicAsset } from "../animation/siegAttack.js";
@@ -28,21 +29,24 @@ export type AppearanceLayer =
   | "defense"
   | "basic"
   | "push"
-  | "sprint";
+  | "sprint"
+  | "flight";
 const layerKey = (role: Role, layer: AppearanceLayer) =>
-  layer === "sprint"
-    ? siegSprintKey
-    : layer === "push"
-      ? siegPushKey
-      : layer === "basic"
-        ? siegBasicKey
-        : layer === "defense"
-          ? defenseKey(role)
-          : layer === "heavy"
-            ? heavyKey
-            : layer === "base"
-              ? textureKey(role)
-              : combatTextureKey(role, layer === "effects");
+  layer === "flight"
+    ? cocoFlightKey
+    : layer === "sprint"
+      ? siegSprintKey
+      : layer === "push"
+        ? siegPushKey
+        : layer === "basic"
+          ? siegBasicKey
+          : layer === "defense"
+            ? defenseKey(role)
+            : layer === "heavy"
+              ? heavyKey
+              : layer === "base"
+                ? textureKey(role)
+                : combatTextureKey(role, layer === "effects");
 const cache = new Map<string, HTMLCanvasElement>();
 function image(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -68,39 +72,43 @@ export async function appearanceCanvas(
   if (cache.has(key)) return cache.get(key)!;
   const sourceKey = layerKey(role, layer);
   const asset =
-    layer === "sprint"
-      ? siegSprintAsset
-      : layer === "push"
-        ? siegPushAsset
-        : layer === "basic"
-          ? siegBasicAsset
-          : layer === "defense"
-            ? defenseAsset(role)
-            : layer === "heavy"
-              ? heavyAsset
-              : layer === "base"
-                ? heroAssets[role]
-                : combatAssets[role];
+    layer === "flight"
+      ? cocoFlightAsset
+      : layer === "sprint"
+        ? siegSprintAsset
+        : layer === "push"
+          ? siegPushAsset
+          : layer === "basic"
+            ? siegBasicAsset
+            : layer === "defense"
+              ? defenseAsset(role)
+              : layer === "heavy"
+                ? heavyAsset
+                : layer === "base"
+                  ? heroAssets[role]
+                  : combatAssets[role];
   const url =
     layer === "effects"
       ? "/assets/characters/ember/combat-effects.png"
       : asset.url;
   const maskName =
-    layer === "sprint"
-      ? "sprint-mask"
-      : layer === "push"
-        ? "push-mask"
-        : layer === "basic"
-          ? "basic-mask"
-          : layer === "defense"
-            ? "defense-mask"
-            : layer === "heavy"
-              ? "heavy-mask"
-              : layer === "base"
-                ? "palette-mask"
-                : layer === "combat"
-                  ? "combat-mask"
-                  : "combat-effects-mask";
+    layer === "flight"
+      ? "flight-mask"
+      : layer === "sprint"
+        ? "sprint-mask"
+        : layer === "push"
+          ? "push-mask"
+          : layer === "basic"
+            ? "basic-mask"
+            : layer === "defense"
+              ? "defense-mask"
+              : layer === "heavy"
+                ? "heavy-mask"
+                : layer === "base"
+                  ? "palette-mask"
+                  : layer === "combat"
+                    ? "combat-mask"
+                    : "combat-effects-mask";
   if (!sources.has(sourceKey))
     sources.set(
       sourceKey,
@@ -199,19 +207,21 @@ export function ensureAppearanceTexture(
         const texture = scene.textures.addCanvas(key, canvas);
         if (!texture) return;
         const asset =
-          layer === "sprint"
-            ? siegSprintAsset
-            : layer === "push"
-              ? siegPushAsset
-              : layer === "basic"
-                ? siegBasicAsset
-                : layer === "defense"
-                  ? defenseAsset(role)
-                  : layer === "heavy"
-                    ? heavyAsset
-                    : layer === "base"
-                      ? heroAssets[role]
-                      : combatAssets[role];
+          layer === "flight"
+            ? cocoFlightAsset
+            : layer === "sprint"
+              ? siegSprintAsset
+              : layer === "push"
+                ? siegPushAsset
+                : layer === "basic"
+                  ? siegBasicAsset
+                  : layer === "defense"
+                    ? defenseAsset(role)
+                    : layer === "heavy"
+                      ? heavyAsset
+                      : layer === "base"
+                        ? heroAssets[role]
+                        : combatAssets[role];
         const columns = Math.floor(canvas.width / asset.frameWidth);
         const count = columns * Math.floor(canvas.height / asset.frameHeight);
         for (let n = 0; n < count; n++)

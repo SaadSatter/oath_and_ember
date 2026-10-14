@@ -1,3 +1,4 @@
+import { cocoFlightAsset, cocoFlightKey } from "../animation/cocoFlight.js";
 import { siegSprintAsset, siegSprintKey } from "../animation/siegSprint.js";
 import { siegPushAsset, siegPushKey } from "../animation/siegPush.js";
 import {
@@ -24,6 +25,7 @@ import {
   animationSets,
 } from "../animation/definitions.js";
 export function preloadHeroes(scene: Phaser.Scene) {
+  scene.load.spritesheet(cocoFlightKey, cocoFlightAsset.url, cocoFlightAsset);
   scene.load.spritesheet(siegSprintKey, siegSprintAsset.url, siegSprintAsset);
   scene.load.spritesheet(siegPushKey, siegPushAsset.url, siegPushAsset);
   scene.load.spritesheet(siegBasicKey, siegBasicAsset.url, siegBasicAsset);

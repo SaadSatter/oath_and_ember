@@ -1,0 +1,16 @@
+{
+  "errors": [],
+  "cocoFlight": 0,
+  "siegSprint": 6.36666666666668,
+  "keys": {
+    "Sieg": [
+      "1 Push",
+      "2 Super Speed"
+    ],
+    "Coco": [
+      "1 Slow Time",
+      "2 Flight",
+      "3 Black Hole"
+    ]
+  }
+}

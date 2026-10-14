@@ -97,6 +97,17 @@ export function move(
   }
 }
 
+export function flightWalls(walls: Rect[], flying: boolean): Rect[] {
+  return flying ? walls.filter((r) => !r.terrain) : walls;
+}
+function overlaps(p: { x: number; y: number }, r: Rect) {
+  return (
+    p.x + HALF > r.x &&
+    p.x - HALF < r.x + r.w &&
+    p.y + HALF > r.y &&
+    p.y - HALF < r.y + r.h
+  );
+}
 // Movement abilities are part of the same deterministic step on both peers.
 // Combat cooldowns remain server-owned; only the movement cooldown is predicted.
 export function stepMovement(
@@ -107,6 +118,49 @@ export function stepMovement(
   dt: number,
   slowTime = false,
 ) {
+  p.flightRemaining = Math.max(0, (p.flightRemaining ?? 0) - dt);
+  if (p.flightRemaining < 1e-9) p.flightRemaining = 0;
+  p.cooldowns.flight = Math.max(0, (p.cooldowns.flight ?? 0) - dt);
+  if (
+    i.flightHeld &&
+    !p.flightWasHeld &&
+    p.role === "EMBER" &&
+    p.hp > 0 &&
+    p.unlockedSkills.includes("flight") &&
+    !p.cooldowns.flight
+  ) {
+    p.flightRemaining = 20;
+    p.cooldowns.flight = 27;
+    p.flightGround = { x: p.x, y: p.y };
+  }
+  p.flightWasHeld = !!i.flightHeld;
+  if (p.hp <= 0) p.flightRemaining = 0;
+  const overGap = [...walls.filter((r) => r.terrain), ...(map.gaps ?? [])].some(
+    (r) => overlaps(p, r),
+  );
+  if (!p.flightRemaining && overGap && p.flightGround) {
+    const ground = p.flightGround;
+    const landing = [
+      ground,
+      ...[32, -32, 64, -64].map((dx) => ({ x: ground.x + dx, y: ground.y })),
+      map.spawn,
+    ].find(
+      (point) =>
+        point.x >= HALF &&
+        point.x <= map.width - HALF &&
+        point.y >= HALF &&
+        point.y <= map.height - HALF &&
+        !walls.some((r) => overlaps(point, r)) &&
+        !(map.gaps ?? []).some((r) => overlaps(point, r)),
+    );
+    if (landing) Object.assign(p, landing, { vx: 0, vy: 0 });
+    p.movementEpoch = (p.movementEpoch ?? 0) + 1;
+    delete p.flightGround;
+  }
+  const movementMap = p.flightRemaining
+    ? { ...map, mode: "TOP_DOWN" as const }
+    : map;
+  const movementWalls = flightWalls(walls, !!p.flightRemaining);
   const remaining = (p.sprintRemaining ?? 0) - dt;
   p.sprintRemaining = remaining < 1e-9 ? 0 : remaining;
   p.cooldowns.sprint = Math.max(0, (p.cooldowns.sprint ?? 0) - dt);
@@ -126,8 +180,8 @@ export function stepMovement(
   move(
     p,
     i,
-    map,
-    walls,
+    movementMap,
+    movementWalls,
     dt,
     slowTime
       ? (p.sprintRemaining ?? 0) > 0 && p.role === "OATH"
@@ -151,12 +205,18 @@ export function stepMovement(
     move(
       p,
       { ...i, moveX: Math.cos(p.facing), moveY: Math.sin(p.facing) },
-      map,
-      walls,
+      movementMap,
+      movementWalls,
       dt * 3,
       slowTime ? SLOW_TIME_SCALE : 1,
     );
     p.movementIntent = intent;
     p.cooldowns.dash = 2;
   }
+  if (
+    p.flightRemaining &&
+    !walls.some((r) => overlaps(p, r)) &&
+    !(map.gaps ?? []).some((r) => overlaps(p, r))
+  )
+    p.flightGround = { x: p.x, y: p.y };
 }

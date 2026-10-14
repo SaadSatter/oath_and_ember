@@ -1,0 +1,70 @@
+{
+  "authorization": "User supplied four directional winged flight GIFs for Coco.",
+  "operations": [
+    "Green matte removed; original pixels otherwise retained",
+    "Nearest-neighbor scale 0.9; shared directional ground anchor (64,96)",
+    "Purple outfit palette mask"
+  ],
+  "sources": [
+    {
+      "source": "Images/Sprites/Coco/Same_mage_but_with_d_custom-Flex_wings_outward_to_lift_off_south.gif",
+      "sha256": "107bedf820e524fe24d2043666c8b9db7fcc200fe3b10287f79dca1b08595a0b",
+      "durations": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ]
+    },
+    {
+      "source": "Images/Sprites/Coco/Same_mage_but_with_d_custom-Flex_wings_outward_to_lift_off_north.gif",
+      "sha256": "de969aa9fca4240eef4092eb42c7837b0bd424efbd95c9d72be088fd4e92acf1",
+      "durations": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ]
+    },
+    {
+      "source": "Images/Sprites/Coco/Same_mage_but_with_d_custom-Flex_wings_outward_to_lift_off_east.gif",
+      "sha256": "22d82ffca4a309ef5452f2c3852508e64c62d11247f27d8aaf087e12a3b73706",
+      "durations": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ]
+    },
+    {
+      "source": "Images/Sprites/Coco/Same_mage_but_with_d_custom-Flex_wings_outward_to_lift_off_west.gif",
+      "sha256": "255dcafd16b9e0387587736afde85da606bc0d2e7091874b980af9effc9f374a",
+      "durations": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ]
+    }
+  ]
+}

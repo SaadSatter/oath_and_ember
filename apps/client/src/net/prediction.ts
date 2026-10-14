@@ -44,7 +44,15 @@ export class Prediction {
         this.player,
         input,
         maps[scene],
-        collisionRects(scene, w.puzzles, w.pushableOffsets),
+        collisionRects(
+          scene,
+          w.puzzles,
+          w.pushableOffsets,
+          w.bridgePuzzle,
+          w.players,
+          w.serverTick,
+          this.player.role,
+        ),
         DT,
         !!w.slowTime && this.tick < w.slowTime.endsTick,
       );

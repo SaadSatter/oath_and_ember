@@ -1,4 +1,13 @@
+import baseFireball from "./baseFireballFrames.json" with { type: "json" };
 export const magicAssets = {
+  baseFireball: {
+    url: "/assets/effects/coco/base-fireball.png",
+    width: baseFireball.frameWidth,
+    height: baseFireball.frameHeight,
+    count: baseFireball.durations.length,
+    fps: 1000 / 130,
+    loop: true,
+  },
   fireball: {
     url: "/assets/effects/coco/fireball.png",
     width: 48,
@@ -48,3 +57,20 @@ export const impactFrame = (elapsedMs: number) =>
 export const fireballFrame = (level: number, elapsedMs: number) =>
   (Math.max(1, Math.min(4, level)) - 1) * 9 +
   (Math.floor(Math.max(0, elapsedMs) / 130) % 9);
+
+export function baseFireballFrame(elapsedMs: number) {
+  let age =
+    Math.max(0, elapsedMs) %
+    baseFireball.durations.slice(0, 7).reduce((sum, n) => sum + n, 0);
+  for (let i = 0; i < 7; i++) {
+    if (age < baseFireball.durations[i]) return i;
+    age -= baseFireball.durations[i];
+  }
+  return 0;
+}
+
+export const baseFireballImpactDuration = baseFireball.durations
+  .slice(7)
+  .reduce((sum, n) => sum + n, 0);
+export const baseFireballImpactFrame = (elapsed: number) =>
+  7 + Math.min(8, Math.floor(Math.max(0, elapsed) / 130));

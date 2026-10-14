@@ -1,3 +1,9 @@
+import {
+  bridgeFixedWalls,
+  bridgeDynamicWalls,
+  bridgeRoleWalls,
+  BRIDGE_SIZE,
+} from "./bridgePuzzle.js";
 import { pushableDefinitions, pushableRect } from "./pushables.js";
 import type { World } from "./gameTypes.js";
 import { interiorElements } from "./mapElements.js";
@@ -8,8 +14,18 @@ export const postTownRoute = {
   TRANSITION_TRAIL: { name: "Transition trail", next: "GRASSLANDS" },
   GRASSLANDS: { name: "Grasslands", next: "PUZZLE_GLADE" },
   PUZZLE_GLADE: { name: "Puzzle glade", next: "MONSTER_CLEARING" },
-  MONSTER_CLEARING: { name: "Monster clearing", next: "FOREST_RUINS" },
+  MONSTER_CLEARING: { name: "Monster clearing", next: "BRIDGE_RUINS" },
 } as const;
+export const previousMap: Partial<Record<SceneId, SceneId>> = {
+  TRANSITION_TRAIL: "MAIN_HOUSE",
+  GRASSLANDS: "TRANSITION_TRAIL",
+  PUZZLE_GLADE: "GRASSLANDS",
+  MONSTER_CLEARING: "PUZZLE_GLADE",
+  BRIDGE_RUINS: "MONSTER_CLEARING",
+  FOREST_RUINS: "BRIDGE_RUINS",
+  AIRSHIP: "FOREST_RUINS",
+  AIRSHIP_BOSS: "AIRSHIP",
+};
 export type PostTownScene = keyof typeof postTownRoute;
 export function isPostTownScene(id: SceneId): id is PostTownScene {
   return Object.hasOwn(postTownRoute, id);
@@ -22,6 +38,7 @@ export interface MapDefinition {
   walls: Rect[];
   /** Presentation framing only; never used by movement. */
   cameraBounds?: Rect;
+  gaps?: Rect[];
   /** Server-reviewed interaction area, independent of doorway artwork. */
   doorInteractionBounds?: Rect;
   spawn: { x: number; y: number };
@@ -52,6 +69,14 @@ function postTownMap(
   };
 }
 export const maps: Record<SceneId, MapDefinition> = {
+  BRIDGE_RUINS: {
+    id: "BRIDGE_RUINS",
+    mode: "TOP_DOWN",
+    ...BRIDGE_SIZE,
+    spawn: { x: 464, y: 1408 },
+    walls: bridgeFixedWalls,
+    points: { exit: { x: 480, y: 144 } },
+  },
   TRANSITION_TRAIL: postTownMap(
     "TRANSITION_TRAIL",
     { x: 100, y: 675 },
@@ -133,6 +158,7 @@ export const maps: Record<SceneId, MapDefinition> = {
   },
   AIRSHIP: {
     id: "AIRSHIP",
+    gaps: [{ x: 650, y: 610, w: 110, h: 140, terrain: "canyon" }],
     mode: "PLATFORMER",
     width: 1800,
     height: 750,
@@ -165,12 +191,22 @@ export const maps: Record<SceneId, MapDefinition> = {
     points: { anchor: { x: 820, y: 655 }, boss: { x: 970, y: 650 } },
   },
 };
+// Return entrances are explicit shared interaction points, never client destinations.
+for (const scene of Object.keys(previousMap) as SceneId[])
+  maps[scene].points.back = { ...maps[scene].spawn };
 export function collisionRects(
   scene: SceneId,
   puzzles: Record<string, { complete: boolean }>,
   offsets?: World["pushableOffsets"],
+  bridge?: World["bridgePuzzle"],
+  players: World["players"] = {},
+  tick = 0,
+  role?: World["players"][string]["role"],
 ): Rect[] {
   return [
+    ...(scene === "BRIDGE_RUINS"
+      ? [...bridgeDynamicWalls(bridge, players, tick), ...bridgeRoleWalls(role)]
+      : []),
     ...maps[scene].walls.map((rect) => {
       const d = pushableDefinitions.find(
         (d) =>
@@ -188,7 +224,7 @@ export function collisionRects(
             ? [{ x: 450, y: 370, w: 35, h: 160 }]
             : []),
           ...(!puzzles.bridge?.complete
-            ? [{ x: 1050, y: 370, w: 35, h: 160 }]
+            ? [{ x: 1050, y: 370, w: 35, h: 160, terrain: "water" as const }]
             : []),
         ]
       : []),

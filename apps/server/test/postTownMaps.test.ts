@@ -22,7 +22,12 @@ function interact(r: GameRoom, atExit: boolean) {
   const p = Object.values(r.state.players)[0];
   Object.assign(
     p,
-    atExit ? maps[r.state.sceneId].points.exit : maps[r.state.sceneId].spawn,
+    atExit
+      ? maps[r.state.sceneId].points.exit
+      : {
+          x: maps[r.state.sceneId].spawn.x + 100,
+          y: maps[r.state.sceneId].spawn.y,
+        },
   );
   const s = r.sessions.get(p.id)!;
   s.input = { ...neutral(s.input.seq + 1), interactHeld: true };
@@ -59,7 +64,9 @@ it("takes both players through all four exports with server-validated exits and 
       expect(r.sessions.get(p.id)!.input.interactHeld).toBe(false);
     });
   }
-  expect(Object.keys(r.state.enemies)).toHaveLength(4);
+  expect(r.state.sceneId).toBe("BRIDGE_RUINS");
+  expect(Object.keys(r.state.enemies)).toHaveLength(0);
+  expect(r.state.bridgePuzzle?.stage).toBe(1);
   expect(r.state.puzzles.gate.complete).toBe(false);
   expect(r.state.puzzles.bridge.complete).toBe(false);
 });
@@ -147,4 +154,125 @@ it("lets both heroes cross the clearing's southeast grass and blocks the lower-l
     move(p, { ...neutral(), moveX: -1 }, map, walls, 0.5);
     expect(p.x).toBe(301);
   }
+});
+
+it("returns the whole party through every campaign entrance using server-validated intent", () => {
+  const r = room();
+  const route = [
+    "MAIN_HOUSE",
+    "TRANSITION_TRAIL",
+    "GRASSLANDS",
+    "PUZZLE_GLADE",
+    "MONSTER_CLEARING",
+    "BRIDGE_RUINS",
+    "FOREST_RUINS",
+    "AIRSHIP",
+    "AIRSHIP_BOSS",
+  ] as const;
+  for (const scene of route.slice(1)) r.transition(scene);
+  const points = Object.values(r.state.players).map((p) => p.skillPoints);
+  for (let i = route.length - 1; i > 0; i--) {
+    for (let n = 0; n < 31; n++) r.tick();
+    const p = Object.values(r.state.players)[0];
+    Object.assign(p, maps[route[i]].points.back);
+    const seq = r.sessions.get(p.id)!.input.seq + 1;
+    r.receiveInput(p.id, { ...neutral(seq), interactHeld: true });
+    r.tick();
+    expect(r.state.sceneId).toBe(route[i - 1]);
+    for (const player of Object.values(r.state.players)) {
+      expect(player.sceneId).toBe(route[i - 1]);
+      const walls = collisionRects(
+        route[i - 1],
+        r.state.puzzles,
+        r.state.pushableOffsets,
+        r.state.bridgePuzzle,
+        r.state.players,
+        r.state.serverTick,
+        player.role,
+      );
+      expect(
+        walls.some(
+          (rect) =>
+            player.x + 13 > rect.x &&
+            player.x - 13 < rect.x + rect.w &&
+            player.y + 13 > rect.y &&
+            player.y - 13 < rect.y + rect.h,
+        ),
+      ).toBe(false);
+      expect(r.sessions.get(player.id)!.input.interactHeld).toBe(false);
+    }
+  }
+  expect(Object.values(r.state.players).map((p) => p.skillPoints)).toEqual(
+    points,
+  );
+});
+
+it("preserves the bridge boulder, completed mechanisms and enemy progress across return visits", () => {
+  const r = room();
+  r.transition("BRIDGE_RUINS");
+  const bridge = r.state.bridgePuzzle!;
+  bridge.firstGateOpen =
+    bridge.goldSwitchOpen =
+    bridge.finalTargetHit =
+    bridge.complete =
+      true;
+  bridge.boulder.y = 736;
+  bridge.spikeProgress = 3;
+  r.transition("FOREST_RUINS");
+  const enemy = Object.values(r.state.enemies)[0];
+  enemy.hp = 0;
+  const points = Object.values(r.state.players).map((p) => p.skillPoints);
+  for (let n = 0; n < 31; n++) r.tick();
+  const p = Object.values(r.state.players)[0];
+  Object.assign(p, maps.FOREST_RUINS.points.back);
+  r.receiveInput(p.id, { ...neutral(1), interactHeld: true });
+  r.tick();
+  expect(r.state.sceneId).toBe("BRIDGE_RUINS");
+  expect(r.state.bridgePuzzle).toBe(bridge);
+  expect(bridge.complete && bridge.finalTargetHit && bridge.firstGateOpen).toBe(
+    true,
+  );
+  expect(bridge.boulder.y).toBe(736);
+  expect(
+    Math.hypot(
+      p.x - maps.BRIDGE_RUINS.points.exit.x,
+      p.y - maps.BRIDGE_RUINS.points.exit.y,
+    ),
+  ).toBeGreaterThan(50);
+  r.transition("FOREST_RUINS");
+  expect(r.state.enemies[enemy.id]?.hp ?? 0).toBe(0);
+  expect(Object.values(r.state.players).map((p) => p.skillPoints)).toEqual(
+    points,
+  );
+});
+
+it("rejects return intent away from the entrance and prevents held-key transition loops", () => {
+  const r = room();
+  r.transition("GRASSLANDS");
+  const p = Object.values(r.state.players)[0];
+  for (let n = 0; n < 31; n++) r.tick();
+  Object.assign(p, {
+    x: maps.GRASSLANDS.spawn.x + 100,
+    y: maps.GRASSLANDS.spawn.y,
+  });
+  r.receiveInput(p.id, { ...neutral(1), interactHeld: true });
+  r.tick();
+  expect(r.state.sceneId).toBe("GRASSLANDS");
+  r.receiveInput(p.id, neutral(2));
+  r.tick();
+  Object.assign(p, maps.GRASSLANDS.points.back);
+  r.receiveInput(p.id, { ...neutral(3), interactHeld: true });
+  r.tick();
+  expect(r.state.sceneId).toBe("TRANSITION_TRAIL");
+  Object.assign(p, maps.TRANSITION_TRAIL.points.back);
+  for (let seq = 4; seq < 45; seq++) {
+    r.receiveInput(p.id, { ...neutral(seq), interactHeld: true });
+    r.tick();
+  }
+  expect(r.state.sceneId).toBe("TRANSITION_TRAIL");
+  r.receiveInput(p.id, neutral(45));
+  r.tick();
+  r.receiveInput(p.id, { ...neutral(46), interactHeld: true });
+  r.tick();
+  expect(r.state.sceneId).toBe("MAIN_HOUSE");
 });

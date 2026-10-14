@@ -52,23 +52,34 @@ describe("room invariants", () => {
     expect(a.unlockedSkills).toContain("guard");
     expect(b.unlockedSkills).toContain("ward");
     r.unlock(a.id, "guard");
-    expect(a.skillPoints).toBe(1);
+    expect(a.skillPoints).toBe(0);
+    expect(() => r.unlock(a.id, "heavy")).toThrow("points");
+    a.skillPoints = 1;
     r.unlock(a.id, "heavy");
     expect(a.skillPoints).toBe(0);
     expect(() => r.unlock(a.id, "heavy")).toThrow("Already unlocked");
-    expect(() => r.unlock(a.id, "dash")).toThrow("points");
+    expect(() => r.unlock(a.id, "dash")).not.toThrow();
   });
 });
-it("buys Super Speed directly for one point without Heavy Break", () => {
+it("starts both heroes with all icon abilities and no skill points", () => {
   const { r, a, b } = pair();
-  expect(a.skillPoints).toBe(1);
+  expect(a.skillPoints).toBe(0);
+  expect(b.skillPoints).toBe(0);
+  expect(a.unlockedSkills).toEqual(["guard", "dash"]);
+  expect(b.unlockedSkills).toEqual([
+    "ward",
+    "slow_time",
+    "flight",
+    "black_hole",
+  ]);
   expect(a.unlockedSkills).not.toContain("heavy");
+  expect(b.unlockedSkills).not.toContain("fireball_2");
   expect(() => r.unlock(b.id, "dash")).toThrow();
   r.unlock(a.id, "dash");
   expect(a.skillPoints).toBe(0);
-  expect(a.unlockedSkills).toContain("dash");
-  expect(a.unlockedSkills).not.toContain("heavy");
-  expect(() => r.unlock(a.id, "dash")).toThrow("Already unlocked");
+  r.reset();
+  expect(a.unlockedSkills).toEqual(["guard", "dash"]);
+  expect(b.unlockedSkills).toContain("black_hole");
 });
 describe("shared movement", () => {
   it("normalizes diagonals and blocks walls", () => {
@@ -121,8 +132,9 @@ describe("shared movement", () => {
 describe("authoritative gameplay", () => {
   it("requires both gate contributions and preserves completion", () => {
     const { r, a, b } = pair();
-    a.x = 410;
+    a.x = 370;
     a.y = 400;
+    a.facing = 0;
     input(r, a.id, { primaryHeld: true });
     r.tick();
     expect(r.state.puzzles.gate.complete).toBe(false);
@@ -132,7 +144,7 @@ describe("authoritative gameplay", () => {
     for (let n = 0; n < 7; n++) r.tick();
     expect(r.state.puzzles.gate.complete).toBe(true);
     r.tick();
-    expect(a.skillPoints).toBe(2);
+    expect(a.skillPoints).toBe(0);
   });
   it("enforces attack cooldown and expires projectiles", () => {
     const { r, a, b } = pair();
@@ -656,7 +668,12 @@ it("resolves basic sword contact once, at server-owned positions, then stops dam
     a.y = 450;
     a.facing = facing;
     const e = (r.state.enemies.target = {
-      ...spawnEnemy("target", "mossling", 610, 450),
+      ...spawnEnemy(
+        "target",
+        "mossling",
+        550 + Math.cos(facing) * 60,
+        450 + Math.sin(facing) * 60,
+      ),
       hp: 100,
       cooldown: 999,
       nextAttackTick: 999999,
@@ -700,5 +717,54 @@ it("cancels delayed contact after hurt/scene changes and rejects targets that le
     if (cancel === "range") e.x = 1100;
     for (let n = 0; n < 8; n++) r.tick();
     expect(e.hp).toBe(100);
+  }
+});
+
+it("basic and heavy sword swings damage only the captured forward arc in all four directions", () => {
+  for (const facing of [0, Math.PI, Math.PI / 2, -Math.PI / 2]) {
+    for (const heavy of [false, true]) {
+      const { r, a, b } = pair();
+      Object.assign(a, { x: 700, y: 700, facing });
+      Object.assign(b, { x: 120, y: 450 });
+      if (heavy) a.unlockedSkills.push("heavy");
+      r.state.enemies = {};
+      for (const [id, offset] of [
+        ["front", 0],
+        ["forward-diagonal", Math.PI / 4],
+        ["left-side", Math.PI / 2],
+        ["right-side", -Math.PI / 2],
+        ["behind", Math.PI],
+      ] as const) {
+        r.state.enemies[id] = {
+          ...spawnEnemy(
+            id,
+            "mossling",
+            a.x + Math.cos(facing + offset) * 65,
+            a.y + Math.sin(facing + offset) * 65,
+          ),
+          hp: 100,
+          cooldown: 999,
+          nextAttackTick: 999999,
+        };
+      }
+      input(r, a.id, { primaryHeld: true });
+      r.tick();
+      // Turning after the swing/charge starts cannot redirect its damage.
+      a.facing = facing + Math.PI;
+      if (heavy) for (let n = 0; n < 14; n++) r.tick();
+      input(r, a.id, {});
+      for (let n = 0; n < 8; n++) r.tick();
+      expect(a.combat?.facing).toBe(facing);
+      for (const id of ["front", "forward-diagonal"])
+        expect(
+          r.state.enemies[id].hp,
+          `${heavy ? "heavy" : "basic"} facing ${facing} ${id}`,
+        ).toBe(heavy ? 60 : 75);
+      for (const id of ["left-side", "right-side", "behind"])
+        expect(
+          r.state.enemies[id].hp,
+          `${heavy ? "heavy" : "basic"} facing ${facing} ${id}`,
+        ).toBe(100);
+    }
   }
 });

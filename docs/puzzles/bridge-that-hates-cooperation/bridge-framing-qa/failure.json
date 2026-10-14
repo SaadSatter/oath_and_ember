@@ -1,0 +1,63 @@
+{
+  "error": "Error: page.evaluate: Target page, context or browser has been closed",
+  "state": {
+    "stage": 1,
+    "boulder": {
+      "id": "bridge-boulder",
+      "x": 288,
+      "y": 1408
+    },
+    "targetHit": false,
+    "firstGateOpen": false,
+    "goldSwitchOpen": false,
+    "finalTargetHit": false,
+    "trapClock": 27.6666666666672,
+    "spikeProgress": 0,
+    "pendingSpike": false,
+    "bridgeClosedUntil": [
+      0,
+      0
+    ],
+    "holdTicks": 0,
+    "complete": false,
+    "failures": 0,
+    "message": "Sieg: push the boulder onto plate A. Coco: shoot the moving target's front weak point."
+  },
+  "players": [
+    {
+      "x": 325,
+      "y": 1408,
+      "movement": {
+        "targetTick": 876,
+        "movementEpoch": 1,
+        "seq": 948,
+        "moveX": 0,
+        "moveY": 0,
+        "jumpHeld": false,
+        "primaryHeld": false,
+        "secondaryHeld": false,
+        "sprintHeld": false,
+        "slowTimeHeld": false,
+        "interactHeld": false
+      }
+    },
+    {
+      "x": 729.3333333333346,
+      "y": 1408,
+      "movement": {
+        "targetTick": 876,
+        "movementEpoch": 1,
+        "seq": 836,
+        "moveX": 0,
+        "moveY": 0,
+        "jumpHeld": false,
+        "primaryHeld": false,
+        "secondaryHeld": false,
+        "sprintHeld": false,
+        "slowTimeHeld": false,
+        "interactHeld": false
+      }
+    }
+  ],
+  "errors": []
+}

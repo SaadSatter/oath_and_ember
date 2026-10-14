@@ -1,6 +1,17 @@
+import {
+  bridgePoints,
+  bridgeRects,
+} from "../../../packages/shared/src/bridgePuzzle.js";
+import {
+  BridgePuzzleView,
+  preloadBridgePuzzle,
+} from "./environment/BridgePuzzleView.js";
 import { SLOW_TIME_SCALE } from "../../../packages/shared/src/constants.js";
 import { TemporalView, preloadTemporal } from "./entities/TemporalView.js";
-import { constrainMotion } from "../../../packages/shared/src/movement.js";
+import {
+  constrainMotion,
+  flightWalls,
+} from "../../../packages/shared/src/movement.js";
 import {
   EnvironmentView,
   preloadEnvironment,
@@ -26,7 +37,6 @@ import {
   isPostTownScene,
   postTownRoute,
 } from "../../../packages/shared/src/maps.js";
-import { skills } from "../../../packages/shared/src/abilities.js";
 import { heroNames } from "./assets/heroNames.js";
 import { speedTimer } from "./ui/speedTimer.js";
 import { neutral } from "../../../packages/shared/src/gameTypes.js";
@@ -34,8 +44,7 @@ const net = new NetworkClient(),
   panel = document.querySelector<HTMLDivElement>("#panel")!,
   hud = document.querySelector<HTMLDivElement>("#hud")!,
   notice = document.querySelector<HTMLDivElement>("#notice")!;
-let skillOpen = false,
-  debug = false,
+let debug = false,
   uiKey = "",
   keys = new Set<string>();
 let characterRendering: CharacterRendering =
@@ -60,18 +69,26 @@ async function request(e: Parameters<typeof net.request>[0], p: unknown) {
 function renderUI() {
   const w = net.world,
     me = w?.players[net.session?.playerId || ""];
-  document.body.dataset.playing = String(w?.phase === "PLAYING" && !skillOpen);
+  document.body.dataset.playing = String(w?.phase === "PLAYING");
   const abilityBar =
     document.querySelector<HTMLDivElement>("#special-abilities")!;
-  abilityBar.hidden = w?.phase !== "PLAYING" || skillOpen || !me?.role;
+  abilityBar.hidden = w?.phase !== "PLAYING" || !me?.role;
   for (const button of abilityBar.querySelectorAll<HTMLButtonElement>(
     "button",
   )) {
     const ability = button.dataset.ability;
-    button.hidden =
-      ability === "time-stop" ? me?.role !== "EMBER" : me?.role !== "OATH";
+    button.hidden = ["time-stop", "flight", "black-hole"].includes(
+      ability || "",
+    )
+      ? me?.role !== "EMBER"
+      : me?.role !== "OATH";
     const speed = ability === "super-speed";
-    if (speed || ability === "time-stop") {
+    if (
+      speed ||
+      ability === "time-stop" ||
+      ability === "flight" ||
+      ability === "black-hole"
+    ) {
       const active =
         ability === "time-stop" &&
         w?.slowTime &&
@@ -79,10 +96,22 @@ function renderUI() {
         w.slowTime.owner === me.id
           ? Math.max(0, (w.slowTime.endsTick - w.serverTick) / 30)
           : 0;
-      const timer = speed
-        ? speedTimer(me?.sprintRemaining, me?.cooldowns.sprint)
-        : speedTimer(active, me?.cooldowns.slow_time, 10, 10);
-      const label = speed ? "Super Speed" : "Slow Time";
+      const timer =
+        ability === "black-hole"
+          ? speedTimer(0, me?.cooldowns.black_hole, 4, 10)
+          : ability === "flight"
+            ? speedTimer(me?.flightRemaining, me?.cooldowns.flight, 20, 7)
+            : speed
+              ? speedTimer(me?.sprintRemaining, me?.cooldowns.sprint)
+              : speedTimer(active, me?.cooldowns.slow_time, 10, 10);
+      const label =
+        ability === "black-hole"
+          ? "Black Hole"
+          : ability === "flight"
+            ? "Flight"
+            : speed
+              ? "Super Speed"
+              : "Slow Time";
       button.dataset.timerPhase = timer.phase;
       button.style.setProperty("--speed-angle", `${timer.angle}deg`);
       button.setAttribute(
@@ -93,6 +122,14 @@ function renderUI() {
       );
     }
     button.disabled =
+      (ability === "black-hole" &&
+        !!me &&
+        me.unlockedSkills.includes("black_hole") &&
+        (me.cooldowns.black_hole ?? 0) > 0) ||
+      (ability === "flight" &&
+        !!me &&
+        me.unlockedSkills.includes("flight") &&
+        (me.cooldowns.flight ?? 0) > 0) ||
       !net.socket.connected ||
       !me?.connected ||
       !me.hp ||
@@ -104,10 +141,18 @@ function renderUI() {
         ? (me.cooldowns.slow_time ?? 0) > 0
           ? `Slow Time · recharging (${Math.ceil(me.cooldowns.slow_time)}s)`
           : "Slow Time · 10 seconds (T)"
-        : "Slow Time · unlock for 1 point in Skills";
+        : "Slow Time";
+    if (ability === "black-hole")
+      button.title = !me?.unlockedSkills.includes("black_hole")
+        ? "Black Hole"
+        : "Black Hole · 6-tile shot, 3-tile pull radius (3)";
+    if (ability === "flight")
+      button.title = !me?.unlockedSkills.includes("flight")
+        ? "Flight"
+        : "Flight · 20 seconds (2), then 7-second cooldown";
     if (speed)
       button.title = !me?.unlockedSkills.includes("dash")
-        ? "Super Speed · click to unlock in Skills"
+        ? "Super Speed"
         : (me.cooldowns.sprint ?? 0) > 0
           ? "Super Speed · recharging"
           : "Super Speed · 2× speed for 10 seconds (Shift)";
@@ -127,7 +172,6 @@ function renderUI() {
         p.skillPoints,
       ]),
     net.socket.connected,
-    skillOpen,
   ]);
   if (k === uiKey) return;
   uiKey = k;
@@ -160,7 +204,6 @@ function renderUI() {
       try {
         await net.leaveRoom();
         keys.clear();
-        skillOpen = false;
         renderUI();
       } catch (err) {
         leave.disabled = !net.socket.connected;
@@ -204,52 +247,11 @@ function renderUI() {
       '<div class="eyebrow">THE STORM BREAKS</div><h1>Victory</h1><p>The airship survives. Your oath holds.</p><button id="again">Play again</button>';
     panel.querySelector<HTMLButtonElement>("#again")!.onclick = () =>
       void request("game:restart", {});
-  } else if (skillOpen) {
-    panel.className = "card skills";
-    panel.innerHTML =
-      "<h2>Your path</h2><p>Spend points earned at cooperative checkpoints.</p>";
-    if (me?.role === "EMBER") {
-      const base = document.createElement("div");
-      base.className = "fireball-base-skill";
-      base.innerHTML =
-        '<img class="fireball-skill-icon" src="/assets/effects/coco/fireball-level-1.png" alt="Fireball 1"> Fireball 1 · Starting spell · 20 damage';
-      panel.append(base);
-    }
-    for (const s of skills.filter((s) => s.role === me?.role)) {
-      const b = document.createElement("button");
-      b.textContent = `${s.name} · ${s.cost === 0 ? "Available by default" : me?.unlockedSkills.includes(s.id) ? "Unlocked" : `${s.cost} point`} — ${s.description}`;
-      if (s.id.startsWith("fireball_")) {
-        const icon = document.createElement("img");
-        icon.src = `/assets/effects/coco/fireball-level-${s.id.split("_")[1]}.png`;
-        icon.alt = s.name;
-        icon.className = "fireball-skill-icon";
-        b.prepend(icon);
-      }
-      b.disabled =
-        s.cost === 0 ||
-        !!me?.unlockedSkills.includes(s.id) ||
-        s.prerequisites.some((id) => !me?.unlockedSkills.includes(id)) ||
-        (me?.skillPoints ?? 0) < s.cost;
-      b.onclick = () => void request("skill:unlock", { nodeId: s.id });
-      panel.append(b);
-    }
-    const b = document.createElement("button");
-    b.textContent = "Close";
-    b.onclick = () => {
-      skillOpen = false;
-      renderUI();
-    };
-    panel.append(b);
   } else {
     panel.className = "hidden";
     panel.innerHTML = "";
   }
-  hud.innerHTML =
-    '<span id="stats"></span><button id="skills">Skills (Tab)</button>';
-  hud.querySelector<HTMLButtonElement>("#skills")!.onclick = () => {
-    skillOpen = !skillOpen;
-    renderUI();
-  };
+  hud.innerHTML = '<span id="stats"></span>';
 }
 net.onchange = renderUI;
 renderUI();
@@ -260,11 +262,7 @@ window.addEventListener("keydown", (e) => {
       ["Enter", " "].includes(e.key))
   )
     return;
-  if (
-    [" ", "Tab", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(
-      e.key,
-    )
-  )
+  if ([" ", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key))
     e.preventDefault();
   if (!e.repeat && e.key === "F4") {
     e.preventDefault();
@@ -289,14 +287,21 @@ window.addEventListener("keydown", (e) => {
       "k",
       "shift",
       "t",
+      "f",
+      "g",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
       "e",
     ].includes(e.key.toLowerCase())
   )
     submitInput(true);
-  if (!e.repeat && e.key === "Tab") {
-    skillOpen = !skillOpen;
-    renderUI();
-  }
   if (!e.repeat && e.key === "F3") {
     e.preventDefault();
     debug = !debug;
@@ -325,6 +330,17 @@ window.addEventListener("keyup", (e) => {
       "k",
       "shift",
       "t",
+      "f",
+      "g",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
       "e",
     ].includes(e.key.toLowerCase())
   )
@@ -349,21 +365,38 @@ for (const button of document.querySelectorAll<HTMLButtonElement>(
 )) {
   const key =
     button.dataset.ability === "push"
-      ? "e"
+      ? "1"
       : button.dataset.ability === "time-stop"
         ? "t"
-        : "shift";
+        : button.dataset.ability === "black-hole"
+          ? "g"
+          : button.dataset.ability === "flight"
+            ? "f"
+            : "shift";
   const canActivate = () => {
-    if (button.dataset.ability !== "super-speed") return true;
+    const ability = button.dataset.ability;
+    if (!["super-speed", "flight", "black-hole"].includes(ability || ""))
+      return true;
+    const node =
+      ability === "flight"
+        ? "flight"
+        : ability === "black-hole"
+          ? "black_hole"
+          : "dash";
+    const cooldown = ability === "super-speed" ? "sprint" : node;
+    const label =
+      ability === "flight"
+        ? "Flight"
+        : ability === "black-hole"
+          ? "Black Hole"
+          : "Super Speed";
     const me = net.world?.players[net.session?.playerId || ""];
-    if (!me?.unlockedSkills.includes("dash")) {
-      skillOpen = true;
-      renderUI();
-      tell("Buy Super Speed in Skills for 1 point to use this ability.");
+    if (!me?.unlockedSkills.includes(node)) {
+      tell(`${label} is unavailable.`);
       return false;
     }
-    if ((me.cooldowns.sprint ?? 0) > 0) {
-      tell("Super Speed is recharging.");
+    if ((me.cooldowns[cooldown] ?? 0) > 0) {
+      tell(`${label} is recharging.`);
       return false;
     }
     return true;
@@ -435,7 +468,7 @@ function submitInput(reliable = false) {
   const held = (...names: string[]) => names.some((k) => keys.has(k));
   const i = neutral(++net.seq);
   i.targetTick = net.clock.target(w.serverTick, performance.now());
-  if (!skillOpen) {
+  {
     i.moveX = Number(held("d", "arrowright")) - Number(held("a", "arrowleft"));
     i.moveY = Number(held("s", "arrowdown")) - Number(held("w", "arrowup"));
     i.jumpHeld = held(" ", "w", "arrowup");
@@ -443,7 +476,13 @@ function submitInput(reliable = false) {
     i.secondaryHeld = held("k");
     i.sprintHeld = held("shift");
     i.slowTimeHeld = held("t");
+    const role = w.players[net.session.playerId]?.role;
     i.interactHeld = held("e");
+    i.pushHeld = role === "OATH" && held("1");
+    i.sprintHeld ||= role === "OATH" && held("2");
+    i.slowTimeHeld ||= role === "EMBER" && held("1");
+    i.flightHeld = role === "EMBER" && held("2", "f");
+    i.blackHoleHeld = role === "EMBER" && held("3", "g");
   }
   net.prediction.push(i, w, !reliable);
   net.sendInput(i, reliable);
@@ -453,6 +492,7 @@ class Adventure extends Phaser.Scene {
   temporalView!: TemporalView;
   gfx!: Phaser.GameObjects.Graphics;
   environment!: EnvironmentView;
+  bridgeView!: BridgePuzzleView;
   labels: Phaser.GameObjects.Text[] = [];
   sceneKey = "";
   rendered = { x: 0, y: 0 };
@@ -471,6 +511,7 @@ class Adventure extends Phaser.Scene {
     preloadMagic(this);
     preloadEnemies(this);
     preloadEnvironment(this);
+    preloadBridgePuzzle(this);
   }
   clearPlayerViews() {
     for (const view of this.playerViews.values()) view.destroy();
@@ -492,6 +533,10 @@ class Adventure extends Phaser.Scene {
     );
     this.gfx = this.add.graphics();
     this.environment = new EnvironmentView(this);
+    this.bridgeView = new BridgePuzzleView(this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
+      this.bridgeView.clear(),
+    );
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
       this.environment.clear(),
     );
@@ -505,6 +550,7 @@ class Adventure extends Phaser.Scene {
     if (!w || w.phase === "LOBBY") {
       this.gfx.clear();
       this.environment.clear();
+      this.bridgeView.clear();
       this.sceneKey = "";
       this.projectileView.clear();
       this.clearPlayerViews();
@@ -533,6 +579,7 @@ class Adventure extends Phaser.Scene {
       this.rendered = { x: local.x, y: local.y };
     }
     this.environment.updatePushables(w.pushableOffsets);
+    this.bridgeView.update(w, sceneId);
     const err = Math.hypot(
       this.rendered.x - local.x,
       this.rendered.y - local.y,
@@ -548,9 +595,37 @@ class Adventure extends Phaser.Scene {
               y: (local.y - this.rendered.y) * a,
             },
             map,
-            collisionRects(sceneId, w.puzzles, w.pushableOffsets),
+            flightWalls(
+              collisionRects(
+                sceneId,
+                w.puzzles,
+                w.pushableOffsets,
+                w.bridgePuzzle,
+                w.players,
+                w.serverTick,
+                me.role,
+              ),
+              !!local.flightRemaining,
+            ),
           );
-    if (house) {
+    const firingBridge = bridgeRects[1];
+    const frameTarget =
+      sceneId === "BRIDGE_RUINS" &&
+      me.role === "EMBER" &&
+      this.rendered.x >= 448 &&
+      this.rendered.x <= 576 &&
+      this.rendered.y >= firingBridge.y &&
+      this.rendered.y <= firingBridge.y + firingBridge.h;
+    const targetSpan = Math.abs(this.rendered.y - bridgePoints.target.y);
+    this.cameras.main.setZoom(
+      frameTarget ? Math.min(1, this.scale.height / (targetSpan + 160)) : 1,
+    );
+    if (frameTarget) {
+      this.cameras.main.centerOn(
+        480,
+        (this.rendered.y + bridgePoints.target.y) / 2,
+      );
+    } else if (house) {
       const halfX = this.scale.width / (2 * this.cameras.main.zoom),
         halfY = this.scale.height / (2 * this.cameras.main.zoom);
       const bounds = map.cameraBounds ?? {
@@ -575,7 +650,7 @@ class Adventure extends Phaser.Scene {
     } else this.cameras.main.centerOn(this.rendered.x, this.rendered.y);
     const g = this.gfx;
     g.clear();
-    if (!house && !isPostTownScene(sceneId)) {
+    if (!house && !isPostTownScene(sceneId) && sceneId !== "BRIDGE_RUINS") {
       g.fillStyle(sceneId === "FOREST_RUINS" ? 0x152c2b : 0x182338);
       g.fillRect(0, 0, map.width, map.height);
       g.lineStyle(1, 0xffffff, 0.04);
@@ -584,8 +659,20 @@ class Adventure extends Phaser.Scene {
       for (let y = 0; y < map.height; y += 60)
         g.lineBetween(0, y, map.width, y);
     }
-    for (const r of collisionRects(sceneId, w.puzzles, w.pushableOffsets)) {
-      if ((house || isPostTownScene(sceneId)) && !debug) continue;
+    for (const r of collisionRects(
+      sceneId,
+      w.puzzles,
+      w.pushableOffsets,
+      w.bridgePuzzle,
+      w.players,
+      w.serverTick,
+      me.role,
+    )) {
+      if (
+        (house || isPostTownScene(sceneId) || sceneId === "BRIDGE_RUINS") &&
+        !debug
+      )
+        continue;
       g.fillStyle(0x52656c);
       g.fillRoundedRect(r.x, r.y, r.w, r.h, 5);
       g.lineStyle(2, 0x839194);
@@ -632,7 +719,6 @@ class Adventure extends Phaser.Scene {
         interacting:
           p.id === me.id &&
           keys.has("e") &&
-          !skillOpen &&
           net.socket.connected &&
           Object.values(w.players).every((hero) => hero.connected),
       });
@@ -666,6 +752,11 @@ class Adventure extends Phaser.Scene {
     this.projectileView.update(
       {
         ...w,
+        blackHoles: Object.fromEntries(
+          Object.entries(w.blackHoles ?? {}).filter(
+            ([, hole]) => hole.sceneId === sceneId,
+          ),
+        ),
         projectiles: Object.fromEntries(
           Object.entries(w.projectiles).filter(
             ([, q]) => (q.sceneId ?? w.sceneId) === sceneId,
@@ -693,17 +784,22 @@ class Adventure extends Phaser.Scene {
       if (house && id === "door") continue;
       this.labels.push(
         this.add
-          .text(q.x, q.y + 34, id.toUpperCase(), {
-            fontSize: "12px",
-            color: "#ecdfc7",
-            backgroundColor: "#15232b",
-          })
+          .text(
+            q.x,
+            q.y + 34,
+            id === "back" ? "E · RETURN" : id.toUpperCase(),
+            {
+              fontSize: "12px",
+              color: "#ecdfc7",
+              backgroundColor: "#15232b",
+            },
+          )
           .setOrigin(0.5),
       );
     }
     const stats = hud.querySelector("#stats");
     if (stats)
-      stats.textContent = `${me.role ? heroNames[me.role] : "Choosing"} · HP ${Math.round(me.hp)} · ${me.skillPoints} points · Room ${w.roomCode} · ${net.socket.connected ? "Connected" : "Reconnecting"}`;
+      stats.textContent = `${me.role ? heroNames[me.role] : "Choosing"} · HP ${Math.round(me.hp)} · Room ${w.roomCode} · ${net.socket.connected ? "Connected" : "Reconnecting"}`;
     let goal =
       sceneId === "MAIN_HOUSE"
         ? "E by the front door: enter house. Follow the path east; E at the exit for the transition trail."
@@ -712,17 +808,22 @@ class Adventure extends Phaser.Scene {
           : isPostTownScene(sceneId)
             ? sceneId === "MONSTER_CLEARING" &&
               Object.values(w.enemies).some((e) => e.hp > 0)
-              ? "Monster clearing: defeat the enemies, then press E at the east exit."
-              : `${postTownRoute[sceneId].name}: explore the paths; E at the golden exit to continue${sceneId === "PUZZLE_GLADE" ? " toward the monster clearing and ruins puzzles" : ""}.`
+              ? "Defeat the monster wave, then press E at the east exit to enter Puzzle Map 2."
+              : sceneId === "MONSTER_CLEARING"
+                ? "Wave cleared! E at the east exit: Puzzle Map 2 — The Bridge That Hates Cooperation."
+                : `${postTownRoute[sceneId].name}: explore the paths; E at the golden exit to continue${sceneId === "PUZZLE_GLADE" ? " toward the monster clearing and ruins puzzles" : ""}.`
             : sceneId === "FOREST_RUINS"
               ? !w.puzzles.gate.complete
                 ? "Sieg: J at bramble. Coco: hold E at rune."
                 : !w.puzzles.bridge.complete
-                  ? "Sieg: hold E at crate to push to plate. Coco: E at crystal."
+                  ? "Sieg: hold 1 at crate to push to plate. Coco: E at crystal."
                   : "Both gates open. Explore east to board the airship."
               : sceneId === "AIRSHIP"
                 ? `Hold E together: Sieg at crank, Coco at core. Engine ${Math.min(100, Math.round((w.puzzles.engine.progress / 3) * 100))}%`
                 : `Coco: hold E at anchor. Sieg: J near Warden. Shield: ${w.boss?.phase}`;
+    if (sceneId === "BRIDGE_RUINS")
+      goal = `Puzzle Map 2 · Stage ${w.bridgePuzzle?.stage}/4 · ${w.bridgePuzzle?.message}`;
+    if (map.points.back) goal += " · E at RETURN to travel back.";
     if (Object.values(w.players).some((p) => !p.connected))
       goal = "Partner disconnected. Game paused for up to 30 seconds.";
     document.querySelector<HTMLDivElement>("#objective")!.textContent = goal;
@@ -841,6 +942,10 @@ class Adventure extends Phaser.Scene {
   }
 }
 new Phaser.Game({
+  // Two-client video QA caps rendering only; simulation and input stay at 30 Hz.
+  fps: new URLSearchParams(location.search).has("recordingQA")
+    ? { target: 24, limit: 24, forceSetTimeOut: true }
+    : undefined,
   type: Phaser.AUTO,
   parent: "game",
   backgroundColor: "#10202b",

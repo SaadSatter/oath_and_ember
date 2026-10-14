@@ -1,4 +1,10 @@
 import type { Role } from "./gameTypes.js";
+export const startingSkills = (role: Role | null) =>
+  role === "OATH"
+    ? ["guard", "dash"]
+    : role === "EMBER"
+      ? ["ward", "slow_time", "flight", "black_hole"]
+      : [];
 export const skills = [
   {
     id: "guard",
@@ -41,7 +47,7 @@ export const skills = [
 ].map((s, index) => ({
   ...s,
   role: s.role as Role,
-  cost: s.id === "guard" || s.id === "ward" ? 0 : 1,
+  cost: startingSkills(s.role as Role).includes(s.id) ? 0 : 1,
   prerequisites:
     s.id === "dash"
       ? []
@@ -82,6 +88,26 @@ skills.push({
   name: "Slow Time",
   description:
     "T slows movement for everyone for 10 seconds. Super Speed lets Sieg move normally. Recharges in 20 seconds.",
-  cost: 1,
+  cost: 0,
+  prerequisites: [],
+});
+
+skills.push({
+  id: "flight",
+  role: "EMBER",
+  name: "Flight",
+  description:
+    "Fly for 20 seconds over water and canyon gaps. Walls and obstacles still block you. Recharges for 7 seconds after landing.",
+  cost: 0,
+  prerequisites: [],
+});
+
+skills.push({
+  id: "black_hole",
+  role: "EMBER",
+  name: "Black Hole",
+  description:
+    "Shoot up to 6 tiles. On impact or at maximum range, pull enemies within 3 tiles for 4 seconds and deal 30 damage once per enemy. Recharges in 10 seconds. (3)",
+  cost: 0,
   prerequisites: [],
 });
