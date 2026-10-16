@@ -1,3 +1,4 @@
+import { ticksFor } from "../../../packages/shared/src/constants.js";
 import { it, expect } from "vitest";
 import { PlayerPresentation } from "../src/animation/PlayerPresentation.js";
 import {
@@ -17,7 +18,7 @@ const hero = (seq = 1, facing = 0): Player =>
     vy: 0,
     combat: { seq, kind: "sword", facing, startedTick: seq },
   }) as Player;
-it("uses accepted markers and immediately interrupts old-facing clips when turning", () => {
+it("draws accepted attacks in their authoritative aim even when the hero turns mid-swing", () => {
   const machine = new PlayerPresentation(),
     p = Object.freeze(hero());
   expect(
@@ -42,7 +43,10 @@ it("uses accepted markers and immediately interrupts old-facing clips when turni
       5,
       false,
     ),
-  ).toMatchObject({ kind: "locomotion" });
+  ).toMatchObject({ kind: "combat", direction: "right" });
+  expect(
+    machine.update({ ...p, facing: Math.PI }, "TOP_DOWN", 320, 9, false).kind,
+  ).toBe("locomotion");
   expect(machine.update(p, "TOP_DOWN", 796, 25, false).kind).toBe("locomotion");
   expect(machine.update(p, "TOP_DOWN", 850, 27, false).kind).toBe("locomotion");
   expect(p.combat!.facing).toBe(0);
@@ -73,8 +77,10 @@ it("aligns independent local/remote clocks from the same server start tick", () 
   const p = hero(30),
     a = new PlayerPresentation(),
     b = new PlayerPresentation();
-  const left = a.update(p, "TOP_DOWN", 1000, 33, false),
-    right = b.update(p, "TOP_DOWN", 7000, 33, false);
+  // 100ms after the swing started on the server.
+  const tick = 30 + ticksFor(0.1);
+  const left = a.update(p, "TOP_DOWN", 1000, tick, false),
+    right = b.update(p, "TOP_DOWN", 7000, tick, false);
   expect(left).toEqual(right);
   expect(left.kind).toBe("combat");
   if (left.kind === "combat")
@@ -197,7 +203,7 @@ it("plays Coco casts in 200 ms and replaces a cast immediately with the latest a
   });
   expect(m.update(newest, "TOP_DOWN", 535, 17, false).kind).toBe("locomotion");
 });
-it("uses predicted local facing immediately for both heroes without changing authoritative action aim", () => {
+it("keeps the accepted aim for both heroes while predicted facing turns, without changing it", () => {
   for (const role of ["OATH", "EMBER"] as const) {
     const m = new PlayerPresentation(),
       p = {
@@ -210,39 +216,39 @@ it("uses predicted local facing immediately for both heroes without changing aut
       };
     expect(m.update(p, "TOP_DOWN", 0, 1, false).kind).toBe("combat");
     expect(
-      m.update(p, "TOP_DOWN", 80, 3, false, { facing: -Math.PI / 2 }).kind,
-    ).toBe("locomotion");
+      m.update(p, "TOP_DOWN", 80, 3, false, { facing: -Math.PI / 2 }),
+    ).toMatchObject({ kind: "combat", direction: "right" });
     expect(p.facing).toBe(0);
     expect(p.combat.facing).toBe(0);
-    // An old accepted action never restarts when the hero turns back.
-    expect(m.update(p, "TOP_DOWN", 100, 4, false, { facing: 0 }).kind).toBe(
-      "locomotion",
-    );
+    // An old accepted action never restarts once its clip has finished.
+    expect(
+      m.update(p, "TOP_DOWN", 320, 10, false, { facing: 0 }).kind,
+    ).toBe("locomotion");
     expect(
       m.update(
         {
           ...p,
-          combat: { ...p.combat, seq: 5, startedTick: 5, facing: Math.PI },
+          combat: { ...p.combat, seq: 11, startedTick: 11, facing: Math.PI },
         },
         "TOP_DOWN",
-        130,
-        5,
+        330,
+        11,
         false,
         { facing: Math.PI },
       ),
     ).toMatchObject({ kind: "combat", direction: "left", elapsedMs: 0 });
   }
 });
-it("drops queued old-facing attacks on a turn and ignores delayed old-facing markers", () => {
+it("plays delayed accepted attacks in their own aim rather than the current facing", () => {
   const m = new PlayerPresentation();
   m.update(hero(), "TOP_DOWN", 0, 1, false);
   m.update(hero(8), "TOP_DOWN", 234, 8, false);
   expect(
-    m.update({ ...hero(8), facing: Math.PI }, "TOP_DOWN", 250, 9, false).kind,
-  ).toBe("locomotion");
+    m.update({ ...hero(8), facing: Math.PI }, "TOP_DOWN", 250, 9, false),
+  ).toMatchObject({ kind: "combat", direction: "right", action: { seq: 8 } });
   expect(
-    m.update({ ...hero(10), facing: Math.PI }, "TOP_DOWN", 300, 10, false).kind,
-  ).toBe("locomotion");
+    m.update({ ...hero(10), facing: Math.PI }, "TOP_DOWN", 300, 10, false),
+  ).toMatchObject({ kind: "combat", direction: "right", action: { seq: 10 } });
   expect(
     m.update({ ...hero(10), facing: Math.PI }, "TOP_DOWN", 900, 28, false).kind,
   ).toBe("locomotion");

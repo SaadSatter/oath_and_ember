@@ -1,3 +1,4 @@
+import { ticksFor } from "../../../packages/shared/src/constants.js";
 import { expect, it } from "vitest";
 import { GameRoom } from "../src/GameRoom.js";
 import {
@@ -173,7 +174,7 @@ it("returns the whole party through every campaign entrance using server-validat
   for (const scene of route.slice(1)) r.transition(scene);
   const points = Object.values(r.state.players).map((p) => p.skillPoints);
   for (let i = route.length - 1; i > 0; i--) {
-    for (let n = 0; n < 31; n++) r.tick();
+    for (let n = 0; n < ticksFor(1.033); n++) r.tick();
     const p = Object.values(r.state.players)[0];
     Object.assign(p, maps[route[i]].points.back);
     const seq = r.sessions.get(p.id)!.input.seq + 1;
@@ -223,13 +224,13 @@ it("preserves the bridge boulder, completed mechanisms and enemy progress across
   const enemy = Object.values(r.state.enemies)[0];
   enemy.hp = 0;
   const points = Object.values(r.state.players).map((p) => p.skillPoints);
-  for (let n = 0; n < 31; n++) r.tick();
+  for (let n = 0; n < ticksFor(1.033); n++) r.tick();
   const p = Object.values(r.state.players)[0];
   Object.assign(p, maps.FOREST_RUINS.points.back);
   r.receiveInput(p.id, { ...neutral(1), interactHeld: true });
   r.tick();
   expect(r.state.sceneId).toBe("GODDESS_SHRINE");
-  for (let n = 0; n < 31; n++) r.tick();
+  for (let n = 0; n < ticksFor(1.033); n++) r.tick();
   Object.assign(p, maps.GODDESS_SHRINE.points.back);
   r.receiveInput(p.id, { ...neutral(2), interactHeld: true });
   r.tick();
@@ -256,7 +257,7 @@ it("rejects return intent away from the entrance and prevents held-key transitio
   const r = room();
   r.transition("GRASSLANDS");
   const p = Object.values(r.state.players)[0];
-  for (let n = 0; n < 31; n++) r.tick();
+  for (let n = 0; n < ticksFor(1.033); n++) r.tick();
   Object.assign(p, {
     x: maps.GRASSLANDS.spawn.x + 100,
     y: maps.GRASSLANDS.spawn.y,
@@ -271,14 +272,15 @@ it("rejects return intent away from the entrance and prevents held-key transitio
   r.tick();
   expect(r.state.sceneId).toBe("TRANSITION_TRAIL");
   Object.assign(p, maps.TRANSITION_TRAIL.points.back);
-  for (let seq = 4; seq < 45; seq++) {
+  const held = 4 + ticksFor(1.367);
+  for (let seq = 4; seq < held; seq++) {
     r.receiveInput(p.id, { ...neutral(seq), interactHeld: true });
     r.tick();
   }
   expect(r.state.sceneId).toBe("TRANSITION_TRAIL");
-  r.receiveInput(p.id, neutral(45));
+  r.receiveInput(p.id, neutral(held));
   r.tick();
-  r.receiveInput(p.id, { ...neutral(46), interactHeld: true });
+  r.receiveInput(p.id, { ...neutral(held + 1), interactHeld: true });
   r.tick();
   expect(r.state.sceneId).toBe("MAIN_HOUSE");
 });

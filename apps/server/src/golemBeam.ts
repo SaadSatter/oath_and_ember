@@ -18,7 +18,7 @@ import { collisionRects, maps } from "../../../packages/shared/src/maps.js";
 import { lineClear } from "./enemySimulation.js";
 export const GOLEM_BLAST_RADIUS = 64;
 // Return earliest contact so a fast beam cannot hit someone through a nearer wall.
-function contact(
+export function contact(
   a: { x: number; y: number },
   b: { x: number; y: number },
   r: Rect,

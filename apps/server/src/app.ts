@@ -10,6 +10,10 @@ import type {
   ServerEvents,
 } from "../../../packages/shared/src/protocol.js";
 import type { GameRoom } from "./GameRoom.js";
+import {
+  DT,
+  SNAPSHOT_INTERVAL_TICKS,
+} from "../../../packages/shared/src/constants.js";
 const inputSchema = z
   .object({
     targetTick: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER).optional(),
@@ -214,10 +218,10 @@ export function createApp(
   // At most five catch-up steps prevent a stalled process from spiraling forever.
   const timer = setInterval(() => {
     const now = performance.now();
-    accumulator += Math.min((now - previous) / 1000, 5 / 30);
+    accumulator += Math.min((now - previous) / 1000, 5 * DT);
     previous = now;
-    while (accumulator >= 1 / 30) {
-      accumulator -= 1 / 30;
+    while (accumulator >= DT) {
+      accumulator -= DT;
       for (const [code, r] of manager.rooms) {
         for (const [id, s] of r.sessions)
           if (s.expires < Date.now()) {
@@ -239,7 +243,7 @@ export function createApp(
         }
         if (phase !== "COMPLETE" && r.state.phase === "COMPLETE")
           io.to(code).emit("game:complete", { victory: true });
-        if (r.state.serverTick % 2 === 0)
+        if (r.state.serverTick % SNAPSHOT_INTERVAL_TICKS === 0)
           io.to(code).volatile.emit("game:snapshot", r.state);
       }
     }

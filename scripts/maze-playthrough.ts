@@ -21,6 +21,7 @@ import { io } from "socket.io-client";
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import assert from "node:assert/strict";
+import { ticksFor } from "../packages/shared/src/constants.js";
 const folder = resolve("docs/quests/bald-goddess/recording-maze");
 const combatEvidence = { beamSeen: false, punchSeen: false };
 await mkdir(folder, { recursive: true });
@@ -60,7 +61,7 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
   function mark(chapter: string) {
     console.log(chapter, "tick", w.serverTick);
     steps.push({ chapter });
-    for (let n = 0; n < 15; n++) tick();
+    for (let n = 0; n < ticksFor(0.5); n++) tick();
   }
   function path(player: Player, goal: { x: number; y: number }) {
     const walls = collisionRects("HEDGE_MAZE", w.puzzles),
@@ -123,16 +124,16 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
       let n = 0;
       while (
         Math.hypot(player.x - waypoint.x, player.y - waypoint.y) > 5 &&
-        n++ < 100
+        n++ < ticksFor(3.333)
       )
         steer(player, waypoint);
-      if (n >= 100) throw Error("Movement stuck");
+      if (n >= ticksFor(3.333)) throw Error("Movement stuck");
     }
     tick();
   }
   function fight(id: string) {
     let route: { x: number; y: number }[] = [];
-    for (let n = 0; n < 2400; n++) {
+    for (let n = 0; n < ticksFor(80); n++) {
       const e = w.enemies[id];
       if (!e || e.hp <= 0) {
         tick();
@@ -178,7 +179,7 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
   move(c, { x: 16.5 * 32, y: 34.5 * 32 });
   tick(c, { moveX: 1 });
   tick(c, { primaryHeld: true });
-  for (let n = 0; n < 90 && !maze.burned; n++) tick();
+  for (let n = 0; n < ticksFor(3) && !maze.burned; n++) tick();
   assert(maze.burned);
   mark("3 · Clear the three guards before the cow");
   fight("maze-moss-cow");
@@ -188,7 +189,7 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
   move(c, { x: 20.5 * 32, y: 25.5 * 32 });
   tick(c, { moveX: 1 });
   tick(c, { blackHoleHeld: true });
-  for (let n = 0; n < 150 && !maze.cow.parked; n++) tick();
+  for (let n = 0; n < ticksFor(5) && !maze.cow.parked; n++) tick();
   assert(maze.cow.parked);
   mark("5 · Regroup for the fleeing key carrier");
   move(s, { x: 27.5 * 32, y: 15.5 * 32 });
@@ -197,7 +198,7 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
   tick(c, { slowTimeHeld: true });
   tick(s, { sprintHeld: true });
   let route: { x: number; y: number }[] = [];
-  for (let n = 0; n < 295 && !maze.runner.caught; n++) {
+  for (let n = 0; n < ticksFor(9.833) && !maze.runner.caught; n++) {
     if (Math.hypot(s.x - maze.runner.x, s.y - maze.runner.y) <= 40) {
       use(s, MAZE_RUNNER_TARGET);
       break;
@@ -219,7 +220,7 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
   mark("9 · Return through the cleared maze");
   move(c, { x: 4.5 * 32, y: 34.5 * 32 });
   move(s, { x: 4.5 * 32, y: 33.5 * 32 });
-  for (let n = 0; n < 60; n++) tick();
+  for (let n = 0; n < ticksFor(2); n++) tick();
   return steps;
 }
 if (process.argv.includes("--plan-only")) {
@@ -358,7 +359,7 @@ try {
       advance();
       frame++;
     }
-    if (frame % 2 === 0) {
+    if (frame % ticksFor(1 / 15) === 0) {
       app.io.to(room.state.roomCode).emit("game:snapshot", room.state);
       due += 1000 / 30;
       await new Promise<void>((r) =>

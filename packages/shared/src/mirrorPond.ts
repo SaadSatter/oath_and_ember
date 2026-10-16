@@ -66,8 +66,13 @@ export const pondBounds = tile(4, 4, 36, 28),
   pondWater = tile(8, 8, 28, 20),
   pondCourt = tile(42, 24, 6, 14);
 export const pondEntry = tile(36, 24, 8, 4),
-  pondTrial = tile(37, 25, 5, 2);
+  // The spiked approach: the gap through the outer wall plus the court lane
+  // between the rails. The dry walkway west of it stays hazard-free.
+  pondTrial = tile(40, 24, 4, 4);
 export const pondCulvert = [tile(34, 30, 8, 2), tile(34, 26, 2, 6)];
+// Where the culvert passes through the outer wall. Barred deep water: Flight
+// crosses it, walkers cannot, so the spike entrance is Sieg's only way in.
+export const pondCulvertMouth = tile(40, 30, 2, 2);
 export const pondPads = [
   tile(24.5, 10.5, 5, 3),
   tile(14.5, 16.5, 3, 3),
@@ -76,7 +81,13 @@ export const pondPads = [
 export const pondCenter = tile(20, 15, 8, 8),
   pondBridge = tile(26, 23, 2, 7);
 export const pondChest = { x: 24 * 32, y: 18.5 * 32 };
-export const pondGuardrails = [tile(37, 24, 7, 1), tile(37, 27, 7, 1)];
+// Rails sit outside the stone entrance rather than occupying whole paved rows.
+// The north rail starts at the outer wall so the dry east walkway stays open
+// past the entrance; the south rail still seals the culvert from the walkway.
+export const pondGuardrails: Rect[] = [
+  { x: 40 * 32, y: 24 * 32 - 8, w: 4 * 32, h: 8 },
+  { x: 37 * 32, y: 28 * 32, w: 7 * 32, h: 8 },
+];
 export const pondOuterBlocks = [
   tile(4, 2, 36, 2),
   tile(2, 4, 2, 28),
@@ -110,6 +121,44 @@ export function subtractRects(rectangles: Rect[], cuts: Rect[]): Rect[] {
     result = next;
   }
   return result;
+}
+// Furthest reach of a mirror frame from its pivot while it rotates.
+export const POND_MIRROR_REACH = 62.4 + 7;
+// The fence stays open in front of each mirror: its frame sweeps across the
+// fence line, and the shot lane from its firing pad passes through there.
+// Gaps snap outward to the 32px post spacing so every rail ends on a post.
+// Deep water still bars walkers from the open stretch.
+export const pondMirrorGaps: Rect[] = pondStations.map((s) => {
+  const snap = (v: number, up: boolean) =>
+    256 + (up ? Math.ceil : Math.floor)((v - 256) / 32) * 32;
+  const x = snap(s.x - POND_MIRROR_REACH, false),
+    y = snap(s.y - POND_MIRROR_REACH, false);
+  return {
+    x,
+    y,
+    w: snap(s.x + POND_MIRROR_REACH, true) - x,
+    h: snap(s.y + POND_MIRROR_REACH, true) - y,
+  };
+});
+// Visible, solid inner-bank fencing. Leave the water culvert and the mirror
+// fronts open, and open the sanctuary bridge gate only once its stone deck
+// has risen.
+export function pondFenceWalls(
+  puzzles: Record<string, { pond?: MirrorPondState }>,
+): Rect[] {
+  const inner: Rect[] = [
+    { x: 256, y: 256, w: 896, h: 8 },
+    { x: 256, y: 256, w: 8, h: 640 },
+    { x: 1144, y: 256, w: 8, h: 640 },
+    { x: 256, y: 888, w: 896, h: 8 },
+  ];
+  return [
+    ...subtractRects(inner, [
+      ...pondCulvert,
+      ...pondMirrorGaps,
+      ...(mirrorPondState(puzzles)?.raised ? [pondBridge] : []),
+    ]),
+  ];
 }
 // Diagonal 24px spell slots through 64px walls. A 26px actor cannot fit.
 export const pondStoneWalls: Rect[] = [];
@@ -156,8 +205,8 @@ export const normalizeMirrorAngle = (angle: number) =>
   ((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
 export function pondMirrorWall(index: number, angle: number): Rect {
   const s = pondStations[index];
-  const halfX = Math.abs(Math.cos(angle)) * 62.4 + 7,
-    halfY = Math.abs(Math.sin(angle)) * 62.4 + 7;
+  const halfX = Math.abs(Math.cos(angle)) * (POND_MIRROR_REACH - 7) + 7,
+    halfY = Math.abs(Math.sin(angle)) * (POND_MIRROR_REACH - 7) + 7;
   return { x: s.x - halfX, y: s.y - halfY, w: halfX * 2, h: halfY * 2 };
 }
 export function pondLand(state: MirrorPondState | undefined) {
@@ -169,7 +218,7 @@ export function pondCollisionWalls(
 ): Rect[] {
   const state = mirrorPondState(puzzles);
   const water = subtractRects(
-    [pondWater, ...(role === "EMBER" ? pondCulvert : [])],
+    [pondWater, ...(role === "EMBER" ? pondCulvert : [pondCulvertMouth])],
     pondLand(state),
   ).map((r) => ({ ...r, terrain: "water" as const }));
   const wards =
@@ -188,6 +237,7 @@ export function pondCollisionWalls(
         ]
       : [];
   return [
+    ...pondFenceWalls(puzzles),
     ...water,
     ...wards,
     ...pondStations.map((_, i) =>
@@ -195,13 +245,48 @@ export function pondCollisionWalls(
     ),
   ];
 }
+// Floor spike traps: four columns across the east entrance rise out of the
+// paving on a staggered timer, rippling from the pond side toward the court.
+// Each cycle: harmless warning (tips peek) -> raised (only this hurts) ->
+// retracting -> down. Timing is in pond-clock seconds, so Slow Time scales it.
+// Tuned so walking never crosses, Super Speed can with good timing, and Slow
+// Time with Super Speed crosses comfortably.
+export const pondSpikeColumns: Rect[] = [40, 41, 42, 43].map((x) =>
+  tile(x, 24, 1, 4),
+);
+export const pondSpikeTiming = {
+  period: 1.6,
+  warning: 0.15,
+  raised: 0.35,
+  retract: 0.1,
+  stagger: 0.06,
+} as const;
+export type PondSpikePhase = "down" | "warning" | "raised" | "retracting";
+export function pondSpikeState(
+  clock: number,
+  index: number,
+): { phase: PondSpikePhase; progress: number } {
+  const { period, warning, raised, retract, stagger } = pondSpikeTiming;
+  const at = (((clock / period - index * stagger) % 1) + 1) % 1;
+  if (at < warning) return { phase: "warning", progress: at / warning };
+  if (at < warning + raised)
+    return { phase: "raised", progress: (at - warning) / raised };
+  if (at < warning + raised + retract)
+    return {
+      phase: "retracting",
+      progress: (at - warning - raised) / retract,
+    };
+  return {
+    phase: "down",
+    progress:
+      (at - warning - raised - retract) / (1 - warning - raised - retract),
+  };
+}
+// Only fully raised columns are dangerous; they are hazards, never walls.
 export function pondSpikes(clock: number): Rect[] {
-  return [38 * 32, 39.5 * 32].map((x, i) => ({
-    x: x - 10,
-    y: 26 * 32 + Math.sin(clock * 3.2 + i * 0.35) * 88 - 24,
-    w: 20,
-    h: 48,
-  }));
+  return pondSpikeColumns.filter(
+    (_, i) => pondSpikeState(clock, i).phase === "raised",
+  );
 }
 export const pondSpawn = (role: Role | null) =>
   role === "EMBER"
@@ -215,3 +300,24 @@ export const pondPuzzle = (): Puzzle => ({
   progress: 0,
   pond: newMirrorPond(),
 });
+
+export function pondMirrorContact(
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+  index: number,
+  angle: number,
+) {
+  const s = pondStations[index],
+    tangent = { x: Math.cos(angle), y: Math.sin(angle) },
+    normal = { x: -tangent.y, y: tangent.x };
+  const d0 = (from.x - s.x) * normal.x + (from.y - s.y) * normal.y,
+    d1 = (to.x - s.x) * normal.x + (to.y - s.y) * normal.y;
+  if (Math.abs(d0 - d1) < 1e-10) return Infinity;
+  const t = d0 / (d0 - d1);
+  if (t < 0 || t > 1) return Infinity;
+  const x = from.x + (to.x - from.x) * t,
+    y = from.y + (to.y - from.y) * t;
+  return Math.abs((x - s.x) * tangent.x + (y - s.y) * tangent.y) <= 66.4
+    ? t
+    : Infinity;
+}

@@ -3,6 +3,12 @@ import { io } from "socket.io-client";
 import { createApp } from "../src/app.js";
 import { GameRoom } from "../src/GameRoom.js";
 import { neutral } from "../../../packages/shared/src/gameTypes.js";
+import { DT,
+  SPEED,
+  SPRINT_MULTIPLIER,
+  SLOW_TIME_SCALE,
+  FIREBALL_SPEED,
+  FIREBALL_RANGE, ticksFor } from "../../../packages/shared/src/constants.js";
 import { fireballFrame } from "../../client/src/animation/projectile.js";
 it("captures all four server-selected strengths at cast time", () => {
   const room = new GameRoom("ABC234", false, "FOREST_RUINS");
@@ -28,7 +34,7 @@ it("captures all four server-selected strengths at cast time", () => {
     )!;
     expect(q).toBeDefined();
     expect(q.damage).toBe(20 + (level - 1) * 10);
-    expect(Math.hypot(q.vx, q.vy)).toBeCloseTo(180);
+    expect(Math.hypot(q.vx, q.vy)).toBeCloseTo(FIREBALL_SPEED);
     expect(fireballFrame(level, 0)).toBe((level - 1) * 9);
     expect(fireballFrame(level, 1170)).toBe((level - 1) * 9);
   }
@@ -106,7 +112,7 @@ it("validates the fireball skill chain over real sockets and broadcasts identica
     clients.forEach((c) => c.disconnect());
     await app.close();
   }
-});
+}, 15000);
 
 it("casts once per press despite held or repeated input, and permits a new press after release", () => {
   const room = new GameRoom("ABC234", false, "FOREST_RUINS");
@@ -123,7 +129,7 @@ it("casts once per press despite held or repeated input, and permits a new press
   press(true);
   const firstCast = p.combat!.seq;
   expect(Object.values(room.state.projectiles).filter(q => q.owner === p.id)).toHaveLength(1);
-  for (let tick = 0; tick < 35; tick++) {
+  for (let tick = 0; tick < ticksFor(1.167); tick++) {
     press(true);
     expect(p.combat!.seq).toBe(firstCast);
   }
@@ -131,4 +137,40 @@ it("casts once per press despite held or repeated input, and permits a new press
   press(false); press(true);
   expect(p.combat!.seq).toBeGreaterThan(firstCast);
   expect(Object.values(room.state.projectiles).filter(q => q.owner === p.id && !previousIds.has(q.id))).toHaveLength(1);
+});
+it("fires at Sieg's super speed, outrunning Coco, and keeps the same range", () => {
+  expect(FIREBALL_SPEED).toBe(SPEED * SPRINT_MULTIPLIER);
+  expect(FIREBALL_SPEED).toBeGreaterThan(SPEED);
+  const room = new GameRoom("FAST23", false, "FOREST_RUINS");
+  const a = room.add("a"),
+    b = room.add("b");
+  room.select(a.playerId, "OATH");
+  room.select(b.playerId, "EMBER");
+  room.ready(a.playerId, true);
+  room.ready(b.playerId, true);
+  const coco = room.state.players[b.playerId];
+  room.receiveInput(coco.id, { ...neutral(1), primaryHeld: true });
+  room.tick();
+  const q = Object.values(room.state.projectiles).find(
+    (q) => q.owner === coco.id,
+  )!;
+  expect(Math.hypot(q.vx, q.vy)).toBeCloseTo(FIREBALL_SPEED);
+  // The shot already travelled its first tick in the tick that cast it.
+  expect((q.life + DT) * FIREBALL_SPEED).toBeCloseTo(FIREBALL_RANGE);
+  // Normal time: one tick of travel at full fireball speed.
+  const x = q.x;
+  room.receiveInput(coco.id, neutral(2));
+  room.tick();
+  expect(Math.abs(q.x - x)).toBeCloseTo(FIREBALL_SPEED * DT);
+  // Slowed time: the same shot crawls at the slow-time scale.
+  room.state.slowTime = {
+    owner: coco.id,
+    startedTick: room.state.serverTick,
+    endsTick: room.state.serverTick + 100,
+  };
+  const slowX = q.x;
+  room.tick();
+  expect(Math.abs(q.x - slowX)).toBeCloseTo(
+    FIREBALL_SPEED * DT * SLOW_TIME_SCALE,
+  );
 });

@@ -2,6 +2,7 @@ import {
   EnemyPresentation,
   enemyDirection,
 } from "../animation/EnemyPresentation.js";
+import { SERVER_HZ } from "../../../../packages/shared/src/constants.js";
 export { enemyDirection } from "../animation/EnemyPresentation.js";
 import {
   preloadGolemAttack,
@@ -117,13 +118,13 @@ export class EnemyView {
     this.charge.setVisible(charging && !punching);
     if (charging) {
       const direction = enemyDirection(motion.facing) as keyof typeof golemPalm;
-      const elapsed = Math.max(0, tick - e.attackStartedTick!) / 30,
+      const elapsed = Math.max(0, tick - e.attackStartedTick!) / SERVER_HZ,
         progress =
           elapsed /
           ((punching
             ? golemMelee.durationTicks
             : enemyDefinitions[e.type].windupTicks) /
-            30),
+            SERVER_HZ),
         palm = golemPalm[direction];
       this.charge.setVisible(!punching && progress < 1);
       this.sprite.anims.stop();

@@ -1,0 +1,41 @@
+{
+  "group_id": "2ed3eb7b-268e-4ea9-a765-39125e46e2d6",
+  "objects": [
+    {
+      "id": "2eb0593a-302b-4ea8-b59a-2a18fa29e4f1",
+      "name": "base",
+      "prompt": "A tall pillar from the ruins",
+      "size": {
+        "width": 160,
+        "height": 160
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/A_tall_pillar_from_the_ruins.png"
+      },
+      "animations": {
+        "The_stone_column_begins_to_groan_under_immense_int": {
+          "directions": {
+            "unknown": {
+              "frames": [
+                "animations/The_stone_column_begins_to_groan_under_immense_int/unknown/frame_000.png",
+                "animations/The_stone_column_begins_to_groan_under_immense_int/unknown/frame_001.png",
+                "animations/The_stone_column_begins_to_groan_under_immense_int/unknown/frame_002.png",
+                "animations/The_stone_column_begins_to_groan_under_immense_int/unknown/frame_003.png",
+                "animations/The_stone_column_begins_to_groan_under_immense_int/unknown/frame_004.png",
+                "animations/The_stone_column_begins_to_groan_under_immense_int/unknown/frame_005.png",
+                "animations/The_stone_column_begins_to_groan_under_immense_int/unknown/frame_006.png",
+                "animations/The_stone_column_begins_to_groan_under_immense_int/unknown/frame_007.png",
+                "animations/The_stone_column_begins_to_groan_under_immense_int/unknown/frame_008.png"
+              ],
+              "frame_count": 9
+            }
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "1.1",
+  "export_date": "2026-10-16T05:39:59.860536"
+}

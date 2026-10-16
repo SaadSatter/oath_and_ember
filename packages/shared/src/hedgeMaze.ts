@@ -42,6 +42,10 @@ export interface HedgeMazeState {
     facing: number;
     caught: boolean;
     waypoint?: { x: number; y: number };
+    /** True while running from a hero who can reach it; otherwise it roams. */
+    fleeing?: boolean;
+    /** Current wander destination while no hero can reach the wolf. */
+    roam?: { x: number; y: number };
   };
 }
 export const newHedgeMaze = (): HedgeMazeState => ({

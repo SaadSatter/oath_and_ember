@@ -1,4 +1,5 @@
 import type { Enemy } from "./gameTypes.js";
+import { ticksFor } from "./constants.js";
 export type EnemyType = "mossling" | "cinder_wisp" | "ironbound_sentinel";
 export interface EnemyDefinition {
   maxHp: number;
@@ -18,9 +19,9 @@ export interface EnemyDefinition {
 }
 export const golemMelee = {
   range: 60,
-  hitTicks: 12,
-  durationTicks: 24,
-  cooldownTicks: 30,
+  hitTicks: ticksFor(0.4),
+  durationTicks: ticksFor(0.8),
+  cooldownTicks: ticksFor(1),
   facingDot: 0.5,
 } as const;
 export const enemyDefinitions: Record<EnemyType, EnemyDefinition> = {
@@ -29,8 +30,8 @@ export const enemyDefinitions: Record<EnemyType, EnemyDefinition> = {
     speed: 65,
     detectionRange: 250,
     attackRange: 45,
-    cooldownTicks: 30,
-    windupTicks: 12,
+    cooldownTicks: ticksFor(1),
+    windupTicks: ticksFor(0.4),
     damage: 10,
     body: { halfWidth: 14, halfHeight: 12 },
     movement: "pursue",
@@ -45,8 +46,8 @@ export const enemyDefinitions: Record<EnemyType, EnemyDefinition> = {
     speed: 55,
     detectionRange: 360,
     attackRange: 250,
-    cooldownTicks: 54,
-    windupTicks: 18,
+    cooldownTicks: ticksFor(1.8),
+    windupTicks: ticksFor(0.6),
     damage: 12,
     body: { halfWidth: 10, halfHeight: 10 },
     movement: "ranged",
@@ -61,8 +62,8 @@ export const enemyDefinitions: Record<EnemyType, EnemyDefinition> = {
     speed: 32,
     detectionRange: 420,
     attackRange: 320,
-    cooldownTicks: 75,
-    windupTicks: 36,
+    cooldownTicks: ticksFor(2.5),
+    windupTicks: ticksFor(1.2),
     damage: 28,
     body: { halfWidth: 22, halfHeight: 18 },
     movement: "pursue",

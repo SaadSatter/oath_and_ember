@@ -3,7 +3,11 @@ import {
   golemPalmOrigin,
 } from "../../../packages/shared/src/golem.js";
 import { SLOW_TIME_SCALE } from "../../../packages/shared/src/constants.js";
-import { DT } from "../../../packages/shared/src/constants.js";
+import {
+  DT,
+  SERVER_HZ,
+  ticksFor,
+} from "../../../packages/shared/src/constants.js";
 import {
   enemyDefinitions,
   golemMelee,
@@ -15,6 +19,7 @@ import type {
   World,
 } from "../../../packages/shared/src/gameTypes.js";
 import { maps, collisionRects } from "../../../packages/shared/src/maps.js";
+import { steerTarget } from "./enemyNavigation.js";
 const distance = (a: { x: number; y: number }, b: { x: number; y: number }) =>
   Math.hypot(a.x - b.x, a.y - b.y);
 export function damageEnemy(e: Enemy, amount: number, tick: number) {
@@ -114,7 +119,7 @@ export function tickEnemies(w: World, damage: (p: Player, n: number) => void) {
     e.vx = e.vy = 0;
     if (e.hp <= 0) damageEnemy(e, 1, w.serverTick);
     if (e.state === "DEAD") {
-      if (w.serverTick - (e.deadTick ?? w.serverTick) >= 30)
+      if (w.serverTick - (e.deadTick ?? w.serverTick) >= ticksFor(1))
         delete w.enemies[e.id];
       continue;
     }
@@ -209,7 +214,7 @@ export function tickEnemies(w: World, damage: (p: Player, n: number) => void) {
         e.attackStartedTick = null;
         e.nextAttackTick = w.serverTick + golemMelee.cooldownTicks;
       }
-      e.cooldown = Math.max(0, (e.nextAttackTick - w.serverTick) / 30);
+      e.cooldown = Math.max(0, (e.nextAttackTick - w.serverTick) / SERVER_HZ);
       continue;
     }
     // Windup locks target/facing. Range and visibility are checked again at resolution.
@@ -264,12 +269,12 @@ export function tickEnemies(w: World, damage: (p: Player, n: number) => void) {
         e.state = "CHASE";
         e.nextAttackTick = w.serverTick + d.cooldownTicks;
       }
-      e.cooldown = Math.max(0, (e.nextAttackTick - w.serverTick) / 30);
+      e.cooldown = Math.max(0, (e.nextAttackTick - w.serverTick) / SERVER_HZ);
       continue;
     }
     const chosen = close ?? target;
     e.targetId = chosen?.id ?? null;
-    e.cooldown = Math.max(0, (e.nextAttackTick - w.serverTick) / 30);
+    e.cooldown = Math.max(0, (e.nextAttackTick - w.serverTick) / SERVER_HZ);
     if (!chosen) {
       e.state = "IDLE";
       continue;
@@ -278,18 +283,30 @@ export function tickEnemies(w: World, damage: (p: Player, n: number) => void) {
     e.facing = Math.atan2(chosen.y - e.y, chosen.x - e.x);
     e.state = "CHASE";
     const retreat = d.movement === "ranged" && dist < d.preferredRange - 25;
-    if (retreat || dist > d.attackRange)
-      moveEnemy(
-        e,
-        (chosen.x - e.x) * (retreat ? -1 : 1),
-        (chosen.y - e.y) * (retreat ? -1 : 1),
-        w,
-      );
+    const sighted = lineClear(e, chosen, walls);
+    if (retreat)
+      moveEnemy(e, e.x - chosen.x, e.y - chosen.y, w);
+    // In range but behind a wall still means closing in, never standing still.
+    else if (dist > d.attackRange || !sighted) {
+      // Walk around walls rather than pressing into them.
+      const map = maps[w.sceneId],
+        goal =
+          steerTarget(
+            e,
+            chosen,
+            walls,
+            map.width,
+            map.height,
+            d.body.halfWidth,
+            d.body.halfHeight,
+          ) ?? chosen;
+      moveEnemy(e, goal.x - e.x, goal.y - e.y, w);
+    }
     if (
       !retreat &&
       dist <= d.attackRange &&
       w.serverTick >= e.nextAttackTick &&
-      lineClear(e, chosen, walls)
+      sighted
     ) {
       if (golem) {
         e.attackKind = dist <= golemMelee.range ? "melee" : "beam";

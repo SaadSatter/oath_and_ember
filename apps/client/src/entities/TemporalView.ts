@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { SERVER_HZ } from "../../../../packages/shared/src/constants.js";
 import type {
   World,
   SceneId,
@@ -70,7 +71,7 @@ export class TemporalView {
     );
     if (pose && slow) {
       let age =
-          (((world.serverTick - slow.startedTick) * 1000) / 30) %
+          (((world.serverTick - slow.startedTick) * 1000) / SERVER_HZ) %
           clock.durations.reduce((sum, ms) => sum + ms, 0),
         frame = 0;
       while (

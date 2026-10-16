@@ -1,4 +1,5 @@
 import { cocoFlightKey, cocoFlightFrame } from "../animation/cocoFlight.js";
+import { SERVER_HZ, ticksFor } from "../../../../packages/shared/src/constants.js";
 import { siegSprintKey, siegSprintFrame } from "../animation/siegSprint.js";
 import { siegPushKey, siegPushFrame } from "../animation/siegPush.js";
 import { combatDirection } from "../animation/combat.js";
@@ -31,6 +32,9 @@ import {
 import {
   selectAnimation,
   resolveHeroAnimation,
+  stickyCardinal,
+  cardinalOf,
+  type Cardinal,
   type VisualHints,
 } from "../animation/selectAnimation.js";
 import { characterVisuals } from "../assets/characterVisuals.js";
@@ -50,6 +54,7 @@ export class PlayerView {
   private hurtUntil = 0;
   private appearanceTexture = "";
   private role: Player["role"] = null;
+  private cardinal: Cardinal | null = null;
   constructor(private scene: Phaser.Scene) {
     this.graphics = scene.add.graphics();
   }
@@ -141,7 +146,7 @@ export class PlayerView {
     const siegHeavy =
       role === "OATH" && (!!charge || combat?.action.kind === "heavy");
 
-    const state = selectAnimation(
+    const selected = selectAnimation(
       {
         ...motion,
         actionState:
@@ -157,6 +162,18 @@ export class PlayerView {
       mode,
       { ...hints, hurt },
     );
+    const travel = motion.movementIntent ?? { x: motion.vx, y: motion.vy };
+    const state =
+      mode === "TOP_DOWN"
+        ? stickyCardinal(
+            selected,
+            this.cardinal,
+            travel.x || travel.y
+              ? travel
+              : { x: Math.cos(motion.facing), y: Math.sin(motion.facing) },
+          )
+        : selected;
+    this.cardinal = cardinalOf(state) ?? this.cardinal;
     const wardStart =
       role === "EMBER" &&
       (defense?.phase === "start" || hints.slowTimeStarting);
@@ -233,7 +250,15 @@ export class PlayerView {
         this.sprite.anims.currentAnim?.key !== key ||
         (combat && this.combatSequence !== combat.action.seq)
       ) {
-        this.sprite.play(key);
+        const previous = this.sprite.anims.currentAnim?.key ?? "";
+        // Turning mid-stride keeps the step phase instead of restarting the cycle.
+        const stride =
+          !combat && previous.includes(":walk_") && key.includes(":walk_")
+            ? this.sprite.anims.currentFrame?.index
+            : undefined;
+        this.sprite.play(
+          stride ? { key, startFrame: stride - 1 } : key,
+        );
         if (combat) this.combatSequence = combat.action.seq;
       }
       if (combat) {
@@ -264,7 +289,7 @@ export class PlayerView {
         );
       if (siegHeavy && charge)
         this.sprite.setFrame(
-          heavyRow(charge.direction) + (charge.ticks < 4 ? 0 : 1),
+          heavyRow(charge.direction) + (charge.ticks < ticksFor(0.13) ? 0 : 1),
         );
       this.applyAppearance();
       if (hurt) this.sprite.setTint(0xff9999);

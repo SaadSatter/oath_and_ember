@@ -1,5 +1,8 @@
 import type { Puzzle, Rect, Role, Player } from "./gameTypes.js";
 export type GriffinPhase =
+  | "GROOMING"
+  | "NEST"
+  | "WAKING"
   | "FLY"
   | "PULLED"
   | "TAKEOFF"
@@ -31,9 +34,19 @@ export interface GriffinState {
   lastSiegX: number;
   lastSiegY: number;
   mirrorDelivered: boolean;
+  shearsDelivered?: boolean;
+  groomingStage?: "RETURN" | "STAND" | "SOUTH" | "NORTH" | "CUT" | "DONE";
   wigClaimed: boolean;
 }
 export const griffinNest = { x: 640, y: 112 };
+export const griffinGroomDurations = {
+  STAND: 1,
+  SOUTH: 2.7,
+  NORTH: 2.7,
+  CUT: 0.9,
+} as const;
+export const griffinWakeDuration = 1;
+export const griffinSightRadius = 480; // Fifteen tiles; server-owned encounter detection.
 export const GRIFFIN_NEST = "griffin-nest";
 export const griffinPillars: Rect[] = [
   { x: 352, y: 544, w: 64, h: 64 },
@@ -66,11 +79,10 @@ export const griffinSpawn = (role: Role | null) => ({
   y: 1056,
 });
 export const newGriffin = (): GriffinState => ({
-  x: 640,
-  y: 256,
+  ...griffinNest,
   facing: Math.PI / 2,
   hp: 320,
-  phase: "FLY",
+  phase: "NEST",
   timer: 0,
   clock: 0,
   grounded: 0,
@@ -99,7 +111,12 @@ export const griffinPuzzle = (): Puzzle => ({
   griffin: newGriffin(),
 });
 export const griffinAirborne = (g: GriffinState) =>
-  g.grounded <= 0 && !["STUNNED", "DEFEATED", "DISTRACTED"].includes(g.phase);
+  g.phase === "GROOMING"
+    ? g.groomingStage === "RETURN"
+    : g.grounded <= 0 &&
+      !["NEST", "WAKING", "STUNNED", "DEFEATED", "DISTRACTED"].includes(
+        g.phase,
+      );
 
 export const griffinBeamDuration = 2;
 export const griffinPullTuning = {

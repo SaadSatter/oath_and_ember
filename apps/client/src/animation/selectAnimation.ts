@@ -45,6 +45,39 @@ export function directionalIdle(facing: number): AnimationState {
   if (Math.abs(x) >= Math.abs(y)) return x < 0 ? "idle_left" : "idle_right";
   return y < 0 ? "idle_up" : "idle_down";
 }
+const cardinals = {
+  up: ["walk_north", "idle_up"],
+  down: ["walk_south", "idle_down"],
+  left: ["walk_west", "idle_left"],
+  right: ["walk_east", "idle_right"],
+} as const;
+export type Cardinal = keyof typeof cardinals;
+export function cardinalOf(state: AnimationState): Cardinal | null {
+  for (const [c, names] of Object.entries(cardinals))
+    if ((names as readonly string[]).includes(state)) return c as Cardinal;
+  return null;
+}
+// Presentation only: diagonal travel keeps the cardinal the hero already shows
+// when it is one of the two directions being travelled, rather than snapping
+// to east/west. Authoritative facing, aim and dash direction are untouched.
+export function stickyCardinal(
+  state: AnimationState,
+  previous: Cardinal | null,
+  direction: { x: number; y: number },
+): AnimationState {
+  const current = cardinalOf(state);
+  if (!current || !previous || current === previous) return state;
+  const { x, y } = direction;
+  if (!x || !y || Math.abs(Math.abs(x) - Math.abs(y)) > 0.05 * Math.hypot(x, y))
+    return state;
+  const allowed =
+    (previous === "up" && y < 0) ||
+    (previous === "down" && y > 0) ||
+    (previous === "left" && x < 0) ||
+    (previous === "right" && x > 0);
+  if (!allowed) return state;
+  return cardinals[previous][state.startsWith("walk") ? 0 : 1];
+}
 export function resolveHeroAnimation(
   role: Role,
   mode: MovementMode,

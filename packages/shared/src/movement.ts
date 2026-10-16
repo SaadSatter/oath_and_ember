@@ -1,4 +1,11 @@
-import { SPEED, GRAVITY, JUMP, HALF, SLOW_TIME_SCALE } from "./constants.js";
+import {
+  SPEED,
+  GRAVITY,
+  JUMP,
+  HALF,
+  SLOW_TIME_SCALE,
+  SPRINT_MULTIPLIER,
+} from "./constants.js";
 import type { Player, InputFrame, Rect } from "./gameTypes.js";
 import type { MapDefinition } from "./maps.js";
 // Sweep the requested axis against every obstacle, choosing the nearest contact.
@@ -52,6 +59,63 @@ export function constrainMotion(
     y = Math.max(HALF, Math.min(map.height - HALF, y));
   return { x, y };
 }
+// The facing a movement intent produces. Movement and action aim share it, so an
+// attack aimed with the newest intent matches the facing prediction shows.
+export function facingFor(
+  mode: MapDefinition["mode"],
+  moveX: number,
+  moveY: number,
+  previous: number,
+) {
+  const mx = Math.max(-1, Math.min(1, moveX)),
+    my = Math.max(-1, Math.min(1, moveY));
+  if (!mx && !my) return previous;
+  return mode === "PLATFORMER" ? (mx < 0 ? Math.PI : 0) : Math.atan2(my, mx);
+}
+// How far off a corner a blocked cardinal step may be nudged around it.
+export const CORNER_SLIDE = 10;
+function clearAt(point: { x: number; y: number }, map: MapDefinition, walls: Rect[]) {
+  return (
+    point.x >= HALF &&
+    point.x <= map.width - HALF &&
+    point.y >= HALF &&
+    point.y <= map.height - HALF &&
+    !walls.some((r) => overlaps(point, r))
+  );
+}
+// A cardinal step blocked by an edge the hero only clips is converted into a
+// sideways slide toward the nearest opening, at the same speed. The nearest
+// offset wins and ties favour the negative side, so both peers agree.
+function cornerSlide(
+  p: { x: number; y: number },
+  axis: "x" | "y",
+  delta: number,
+  map: MapDefinition,
+  walls: Rect[],
+) {
+  const side = axis === "x" ? "y" : "x";
+  // Probes sit on whole-pixel positions (edges are whole pixels), so a hero
+  // standing at a fractional position slides exactly onto the edge instead of
+  // overshooting it by the fraction.
+  for (let offset = 1; offset <= CORNER_SLIDE; offset++)
+    for (const sign of [-1, 1]) {
+      const target =
+        sign < 0 ? Math.ceil(p[side]) - offset : Math.floor(p[side]) + offset;
+      const probe = { ...p, [side]: target };
+      if (!clearAt(probe, map, walls)) continue;
+      const ahead = { ...probe, [axis]: probe[axis] + Math.sign(delta) };
+      if (!clearAt(ahead, map, walls)) continue;
+      const step =
+        Math.min(Math.abs(delta), Math.abs(target - p[side])) * sign;
+      return constrainMotion(
+        p,
+        axis === "x" ? { x: 0, y: step } : { x: step, y: 0 },
+        map,
+        walls,
+      );
+    }
+  return null;
+}
 // Shared fixed-step kinematics keep prediction reproducible without browser physics.
 export function move(
   p: Player,
@@ -77,19 +141,27 @@ export function move(
     }
     p.vy += GRAVITY * dt * verticalTimeScale;
   }
-  if (mx || my)
-    p.facing =
-      map.mode === "PLATFORMER" ? (mx < 0 ? Math.PI : 0) : Math.atan2(my, mx);
+  p.facing = facingFor(map.mode, mx, my, p.facing);
   const dx = p.vx * dt,
     dy = p.vy * dt * (map.mode === "PLATFORMER" ? verticalTimeScale : 1);
   const ox = p.x,
     oy = p.y;
-  const next = constrainMotion(p, { x: dx, y: dy }, map, walls);
+  let next = constrainMotion(p, { x: dx, y: dy }, map, walls);
+  if (map.mode === "TOP_DOWN" && (!dx || !dy) && (dx || dy)) {
+    const axis = dx ? "x" : "y";
+    const blocked = axis === "x" ? next.x === ox : next.y === oy;
+    const slid = blocked && cornerSlide(p, axis, dx || dy, map, walls);
+    if (slid) next = slid;
+  }
   p.x = next.x;
   p.y = next.y;
   if (p.x !== ox + dx) p.vx = 0;
   p.grounded = map.mode === "PLATFORMER" && dy > 0 && p.y < oy + dy;
   if (p.y !== oy + dy) p.vy = 0;
+  if (map.mode === "TOP_DOWN" && dt) {
+    if (!dx && p.x !== ox) p.vx = (p.x - ox) / dt;
+    if (!dy && p.y !== oy) p.vy = (p.y - oy) / dt;
+  }
   if (p.y > map.height + 150) {
     p.x = map.spawn.x;
     p.y = map.spawn.y;
@@ -188,7 +260,7 @@ export function stepMovement(
         ? 1
         : SLOW_TIME_SCALE
       : (p.sprintRemaining ?? 0) > 0
-        ? 2
+        ? SPRINT_MULTIPLIER
         : 1,
     slowTime && !(p.role === "OATH" && (p.sprintRemaining ?? 0) > 0)
       ? SLOW_TIME_SCALE

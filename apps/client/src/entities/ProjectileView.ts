@@ -1,9 +1,11 @@
 import {
   golemKey,
   golemEffectFrame,
+  golemBeamFade,
   golemBlastDuration,
   golemBeamTipFrame,
 } from "../animation/golem.js";
+import { SERVER_HZ } from "../../../../packages/shared/src/constants.js";
 import { fireballLevel } from "../../../../packages/shared/src/abilities.js";
 import { blackHoleKey, blackHoleFrame } from "../animation/blackHole.js";
 import { blackHoleTuning } from "../../../../packages/shared/src/blackHole.js";
@@ -36,6 +38,16 @@ export class ProjectileView {
   private golemShots = new Map<string, Phaser.GameObjects.Image>();
   private golemTips = new Map<string, Phaser.GameObjects.Image>();
   private golemRays = new Map<string, Phaser.GameObjects.TileSprite>();
+  // Ended beams, held in place while they dissipate.
+  private golemFades = new Map<
+    string,
+    {
+      parts: (Phaser.GameObjects.Image | Phaser.GameObjects.TileSprite)[];
+      ray?: Phaser.GameObjects.TileSprite;
+      elapsed: number;
+      last: number;
+    }
+  >();
   private golemBlasts = new Map<
     string,
     { sprite: Phaser.GameObjects.Image; elapsed: number; last: number }
@@ -76,7 +88,7 @@ export class ProjectileView {
           blackHoleFrame(
             hole.phase === "vortex"
               ? (blackHoleTuning.duration - hole.life) * 1000
-              : ((world.serverTick - hole.startedTick) * 1000) / 30,
+              : ((world.serverTick - hole.startedTick) * 1000) / SERVER_HZ,
             hole.phase,
           ),
         )
@@ -235,25 +247,35 @@ export class ProjectileView {
       }
     for (const [id, im] of this.golemShots)
       if (!world.projectiles[id]) {
-        im.destroy();
+        const ray = this.golemRays.get(id),
+          tip = this.golemTips.get(id);
+        this.golemFades.set(id, {
+          parts: [im, ...(ray ? [ray] : []), ...(tip ? [tip] : [])],
+          ray,
+          elapsed: 0,
+          last: now,
+        });
         this.golemShots.delete(id);
-        this.golemRays.get(id)?.destroy();
         this.golemRays.delete(id);
-        this.golemTips.get(id)?.destroy();
         this.golemTips.delete(id);
       }
+    for (const [id, fade] of this.golemFades) {
+      fade.elapsed += (now - fade.last) * (world.slowTime ? 0.2 : 1);
+      fade.last = now;
+      const look = golemBeamFade(fade.elapsed);
+      if (look.done) {
+        for (const part of fade.parts) part.destroy();
+        this.golemFades.delete(id);
+        continue;
+      }
+      for (const part of fade.parts) part.setAlpha(look.alpha).setVisible(!debug);
+      fade.ray?.setScale(1, 0.4 * look.thickness);
+    }
     for (const hit of world.projectileImpacts || [])
       if (!this.seen.has(hit.id)) {
         this.seen.add(hit.id);
         if (hit.effect === "golem_blast") {
-          // The continuous beam now supplies its own blue/white terminal animation.
-          if (
-            Object.values(world.projectiles).some(
-              (q) => q.effect === "golem_beam" && q.owner === hit.owner,
-            )
-          )
-            continue;
-          const age = Math.max(0, ((world.serverTick - hit.tick) * 1000) / 30);
+          const age = Math.max(0, ((world.serverTick - hit.tick) * 1000) / SERVER_HZ);
           if (age < golemBlastDuration)
             this.golemBlasts.set(hit.id, {
               sprite: this.scene.add
@@ -265,7 +287,7 @@ export class ProjectileView {
             });
           continue;
         }
-        const age = Math.max(0, ((world.serverTick - hit.tick) * 1000) / 30);
+        const age = Math.max(0, ((world.serverTick - hit.tick) * 1000) / SERVER_HZ);
         const owner = world.players[hit.owner];
         const base =
           this.baseShots.has(hit.id) ||
@@ -386,6 +408,9 @@ export class ProjectileView {
     this.golemRays.clear();
     for (const tip of this.golemTips.values()) tip.destroy();
     this.golemTips.clear();
+    for (const fade of this.golemFades.values())
+      for (const part of fade.parts) part.destroy();
+    this.golemFades.clear();
     for (const b of this.golemBlasts.values()) b.sprite.destroy();
     this.golemBlasts.clear();
     this.graphics.clear();

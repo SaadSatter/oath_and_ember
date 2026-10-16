@@ -20,7 +20,7 @@ Heavy Break still requires the existing Guard prerequisite and one additional sk
 | Hurt, stale intent, disconnect, reset, transition | Cancel charge without dealing release damage |
 | Press during cooldown | Ignore; release and press again when cooldown clears |
 
-At 30 Hz, minimum is approximately 0.467 seconds, full is 1.1 seconds, and cap is 1.267 seconds. Values are centralized in `packages/shared/src/combat.ts`. Early release as a normal slash preserves tap-to-attack and avoids a dead-feeling canceled tap. Fixed heavy damage retains the prior stronger damage value rather than adding an unrequested damage curve.
+Minimum is 0.467 seconds, full is 1.1 seconds, and cap is 1.267 seconds, converted to ticks with `ticksFor`. Values are centralized in `packages/shared/src/combat.ts`. Early release as a normal slash preserves tap-to-attack and avoids a dead-feeling canceled tap. Fixed heavy damage retains the prior stronger damage value rather than adding an unrequested damage curve.
 
 `Player.heavyCharge` contains server-owned `startedTick`, locked `facing`, `ticks`, and `progress`. `Player.combat` retains the existing accepted sword/heavy/cast marker; a new heavy marker means release. No client charge duration, damage, position or outcome is accepted. A paused room does not accumulate held ticks. The server applies damage on accepted release, independent of artwork frames.
 
@@ -42,7 +42,7 @@ Right is canonical and left mirrors it. Up/down use their approved basic directi
 
 `effects/coco-blast.png` is a single neutral grayscale blast extracted from the approved isolated right-traveling projectile in `Basic Fighting Sprites.png`, using explicit bounds (1368,118)-(1524,244). `scripts/normalize_projectile_reference.py` removes the dark background, normalizes to 96×64, and places its core at (76,32). Rotation points its short comet tail away from velocity. Runtime tint uses Coco's selected magic palette for blast, glow, trail and burst; the small bright core remains pale. The same texture supports every palette, with no recoloring work or five texture sets per render frame.
 
-The existing snapshots now include a bounded `World.projectileImpacts` list containing projectile id, owner, world position and server tick. Only the existing enemy/boss collision branches record an impact. Natural lifetime expiry, scene clearing and disconnect do not invent collision bursts. Events persist for 30 ticks (one second), allowing ordinary missed snapshots to recover them. Views deduplicate by projectile id and skip old bursts on reconnect; a burst lasts 350 ms. This short retention is not an indefinite event log under prolonged packet loss.
+The existing snapshots now include a bounded `World.projectileImpacts` list containing projectile id, owner, world position and server tick. Only the existing enemy/boss collision branches record an impact. Natural lifetime expiry, scene clearing and disconnect do not invent collision bursts. Events persist for one second, allowing ordinary missed snapshots to recover them. Views deduplicate by projectile id and skip old bursts on reconnect; a burst lasts 350 ms. This short retention is not an indefinite event log under prolonged packet loss.
 
 F4 displays geometric traveling projectiles along with geometric characters. Resize affects presentation only. Missing blast art retains colored procedural core/trail presentation.
 

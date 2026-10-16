@@ -1,6 +1,7 @@
 // Loaded only by the separate Vite development HTML entry. The production build
 // has a single main entry and includes neither this page nor this fixture.
 import Phaser from "phaser";
+import { SERVER_HZ } from "../../../../packages/shared/src/constants.js";
 import { siegPalettes } from "../../../../packages/shared/src/appearance.js";
 import { preloadHeroes, registerHeroes } from "../assets/heroLoader.js";
 import { PlayerView } from "../entities/PlayerView.js";
@@ -69,7 +70,7 @@ class Preview extends Phaser.Scene {
     this.hero.facing = facing[direction];
     this.hero.combat = {
       seq: (this.hero.combat?.seq ?? 0) + 1,
-      startedTick: Math.floor((this.time.now * 30) / 1000),
+      startedTick: Math.floor((this.time.now * SERVER_HZ) / 1000),
       facing: this.hero.facing,
       kind: "sword",
     };
@@ -86,7 +87,7 @@ class Preview extends Phaser.Scene {
     this.hero.vx = walk ? Math.cos(this.hero.facing) * 190 : 0;
     this.hero.vy = walk ? Math.sin(this.hero.facing) * 190 : 0;
     this.view.update(this.hero, this.hero, this.hero, "TOP_DOWN", "sprite", {
-      serverTick: Math.floor((this.time.now * 30) / 1000),
+      serverTick: Math.floor((this.time.now * SERVER_HZ) / 1000),
     });
     const observation = this.view.inspectCombat();
     document.querySelector<HTMLElement>("#readout")!.textContent =

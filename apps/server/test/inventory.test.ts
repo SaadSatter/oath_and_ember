@@ -262,4 +262,4 @@ it("synchronizes concurrent claims and key use across two sockets and restores i
     clients.forEach((s) => s.disconnect());
     await app.close();
   }
-});
+}, 15000);
