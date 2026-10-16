@@ -1,0 +1,16 @@
+{
+  "source": "Images/Sprites/Griffin",
+  "metadata": "Images/Sprites/Griffin/metadata.json",
+  "frameSize": 164,
+  "anchor": [
+    82,
+    106
+  ],
+  "directions": [
+    "south",
+    "east",
+    "north",
+    "west"
+  ],
+  "northRun": "Native north idle rotation: no north run animation supplied."
+}

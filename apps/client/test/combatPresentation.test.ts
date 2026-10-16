@@ -17,7 +17,7 @@ const hero = (seq = 1, facing = 0): Player =>
     vy: 0,
     combat: { seq, kind: "sword", facing, startedTick: seq },
   }) as Player;
-it("uses accepted markers, locks facing and completes through movement/input release", () => {
+it("uses accepted markers and immediately interrupts old-facing clips when turning", () => {
   const machine = new PlayerPresentation(),
     p = Object.freeze(hero());
   expect(
@@ -42,18 +42,18 @@ it("uses accepted markers, locks facing and completes through movement/input rel
       5,
       false,
     ),
-  ).toMatchObject({ kind: "combat", direction: "right" });
+  ).toMatchObject({ kind: "locomotion" });
   expect(machine.update(p, "TOP_DOWN", 796, 25, false).kind).toBe("locomotion");
   expect(machine.update(p, "TOP_DOWN", 850, 27, false).kind).toBe("locomotion");
   expect(p.combat!.facing).toBe(0);
 });
-it("queues accepted repeats without cutting recovery and prioritizes hurt/defeat", () => {
+it("starts a fresh accepted direction immediately and prioritizes hurt/defeat", () => {
   const m = new PlayerPresentation();
   m.update(hero(), "TOP_DOWN", 0, 1, false);
   expect(m.update(hero(14, Math.PI), "TOP_DOWN", 430, 14, false)).toMatchObject(
-    { direction: "right" },
+    { direction: "left", action: { seq: 14 } },
   );
-  expect(m.update(hero(14, Math.PI), "TOP_DOWN", 786, 25, false)).toMatchObject(
+  expect(m.update(hero(14, Math.PI), "TOP_DOWN", 600, 19, false)).toMatchObject(
     { direction: "left", action: { seq: 14 } },
   );
   expect(m.update(hero(14), "TOP_DOWN", 820, 26, true).kind).toBe("hurt");
@@ -76,7 +76,9 @@ it("aligns independent local/remote clocks from the same server start tick", () 
   const left = a.update(p, "TOP_DOWN", 1000, 33, false),
     right = b.update(p, "TOP_DOWN", 7000, 33, false);
   expect(left).toEqual(right);
-  expect(left).toMatchObject({ elapsedMs: 100 });
+  expect(left.kind).toBe("combat");
+  if (left.kind === "combat")
+    expect(left.elapsedMs).toBeCloseTo(100 * left.playbackRate!);
   for (const [facing, d] of [
     [0, "right"],
     [Math.PI, "left"],
@@ -108,7 +110,7 @@ it("combat sheets and separate effects share frame dimensions and valid clip ran
 it("holds charge from authoritative state without input guesses and releases above locomotion", () => {
   const m = new PlayerPresentation(),
     p = {
-      ...hero(),
+      ...hero(1, Math.PI),
       combat: undefined,
       heavyCharge: {
         startedTick: 1,
@@ -124,7 +126,7 @@ it("holds charge from authoritative state without input guesses and releases abo
   });
   expect(
     m.update({ ...p, facing: 0, vx: 190 }, "TOP_DOWN", 1200, 25, false),
-  ).toMatchObject({ kind: "charge", direction: "left" });
+  ).toMatchObject({ kind: "charge", direction: "right" });
   const release = {
     ...p,
     heavyCharge: undefined,
@@ -145,27 +147,34 @@ it("holds charge from authoritative state without input guesses and releases abo
   expect(m.update(p, "TOP_DOWN", 1900, 50, true).kind).toBe("hurt");
 });
 
-it("retains every repeated basic marker and starts each full frame sequence after recovery", () => {
+it("finishes quick swings before the next accepted attack and never queues stale swings", () => {
   const m = new PlayerPresentation();
   m.update(hero(), "TOP_DOWN", 0, 1, false);
-  m.update(hero(15, Math.PI), "TOP_DOWN", 467, 15, false);
-  const second = m.update(hero(15, Math.PI), "TOP_DOWN", 765, 24, false);
-  expect(second).toMatchObject({
+  expect(m.update(hero(), "TOP_DOWN", 301, 10, false).kind).toBe("locomotion");
+  expect(m.update(hero(15), "TOP_DOWN", 467, 15, false)).toMatchObject({
     kind: "combat",
     action: { seq: 15 },
-    direction: "left",
     elapsedMs: 0,
   });
-  m.update(hero(29, -Math.PI / 2), "TOP_DOWN", 934, 29, false);
-  const third = m.update(hero(29), "TOP_DOWN", 1231.667, 38, false);
-  expect(third).toMatchObject({
+  expect(m.update(hero(15), "TOP_DOWN", 768, 24, false).kind).toBe(
+    "locomotion",
+  );
+  const fresh = m.update(hero(16), "TOP_DOWN", 770, 16, false);
+  expect(fresh).toMatchObject({
     kind: "combat",
-    action: { seq: 29 },
-    direction: "up",
+    action: { seq: 16 },
+    elapsedMs: 0,
   });
-  if (third.kind === "combat") expect(third.elapsedMs).toBeLessThan(1);
+  expect(m.update(hero(17), "TOP_DOWN", 800, 17, false)).toMatchObject({
+    kind: "combat",
+    action: { seq: 17 },
+    elapsedMs: 0,
+  });
+  expect(m.update(hero(17), "TOP_DOWN", 1101, 26, false).kind).toBe(
+    "locomotion",
+  );
 });
-it("keeps Coco's existing six-frame cast duration and queue policy", () => {
+it("plays Coco casts in 200 ms and replaces a cast immediately with the latest accepted action", () => {
   const m = new PlayerPresentation(),
     p = {
       ...hero(),
@@ -176,6 +185,83 @@ it("keeps Coco's existing six-frame cast duration and queue policy", () => {
     kind: "combat",
     elapsedMs: 0,
   });
-  expect(m.update(p, "TOP_DOWN", 499, 15, false).kind).toBe("combat");
-  expect(m.update(p, "TOP_DOWN", 501, 16, false).kind).toBe("locomotion");
+  expect(m.update(p, "TOP_DOWN", 199, 6, false).kind).toBe("combat");
+  expect(m.update(p, "TOP_DOWN", 201, 7, false).kind).toBe("locomotion");
+  const next = { ...p, combat: { ...p.combat, seq: 10, startedTick: 10 } };
+  m.update(next, "TOP_DOWN", 300, 10, false);
+  const newest = { ...p, combat: { ...p.combat, seq: 11, startedTick: 11 } };
+  expect(m.update(newest, "TOP_DOWN", 334, 11, false)).toMatchObject({
+    kind: "combat",
+    action: { seq: 11 },
+    elapsedMs: 0,
+  });
+  expect(m.update(newest, "TOP_DOWN", 535, 17, false).kind).toBe("locomotion");
+});
+it("uses predicted local facing immediately for both heroes without changing authoritative action aim", () => {
+  for (const role of ["OATH", "EMBER"] as const) {
+    const m = new PlayerPresentation(),
+      p = {
+        ...hero(),
+        role,
+        combat: {
+          ...hero().combat!,
+          kind: role === "OATH" ? ("sword" as const) : ("cast" as const),
+        },
+      };
+    expect(m.update(p, "TOP_DOWN", 0, 1, false).kind).toBe("combat");
+    expect(
+      m.update(p, "TOP_DOWN", 80, 3, false, { facing: -Math.PI / 2 }).kind,
+    ).toBe("locomotion");
+    expect(p.facing).toBe(0);
+    expect(p.combat.facing).toBe(0);
+    // An old accepted action never restarts when the hero turns back.
+    expect(m.update(p, "TOP_DOWN", 100, 4, false, { facing: 0 }).kind).toBe(
+      "locomotion",
+    );
+    expect(
+      m.update(
+        {
+          ...p,
+          combat: { ...p.combat, seq: 5, startedTick: 5, facing: Math.PI },
+        },
+        "TOP_DOWN",
+        130,
+        5,
+        false,
+        { facing: Math.PI },
+      ),
+    ).toMatchObject({ kind: "combat", direction: "left", elapsedMs: 0 });
+  }
+});
+it("drops queued old-facing attacks on a turn and ignores delayed old-facing markers", () => {
+  const m = new PlayerPresentation();
+  m.update(hero(), "TOP_DOWN", 0, 1, false);
+  m.update(hero(8), "TOP_DOWN", 234, 8, false);
+  expect(
+    m.update({ ...hero(8), facing: Math.PI }, "TOP_DOWN", 250, 9, false).kind,
+  ).toBe("locomotion");
+  expect(
+    m.update({ ...hero(10), facing: Math.PI }, "TOP_DOWN", 300, 10, false).kind,
+  ).toBe("locomotion");
+  expect(
+    m.update({ ...hero(10), facing: Math.PI }, "TOP_DOWN", 900, 28, false).kind,
+  ).toBe("locomotion");
+});
+it("turns guard and held-charge artwork using current motion rather than stale server facing", () => {
+  const m = new PlayerPresentation(),
+    p = { ...hero(), combat: undefined, actionState: "guard" };
+  expect(
+    m.update(p, "TOP_DOWN", 0, 1, false, { facing: Math.PI }),
+  ).toMatchObject({ kind: "defense", direction: "left" });
+  expect(
+    m.update(p, "TOP_DOWN", 20, 2, false, { facing: -Math.PI / 2 }),
+  ).toMatchObject({ kind: "defense", direction: "up" });
+  const charge = {
+    ...p,
+    actionState: "heavyCharge",
+    heavyCharge: { startedTick: 1, facing: 0, ticks: 5, progress: 0.2 },
+  };
+  expect(
+    m.update(charge, "TOP_DOWN", 40, 3, false, { facing: Math.PI / 2 }),
+  ).toMatchObject({ kind: "charge", direction: "down" });
 });

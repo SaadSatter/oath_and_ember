@@ -1,0 +1,1 @@
+Supplied PixelLab source: Images/Sprites/pixellab-The-concentrated-stream-of-pur-1792122894100.png. Unmodified transparent 512×384 sheet with 128×128 cells, four columns and eleven occupied frames. Runtime plays 0–10 once at 90ms per frame, then repeats 8–10. The empty twelfth cell is excluded.

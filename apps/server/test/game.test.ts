@@ -157,10 +157,14 @@ describe("authoritative gameplay", () => {
     expect(r.state.enemies.moss.hp).toBe(hp);
     input(r, b.id, { primaryHeld: true });
     r.tick();
-    expect(Object.keys(r.state.projectiles)).toHaveLength(1);
+    expect(
+      Object.values(r.state.projectiles).filter((q) => q.owner === b.id),
+    ).toHaveLength(1);
     input(r, b.id, {});
     for (let n = 0; n < 60; n++) r.tick();
-    expect(Object.keys(r.state.projectiles)).toHaveLength(0);
+    expect(
+      Object.values(r.state.projectiles).filter((q) => q.owner === b.id),
+    ).toHaveLength(0);
   });
   it("engine requires simultaneous roles and boss requires shield disruption", () => {
     const { r, a, b } = pair();

@@ -1,44 +1,129 @@
 {
   "asset_id": "ironbound_sentinel_sprites_v2",
-  "url": "/assets/enemies/ironbound_sentinel/top-down.png",
+  "url": "/assets/enemies/ironbound_sentinel/forest-golem.png",
   "frame_dimensions": [
-    352,
-    352
+    112,
+    112
   ],
   "anchor": [
-    176,
-    312
+    56,
+    92
   ],
   "directions": [
     "south",
+    "south-east",
+    "east",
+    "north-east",
     "north",
+    "north-west",
     "west",
-    "east"
+    "south-west"
   ],
   "x_edges": [
     0,
-    352,
-    704,
-    1056,
-    1408
+    112,
+    224,
+    336,
+    448,
+    560,
+    672,
+    784,
+    896,
+    1008
   ],
-  "direction_aliases": {
-    "west": {
-      "source_direction": "east",
-      "flip_x": true
-    }
+  "animation_frames": {
+    "south": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "south-east": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "east": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "north-east": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "north": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "north-west": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "west": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "south-west": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
   },
   "standing_frames": {
+    "south": 0,
+    "south-east": 0,
     "east": 0,
-    "west": 0,
+    "north-east": 0,
     "north": 0,
-    "south": 0
+    "north-west": 0,
+    "west": 0,
+    "south-west": 0
   },
-  "direction_scales": {
-    "east": 0.28,
-    "west": 0.28
-  },
-  "scale": 0.375,
+  "scale": 1,
   "fps": 8,
   "motion": "walk"
 }

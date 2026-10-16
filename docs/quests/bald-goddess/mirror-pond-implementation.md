@@ -1,0 +1,27 @@
+# Mirror Pond implementation
+
+Enter from E · MIRROR POND in Forest Ruins (240,650). Return at the east courtyard's RETURN marker. Travel remains party-wide in this stage; the approved shrine hub and independent map simulation are subsequent work. Solved torches, mirror orientations and the shared inventory persist on revisits.
+
+Sieg enters through the east spike corridor. Two heads move vertically across it. Slow Time reduces their timing to 0.2 speed; Super Speed preserves Sieg's normal movement during that effect. Contact safely returns Sieg to the east courtyard without erasing lit torches. The south outer wall prevents bypassing the spike entrance.
+
+Coco's sealed perimeter wards remain solid during Flight. A separate water culvert beneath the southeast walkway lets her fly into the pond. Three safe islands contain four marked firing positions; the first island contains both A1 and A2. Flight cannot cross solid walls. The culvert is a walking bridge for Sieg, water for Coco; its northward opening remains sealed from the dry perimeter.
+
+At M1–M4 Sieg faces the mirror and holds Push (1) to turn clockwise through the entire 360° circle at 45° per second. Releasing stops rotation; a quick tap moves 1.5°. The current angle appears beside the mirror. No preset or auto-aim snap exists. Rotate back parallel to the walkway after lighting the torch to restore the passage. Quick press/release packets are queued through the authoritative server tick. Each incremental rotation that would overlap a player is refused.
+
+Coco fires J from the matching A marker in its indicated direction. The server sweeps the fireball against the finite mirror segment and stone walls, calculates reflection using the mirror tangent, and traces through a narrow diagonal spell port to the paired protected torch. The four required angles differ; rays reflect using the current server-owned angle, even when it misses the torch. Solution guide lines are removed. Incorrect pads, backward shots, incorrectly aimed mirrors and direct torch shots cannot light a torch. Reflection preserves projectile range/lifetime. Player bodies cannot fit through the spell ports.
+
+The fourth lit torch immediately raises the entire central platform and its connected bridge, making the Vanity Mirror chest available. No chest or landing platform exists there earlier. Either player presses E to claim one shared Vanity Mirror through the existing atomic inventory service. Restoring mirror shutters remains necessary for Sieg to continue along the perimeter.
+
+Validation:
+
+- `mirrorPond.test.ts`: four real reflection traces, wrong angles/shots, full-turn wrap, held rotation and release, synchronized numeric angles and rejection of client-supplied angles, submerged/raised terrain, role restrictions, safe rotation, quick taps, slowed spike timing, local reset, unique reward and revisit persistence.
+- `mirrorPondWalkthrough.test.ts`: ordinary server movement intents from both spawns, Coco's culvert and all firing islands, Slow Time + Super Speed spike crossing, traversal and deployment/restoration of every mirror. No position or facing teleporting.
+- `scripts/qa-mirror-pond.ts`: two real browser clients, real keyboard Push and Fireball for all four stations, restoration, platform rise and shared reward. Server-side position fixtures isolate each station for browser screenshots; this is focused interaction QA, not a continuous recorded playthrough.
+- Screenshots: `qa/pond-entry.png`, `qa/pond-torch-1.png` through `qa/pond-torch-4.png`, `qa/pond-sanctuary.png`.
+- Typecheck, all 238 tests across 36 files, and production build pass. The existing Vite large-bundle advisory remains.
+
+Artwork provenance: `Images/Maps/mirror-pond/source/PROVENANCE.md`.
+
+Lit braziers loop the supplied transparent 64×64 GIF as sixteen unchanged 130ms frames. The source GIF and source metadata are preserved; playback follows the pond mechanism clock, including Slow Time.
+
+Reflected fireballs now travel freely across the perimeter grass and beyond the camera view. Perimeter collision remains for players and incoming shots; a valid reflection continues through those perimeter blockers and other mirror shutters instead of being absorbed. Reflected lifetime covers a map diagonal, with cleanup beyond the world boundary. Any torch within its 28px circular hit radius (plus projectile radius) lights from an actual swept reflected hit, regardless of the source mirror. Direction is never corrected toward a torch. Direct/unreflected shots still cannot light the protected torches, and the existing firing-pad requirements remain in effect.

@@ -1,0 +1,61 @@
+{
+  "asset_id": "forest_wolf_runner",
+  "url": "/assets/enemies/forest_wolf/wolf.png",
+  "frame_dimensions": [
+    96,
+    96
+  ],
+  "anchor": [
+    48,
+    64
+  ],
+  "directions": [
+    "south",
+    "east",
+    "north",
+    "west"
+  ],
+  "x_edges": [
+    0,
+    96,
+    192,
+    288,
+    384,
+    480
+  ],
+  "animation_frames": {
+    "south": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "east": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "north": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "west": [
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  "standing_frames": {
+    "south": 0,
+    "east": 0,
+    "north": 0,
+    "west": 0
+  },
+  "scale": 1,
+  "fps": 12,
+  "motion": "run"
+}

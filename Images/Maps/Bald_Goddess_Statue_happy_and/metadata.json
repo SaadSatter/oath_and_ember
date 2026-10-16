@@ -1,0 +1,22 @@
+{
+  "group_id": "38bbfe64-f615-4bf5-a504-cfe55bfe9a1e",
+  "objects": [
+    {
+      "id": "92051242-88a8-4cd4-9c1f-42f1354f3606",
+      "name": "base",
+      "prompt": "Bald Goddess Statue happy and joyful in a shrine",
+      "size": {
+        "width": 168,
+        "height": 168
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/Bald_Goddess_Statue_happy_and.png"
+      },
+      "animations": {}
+    }
+  ],
+  "export_version": "1.1",
+  "export_date": "2026-10-14T22:53:54.950406"
+}

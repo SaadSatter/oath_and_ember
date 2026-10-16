@@ -1,0 +1,83 @@
+{
+  "group_id": "ee9a4d36-8883-4859-b902-b5d288b4b939",
+  "states": [
+    {
+      "character": {
+        "id": "ac6af65e-c744-422d-891e-b326e595ce95",
+        "name": "He puts his palm out",
+        "prompt": "A forest iron Golem",
+        "size": {
+          "width": 80,
+          "height": 80
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "high top-down",
+        "created_at": "2026-10-15T17:52:12.131842+00:00"
+      },
+      "folder": "He_puts_his_palm_out",
+      "frames": {
+        "rotations": {
+          "south": "He_puts_his_palm_out/rotations/south.png",
+          "south-east": "He_puts_his_palm_out/rotations/south-east.png",
+          "east": "He_puts_his_palm_out/rotations/east.png",
+          "north-east": "He_puts_his_palm_out/rotations/north-east.png",
+          "north": "He_puts_his_palm_out/rotations/north.png",
+          "north-west": "He_puts_his_palm_out/rotations/north-west.png",
+          "west": "He_puts_his_palm_out/rotations/west.png",
+          "south-west": "He_puts_his_palm_out/rotations/south-west.png"
+        },
+        "animations": {
+          "Flash_a_bright_white_light_across_the_raised_palm": {
+            "north": [
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_000.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_001.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_002.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_003.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_004.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_005.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_006.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_007.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_008.png"
+            ],
+            "west": [
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_000.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_001.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_002.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_003.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_004.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_005.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_006.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_007.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_008.png"
+            ],
+            "east": [
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_000.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_001.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_002.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_003.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_004.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_005.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_006.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_007.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_008.png"
+            ],
+            "south": [
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_000.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_001.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_002.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_003.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_004.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_005.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_006.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_007.png",
+              "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_008.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-15T21:29:38.564269"
+}

@@ -1,0 +1,114 @@
+{
+  "directions": [
+    "south",
+    "north",
+    "west",
+    "east"
+  ],
+  "columns": 6,
+  "frameWidth": 128,
+  "frameHeight": 128,
+  "anchor": [
+    64,
+    108
+  ],
+  "sources": [
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/south/frame_000.png",
+      "sha256": "ea5c1d2edeab82f8f60ff7f47fc47f48253a3266dc7fcdd50f908c5ac3932e6b"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/south/frame_001.png",
+      "sha256": "510f5deaaa2b2efffcca31e779a049abb607b64284553b95c5486c8d6b6845b8"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/south/frame_002.png",
+      "sha256": "0db1dfa08684edbb95725ff14a9e0d46d92725d85b49804a6fe51c68b9fb12e9"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/south/frame_003.png",
+      "sha256": "ff745b2a3bc5681b79502523d7eafb1ba9fc0c0f48ddc1a4a1000fd3c30fd2ee"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/south/frame_004.png",
+      "sha256": "951a8a8bff5180a8e74cf26d1537ac77c21afd1e742832ec2de5a38523a0bce0"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/south/frame_005.png",
+      "sha256": "fed1dab90806d8685a79ed0997184ae46f60ce070d1d3fc3ddac34b4ddb6d76f"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/north/frame_000.png",
+      "sha256": "d4307333e5a770dd7f49470671798b84163ed37662a3b8135f877639daf5c4d5"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/north/frame_001.png",
+      "sha256": "8a68c1a41e02a534a790654f9f656560bbad48eb5025b3c0d2bf58b4916903a9"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/north/frame_002.png",
+      "sha256": "016e95c14994a741683f1ee83777ebe210ee665e613322c4974d835e4a571fc9"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/north/frame_003.png",
+      "sha256": "a1072166812bc4514e46fabdbb87cd647a283f626a1077716558fe31990f1aad"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/north/frame_004.png",
+      "sha256": "e9cba92b4585d262bd4565cd228843a531c1a84c08359a9b5824bb2979231fb1"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/north/frame_005.png",
+      "sha256": "6bd0f6870b2f0a7d2091c66ae277648320d0e5f87322035892e1a04bd6f255ad"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/west/frame_000.png",
+      "sha256": "bfd8e996f2cd3fa2ef5b7fa66d9fdef3246cebf25d9bd1e2466253ff3dc2a055"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/west/frame_001.png",
+      "sha256": "ba02e40184375169f63f080d88092c973887eef3772a23fc47c9bc6819d1d5bf"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/west/frame_002.png",
+      "sha256": "7f99e0ab38036b1f5a5dbd2967372f39eb593f8b19164883b81d6d527cafb6f2"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/west/frame_003.png",
+      "sha256": "99ac6d133a8766e6a966a112721cb092f4ebb432902a06a7e738eef567bf48b8"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/west/frame_004.png",
+      "sha256": "fe4f2ba10ff25fcf5cf2ddfe7c1119806863fb43a19ae12722205bd21b60c86d"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/west/frame_005.png",
+      "sha256": "758e88bcaadcba319ba998b9a9cdf4cf406079495b1bb94c046182168048f37b"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/east/frame_000.png",
+      "sha256": "1df47efd98b8c92f568f4148766d418667eeb4e3014b7259699683f19c55c0b3"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/east/frame_001.png",
+      "sha256": "fe1cd7d6f1f395fc71e038240023276b53855e90b9a0dc399cf6e5be98c0befc"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/east/frame_002.png",
+      "sha256": "fe7547924cfaaaff6a1e0b8e750d350dd35990089d5c51a81f99cbbd537e9a34"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/east/frame_003.png",
+      "sha256": "3093d609d7fcbd233328a95003580984fc942270c164ab12609a246184736cc2"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/east/frame_004.png",
+      "sha256": "64a538ddcc4b51ce4bf958a0174e20ceaaa7a680673d3f090150e3ad8b4ca213"
+    },
+    {
+      "file": "Winding_one_arm_back/animations/Cross_Punch/east/frame_005.png",
+      "sha256": "1bb3eaa34430b694654cef344f12dbe012b3e3ed8175ef93f22e081dbec4e9c2"
+    }
+  ],
+  "processing": "Lossless original RGBA pixels, one fixed translation per direction/clip. No resampling/recoloring."
+}

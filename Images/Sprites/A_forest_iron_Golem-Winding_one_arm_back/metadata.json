@@ -1,0 +1,71 @@
+{
+  "group_id": "ee9a4d36-8883-4859-b902-b5d288b4b939",
+  "states": [
+    {
+      "character": {
+        "id": "73044124-6b63-4b41-b35a-5186674a63ed",
+        "name": "Winding one arm back",
+        "prompt": "A forest iron Golem",
+        "size": {
+          "width": 80,
+          "height": 80
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "high top-down",
+        "created_at": "2026-10-15T19:04:37.733925+00:00"
+      },
+      "folder": "Winding_one_arm_back",
+      "frames": {
+        "rotations": {
+          "south": "Winding_one_arm_back/rotations/south.png",
+          "south-east": "Winding_one_arm_back/rotations/south-east.png",
+          "east": "Winding_one_arm_back/rotations/east.png",
+          "north-east": "Winding_one_arm_back/rotations/north-east.png",
+          "north": "Winding_one_arm_back/rotations/north.png",
+          "north-west": "Winding_one_arm_back/rotations/north-west.png",
+          "west": "Winding_one_arm_back/rotations/west.png",
+          "south-west": "Winding_one_arm_back/rotations/south-west.png"
+        },
+        "animations": {
+          "Cross_Punch": {
+            "west": [
+              "Winding_one_arm_back/animations/Cross_Punch/west/frame_000.png",
+              "Winding_one_arm_back/animations/Cross_Punch/west/frame_001.png",
+              "Winding_one_arm_back/animations/Cross_Punch/west/frame_002.png",
+              "Winding_one_arm_back/animations/Cross_Punch/west/frame_003.png",
+              "Winding_one_arm_back/animations/Cross_Punch/west/frame_004.png",
+              "Winding_one_arm_back/animations/Cross_Punch/west/frame_005.png"
+            ],
+            "south": [
+              "Winding_one_arm_back/animations/Cross_Punch/south/frame_000.png",
+              "Winding_one_arm_back/animations/Cross_Punch/south/frame_001.png",
+              "Winding_one_arm_back/animations/Cross_Punch/south/frame_002.png",
+              "Winding_one_arm_back/animations/Cross_Punch/south/frame_003.png",
+              "Winding_one_arm_back/animations/Cross_Punch/south/frame_004.png",
+              "Winding_one_arm_back/animations/Cross_Punch/south/frame_005.png"
+            ],
+            "north": [
+              "Winding_one_arm_back/animations/Cross_Punch/north/frame_000.png",
+              "Winding_one_arm_back/animations/Cross_Punch/north/frame_001.png",
+              "Winding_one_arm_back/animations/Cross_Punch/north/frame_002.png",
+              "Winding_one_arm_back/animations/Cross_Punch/north/frame_003.png",
+              "Winding_one_arm_back/animations/Cross_Punch/north/frame_004.png",
+              "Winding_one_arm_back/animations/Cross_Punch/north/frame_005.png"
+            ],
+            "east": [
+              "Winding_one_arm_back/animations/Cross_Punch/east/frame_000.png",
+              "Winding_one_arm_back/animations/Cross_Punch/east/frame_001.png",
+              "Winding_one_arm_back/animations/Cross_Punch/east/frame_002.png",
+              "Winding_one_arm_back/animations/Cross_Punch/east/frame_003.png",
+              "Winding_one_arm_back/animations/Cross_Punch/east/frame_004.png",
+              "Winding_one_arm_back/animations/Cross_Punch/east/frame_005.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-15T21:50:09.012954"
+}

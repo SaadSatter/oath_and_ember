@@ -1,0 +1,191 @@
+{
+  "group_id": "24722986-63e0-4c9e-a831-d37e29d6be1e",
+  "states": [
+    {
+      "character": {
+        "id": "48d8fb72-283c-4945-8167-eab71ad2d165",
+        "name": "Idle",
+        "prompt": "Griffin",
+        "size": {
+          "width": 116,
+          "height": 116
+        },
+        "template_id": "lion",
+        "directions": 8,
+        "view": "high top-down",
+        "created_at": "2026-10-15T22:30:31.536376+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {
+          "Tuck_the_hind_legs_inward_and_compress_the_body_in": {
+            "south": [
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/south/frame_000.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/south/frame_001.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/south/frame_002.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/south/frame_003.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/south/frame_004.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/south/frame_005.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/south/frame_006.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/south/frame_007.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/south/frame_008.png"
+            ],
+            "north": [
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/north/frame_000.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/north/frame_001.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/north/frame_002.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/north/frame_003.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/north/frame_004.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/north/frame_005.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/north/frame_006.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/north/frame_007.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/north/frame_008.png"
+            ],
+            "west": [
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/west/frame_000.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/west/frame_001.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/west/frame_002.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/west/frame_003.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/west/frame_004.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/west/frame_005.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/west/frame_006.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/west/frame_007.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/west/frame_008.png"
+            ],
+            "east": [
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/east/frame_000.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/east/frame_001.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/east/frame_002.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/east/frame_003.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/east/frame_004.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/east/frame_005.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/east/frame_006.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/east/frame_007.png",
+              "Idle/animations/Tuck_the_hind_legs_inward_and_compress_the_body_in/east/frame_008.png"
+            ]
+          },
+          "Running": {
+            "west": [
+              "Idle/animations/Running/west/frame_000.png",
+              "Idle/animations/Running/west/frame_001.png",
+              "Idle/animations/Running/west/frame_002.png",
+              "Idle/animations/Running/west/frame_003.png",
+              "Idle/animations/Running/west/frame_004.png",
+              "Idle/animations/Running/west/frame_005.png",
+              "Idle/animations/Running/west/frame_006.png",
+              "Idle/animations/Running/west/frame_007.png"
+            ],
+            "south": [
+              "Idle/animations/Running/south/frame_000.png",
+              "Idle/animations/Running/south/frame_001.png",
+              "Idle/animations/Running/south/frame_002.png",
+              "Idle/animations/Running/south/frame_003.png",
+              "Idle/animations/Running/south/frame_004.png",
+              "Idle/animations/Running/south/frame_005.png",
+              "Idle/animations/Running/south/frame_006.png",
+              "Idle/animations/Running/south/frame_007.png"
+            ],
+            "east": [
+              "Idle/animations/Running/east/frame_000.png",
+              "Idle/animations/Running/east/frame_001.png",
+              "Idle/animations/Running/east/frame_002.png",
+              "Idle/animations/Running/east/frame_003.png",
+              "Idle/animations/Running/east/frame_004.png",
+              "Idle/animations/Running/east/frame_005.png",
+              "Idle/animations/Running/east/frame_006.png",
+              "Idle/animations/Running/east/frame_007.png"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "character": {
+        "id": "a3b163f8-445c-4d6b-82ea-e10d1622805a",
+        "name": "Legs are tucked and",
+        "prompt": "Griffin",
+        "size": {
+          "width": 116,
+          "height": 116
+        },
+        "template_id": "lion",
+        "directions": 8,
+        "view": "high top-down",
+        "created_at": "2026-10-15T23:14:44.818009+00:00"
+      },
+      "folder": "Legs_are_tucked_and",
+      "frames": {
+        "rotations": {
+          "south": "Legs_are_tucked_and/rotations/south.png",
+          "south-east": "Legs_are_tucked_and/rotations/south-east.png",
+          "east": "Legs_are_tucked_and/rotations/east.png",
+          "north-east": "Legs_are_tucked_and/rotations/north-east.png",
+          "north": "Legs_are_tucked_and/rotations/north.png",
+          "north-west": "Legs_are_tucked_and/rotations/north-west.png",
+          "west": "Legs_are_tucked_and/rotations/west.png",
+          "south-west": "Legs_are_tucked_and/rotations/south-west.png"
+        },
+        "animations": {
+          "Flex_wings_downward_and_inward_in_a_powerful_strok": {
+            "east": [
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/east/frame_000.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/east/frame_001.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/east/frame_002.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/east/frame_003.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/east/frame_004.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/east/frame_005.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/east/frame_006.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/east/frame_007.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/east/frame_008.png"
+            ],
+            "west": [
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/west/frame_000.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/west/frame_001.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/west/frame_002.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/west/frame_003.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/west/frame_004.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/west/frame_005.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/west/frame_006.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/west/frame_007.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/west/frame_008.png"
+            ],
+            "north": [
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/north/frame_000.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/north/frame_001.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/north/frame_002.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/north/frame_003.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/north/frame_004.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/north/frame_005.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/north/frame_006.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/north/frame_007.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/north/frame_008.png"
+            ],
+            "south": [
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/south/frame_000.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/south/frame_001.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/south/frame_002.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/south/frame_003.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/south/frame_004.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/south/frame_005.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/south/frame_006.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/south/frame_007.png",
+              "Legs_are_tucked_and/animations/Flex_wings_downward_and_inward_in_a_powerful_strok/south/frame_008.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-15T23:43:38.226030"
+}

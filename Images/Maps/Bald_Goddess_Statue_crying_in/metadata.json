@@ -1,0 +1,22 @@
+{
+  "group_id": "0ed6798f-cbb4-438b-a67f-4367331b1b30",
+  "objects": [
+    {
+      "id": "faa9d37e-f27c-4ed4-bbf9-59d1de1a4c61",
+      "name": "base",
+      "prompt": "Bald Goddess Statue crying in a shrine",
+      "size": {
+        "width": 168,
+        "height": 168
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/Bald_Goddess_Statue_crying_in.png"
+      },
+      "animations": {}
+    }
+  ],
+  "export_version": "1.1",
+  "export_date": "2026-10-14T22:53:47.426766"
+}

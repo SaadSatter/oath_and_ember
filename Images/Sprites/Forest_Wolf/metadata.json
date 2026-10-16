@@ -1,0 +1,63 @@
+{
+  "group_id": "fc26184e-341f-47d6-a38e-ac129c42c346",
+  "states": [
+    {
+      "character": {
+        "id": "40a7d94c-6dce-4bff-a162-5b2a6b876e69",
+        "name": "Idle",
+        "prompt": "Forest Wolf",
+        "size": {
+          "width": 64,
+          "height": 64
+        },
+        "template_id": "dog",
+        "directions": 8,
+        "view": "high top-down",
+        "created_at": "2026-10-15T23:10:03.731849+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {
+          "Run": {
+            "west": [
+              "Idle/animations/Run/west/frame_000.png",
+              "Idle/animations/Run/west/frame_001.png",
+              "Idle/animations/Run/west/frame_002.png",
+              "Idle/animations/Run/west/frame_003.png"
+            ],
+            "east": [
+              "Idle/animations/Run/east/frame_000.png",
+              "Idle/animations/Run/east/frame_001.png",
+              "Idle/animations/Run/east/frame_002.png",
+              "Idle/animations/Run/east/frame_003.png"
+            ],
+            "north": [
+              "Idle/animations/Run/north/frame_000.png",
+              "Idle/animations/Run/north/frame_001.png",
+              "Idle/animations/Run/north/frame_002.png",
+              "Idle/animations/Run/north/frame_003.png"
+            ],
+            "south": [
+              "Idle/animations/Run/south/frame_000.png",
+              "Idle/animations/Run/south/frame_001.png",
+              "Idle/animations/Run/south/frame_002.png",
+              "Idle/animations/Run/south/frame_003.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-15T23:31:15.841072"
+}

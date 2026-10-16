@@ -26,24 +26,35 @@ Production serves the game and Socket.IO together at http://localhost:3000. `POR
 
 - WASD or arrow keys: move.
 - J: primary attack (Oath slash / Ember bolt).
-- K: defense after unlocking Guard/Ward; later Dash/Blink.
-- E: hold to interact, push, or channel.
+- K: defense (available from the start).
+- E: interact with nearby items, NPCs, objects and travel markers.
+- 1–9: the displayed hero abilities; Sieg uses 1 for Push and 2 for Super Speed; Coco uses 1 for Slow Time, 2 for Flight and 3 for Black Hole.
+- I: shared inventory.
 - Space, W, or Up: jump in side view.
-- Tab: skill tree. F3: networking diagnostics.
+- F3: networking diagnostics.
 - Touch devices have directional, strike, defense, use, and jump buttons.
 
 ## Playthrough
 
-Start at the main house exterior, follow the path east, and press E by the exit to enter the forest together. See [house/tree assets](docs/HOUSE_AND_TREES.md).
+The normal campaign starts at the main house and continues through Transition Trail → Grasslands → Puzzle Glade → Monster Clearing → The Bridge That Hates Cooperation → Goddess Shrine hub → Forest Ruins.
 
-1. Oath attacks the bramble with J; Ember holds E near the rune. Both conditions open the first gate.
-2. Oath stays near the moving crate and holds E to push it east onto the plate. Ember uses the crystal. The second gate opens.
-3. Reach the boarding marker at the eastern edge to move both heroes to the airship.
-4. Jump across the deck gap. Oath holds E at the crank while Ember holds E at the core for three seconds.
-5. Reach the eastern exit to enter the boss arena. Ember uses the anchor to strip the shield; Oath attacks the Warden. The shield returns once at half HP.
-6. After victory, either hero can replay. Roles and room stay; progression resets.
+The exit of Puzzle Map 2 leads directly to the Goddess Shrine. The hub connects all three quest branches:
 
-Each hero starts with one skill point and gains points at gates and transitions. Skills form a three-node prerequisite chain. A defeated hero respawns at the scene entrance. This forgiving behavior keeps the technical prototype playable.
+1. East: Hedge Maze. Defeat the guards, burn the dry bush, pull the cow with Black Hole, and combine Slow Time and Super Speed to catch the key-carrying forest wolf. Open the gate and collect the shared Enchanted Shears.
+2. West: Mirror Pond. Sieg passes the east spike entrance and rotates the mirrors with Push. Coco flies over the pond and reflects fireballs to light all four torches. Collect the shared Vanity Mirror.
+3. North: Griffin Enclosure. Coco flies to the nest, offers the mirror from inventory, then uses the shears to obtain the shared wig. Alternatively, fight the Griffin: Black Hole pulls it ashore, Slow Time helps dodge its mouth beam, and a headbutt into a pillar stuns it.
+4. Return to the goddess and offer the wig. Use E at the south-east golden switch to continue to Forest Ruins; finish its two gate mechanisms and board the airship. Boarding requires the shrine quest to be complete.
+5. Power the airship together, then fight the Stormbound Warden.
+
+E at each RETURN point travels backwards. Shared inventory and completed quest trials survive hub travel. Maze and pond can be completed in either order. Both heroes start with their icon abilities available, without skill points or a skill tree.
+
+### Play-test the new maps directly
+
+```sh
+npm run playtest
+```
+
+Open http://localhost:3018 in two tabs, create/join a room, select Sieg and Coco, and ready both. This launcher starts a fresh party at the Goddess Shrine with empty shared inventory and normal combat/ability rules. It does not skip puzzles, grant tools or change the standard campaign start. Earn the mirror and shears on their branches, then visit the Griffin and return the wig.
 
 ## Deploy
 

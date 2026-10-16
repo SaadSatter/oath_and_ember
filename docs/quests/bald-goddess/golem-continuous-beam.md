@@ -1,0 +1,9 @@
+# Continuous palm beam
+
+The server now emits a two-second beam from the golem's raised palm, with locked aim, a 640px ray, and first-contact wall/player collision. The owner holds its attack pose until the burst ends. Death cancels firing, and entering melee range interrupts the burst for a new readable punch. Slow Time scales charge, beam age and active duration to 20 percent. Palm offsets live in shared/golem.ts and are reused by the client charge pose. Black Hole displacement moves the origin with the owner.
+
+The original two-tile contact explosion and damage remain. Each hero can take that area damage once per burst; repeated beam frames cannot multiply damage. Impact effects are emitted only for new contacted blockers. Server snapshots publish the palm origin, endpoint, beam age and damage receipts; clients only draw them.
+
+The continuous texture uses the alpha mask from the approved Griffin middle-beam frames with a white/blue palette, preserving the original file. Rebuild with scripts/import-golem-beam.py. The original golem charge and impact animations remain. scripts/qa-golem-attack.ts verifies all four palm poses and beam anchors in two browsers; the gameplay tests also cover first-contact clipping, area damage, death, melee interruption, duration and matching multiplayer snapshots.
+
+The supplied blue/white terminal sheet now renders at the server beam endpoint, rotated with its direction. Its eleven occupied frames play once at 90ms each; only the final three (zero-based 8–10) repeat for the rest of the burst. The empty twelfth cell is excluded. This endpoint replaces the orange blast visual while the continuous beam is active; authoritative two-tile damage remains unchanged. Source and provenance are preserved under monster_sprites/sources/forest-iron-golem/beam-tip.

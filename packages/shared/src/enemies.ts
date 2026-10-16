@@ -16,6 +16,13 @@ export interface EnemyDefinition {
   projectileLife: number;
   sprite: string;
 }
+export const golemMelee = {
+  range: 60,
+  hitTicks: 12,
+  durationTicks: 24,
+  cooldownTicks: 30,
+  facingDot: 0.5,
+} as const;
 export const enemyDefinitions: Record<EnemyType, EnemyDefinition> = {
   mossling: {
     maxHp: 60,
@@ -52,17 +59,17 @@ export const enemyDefinitions: Record<EnemyType, EnemyDefinition> = {
   ironbound_sentinel: {
     maxHp: 180,
     speed: 32,
-    detectionRange: 260,
-    attackRange: 60,
+    detectionRange: 420,
+    attackRange: 320,
     cooldownTicks: 75,
-    windupTicks: 27,
+    windupTicks: 36,
     damage: 28,
     body: { halfWidth: 22, halfHeight: 18 },
     movement: "pursue",
-    attack: "melee",
+    attack: "projectile",
     preferredRange: 0,
-    projectileSpeed: 0,
-    projectileLife: 0,
+    projectileSpeed: 400,
+    projectileLife: 1.6,
     sprite: "ironbound_sentinel_sprites_v2",
   },
 };

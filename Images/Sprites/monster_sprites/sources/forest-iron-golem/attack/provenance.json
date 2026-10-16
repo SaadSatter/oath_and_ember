@@ -1,0 +1,207 @@
+{
+  "directions": [
+    "south",
+    "north",
+    "west",
+    "east"
+  ],
+  "frameWidth": 128,
+  "frameHeight": 128,
+  "columns": 9,
+  "anchor": [
+    64,
+    108
+  ],
+  "sources": [
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_000.png",
+      "sha256": "510dcb1450078647a6019c96d7113071bb35c9badc970a95abd1f460560b5c0f"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_001.png",
+      "sha256": "5e18d89e56338644a6365351ce7c91f597c91fe81c4a0a1ddb59b734e9a5361b"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_002.png",
+      "sha256": "39b3f2f658c671da53470f2c7a7f4e8c8e75bc18cdec740c5002f9d3b255348c"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_003.png",
+      "sha256": "3503ae1745b734ec9fd1eb82f736d61e77cdad6e3e3b3907dcf7ca048dee87ce"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_004.png",
+      "sha256": "72ac965adde4326e97a4033637b8b59ceb4207cf174428092647cd4fd9b3c969"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_005.png",
+      "sha256": "f22846086befcb344ca89d13f42cedb1392fa17a43ace757c426f993e018b84a"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_006.png",
+      "sha256": "77ed246d615c077a057c25c6a02b8dffdae03d188ebc1e13a99f4832f4c6d89a"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_007.png",
+      "sha256": "975ca83954705d53781ed16f423f7d290a712c7f5f15b99786a662ed704a204a"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/south/frame_008.png",
+      "sha256": "2dc679abe5c1fd8083c7866b47b70804d3416f919cc121eb19c5cf96892f53b9"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_000.png",
+      "sha256": "afd8956a0f16fe3cd0277cb90d1bbfc1502cbdc1014cb849720a468fedcbe375"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_001.png",
+      "sha256": "4a1518cd8d3dd6155e5c4e7b03a820e48081e8718d970f0e96670c85041d95c8"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_002.png",
+      "sha256": "ebc206c9f8d0726473bfef175ce87908dbef5e3bdc9e93d7a6ce748a8710a4a4"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_003.png",
+      "sha256": "cf9258ef01facdae690639adf57a4b771873840574204dd080814fa5e81d80d9"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_004.png",
+      "sha256": "8a8a0698f312b52eba370cb0142d472c64d2c8ebe25df1fc45f3c0e769e6539a"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_005.png",
+      "sha256": "68e6c11241ab00f5ecbb3c2ec59f0797affee4239abdf1b48e1ce026e9a79494"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_006.png",
+      "sha256": "4018af697703699e2bbf3b23b3fdaea7db0ee1dc4e3bf53175c83b45a649930b"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_007.png",
+      "sha256": "aff5e9d038c36f682f7d46aa714c9ab4a9be7585af2a94fdfca78f83704d2344"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/north/frame_008.png",
+      "sha256": "69341cac20723e91438f6eeaeb71429c21cf9e6c145a98240ccb2be601a30cf2"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_000.png",
+      "sha256": "2cd25c22e3ee7f4fb0fb3a18820142a99895151940e73df5144c576b595d624b"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_001.png",
+      "sha256": "e75130924dee4dd732a4ffb8e7851467ffcd0a96f91221902b708022630beb49"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_002.png",
+      "sha256": "c8d52321c9334f483e69c09a5f93f6a1201894a8702a36011bcf96bc041d8d4e"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_003.png",
+      "sha256": "4a99a51c213533688ea38c4912e77e2b475e8e37bbbc6e4bf51e1ad680937d9d"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_004.png",
+      "sha256": "0c6fbfe939d0af9e638f6b62e55ce5b7b4071d609bc09dfa339f86d677d2e634"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_005.png",
+      "sha256": "15c0c5d9c985d06148c682f2d11440b85ae24dd55da0530ee749ede8bcfe7619"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_006.png",
+      "sha256": "cae646a827b077cec3d172053ad767d3541fc35903c746a29ceb95def6e057fd"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_007.png",
+      "sha256": "1e95c900791353457f4b308a630c3ce2c5f12fe51ee5c7d073ad7e09aa177b73"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/west/frame_008.png",
+      "sha256": "729bf4643f25db68a129785bd7e20d215b00cc84b1b1bb15091b6392908268d8"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_000.png",
+      "sha256": "ab3d4be1044d98a76ab3ce32bee4582b26899d1c440a64431f36eb1a7a993cef"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_001.png",
+      "sha256": "cbc682700fbdf60e4d49ec3b753c455c96a910015a3bf4776d4a9bda5eed832e"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_002.png",
+      "sha256": "5446047ef223d268f00073b3e799dfc3508d9c2e2dae0e55e926b4304be28c2b"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_003.png",
+      "sha256": "28ee402bb11f1960fc45ffda8e866d09864a1795cb763a57c0fd312bb0f17410"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_004.png",
+      "sha256": "92afa906d8a827d552113680b941c0cfc00d1d7b807befe7db08cb8eb83c0be9"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_005.png",
+      "sha256": "5351320c224712c2b00b3c632cda53b6c5563763d01f9da5bb60df7488c9e660"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_006.png",
+      "sha256": "cb880ec8700b38b248ed23494ff910757f71192ce7ecdfa53c9b925eef35704a"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_007.png",
+      "sha256": "48250e15ff7a56925e3015ac59f6ee0face5a98fe1f173c758d7ac2df4e129f6"
+    },
+    {
+      "file": "He_puts_his_palm_out/animations/Flash_a_bright_white_light_across_the_raised_palm/east/frame_008.png",
+      "sha256": "2dd57260b7aebba774331de73d27f2db0ee6ff63b300aaf9ea85ca271756f4a3"
+    }
+  ],
+  "effects": {
+    "charge": {
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "durations": [
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130
+      ],
+      "source": "pixellab-The-concentrated-sphere-of-cra-1792095254007.gif",
+      "sha256": "4befef6cd3b8d47201a1e54a0e79b305b50c3008d938f4573af9fde5f652e1b6"
+    },
+    "blast": {
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "durations": [
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130
+      ],
+      "source": "pixellab-The-initial-small-eruption-vio-1792098934914.gif",
+      "sha256": "854b3acf56ffc3abc16348d27c0782e184ce0cff011a419cefbf42b9f8d6759e"
+    }
+  }
+}

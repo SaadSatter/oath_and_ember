@@ -28,9 +28,11 @@ export type Presentation =
       playbackRate?: number;
     };
 // Presentation-only state machine. Highest priority: defeat > hurt > accepted
-// combat > held ability/channel fallback > locomotion. Input never starts combat.
+// combat > held ability/channel fallback > locomotion. Turning interrupts old
+// visual clips; accepted gameplay actions and their locked aim stay untouched.
 export class PlayerPresentation {
   private seen = 0;
+  private lastDirection: CombatDirection | null = null;
   private defense: { phase: DefensePhase; start: number } | null = null;
   private hitSeen = 0;
   private impactUntil = 0;
@@ -42,17 +44,20 @@ export class PlayerPresentation {
     end: number;
     playbackRate?: number;
   } | null = null;
-  private queued: CombatAction | null = null;
-  private basicQueue: { action: CombatAction; playbackRate: number }[] = [];
-  private lastBasicTick: number | null = null;
-  private basicEnd: number | null = null;
+
   update(
     p: Readonly<Player>,
     mode: MovementMode,
     now: number,
     serverTick: number,
     hurt: boolean,
+    motion: Pick<Player, "facing"> = p,
   ): Presentation {
+    const d = combatDirection(motion.facing);
+    if (this.lastDirection !== null && this.lastDirection !== d) {
+      this.active = null;
+    }
+    this.lastDirection = d;
     const guarding = p.actionState === "guard";
     if (guarding && !this.held) this.defense = { phase: "start", start: now };
     if (!guarding && this.held && this.defense)
@@ -62,7 +67,6 @@ export class PlayerPresentation {
       this.hitSeen = p.defensiveHit.seq;
       if (serverTick - p.defensiveHit.tick < 9) this.impactUntil = now + 250;
     }
-    const d = combatDirection(p.facing);
     if (
       this.defense &&
       p.role &&
@@ -75,39 +79,32 @@ export class PlayerPresentation {
     }
     if (p.combat && p.combat.seq > this.seen) {
       this.seen = p.combat.seq;
-      if (p.role === "OATH" && p.combat.kind === "sword") {
-        const clip = actionClip(
-          p.role,
-          combatDirection(p.combat.facing),
-          p.combat.kind,
-        );
+      if (combatDirection(p.combat.facing) !== d) {
+        // Consume delayed accepted markers without replaying the direction we left.
+      } else if (p.role) {
+        const clip = actionClip(p.role, d, p.combat.kind);
+        const duration =
+          p.role === "EMBER" ? 200 : p.combat.kind === "heavy" ? 250 : 300;
         const age = Math.max(
           0,
           ((serverTick - p.combat.startedTick) * 1000) / 30,
         );
-        if (age < clip.durationMs) {
-          const gap =
-            this.lastBasicTick === null
-              ? clip.durationMs
-              : Math.max(
-                  1,
-                  ((p.combat.startedTick - this.lastBasicTick) * 1000) / 30,
-                );
-          // A standalone swing uses its authored rhythm. Repeated confirmed
-          // swings compress their full sequence to the observed server cadence,
-          // keeping visual backlog bounded without altering gameplay cooldowns.
-          const playbackRate = clip.durationMs / Math.min(clip.durationMs, gap);
-          this.basicQueue.push({ action: p.combat, playbackRate });
-          this.lastBasicTick = p.combat.startedTick;
-        }
-      } else this.queued = p.combat;
+        // Only the newest confirmed action is relevant. Never build a visual
+        // backlog behind an older swing/cast when repeated inputs are accepted.
+        this.active =
+          age < duration
+            ? {
+                action: p.combat,
+                direction: d,
+                start: now - age,
+                end: now - age + duration,
+                playbackRate: clip.durationMs / duration,
+              }
+            : null;
+      }
     }
     if (mode !== "TOP_DOWN" || p.hp <= 0 || hurt || p.actionState === "hurt") {
       this.active = null;
-      this.queued = null;
-      this.basicQueue = [];
-      this.basicEnd = null;
-      this.lastBasicTick = null;
       if (
         mode !== "TOP_DOWN" &&
         p.hp > 0 &&
@@ -138,39 +135,6 @@ export class PlayerPresentation {
       };
     }
     if (this.active && now >= this.active.end) this.active = null;
-    if (
-      !this.active &&
-      this.basicQueue.length &&
-      p.role === "OATH" &&
-      (!this.queued ||
-        this.basicQueue[0].action.startedTick <= this.queued.startedTick)
-    ) {
-      const { action, playbackRate } = this.basicQueue.shift()!;
-      const direction = combatDirection(action.facing),
-        clip = actionClip(p.role, direction, action.kind);
-      const age = Math.max(0, ((serverTick - action.startedTick) * 1000) / 30);
-      // Admit fresh markers once; queued clips start from their first frame,
-      // using the prior authoritative schedule to align both client clocks.
-      const start = Math.max(now - age, this.basicEnd ?? -Infinity);
-      const end = start + clip.durationMs / playbackRate;
-      this.active = { action, direction, start, end, playbackRate };
-      this.basicEnd = end;
-    }
-    if (!this.active && this.queued && p.role) {
-      const action = this.queued;
-      this.queued = null;
-      const direction = combatDirection(action.facing),
-        clip = actionClip(p.role, direction, action.kind);
-      const age = Math.max(0, ((serverTick - action.startedTick) * 1000) / 30);
-      // Old snapshots on scene creation/reconnect never replay stale attacks.
-      if (age < clip.durationMs)
-        this.active = {
-          action,
-          direction,
-          start: now - age,
-          end: now - age + clip.durationMs,
-        };
-    }
     return this.active
       ? {
           kind: "combat",
@@ -186,7 +150,7 @@ export class PlayerPresentation {
       : p.heavyCharge
         ? {
             kind: "charge",
-            direction: combatDirection(p.heavyCharge.facing),
+            direction: d,
             progress: p.heavyCharge.progress,
             ticks: p.heavyCharge.ticks,
           }

@@ -1,0 +1,47 @@
+{
+  "generator": "Built-in image_gen.imagegen",
+  "date": "2026-10-14",
+  "assets": {
+    "hedge-gate-key": {
+      "file": "hedge-gate-key.png",
+      "source": "/Users/saadsatter/.codex/generated_images/01a13672-f3eb-7470-98d1-30c3595be099/exec-a5be8072-fca3-461d-a4b4-4640950c37a2.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "alpha": true,
+      "original_preserved": true
+    },
+    "enchanted-shears": {
+      "file": "enchanted-shears.png",
+      "source": "/Users/saadsatter/.codex/generated_images/01a13672-f3eb-7470-98d1-30c3595be099/exec-62551edc-6111-4803-9d82-2a36ef9d8095.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "alpha": true,
+      "original_preserved": true
+    },
+    "vanity-mirror": {
+      "file": "vanity-mirror.png",
+      "source": "/Users/saadsatter/.codex/generated_images/01a13672-f3eb-7470-98d1-30c3595be099/exec-5ad24bee-47ac-436e-8dea-4abe089fbec1.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "alpha": true,
+      "original_preserved": true
+    },
+    "griffin-wig": {
+      "file": "griffin-wig.png",
+      "source": "/Users/saadsatter/.codex/generated_images/01a13672-f3eb-7470-98d1-30c3595be099/exec-c632d675-4057-4db3-8186-1848b9b2ef6b.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "alpha": true,
+      "original_preserved": true
+    }
+  },
+  "status": "Generated inventory artwork; preview only, not yet integrated into gameplay"
+}

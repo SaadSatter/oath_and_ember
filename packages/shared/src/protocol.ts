@@ -11,6 +11,10 @@ export type Ack<T = unknown> = (r: Result<T>) => void;
 // Only intent crosses this boundary. Snapshots acknowledge input sequences;
 // authoritative outcomes remain recoverable even when transient packets drop.
 export interface ClientEvents {
+  "inventory:use": (
+    p: import("./items.js").ItemIntent,
+    ack: Ack<import("./items.js").ItemOutcome>,
+  ) => void;
   "room:leave": (p: Record<string, never>, ack: Ack) => void;
   "room:create": (p: Record<string, never>, ack: Ack<Session>) => void;
   "room:join": (p: { roomCode: string }, ack: Ack<Session>) => void;

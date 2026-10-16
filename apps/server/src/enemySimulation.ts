@@ -1,6 +1,13 @@
+import {
+  golemBeam,
+  golemPalmOrigin,
+} from "../../../packages/shared/src/golem.js";
 import { SLOW_TIME_SCALE } from "../../../packages/shared/src/constants.js";
 import { DT } from "../../../packages/shared/src/constants.js";
-import { enemyDefinitions } from "../../../packages/shared/src/enemies.js";
+import {
+  enemyDefinitions,
+  golemMelee,
+} from "../../../packages/shared/src/enemies.js";
 import type {
   Enemy,
   Player,
@@ -111,6 +118,11 @@ export function tickEnemies(w: World, damage: (p: Player, n: number) => void) {
         delete w.enemies[e.id];
       continue;
     }
+    if (e.passive) {
+      e.state = "IDLE";
+      e.attackStartedTick = null;
+      continue;
+    }
     const d = enemyDefinitions[e.type];
     if (w.slowTime) {
       if (e.attackStartedTick !== null)
@@ -135,6 +147,71 @@ export function tickEnemies(w: World, damage: (p: Player, n: number) => void) {
       retained && nearest && distance(e, retained) <= distance(e, nearest) + 30
         ? retained
         : nearest;
+    const golem = e.type === "ironbound_sentinel";
+    const close =
+      golem &&
+      nearest &&
+      distance(e, nearest) <= golemMelee.range &&
+      lineClear(e, nearest, walls)
+        ? nearest
+        : undefined;
+    const activeBeam = golem
+      ? Object.values(w.projectiles).find(
+          (q) => q.owner === e.id && q.effect === "golem_beam",
+        )
+      : undefined;
+    if (activeBeam && !close) {
+      e.state = "ATTACK";
+      continue;
+    }
+    if (activeBeam && close) delete w.projectiles[activeBeam.id];
+    // A hero rushing the charge forces a fresh, readable punch windup.
+    if (close && e.state === "ATTACK" && e.attackKind !== "melee") {
+      e.attackKind = "melee";
+      e.attackHit = false;
+      e.attackStartedTick = w.serverTick;
+      e.targetId = close.id;
+      e.attackFacing = e.facing = Math.atan2(close.y - e.y, close.x - e.x);
+      e.attackSeq++;
+    }
+    if (
+      golem &&
+      e.state === "ATTACK" &&
+      e.attackKind === "melee" &&
+      e.attackStartedTick !== null
+    ) {
+      const age = w.serverTick - e.attackStartedTick,
+        p = w.players[e.targetId ?? ""];
+      if (age >= golemMelee.hitTicks && !e.attackHit) {
+        e.attackHit = true;
+        if (
+          p &&
+          p.connected &&
+          p.hp > 0 &&
+          (p.sceneId ?? w.sceneId) === w.sceneId
+        ) {
+          const dx = p.x - e.x,
+            dy = p.y - e.y,
+            dist = Math.hypot(dx, dy);
+          if (
+            dist <= golemMelee.range &&
+            (dist < 1 ||
+              (dx * Math.cos(e.attackFacing) + dy * Math.sin(e.attackFacing)) /
+                dist >=
+                golemMelee.facingDot) &&
+            lineClear(e, p, walls)
+          )
+            damage(p, d.damage);
+        }
+      }
+      if (age >= golemMelee.durationTicks) {
+        e.state = "CHASE";
+        e.attackStartedTick = null;
+        e.nextAttackTick = w.serverTick + golemMelee.cooldownTicks;
+      }
+      e.cooldown = Math.max(0, (e.nextAttackTick - w.serverTick) / 30);
+      continue;
+    }
     // Windup locks target/facing. Range and visibility are checked again at resolution.
     if (e.state === "ATTACK" && e.attackStartedTick !== null) {
       if (w.serverTick - e.attackStartedTick >= d.windupTicks) {
@@ -162,9 +239,26 @@ export function tickEnemies(w: World, damage: (p: Player, n: number) => void) {
               faction: "enemies",
               damage: d.damage,
               radius: 6,
+              ...(e.type === "ironbound_sentinel"
+                ? {
+                    effect: "golem_beam" as const,
+                    beamOrigin: golemPalmOrigin(e),
+                    ...golemPalmOrigin(e),
+                    beamAge: 0,
+                    beamDamaged: [],
+                    life: golemBeam.duration,
+                  }
+                : {}),
             };
           }
         }
+        if (
+          golem &&
+          Object.values(w.projectiles).some(
+            (q) => q.owner === e.id && q.effect === "golem_beam",
+          )
+        )
+          continue;
         if (!p || (p.sceneId ?? w.sceneId) !== w.sceneId) e.targetId = null;
         e.attackStartedTick = null;
         e.state = "CHASE";
@@ -173,32 +267,44 @@ export function tickEnemies(w: World, damage: (p: Player, n: number) => void) {
       e.cooldown = Math.max(0, (e.nextAttackTick - w.serverTick) / 30);
       continue;
     }
-    e.targetId = target?.id ?? null;
+    const chosen = close ?? target;
+    e.targetId = chosen?.id ?? null;
     e.cooldown = Math.max(0, (e.nextAttackTick - w.serverTick) / 30);
-    if (!target) {
+    if (!chosen) {
       e.state = "IDLE";
       continue;
     }
-    const dist = distance(e, target);
-    e.facing = Math.atan2(target.y - e.y, target.x - e.x);
+    const dist = distance(e, chosen);
+    e.facing = Math.atan2(chosen.y - e.y, chosen.x - e.x);
     e.state = "CHASE";
     const retreat = d.movement === "ranged" && dist < d.preferredRange - 25;
     if (retreat || dist > d.attackRange)
       moveEnemy(
         e,
-        (target.x - e.x) * (retreat ? -1 : 1),
-        (target.y - e.y) * (retreat ? -1 : 1),
+        (chosen.x - e.x) * (retreat ? -1 : 1),
+        (chosen.y - e.y) * (retreat ? -1 : 1),
         w,
       );
     if (
       !retreat &&
       dist <= d.attackRange &&
       w.serverTick >= e.nextAttackTick &&
-      lineClear(e, target, walls)
+      lineClear(e, chosen, walls)
     ) {
+      if (golem) {
+        e.attackKind = dist <= golemMelee.range ? "melee" : "beam";
+        e.attackHit = false;
+      }
       e.state = "ATTACK";
       e.attackStartedTick = w.serverTick;
       e.attackFacing = e.facing;
+      if (golem && e.attackKind === "beam") {
+        const palm = golemPalmOrigin(e);
+        e.attackFacing = e.facing = Math.atan2(
+          chosen.y - palm.y,
+          chosen.x - palm.x,
+        );
+      }
       e.attackSeq++;
       e.vx = e.vy = 0;
     }

@@ -146,6 +146,32 @@ export function createApp(
         sync();
       }),
     );
+    socket.on("inventory:use", (p, ack) =>
+      request(ack, () => {
+        const intent = z
+          .object({
+            requestId: z
+              .string()
+              .min(1)
+              .max(80)
+              .regex(/^[a-zA-Z0-9_-]+$/),
+            targetId: z.string().min(1).max(100),
+            itemId: z
+              .enum([
+                "hedge_gate_key",
+                "enchanted_shears",
+                "vanity_mirror",
+                "griffin_wig",
+              ])
+              .optional(),
+          })
+          .strict()
+          .parse(p);
+        const result = requireRoom().useItem(id, intent);
+        sync();
+        return result;
+      }),
+    );
     socket.on("skill:unlock", (p, ack) =>
       request(ack, () => {
         requireRoom().unlock(id, z.string().parse(p?.nodeId));

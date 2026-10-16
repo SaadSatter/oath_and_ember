@@ -1,3 +1,4 @@
+import wolf from "../../public/assets/enemies/forest_wolf/visual.json" with { type: "json" };
 import mossling from "../../public/assets/enemies/mossling/visual.json" with { type: "json" };
 import wisp from "../../public/assets/enemies/cinder_wisp/visual.json" with { type: "json" };
 import sentinel from "../../public/assets/enemies/ironbound_sentinel/visual.json" with { type: "json" };
@@ -20,4 +21,4 @@ export interface EnemyVisual {
   fps: number;
   motion: string;
 }
-export const enemyVisuals: EnemyVisual[] = [mossling, wisp, sentinel];
+export const enemyVisuals: EnemyVisual[] = [mossling, wisp, sentinel, wolf];

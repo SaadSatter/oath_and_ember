@@ -1,0 +1,36 @@
+{
+  "group_id": "24722986-63e0-4c9e-a831-d37e29d6be1e",
+  "states": [
+    {
+      "character": {
+        "id": "99612bfb-b035-4238-8b4c-7d73a3f597ce",
+        "name": "Open mouth wide",
+        "prompt": "Griffin",
+        "size": {
+          "width": 116,
+          "height": 116
+        },
+        "template_id": "lion",
+        "directions": 8,
+        "view": "high top-down",
+        "created_at": "2026-10-16T00:10:43.072620+00:00"
+      },
+      "folder": "Open_mouth_wide",
+      "frames": {
+        "rotations": {
+          "south": "Open_mouth_wide/rotations/south.png",
+          "south-east": "Open_mouth_wide/rotations/south-east.png",
+          "east": "Open_mouth_wide/rotations/east.png",
+          "north-east": "Open_mouth_wide/rotations/north-east.png",
+          "north": "Open_mouth_wide/rotations/north.png",
+          "north-west": "Open_mouth_wide/rotations/north-west.png",
+          "west": "Open_mouth_wide/rotations/west.png",
+          "south-west": "Open_mouth_wide/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-16T01:52:59.898357"
+}

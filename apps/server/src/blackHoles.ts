@@ -1,3 +1,6 @@
+import { pullGriffin } from "./griffin.js";
+import { griffinState } from "../../../packages/shared/src/griffin.js";
+import { pullMazeCow } from "./hedgeMaze.js";
 import { blackHoleTuning as T } from "../../../packages/shared/src/blackHole.js";
 import { DT, SLOW_TIME_SCALE } from "../../../packages/shared/src/constants.js";
 import type { World, Rect } from "../../../packages/shared/src/gameTypes.js";
@@ -48,7 +51,14 @@ export function tickBlackHoles(w: World) {
         ny = hole.y + (hole.vy / T.speed) * distance;
       let fraction = 1;
       let hit = false;
+      const griffin =
+        hole.sceneId === "GRIFFIN_ENCLOSURE"
+          ? griffinState(w.puzzles)
+          : undefined;
       const blockers = [
+        ...(griffin && griffin.hp > 0
+          ? [{ x: griffin.x - 30, y: griffin.y - 30, w: 60, h: 60 }]
+          : []),
         ...walls,
         ...enemies.map((e) => ({ x: e.x - 20, y: e.y - 20, w: 40, h: 40 })),
       ];
@@ -75,6 +85,8 @@ export function tickBlackHoles(w: World) {
       }
     }
     if (hole.phase !== "vortex") continue;
+    pullMazeCow(w, hole, T.pullSpeed);
+    pullGriffin(w, hole, T.pullSpeed);
     for (const enemy of enemies) {
       const dx = hole.x - enemy.x,
         dy = hole.y - enemy.y,

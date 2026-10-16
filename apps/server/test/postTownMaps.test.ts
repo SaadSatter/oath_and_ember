@@ -165,6 +165,7 @@ it("returns the whole party through every campaign entrance using server-validat
     "PUZZLE_GLADE",
     "MONSTER_CLEARING",
     "BRIDGE_RUINS",
+    "GODDESS_SHRINE",
     "FOREST_RUINS",
     "AIRSHIP",
     "AIRSHIP_BOSS",
@@ -226,6 +227,11 @@ it("preserves the bridge boulder, completed mechanisms and enemy progress across
   const p = Object.values(r.state.players)[0];
   Object.assign(p, maps.FOREST_RUINS.points.back);
   r.receiveInput(p.id, { ...neutral(1), interactHeld: true });
+  r.tick();
+  expect(r.state.sceneId).toBe("GODDESS_SHRINE");
+  for (let n = 0; n < 31; n++) r.tick();
+  Object.assign(p, maps.GODDESS_SHRINE.points.back);
+  r.receiveInput(p.id, { ...neutral(2), interactHeld: true });
   r.tick();
   expect(r.state.sceneId).toBe("BRIDGE_RUINS");
   expect(r.state.bridgePuzzle).toBe(bridge);

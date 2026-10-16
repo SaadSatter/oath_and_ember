@@ -124,3 +124,17 @@ it("uses authored defensive directions and walks only while moving", () => {
       );
   }
 });
+
+it("brings Coco into and out of Ward quickly without delaying her next action", () => {
+  const m = new PlayerPresentation(),
+    p = hero("EMBER");
+  m.update(p, "TOP_DOWN", 0, 0, false);
+  expect(m.update(p, "TOP_DOWN", 350, 11, false)).toMatchObject({
+    kind: "defense",
+    phase: "loop",
+  });
+  m.update({ ...p, actionState: "idle" }, "TOP_DOWN", 400, 12, false);
+  expect(
+    m.update({ ...p, actionState: "idle" }, "TOP_DOWN", 900, 27, false).kind,
+  ).toBe("locomotion");
+});

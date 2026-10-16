@@ -1,0 +1,70 @@
+{
+  "videos": [
+    "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/docs/quests/bald-goddess/recording-maze/page@df0a2287e95875376d94a17fa6e67c5d.webm",
+    "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/docs/quests/bald-goddess/recording-maze/page@3d77ef8a44a6ebde595525955ce2756f.webm"
+  ],
+  "videoStarts": [
+    1792101611823,
+    1792101613391
+  ],
+  "startedTimestamp": 1792101616122,
+  "duration": 37.665,
+  "events": [
+    {
+      "chapter": "1 \u00b7 Clear the first Mossling and Cinder Wisp",
+      "time": 0,
+      "tick": 0
+    },
+    {
+      "chapter": "2 \u00b7 Coco burns the marked hedge",
+      "time": 3.001,
+      "tick": 178
+    },
+    {
+      "chapter": "3 \u00b7 Clear the three guards before the cow",
+      "time": 4.369,
+      "tick": 258
+    },
+    {
+      "chapter": "4 \u00b7 Coco pulls the cow into its grazing bay",
+      "time": 9.406,
+      "tick": 559
+    },
+    {
+      "chapter": "5 \u00b7 Regroup for the fleeing key carrier",
+      "time": 11.534,
+      "tick": 687
+    },
+    {
+      "chapter": "6 \u00b7 Slow Time + Super Speed chase",
+      "time": 15.702,
+      "tick": 937
+    },
+    {
+      "chapter": "7 \u00b7 Shared key opens the chest gate",
+      "time": 18.9,
+      "tick": 1127
+    },
+    {
+      "chapter": "8 \u00b7 Coco collects the shared Enchanted Shears",
+      "time": 21.667,
+      "tick": 1291
+    },
+    {
+      "chapter": "9 \u00b7 Return through the cleared maze",
+      "time": 23.969,
+      "tick": 1428
+    }
+  ],
+  "frames": 2120,
+  "playbackSpeed": 2,
+  "allFiveGuardsDefeated": true,
+  "golemBeamSeen": true,
+  "golemPunchSeen": true,
+  "noTeleports": true,
+  "sharedShears": 1,
+  "captionSyncSeconds": [
+    3.5833333333333335,
+    2.375
+  ]
+}

@@ -181,7 +181,7 @@ try {
           frames.add(v.frame);
           seen.set(e.type, frames);
           if (
-            ["mossling", "ironbound_sentinel"].includes(e.type) &&
+            e.type === "mossling" &&
             Math.abs(Math.cos(e.facing)) >= Math.abs(Math.sin(e.facing))
           ) {
             if (

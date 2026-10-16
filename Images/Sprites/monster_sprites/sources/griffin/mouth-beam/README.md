@@ -1,0 +1,1 @@
+Supplied PixelLab mouth pose, nine-frame transparent charge GIF, 5×4 beam sheet (17 occupied cells), and 2×2 impact sheet. Runtime assets are packed without resampling/recoloring. Beam-middle.png extracts only x=32..96 of frames 3..12 for repeating segments; beam frames 14..16 form terminal contact. Source metadata is preserved in pose/metadata.json.

@@ -1,3 +1,9 @@
+import {
+  golemKey,
+  golemEffectFrame,
+  golemBlastDuration,
+  golemBeamTipFrame,
+} from "../animation/golem.js";
 import { fireballLevel } from "../../../../packages/shared/src/abilities.js";
 import { blackHoleKey, blackHoleFrame } from "../animation/blackHole.js";
 import { blackHoleTuning } from "../../../../packages/shared/src/blackHole.js";
@@ -27,6 +33,13 @@ export class ProjectileView {
     }
   >();
   private baseShots = new Set<string>();
+  private golemShots = new Map<string, Phaser.GameObjects.Image>();
+  private golemTips = new Map<string, Phaser.GameObjects.Image>();
+  private golemRays = new Map<string, Phaser.GameObjects.TileSprite>();
+  private golemBlasts = new Map<
+    string,
+    { sprite: Phaser.GameObjects.Image; elapsed: number; last: number }
+  >();
   private holes = new Map<string, Phaser.GameObjects.Image>();
   private seen = new Set<string>();
   private bursts = new Map<
@@ -83,6 +96,56 @@ export class ProjectileView {
         this.holes.delete(id);
       }
     for (const p of Object.values(world.projectiles)) {
+      if (p.effect === "golem_beam") {
+        const origin = p.beamOrigin;
+        if (!origin) continue;
+        let im = this.golemShots.get(p.id);
+        if (!im) {
+          im = this.scene.add
+            .image(origin.x, origin.y, golemKey("charge"))
+            .setScale(0.3)
+            .setDepth(1801);
+          this.golemShots.set(p.id, im);
+        }
+        const elapsed = p.beamAge ?? 0,
+          angle = Math.atan2(p.y - origin.y, p.x - origin.x),
+          length = Math.hypot(p.x - origin.x, p.y - origin.y);
+        im.setPosition(origin.x, origin.y)
+          .setVisible(!debug)
+          .setFrame(golemEffectFrame("charge", elapsed * 1000));
+        let ray = this.golemRays.get(p.id);
+        if (!ray) {
+          ray = this.scene.add
+            .tileSprite(0, 0, 1, 128, golemKey("beam-middle"), 0)
+            .setOrigin(0, 0.5)
+            .setScale(1, 0.4)
+            .setDepth(1800);
+          this.scene.textures.get(golemKey("beam-middle")).setFilter(0);
+          this.golemRays.set(p.id, ray);
+        }
+        ray
+          .setPosition(origin.x, origin.y)
+          .setSize(Math.max(1, length), 128)
+          .setFrame(Math.floor(elapsed / 0.08) % 10)
+          .setRotation(angle)
+          .setVisible(!debug);
+        let tip = this.golemTips.get(p.id);
+        if (!tip) {
+          tip = this.scene.add
+            .image(p.x, p.y, golemKey("beam-tip"))
+            .setOrigin(112 / 128, 0.5)
+            .setScale(0.6)
+            .setDepth(1802);
+          this.scene.textures.get(golemKey("beam-tip")).setFilter(0);
+          this.golemTips.set(p.id, tip);
+        }
+        tip
+          .setPosition(p.x, p.y)
+          .setRotation(angle)
+          .setFrame(golemBeamTipFrame(elapsed))
+          .setVisible(!debug);
+        continue;
+      }
       if (p.fireballLevel === 1) this.baseShots.add(p.id);
       const q = position(p.id) || p,
         palette = world.players[p.owner]?.appearance?.effectPalette || "ember",
@@ -170,9 +233,38 @@ export class ProjectileView {
         f.core.destroy();
         this.flights.delete(id);
       }
+    for (const [id, im] of this.golemShots)
+      if (!world.projectiles[id]) {
+        im.destroy();
+        this.golemShots.delete(id);
+        this.golemRays.get(id)?.destroy();
+        this.golemRays.delete(id);
+        this.golemTips.get(id)?.destroy();
+        this.golemTips.delete(id);
+      }
     for (const hit of world.projectileImpacts || [])
       if (!this.seen.has(hit.id)) {
         this.seen.add(hit.id);
+        if (hit.effect === "golem_blast") {
+          // The continuous beam now supplies its own blue/white terminal animation.
+          if (
+            Object.values(world.projectiles).some(
+              (q) => q.effect === "golem_beam" && q.owner === hit.owner,
+            )
+          )
+            continue;
+          const age = Math.max(0, ((world.serverTick - hit.tick) * 1000) / 30);
+          if (age < golemBlastDuration)
+            this.golemBlasts.set(hit.id, {
+              sprite: this.scene.add
+                .image(hit.x, hit.y, golemKey("blast"))
+                .setOrigin(0.5, 100 / 128)
+                .setDepth(33),
+              elapsed: age,
+              last: now,
+            });
+          continue;
+        }
         const age = Math.max(0, ((world.serverTick - hit.tick) * 1000) / 30);
         const owner = world.players[hit.owner];
         const base =
@@ -196,6 +288,18 @@ export class ProjectileView {
           });
         }
       }
+    for (const [id, b] of this.golemBlasts) {
+      b.elapsed += (now - b.last) * (world.slowTime ? 0.2 : 1);
+      b.last = now;
+      if (b.elapsed >= golemBlastDuration) {
+        b.sprite.destroy();
+        this.golemBlasts.delete(id);
+        continue;
+      }
+      b.sprite
+        .setFrame(golemEffectFrame("blast", b.elapsed, false))
+        .setVisible(!debug);
+    }
     const retained = new Set((world.projectileImpacts || []).map((e) => e.id));
     for (const id of this.seen) if (!retained.has(id)) this.seen.delete(id);
     for (const id of this.baseShots)
@@ -231,6 +335,31 @@ export class ProjectileView {
         x: im.x,
         y: im.y,
       })),
+      golemShots: [...this.golemShots].map(([id, im]) => ({
+        id,
+        x: im.x,
+        y: im.y,
+        frame: Number(im.frame.name),
+      })),
+      golemTips: [...this.golemTips].map(([id, tip]) => ({
+        id,
+        x: tip.x,
+        y: tip.y,
+        frame: Number(tip.frame.name),
+      })),
+      golemRays: [...this.golemRays].map(([id, ray]) => ({
+        id,
+        x: ray.x,
+        y: ray.y,
+        length: ray.width,
+        frame: Number(ray.frame.name),
+      })),
+      golemBlasts: [...this.golemBlasts].map(([id, b]) => ({
+        id,
+        x: b.sprite.x,
+        y: b.sprite.y,
+        frame: Number(b.sprite.frame.name),
+      })),
       flights: [...this.flights].map(([id, f]) => ({
         id,
         frame: Number(f.ribbons.frame.name),
@@ -251,6 +380,14 @@ export class ProjectileView {
     for (const im of this.holes.values()) im.destroy();
     this.holes.clear();
     this.baseShots.clear();
+    for (const im of this.golemShots.values()) im.destroy();
+    this.golemShots.clear();
+    for (const ray of this.golemRays.values()) ray.destroy();
+    this.golemRays.clear();
+    for (const tip of this.golemTips.values()) tip.destroy();
+    this.golemTips.clear();
+    for (const b of this.golemBlasts.values()) b.sprite.destroy();
+    this.golemBlasts.clear();
     this.graphics.clear();
     for (const f of this.flights.values()) {
       f.ribbons.destroy();

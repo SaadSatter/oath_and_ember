@@ -99,6 +99,7 @@ export class PlayerView {
       now,
       hints.serverTick ?? player.combat?.startedTick ?? 0,
       hurt,
+      motion,
     );
     const combat = presentation.kind === "combat" ? presentation : null;
     const pushing =
@@ -120,7 +121,7 @@ export class PlayerView {
       pushing || sprinting || flying
         ? {
             phase: "loop" as const,
-            direction: combatDirection(player.facing),
+            direction: combatDirection(motion.facing),
             elapsedMs: now,
             impact: false,
           }
@@ -160,7 +161,7 @@ export class PlayerView {
       role === "EMBER" &&
       (defense?.phase === "start" || hints.slowTimeStarting);
     const spellStartDirection =
-      defense?.direction ?? combatDirection(player.facing);
+      defense?.direction ?? combatDirection(motion.facing);
     const bodyMode = role === "EMBER" && defense ? "TOP_DOWN" : mode;
     const resolved = role
       ? resolveHeroAnimation(

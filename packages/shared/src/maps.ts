@@ -1,4 +1,23 @@
 import {
+  griffinBounds,
+  griffinWater,
+  griffinSpawn,
+  griffinWalls,
+  type GriffinState,
+} from "./griffin.js";
+import { shrinePoints, shrineSpawn, shrineWalls } from "./shrine.js";
+import {
+  pondFixedWalls,
+  pondCollisionWalls,
+  pondSpawn,
+  type MirrorPondState,
+} from "./mirrorPond.js";
+import {
+  mazeHedges,
+  mazeDynamicWalls,
+  type HedgeMazeState,
+} from "./hedgeMaze.js";
+import {
   bridgeFixedWalls,
   bridgeDynamicWalls,
   bridgeRoleWalls,
@@ -17,12 +36,16 @@ export const postTownRoute = {
   MONSTER_CLEARING: { name: "Monster clearing", next: "BRIDGE_RUINS" },
 } as const;
 export const previousMap: Partial<Record<SceneId, SceneId>> = {
+  GODDESS_SHRINE: "BRIDGE_RUINS",
+  GRIFFIN_ENCLOSURE: "GODDESS_SHRINE",
+  MIRROR_POND: "GODDESS_SHRINE",
+  HEDGE_MAZE: "GODDESS_SHRINE",
   TRANSITION_TRAIL: "MAIN_HOUSE",
   GRASSLANDS: "TRANSITION_TRAIL",
   PUZZLE_GLADE: "GRASSLANDS",
   MONSTER_CLEARING: "PUZZLE_GLADE",
   BRIDGE_RUINS: "MONSTER_CLEARING",
-  FOREST_RUINS: "BRIDGE_RUINS",
+  FOREST_RUINS: "GODDESS_SHRINE",
   AIRSHIP: "FOREST_RUINS",
   AIRSHIP_BOSS: "AIRSHIP",
 };
@@ -69,6 +92,42 @@ function postTownMap(
   };
 }
 export const maps: Record<SceneId, MapDefinition> = {
+  GRIFFIN_ENCLOSURE: {
+    id: "GRIFFIN_ENCLOSURE",
+    mode: "TOP_DOWN",
+    width: 1280,
+    height: 1152,
+    spawn: griffinSpawn("OATH"),
+    walls: [...griffinBounds, ...griffinWater],
+    points: { back: { x: 640, y: 1088 } },
+  },
+  GODDESS_SHRINE: {
+    id: "GODDESS_SHRINE",
+    mode: "TOP_DOWN",
+    width: 1280,
+    height: 1024,
+    spawn: shrineSpawn("OATH"),
+    walls: shrineWalls,
+    points: shrinePoints,
+  },
+  MIRROR_POND: {
+    id: "MIRROR_POND",
+    mode: "TOP_DOWN",
+    width: 1536,
+    height: 1280,
+    spawn: pondSpawn("OATH"),
+    walls: pondFixedWalls,
+    points: { back: { x: 46.5 * 32, y: 34 * 32 } },
+  },
+  HEDGE_MAZE: {
+    id: "HEDGE_MAZE",
+    mode: "TOP_DOWN",
+    width: 1536,
+    height: 1280,
+    spawn: { x: 4 * 32, y: 34 * 32 },
+    walls: mazeHedges,
+    points: { back: { x: 48, y: 34 * 32 } },
+  },
   BRIDGE_RUINS: {
     id: "BRIDGE_RUINS",
     mode: "TOP_DOWN",
@@ -148,6 +207,7 @@ export const maps: Record<SceneId, MapDefinition> = {
       { x: 1050, y: 530, w: 35, h: 335 },
     ],
     points: {
+      shrine: { x: 240, y: 650 },
       bramble: { x: 410, y: 400 },
       rune: { x: 410, y: 505 },
       crate: { x: 790, y: 430 },
@@ -193,10 +253,23 @@ export const maps: Record<SceneId, MapDefinition> = {
 };
 // Return entrances are explicit shared interaction points, never client destinations.
 for (const scene of Object.keys(previousMap) as SceneId[])
-  maps[scene].points.back = { ...maps[scene].spawn };
+  if (
+    scene !== "MIRROR_POND" &&
+    scene !== "GODDESS_SHRINE" &&
+    scene !== "GRIFFIN_ENCLOSURE"
+  )
+    maps[scene].points.back = { ...maps[scene].spawn };
 export function collisionRects(
   scene: SceneId,
-  puzzles: Record<string, { complete: boolean }>,
+  puzzles: Record<
+    string,
+    {
+      complete: boolean;
+      maze?: HedgeMazeState;
+      pond?: MirrorPondState;
+      griffin?: GriffinState;
+    }
+  >,
   offsets?: World["pushableOffsets"],
   bridge?: World["bridgePuzzle"],
   players: World["players"] = {},
@@ -204,6 +277,9 @@ export function collisionRects(
   role?: World["players"][string]["role"],
 ): Rect[] {
   return [
+    ...(scene === "GRIFFIN_ENCLOSURE" ? griffinWalls(puzzles) : []),
+    ...(scene === "MIRROR_POND" ? pondCollisionWalls(puzzles, role) : []),
+    ...(scene === "HEDGE_MAZE" ? mazeDynamicWalls(puzzles) : []),
     ...(scene === "BRIDGE_RUINS"
       ? [...bridgeDynamicWalls(bridge, players, tick), ...bridgeRoleWalls(role)]
       : []),

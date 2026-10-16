@@ -1,6 +1,22 @@
-import type Phaser from "phaser";
+import {
+  EnemyPresentation,
+  enemyDirection,
+} from "../animation/EnemyPresentation.js";
+export { enemyDirection } from "../animation/EnemyPresentation.js";
+import {
+  preloadGolemAttack,
+  golemKey,
+  golemAttackFrame,
+  golemMeleeFrame,
+  golemPalm,
+  golemEffectFrame,
+} from "../animation/golem.js";
+import Phaser from "phaser";
 import type { Enemy } from "../../../../packages/shared/src/gameTypes.js";
-import { enemyDefinitions } from "../../../../packages/shared/src/enemies.js";
+import {
+  enemyDefinitions,
+  golemMelee,
+} from "../../../../packages/shared/src/enemies.js";
 import { enemyVisuals } from "../assets/enemyVisuals.js";
 import {
   externalAnimationFrames,
@@ -8,6 +24,7 @@ import {
   externalStandingFrame,
 } from "../assets/externalAnimationFrames.js";
 export function preloadEnemies(scene: Phaser.Scene) {
+  preloadGolemAttack(scene);
   for (const c of enemyVisuals)
     scene.load.spritesheet(c.asset_id, c.url, {
       frameWidth: c.frame_dimensions[0],
@@ -15,6 +32,10 @@ export function preloadEnemies(scene: Phaser.Scene) {
     });
 }
 export function registerEnemies(scene: Phaser.Scene) {
+  for (const c of enemyVisuals)
+    scene.textures
+      .get(c.asset_id)
+      .setFilter(Phaser.Textures.FilterMode.NEAREST);
   for (const c of enemyVisuals)
     for (const [row, dir] of c.directions.entries())
       scene.anims.create({
@@ -26,22 +47,16 @@ export function registerEnemies(scene: Phaser.Scene) {
         repeat: -1,
       });
 }
-export function enemyDirection(angle: number) {
-  return Math.abs(Math.cos(angle)) >= Math.abs(Math.sin(angle))
-    ? Math.cos(angle) >= 0
-      ? "east"
-      : "west"
-    : Math.sin(angle) >= 0
-      ? "south"
-      : "north";
-}
 export class EnemyView {
+  private presentation = new EnemyPresentation();
   private sprite: Phaser.GameObjects.Sprite;
   private bar: Phaser.GameObjects.Graphics;
+  private charge: Phaser.GameObjects.Image;
   private text: Phaser.GameObjects.Text;
   constructor(
     private scene: Phaser.Scene,
     e: Enemy,
+    private visualOverride?: string,
   ) {
     const c = this.contract(e);
     this.sprite = scene.add
@@ -50,6 +65,14 @@ export class EnemyView {
         c.anchor[0] / c.frame_dimensions[0],
         c.anchor[1] / c.frame_dimensions[1],
       );
+    this.charge = scene.add
+      .image(e.x, e.y, golemKey("charge"))
+      .setVisible(false)
+      .setScale(0.32);
+    for (const kind of ["attack", "charge", "blast", "melee"])
+      scene.textures
+        .get(golemKey(kind))
+        .setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.bar = scene.add.graphics();
     this.text = scene.add
       .text(0, 0, "", {
@@ -61,7 +84,8 @@ export class EnemyView {
   }
   private contract(e: Enemy) {
     return enemyVisuals.find(
-      (c) => c.asset_id === enemyDefinitions[e.type].sprite,
+      (c) =>
+        c.asset_id === (this.visualOverride ?? enemyDefinitions[e.type].sprite),
     )!;
   }
   update(
@@ -72,8 +96,9 @@ export class EnemyView {
     timeScale = 1,
   ) {
     this.sprite.anims.timeScale = timeScale;
+    const motion = this.presentation.update(e, tick);
     const c = this.contract(e),
-      direction = enemyDirection(e.facing),
+      direction = enemyDirection(motion.facing, c.directions.length),
       resolved = externalDirection(c, direction);
     const scales = c.direction_scales as
       Partial<Record<string, number>> | undefined;
@@ -83,21 +108,61 @@ export class EnemyView {
       .setFlipX(resolved.flipX)
       .setScale(scales?.[direction] ?? c.scale);
     const animated =
-      e.state !== "DEAD" &&
-      (Math.hypot(e.vx, e.vy) > 0.1 || c.motion === "hover");
-    if (animated)
-      this.sprite.play(
-        `${c.asset_id}:${c.motion}_${resolved.sourceDirection}`,
-        true,
-      );
-    else {
+      e.state !== "DEAD" && (motion.moving || c.motion === "hover");
+    const charging =
+      e.type === "ironbound_sentinel" &&
+      motion.attacking &&
+      e.attackStartedTick !== null;
+    const punching = charging && e.attackKind === "melee";
+    this.charge.setVisible(charging && !punching);
+    if (charging) {
+      const direction = enemyDirection(motion.facing) as keyof typeof golemPalm;
+      const elapsed = Math.max(0, tick - e.attackStartedTick!) / 30,
+        progress =
+          elapsed /
+          ((punching
+            ? golemMelee.durationTicks
+            : enemyDefinitions[e.type].windupTicks) /
+            30),
+        palm = golemPalm[direction];
+      this.charge.setVisible(!punching && progress < 1);
       this.sprite.anims.stop();
-      this.sprite.setFrame(externalStandingFrame(c, direction));
+      this.sprite
+        .setTexture(
+          golemKey(punching ? "melee" : "attack"),
+          punching
+            ? golemMeleeFrame(direction, progress)
+            : golemAttackFrame(direction, progress >= 1 ? 2 / 9 : progress),
+        )
+        .setOrigin(64 / 128, 108 / 128)
+        .setScale(1)
+        .setFlipX(false);
+      this.charge
+        .setPosition(pos.x + palm.x, pos.y + palm.y)
+        .setDepth(pos.y + 1)
+        .setFrame(golemEffectFrame("charge", elapsed * 1000))
+        .setScale(0.15 + Math.min(1, progress) * 0.3);
+    } else {
+      if (this.sprite.texture.key !== c.asset_id)
+        this.sprite.setTexture(c.asset_id);
+      this.sprite.setOrigin(
+        c.anchor[0] / c.frame_dimensions[0],
+        c.anchor[1] / c.frame_dimensions[1],
+      );
+      if (animated)
+        this.sprite.play(
+          `${c.asset_id}:${c.motion}_${resolved.sourceDirection}`,
+          true,
+        );
+      else {
+        this.sprite.anims.stop();
+        this.sprite.setFrame(externalStandingFrame(c, direction));
+      }
     }
-    // No attack/death art exists: hold contact pose, use a geometric windup ring and hide dead sprite.
+    // Other enemies retain their existing windup presentation; dead sprites remain hidden.
     this.sprite.setVisible(e.state !== "DEAD");
     this.bar.clear().setDepth(pos.y + 1);
-    if (e.state === "ATTACK")
+    if (motion.attacking && !charging)
       this.bar
         .lineStyle(2, 0xff9b32, 0.85)
         .strokeCircle(
@@ -126,6 +191,8 @@ export class EnemyView {
       x: this.sprite.x,
       y: this.sprite.y,
       frame: Number(this.sprite.frame.name),
+      texture: this.sprite.texture.key,
+      charging: this.charge.visible,
       flipX: this.sprite.flipX,
       animation: this.sprite.anims.currentAnim?.key,
       playing: this.sprite.anims.isPlaying,
@@ -134,6 +201,7 @@ export class EnemyView {
   }
   destroy() {
     this.sprite.destroy();
+    this.charge.destroy();
     this.bar.destroy();
     this.text.destroy();
   }

@@ -44,9 +44,10 @@ export function defenseClip(
             : phase === "start" && direction === "up"
               ? (7 * 1000) / 12
               : (8 * 1000) / 12) /
-      (phase === "end"
+      ((phase === "end"
         ? effectPresentationProfiles.ward.endRate
-        : effectPresentationProfiles.ward.startRate),
+        : effectPresentationProfiles.ward.startRate) *
+        (phase === "start" || phase === "end" ? 2 : 1)),
   };
 }
 

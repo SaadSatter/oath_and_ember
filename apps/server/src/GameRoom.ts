@@ -1,3 +1,39 @@
+import { ensureGriffin, tickGriffin, damageGriffin } from "./griffin.js";
+import {
+  griffinState,
+  griffinSpawn,
+  griffinAirborne,
+} from "../../../packages/shared/src/griffin.js";
+import { ensureShrine } from "./shrine.js";
+import {
+  shrineComplete,
+  shrinePoints,
+  shrineSpawn,
+} from "../../../packages/shared/src/shrine.js";
+import { tickGolemBeam } from "./golemBeam.js";
+import {
+  ensureMirrorPond,
+  updatePondChest,
+  pushPondMirror,
+  tickMirrorPond,
+  tracePondFireball,
+} from "./mirrorPond.js";
+import {
+  mirrorPondState,
+  pondSpawn,
+} from "../../../packages/shared/src/mirrorPond.js";
+import {
+  ensureHedgeMaze,
+  spawnMazeEnemies,
+  updateHedgeMazeTargets,
+  tickMazeRunner,
+  burnMazeBush,
+} from "./hedgeMaze.js";
+import { InventoryService } from "./inventory.js";
+import {
+  emptyInventory,
+  type ItemIntent,
+} from "../../../packages/shared/src/items.js";
 import { tickBlackHoles } from "./blackHoles.js";
 import { blackHoleTuning } from "../../../packages/shared/src/blackHole.js";
 import {
@@ -59,6 +95,14 @@ import {
 } from "../../../packages/shared/src/abilities.js";
 export class GameRoom {
   state: World;
+  readonly inventory = new InventoryService();
+  useItem(id: string, intent: ItemIntent) {
+    const player = this.state.players[id];
+    if (!player || !this.sessions.has(id)) throw Error("Join a room first.");
+    const result = this.inventory.use(this.state, player, intent);
+    updateHedgeMazeTargets(this.state, this.inventory);
+    return result;
+  }
   private travelReadyTick = 0;
   private savedMaps = new Map<
     SceneId,
@@ -93,6 +137,7 @@ export class GameRoom {
       received: number;
       receivedTick?: number;
       primaryEdges?: boolean[];
+      pushEdges?: boolean[];
       movementQueue?: Map<number, InputFrame>;
       movementInput?: InputFrame;
     }
@@ -228,6 +273,7 @@ export class GameRoom {
       this.state.players[id].lastProcessedInputSeq,
     );
     s.primaryEdges = [];
+    s.pushEdges = [];
     delete this.state.players[id].heavyCharge;
     this.primaryWasHeld.delete(id);
     this.state.players[id].connected = true;
@@ -249,12 +295,16 @@ export class GameRoom {
       s.movementQueue?.clear();
       s.movementInput = neutral(this.state.players[id].lastProcessedInputSeq);
       s.primaryEdges = [];
+      s.pushEdges = [];
       delete this.state.players[id].heavyCharge;
       this.primaryWasHeld.delete(id);
       this.state.players[id].connected = false;
     }
   }
   reset() {
+    this.inventory.clear();
+    this.state.inventory = emptyInventory();
+    this.state.inventoryTargets = {};
     this.savedMaps.clear();
     this.travelReadyTick = 0;
     this.pendingSwords.clear();
@@ -306,6 +356,24 @@ export class GameRoom {
     );
     if (w.sceneId === "MAIN_HOUSE" || w.sceneId === "BRIDGE_RUINS")
       w.enemies = {};
+    if (w.sceneId === "GRIFFIN_ENCLOSURE") {
+      ensureGriffin(w, this.inventory);
+      w.enemies = {};
+      w.checkpoint = "Griffin Enclosure";
+    }
+    if (w.sceneId === "GODDESS_SHRINE") {
+      ensureShrine(w, this.inventory);
+      w.enemies = {};
+      w.checkpoint = "Goddess Shrine";
+    }
+    if (w.sceneId === "MIRROR_POND") {
+      ensureMirrorPond(w, this.inventory);
+      w.enemies = {};
+    }
+    if (w.sceneId === "HEDGE_MAZE") {
+      ensureHedgeMaze(w, this.inventory);
+      w.enemies = spawnMazeEnemies();
+    }
     if (this.encounter) {
       for (const key of ["gate", "bridge"]) w.puzzles[key].complete = true;
       w.checkpoint = "Enemy validation encounter";
@@ -334,13 +402,17 @@ export class GameRoom {
         x: this.encounter
           ? 550
           : maps[w.sceneId].spawn.x +
-            (["MAIN_HOUSE", "BRIDGE_RUINS"].includes(w.sceneId) ? i * 50 : 0),
+            (["MAIN_HOUSE", "BRIDGE_RUINS", "HEDGE_MAZE"].includes(w.sceneId)
+              ? i * 50
+              : 0),
         y:
-          w.sceneId === "BRIDGE_RUINS"
-            ? maps.BRIDGE_RUINS.spawn.y
-            : w.sceneId === "MAIN_HOUSE"
-              ? maps.MAIN_HOUSE.spawn.y
-              : 430 + i * 50,
+          w.sceneId === "HEDGE_MAZE"
+            ? maps.HEDGE_MAZE.spawn.y
+            : w.sceneId === "BRIDGE_RUINS"
+              ? maps.BRIDGE_RUINS.spawn.y
+              : w.sceneId === "MAIN_HOUSE"
+                ? maps.MAIN_HOUSE.spawn.y
+                : 430 + i * 50,
         vx: 0,
         vy: 0,
         hp: 100,
@@ -349,12 +421,20 @@ export class GameRoom {
         cooldowns: {},
         lastProcessedInputSeq: 0,
       });
+      if (w.sceneId === "GRIFFIN_ENCLOSURE")
+        Object.assign(p, griffinSpawn(p.role));
+      if (w.sceneId === "MIRROR_POND") Object.assign(p, pondSpawn(p.role));
+      if (w.sceneId === "GODDESS_SHRINE") {
+        Object.assign(p, shrineSpawn(p.role));
+        w.checkpoint = "Goddess Shrine";
+      }
       const s = this.sessions.get(p.id);
       if (s) {
         s.input = neutral();
         s.movementQueue?.clear();
         s.movementInput = neutral();
         s.primaryEdges = [];
+        s.pushEdges = [];
       }
     });
   }
@@ -362,12 +442,21 @@ export class GameRoom {
     this.pendingSwords.clear();
     const w = this.state;
     const previous = w.sceneId;
+    const questTravel =
+      previous === "GODDESS_SHRINE" || scene === "GODDESS_SHRINE";
     this.savedMaps.set(previous, {
       bridgePuzzle: w.bridgePuzzle,
       enemies: w.enemies,
       boss: w.boss,
     });
     const saved = this.savedMaps.get(scene);
+    if (scene === "GRIFFIN_ENCLOSURE") ensureGriffin(w, this.inventory);
+    if (scene === "GODDESS_SHRINE") ensureShrine(w, this.inventory);
+    if (scene === "HEDGE_MAZE") ensureHedgeMaze(w, this.inventory);
+    if (scene === "MIRROR_POND") {
+      ensureMirrorPond(w, this.inventory);
+      mirrorPondState(w.puzzles)!.entryPassed = false;
+    }
     this.travelReadyTick = w.serverTick + 30;
     delete w.slowTime;
     w.sceneId = scene;
@@ -402,6 +491,15 @@ export class GameRoom {
             ]),
           )
         : {};
+    if (scene === "GRIFFIN_ENCLOSURE") w.checkpoint = "Griffin Enclosure";
+    if (scene === "MIRROR_POND") {
+      w.checkpoint = "Mirror Pond";
+      w.enemies = {};
+    }
+    if (scene === "HEDGE_MAZE") {
+      w.checkpoint = "Hedge Maze";
+      w.enemies = spawnMazeEnemies();
+    }
     if (scene === "MONSTER_CLEARING")
       w.enemies = Object.fromEntries([
         ["clearing-moss", spawnEnemy("clearing-moss", "mossling", 560, 340)],
@@ -431,6 +529,7 @@ export class GameRoom {
         session.movementQueue?.clear();
         session.movementInput = neutral(p.lastProcessedInputSeq);
         session.primaryEdges = [];
+        session.pushEdges = [];
       }
       Object.assign(p, {
         flightRemaining: 0,
@@ -444,11 +543,46 @@ export class GameRoom {
         x: maps[scene].spawn.x + i * 50,
         vx: 0,
         vy: 0,
-        hp: 100,
+        hp: questTravel ? p.hp : 100,
       });
     });
+    if (scene === "GODDESS_SHRINE") {
+      w.checkpoint = "Goddess Shrine";
+      const arrival =
+        previous === "GRIFFIN_ENCLOSURE"
+          ? { x: 640, y: 160 }
+          : previous === "MIRROR_POND"
+            ? { x: 160, y: 576 }
+            : previous === "HEDGE_MAZE"
+              ? { x: 1120, y: 576 }
+              : previous === "FOREST_RUINS"
+                ? shrinePoints.exit
+                : null;
+      for (const p of Object.values(w.players))
+        this.relocate(p, scene, arrival ?? shrineSpawn(p.role));
+    }
+    if (scene === "GRIFFIN_ENCLOSURE")
+      for (const p of Object.values(w.players))
+        Object.assign(p, griffinSpawn(p.role));
+    if (scene === "MIRROR_POND")
+      for (const p of Object.values(w.players))
+        Object.assign(p, pondSpawn(p.role));
     if (scene === "MAIN_HOUSE") w.checkpoint = "Main house";
-    if (backwards && saved && maps[scene].points.exit) {
+    if (previous === "GODDESS_SHRINE" && scene === "FOREST_RUINS") {
+      for (const p of Object.values(w.players))
+        this.relocate(p, scene, maps.FOREST_RUINS.spawn);
+    } else if (previous === "MIRROR_POND" && scene === "FOREST_RUINS") {
+      for (const p of Object.values(w.players))
+        this.relocate(p, scene, maps.FOREST_RUINS.points.shrine);
+    } else if (previous === "HEDGE_MAZE" && scene === "FOREST_RUINS") {
+      for (const p of Object.values(w.players))
+        this.relocate(p, scene, maps.FOREST_RUINS.points.shrine);
+    } else if (
+      backwards &&
+      scene !== "GODDESS_SHRINE" &&
+      saved &&
+      maps[scene].points.exit
+    ) {
       const exit = maps[scene].points.exit;
       Object.values(w.players).forEach((p) =>
         this.relocate(p, scene, { x: exit.x - 96, y: exit.y }),
@@ -506,6 +640,7 @@ export class GameRoom {
       interactHeld: session.input.interactHeld,
     };
     session.primaryEdges = [];
+    session.pushEdges = [];
     session.movementQueue?.clear();
     session.movementInput = neutral(p.lastProcessedInputSeq);
     // Retain the interaction latch until E is released: no held-key door loops.
@@ -533,6 +668,10 @@ export class GameRoom {
     if (input.primaryHeld !== s.input.primaryHeld) {
       s.primaryEdges ||= [];
       if (s.primaryEdges.length < 8) s.primaryEdges.push(input.primaryHeld);
+    }
+    if (!!input.pushHeld !== !!s.input.pushHeld) {
+      s.pushEdges ||= [];
+      if (s.pushEdges.length < 8) s.pushEdges.push(!!input.pushHeld);
     }
     if (input.blackHoleHeld && !s.input.blackHoleHeld)
       this.blackHoleRequests.add(id);
@@ -614,13 +753,19 @@ export class GameRoom {
         ? {
             ...s.input,
             primaryHeld: s.primaryEdges?.shift() ?? s.input.primaryHeld,
+            pushHeld: s.pushEdges?.shift() ?? s.input.pushHeld,
           }
         : neutral(s.input.seq);
-      if (!fresh) s.primaryEdges = [];
+      if (!fresh) {
+        s.primaryEdges = [];
+        s.pushEdges = [];
+      }
       const sceneId = p.sceneId ?? w.sceneId;
       const map = maps[sceneId];
       const interactEdge = i.interactHeld && !this.interactWasHeld.get(p.id);
       this.interactWasHeld.set(p.id, i.interactHeld);
+      if (i.pushHeld && !i.primaryHeld && !i.secondaryHeld)
+        pushPondMirror(w, p);
       let movement = i;
       if (s.movementQueue) {
         if (!fresh) s.movementQueue.clear();
@@ -809,6 +954,33 @@ export class GameRoom {
         this.relocate(p, "HOUSE_INTERIOR", maps.HOUSE_INTERIOR.spawn);
         continue;
       }
+      if (interactEdge && p.hp > 0 && w.serverTick >= this.travelReadyTick) {
+        if (
+          sceneId === "FOREST_RUINS" &&
+          near(p, maps.FOREST_RUINS.points.shrine, 48)
+        ) {
+          this.transition("GODDESS_SHRINE");
+          return;
+        }
+        if (sceneId === "GODDESS_SHRINE") {
+          if (shrineComplete(w) && near(p, shrinePoints.exit, 48)) {
+            this.transition("FOREST_RUINS");
+            return;
+          }
+          if (near(p, shrinePoints.north, 48)) {
+            this.transition("GRIFFIN_ENCLOSURE");
+            return;
+          }
+          if (near(p, shrinePoints.west, 48)) {
+            this.transition("MIRROR_POND");
+            return;
+          }
+          if (near(p, shrinePoints.east, 48)) {
+            this.transition("HEDGE_MAZE");
+            return;
+          }
+        }
+      }
       if (
         interactEdge &&
         sceneId === "HOUSE_INTERIOR" &&
@@ -867,7 +1039,7 @@ export class GameRoom {
           w.bridgePuzzle?.complete &&
           near(p, map.points.exit, 50)
         ) {
-          this.transition("FOREST_RUINS");
+          this.transition("GODDESS_SHRINE");
           return;
         }
         if (sceneId === "MAIN_HOUSE" && near(p, map.points.exit, 50)) {
@@ -985,6 +1157,10 @@ export class GameRoom {
       }
     }
     for (const q of Object.values(w.projectiles)) {
+      if (q.effect === "golem_beam") {
+        tickGolemBeam(w, q, (p, n) => this.damage(p, n));
+        continue;
+      }
       const ox = q.x,
         oy = q.y;
       q.x += q.vx * DT * (w.slowTime ? SLOW_TIME_SCALE : 1);
@@ -999,14 +1175,25 @@ export class GameRoom {
         w.players,
         w.serverTick,
       );
+      const burnedBush =
+        (q.sceneId ?? w.sceneId) === "HEDGE_MAZE" &&
+        q.faction !== "enemies" &&
+        burnMazeBush(w, q.owner, { x: ox, y: oy }, q);
       let collided =
-        (q.sceneId ?? w.sceneId) === "BRIDGE_RUINS"
-          ? bridgeGateWalls(w.bridgePuzzle, w.players).some((r) =>
-              segmentHits(ox, oy, q.x, q.y, r, q.radius ?? 4),
-            )
-          : projectileWalls.some((r) =>
-              segmentHits(ox, oy, q.x, q.y, r, q.radius ?? 4),
-            );
+        burnedBush ||
+        ((q.sceneId ?? w.sceneId) === "MIRROR_POND"
+          ? tracePondFireball(w, q, { x: ox, y: oy }, { x: q.x, y: q.y })
+          : (q.sceneId ?? w.sceneId) === "BRIDGE_RUINS"
+            ? bridgeGateWalls(w.bridgePuzzle, w.players).some((r) =>
+                segmentHits(ox, oy, q.x, q.y, r, q.radius ?? 4),
+              )
+            : projectileWalls
+                .filter(
+                  (r) =>
+                    (q.sceneId ?? w.sceneId) !== "GRIFFIN_ENCLOSURE" ||
+                    !r.terrain,
+                )
+                .some((r) => segmentHits(ox, oy, q.x, q.y, r, q.radius ?? 4)));
       if (
         !collided &&
         (q.sceneId ?? w.sceneId) === "BRIDGE_RUINS" &&
@@ -1076,6 +1263,23 @@ export class GameRoom {
           hitBridgeLock(w, q.owner, q);
         collided = true;
       }
+      const griffin = griffinState(w.puzzles);
+      if (
+        !collided &&
+        (q.sceneId ?? w.sceneId) === "GRIFFIN_ENCLOSURE" &&
+        q.faction !== "enemies" &&
+        griffin &&
+        griffin.hp > 0 &&
+        segmentHits(ox, oy, q.x, q.y, {
+          x: griffin.x - 30,
+          y: griffin.y - 30,
+          w: 60,
+          h: 60,
+        })
+      ) {
+        damageGriffin(w, q.damage ?? 20);
+        collided = true;
+      }
       if (!collided) {
         const targets =
           q.faction === "enemies"
@@ -1140,6 +1344,8 @@ export class GameRoom {
       Object.values(w.players).map((p) => [p.id, p.movementEpoch]),
     );
     tickBridgePuzzle(w);
+    tickMirrorPond(w, beforeMovement);
+    updatePondChest(w, this.inventory);
     for (const p of Object.values(w.players))
       if (p.movementEpoch !== recoveryEpochs.get(p.id)) {
         const session = this.sessions.get(p.id);
@@ -1148,12 +1354,16 @@ export class GameRoom {
           session.movementQueue?.clear();
           session.movementInput = neutral(p.lastProcessedInputSeq);
           session.primaryEdges = [];
+          session.pushEdges = [];
         }
         p.movementInput = neutral(p.lastProcessedInputSeq);
         p.movementIntent = { x: 0, y: 0 };
       }
     tickEnemies(w, (p, n) => this.damage(p, n));
     tickBlackHoles(w);
+    tickGriffin(w, (p, n) => this.damage(p, n));
+    tickMazeRunner(w);
+    updateHedgeMazeTargets(w, this.inventory);
     if (w.sceneId === "FOREST_RUINS") {
       w.puzzles.bridge.physical = near(
         w.interactables.crate,
@@ -1169,6 +1379,7 @@ export class GameRoom {
       }
       if (
         w.puzzles.bridge.complete &&
+        shrineComplete(w) &&
         Object.values(w.players).some((p) =>
           near(p, maps[w.sceneId].points.exit),
         )
@@ -1218,6 +1429,17 @@ export class GameRoom {
   ) {
     const w = this.state,
       map = maps[sceneId];
+    const griffin = griffinState(w.puzzles);
+    if (
+      sceneId === "GRIFFIN_ENCLOSURE" &&
+      griffin &&
+      !griffinAirborne(griffin) &&
+      inSwordArc(p, griffin, facing, 100) &&
+      !collisionRects(sceneId, w.puzzles)
+        .filter((r) => !r.terrain)
+        .some((r) => segmentHits(p.x, p.y, griffin.x, griffin.y, r))
+    )
+      damageGriffin(w, damage);
     for (const e of Object.values(sceneId === w.sceneId ? w.enemies : {}))
       if (
         e.state !== "DEAD" &&

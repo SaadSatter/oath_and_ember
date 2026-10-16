@@ -1,0 +1,73 @@
+{
+  "videos": [
+    "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/docs/quests/bald-goddess/recording-griffin/page@8077bc50a005e489d273cc8b866fe18e.webm",
+    "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/docs/quests/bald-goddess/recording-griffin/page@59a4f10f468ede67fb1b9fd248589c59.webm"
+  ],
+  "videoStarts": [
+    1792109214684,
+    1792109216218
+  ],
+  "startedTimestamp": 1792109218605,
+  "duration": 37.633,
+  "events": [
+    {
+      "chapter": "1 \u00b7 Northern enclosure \u2014 mirror and shears earned on prior maps",
+      "time": 0,
+      "tick": 0
+    },
+    {
+      "chapter": "2 \u00b7 Dodge the Griffin's eye beams; prepare a shore-side Black Hole",
+      "time": 4.767,
+      "tick": 285
+    },
+    {
+      "chapter": "3 \u00b7 Black Hole drags it ashore \u2014 Sieg baits a headbutt into a pillar",
+      "time": 20.599,
+      "tick": 1234
+    },
+    {
+      "chapter": "4 \u00b7 Pillar collapsed! Slow Time and Super Speed create a safe opening",
+      "time": 23.446,
+      "tick": 1398
+    },
+    {
+      "chapter": "5 \u00b7 Coco reaches the nest \u2014 offer the Vanity Mirror",
+      "time": 27.802,
+      "tick": 1663
+    },
+    {
+      "chapter": "6 \u00b7 The Griffin is distracted \u2014 use the Enchanted Shears",
+      "time": 28.285,
+      "tick": 1679
+    },
+    {
+      "chapter": "7 \u00b7 Magnificent Griffin Wig in the shared backpack \u2014 return south",
+      "time": 28.612,
+      "tick": 1695
+    },
+    {
+      "chapter": "8 \u00b7 Reunited at the shrine \u2014 offer the wig to the Bald Goddess",
+      "time": 32.73,
+      "tick": 1869
+    },
+    {
+      "chapter": "9 \u00b7 Quest complete \u2014 the goddess has divine volume",
+      "time": 33.589,
+      "tick": 1978
+    }
+  ],
+  "frames": 2083,
+  "playbackSpeed": 2,
+  "pillarStunned": true,
+  "sharedWigAcquired": true,
+  "goddessComplete": true,
+  "priorBranchToolsFixture": [
+    "vanity_mirror",
+    "enchanted_shears"
+  ],
+  "noActorPositionOrHealthOverrides": true,
+  "captionSyncSeconds": [
+    3.3333333333333335,
+    1.9583333333333333
+  ]
+}

@@ -199,7 +199,7 @@ it("switches cosmetic textures without restarting animation or losing appearance
   expect(p.appearance.primaryPalette).toBe("blue");
 });
 
-it("plays accepted combat once, locks direction and restores locomotion after recovery", () => {
+it("interrupts old-facing combat immediately and restores movement without replay", () => {
   const h = harness(),
     p = {
       ...player(),
@@ -216,10 +216,16 @@ it("plays accepted combat once, locks direction and restores locomotion after re
     "sprite",
     { serverTick: 6 },
   );
-  expect(h.sprite.play).toHaveBeenCalledTimes(1);
+  expect(h.sprite.play).toHaveBeenCalledTimes(2);
+  expect(h.sprite.play).toHaveBeenLastCalledWith(
+    "hero:OATH:TOP_DOWN:walk_west",
+  );
   h.view.update(p, p, p, "TOP_DOWN", "geometric", { serverTick: 6 });
   h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 6 });
-  expect(h.sprite.play).toHaveBeenCalledTimes(1);
+  expect(h.sprite.play).toHaveBeenCalledTimes(3);
+  expect(h.sprite.play).toHaveBeenLastCalledWith(
+    "hero:OATH:TOP_DOWN:idle_right",
+  );
   h.scene.time.now = 801;
   h.view.update(p, { ...p, vx: 190 }, p, "TOP_DOWN", "sprite", {
     serverTick: 25,
@@ -234,6 +240,7 @@ it("holds authored heavy wind-up and plays release once without moving the ancho
   const h = harness(),
     p = {
       ...player(),
+      facing: Math.PI,
       heavyCharge: {
         startedTick: 1,
         facing: Math.PI,
@@ -248,7 +255,10 @@ it("holds authored heavy wind-up and plays release once without moving the ancho
   h.view.update(p, { ...p, vx: 190, facing: 0 }, p, "TOP_DOWN", "sprite", {
     serverTick: 21,
   });
-  expect(h.sprite.play).toHaveBeenCalledTimes(1);
+  expect(h.sprite.play).toHaveBeenCalledTimes(2);
+  expect(h.sprite.play).toHaveBeenLastCalledWith(
+    "hero:OATH:heavy:right:charge",
+  );
   const release = {
     ...p,
     heavyCharge: undefined,
@@ -267,7 +277,7 @@ it("holds authored heavy wind-up and plays release once without moving the ancho
     serverTick: 23,
   });
   h.view.update(release, release, p, "TOP_DOWN", "sprite", { serverTick: 23 });
-  expect(h.sprite.play).toHaveBeenCalledTimes(2);
+  expect(h.sprite.play).toHaveBeenCalledTimes(3);
 });
 
 it("keeps Coco's clean body visible while animating only the isolated Ward layer", () => {
@@ -395,6 +405,7 @@ it("uses authored LEFT basic attacks and the same fixed ground anchor in all dir
     const h = harness(),
       p = {
         ...player(),
+        facing,
         combat: { seq: 1, startedTick: 1, facing, kind: "sword" as const },
       };
     h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 1 });
@@ -485,5 +496,29 @@ it("starts Coco casts and Ward with the same supplied directional pose", () => {
       expect(h.sprite.setFrame).toHaveBeenLastCalledWith(frame);
       expect(h.sprite.setOrigin).toHaveBeenCalledWith(0.5, 0.75);
     }
+  }
+});
+
+it("turns both heroes using predicted motion before the authoritative facing catches up", () => {
+  for (const role of ["OATH", "EMBER"] as const) {
+    const h = harness(),
+      p = {
+        ...player(role),
+        combat: {
+          seq: 1,
+          startedTick: 1,
+          facing: 0,
+          kind: role === "OATH" ? ("sword" as const) : ("cast" as const),
+        },
+      };
+    h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 1 });
+    h.scene.time.now = 50;
+    const motion = { ...p, facing: -Math.PI / 2, vx: 0, vy: -190 };
+    h.view.update(p, motion, p, "TOP_DOWN", "sprite", { serverTick: 2 });
+    expect(h.sprite.play).toHaveBeenLastCalledWith(
+      `hero:${role}:TOP_DOWN:walk_north`,
+    );
+    expect(p.facing).toBe(0);
+    expect(p.combat.facing).toBe(0);
   }
 });

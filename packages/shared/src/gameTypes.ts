@@ -1,6 +1,10 @@
 import type { CharacterAppearance } from "./appearance.js";
 export type Role = "OATH" | "EMBER";
 export type SceneId =
+  | "GRIFFIN_ENCLOSURE"
+  | "GODDESS_SHRINE"
+  | "MIRROR_POND"
+  | "HEDGE_MAZE"
   | "BRIDGE_RUINS"
   | "HOUSE_INTERIOR"
   | "MAIN_HOUSE"
@@ -77,6 +81,9 @@ export interface Player {
   lastProcessedInputSeq: number;
 }
 export interface Enemy {
+  attackKind?: "melee" | "beam";
+  attackHit?: boolean;
+  passive?: boolean;
   type: import("./enemies.js").EnemyType;
   maxHp: number;
   state: "IDLE" | "CHASE" | "ATTACK" | "DEAD";
@@ -96,6 +103,14 @@ export interface Enemy {
   cooldown: number;
 }
 export interface Projectile {
+  effect?: "golem_beam";
+  beamOrigin?: { x: number; y: number };
+  beamAge?: number;
+  beamDamaged?: string[];
+  beamContact?: string;
+  beamImpacts?: number;
+  /** Set only by a validated server reflection. */
+  pondReflection?: number;
   castTick?: number;
   castOrigin?: { x: number; y: number };
   /** Strength captured by the server at cast time (Coco only). */
@@ -113,6 +128,9 @@ export interface Projectile {
   owner: string;
 }
 export interface Puzzle {
+  griffin?: import("./griffin.js").GriffinState;
+  pond?: import("./mirrorPond.js").MirrorPondState;
+  maze?: import("./hedgeMaze.js").HedgeMazeState;
   id: string;
   physical: boolean;
   arcane: boolean;
@@ -134,6 +152,8 @@ export interface BlackHole {
   damaged: string[];
 }
 export interface World {
+  inventory?: import("./items.js").InventoryState;
+  inventoryTargets?: Record<string, import("./items.js").InventoryTarget>;
   blackHoles?: Record<string, BlackHole>;
   bridgePuzzle?: import("./bridgePuzzle.js").BridgePuzzleState;
   slowTime?: { owner: string; startedTick: number; endsTick: number };
@@ -148,6 +168,8 @@ export interface World {
   enemies: Record<string, Enemy>;
   projectiles: Record<string, Projectile>;
   projectileImpacts?: {
+    effect?: "golem_blast";
+    radius?: number;
     id: string;
     x: number;
     y: number;

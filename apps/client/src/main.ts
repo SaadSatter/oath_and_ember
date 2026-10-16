@@ -1,3 +1,21 @@
+import { GriffinView, preloadGriffin } from "./environment/GriffinView.js";
+import { griffinState } from "../../../packages/shared/src/griffin.js";
+import { ShrineView, preloadShrine } from "./environment/ShrineView.js";
+import { shrineComplete } from "../../../packages/shared/src/shrine.js";
+import {
+  MirrorPondView,
+  preloadMirrorPond,
+} from "./environment/MirrorPondView.js";
+import {
+  mirrorPondState,
+  pondStations,
+} from "../../../packages/shared/src/mirrorPond.js";
+import {
+  HedgeMazeView,
+  preloadHedgeMaze,
+} from "./environment/HedgeMazeView.js";
+import { hedgeMazeState } from "../../../packages/shared/src/hedgeMaze.js";
+import { InventoryPanel } from "./ui/inventory.js";
 import {
   bridgePoints,
   bridgeRects,
@@ -57,6 +75,14 @@ const tell = (s: string) => {
     if (notice.textContent === s) notice.textContent = "";
   }, 6000);
 };
+const inventory = new InventoryPanel(
+  net,
+  () => {
+    keys.clear();
+    submitInput(true);
+  },
+  tell,
+);
 net.onerror = tell;
 async function request(e: Parameters<typeof net.request>[0], p: unknown) {
   try {
@@ -67,6 +93,7 @@ async function request(e: Parameters<typeof net.request>[0], p: unknown) {
   }
 }
 function renderUI() {
+  inventory.render();
   const w = net.world,
     me = w?.players[net.session?.playerId || ""];
   document.body.dataset.playing = String(w?.phase === "PLAYING");
@@ -256,6 +283,7 @@ function renderUI() {
 net.onchange = renderUI;
 renderUI();
 window.addEventListener("keydown", (e) => {
+  if (inventory.open) return;
   if (
     (e.target as HTMLElement).tagName === "INPUT" ||
     ((e.target as HTMLElement).closest("#special-abilities") &&
@@ -465,7 +493,8 @@ function submitInput(reliable = false) {
     Object.values(w.players).some((p) => !p.connected)
   )
     return;
-  const held = (...names: string[]) => names.some((k) => keys.has(k));
+  const held = (...names: string[]) =>
+    !inventory.open && names.some((k) => keys.has(k));
   const i = neutral(++net.seq);
   i.targetTick = net.clock.target(w.serverTick, performance.now());
   {
@@ -506,6 +535,10 @@ class Adventure extends Phaser.Scene {
     this.enemyViews.clear();
   }
   preload() {
+    preloadHedgeMaze(this);
+    preloadMirrorPond(this);
+    preloadShrine(this);
+    preloadGriffin(this);
     preloadHeroes(this);
     preloadTemporal(this);
     preloadMagic(this);
@@ -517,7 +550,27 @@ class Adventure extends Phaser.Scene {
     for (const view of this.playerViews.values()) view.destroy();
     this.playerViews.clear();
   }
+  private mazeView!: HedgeMazeView;
+  private pondView!: MirrorPondView;
+  private shrineView!: ShrineView;
+  private griffinView!: GriffinView;
   create() {
+    this.mazeView = new HedgeMazeView(this);
+    this.pondView = new MirrorPondView(this);
+    this.shrineView = new ShrineView(this);
+    this.griffinView = new GriffinView(this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
+      this.griffinView.clear(),
+    );
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
+      this.shrineView.clear(),
+    );
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
+      this.pondView.clear(),
+    );
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
+      this.mazeView.clear(),
+    );
     registerHeroes(this);
     registerEnemies(this);
     warmMagicTextures(this);
@@ -551,6 +604,10 @@ class Adventure extends Phaser.Scene {
       this.gfx.clear();
       this.environment.clear();
       this.bridgeView.clear();
+      this.mazeView.clear();
+      this.pondView.clear();
+      this.shrineView.clear();
+      this.griffinView.clear();
       this.sceneKey = "";
       this.projectileView.clear();
       this.clearPlayerViews();
@@ -580,6 +637,10 @@ class Adventure extends Phaser.Scene {
     }
     this.environment.updatePushables(w.pushableOffsets);
     this.bridgeView.update(w, sceneId);
+    this.mazeView.update(w, sceneId);
+    this.pondView.update(w, sceneId);
+    this.griffinView.update(w, sceneId);
+    this.shrineView.update(w, sceneId);
     const err = Math.hypot(
       this.rendered.x - local.x,
       this.rendered.y - local.y,
@@ -625,6 +686,59 @@ class Adventure extends Phaser.Scene {
         480,
         (this.rendered.y + bridgePoints.target.y) / 2,
       );
+    } else if (
+      sceneId === "MIRROR_POND" &&
+      me.role === "EMBER" &&
+      pondStations.some(
+        (p) =>
+          Math.hypot(p.shot.x - this.rendered.x, p.shot.y - this.rendered.y) <
+          40,
+      )
+    ) {
+      const p = pondStations.find(
+        (p) =>
+          Math.hypot(p.shot.x - this.rendered.x, p.shot.y - this.rendered.y) <
+          40,
+      )!;
+      const xs = [p.x, p.torch.x, this.rendered.x],
+        ys = [p.y, p.torch.y, this.rendered.y];
+      const left = Math.min(...xs),
+        top = Math.min(...ys),
+        right = Math.max(...xs),
+        bottom = Math.max(...ys);
+      this.cameras.main.setZoom(
+        Math.min(
+          1,
+          this.scale.width / (right - left + 180),
+          this.scale.height / (bottom - top + 180),
+        ),
+      );
+      this.cameras.main.centerOn((left + right) / 2, (top + bottom) / 2);
+    } else if (
+      sceneId === "GRIFFIN_ENCLOSURE" &&
+      griffinState(w.puzzles) &&
+      Math.abs(this.rendered.x - griffinState(w.puzzles)!.x) <
+        this.scale.width - 180 &&
+      Math.abs(this.rendered.y - griffinState(w.puzzles)!.y) <
+        this.scale.height - 160
+    ) {
+      const g = griffinState(w.puzzles)!;
+      this.cameras.main.centerOn(
+        (this.rendered.x + g.x) / 2,
+        (Math.min(this.rendered.y - 64, g.y - 110) +
+          Math.max(this.rendered.y + 24, g.y + 24)) /
+          2,
+      );
+    } else if (
+      sceneId === "GODDESS_SHRINE" &&
+      this.rendered.x >= 512 &&
+      this.rendered.x <= 768 &&
+      this.rendered.y >= 350 &&
+      this.rendered.y <= 608
+    ) {
+      // Keep the statue and offering visible at native pixel scale. Shrinking
+      // the whole plaza into this viewport discards detail before CSS upscales it.
+      this.cameras.main.centerOn(640, 430);
     } else if (house) {
       const halfX = this.scale.width / (2 * this.cameras.main.zoom),
         halfY = this.scale.height / (2 * this.cameras.main.zoom);
@@ -650,7 +764,15 @@ class Adventure extends Phaser.Scene {
     } else this.cameras.main.centerOn(this.rendered.x, this.rendered.y);
     const g = this.gfx;
     g.clear();
-    if (!house && !isPostTownScene(sceneId) && sceneId !== "BRIDGE_RUINS") {
+    if (
+      !house &&
+      !isPostTownScene(sceneId) &&
+      sceneId !== "BRIDGE_RUINS" &&
+      sceneId !== "HEDGE_MAZE" &&
+      sceneId !== "MIRROR_POND" &&
+      sceneId !== "GODDESS_SHRINE" &&
+      sceneId !== "GRIFFIN_ENCLOSURE"
+    ) {
       g.fillStyle(sceneId === "FOREST_RUINS" ? 0x152c2b : 0x182338);
       g.fillRect(0, 0, map.width, map.height);
       g.lineStyle(1, 0xffffff, 0.04);
@@ -669,7 +791,13 @@ class Adventure extends Phaser.Scene {
       me.role,
     )) {
       if (
-        (house || isPostTownScene(sceneId) || sceneId === "BRIDGE_RUINS") &&
+        (house ||
+          isPostTownScene(sceneId) ||
+          sceneId === "BRIDGE_RUINS" ||
+          sceneId === "HEDGE_MAZE" ||
+          sceneId === "MIRROR_POND" ||
+          sceneId === "GODDESS_SHRINE" ||
+          sceneId === "GRIFFIN_ENCLOSURE") &&
         !debug
       )
         continue;
@@ -781,13 +909,21 @@ class Adventure extends Phaser.Scene {
     this.labels.forEach((t) => t.destroy());
     this.labels = [];
     for (const [id, q] of Object.entries(map.points)) {
-      if (house && id === "door") continue;
+      if ((house && id === "door") || sceneId === "GODDESS_SHRINE") continue;
       this.labels.push(
         this.add
           .text(
             q.x,
             q.y + 34,
-            id === "back" ? "E · RETURN" : id.toUpperCase(),
+            id === "back"
+              ? "E · RETURN"
+              : id === "shrine"
+                ? "E · GODDESS SHRINE"
+                : id === "maze"
+                  ? "E · HEDGE MAZE"
+                  : id === "pond"
+                    ? "E · MIRROR POND"
+                    : id.toUpperCase(),
             {
               fontSize: "12px",
               color: "#ecdfc7",
@@ -817,7 +953,9 @@ class Adventure extends Phaser.Scene {
                 ? "Sieg: J at bramble. Coco: hold E at rune."
                 : !w.puzzles.bridge.complete
                   ? "Sieg: hold 1 at crate to push to plate. Coco: E at crystal."
-                  : "Both gates open. Explore east to board the airship."
+                  : !shrineComplete(w)
+                    ? "Before boarding: E at GODDESS SHRINE in the south-west. Complete the maze and pond, obtain the Griffin wig, and offer it to the goddess."
+                    : "Shrine quest complete and both gates open. Explore east to board the airship."
               : sceneId === "AIRSHIP"
                 ? `Hold E together: Sieg at crank, Coco at core. Engine ${Math.min(100, Math.round((w.puzzles.engine.progress / 3) * 100))}%`
                 : `Coco: hold E at anchor. Sieg: J near Warden. Shield: ${w.boss?.phase}`;
@@ -826,6 +964,34 @@ class Adventure extends Phaser.Scene {
     if (map.points.back) goal += " · E at RETURN to travel back.";
     if (Object.values(w.players).some((p) => !p.connected))
       goal = "Partner disconnected. Game paused for up to 30 seconds.";
+    if (sceneId === "HEDGE_MAZE") {
+      const maze = hedgeMazeState(w.puzzles)!;
+      goal = !maze.burned
+        ? "Hedge Maze: defeat the guards, then Coco burns the dry amber bush with Fireball (J)."
+        : !maze.cow.parked
+          ? "Coco: enter the side bay and cast Black Hole (3) into the cow's left flank. Clear its path."
+          : !maze.runner.caught
+            ? "Coco: Slow Time (1). Sieg: Super Speed (2), chase the fleeing carrier and press E to tag it."
+            : !w.puzzles.hedgeGate.complete
+              ? "Use the shared key at the eastern gate (E)."
+              : "Open the shears chest with E, then return to the western entrance. Shared progress is retained.";
+    }
+    if (sceneId === "MIRROR_POND") {
+      const pond = mirrorPondState(w.puzzles)!;
+      goal = pond.raised
+        ? "All four flames lit! The sanctuary has risen. Open the shared mirror chest (E), then return east."
+        : `Mirror Pond · ${pond.torches.filter(Boolean).length}/4 torches · Sieg: Speed through east spikes; hold Push (1) to rotate mirrors 360°. Coco: Flight (2) through water culvert; Fireball (J) from A1–A4.`;
+    }
+    if (sceneId === "GRIFFIN_ENCLOSURE") {
+      const g = griffinState(w.puzzles)!;
+      goal = g.wigClaimed
+        ? "Griffin Wig acquired · Return south to the goddess and offer it from the shared inventory."
+        : "Griffin · Coco: Fly to the northern nest; offer Mirror, then Shears. Black Hole pulls it ashore. Sieg: stand to bait a headbutt, dodge behind a pillar. Slow Time helps both heroes dodge.";
+    }
+    if (sceneId === "GODDESS_SHRINE")
+      goal = shrineComplete(w)
+        ? "The Bald Goddess · Quest complete! E at the south-east golden switch to continue to Forest Ruins; south returns to Puzzle Map 2."
+        : "Goddess Shrine · E at the offering bowl for a clue. West: Mirror Pond for the mirror. East: Hedge Maze for shears. North: Griffin for the wig. Return here to offer it. I opens the shared backpack.";
     document.querySelector<HTMLDivElement>("#objective")!.textContent = goal;
     const debugPanel = document.querySelector<HTMLDivElement>("#debug")!;
     debugPanel.hidden = !debug;
