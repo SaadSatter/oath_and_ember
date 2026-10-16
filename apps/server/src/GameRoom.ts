@@ -10,7 +10,20 @@ import {
   shrinePoints,
   shrineSpawn,
 } from "../../../packages/shared/src/shrine.js";
-import { tickGolemBeam } from "./golemBeam.js";
+import { tickGolemBeam, contact } from "./golemBeam.js";
+// A shot that struck a body this tick is placed where it first touched it, so
+// its impact appears at the target rather than up to one step beyond it.
+function settleAtContact(
+  q: { x: number; y: number },
+  ox: number,
+  oy: number,
+  body: { x: number; y: number; w: number; h: number },
+) {
+  const t = contact({ x: ox, y: oy }, q, body, 0);
+  if (!Number.isFinite(t)) return;
+  q.x = ox + (q.x - ox) * t;
+  q.y = oy + (q.y - oy) * t;
+}
 import {
   ensureMirrorPond,
   updatePondChest,
@@ -66,7 +79,10 @@ import {
 } from "../../../packages/shared/src/combat.js";
 import {
   DT,
+  ticksFor,
   MAX_PREDICTION_LEAD,
+  FIREBALL_SPEED,
+  FIREBALL_RANGE,
 } from "../../../packages/shared/src/constants.js";
 import {
   neutral,
@@ -86,6 +102,7 @@ import {
 import {
   constrainMotion,
   stepMovement,
+  facingFor,
 } from "../../../packages/shared/src/movement.js";
 import {
   skills,
@@ -93,6 +110,7 @@ import {
   fireballLevel,
   fireballDamage,
 } from "../../../packages/shared/src/abilities.js";
+type Aim = { x: number; y: number };
 export class GameRoom {
   state: World;
   readonly inventory = new InventoryService();
@@ -136,7 +154,14 @@ export class GameRoom {
       input: InputFrame;
       received: number;
       receivedTick?: number;
-      primaryEdges?: boolean[];
+      // Each edge keeps the movement intent held when it was pressed: actions
+      // fire on receipt, while movement (and so facing) plays back ticks later.
+      primaryEdges?: { held: boolean; aim: Aim | null }[];
+      aim?: Aim | null;
+      blackHoleAim?: Aim | null;
+      // Coco's casts join the scheduled movement timeline, firing on the tick
+      // her movement reaches, from the position and facing prediction shows.
+      scheduledCasts?: number[];
       pushEdges?: boolean[];
       movementQueue?: Map<number, InputFrame>;
       movementInput?: InputFrame;
@@ -273,6 +298,8 @@ export class GameRoom {
       this.state.players[id].lastProcessedInputSeq,
     );
     s.primaryEdges = [];
+    s.aim = null;
+    s.scheduledCasts = [];
     s.pushEdges = [];
     delete this.state.players[id].heavyCharge;
     this.primaryWasHeld.delete(id);
@@ -295,6 +322,8 @@ export class GameRoom {
       s.movementQueue?.clear();
       s.movementInput = neutral(this.state.players[id].lastProcessedInputSeq);
       s.primaryEdges = [];
+      s.aim = null;
+      s.scheduledCasts = [];
       s.pushEdges = [];
       delete this.state.players[id].heavyCharge;
       this.primaryWasHeld.delete(id);
@@ -434,6 +463,8 @@ export class GameRoom {
         s.movementQueue?.clear();
         s.movementInput = neutral();
         s.primaryEdges = [];
+        s.aim = null;
+        s.scheduledCasts = [];
         s.pushEdges = [];
       }
     });
@@ -457,7 +488,7 @@ export class GameRoom {
       ensureMirrorPond(w, this.inventory);
       mirrorPondState(w.puzzles)!.entryPassed = false;
     }
-    this.travelReadyTick = w.serverTick + 30;
+    this.travelReadyTick = w.serverTick + ticksFor(1);
     delete w.slowTime;
     w.sceneId = scene;
     w.bridgePuzzle = scene === "BRIDGE_RUINS" ? newBridgePuzzle() : undefined;
@@ -529,6 +560,8 @@ export class GameRoom {
         session.movementQueue?.clear();
         session.movementInput = neutral(p.lastProcessedInputSeq);
         session.primaryEdges = [];
+        session.aim = null;
+        session.scheduledCasts = [];
         session.pushEdges = [];
       }
       Object.assign(p, {
@@ -640,6 +673,8 @@ export class GameRoom {
       interactHeld: session.input.interactHeld,
     };
     session.primaryEdges = [];
+    session.aim = null;
+    session.scheduledCasts = [];
     session.pushEdges = [];
     session.movementQueue?.clear();
     session.movementInput = neutral(p.lastProcessedInputSeq);
@@ -665,16 +700,32 @@ export class GameRoom {
       input.targetTick > this.state.serverTick + MAX_PREDICTION_LEAD
     )
       return false;
+    if (input.moveX || input.moveY) s.aim = { x: input.moveX, y: input.moveY };
     if (input.primaryHeld !== s.input.primaryHeld) {
       s.primaryEdges ||= [];
-      if (s.primaryEdges.length < 8) s.primaryEdges.push(input.primaryHeld);
+      if (s.primaryEdges.length < 8)
+        s.primaryEdges.push({ held: input.primaryHeld, aim: s.aim ?? null });
+    }
+    if (
+      p.role === "EMBER" &&
+      input.targetTick !== undefined &&
+      input.primaryHeld &&
+      !s.input.primaryHeld
+    ) {
+      s.scheduledCasts ||= [];
+      if (s.scheduledCasts.length < 4)
+        s.scheduledCasts.push(
+          Math.max(this.state.serverTick + 1, input.targetTick),
+        );
     }
     if (!!input.pushHeld !== !!s.input.pushHeld) {
       s.pushEdges ||= [];
       if (s.pushEdges.length < 8) s.pushEdges.push(!!input.pushHeld);
     }
-    if (input.blackHoleHeld && !s.input.blackHoleHeld)
+    if (input.blackHoleHeld && !s.input.blackHoleHeld) {
       this.blackHoleRequests.add(id);
+      s.blackHoleAim = s.aim ?? null;
+    }
     if (input.flightHeld && !s.input.flightHeld) this.flightRequests.add(id);
     if (input.sprintHeld && !s.input.sprintHeld) this.sprintRequests.add(id);
     if (input.slowTimeHeld && !s.input.slowTimeHeld)
@@ -719,7 +770,7 @@ export class GameRoom {
         w.slowTime = {
           owner: id,
           startedTick: w.serverTick,
-          endsTick: w.serverTick + 300,
+          endsTick: w.serverTick + ticksFor(10),
         };
         p.cooldowns.slow_time = 20;
       }
@@ -736,7 +787,7 @@ export class GameRoom {
       Object.values(w.players).map((p) => [p.id, { x: p.x, y: p.y }]),
     );
     w.projectileImpacts = (w.projectileImpacts || []).filter(
-      (e) => w.serverTick - e.tick <= 30,
+      (e) => w.serverTick - e.tick <= ticksFor(1),
     );
     const near = (
       p: { x: number; y: number },
@@ -749,16 +800,18 @@ export class GameRoom {
         s.receivedTick === undefined
           ? Date.now() - s.received < 250
           : w.serverTick <= s.receivedTick + Math.ceil(0.25 / DT);
+      const edge = fresh ? s.primaryEdges?.shift() : undefined;
       const i = fresh
         ? {
             ...s.input,
-            primaryHeld: s.primaryEdges?.shift() ?? s.input.primaryHeld,
+            primaryHeld: edge?.held ?? s.input.primaryHeld,
             pushHeld: s.pushEdges?.shift() ?? s.input.pushHeld,
           }
         : neutral(s.input.seq);
       if (!fresh) {
         s.primaryEdges = [];
         s.pushEdges = [];
+        s.scheduledCasts = [];
       }
       const sceneId = p.sceneId ?? w.sceneId;
       const map = maps[sceneId];
@@ -831,7 +884,10 @@ export class GameRoom {
           ? "attack"
           : "idle";
       let strike: "sword" | "heavy" | "cast" | null = null;
-      let strikeFacing = p.facing;
+      const aimMode = p.flightRemaining ? "TOP_DOWN" : map.mode;
+      const aimFrom = (aim: Aim | null | undefined) =>
+        aim ? facingFor(aimMode, aim.x, aim.y, p.facing) : p.facing;
+      let strikeFacing = aimFrom(edge ? edge.aim : s.aim);
       const heavyEnabled =
         p.role === "OATH" && p.unlockedSkills.includes("heavy");
       const wasHeld = this.primaryWasHeld.get(p.id) || false;
@@ -840,7 +896,7 @@ export class GameRoom {
         if (i.primaryHeld && !wasHeld && !p.cooldowns.attack) {
           p.heavyCharge = {
             startedTick: w.serverTick,
-            facing: p.facing,
+            facing: strikeFacing,
             ticks: 0,
             progress: 0,
           };
@@ -867,10 +923,23 @@ export class GameRoom {
       } else if (
         i.primaryHeld &&
         (p.role !== "EMBER" || !wasHeld) &&
+        !(p.role === "EMBER" && s.movementQueue) &&
         !p.cooldowns.attack &&
         p.hp > 0
       ) {
         strike = p.role === "OATH" ? "sword" : "cast";
+      }
+      if (p.role === "EMBER" && s.movementQueue && s.scheduledCasts?.length) {
+        const due = s.scheduledCasts.some((tick) => tick <= w.serverTick);
+        s.scheduledCasts = s.scheduledCasts.filter(
+          (tick) => tick > w.serverTick,
+        );
+        // Movement already stepped this tick, so position and facing equal the
+        // predicted state the player saw when pressing.
+        if (due && fresh && !p.cooldowns.attack && p.hp > 0) {
+          strike = "cast";
+          strikeFacing = p.facing;
+        }
       }
       this.primaryWasHeld.set(p.id, i.primaryHeld);
       if (strike) {
@@ -900,10 +969,9 @@ export class GameRoom {
             sceneId,
             x: p.x,
             y: p.y,
-            vx: Math.cos(strikeFacing) * 180,
-            vy: Math.sin(strikeFacing) * 180,
-            // Slower travel makes the nine-frame animation readable; retain the 672px range.
-            life: 672 / 180,
+            vx: Math.cos(strikeFacing) * FIREBALL_SPEED,
+            vy: Math.sin(strikeFacing) * FIREBALL_SPEED,
+            life: FIREBALL_RANGE / FIREBALL_SPEED,
             owner: p.id,
           };
         }
@@ -917,6 +985,7 @@ export class GameRoom {
         !p.cooldowns.black_hole
       ) {
         const id = randomUUID();
+        const holeFacing = aimFrom(s.blackHoleAim);
         w.blackHoles ??= {};
         w.blackHoles[id] = {
           id,
@@ -924,8 +993,8 @@ export class GameRoom {
           sceneId,
           x: p.x,
           y: p.y,
-          vx: Math.cos(p.facing) * blackHoleTuning.speed,
-          vy: Math.sin(p.facing) * blackHoleTuning.speed,
+          vx: Math.cos(holeFacing) * blackHoleTuning.speed,
+          vy: Math.sin(holeFacing) * blackHoleTuning.speed,
           remainingRange: blackHoleTuning.range,
           phase: "travel",
           startedTick: w.serverTick,
@@ -937,7 +1006,7 @@ export class GameRoom {
           seq: w.serverTick,
           startedTick: w.serverTick,
           kind: "cast",
-          facing: p.facing,
+          facing: holeFacing,
         };
       }
       const pendingSword = this.pendingSwords.get(p.id);
@@ -1044,6 +1113,11 @@ export class GameRoom {
         }
         if (sceneId === "MAIN_HOUSE" && near(p, map.points.exit, 50)) {
           this.transition("TRANSITION_TRAIL");
+          return;
+        }
+        // Playtest shortcut from the starting map to the Goddess Shrine hub.
+        if (sceneId === "MAIN_HOUSE" && near(p, map.points.shrine, 50)) {
+          this.transition("GODDESS_SHRINE");
           return;
         }
         if (isPostTownScene(sceneId) && near(p, map.points.exit, 50)) {
@@ -1295,15 +1369,15 @@ export class GameRoom {
               );
         for (const target of targets) {
           const radius = q.faction === "enemies" ? 17 : 28;
-          if (
-            segmentHits(ox, oy, q.x, q.y, {
-              x: target.x - radius,
-              y: target.y - radius,
-              w: radius * 2,
-              h: radius * 2,
-            })
-          ) {
+          const body = {
+            x: target.x - radius,
+            y: target.y - radius,
+            w: radius * 2,
+            h: radius * 2,
+          };
+          if (segmentHits(ox, oy, q.x, q.y, body)) {
             collided = true;
+            settleAtContact(q, ox, oy, body);
             if (q.faction === "enemies")
               this.damage(target as Player, q.damage ?? 12);
             else
@@ -1354,6 +1428,8 @@ export class GameRoom {
           session.movementQueue?.clear();
           session.movementInput = neutral(p.lastProcessedInputSeq);
           session.primaryEdges = [];
+          session.aim = null;
+          session.scheduledCasts = [];
           session.pushEdges = [];
         }
         p.movementInput = neutral(p.lastProcessedInputSeq);
@@ -1411,7 +1487,7 @@ export class GameRoom {
         b.shieldReturned = true;
         b.phase = "SHIELDED";
       }
-      if (w.serverTick % 45 === 0)
+      if (w.serverTick % ticksFor(1.5) === 0)
         for (const p of Object.values(w.players))
           if (near(p, maps[w.sceneId].points.boss, 160)) this.damage(p, 12);
       if (b.hp <= 0) {

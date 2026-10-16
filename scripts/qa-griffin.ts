@@ -114,7 +114,7 @@ try {
   await pages[1].waitForFunction(() =>
     document.querySelector("#notice")?.textContent?.includes("admires"),
   );
-  if (g.phase !== "DISTRACTED") throw Error("Mirror failed to distract");
+  if (g.phase !== "GROOMING") throw Error("Mirror failed to start grooming");
   await pages[1].locator('[data-item="enchanted_shears"]').click();
   await pages[1].locator("[data-use]").click();
   await pages[1].locator("[data-close]").click();

@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { spikeTrapFrame } from "../animation/pondSpikes.js";
 import type {
   World,
   SceneId,
@@ -12,12 +13,15 @@ import {
   pondCourt,
   pondEntry,
   pondCulvert,
+  pondCulvertMouth,
   pondPads,
   pondCenter,
   pondBridge,
   pondChest,
   pondGuardrails,
-  pondSpikes,
+  pondFenceWalls,
+  pondSpikeColumns,
+  pondSpikeState,
 } from "../../../../packages/shared/src/mirrorPond.js";
 export function preloadMirrorPond(s: Phaser.Scene) {
   for (const key of ["mirror", "brazier"])
@@ -26,6 +30,11 @@ export function preloadMirrorPond(s: Phaser.Scene) {
     "pond:flame",
     "/assets/environment/mirror-pond/torch-flame.png",
     { frameWidth: 64, frameHeight: 64 },
+  );
+  s.load.spritesheet(
+    "pond:spike-trap",
+    "/assets/environment/mirror-pond/spike-trap.png",
+    { frameWidth: 32, frameHeight: 32 },
   );
   s.load.json(
     "pond:flame-meta",
@@ -48,7 +57,7 @@ export class MirrorPondView {
   private flames: Phaser.GameObjects.Image[] = [];
   private angles: Phaser.GameObjects.Text[] = [];
   private mirrors: Phaser.GameObjects.Image[] = [];
-  private spikes: Phaser.GameObjects.Image[] = [];
+  private spikes: Phaser.GameObjects.Image[][] = [];
   private raised: Phaser.GameObjects.GameObject[] = [];
   private gfx: Phaser.GameObjects.Graphics;
   constructor(private scene: Phaser.Scene) {
@@ -121,13 +130,12 @@ export class MirrorPondView {
         this.image("maze:chest", pondChest.x, pondChest.y),
       ];
       // The blocked outer grass meets the stone walkway directly.
-      for (const r of pondGuardrails) this.floor(r).setDepth(-30);
       for (let i = 0; i < 4; i++) {
         const p = pondStations[i];
         this.mirrors.push(this.image("pond:mirror", p.x, p.y));
         this.image("pond:brazier", p.torch.x, p.torch.y);
         this.angles.push(
-          this.label(`M${i + 1} · Hold 1 to rotate`, p.x, p.y + 78),
+          this.label(`M${i + 1} · Hold 1 · opposite side reverses`, p.x, p.y + 78),
         );
         this.scene.textures
           .get("pond:flame")
@@ -144,7 +152,21 @@ export class MirrorPondView {
         );
         this.label(`${i + 1}`, p.torch.x, p.torch.y + 39);
       }
-      this.spikes = [0, 1].map(() => this.image("ruins:spike-slider", 0, 0));
+      // Floor traps: one column of plates per spike lane, drawn on the paving.
+      this.scene.textures
+        .get("pond:spike-trap")
+        .setFilter(Phaser.Textures.FilterMode.NEAREST);
+      this.spikes = pondSpikeColumns.map((r) => {
+        const plates: Phaser.GameObjects.Image[] = [];
+        for (let y = r.y; y < r.y + r.h; y += 32) {
+          const plate = this.scene.add
+            .image(r.x + 16, y + 16, "pond:spike-trap", 0)
+            .setDepth(-6);
+          this.objects.push(plate);
+          plates.push(plate);
+        }
+        return plates;
+      });
       this.label("SIEG · Super Speed (2)\nEast spike entrance", 1440, 760);
       this.label("COCO · Flight (2)\nWater culvert → pond", 1408, 1010);
       this.label("Return · E", 1488, 1120);
@@ -168,7 +190,7 @@ export class MirrorPondView {
     this.mirrors.forEach((o, i) => {
       o.setRotation(state.mirrors[i]);
       this.angles[i].setText(
-        `M${i + 1} · ${Number((((state.mirrors[i] * 180) / Math.PI) % 360).toFixed(1))}°\nHold 1 to rotate`,
+        `M${i + 1} · ${Number((((state.mirrors[i] * 180) / Math.PI) % 360).toFixed(1))}°\nHold 1 · opposite side reverses`,
       );
     });
     const durations = this.scene.cache.json.get("pond:flame-meta")
@@ -180,14 +202,44 @@ export class MirrorPondView {
     this.flames.forEach((flame, i) =>
       flame.setFrame(frame).setVisible(state.torches[i]),
     );
-    pondSpikes(state.clock).forEach((r, i) =>
-      this.spikes[i].setPosition(r.x + r.w / 2, r.y + r.h / 2),
-    );
+    this.spikes.forEach((plates, i) => {
+      const frame = spikeTrapFrame(pondSpikeState(state.clock, i));
+      for (const plate of plates) plate.setFrame(frame);
+    });
     const g = this.gfx;
     g.clear();
-    // The thin ward marks Coco's sealed walking route; her culvert passes beneath it.
-    g.lineStyle(3, 0x87d3df, 0.65);
-    g.strokeRect(pondWater.x, pondWater.y, pondWater.w, pondWater.h);
+    // Overhead wooden rails make the same solid geometry visible on every bank.
+    for (const r of [...pondFenceWalls(w.puzzles), ...pondGuardrails]) {
+      g.fillStyle(0x342b20).fillRect(r.x + 2, r.y + 2, r.w, r.h);
+      g.fillStyle(0x806044)
+        .fillRect(r.x, r.y, r.w, r.h)
+        .lineStyle(1, 0xd4b27b)
+        .strokeRect(r.x, r.y, r.w, r.h);
+      const horizontal = r.w >= r.h,
+        length = horizontal ? r.w : r.h;
+      for (let n = 0; n <= length; n += 32) {
+        const x = r.x + (horizontal ? n : r.w / 2),
+          y = r.y + (horizontal ? r.h / 2 : n);
+        g.fillStyle(0x4b3425)
+          .fillRect(x - 5, y - 5, 10, 10)
+          .lineStyle(1, 0xd4b27b)
+          .strokeRect(x - 5, y - 5, 10, 10);
+      }
+    }
+    // Iron grate across the culvert mouth: Coco flies over, walkers are barred.
+    {
+      const m = pondCulvertMouth;
+      g.fillStyle(0x1d2430, 0.35).fillRect(m.x, m.y, m.w, m.h);
+      for (let x = m.x + 6; x < m.x + m.w; x += 10) {
+        g.fillStyle(0x23262e).fillRect(x + 1, m.y + 1, 4, m.h);
+        g.fillStyle(0x6f7686).fillRect(x, m.y, 4, m.h);
+        g.fillStyle(0xa9afbd).fillRect(x, m.y, 1, m.h);
+      }
+      for (const y of [m.y + 4, m.y + m.h - 8]) {
+        g.fillStyle(0x23262e).fillRect(m.x, y + 1, m.w, 4);
+        g.fillStyle(0x7d8494).fillRect(m.x, y, m.w, 4);
+      }
+    }
     for (let i = 0; i < 4; i++) {
       const p = pondStations[i];
       g.lineStyle(1, 0xe3d295, 0.7);

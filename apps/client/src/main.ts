@@ -8,7 +8,9 @@ import {
 } from "./environment/MirrorPondView.js";
 import {
   mirrorPondState,
+  pondGuardrails,
   pondStations,
+  pondStoneWalls,
 } from "../../../packages/shared/src/mirrorPond.js";
 import {
   HedgeMazeView,
@@ -24,7 +26,10 @@ import {
   BridgePuzzleView,
   preloadBridgePuzzle,
 } from "./environment/BridgePuzzleView.js";
-import { SLOW_TIME_SCALE } from "../../../packages/shared/src/constants.js";
+import {
+  SERVER_HZ,
+  SLOW_TIME_SCALE,
+} from "../../../packages/shared/src/constants.js";
 import { TemporalView, preloadTemporal } from "./entities/TemporalView.js";
 import {
   constrainMotion,
@@ -43,12 +48,24 @@ import { renderAppearanceLobby } from "./ui/appearanceLobby.js";
 import { preloadMagic, warmMagicTextures } from "./assets/magicTextures.js";
 import { ProjectileView } from "./entities/ProjectileView.js";
 import Phaser from "phaser";
-import { attachResponsiveRenderer } from "./rendering/ResponsiveRenderer.js";
-import { smoothingFactor } from "./rendering/viewport.js";
+import {
+  attachResponsiveRenderer,
+  pixelZoom,
+} from "./rendering/ResponsiveRenderer.js";
+import {
+  followPrediction,
+  followCamera,
+  snapToPixel,
+  stepFocusWeight,
+  blendCamera,
+  type CameraFocus,
+} from "./rendering/viewport.js";
 import { preloadHeroes, registerHeroes } from "./assets/heroLoader.js";
 import { PlayerView, type CharacterRendering } from "./entities/PlayerView.js";
 import "./styles.css";
 import { NetworkClient } from "./net/NetworkClient.js";
+import { CastPrediction, staffOrigin } from "./net/castPrediction.js";
+import { fireballLevel } from "../../../packages/shared/src/abilities.js";
 import {
   maps,
   collisionRects,
@@ -57,7 +74,11 @@ import {
 } from "../../../packages/shared/src/maps.js";
 import { heroNames } from "./assets/heroNames.js";
 import { speedTimer } from "./ui/speedTimer.js";
-import { neutral } from "../../../packages/shared/src/gameTypes.js";
+import {
+  neutral,
+  type SceneId,
+  type World,
+} from "../../../packages/shared/src/gameTypes.js";
 const net = new NetworkClient(),
   panel = document.querySelector<HTMLDivElement>("#panel")!,
   hud = document.querySelector<HTMLDivElement>("#hud")!,
@@ -121,7 +142,7 @@ function renderUI() {
         w?.slowTime &&
         me &&
         w.slowTime.owner === me.id
-          ? Math.max(0, (w.slowTime.endsTick - w.serverTick) / 30)
+          ? Math.max(0, (w.slowTime.endsTick - w.serverTick) / SERVER_HZ)
           : 0;
       const timer =
         ability === "black-hole"
@@ -483,6 +504,9 @@ for (const b of document.querySelectorAll<HTMLButtonElement>("[data-key]")) {
           submitInput(true);
       };
 }
+// Coco's own casts, predicted for presentation on the local timeline.
+const casts = new CastPrediction();
+let primaryWasHeld = false;
 function submitInput(reliable = false) {
   const w = net.world;
   if (
@@ -514,9 +538,45 @@ function submitInput(reliable = false) {
     i.blackHoleHeld = role === "EMBER" && held("3", "g");
   }
   net.prediction.push(i, w, !reliable);
+  if (i.primaryHeld && !primaryWasHeld && net.prediction.player)
+    casts.press(i.targetTick!, net.prediction.player, w);
+  primaryWasHeld = i.primaryHeld;
   net.sendInput(i, reliable);
 }
-setInterval(() => submitInput(), 1000 / 30);
+// Advance prediction from the render loop the moment the simulation clock
+// reaches a new tick, so steps line up with frames instead of a drifting timer.
+// The interval only covers hidden tabs, where animation frames stop.
+let lastPumpTarget = -1,
+  lastPumpTime = 0;
+function pumpInput(now = performance.now()) {
+  const w = net.world;
+  if (!w) return;
+  const target = net.clock.target(w.serverTick, now);
+  if (target <= lastPumpTarget && now - lastPumpTime < 1000 / SERVER_HZ) return;
+  lastPumpTarget = target;
+  lastPumpTime = now;
+  submitInput();
+}
+setInterval(() => {
+  if (performance.now() - lastPumpTime > 100) pumpInput();
+}, 1000 / SERVER_HZ);
+// Hit boxes the server tests Coco's shots against, at the positions this client
+// draws them, so a locally drawn shot stops where it visibly meets its target.
+function shotTargets(w: World, sceneId: SceneId) {
+  const box = (p: { x: number; y: number }, half: number) => ({
+    x: p.x - half,
+    y: p.y - half,
+    w: half * 2,
+    h: half * 2,
+  });
+  const targets = Object.values(w.enemies)
+    .filter((e) => e.state !== "DEAD" && sceneId === w.sceneId)
+    .map((e) => box(net.interpolation.position(e.id, "enemies") || e, 28));
+  const griffin =
+    sceneId === "GRIFFIN_ENCLOSURE" ? griffinState(w.puzzles) : null;
+  if (griffin && griffin.hp > 0) targets.push(box(griffin, 30));
+  return targets;
+}
 class Adventure extends Phaser.Scene {
   temporalView!: TemporalView;
   gfx!: Phaser.GameObjects.Graphics;
@@ -525,6 +585,11 @@ class Adventure extends Phaser.Scene {
   labels: Phaser.GameObjects.Text[] = [];
   sceneKey = "";
   rendered = { x: 0, y: 0 };
+  lastGlide: { x: number; y: number } | null = null;
+  cameraPos: { x: number; y: number } | null = null;
+  focusWeight = 0;
+  focusScene = "";
+  lastFocus: CameraFocus | null = null;
   movementTrace: string[] = [];
   lastMovementTrace = 0;
   playerViews = new Map<string, PlayerView>();
@@ -599,6 +664,7 @@ class Adventure extends Phaser.Scene {
     );
   }
   update(_time: number, delta: number) {
+    pumpInput();
     const w = net.world;
     if (!w || w.phase === "LOBBY") {
       this.gfx.clear();
@@ -619,9 +685,12 @@ class Adventure extends Phaser.Scene {
     const sceneId = me.sceneId ?? w.sceneId;
     const house = sceneId === "MAIN_HOUSE" || sceneId === "HOUSE_INTERIOR";
     const map = maps[sceneId];
+    const zoom = pixelZoom(this),
+      viewWidth = this.scale.width / zoom,
+      viewHeight = this.scale.height / zoom;
     if (house) this.cameras.main.removeBounds();
     else this.cameras.main.setBounds(0, 0, map.width, map.height);
-    this.cameras.main.setZoom(1);
+    this.cameras.main.setZoom(zoom);
     this.cameras.main.setBackgroundColor(
       sceneId === "HOUSE_INTERIOR" ? 0x2d2827 : house ? 0x29432c : 0x10202b,
     );
@@ -634,6 +703,9 @@ class Adventure extends Phaser.Scene {
       this.sceneKey = sceneId;
       this.environment.show(sceneId);
       this.rendered = { x: local.x, y: local.y };
+      this.lastGlide = null;
+      this.cameraPos = null;
+      casts.clear();
     }
     this.environment.updatePushables(w.pushableOffsets);
     this.bridgeView.update(w, sceneId);
@@ -641,19 +713,28 @@ class Adventure extends Phaser.Scene {
     this.pondView.update(w, sceneId);
     this.griffinView.update(w, sceneId);
     this.shrineView.update(w, sceneId);
+    const glide = (net.prediction.player &&
+      net.prediction.renderPosition(performance.now())) || {
+      x: local.x,
+      y: local.y,
+    };
     const err = Math.hypot(
-      this.rendered.x - local.x,
-      this.rendered.y - local.y,
+      this.rendered.x - glide.x,
+      this.rendered.y - glide.y,
     );
-    const a = err > 100 ? 1 : smoothingFactor(delta);
+    const follow =
+      err > 100 || !this.lastGlide
+        ? glide
+        : followPrediction(this.rendered, this.lastGlide, glide, delta);
+    this.lastGlide = { x: glide.x, y: glide.y };
     this.rendered =
       err > 100
-        ? { x: local.x, y: local.y }
+        ? { x: glide.x, y: glide.y }
         : constrainMotion(
             this.rendered,
             {
-              x: (local.x - this.rendered.x) * a,
-              y: (local.y - this.rendered.y) * a,
+              x: follow.x - this.rendered.x,
+              y: follow.y - this.rendered.y,
             },
             map,
             flightWalls(
@@ -678,57 +759,55 @@ class Adventure extends Phaser.Scene {
       this.rendered.y >= firingBridge.y &&
       this.rendered.y <= firingBridge.y + firingBridge.h;
     const targetSpan = Math.abs(this.rendered.y - bridgePoints.target.y);
-    this.cameras.main.setZoom(
-      frameTarget ? Math.min(1, this.scale.height / (targetSpan + 160)) : 1,
-    );
+    // Each framed area proposes a focus; the camera eases toward it and back.
+    let focus: CameraFocus | null = null;
+    const station =
+      sceneId === "MIRROR_POND" && me.role === "EMBER"
+        ? pondStations.find(
+            (p) =>
+              Math.hypot(
+                p.shot.x - this.rendered.x,
+                p.shot.y - this.rendered.y,
+              ) < 40,
+          )
+        : undefined;
+    const griffin =
+      sceneId === "GRIFFIN_ENCLOSURE" ? griffinState(w.puzzles) : null;
     if (frameTarget) {
-      this.cameras.main.centerOn(
-        480,
-        (this.rendered.y + bridgePoints.target.y) / 2,
-      );
-    } else if (
-      sceneId === "MIRROR_POND" &&
-      me.role === "EMBER" &&
-      pondStations.some(
-        (p) =>
-          Math.hypot(p.shot.x - this.rendered.x, p.shot.y - this.rendered.y) <
-          40,
-      )
-    ) {
-      const p = pondStations.find(
-        (p) =>
-          Math.hypot(p.shot.x - this.rendered.x, p.shot.y - this.rendered.y) <
-          40,
-      )!;
-      const xs = [p.x, p.torch.x, this.rendered.x],
-        ys = [p.y, p.torch.y, this.rendered.y];
+      focus = {
+        x: 480,
+        y: (this.rendered.y + bridgePoints.target.y) / 2,
+        zoom: Math.min(1, viewHeight / (targetSpan + 160)),
+      };
+    } else if (station) {
+      const xs = [station.x, station.torch.x, this.rendered.x],
+        ys = [station.y, station.torch.y, this.rendered.y];
       const left = Math.min(...xs),
         top = Math.min(...ys),
         right = Math.max(...xs),
         bottom = Math.max(...ys);
-      this.cameras.main.setZoom(
-        Math.min(
+      focus = {
+        x: (left + right) / 2,
+        y: (top + bottom) / 2,
+        zoom: Math.min(
           1,
-          this.scale.width / (right - left + 180),
-          this.scale.height / (bottom - top + 180),
+          viewWidth / (right - left + 180),
+          viewHeight / (bottom - top + 180),
         ),
-      );
-      this.cameras.main.centerOn((left + right) / 2, (top + bottom) / 2);
+      };
     } else if (
-      sceneId === "GRIFFIN_ENCLOSURE" &&
-      griffinState(w.puzzles) &&
-      Math.abs(this.rendered.x - griffinState(w.puzzles)!.x) <
-        this.scale.width - 180 &&
-      Math.abs(this.rendered.y - griffinState(w.puzzles)!.y) <
-        this.scale.height - 160
+      griffin &&
+      Math.abs(this.rendered.x - griffin.x) < viewWidth - 180 &&
+      Math.abs(this.rendered.y - griffin.y) < viewHeight - 160
     ) {
-      const g = griffinState(w.puzzles)!;
-      this.cameras.main.centerOn(
-        (this.rendered.x + g.x) / 2,
-        (Math.min(this.rendered.y - 64, g.y - 110) +
-          Math.max(this.rendered.y + 24, g.y + 24)) /
+      focus = {
+        x: (this.rendered.x + griffin.x) / 2,
+        y:
+          (Math.min(this.rendered.y - 64, griffin.y - 110) +
+            Math.max(this.rendered.y + 24, griffin.y + 24)) /
           2,
-      );
+        zoom: 1,
+      };
     } else if (
       sceneId === "GODDESS_SHRINE" &&
       this.rendered.x >= 512 &&
@@ -738,8 +817,30 @@ class Adventure extends Phaser.Scene {
     ) {
       // Keep the statue and offering visible at native pixel scale. Shrinking
       // the whole plaza into this viewport discards detail before CSS upscales it.
-      this.cameras.main.centerOn(640, 430);
-    } else if (house) {
+      focus = { x: 640, y: 430, zoom: 1 };
+    }
+    if (this.focusScene !== sceneId) {
+      // Arriving in a scene starts settled, never panning in from elsewhere.
+      this.focusScene = sceneId;
+      this.focusWeight = focus ? 1 : 0;
+    } else this.focusWeight = stepFocusWeight(this.focusWeight, !!focus, delta);
+    if (focus) this.lastFocus = focus;
+    // On leaving, the last framing holds still while the blend fades out.
+    // The camera trails the hero softly, so per-frame unevenness in the hero's
+    // motion is absorbed instead of moving the whole screen.
+    this.cameraPos = this.cameraPos
+      ? followCamera(this.cameraPos, this.rendered, delta)
+      : { x: this.rendered.x, y: this.rendered.y };
+    const view = blendCamera(
+      this.cameraPos,
+      focus ?? this.lastFocus,
+      this.focusWeight,
+    );
+    if (!house) {
+      this.cameras.main.setZoom(view.zoom * zoom);
+      const center = view.zoom === 1 ? snapToPixel(view, zoom) : view;
+      this.cameras.main.centerOn(center.x, center.y);
+    } else {
       const halfX = this.scale.width / (2 * this.cameras.main.zoom),
         halfY = this.scale.height / (2 * this.cameras.main.zoom);
       const bounds = map.cameraBounds ?? {
@@ -757,11 +858,12 @@ class Adventure extends Phaser.Scene {
         size < half * 2
           ? start + size / 2
           : Phaser.Math.Clamp(position, start + half, start + size - half);
+      const pixel = snapToPixel(this.cameraPos, zoom);
       this.cameras.main.centerOn(
-        center(this.rendered.x, bounds.x, bounds.w, halfX),
-        center(this.rendered.y, bounds.y, bounds.h, halfY),
+        center(pixel.x, bounds.x, bounds.w, halfX),
+        center(pixel.y, bounds.y, bounds.h, halfY),
       );
-    } else this.cameras.main.centerOn(this.rendered.x, this.rendered.y);
+    }
     const g = this.gfx;
     g.clear();
     if (
@@ -827,7 +929,7 @@ class Adventure extends Phaser.Scene {
       if ((p.sceneId ?? w.sceneId) !== sceneId) continue;
       const pos =
         p.id === me.id
-          ? this.rendered
+          ? snapToPixel(this.rendered, zoom)
           : net.interpolation.position(p.id, "players") || p;
       let view = this.playerViews.get(p.id);
       if (!view) {
@@ -835,7 +937,17 @@ class Adventure extends Phaser.Scene {
         this.playerViews.set(p.id, view);
       }
       const motion = p.id === me.id ? local : p;
-      view.update(p, motion, pos, map.mode, characterRendering, {
+      // The local cast pose starts on the predicted timeline, with its fireball.
+      const predictedCast =
+        p.id === me.id
+          ? casts.pose(
+              net.prediction.renderTick,
+              w.serverTick,
+              p.combat?.seq,
+            )
+          : null;
+      const shown = predictedCast ? { ...p, combat: predictedCast } : p;
+      view.update(shown, motion, pos, map.mode, characterRendering, {
         serverTick: w.serverTick,
         timeScale:
           w.slowTime && !(p.role === "OATH" && (p.sprintRemaining ?? 0) > 0)
@@ -877,6 +989,33 @@ class Adventure extends Phaser.Scene {
         view.destroy();
         this.enemyViews.delete(id);
       }
+    casts.resolve((tick) => net.prediction.stateAt(tick));
+    casts.sync(w, me.id);
+    const shots = casts.view(
+      w,
+      Object.fromEntries(
+        Object.entries(w.projectiles).filter(
+          ([, q]) => (q.sceneId ?? w.sceneId) === sceneId,
+        ),
+      ),
+      me.id,
+      net.prediction.renderTick,
+      fireballLevel(me.unlockedSkills),
+      // Draw Coco's own shots against the same blockers the server traces.
+      // Pond magic crosses the water, fence and banks; only stone and the
+      // entrance rails stop it before it reaches a mirror.
+      sceneId === "MIRROR_POND"
+        ? [...pondStoneWalls, ...pondGuardrails]
+        : collisionRects(
+            sceneId,
+            w.puzzles,
+            w.pushableOffsets,
+            w.bridgePuzzle,
+            w.players,
+            w.serverTick,
+          ).filter((r) => sceneId !== "GRIFFIN_ENCLOSURE" || !r.terrain),
+      shotTargets(w, sceneId),
+    );
     this.projectileView.update(
       {
         ...w,
@@ -885,16 +1024,21 @@ class Adventure extends Phaser.Scene {
             ([, hole]) => hole.sceneId === sceneId,
           ),
         ),
-        projectiles: Object.fromEntries(
-          Object.entries(w.projectiles).filter(
-            ([, q]) => (q.sceneId ?? w.sceneId) === sceneId,
-          ),
-        ),
+        projectiles: shots.projectiles,
         projectileImpacts: w.projectileImpacts?.filter(
           (q) => (q.sceneId ?? w.sceneId) === sceneId,
         ),
       },
-      (id) => net.interpolation.position(id, "projectiles"),
+      (id) => {
+        const q = shots.projectiles[id];
+        const at =
+          shots.positions.get(id) ??
+          net.interpolation.position(id, "projectiles");
+        // Fireballs leave from Coco's staff, then settle onto their path.
+        return at && q?.fireballLevel
+          ? staffOrigin(at, q.castOrigin, { x: q.vx, y: q.vy })
+          : at;
+      },
       characterRendering === "geometric",
     );
     if (w.boss && sceneId === w.sceneId) {
@@ -938,7 +1082,7 @@ class Adventure extends Phaser.Scene {
       stats.textContent = `${me.role ? heroNames[me.role] : "Choosing"} · HP ${Math.round(me.hp)} · Room ${w.roomCode} · ${net.socket.connected ? "Connected" : "Reconnecting"}`;
     let goal =
       sceneId === "MAIN_HOUSE"
-        ? "E by the front door: enter house. Follow the path east; E at the exit for the transition trail."
+        ? "E by the front door: enter house. Follow the path east; E at the exit for the transition trail. Playtest shortcut: E at the west sign for the Goddess Shrine."
         : sceneId === "HOUSE_INTERIOR"
           ? "Explore the house. E near the lower-right doorway: return outside."
           : isPostTownScene(sceneId)
@@ -980,13 +1124,13 @@ class Adventure extends Phaser.Scene {
       const pond = mirrorPondState(w.puzzles)!;
       goal = pond.raised
         ? "All four flames lit! The sanctuary has risen. Open the shared mirror chest (E), then return east."
-        : `Mirror Pond · ${pond.torches.filter(Boolean).length}/4 torches · Sieg: Speed through east spikes; hold Push (1) to rotate mirrors 360°. Coco: Flight (2) through water culvert; Fireball (J) from A1–A4.`;
+        : `Mirror Pond · ${pond.torches.filter(Boolean).length}/4 torches · Sieg: Speed through east spikes; hold Push (1) on opposite sides to turn mirrors in opposite directions. Coco: Flight (2) through water culvert; Fireball (J) from A1–A4.`;
     }
     if (sceneId === "GRIFFIN_ENCLOSURE") {
       const g = griffinState(w.puzzles)!;
       goal = g.wigClaimed
         ? "Griffin Wig acquired · Return south to the goddess and offer it from the shared inventory."
-        : "Griffin · Coco: Fly to the northern nest; offer Mirror, then Shears. Black Hole pulls it ashore. Sieg: stand to bait a headbutt, dodge behind a pillar. Slow Time helps both heroes dodge.";
+        : "Griffin · Coco: Fly to the northern nest; drop the Mirror and Shears for a haircut. Black Hole pulls it ashore. Sieg: stand to bait a headbutt, dodge behind a pillar. Slow Time helps both heroes dodge.";
     }
     if (sceneId === "GODDESS_SHRINE")
       goal = shrineComplete(w)
@@ -996,7 +1140,7 @@ class Adventure extends Phaser.Scene {
     const debugPanel = document.querySelector<HTMLDivElement>("#debug")!;
     debugPanel.hidden = !debug;
     if (debug)
-      debugPanel.textContent = `F3 · ${characterRendering} (F4) · tick ${w.serverTick} · seq ${net.seq} / ack ${me.lastProcessedInputSeq}\npending ${net.prediction.pending.length} · correction ${net.prediction.error.toFixed(1)}px · buffer ${net.interpolation.buffer.length} · viewport ${this.scale.width}×${this.scale.height}`;
+      debugPanel.textContent = `F3 · ${characterRendering} (F4) · tick ${w.serverTick} · seq ${net.seq} / ack ${me.lastProcessedInputSeq}\npending ${net.prediction.pending.length} · correction ${net.prediction.error.toFixed(1)}px · buffer ${net.interpolation.buffer.length} · viewport ${this.scale.width}×${this.scale.height} @${pixelZoom(this)}×`;
     this.temporalView.update(w, sceneId, this.playerViews, this.time.now);
     const root = document.querySelector<HTMLDivElement>("#game")!;
     root.dataset.playerId = me.id;

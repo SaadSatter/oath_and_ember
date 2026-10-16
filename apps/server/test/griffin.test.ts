@@ -1,3 +1,4 @@
+import { DT, ticksFor } from "../../../packages/shared/src/constants.js";
 import { it, expect } from "vitest";
 import { GameRoom } from "../src/GameRoom.js";
 import { damageGriffin, pullGriffin, tickGriffin } from "../src/griffin.js";
@@ -35,6 +36,12 @@ function setup() {
     g: griffinState(w.puzzles)!,
   };
 }
+function finishGrooming(w: ReturnType<typeof setup>["w"]) {
+  const g = griffinState(w.puzzles)!;
+  for (let i = 0; i < ticksFor(60) && !g.wigClaimed; i++)
+    tickGriffin(w, () => {});
+  expect(g.wigClaimed).toBe(true);
+}
 it("connects the northern shrine trail in both directions and preserves completed trials", () => {
   const { r, w, s, g } = setup();
   g.pillars[0] = true;
@@ -42,7 +49,7 @@ it("connects the northern shrine trail in both directions and preserves complete
   r.transition("GODDESS_SHRINE", true);
   expect(s.y).toBe(160);
   Object.assign(s, shrinePoints.north);
-  w.serverTick += 31;
+  w.serverTick += ticksFor(1) + 1;
   r.receiveInput(s.id, { ...neutral(1), interactHeld: true });
   r.tick();
   expect(w.sceneId).toBe("GRIFFIN_ENCLOSURE");
@@ -51,7 +58,7 @@ it("connects the northern shrine trail in both directions and preserves complete
     pillars: [true, false, false, false],
   });
   Object.assign(s, maps.GRIFFIN_ENCLOSURE.points.back);
-  w.serverTick += 31;
+  w.serverTick += ticksFor(1) + 1;
   r.receiveInput(s.id, neutral(2));
   r.tick();
   r.receiveInput(s.id, { ...neutral(3), interactHeld: true });
@@ -64,32 +71,32 @@ it("keeps water in the northern third, lets only flight cross it, and keeps pill
   const walls = collisionRects("GRIFFIN_ENCLOSURE", w.puzzles);
   Object.assign(s, { x: 500, y: 410 });
   Object.assign(c, { x: 500, y: 410 });
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < ticksFor(1); i++) {
     stepMovement(
       s,
       { ...neutral(), moveY: -1 },
       maps.GRIFFIN_ENCLOSURE,
       walls,
-      1 / 30,
+      DT,
     );
     stepMovement(
       c,
       { ...neutral(), moveY: -1, flightHeld: true },
       maps.GRIFFIN_ENCLOSURE,
       walls,
-      1 / 30,
+      DT,
     );
   }
   expect(s.y).toBeGreaterThanOrEqual(397);
   expect(c.y).toBeLessThan(384);
   Object.assign(c, { x: 320, y: 576, flightRemaining: 10 });
-  for (let i = 0; i < 30; i++)
+  for (let i = 0; i < ticksFor(1); i++)
     stepMovement(
       c,
       { ...neutral(), moveX: 1 },
       maps.GRIFFIN_ENCLOSURE,
       walls,
-      1 / 30,
+      DT,
     );
   expect(c.x).toBeLessThanOrEqual(339);
 });
@@ -102,26 +109,28 @@ it("pulls the airborne guardian ashore with Black Hole, respecting pillars and o
     sceneId: "GRIFFIN_ENCLOSURE",
     damaged: [] as string[],
   };
-  for (let i = 0; i < 27; i++) pullGriffin(w, hole, 100);
+  for (let i = 0; i < ticksFor(0.9); i++) pullGriffin(w, hole, 100);
   expect(g.y).toBeGreaterThanOrEqual(400);
   expect(g.phase).toBe("LAND");
   expect(g.grounded).toBe(14);
   expect(g.hp).toBe(296);
   Object.assign(g, { x: 330, y: 576 });
   const before = g.x;
-  for (let i = 0; i < 60; i++) pullGriffin(w, { ...hole, x: 440, y: 576 }, 100);
+  for (let i = 0; i < ticksFor(2); i++)
+    pullGriffin(w, { ...hole, x: 440, y: 576 }, 100);
   expect(g.x).toBe(before);
 });
 it("locks its warned beam direction, deals damage once, and pillars shield players", () => {
   const { w, g, s, c } = setup();
-  Object.assign(g, { x: 640, y: 312, cooldown: 0 });
+  Object.assign(g, { x: 640, y: 312, phase: "FLY", cooldown: 0 });
   Object.assign(s, { x: 640, y: 700 });
   c.connected = false;
   tickGriffin(w, (p, n) => (p.hp -= n));
   expect(g.phase).toBe("BEAM_CHARGE");
   const aim = g.facing;
   s.x = 740;
-  for (let i = 0; i < 37; i++) tickGriffin(w, (p, n) => (p.hp -= n));
+  for (let i = 0; i < ticksFor(1.233); i++)
+    tickGriffin(w, (p, n) => (p.hp -= n));
   expect(g.facing).toBe(aim);
   expect(s.hp).toBe(100);
   Object.assign(g, {
@@ -148,12 +157,12 @@ it("slows flight, telegraphs and charges to 20 percent and returns to defend an 
     h.g.phase = "BEAM_CHARGE";
     h.g.timer = 1;
   }
-  b.w.slowTime = { owner: b.c.id, startedTick: 0, endsTick: 300 };
+  b.w.slowTime = { owner: b.c.id, startedTick: 0, endsTick: ticksFor(10) };
   tickGriffin(a.w, () => {});
   tickGriffin(b.w, () => {});
   expect(1 - b.g.timer).toBeCloseTo((1 - a.g.timer) * 0.2);
   const { w, g, c } = setup();
-  g.cooldown = 10;
+  Object.assign(g, { y: 256, phase: "FLY", cooldown: 10 });
   Object.assign(c, { ...griffinNest, flightRemaining: 10 });
   const y = g.y;
   tickGriffin(w, () => {});
@@ -182,7 +191,7 @@ it("baits stationary Sieg, sweeps the fast headbutt into a pillar and stuns with
   tickGriffin(w, () => {});
   expect(g.phase).toBe("HEADBUTT_CHARGE");
   s.x = 500;
-  for (let i = 0; i < 65 && g.phase !== "STUNNED"; i++)
+  for (let i = 0; i < ticksFor(2.167) && g.phase !== "STUNNED"; i++)
     tickGriffin(w, (p, n) => (p.hp -= n));
   expect(g.phase).toBe("STUNNED");
   expect(g.pillars[0]).toBe(true);
@@ -200,7 +209,9 @@ it("validates nest range, ownership, role and order; awards one shared wig and f
   Object.assign(c, griffinNest);
   expect(() => use("fake", "vanity_mirror")).toThrow("backpack");
   w.inventory!.counts = { vanity_mirror: 1, enchanted_shears: 1 };
-  expect(() => use("early", "enchanted_shears")).toThrow("First distract");
+  use("early", "enchanted_shears");
+  expect(g.shearsDelivered).toBe(true);
+  expect(g.wigClaimed).toBe(false);
   Object.assign(s, griffinNest);
   expect(() =>
     r.useItem(s.id, {
@@ -210,10 +221,13 @@ it("validates nest range, ownership, role and order; awards one shared wig and f
     }),
   ).toThrow("Coco");
   use("mirror", "vanity_mirror");
-  expect(g.phase).toBe("DISTRACTED");
+  expect(g.phase).toBe("GROOMING");
   use("cut", "enchanted_shears");
   use("cut", "enchanted_shears");
   use("again", "enchanted_shears");
+  expect(w.inventory!.counts.griffin_wig).toBeUndefined();
+  finishGrooming(w);
+  use("finished", "enchanted_shears");
   expect(w.inventory!.counts).toEqual({
     vanity_mirror: 1,
     enchanted_shears: 1,
@@ -259,9 +273,9 @@ it("walks and flies from the real spawn to the nest, delivers both earned tools,
     });
     r.tick();
   }
-  for (let n = 0; n < 9; n++) step(-1, 0);
+  for (let n = 0; n < ticksFor(0.3); n++) step(-1, 0);
   step(0, -1, true);
-  for (let n = 0; n < 170 && c.y > 142; n++) step(0, -1);
+  for (let n = 0; n < ticksFor(5.667) && c.y > 142; n++) step(0, -1);
   expect(c.y).toBeLessThan(150);
   expect(c.hp).toBeGreaterThan(0);
   expect(c.flightRemaining).toBeGreaterThan(0);
@@ -275,9 +289,10 @@ it("walks and flies from the real spawn to the nest, delivers both earned tools,
     targetId: GRIFFIN_NEST,
     itemId: "enchanted_shears",
   });
+  finishGrooming(w);
   expect(g.wigClaimed).toBe(true);
   expect(w.inventory!.counts.griffin_wig).toBe(1);
-  for (let n = 0; n < 170 && c.y < 1080; n++) step(0, 1);
+  for (let n = 0; n < ticksFor(5.667) && c.y < 1080; n++) step(0, 1);
   seq++;
   r.receiveInput(c.id, { ...neutral(seq), interactHeld: true });
   r.tick();
@@ -330,6 +345,24 @@ it("synchronizes Griffin attacks, pillar changes and a unique nest reward to two
         })
       ).ok,
     ).toBe(false);
+    // Both real clients observe the same authoritative stand-up phase.
+    Object.assign(w.players[a.playerId], { x: 640, y: 450 });
+    const wakeDeadline = Date.now() + 2500;
+    let wakeTick: number | undefined;
+    while (Date.now() < wakeDeadline && wakeTick === undefined) {
+      wakeTick = [...history[0].keys()].find(
+        (t) =>
+          history[1].has(t) &&
+          griffinState(history[0].get(t).puzzles)?.phase === "WAKING" &&
+          griffinState(history[1].get(t).puzzles)?.phase === "WAKING",
+      );
+      if (wakeTick === undefined)
+        await new Promise((resolve) => setTimeout(resolve, 20));
+    }
+    expect(wakeTick).toBeDefined();
+    expect(griffinState(history[0].get(wakeTick!).puzzles)).toEqual(
+      griffinState(history[1].get(wakeTick!).puzzles),
+    );
     // A continuous mouth beam stops at Sieg; Coco behind him is shielded.
     Object.assign(g, {
       x: 640,
@@ -386,6 +419,24 @@ it("synchronizes Griffin attacks, pillar changes and a unique nest reward to two
     };
     expect((await req(clients[1], "inventory:use", cut)).ok).toBe(true);
     expect((await req(clients[1], "inventory:use", cut)).ok).toBe(true);
+    expect(g.wigClaimed).toBe(false);
+    const groomingDeadline = Date.now() + 2500;
+    let groomingTick: number | undefined;
+    while (groomingTick === undefined && Date.now() < groomingDeadline) {
+      groomingTick = [...history[0].keys()].find(
+        (t) =>
+          history[1].has(t) &&
+          griffinState(history[0].get(t).puzzles)?.phase === "GROOMING" &&
+          griffinState(history[1].get(t).puzzles)?.phase === "GROOMING",
+      );
+      if (groomingTick === undefined)
+        await new Promise((resolve) => setTimeout(resolve, 20));
+    }
+    expect(groomingTick).toBeDefined();
+    expect(history[0].get(groomingTick!).puzzles.griffin).toEqual(
+      history[1].get(groomingTick!).puzzles.griffin,
+    );
+    finishGrooming(w);
     await new Promise((resolve) => setTimeout(resolve, 150));
     const ticks = [...history[0].keys()].filter(
       (t) =>
@@ -404,7 +455,7 @@ it("synchronizes Griffin attacks, pillar changes and a unique nest reward to two
     clients.forEach((c) => c.disconnect());
     await app.close();
   }
-});
+}, 15000);
 
 it("Black Hole overcomes flight AI and really drags the Griffin onto land over successive live ticks", () => {
   const { w, g, s, c } = setup();
@@ -417,7 +468,7 @@ it("Black Hole overcomes flight AI and really drags the Griffin onto land over s
     sceneId: "GRIFFIN_ENCLOSURE",
     damaged: [] as string[],
   };
-  for (let i = 0; i < 110; i++) {
+  for (let i = 0; i < ticksFor(3.667); i++) {
     tickGriffin(w, () => {});
     pullGriffin(w, hole, 100);
   }
@@ -440,7 +491,7 @@ it("loops a two-second beam from its mouth and explodes only at the nearest cont
   Object.assign(s, { x: 800, y: 459 });
   Object.assign(c, { x: 900, y: 459 });
   expect(griffinMouth(g)).toEqual({ x: 689, y: 459 });
-  for (let i = 0; i < 30; i++) tickGriffin(w, (p, n) => (p.hp -= n));
+  for (let i = 0; i < ticksFor(1); i++) tickGriffin(w, (p, n) => (p.hp -= n));
   expect(g.phase).toBe("BEAM");
   expect(g.beam).toMatchObject({ x: 779, y: 459, contactId: `player:${s.id}` });
   expect(s.hp).toBe(74);
@@ -457,7 +508,8 @@ it("loops a two-second beam from its mouth and explodes only at the nearest cont
   });
   c.sceneId = "GODDESS_SHRINE";
   expect(griffinBeamEnd(g, [], [s, c]).contactId).toBe("range");
-  for (let i = 0; i < 40; i++) tickGriffin(w, (p, n) => (p.hp -= n));
+  for (let i = 0; i < ticksFor(1.333); i++)
+    tickGriffin(w, (p, n) => (p.hp -= n));
   expect(g.phase).not.toBe("BEAM");
   expect(s.hp).toBe(74);
 });
@@ -472,11 +524,11 @@ it("drags a Griffin hit by a shoreline vortex physically onto land, with stronge
     sceneId: "GRIFFIN_ENCLOSURE",
     damaged: [] as string[],
   };
-  for (let n = 0; n < 20; n++) {
+  for (let n = 0; n < ticksFor(0.667); n++) {
     const before = { x: g.x, y: g.y };
     pullGriffin(w, hole, 100);
     expect(Math.hypot(g.x - before.x, g.y - before.y)).toBeLessThanOrEqual(
-      220 / 30 + 1e-6,
+      220 * DT + 1e-6,
     );
   }
   expect(g.y).toBeGreaterThan(400);
@@ -486,4 +538,126 @@ it("drags a Griffin hit by a shoreline vortex physically onto land, with stronge
   Object.assign(distant.g, { x: 640, y: 312 });
   pullGriffin(distant.w, { ...hole, x: 790, y: 312, damaged: [] }, 100);
   expect(distant.g.x).toBeGreaterThan(640);
+});
+
+it("waits at the nest until a living connected hero enters unobstructed sight", () => {
+  const { w, g, s, c } = setup();
+  expect(g).toMatchObject({ ...griffinNest, phase: "NEST" });
+  for (let i = 0; i < ticksFor(10); i++)
+    tickGriffin(w, () => {
+      throw Error("Dormant attack");
+    });
+  expect(g).toMatchObject({
+    ...griffinNest,
+    phase: "NEST",
+    clock: 0,
+    cooldown: 2,
+  });
+  Object.assign(c, { x: 640, y: 450, connected: false });
+  tickGriffin(w, () => {});
+  expect(g.phase).toBe("NEST");
+  Object.assign(c, { connected: true, hp: 0 });
+  tickGriffin(w, () => {});
+  expect(g.phase).toBe("NEST");
+  Object.assign(c, { hp: 100, sceneId: "GODDESS_SHRINE" });
+  tickGriffin(w, () => {});
+  expect(g.phase).toBe("NEST");
+  c.sceneId = "GRIFFIN_ENCLOSURE";
+  tickGriffin(w, () => {});
+  expect(g.phase).toBe("WAKING");
+  Object.assign(c, { x: 688, y: 1056 });
+  tickGriffin(w, () => {});
+  expect(g.phase).not.toBe("NEST");
+  expect(s.hp).toBe(100);
+});
+
+it("detects Sieg too and wakes if attacked at the nest", () => {
+  const a = setup();
+  Object.assign(a.s, { x: 640, y: 450 });
+  tickGriffin(a.w, () => {});
+  expect(a.g.phase).toBe("WAKING");
+  const b = setup();
+  damageGriffin(b.w, 5);
+  expect(b.g.phase).toBe("WAKING");
+  expect(b.g.hp).toBe(315);
+});
+
+it("does not detect a hero behind a solid pillar", () => {
+  const { w, g, s, c } = setup();
+  Object.assign(g, { x: 384, y: 400 });
+  Object.assign(s, { x: 384, y: 650 });
+  c.connected = false;
+  tickGriffin(w, () => {});
+  expect(g.phase).toBe("NEST");
+  s.x = 640;
+  tickGriffin(w, () => {});
+  expect(g.phase).toBe("WAKING");
+});
+
+it("stands up at the nest before moving, with wake-up synchronized to Slow Time", () => {
+  const { w, g, s } = setup();
+  Object.assign(s, { x: 640, y: 450 });
+  tickGriffin(w, () => {});
+  expect(g.phase).toBe("WAKING");
+  expect(g).toMatchObject(griffinNest);
+  w.slowTime = { owner: s.id, startedTick: 0, endsTick: ticksFor(10) };
+  const before = g.timer;
+  tickGriffin(w, () => {});
+  expect(before - g.timer).toBeCloseTo(DT * 0.2, 6);
+  for (let i = 0; i < ticksFor(2); i++) tickGriffin(w, () => {});
+  expect(g.phase).toBe("WAKING");
+  expect(g).toMatchObject(griffinNest);
+  w.slowTime = undefined;
+  for (let i = 0; i < ticksFor(1); i++) tickGriffin(w, () => {});
+  expect(g.phase).not.toBe("WAKING");
+  const facing = g.facing;
+  damageGriffin(w, 999);
+  tickGriffin(w, () => {});
+  expect(g.phase).toBe("DEFEATED");
+  expect(g.facing).toBe(facing);
+});
+
+it("returns to the nest and checks south then north before cutting; waits for shears and awards once", () => {
+  const { r, w, c, g } = setup();
+  Object.assign(g, { x: 900, y: 700, phase: "LAND", grounded: 20 });
+  Object.assign(c, griffinNest);
+  w.inventory!.counts = { vanity_mirror: 1, enchanted_shears: 1 };
+  const drop = (
+    requestId: string,
+    itemId: "vanity_mirror" | "enchanted_shears",
+  ) => r.useItem(c.id, { requestId, itemId, targetId: GRIFFIN_NEST });
+  drop("mirror", "vanity_mirror");
+  const stages = new Set<string>();
+  for (let i = 0; i < ticksFor(20); i++) {
+    tickGriffin(w, () => {
+      throw Error("Grooming must not attack");
+    });
+    stages.add(g.groomingStage!);
+    if (g.groomingStage !== "RETURN")
+      expect(Math.hypot(g.x - griffinNest.x, g.y - griffinNest.y)).toBeLessThan(
+        1,
+      );
+  }
+  expect([...stages]).toEqual(["RETURN", "STAND", "SOUTH", "NORTH"]);
+  expect(g.wigClaimed).toBe(false);
+  expect(w.inventory!.counts.griffin_wig).toBeUndefined();
+  const timer = g.timer;
+  drop("mirror-again", "vanity_mirror");
+  expect(g.timer).toBe(timer);
+  drop("shears", "enchanted_shears");
+  let sawCut = false;
+  for (let i = 0; i < ticksFor(10) && !g.wigClaimed; i++) {
+    tickGriffin(w, () => {});
+    if (g.groomingStage === "CUT") {
+      sawCut = true;
+      expect(w.inventory!.counts.griffin_wig).toBeUndefined();
+    }
+  }
+  expect(sawCut).toBe(true);
+  expect(g.groomingStage).toBe("DONE");
+  expect(w.inventory!.counts.griffin_wig).toBe(1);
+  expect(w.puzzles.griffin.complete).toBe(true);
+  drop("again", "enchanted_shears");
+  tickGriffin(w, () => {});
+  expect(w.inventory!.counts.griffin_wig).toBe(1);
 });

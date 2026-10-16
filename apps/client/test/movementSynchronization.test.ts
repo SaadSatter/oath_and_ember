@@ -12,7 +12,12 @@ import {
   DT,
   INPUT_LEAD_TICKS,
   MAX_PREDICTION_LEAD,
+  SERVER_HZ,
+  SNAPSHOT_INTERVAL_TICKS,
+  ticksFor,
 } from "../../../packages/shared/src/constants.js";
+// Network jitter in these scenarios is authored in 30Hz ticks (33ms units).
+const JITTER = ticksFor(1 / 30);
 import { collisionRects } from "../../../packages/shared/src/maps.js";
 function pair() {
   const room = new GameRoom("SYNC01", false, "FOREST_RUINS");
@@ -58,7 +63,7 @@ for (const hz of [30, 60, 120, 144])
     let sampleTime = 0,
       renderTime = 0;
     let maxCorrection = 0;
-    for (let tick = 1; tick <= 390; tick++) {
+    for (let tick = 1; tick <= ticksFor(13); tick++) {
       const now = (tick - 1) * 1000 * DT;
       // Rendering reads state; it cannot determine the number of physics steps.
       while (renderTime <= now) {
@@ -73,8 +78,9 @@ for (const hz of [30, 60, 120, 144])
             const input = {
               ...neutral(++c.seq),
               targetTick: c.clock.target(c.world.serverTick, now),
-              moveX: tick <= 150 ? 1 : tick <= 300 ? -1 : 0,
-              secondaryHeld: tick <= 300 && tick % 90 < 8,
+              moveX: tick <= ticksFor(5) ? 1 : tick <= ticksFor(10) ? -1 : 0,
+              secondaryHeld:
+                tick <= ticksFor(10) && tick % ticksFor(3) < ticksFor(0.267),
             };
             c.prediction.push(input, c.world);
             c.history.push({ ...input });
@@ -82,7 +88,7 @@ for (const hz of [30, 60, 120, 144])
             // Redundancy recovers missing transition packets before their target tick.
             if (c.seq % 11 !== 0)
               packets.push({
-                due: tick + (tick % 4),
+                due: tick + (tick % 4) * JITTER,
                 n,
                 frames: structuredClone(c.history),
               });
@@ -98,9 +104,9 @@ for (const hz of [30, 60, 120, 144])
       for (let i = packets.length - 1; i >= 0; i--)
         if (packets[i].due <= tick) packets.splice(i, 1);
       room.tick();
-      if (tick % 2 === 0)
+      if (tick % SNAPSHOT_INTERVAL_TICKS === 0)
         snapshots.push({
-          due: tick + (tick % 3),
+          due: tick + (tick % 3) * JITTER,
           world: structuredClone(room.state),
         });
       for (const snapshot of snapshots.filter((s) => s.due <= tick))
@@ -137,7 +143,7 @@ it("uses server simulation spacing when snapshots arrive as a burst", () => {
     interpolation = new Interpolation();
   room.state.serverTick = 0;
   interpolation.push(structuredClone(room.state), 1000);
-  for (let tick = 1; tick <= 6; tick++) {
+  for (let tick = 1; tick <= ticksFor(0.2); tick++) {
     room.state.serverTick = tick;
     p.x = 100 + tick * 190 * DT;
     interpolation.push(structuredClone(room.state), 1200);
@@ -151,7 +157,7 @@ it("uses server simulation spacing when snapshots arrive as a burst", () => {
   interpolation.push({ ...room.state, serverTick: 1 }, 1400);
   expect(interpolation.buffer.length).toBe(count);
 });
-it("never advances prediction beyond twelve ticks during a five-second snapshot outage", () => {
+it("never advances prediction beyond its lead during a five-second snapshot outage", () => {
   const { room, players } = pair();
   const prediction = new Prediction(),
     clock = new SimulationClock();
@@ -177,7 +183,10 @@ it("calibrates promptly after delayed full sync and bounds delayed probes and re
   clock.sample(120, 1000, 1002);
   expect(clock.target(120, 1002)).toBe(120 + INPUT_LEAD_TICKS);
   clock.sample(121, 1002, 1302); // Queue delay is not a reliable clock measurement.
-  expect(clock.estimate(1302)).toBeCloseTo(129.03);
+  // Anchored on the first probe (half its 2ms round trip), then 300ms of time.
+  expect(clock.estimate(1302)).toBeCloseTo(
+    120 + (2 * SERVER_HZ) / 2000 + (300 * SERVER_HZ) / 1000,
+  );
 });
 it("does not interpolate a same-scene respawn through intervening obstacles", () => {
   const { room, players } = pair();
@@ -225,10 +234,12 @@ it("ignores clock replies from an earlier reset or superseded probe", () => {
   clock.reset(100, 1000);
   clock.sample(120, 1100, 1102);
   clock.sample(50, 1001, 1200);
-  expect(clock.estimate(1200)).toBeCloseTo(122.97);
+  expect(clock.estimate(1200)).toBeCloseTo(
+    120 + (2 * SERVER_HZ) / 2000 + (98 * SERVER_HZ) / 1000,
+  );
   clock.reset(200, 1300);
   clock.sample(125, 1200, 1350);
-  expect(clock.estimate(1350)).toBeCloseTo(201.5);
+  expect(clock.estimate(1350)).toBeCloseTo(200 + (50 * SERVER_HZ) / 1000);
 });
 
 it("does not replay queued movement while the partner disconnect pauses authority", () => {
@@ -258,4 +269,67 @@ it("does not collapse the movement buffer after a delayed clock reply and add ex
   clock.sample(1024, 800, 802);
   const after = clock.target(1024, 802);
   expect(after - before).toBeLessThanOrEqual(1);
+});
+
+it("glides the local hero at constant speed despite uneven input timer wakes", () => {
+  const { room, players } = pair();
+  const prediction = new Prediction(),
+    clock = new SimulationClock();
+  prediction.reset(players[0]);
+  clock.reset(0, 0);
+  const world = structuredClone(room.state);
+  let seq = 0,
+    nextWake = 0,
+    previous: { x: number } | null = null;
+  const steps: number[] = [];
+  for (let ms = 0; ms < 1000; ms += 1000 / 60) {
+    // setInterval wakes late, early, or twice in one frame; render stays at 60Hz.
+    while (nextWake <= ms) {
+      world.serverTick = Math.max(
+        0,
+        Math.floor((nextWake * SERVER_HZ) / 1000) - 2,
+      );
+      prediction.push(
+        {
+          ...neutral(++seq),
+          targetTick: clock.target(world.serverTick, nextWake),
+          moveX: 1,
+        },
+        world,
+      );
+      nextWake += seq % 3 === 0 ? 50 : 25;
+    }
+    const at = prediction.renderPosition(ms)!;
+    if (previous && ms > 500) steps.push(at.x - previous.x);
+    previous = at;
+  }
+  for (const step of steps) expect(step).toBeCloseTo(190 / 60, 0);
+  expect(Math.max(...steps) - Math.min(...steps)).toBeLessThan(0.6);
+});
+
+it("recovers remote interpolation delay that a network stall added", () => {
+  const { room, players } = pair();
+  const interpolation = new Interpolation();
+  interpolation.push(structuredClone(room.state), 1000);
+  interpolation.position(players[0].id, "players", 1000);
+  // A 400ms stall drains the buffer, then the backlog arrives at once.
+  interpolation.position(players[0].id, "players", 1400);
+  for (let tick = 1; tick <= 15; tick++) {
+    room.state.serverTick = tick;
+    interpolation.push(structuredClone(room.state), 1400);
+  }
+  let lag = 0,
+    frame = 0;
+  for (let ms = 1400; ms <= 6000; ms += 1000 / 60) {
+    // Steady snapshots resume after the stall.
+    if (++frame % 4 === 0) {
+      room.state.serverTick += 2;
+      interpolation.push(structuredClone(room.state), ms);
+    }
+    interpolation.position(players[0].id, "players", ms);
+    lag =
+      interpolation.buffer.at(-1)!.time -
+      (interpolation as unknown as { playbackTime: number }).playbackTime;
+  }
+  expect(lag).toBeLessThanOrEqual(270);
 });

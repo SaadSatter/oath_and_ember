@@ -6,7 +6,7 @@ import type {
   InputFrame,
   Projectile,
 } from "./gameTypes.js";
-import { DT, SLOW_TIME_SCALE, SPEED } from "./constants.js";
+import { DT, SLOW_TIME_SCALE, SPEED, ticksFor } from "./constants.js";
 export const BRIDGE_SIZE = { width: 960, height: 1536 };
 export const BOULDER_HALF = 24;
 export const bridgeRects: Rect[] = [1184, 800].map((y) => ({
@@ -385,7 +385,7 @@ export function tickBridgePuzzle(w: World) {
     const unstable =
       !bridgeOpen(s, w, i) || (!s.finalTargetHit && occupants.length > 1);
     if (unstable && occupants.length) {
-      s.bridgeClosedUntil[i] = w.serverTick + 60;
+      s.bridgeClosedUntil[i] = w.serverTick + ticksFor(2);
       s.failures++;
       for (const p of occupants) {
         recover(p, p.role === "EMBER" ? 640 : 288, bridgeRects[i].y + 32);
@@ -411,7 +411,7 @@ export function tickBridgePuzzle(w: World) {
       onPlate(coco, bridgePoints.switchEast)
         ? s.holdTicks + 1
         : 0;
-    if (s.holdTicks >= 23) s.complete = true;
+    if (s.holdTicks >= ticksFor(0.767)) s.complete = true;
   }
 }
 function frontShot(q: Projectile, target: { x: number; y: number }) {

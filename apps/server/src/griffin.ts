@@ -7,6 +7,9 @@ import {
   griffinMouth,
   griffinBounds,
   griffinNest,
+  griffinSightRadius,
+  griffinWakeDuration,
+  griffinGroomDurations,
   griffinPillars,
   griffinPuzzle,
   griffinState,
@@ -23,7 +26,7 @@ export function ensureGriffin(w: World, inventory: InventoryService) {
   if (inventory.targets.has(GRIFFIN_NEST)) return;
   inventory.register(w, {
     id: GRIFFIN_NEST,
-    name: "Griffin nest · mirror / shears",
+    name: "Griffin nest · drop mirror / shears",
     kind: "offering",
     sceneId: "GRIFFIN_ENCLOSURE",
     ...griffinNest,
@@ -40,30 +43,34 @@ export function ensureGriffin(w: World, inventory: InventoryService) {
       if (intent.itemId && !(bag.counts[intent.itemId]! > 0))
         throw Error("That item is not in the shared backpack.");
       let message: string;
-      if (intent.itemId === "vanity_mirror") {
-        g.mirrorDelivered = true;
-        if (g.hp > 0) {
-          g.phase = "DISTRACTED";
-          g.timer = 20;
-        }
-        message =
-          "The Griffin admires its reflection. Use the shears while it is distracted!";
-      } else if (
-        intent.itemId === "enchanted_shears" ||
-        (!intent.itemId && g.hp <= 0)
+      if (
+        intent.itemId === "vanity_mirror" ||
+        intent.itemId === "enchanted_shears"
       ) {
-        if (g.hp > 0 && (!g.mirrorDelivered || g.phase !== "DISTRACTED"))
-          throw Error("First distract the Griffin with the vanity mirror.");
-        g.wigClaimed = true;
-        bag.counts.griffin_wig = (bag.counts.griffin_wig ?? 0) + 1;
-        bag.claimed.push(GRIFFIN_NEST);
-        world.puzzles.griffin.complete = true;
+        if (intent.itemId === "vanity_mirror") g.mirrorDelivered = true;
+        else g.shearsDelivered = true;
+        if (g.hp <= 0 && intent.itemId === "enchanted_shears") {
+          awardGriffinWig(world, g);
+        } else if (g.mirrorDelivered && g.hp > 0 && g.phase !== "GROOMING") {
+          phase(g, "GROOMING", 0);
+          g.groomingStage = "RETURN";
+          g.beam = undefined;
+        }
+        message = g.wigClaimed
+          ? "Magnificent Griffin Wig added to the shared backpack. Return to the goddess."
+          : g.shearsDelivered && g.mirrorDelivered
+            ? "Both tools are at the nest. The Griffin will admire its hair, then give itself a trim."
+            : g.mirrorDelivered
+              ? "The Griffin admires its reflection. Drop the shears at the nest for its haircut."
+              : "Shears left at the nest. Bring the vanity mirror to complete the setup.";
+      } else if (!intent.itemId && g.hp <= 0) {
+        awardGriffinWig(world, g);
         message =
-          "A discreet snip! Magnificent Griffin Wig added to the shared backpack. Return to the goddess.";
+          "Magnificent Griffin Wig added to the shared backpack. Return to the goddess.";
       } else {
         return {
           message:
-            "A vain guardian, a vanity mirror, and enchanted shears. Offer the mirror here, then the shears. Or defeat the guardian and collect its shed plumage.",
+            "Drop the vanity mirror and enchanted shears at the nest. The Griffin will check its hair and cut it. Or defeat the guardian and collect its shed plumage.",
           revision: bag.revision,
         };
       }
@@ -72,10 +79,69 @@ export function ensureGriffin(w: World, inventory: InventoryService) {
     },
   });
 }
+function awardGriffinWig(w: World, g: GriffinState) {
+  if (g.wigClaimed) return;
+  g.wigClaimed = true;
+  const bag = w.inventory!;
+  bag.counts.griffin_wig = (bag.counts.griffin_wig ?? 0) + 1;
+  if (!bag.claimed.includes(GRIFFIN_NEST)) bag.claimed.push(GRIFFIN_NEST);
+  w.puzzles.griffin.complete = true;
+}
+
+function tickGrooming(w: World, g: GriffinState, dt: number) {
+  if (g.groomingStage === "RETURN") {
+    const dx = griffinNest.x - g.x,
+      dy = griffinNest.y - g.y;
+    const distance = Math.hypot(dx, dy);
+    if (distance > 1) {
+      const step = Math.min(distance, 160 * dt);
+      g.facing = Math.atan2(dy, dx);
+      Object.assign(
+        g,
+        constrainMotion(
+          g,
+          { x: (dx / distance) * step, y: (dy / distance) * step },
+          maps.GRIFFIN_ENCLOSURE,
+          griffinBounds,
+        ),
+      );
+      return;
+    }
+    g.groomingStage = "STAND";
+    g.timer = griffinGroomDurations.STAND;
+    g.facing = Math.PI / 2;
+    return;
+  }
+  if (g.timer > 0) return;
+  const next =
+    g.groomingStage === "STAND"
+      ? "SOUTH"
+      : g.groomingStage === "SOUTH"
+        ? "NORTH"
+        : g.groomingStage === "NORTH"
+          ? g.shearsDelivered
+            ? "CUT"
+            : "NORTH"
+          : "DONE";
+  g.groomingStage = next;
+  g.facing = next === "SOUTH" ? Math.PI / 2 : -Math.PI / 2;
+  if (next === "DONE") {
+    awardGriffinWig(w, g);
+    w.inventory!.revision++;
+  } else g.timer = griffinGroomDurations[next];
+}
+
 export function damageGriffin(w: World, amount: number) {
   const g = griffinState(w.puzzles);
-  if (w.sceneId !== "GRIFFIN_ENCLOSURE" || !g || g.hp <= 0 || g.wigClaimed)
+  if (
+    w.sceneId !== "GRIFFIN_ENCLOSURE" ||
+    !g ||
+    g.hp <= 0 ||
+    g.wigClaimed ||
+    g.phase === "GROOMING"
+  )
     return;
+  if (amount > 0 && g.phase === "NEST") phase(g, "WAKING", griffinWakeDuration);
   g.hp = Math.max(0, g.hp - amount);
   if (!g.hp) {
     g.phase = "DEFEATED";
@@ -93,7 +159,8 @@ export function pullGriffin(
     !g ||
     g.hp <= 0 ||
     g.wigClaimed ||
-    g.phase === "DISTRACTED"
+    g.phase === "DISTRACTED" ||
+    g.phase === "GROOMING"
   )
     return;
   const dx = hole.x - g.x,
@@ -161,10 +228,28 @@ export function tickGriffin(w: World, damage: (p: Player, n: number) => void) {
       (p.sceneId ?? w.sceneId) === "GRIFFIN_ENCLOSURE",
   );
   if (!heroes.length) return;
+  if (g.phase === "NEST") {
+    const blockers = [...griffinBounds, ...griffinWalls(w.puzzles)];
+    const visible = heroes.some(
+      (p) =>
+        Math.hypot(p.x - g.x, p.y - g.y) <= griffinSightRadius &&
+        !blockers.some((wall) => segmentHits(g.x, g.y, p.x, p.y, wall)),
+    );
+    if (!visible) return;
+    phase(g, "WAKING", griffinWakeDuration);
+  }
   const dt = DT * (w.slowTime ? SLOW_TIME_SCALE : 1);
   g.clock += dt;
   g.timer = Math.max(0, g.timer - dt);
   g.cooldown = Math.max(0, g.cooldown - dt);
+  if (g.phase === "GROOMING") {
+    tickGrooming(w, g, dt);
+    return;
+  }
+  if (g.phase === "WAKING") {
+    if (g.timer > 0) return;
+    phase(g, "FLY", 0);
+  }
   const sieg = heroes.find((p) => p.role === "OATH"),
     coco = heroes.find((p) => p.role === "EMBER");
   if (sieg) {

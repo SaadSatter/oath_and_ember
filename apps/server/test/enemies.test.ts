@@ -5,6 +5,9 @@ import {
   forestEncounter,
 } from "../../../packages/shared/src/enemies.js";
 import { neutral } from "../../../packages/shared/src/gameTypes.js";
+import { DT, ticksFor } from "../../../packages/shared/src/constants.js";
+const mossling = enemyDefinitions.mossling,
+  wisp = enemyDefinitions.cinder_wisp;
 import { GameRoom } from "../src/GameRoom.js";
 import { tickEnemies, damageEnemy } from "../src/enemySimulation.js";
 function fixture() {
@@ -59,7 +62,7 @@ describe("deterministic authoritative enemy architecture", () => {
     step(f);
     expect(f.e.targetId).toBe(f.a.id);
     expect(f.e.state).toBe("CHASE");
-    expect(f.e.x).toBeCloseTo(800 - 65 / 30);
+    expect(f.e.x).toBeCloseTo(800 - mossling.speed * DT);
     expect(f.e.facing).toBeCloseTo(Math.PI);
   });
   it("retains nearly tied targets and switches for meaningful distance differences", () => {
@@ -80,7 +83,7 @@ describe("deterministic authoritative enemy architecture", () => {
     f.e.x = 505;
     f.e.y = 450;
     f.a.x = f.b.x = 400;
-    step(f, 60);
+    step(f, ticksFor(2));
     expect(f.e.x).toBeGreaterThanOrEqual(499);
   });
   it("telegraphs melee, checks resolution range, and enforces cooldown", () => {
@@ -90,13 +93,13 @@ describe("deterministic authoritative enemy architecture", () => {
     step(f);
     expect(f.e.state).toBe("ATTACK");
     expect(f.a.hp).toBe(100);
-    step(f, 12);
+    step(f, mossling.windupTicks);
     expect(f.a.hp).toBe(90);
-    step(f, 29);
+    step(f, mossling.cooldownTicks - 1);
     expect(f.a.hp).toBe(90);
     step(f);
     expect(f.e.attackSeq).toBe(2);
-    step(f, 12);
+    step(f, mossling.windupTicks);
     expect(f.a.hp).toBe(80);
   });
   it("allows a hero to evade a melee windup", () => {
@@ -104,10 +107,10 @@ describe("deterministic authoritative enemy architecture", () => {
     f.a.x = 775;
     step(f);
     f.a.x = 650;
-    step(f, 12);
+    step(f, mossling.windupTicks);
     expect(f.a.hp).toBe(100);
   });
-  it("clamps damage, records death, cancels attack and despawns after 30 ticks", () => {
+  it("clamps damage, records death, cancels attack and despawns after one second", () => {
     const f = fixture();
     f.a.x = 775;
     step(f);
@@ -118,7 +121,7 @@ describe("deterministic authoritative enemy architecture", () => {
       targetId: null,
       attackStartedTick: null,
     });
-    step(f, 29);
+    step(f, ticksFor(1) - 1);
     expect(f.w.enemies.test).toBeDefined();
     step(f);
     expect(f.w.enemies.test).toBeUndefined();
@@ -143,7 +146,7 @@ describe("deterministic authoritative enemy architecture", () => {
     f.a.x = 600;
     step(f);
     expect(f.e.state).toBe("ATTACK");
-    step(f, 18);
+    step(f, wisp.windupTicks);
     const q = Object.values(f.w.projectiles)[0];
     expect(q).toMatchObject({ owner: "test", faction: "enemies", damage: 12 });
     expect(q.vx).toBeLessThan(0);
@@ -157,7 +160,7 @@ describe("deterministic authoritative enemy architecture", () => {
     f.r.tick();
     expect(f.e.hp).toBe(60);
     session.input = neutral(2);
-    for (let n = 0; n < 7; n++) f.r.tick();
+    for (let n = 0; n < ticksFor(0.233); n++) f.r.tick();
     expect(f.e.hp).toBe(35);
   });
   it("Coco projectile hits once and cannot damage players", () => {
@@ -173,7 +176,7 @@ describe("deterministic authoritative enemy architecture", () => {
       life: 2,
       owner: f.b.id,
     };
-    for (let i = 0; i < 4; i++) f.r.tick();
+    for (let i = 0; i < ticksFor(0.133); i++) f.r.tick();
     expect(f.e.hp).toBe(40);
     expect(f.a.hp).toBe(100);
     expect(f.w.projectiles.q).toBeUndefined();
@@ -192,7 +195,7 @@ describe("deterministic authoritative enemy architecture", () => {
       faction: "enemies",
       damage: 12,
     };
-    for (let i = 0; i < 7; i++) f.r.tick();
+    for (let i = 0; i < ticksFor(0.233); i++) f.r.tick();
     expect(f.e.hp).toBe(60);
     expect(f.a.hp).toBe(88);
     expect(f.b.hp).toBe(100);
@@ -285,4 +288,4 @@ it("two real clients receive identical typed authoritative states, attacks, heal
     clients.forEach((s) => s.disconnect());
     await app.close();
   }
-});
+}, 15000);

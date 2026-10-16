@@ -2,6 +2,7 @@ import { expect, it } from "vitest";
 import { GameRoom } from "../../server/src/GameRoom.js";
 import { Prediction } from "../src/net/prediction.js";
 import { neutral } from "../../../packages/shared/src/gameTypes.js";
+import { DT } from "../../../packages/shared/src/constants.js";
 it("does not rewind diagonal wall sliding when two sampled inputs are acknowledged in one server tick", () => {
   const r = new GameRoom("PROBE1"),
     a = r.add("a"),
@@ -84,7 +85,7 @@ it("anchors prediction to the existing server tick when a hero changes independe
   const prediction = new Prediction();
   prediction.reset(p, r.state.serverTick);
   prediction.push({ ...neutral(1), moveX: 1 }, r.state);
-  p.x += 190 / 30;
+  p.x += 190 * DT;
   p.lastProcessedInputSeq = 1;
   r.state.serverTick++;
   prediction.reconcile(p, r.state);

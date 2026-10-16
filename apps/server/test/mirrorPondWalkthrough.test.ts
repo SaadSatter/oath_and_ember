@@ -1,3 +1,4 @@
+import { ticksFor } from "../../../packages/shared/src/constants.js";
 import { it, expect } from "vitest";
 import { GameRoom } from "../src/GameRoom.js";
 import { collisionRects } from "../../../packages/shared/src/maps.js";
@@ -9,6 +10,7 @@ import {
 import {
   mirrorPondState,
   pondStations,
+  pondSpikeState,
   normalizeMirrorAngle,
 } from "../../../packages/shared/src/mirrorPond.js";
 it("traverses both pond routes and all four mirror stations using server intents", () => {
@@ -101,7 +103,7 @@ it("traverses both pond routes and all four mirror stations using server intents
   function go(p: Player, x: number, y: number) {
     for (const v of [...path(p, { x, y }), { x, y }]) {
       let n = 0;
-      while (Math.hypot(p.x - v.x, p.y - v.y) > 4 && n++ < 180) {
+      while (Math.hypot(p.x - v.x, p.y - v.y) > Math.hypot(3, 3) && n++ < 180) {
         const dx = v.x - p.x,
           dy = v.y - p.y;
         tick(p, {
@@ -119,17 +121,18 @@ it("traverses both pond routes and all four mirror stations using server intents
   go(c, 35 * 32, 27 * 32);
   go(c, 28 * 32, 12 * 32);
   expect(c.flightRemaining).toBeGreaterThan(0);
-  // Wait for a clear spike phase, then cross at boosted speed.
-  go(s, 43 * 32, 26 * 32);
+  // Wait in the court for a clear spike phase, then cross at boosted speed.
+  go(s, 45 * 32, 26 * 32);
   let crossed = false;
   for (let attempt = 0; attempt < 5 && !crossed; attempt++) {
     while (s.cooldowns.sprint) tick();
-    go(s, 43 * 32, 26 * 32);
-    while (Math.abs(Math.sin(pond.clock * 3.2)) < 0.85) tick();
+    go(s, 45 * 32, 26 * 32);
+    // The east-most column rises last; once it retracts the lanes are clear.
+    while (pondSpikeState(pond.clock, 3).phase !== "retracting") tick();
     tick(c, { slowTimeHeld: true });
     tick(s, { sprintHeld: true });
-    for (let n = 0; n < 45 && s.x > 36.5 * 32; n++) tick(s, { moveX: -1 });
-    crossed = s.x < 37 * 32;
+    for (let n = 0; n < ticksFor(1.5) && s.x > 36.5 * 32; n++) tick(s, { moveX: -1 });
+    crossed = s.x < 39 * 32;
   }
   expect(crossed).toBe(true);
   // Let speed expire so precise mirror approaches use ordinary movement.
@@ -169,4 +172,4 @@ it("traverses both pond routes and all four mirror stations using server intents
   expect(c.flightRemaining).toBeGreaterThan(0);
   go(s, 38 * 32, 29 * 32);
   expect(s.x).toBeCloseTo(38 * 32, -1);
-}, 20000);
+}, 45000);

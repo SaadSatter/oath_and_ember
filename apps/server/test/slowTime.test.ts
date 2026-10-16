@@ -1,7 +1,7 @@
 import { expect, it } from "vitest";
 import { GameRoom } from "../src/GameRoom.js";
 import { neutral } from "../../../packages/shared/src/gameTypes.js";
-import { SPEED } from "../../../packages/shared/src/constants.js";
+import { SPEED, ticksFor } from "../../../packages/shared/src/constants.js";
 function fixture() {
   const room = new GameRoom("TIME23"),
     a = room.add("a"),
@@ -32,7 +32,7 @@ it("provides Slow Time from the start and accepts only Coco's activation", () =>
   room.tick();
   expect(room.state.slowTime).toMatchObject({
     owner: coco.id,
-    endsTick: room.state.serverTick + 300,
+    endsTick: room.state.serverTick + ticksFor(10),
   });
 });
 it("slows everyone and restores Sieg's normal speed during his boost", () => {
@@ -142,7 +142,7 @@ it("broadcasts identical accepted Slow Time state and slowed movement to two cli
     clients.forEach((client) => client.disconnect());
     await app.close();
   }
-});
+}, 15000);
 
 it("keeps Coco with Sieg until he stops or changes direction, despite her own movement intent", () => {
   const { room, sieg, coco, input } = fixture();

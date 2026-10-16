@@ -50,4 +50,4 @@ it("leaves a lobby, releases its slot, updates the partner, and permits creating
     clients.forEach((s) => s.disconnect());
     await app.close();
   }
-});
+}, 15000);

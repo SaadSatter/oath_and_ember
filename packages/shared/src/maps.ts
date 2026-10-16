@@ -176,7 +176,12 @@ export const maps: Record<SceneId, MapDefinition> = {
       { x: 212, y: 432, w: 252, h: 8 },
       { x: 496, y: 432, w: 128, h: 8 },
     ],
-    points: { door: { x: 480, y: 326 }, exit: { x: 810, y: 500 } },
+    points: {
+      door: { x: 480, y: 326 },
+      exit: { x: 810, y: 500 },
+      // Playtest shortcut: straight to the Goddess Shrine hub.
+      shrine: { x: 130, y: 500 },
+    },
   },
   HOUSE_INTERIOR: {
     id: "HOUSE_INTERIOR",

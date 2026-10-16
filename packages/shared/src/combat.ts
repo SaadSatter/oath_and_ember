@@ -1,15 +1,21 @@
-// Server-owned charge timing at the existing 30 Hz fixed simulation step.
+import { ticksFor } from "./constants.js";
+
+// Server-owned charge timing in fixed simulation steps.
 export const heavyTiming = {
-  minimumTicks: 14,
-  fullTicks: 33,
-  capTicks: 38,
+  minimumTicks: ticksFor(0.467),
+  fullTicks: ticksFor(1.1),
+  capTicks: ticksFor(1.267),
 } as const;
 
 // Basic sword cadence remains 450 ms. Contact is a single server-owned event,
 // independent of sprite dimensions, crop metadata, or the client frame clock.
 export const swordTiming = {
   durationMs: 450,
-  contactTicks: { horizontal: 7, up: 5, down: 3 },
+  contactTicks: {
+    horizontal: ticksFor(0.233),
+    up: ticksFor(0.167),
+    down: ticksFor(0.1),
+  },
 } as const;
 export function swordContactTicks(facing: number) {
   return Math.abs(Math.cos(facing)) >= Math.abs(Math.sin(facing))

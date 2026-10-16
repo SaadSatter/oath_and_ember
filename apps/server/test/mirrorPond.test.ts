@@ -6,19 +6,29 @@ import {
   pondCenter,
   pondBridge,
   pondSpikes,
+  pondSpikeState,
+  pondSpikeColumns,
+  pondSpikeTiming,
+  pondTrial,
+  pondCulvertMouth,
   pondSpawn,
   pondMirrorWall,
   normalizeMirrorAngle,
   POND_ROTATION_STEP,
+  pondFenceWalls,
 } from "../../../packages/shared/src/mirrorPond.js";
 import { collisionRects, maps } from "../../../packages/shared/src/maps.js";
+import { DT, HALF, ticksFor } from "../../../packages/shared/src/constants.js";
 import {
+  move,
+  flightWalls,
   stepMovement,
   constrainMotion,
 } from "../../../packages/shared/src/movement.js";
 import {
   neutral,
   type Projectile,
+  type Rect,
 } from "../../../packages/shared/src/gameTypes.js";
 import {
   pushPondMirror,
@@ -213,7 +223,7 @@ describe("Mirror Pond authoritative mechanics", () => {
   it("Coco cannot enter the perimeter even in Flight; the separate culvert is traversable only while flying", () => {
     const g = setup();
     Object.assign(g.c, { x: 44.5 * 32, y: 26 * 32, flightRemaining: 10 });
-    for (let n = 0; n < 120; n++)
+    for (let n = 0; n < ticksFor(4); n++)
       stepMovement(
         g.c,
         { ...neutral(), moveX: -1 },
@@ -227,7 +237,7 @@ describe("Mirror Pond authoritative mechanics", () => {
           0,
           "EMBER",
         ),
-        1 / 30,
+        DT,
       );
     expect(g.c.x).toBeGreaterThanOrEqual(44 * 32 + 13);
     Object.assign(g.c, { x: 43 * 32, y: 31 * 32, flightRemaining: 0 });
@@ -243,32 +253,191 @@ describe("Mirror Pond authoritative mechanics", () => {
     stepMovement(g.c, { ...neutral(), moveX: -1 }, maps.MIRROR_POND, walls, 1);
     expect(g.c.x).toBeGreaterThanOrEqual(42 * 32 + 13);
     g.c.flightRemaining = 10;
-    for (let n = 0; n < 40; n++)
+    for (let n = 0; n < ticksFor(1.333); n++)
       stepMovement(
         g.c,
         { ...neutral(), moveX: -1 },
         maps.MIRROR_POND,
         walls,
-        1 / 30,
+        DT,
       );
     expect(g.c.x).toBeLessThan(40 * 32);
   });
-  it("spikes move vertically, Slow Time scales their clock, and failures keep lit torches", () => {
+  it("floor spikes rise on a staggered timer, Slow Time scales their clock, and failures keep lit torches", () => {
     const fast = setup(),
       slow = setup();
-    slow.w.slowTime = { owner: slow.c.id, startedTick: 0, endsTick: 300 };
+    slow.w.slowTime = {
+      owner: slow.c.id,
+      startedTick: 0,
+      endsTick: ticksFor(10),
+    };
     tickMirrorPond(fast.w, new Map());
     tickMirrorPond(slow.w, new Map());
     expect(slow.pond.clock).toBeCloseTo(fast.pond.clock * 0.2);
-    expect(pondSpikes(0)[0].x).toBe(pondSpikes(0.3)[0].x);
-    expect(pondSpikes(0)[0].y).not.toBe(pondSpikes(0.3)[0].y);
+    // Columns never move: they only change phase in place.
+    const { period, warning, stagger } = pondSpikeTiming;
+    const raisedAt = (i: number) => (warning + i * stagger + 0.01) * period;
+    for (let i = 0; i < pondSpikeColumns.length; i++) {
+      expect(pondSpikeState(raisedAt(i), i).phase).toBe("raised");
+      expect(pondSpikes(raisedAt(i))).toContainEqual(pondSpikeColumns[i]);
+      expect(pondSpikeState(raisedAt(i) - 0.02 * period, i).phase).toBe(
+        "warning",
+      );
+    }
+    // The ripple reaches each lane in turn, west to east.
+    expect(pondSpikeState(raisedAt(0), 4).phase).not.toBe("raised");
+    // Only raised columns are dangerous; warning tips never are.
+    expect(pondSpikes(0.01 * period)).toEqual([]);
     const g = setup();
     g.pond.torches[0] = true;
-    Object.assign(g.s, { x: 39 * 32, y: 26 * 32 });
+    g.pond.clock = raisedAt(2) - DT;
+    Object.assign(g.s, { x: pondSpikeColumns[2].x + 16, y: 26 * 32 });
     tickMirrorPond(g.w, new Map());
     expect(g.pond.failures).toBe(1);
     expect(g.s.x).toBe(pondSpawn("OATH").x);
     expect(g.pond.torches[0]).toBe(true);
+  });
+  it("warning tips never hurt, and only raised columns reset Sieg", () => {
+    const { period, stagger } = pondSpikeTiming;
+    const g = setup();
+    // Warning phase of column 2, just after it starts peeking.
+    g.pond.clock = (2 * stagger + 0.01) * period;
+    expect(pondSpikeState(g.pond.clock, 2).phase).toBe("warning");
+    Object.assign(g.s, { x: pondSpikeColumns[2].x + 16, y: 26 * 32 });
+    const before = { x: g.s.x, y: g.s.y };
+    tickMirrorPond(g.w, new Map());
+    expect(g.pond.failures).toBe(0);
+    expect({ x: g.s.x, y: g.s.y }).toEqual(before);
+  });
+  it("walking never crosses the spike lanes; Super Speed can, and Slow Time makes it comfortable", () => {
+    // Straight westward runs from the court at every start offset in one cycle.
+    const crossings = (speed: number, scale: number) => {
+      let wins = 0,
+        tries = 0;
+      for (let start = 0; start < pondSpikeTiming.period / scale; start += DT) {
+        tries++;
+        let x = pondTrial.x + pondTrial.w + HALF + 1,
+          clock = start * scale,
+          safe = true;
+        while (safe && x > pondTrial.x - HALF) {
+          const from = x;
+          const old = pondSpikes(clock);
+          x -= speed * DT;
+          clock += DT * scale;
+          safe = ![...old, ...pondSpikes(clock)].some(
+            (r) => from + HALF > r.x && x - HALF < r.x + r.w,
+          );
+        }
+        if (safe) wins++;
+      }
+      return wins / tries;
+    };
+    expect(crossings(190, 1)).toBe(0);
+    expect(crossings(380, 1)).toBeGreaterThan(0.1);
+    expect(crossings(190, 0.2)).toBeGreaterThan(crossings(380, 1));
+  });
+  it("leaves the east walkway open past the entrance while the culvert stays sealed", () => {
+    const g = setup();
+    const walls = collisionRects(
+      "MIRROR_POND",
+      g.w.puzzles,
+      g.w.pushableOffsets,
+      g.w.bridgePuzzle,
+      g.w.players,
+      g.w.serverTick,
+      "OATH",
+    );
+    const walk = (
+      from: { x: number; y: number },
+      moveY: number,
+      ticks: number,
+    ) => {
+      Object.assign(g.s, from);
+      for (let n = 0; n < ticks; n++)
+        move(g.s, { ...neutral(), moveY }, maps.MIRROR_POND, walls, DT);
+      return g.s.y;
+    };
+    // North along the walkway lane right beside the entrance (tile 38),
+    // never touching a spike lane.
+    expect(walk({ x: 38.5 * 32, y: 25 * 32 }, -1, 60)).toBeLessThan(20 * 32);
+    // From the culvert, the south rail still blocks the way up to the walkway.
+    expect(walk({ x: 38.5 * 32, y: 30.5 * 32 }, -1, 60)).toBeGreaterThan(
+      28 * 32,
+    );
+  });
+  it("bars the culvert mouth to walkers so the spike entrance is Sieg's only way in", () => {
+    const g = setup();
+    const wallsFor = (role: "OATH" | "EMBER") =>
+      collisionRects(
+        "MIRROR_POND",
+        g.w.puzzles,
+        g.w.pushableOffsets,
+        g.w.bridgePuzzle,
+        g.w.players,
+        g.w.serverTick,
+        role,
+      );
+    // Walking west along the culvert row from the court stops at the grate.
+    Object.assign(g.s, { x: 44 * 32, y: 31 * 32 });
+    for (let n = 0; n < ticksFor(2); n++)
+      move(
+        g.s,
+        { ...neutral(), moveX: -1 },
+        maps.MIRROR_POND,
+        wallsFor("OATH"),
+        DT,
+      );
+    expect(g.s.x).toBeGreaterThanOrEqual(
+      pondCulvertMouth.x + pondCulvertMouth.w + HALF,
+    );
+    // Flood fill every spot Sieg can stand on from his spawn, treating the
+    // spike lanes as impassable: none of it lies inside the pond walls.
+    const walls = [...wallsFor("OATH"), pondTrial];
+    const free = (x: number, y: number) =>
+      x >= HALF &&
+      y >= HALF &&
+      x <= maps.MIRROR_POND.width - HALF &&
+      y <= maps.MIRROR_POND.height - HALF &&
+      !walls.some(
+        (r) =>
+          x + HALF > r.x &&
+          x - HALF < r.x + r.w &&
+          y + HALF > r.y &&
+          y - HALF < r.y + r.h,
+      );
+    const spawn = pondSpawn("OATH"),
+      seen = new Set([`${spawn.x},${spawn.y}`]),
+      queue = [[spawn.x, spawn.y]];
+    while (queue.length) {
+      const [x, y] = queue.pop()!;
+      for (const [dx, dy] of [
+        [8, 0],
+        [-8, 0],
+        [0, 8],
+        [0, -8],
+      ]) {
+        const key = `${x + dx},${y + dy}`;
+        if (!seen.has(key) && free(x + dx, y + dy)) {
+          seen.add(key);
+          queue.push([x + dx, y + dy]);
+        }
+      }
+    }
+    const inside = [...seen].filter((k) => {
+      const [x, y] = k.split(",").map(Number);
+      return x < 40 * 32 && y > 4 * 32 && y < 32 * 32;
+    });
+    expect(inside).toEqual([]);
+    // Coco's flight still crosses the mouth over the culvert water.
+    expect(
+      flightWalls(wallsFor("EMBER"), true).some(
+        (r) =>
+          r.x < pondCulvertMouth.x + pondCulvertMouth.w &&
+          r.x + r.w > pondCulvertMouth.x &&
+          r.y < pondCulvertMouth.y + pondCulvertMouth.h &&
+          r.y + r.h > pondCulvertMouth.y,
+      ),
+    ).toBe(false);
   });
   it("grants one shared mirror, persists solved state on revisits, and preserves the quest inventory", () => {
     const g = setup();
@@ -344,7 +513,7 @@ it("synchronizes numeric mirror angles to both clients and rejects client-suppli
     clients.forEach((c) => c.disconnect());
     await app.close();
   }
-});
+}, 15000);
 
 it("keeps reflected misses flying across perimeter grass until they leave the world", () => {
   const g = setup(),
@@ -357,10 +526,10 @@ it("keeps reflected misses flying across perimeter grass until they leave the wo
       life: 10,
     });
   g.w.projectiles[q.id] = q;
-  for (let n = 0; n < 10; n++) g.r.tick();
+  for (let n = 0; n < ticksFor(0.333); n++) g.r.tick();
   expect(g.w.projectiles[q.id]).toBeDefined();
   expect(q.x).toBeCloseTo(1460);
-  for (let n = 0; n < 30; n++) g.r.tick();
+  for (let n = 0; n < ticksFor(1); n++) g.r.tick();
   expect(g.w.projectiles[q.id]).toBeUndefined();
 });
 it("lights any torch reached by a reflected fireball's swept circular radius, without auto-aiming", () => {
@@ -407,4 +576,148 @@ it("gives a real mirror reflection enough lifetime to visibly fly off screen", (
   expect(q.pondReflection).toBe(0);
   expect(q.life).toBeGreaterThan(10);
   expect(q.vy).toBeCloseTo(180);
+});
+
+it("lets Sieg walk the paved east entrance without invisible rail collisions or a hidden sprint reset", () => {
+  const g = setup();
+  Object.assign(g.s, { x: 1424, y: 790 });
+  for (let i = 0; i < ticksFor(1.067); i++)
+    stepMovement(
+      g.s,
+      { ...neutral(), moveX: -1 },
+      maps.MIRROR_POND,
+      collisionRects(
+        "MIRROR_POND",
+        g.w.puzzles,
+        undefined,
+        undefined,
+        g.w.players,
+        0,
+        "OATH",
+      ),
+      DT,
+    );
+  expect(g.s.x).toBeLessThan(1240);
+  expect(g.s.hp).toBe(100);
+  Object.assign(g.s, { x: 1320, y: 790, sprintRemaining: 0 });
+  tickMirrorPond(g.w, new Map());
+  expect(g.s.x).toBe(1320);
+  expect(g.pond.failures).toBe(0);
+});
+it("keeps fencing solid during Coco flight while leaving the water culvert open", () => {
+  const g = setup();
+  Object.assign(g.c, { x: 1120, y: 600, flightRemaining: 10 });
+  const walls = () =>
+    collisionRects(
+      "MIRROR_POND",
+      g.w.puzzles,
+      undefined,
+      undefined,
+      g.w.players,
+      0,
+      "EMBER",
+    );
+  for (let i = 0; i < ticksFor(0.833); i++)
+    stepMovement(
+      g.c,
+      { ...neutral(), moveX: 1 },
+      maps.MIRROR_POND,
+      walls(),
+      DT,
+    );
+  expect(g.c.x).toBeLessThanOrEqual(1139);
+  Object.assign(g.c, { x: 1120, y: 960, flightRemaining: 10 });
+  for (let i = 0; i < ticksFor(0.833); i++)
+    stepMovement(
+      g.c,
+      { ...neutral(), moveY: -1 },
+      maps.MIRROR_POND,
+      walls(),
+      DT,
+    );
+  expect(g.c.y).toBeLessThan(896);
+  expect(
+    pondFenceWalls(g.w.puzzles).some(
+      (r) => r.x <= 864 && r.x + r.w >= 864 && r.y === 888,
+    ),
+  ).toBe(true);
+  g.pond.raised = true;
+  expect(
+    pondFenceWalls(g.w.puzzles).some(
+      (r) => r.x < 864 && r.x + r.w > 864 && r.y === 888,
+    ),
+  ).toBe(false);
+  Object.assign(g.s, { x: 864, y: 940 });
+  for (let i = 0; i < ticksFor(0.733); i++)
+    stepMovement(
+      g.s,
+      { ...neutral(), moveY: -1 },
+      maps.MIRROR_POND,
+      collisionRects(
+        "MIRROR_POND",
+        g.w.puzzles,
+        undefined,
+        undefined,
+        g.w.players,
+        0,
+        "OATH",
+      ),
+      DT,
+    );
+  expect(g.s.y).toBeLessThan(896);
+});
+it("leaves the fence open in front of every mirror, while water still bars walkers", () => {
+  const g = setup();
+  const fence = pondFenceWalls(g.w.puzzles);
+  const touches = (a: Rect, b: Rect) =>
+    a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+  for (let i = 0; i < 4; i++) {
+    const s = pondStations[i];
+    // The frame sweeps a full turn without crossing a rail.
+    for (let step = 0; step < 240; step++)
+      expect(
+        fence.some((r) =>
+          touches(pondMirrorWall(i, (step * Math.PI) / 120), r),
+        ),
+      ).toBe(false);
+    // The shot lane from the firing pad to the mirror is clear of rails.
+    const lane = {
+      x: Math.min(s.shot.x, s.x) - 4,
+      y: Math.min(s.shot.y, s.y) - 4,
+      w: Math.abs(s.x - s.shot.x) + 8,
+      h: Math.abs(s.y - s.shot.y) + 8,
+    };
+    expect(fence.some((r) => touches(lane, r))).toBe(false);
+  }
+  // Sieg on the east bank walks into the opening but stops at the water.
+  Object.assign(g.s, { x: 1200, y: 300 });
+  for (let i = 0; i < ticksFor(2); i++)
+    move(
+      g.s,
+      { ...neutral(), moveX: -1 },
+      maps.MIRROR_POND,
+      collisionRects(
+        "MIRROR_POND",
+        g.w.puzzles,
+        {},
+        undefined,
+        g.w.players,
+        0,
+        "OATH",
+      ),
+      DT,
+    );
+  expect(g.s.x).toBeCloseTo(36 * 32 + HALF);
+});
+
+it("rotates in opposite directions when Sieg pushes from opposite banks of the pivot", () => {
+  const g = setup(),
+    station = pondStations[0];
+  const start = g.pond.mirrors[0];
+  Object.assign(g.s, { x: station.x, y: station.y + 96, facing: -Math.PI / 2 });
+  expect(pushPondMirror(g.w, g.s)).toBe(true);
+  expect(g.pond.mirrors[0]).toBeCloseTo(start + POND_ROTATION_STEP);
+  Object.assign(g.s, { y: station.y - 96, facing: Math.PI / 2 });
+  expect(pushPondMirror(g.w, g.s)).toBe(true);
+  expect(g.pond.mirrors[0]).toBeCloseTo(start);
 });

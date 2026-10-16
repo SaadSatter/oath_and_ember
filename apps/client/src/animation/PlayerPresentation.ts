@@ -1,4 +1,5 @@
 import { defenseClip, type DefensePhase } from "./defense.js";
+import { SERVER_HZ, ticksFor } from "../../../../packages/shared/src/constants.js";
 import type {
   Player,
   CombatAction,
@@ -28,11 +29,11 @@ export type Presentation =
       playbackRate?: number;
     };
 // Presentation-only state machine. Highest priority: defeat > hurt > accepted
-// combat > held ability/channel fallback > locomotion. Turning interrupts old
-// visual clips; accepted gameplay actions and their locked aim stay untouched.
+// combat > held ability/channel fallback > locomotion. An accepted action is
+// drawn in its own authoritative aim and is not cut short by turning, so the
+// pose always matches the direction the swing or projectile actually goes.
 export class PlayerPresentation {
   private seen = 0;
-  private lastDirection: CombatDirection | null = null;
   private defense: { phase: DefensePhase; start: number } | null = null;
   private hitSeen = 0;
   private impactUntil = 0;
@@ -54,10 +55,6 @@ export class PlayerPresentation {
     motion: Pick<Player, "facing"> = p,
   ): Presentation {
     const d = combatDirection(motion.facing);
-    if (this.lastDirection !== null && this.lastDirection !== d) {
-      this.active = null;
-    }
-    this.lastDirection = d;
     const guarding = p.actionState === "guard";
     if (guarding && !this.held) this.defense = { phase: "start", start: now };
     if (!guarding && this.held && this.defense)
@@ -65,7 +62,7 @@ export class PlayerPresentation {
     this.held = guarding;
     if (p.defensiveHit && p.defensiveHit.seq > this.hitSeen) {
       this.hitSeen = p.defensiveHit.seq;
-      if (serverTick - p.defensiveHit.tick < 9) this.impactUntil = now + 250;
+      if (serverTick - p.defensiveHit.tick < ticksFor(0.3)) this.impactUntil = now + 250;
     }
     if (
       this.defense &&
@@ -79,15 +76,14 @@ export class PlayerPresentation {
     }
     if (p.combat && p.combat.seq > this.seen) {
       this.seen = p.combat.seq;
-      if (combatDirection(p.combat.facing) !== d) {
-        // Consume delayed accepted markers without replaying the direction we left.
-      } else if (p.role) {
-        const clip = actionClip(p.role, d, p.combat.kind);
+      const aim = combatDirection(p.combat.facing);
+      if (p.role) {
+        const clip = actionClip(p.role, aim, p.combat.kind);
         const duration =
           p.role === "EMBER" ? 200 : p.combat.kind === "heavy" ? 250 : 300;
         const age = Math.max(
           0,
-          ((serverTick - p.combat.startedTick) * 1000) / 30,
+          ((serverTick - p.combat.startedTick) * 1000) / SERVER_HZ,
         );
         // Only the newest confirmed action is relevant. Never build a visual
         // backlog behind an older swing/cast when repeated inputs are accepted.
@@ -95,7 +91,7 @@ export class PlayerPresentation {
           age < duration
             ? {
                 action: p.combat,
-                direction: d,
+                direction: aim,
                 start: now - age,
                 end: now - age + duration,
                 playbackRate: clip.durationMs / duration,
