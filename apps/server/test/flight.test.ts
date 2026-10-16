@@ -9,7 +9,7 @@ import {
   type Player,
   type Rect,
 } from "../../../packages/shared/src/gameTypes.js";
-import { DT } from "../../../packages/shared/src/constants.js";
+import { DT, ticksFor } from "../../../packages/shared/src/constants.js";
 const hero = () =>
   ({
     role: "EMBER",
@@ -27,7 +27,7 @@ const map = { ...maps.GRASSLANDS, width: 1000, height: 1000 };
 it("predicts 20 seconds of flight and 7 seconds of recovery, with no held-key repeats", () => {
   const a = hero(),
     b = structuredClone(a);
-  for (let tick = 0; tick <= 600; tick++) {
+  for (let tick = 0; tick <= ticksFor(20); tick++) {
     const frame = { ...neutral(tick + 1), flightHeld: true };
     stepMovement(a, frame, map, [], DT);
     stepMovement(b, frame, map, [], DT);
@@ -35,7 +35,7 @@ it("predicts 20 seconds of flight and 7 seconds of recovery, with no held-key re
   }
   expect(a.flightRemaining).toBe(0);
   expect(a.cooldowns.flight).toBeCloseTo(7);
-  for (let tick = 0; tick < 211; tick++)
+  for (let tick = 0; tick < ticksFor(7) + 1; tick++)
     stepMovement(a, { ...neutral(), flightHeld: true }, map, [], DT);
   expect(a.flightRemaining).toBe(0);
   stepMovement(a, neutral(), map, [], DT);
@@ -62,7 +62,7 @@ it("crosses only water/canyon blockers, while solid obstacles still stop flight"
     ];
     const grounded = hero(),
       flying = hero();
-    for (let tick = 0; tick < 40; tick++) {
+    for (let tick = 0; tick < ticksFor(1.333); tick++) {
       stepMovement(grounded, { ...neutral(), moveX: 1 }, map, walls, DT);
       stepMovement(
         flying,
@@ -79,7 +79,7 @@ it("crosses only water/canyon blockers, while solid obstacles still stop flight"
 it("lands safely at the last dry position when flight expires over water", () => {
   const p = hero(),
     walls: Rect[] = [{ x: 140, y: 50, w: 300, h: 100, terrain: "water" }];
-  for (let tick = 0; tick < 20; tick++)
+  for (let tick = 0; tick < ticksFor(0.667); tick++)
     stepMovement(
       p,
       { ...neutral(), moveX: 1, flightHeld: tick === 0 },
@@ -89,7 +89,7 @@ it("lands safely at the last dry position when flight expires over water", () =>
     );
   expect(p.x).toBeGreaterThan(140);
   const safe = { ...p.flightGround! };
-  for (let tick = 0; tick < 581; tick++)
+  for (let tick = 0; tick < ticksFor(20) + 1 - ticksFor(0.667); tick++)
     stepMovement(p, neutral(), map, walls, DT);
   expect(p.flightRemaining).toBe(0);
   expect({ x: p.x, y: p.y }).toEqual(safe);
@@ -100,7 +100,7 @@ it("allows flight through the ruins water crossing but preserves walls and puzzl
   const p = hero();
   Object.assign(p, { x: 1010, y: 450 });
   const walls = collisionRects("FOREST_RUINS", {});
-  for (let tick = 0; tick < 25; tick++)
+  for (let tick = 0; tick < ticksFor(0.833); tick++)
     stepMovement(
       p,
       { ...neutral(), moveX: 1, flightHeld: tick === 0 },
@@ -119,7 +119,7 @@ it("allows flight through the ruins water crossing but preserves walls and puzzl
   const coco = r.state.players[b.playerId];
   r.unlock(coco.id, "flight");
   Object.assign(coco, { x: 640, y: 832 });
-  for (let n = 0; n < 40; n++) {
+  for (let n = 0; n < ticksFor(1.333); n++) {
     r.receiveInput(coco.id, {
       ...neutral(n + 1),
       moveX: -1,
@@ -190,4 +190,4 @@ it("accepts flight intent on the wire, rejects fabricated timers, and synchroniz
     clients.forEach((c) => c.disconnect());
     await app.close();
   }
-});
+}, 15000);

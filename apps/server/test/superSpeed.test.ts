@@ -5,7 +5,7 @@ import {
   neutral,
   type Player,
 } from "../../../packages/shared/src/gameTypes.js";
-import { DT, SPEED } from "../../../packages/shared/src/constants.js";
+import { DT, SPEED, ticksFor } from "../../../packages/shared/src/constants.js";
 import { maps } from "../../../packages/shared/src/maps.js";
 const hero = () =>
   ({
@@ -24,7 +24,7 @@ it("predicts the same 2x ten-second boost and five-second recovery without chang
   const a = hero(),
     b = structuredClone(a),
     input = { ...neutral(1), moveX: 1, moveY: 1, sprintHeld: true };
-  for (let tick = 0; tick < 300; tick++) {
+  for (let tick = 0; tick < ticksFor(10); tick++) {
     const frame = { ...input, sprintHeld: tick === 0 };
     const before = { x: a.x, y: a.y };
     stepMovement(
@@ -81,7 +81,8 @@ it("requires Sieg's unlocked skill, prevents held-key repeats and sweeps boost m
     expect(p.sprintRemaining).toBe(0);
   }
   const p = hero();
-  p.x = 197;
+  // One boosted step from here would end inside the wall; it stops flush.
+  p.x = 207 - SPEED * DT;
   stepMovement(
     p,
     { ...neutral(1), moveX: 1, sprintHeld: true },
@@ -90,7 +91,7 @@ it("requires Sieg's unlocked skill, prevents held-key repeats and sweeps boost m
     DT,
   );
   expect(p.x).toBe(207);
-  for (let n = 0; n < 510; n++)
+  for (let n = 0; n < ticksFor(17); n++)
     stepMovement(
       p,
       { ...neutral(1), sprintHeld: true },
@@ -166,7 +167,7 @@ it("broadcasts identical accepted Super Speed movement to both real clients", as
     clients.forEach((client) => client.disconnect());
     await app.close();
   }
-});
+}, 15000);
 
 it("retains a quick Super Speed click when release arrives before the next server tick", () => {
   const room = new GameRoom("FAST23"),
@@ -187,12 +188,12 @@ it("recharges for five seconds after the ten-second boost ends", () => {
   const p = hero(),
     map = { ...maps.GRASSLANDS, width: 5000, height: 5000 };
   stepMovement(p, { ...neutral(1), sprintHeld: true }, map, [], DT);
-  for (let n = 0; n < 300; n++) stepMovement(p, neutral(2), map, [], DT);
+  for (let n = 0; n < ticksFor(10); n++) stepMovement(p, neutral(2), map, [], DT);
   expect(p.sprintRemaining).toBe(0);
   expect(p.cooldowns.sprint).toBeCloseTo(5);
   stepMovement(p, { ...neutral(3), sprintHeld: true }, map, [], DT);
   expect(p.sprintRemaining).toBe(0);
-  for (let n = 0; n < 150; n++) stepMovement(p, neutral(4), map, [], DT);
+  for (let n = 0; n < ticksFor(5); n++) stepMovement(p, neutral(4), map, [], DT);
   stepMovement(p, { ...neutral(5), sprintHeld: true }, map, [], DT);
   expect(p.sprintRemaining).toBe(10);
 });

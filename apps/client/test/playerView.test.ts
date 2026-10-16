@@ -199,7 +199,7 @@ it("switches cosmetic textures without restarting animation or losing appearance
   expect(p.appearance.primaryPalette).toBe("blue");
 });
 
-it("interrupts old-facing combat immediately and restores movement without replay", () => {
+it("finishes an accepted attack in its aim after a turn, then restores movement without replay", () => {
   const h = harness(),
     p = {
       ...player(),
@@ -207,22 +207,25 @@ it("interrupts old-facing combat immediately and restores movement without repla
     };
   h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 1 });
   expect(h.sprite.play).toHaveBeenLastCalledWith("hero:OATH:basic:right");
-  h.scene.time.now = 200;
-  h.view.update(
+  const turned = [
     { ...p, facing: Math.PI },
     { ...p, vx: -190, facing: Math.PI },
     p,
     "TOP_DOWN",
     "sprite",
-    { serverTick: 6 },
-  );
-  expect(h.sprite.play).toHaveBeenCalledTimes(2);
+  ] as const;
+  h.scene.time.now = 200;
+  h.view.update(...turned, { serverTick: 6 });
+  expect(h.sprite.play).toHaveBeenLastCalledWith("hero:OATH:basic:right");
+  h.scene.time.now = 400;
+  h.view.update(...turned, { serverTick: 12 });
   expect(h.sprite.play).toHaveBeenLastCalledWith(
     "hero:OATH:TOP_DOWN:walk_west",
   );
-  h.view.update(p, p, p, "TOP_DOWN", "geometric", { serverTick: 6 });
-  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 6 });
-  expect(h.sprite.play).toHaveBeenCalledTimes(3);
+  const plays = h.sprite.play.mock.calls.length;
+  h.view.update(p, p, p, "TOP_DOWN", "geometric", { serverTick: 12 });
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 12 });
+  expect(h.sprite.play).toHaveBeenCalledTimes(plays + 1);
   expect(h.sprite.play).toHaveBeenLastCalledWith(
     "hero:OATH:TOP_DOWN:idle_right",
   );
@@ -499,7 +502,7 @@ it("starts Coco casts and Ward with the same supplied directional pose", () => {
   }
 });
 
-it("turns both heroes using predicted motion before the authoritative facing catches up", () => {
+it("keeps both heroes' accepted attack pose for its clip, then turns with predicted motion", () => {
   for (const role of ["OATH", "EMBER"] as const) {
     const h = harness(),
       p = {
@@ -512,9 +515,13 @@ it("turns both heroes using predicted motion before the authoritative facing cat
         },
       };
     h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 1 });
+    const attack = h.sprite.play.mock.calls.at(-1)![0];
     h.scene.time.now = 50;
     const motion = { ...p, facing: -Math.PI / 2, vx: 0, vy: -190 };
     h.view.update(p, motion, p, "TOP_DOWN", "sprite", { serverTick: 2 });
+    expect(h.sprite.play).toHaveBeenLastCalledWith(attack);
+    h.scene.time.now = 400;
+    h.view.update(p, motion, p, "TOP_DOWN", "sprite", { serverTick: 13 });
     expect(h.sprite.play).toHaveBeenLastCalledWith(
       `hero:${role}:TOP_DOWN:walk_north`,
     );

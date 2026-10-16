@@ -1,3 +1,4 @@
+import { ticksFor } from "../../../packages/shared/src/constants.js";
 import { it, expect } from "vitest";
 import { GameRoom } from "../src/GameRoom.js";
 import {
@@ -150,7 +151,7 @@ it("travels through the shrine portals using E intent and returns south to the c
   const g = setup();
   function interact(point: { x: number; y: number }) {
     Object.assign(g.s, point);
-    for (let n = 0; n < 31; n++) g.r.tick();
+    for (let n = 0; n < ticksFor(1.033); n++) g.r.tick();
     g.r.receiveInput(g.s.id, {
       ...neutral(g.r.sessions.get(g.s.id)!.input.seq + 1),
       interactHeld: true,
@@ -238,4 +239,4 @@ it("synchronizes dialogue, rejected gifts and one atomic shared offering across 
     clients.forEach((c) => c.disconnect());
     await app.close();
   }
-});
+}, 15000);

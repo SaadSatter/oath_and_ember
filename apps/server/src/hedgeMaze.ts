@@ -238,29 +238,36 @@ function distances(start: number, cells: Map<number, unknown>) {
   return d;
 }
 // Faster than Sieg both walking (190) and sprinting (380). Slow Time still
-// scales the wolf, while boosted Sieg retains normal speed (190).
+// scales the wolf, while boosted Sieg retains normal speed (190). With no hero
+// able to reach it, the wolf trots around its section instead of standing still.
 export const mazeWolf = {
   detectionRadius: 1000,
   speed: 430,
   alertSpeed: 560,
+  roamSpeed: 150,
+  roamMinSteps: 4,
+  roamMaxSteps: 14,
 } as const;
 export function tickMazeRunner(w: World) {
   const state = hedgeMazeState(w.puzzles);
   if (w.sceneId !== "HEDGE_MAZE" || !state || state.runner.caught) return;
   const runner = state.runner,
-    players = Object.values(w.players).filter(
+    present = Object.values(w.players).filter(
       (p) =>
         p.connected &&
         p.hp > 0 &&
-        (p.sceneId ?? w.sceneId) === "HEDGE_MAZE" &&
+        (p.sceneId ?? w.sceneId) === "HEDGE_MAZE",
+    ),
+    players = present.filter(
+      (p) =>
         Math.hypot(p.x - runner.x, p.y - runner.y) <= mazeWolf.detectionRadius,
     );
-  if (!players.length) return;
-  const speed = players.some(
-    (p) => p.role === "OATH" && (p.sprintRemaining ?? 0) > 0,
-  )
-    ? mazeWolf.alertSpeed
-    : mazeWolf.speed;
+  if (!present.length) return;
+  const speed = !runner.fleeing
+    ? mazeWolf.roamSpeed
+    : players.some((p) => p.role === "OATH" && (p.sprintRemaining ?? 0) > 0)
+      ? mazeWolf.alertSpeed
+      : mazeWolf.speed;
   const advance = (waypoint: { x: number; y: number }) => {
     const dx = waypoint.x - runner.x,
       dy = waypoint.y - runner.y,
@@ -298,13 +305,41 @@ export function tickMazeRunner(w: World) {
     return distances(closest, cells);
   });
   const reachable = distances(start, cells);
+  // A hero who cannot walk to the wolf's section is no threat. Counting such a
+  // hero as distance 0 made every cell equal, so the wolf froze in place.
+  const chasers = threats.filter((d) => d.has(start));
   const score = (key: number) =>
-    Math.min(...threats.map((d) => d.get(key) ?? 0));
-  // Choose a new safe destination from both live hero positions, never a fixed patrol.
-  const goal = [...reachable.keys()].sort(
-    (a, b) =>
-      score(b) - score(a) || reachable.get(a)! - reachable.get(b)! || a - b,
-  )[0];
+    chasers.length ? Math.min(...chasers.map((d) => d.get(key) ?? Infinity)) : 0;
+  let goal: number;
+  if (chasers.length) {
+    runner.fleeing = true;
+    delete runner.roam;
+    // Choose a new safe destination from live hero positions, never a fixed patrol.
+    goal = [...reachable.keys()].sort(
+      (a, b) =>
+        score(b) - score(a) || reachable.get(a)! - reachable.get(b)! || a - b,
+    )[0];
+  } else {
+    runner.fleeing = false;
+    const roamKey =
+      runner.roam &&
+      cellKey(Math.floor(runner.roam.x / 32), Math.floor(runner.roam.y / 32));
+    if (roamKey === undefined || roamKey === start || !reachable.has(roamKey)) {
+      const options = [...reachable]
+        .filter(
+          ([, steps]) =>
+            steps >= mazeWolf.roamMinSteps && steps <= mazeWolf.roamMaxSteps,
+        )
+        .map(([key]) => key)
+        .sort((a, b) => a - b);
+      // Deterministic pick from the server tick: no browser or Math.random.
+      const pick = options.length
+        ? options[(Math.imul(w.serverTick + start, 2654435761) >>> 0) % options.length]
+        : start;
+      runner.roam = { ...cells.get(pick)! };
+      goal = pick;
+    } else goal = roamKey;
+  }
   const back = distances(goal, cells);
   const next = neighbors(start, cells)
     .filter((n) => (back.get(n) ?? Infinity) < (back.get(start) ?? 0))

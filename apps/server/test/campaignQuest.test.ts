@@ -1,3 +1,4 @@
+import { ticksFor } from "../../../packages/shared/src/constants.js";
 import { it, expect } from "vitest";
 import { GameRoom } from "../src/GameRoom.js";
 import {
@@ -56,7 +57,7 @@ it("connects the campaign forest entrance to every hub branch and back using E w
   let seq = 0;
   const use = (point: { x: number; y: number }) => {
     Object.assign(s, point);
-    w.serverTick += 31;
+    w.serverTick += ticksFor(1) + 1;
     r.receiveInput(s.id, neutral(++seq));
     r.tick();
     r.receiveInput(s.id, { ...neutral(++seq), interactHeld: true });
@@ -96,7 +97,7 @@ it("puts the shrine directly after Puzzle Map 2 and unlocks its onward route onl
   expect(previousMap.FOREST_RUINS).toBe("GODDESS_SHRINE");
   const use = (point: { x: number; y: number }) => {
     Object.assign(s, point);
-    w.serverTick += 31;
+    w.serverTick += ticksFor(1) + 1;
     const seq = r.sessions.get(s.id)!.input.seq;
     r.receiveInput(s.id, neutral(seq + 1));
     r.tick();

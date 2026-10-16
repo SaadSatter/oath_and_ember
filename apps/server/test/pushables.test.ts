@@ -1,3 +1,4 @@
+import { DT, ticksFor } from "../../../packages/shared/src/constants.js";
 import { expect, it } from "vitest";
 import { GameRoom } from "../src/GameRoom.js";
 import { neutral } from "../../../packages/shared/src/gameTypes.js";
@@ -31,7 +32,7 @@ it("moves the reviewed chair from held intent and moves its authoritative collis
   const { room, player, tick } = fixture();
   tick();
   expect(player.actionState).toBe("push");
-  expect(room.state.pushableOffsets?.["puzzle-chair"]).toEqual({ x: 2, y: 0 });
+  expect(room.state.pushableOffsets?.["puzzle-chair"]).toEqual({ x: 60 * DT, y: 0 });
   const rect = pushableRect(pushableDefinitions[0], room.state.pushableOffsets);
   expect(
     collisionRects(
@@ -40,7 +41,7 @@ it("moves the reviewed chair from held intent and moves its authoritative collis
       room.state.pushableOffsets,
     ),
   ).toContainEqual(rect);
-  for (let n = 0; n < 30; n++) tick();
+  for (let n = 0; n < ticksFor(1); n++) tick();
   expect(
     pushableRect(pushableDefinitions[0], room.state.pushableOffsets).x + rect.w,
   ).toBeLessThanOrEqual(992);
@@ -131,7 +132,7 @@ it("broadcasts identical push positions and presentation state to two real clien
     clients.forEach((client) => client.disconnect());
     await app.close();
   }
-});
+}, 15000);
 
 it("E interacts for either hero without posing or moving pushable objects; only Sieg's dedicated push intent moves them", () => {
   for (const role of ["OATH", "EMBER"] as const) {

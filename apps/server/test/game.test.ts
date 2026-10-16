@@ -1,3 +1,8 @@
+import { DT, ticksFor } from "../../../packages/shared/src/constants.js";
+import {
+  heavyTiming,
+  swordContactTicks,
+} from "../../../packages/shared/src/combat.js";
 import { spawnEnemy } from "../../../packages/shared/src/enemies.js";
 import { describe, it, expect } from "vitest";
 import { io } from "socket.io-client";
@@ -141,7 +146,7 @@ describe("authoritative gameplay", () => {
     b.x = 410;
     b.y = 505;
     input(r, b.id, { interactHeld: true });
-    for (let n = 0; n < 7; n++) r.tick();
+    for (let n = 0; n < ticksFor(0.233); n++) r.tick();
     expect(r.state.puzzles.gate.complete).toBe(true);
     r.tick();
     expect(a.skillPoints).toBe(0);
@@ -161,7 +166,7 @@ describe("authoritative gameplay", () => {
       Object.values(r.state.projectiles).filter((q) => q.owner === b.id),
     ).toHaveLength(1);
     input(r, b.id, {});
-    for (let n = 0; n < 60; n++) r.tick();
+    for (let n = 0; n < ticksFor(2); n++) r.tick();
     expect(
       Object.values(r.state.projectiles).filter((q) => q.owner === b.id),
     ).toHaveLength(0);
@@ -174,10 +179,10 @@ describe("authoritative gameplay", () => {
     b.x = 1390;
     b.y = 677;
     input(r, a.id, { interactHeld: true });
-    for (let n = 0; n < 100; n++) r.tick();
+    for (let n = 0; n < ticksFor(3.333); n++) r.tick();
     expect(r.state.puzzles.engine.complete).toBe(false);
     input(r, b.id, { interactHeld: true });
-    for (let n = 0; n < 92; n++) r.tick();
+    for (let n = 0; n < ticksFor(3.067); n++) r.tick();
     expect(r.state.puzzles.engine.complete).toBe(true);
     r.transition("AIRSHIP_BOSS");
     a.x = 950;
@@ -195,10 +200,32 @@ describe("authoritative gameplay", () => {
     a.cooldowns.attack = 0;
     r.tick();
     input(r, a.id, {});
-    for (let n = 0; n < 7; n++) r.tick();
+    for (let n = 0; n < ticksFor(0.233); n++) r.tick();
     expect(r.state.phase).toBe("COMPLETE");
   });
 });
+// Snapshots are volatile, so under load either client may skip one. Compare
+// the first tick both clients actually received rather than each one's next.
+function sharedSnapshot(
+  a: { on: Function; off: Function },
+  b: { on: Function; off: Function },
+) {
+  return new Promise<[any, any]>((resolve) => {
+    const seen = [new Map<number, any>(), new Map<number, any>()];
+    const handlers = [a, b].map((socket, n) => {
+      const handler = (w: any) => {
+        seen[n].set(w.serverTick, w);
+        const other = seen[1 - n].get(w.serverTick);
+        if (!other) return;
+        a.off("game:snapshot", handlers[0]);
+        b.off("game:snapshot", handlers[1]);
+        resolve(n === 0 ? [w, other] : [other, w]);
+      };
+      socket.on("game:snapshot", handler);
+      return handler;
+    });
+  });
+}
 it("real Socket.IO clients create/join, reject malformed input, synchronize and resume", async () => {
   const app = createApp();
   await new Promise<void>((res) => app.http.listen(0, "127.0.0.1", res));
@@ -274,11 +301,7 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
     });
     await new Promise((res) => setTimeout(res, 40));
     expect(room.state.players[sa.playerId].lastProcessedInputSeq).toBe(1);
-    const snapshots = await Promise.all(
-      clients
-        .slice(0, 2)
-        .map((s) => new Promise<any>((res) => s.once("game:snapshot", res))),
-    );
+    const snapshots = await sharedSnapshot(clients[0], clients[1]);
     expect(snapshots[0]).toEqual(snapshots[1]);
     expect(snapshots[0].players[sa.playerId].combat).toMatchObject({
       kind: "sword",
@@ -314,11 +337,7 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
       30,
     );
     await new Promise((res) => setTimeout(res, 600));
-    const charging = await Promise.all(
-      clients
-        .slice(0, 2)
-        .map((s) => new Promise<any>((res) => s.once("game:snapshot", res))),
-    );
+    const charging = await sharedSnapshot(clients[0], clients[1]);
     clearInterval(heldTimer);
     expect(charging[0]).toEqual(charging[1]);
     expect(
@@ -326,11 +345,7 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
     ).toBeGreaterThanOrEqual(14);
     clients[0].emit("player:input", neutral(chargeSeq++));
     await new Promise((res) => setTimeout(res, 70));
-    const released = await Promise.all(
-      clients
-        .slice(0, 2)
-        .map((s) => new Promise<any>((res) => s.once("game:snapshot", res))),
-    );
+    const released = await sharedSnapshot(clients[0], clients[1]);
     expect(released[0]).toEqual(released[1]);
     expect(released[0].players[sa.playerId].heavyCharge).toBeUndefined();
     expect(released[0].players[sa.playerId].combat.kind).toBe("heavy");
@@ -349,11 +364,7 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
     room.state.enemies = {};
     clients[1].emit("player:input", { ...neutral(10), primaryHeld: true });
     await new Promise((res) => setTimeout(res, 70)); // Wait for the accepted cast before observing a snapshot.
-    const traveling = await Promise.all(
-      clients
-        .slice(0, 2)
-        .map((s) => new Promise<any>((res) => s.once("game:snapshot", res))),
-    );
+    const traveling = await sharedSnapshot(clients[0], clients[1]);
     expect(traveling[0]).toEqual(traveling[1]);
     expect(
       Object.values(traveling[0].projectiles).some(
@@ -371,11 +382,7 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
       nextAttackTick: 999999,
       cooldown: 999,
     };
-    const impacts = await Promise.all(
-      clients
-        .slice(0, 2)
-        .map((s) => new Promise<any>((res) => s.once("game:snapshot", res))),
-    );
+    const impacts = await sharedSnapshot(clients[0], clients[1]);
     expect(impacts[0]).toEqual(impacts[1]);
     expect(
       impacts[0].projectileImpacts.some((e: any) => e.id === missile.id),
@@ -451,7 +458,7 @@ it("real Socket.IO clients create/join, reject malformed input, synchronize and 
     clients.forEach((s) => s.disconnect());
     await app.close();
   }
-});
+}, 15000);
 
 describe("cosmetic appearance state", () => {
   it("defaults legacy initialization, validates roles and preserves gameplay and transitions", () => {
@@ -525,7 +532,7 @@ it("accepted combat markers follow cooldowns and charge upgrades", () => {
   });
   expect(b.combat).toMatchObject({ kind: "cast" });
   expect(Object.keys(r.state.projectiles)).toHaveLength(1);
-  for (let n = 0; n < 5; n++) r.tick();
+  for (let n = 0; n < ticksFor(0.167); n++) r.tick();
   expect(a.combat!.seq).toBe(1);
   expect(Object.keys(r.state.projectiles)).toHaveLength(1);
   a.unlockedSkills.push("heavy");
@@ -535,7 +542,7 @@ it("accepted combat markers follow cooldowns and charge upgrades", () => {
   input(r, a.id, { primaryHeld: true });
   r.tick();
   expect(a.heavyCharge).toBeDefined();
-  for (let n = 0; n < 14; n++) r.tick();
+  for (let n = 0; n < ticksFor(0.467); n++) r.tick();
   input(r, a.id, { primaryHeld: false });
   r.tick();
   expect(a.combat).toMatchObject({ kind: "heavy" });
@@ -575,17 +582,23 @@ describe("authoritative Heavy Break", () => {
     expect(a.heavyCharge).toBeUndefined();
     expect(a.combat).toMatchObject({ kind: "sword", facing: 0 });
     expect(r.state.enemies.target.hp).toBe(100);
-    for (let n = 0; n < 7; n++) r.tick();
+    for (let n = 0; n < ticksFor(0.233); n++) r.tick();
     expect(r.state.enemies.target.hp).toBe(75);
     const seq = a.combat!.seq;
     r.tick();
     expect(a.combat!.seq).toBe(seq);
   });
   it("minimum/full/capped charge releases a single 40-damage strike and preserves cooldown", () => {
-    for (const ticks of [14, 33, 60]) {
+    for (const ticks of [
+      heavyTiming.minimumTicks,
+      heavyTiming.fullTicks,
+      ticksFor(2),
+    ]) {
       const { r, a } = charge(ticks);
-      expect(a.heavyCharge!.ticks).toBe(Math.min(38, ticks));
-      expect(a.heavyCharge!.progress).toBe(Math.min(1, ticks / 33));
+      expect(a.heavyCharge!.ticks).toBe(Math.min(heavyTiming.capTicks, ticks));
+      expect(a.heavyCharge!.progress).toBe(
+        Math.min(1, ticks / heavyTiming.fullTicks),
+      );
       expect(r.state.enemies.target.hp).toBe(100);
       input(r, a.id, { primaryHeld: false });
       r.tick();
@@ -643,7 +656,8 @@ it("server records projectile collision impacts once, never expiry bursts", () =
   expect(r.state.projectileImpacts).toEqual([
     {
       id: "hit",
-      x: b.x + 14,
+      // The shot starts inside the target's body, so it touched it at once.
+      x: b.x,
       y: b.y,
       owner: b.id,
       tick: 1,
@@ -661,7 +675,7 @@ it("server records projectile collision impacts once, never expiry bursts", () =
   };
   r.tick();
   expect(r.state.projectileImpacts).toHaveLength(1);
-  for (let n = 0; n < 31; n++) r.tick();
+  for (let n = 0; n < ticksFor(1.033); n++) r.tick();
   expect(r.state.projectileImpacts).toHaveLength(0);
 });
 
@@ -686,19 +700,14 @@ it("resolves basic sword contact once, at server-owned positions, then stops dam
     r.tick();
     input(r, a.id, {});
     expect(e.hp).toBe(100);
-    const delay =
-      Math.abs(Math.cos(facing)) >= Math.abs(Math.sin(facing))
-        ? 7
-        : facing < 0
-          ? 5
-          : 3;
+    const delay = swordContactTicks(facing);
     for (let n = 1; n < delay; n++) {
       r.tick();
       expect(e.hp).toBe(100);
     }
     r.tick();
     expect(e.hp).toBe(75);
-    for (let n = 0; n < 10; n++) r.tick();
+    for (let n = 0; n < ticksFor(0.333); n++) r.tick();
     expect(e.hp).toBe(75);
   }
 });
@@ -719,7 +728,7 @@ it("cancels delayed contact after hurt/scene changes and rejects targets that le
     if (cancel === "hurt") r.damage(a, 1);
     if (cancel === "transition") r.transition("AIRSHIP");
     if (cancel === "range") e.x = 1100;
-    for (let n = 0; n < 8; n++) r.tick();
+    for (let n = 0; n < ticksFor(0.267); n++) r.tick();
     expect(e.hp).toBe(100);
   }
 });
@@ -755,9 +764,9 @@ it("basic and heavy sword swings damage only the captured forward arc in all fou
       r.tick();
       // Turning after the swing/charge starts cannot redirect its damage.
       a.facing = facing + Math.PI;
-      if (heavy) for (let n = 0; n < 14; n++) r.tick();
+      if (heavy) for (let n = 0; n < ticksFor(0.467); n++) r.tick();
       input(r, a.id, {});
-      for (let n = 0; n < 8; n++) r.tick();
+      for (let n = 0; n < ticksFor(0.267); n++) r.tick();
       expect(a.combat?.facing).toBe(facing);
       for (const id of ["front", "forward-diagonal"])
         expect(

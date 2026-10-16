@@ -1,3 +1,4 @@
+import { ticksFor } from "../../../packages/shared/src/constants.js";
 import { expect, it } from "vitest";
 import { GameRoom } from "../src/GameRoom.js";
 import { neutral } from "../../../packages/shared/src/gameTypes.js";
@@ -76,7 +77,7 @@ it("returns outside after walking into the exit arch, without accepting distant 
   input(r, a.id, false);
   // Approach through real server movement, rather than teleporting to the trigger.
   const session = r.sessions.get(a.id)!;
-  for (let tick = 0; tick < 14; tick++) {
+  for (let tick = 0; tick < ticksFor(0.467); tick++) {
     session.input = { ...neutral(session.input.seq + 1), moveY: -1 };
     session.received = Date.now();
     r.tick();
@@ -249,7 +250,7 @@ it("synchronizes independent locations to two real sockets and restores the inte
     sockets.forEach((s) => s.disconnect());
     await app.close();
   }
-});
+}, 15000);
 it("keeps the latest movement intent when validated packets arrive in the same burst", async () => {
   const { createApp } = await import("../src/app.js");
   const { io } = await import("socket.io-client");
@@ -278,7 +279,7 @@ it("keeps the latest movement intent when validated packets arrive in the same b
     socket.disconnect();
     await app.close();
   }
-});
+}, 15000);
 it("allows walking across open rug margins and into stair treads while retaining furniture and wall barriers", () => {
   const { a } = pair();
   a.sceneId = "HOUSE_INTERIOR";

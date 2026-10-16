@@ -12,6 +12,7 @@ import {
 } from "../../../packages/shared/src/constants.js";
 import {
   POND_ROTATION_STEP,
+  pondMirrorContact,
   normalizeMirrorAngle,
   mirrorPondState,
   pondChest,
@@ -75,7 +76,12 @@ export function pushPondMirror(w: World, p: Player) {
       0.45
   )
     return false;
-  const angle = normalizeMirrorAngle(pond.mirrors[i] + POND_ROTATION_STEP),
+  // Use a fixed bank-relative side so holding Push can complete a full turn.
+  const side = (p.x - s.x) * -s.incoming.y + (p.y - s.y) * s.incoming.x;
+  const direction = side < -1 ? -1 : 1;
+  const angle = normalizeMirrorAngle(
+      pond.mirrors[i] + direction * POND_ROTATION_STEP,
+    ),
     wall = pondMirrorWall(i, angle);
   if (
     Object.values(w.players).some(
@@ -106,26 +112,17 @@ export function tickMirrorPond(
       (p.sceneId ?? w.sceneId) !== "MIRROR_POND"
     )
       continue;
-    if (p.x > 42 * 32 + HALF) pond.entryPassed = false;
+    if (p.x > pondTrial.x + pondTrial.w + HALF) pond.entryPassed = false;
     const from = before.get(p.id) ?? p;
     const inTrial = overlaps(p, pondTrial) || overlaps(from, pondTrial);
+    // Columns are fixed; any column raised at either end of the tick counts,
+    // swept along Sieg's path so a boosted dash cannot skip through one.
     const hit =
       inTrial &&
-      spikes.some((r, i) => {
-        const old = oldSpikes[i];
-        const swept = {
-          x: r.x,
-          y: Math.min(r.y, old.y),
-          w: r.w,
-          h: r.h + Math.abs(r.y - old.y),
-        };
-        return contact(from, p, swept, HALF) !== Infinity;
-      });
-    if (
-      inTrial &&
-      ((!pond.entryPassed && !(p.sprintRemaining && p.sprintRemaining > 0)) ||
-        hit)
-    ) {
+      [...oldSpikes, ...spikes].some(
+        (r) => contact(from, p, r, HALF) !== Infinity,
+      );
+    if (inTrial && hit) {
       p.hp = Math.max(1, p.hp - 8);
       Object.assign(p, pondSpawn("OATH"), {
         vx: 0,
@@ -136,7 +133,7 @@ export function tickMirrorPond(
       pond.failures++;
       continue;
     }
-    if (p.x <= 37 * 32 - HALF && p.y >= 25 * 32 && p.y <= 27 * 32)
+    if (p.x <= pondTrial.x - HALF && p.y >= 25 * 32 && p.y <= 27 * 32)
       pond.entryPassed = true;
   }
 }
@@ -164,26 +161,6 @@ function contact(
     if (lo > hi) return Infinity;
   }
   return lo;
-}
-function mirrorContact(
-  from: { x: number; y: number },
-  to: { x: number; y: number },
-  index: number,
-  angle: number,
-) {
-  const s = pondStations[index],
-    tangent = { x: Math.cos(angle), y: Math.sin(angle) },
-    normal = { x: -tangent.y, y: tangent.x };
-  const d0 = (from.x - s.x) * normal.x + (from.y - s.y) * normal.y,
-    d1 = (to.x - s.x) * normal.x + (to.y - s.y) * normal.y;
-  if (Math.abs(d0 - d1) < 1e-10) return Infinity;
-  const t = d0 / (d0 - d1);
-  if (t < 0 || t > 1) return Infinity;
-  const x = from.x + (to.x - from.x) * t,
-    y = from.y + (to.y - from.y) * t;
-  return Math.abs((x - s.x) * tangent.x + (y - s.y) * tangent.y) <= 66.4
-    ? t
-    : Infinity;
 }
 // Swept circle contact prevents fast shots from tunnelling through a torch radius.
 export const POND_TORCH_RADIUS = 28;
@@ -235,7 +212,7 @@ export function tracePondFireball(
       consider(contact(from, to, wall, q.radius ?? 4), "wall", 0);
   for (let i = 0; i < 4; i++) {
     if (q.pondReflection === undefined)
-      consider(mirrorContact(from, to, i, pond.mirrors[i]), "mirror", i);
+      consider(pondMirrorContact(from, to, i, pond.mirrors[i]), "mirror", i);
     const t = pondStations[i].torch;
     consider(
       torchContact(from, to, t, POND_TORCH_RADIUS + (q.radius ?? 4)),

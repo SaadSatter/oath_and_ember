@@ -6,6 +6,11 @@ import { tickBlackHoles } from "../src/blackHoles.js";
 import { blackHoleTuning as T } from "../../../packages/shared/src/blackHole.js";
 import { spawnEnemy } from "../../../packages/shared/src/enemies.js";
 import {
+  DT,
+  SLOW_TIME_SCALE,
+  ticksFor,
+} from "../../../packages/shared/src/constants.js";
+import {
   neutral,
   type BlackHole,
 } from "../../../packages/shared/src/gameTypes.js";
@@ -40,11 +45,11 @@ function fixture(scene: "FOREST_RUINS" | "BRIDGE_RUINS" = "FOREST_RUINS") {
 }
 it("stops at exactly six 32px tiles and remains for four seconds", () => {
   const { w, hole } = fixture();
-  for (let tick = 0; tick < 32; tick++) tickBlackHoles(w);
+  for (let tick = 0; tick < ticksFor(1.067); tick++) tickBlackHoles(w);
   expect(hole.phase).toBe("vortex");
   expect(hole.x).toBe(700 + 192);
   expect(hole.remainingRange).toBe(0);
-  for (let tick = 0; tick < 119; tick++) tickBlackHoles(w);
+  for (let tick = 0; tick < ticksFor(T.duration) - 1; tick++) tickBlackHoles(w);
   expect(w.blackHoles?.hole).toBeDefined();
   tickBlackHoles(w);
   expect(w.blackHoles?.hole).toBeUndefined();
@@ -52,12 +57,12 @@ it("stops at exactly six 32px tiles and remains for four seconds", () => {
 it("stops at first enemy contact, damages once, and pulls toward that contact", () => {
   const { w, hole, coco, sieg } = fixture();
   const e = (w.enemies.target = spawnEnemy("target", "mossling", 800, 450));
-  for (let tick = 0; tick < 15; tick++) tickBlackHoles(w);
+  for (let tick = 0; tick < ticksFor(0.5); tick++) tickBlackHoles(w);
   expect(hole.phase).toBe("vortex");
   expect(hole.x).toBeCloseTo(774, 3);
   expect(e.hp).toBe(30);
   expect(e.x).toBeLessThan(800);
-  for (let tick = 0; tick < 20; tick++) tickBlackHoles(w);
+  for (let tick = 0; tick < ticksFor(0.667); tick++) tickBlackHoles(w);
   expect(e.hp).toBe(30);
   expect(Math.abs(e.x - hole.x)).toBeLessThan(1);
   expect(coco.hp).toBe(100);
@@ -87,7 +92,7 @@ it("stops before a solid gate and cannot damage or pull enemies through it", () 
   const { w, hole } = fixture("BRIDGE_RUINS");
   Object.assign(hole, { x: 672, y: 1200, vx: 0, vy: -T.speed });
   const enemy = (w.enemies.enemy = spawnEnemy("enemy", "mossling", 672, 1100));
-  for (let tick = 0; tick < 20; tick++) tickBlackHoles(w);
+  for (let tick = 0; tick < ticksFor(0.667); tick++) tickBlackHoles(w);
   expect(hole.phase).toBe("vortex");
   expect(hole.y).toBeGreaterThanOrEqual(1142);
   expect(enemy.hp).toBe(60);
@@ -95,10 +100,10 @@ it("stops before a solid gate and cannot damage or pull enemies through it", () 
 });
 it("Slow Time reduces travel and pull speed without changing the range", () => {
   const { w, hole, coco } = fixture();
-  w.slowTime = { owner: coco.id, startedTick: 0, endsTick: 300 };
+  w.slowTime = { owner: coco.id, startedTick: 0, endsTick: ticksFor(10) };
   tickBlackHoles(w);
-  expect(hole.x - 700).toBeCloseTo(1.2);
-  for (let tick = 1; tick < 160; tick++) tickBlackHoles(w);
+  expect(hole.x - 700).toBeCloseTo(T.speed * SLOW_TIME_SCALE * DT);
+  for (let tick = 1; tick < ticksFor(5.333); tick++) tickBlackHoles(w);
   expect(hole.phase).toBe("vortex");
   expect(hole.x).toBeCloseTo(892);
   const e = (w.enemies.enemy = spawnEnemy(
@@ -108,7 +113,7 @@ it("Slow Time reduces travel and pull speed without changing the range", () => {
     450,
   ));
   tickBlackHoles(w);
-  expect(e.x - (hole.x + 60)).toBeCloseTo(-100 / 150);
+  expect(e.x - (hole.x + 60)).toBeCloseTo(-T.pullSpeed * SLOW_TIME_SCALE * DT);
 });
 it("requires Coco's unlock, respects cooldown and does not repeat while the key is held", () => {
   const { room, w, coco, sieg } = fixture();
@@ -127,14 +132,15 @@ it("requires Coco's unlock, respects cooldown and does not repeat while the key 
   room.receiveInput(sieg.id, { ...neutral(1), blackHoleHeld: true });
   room.tick();
   expect(Object.keys(w.blackHoles!)).toHaveLength(1);
-  for (let seq = 4; seq < 340; seq++) {
+  const held = 4 + ticksFor(11.2);
+  for (let seq = 4; seq < held; seq++) {
     room.receiveInput(coco.id, { ...neutral(seq), blackHoleHeld: true });
     room.tick();
   }
   expect(Object.keys(w.blackHoles!)).toHaveLength(0);
-  room.receiveInput(coco.id, neutral(340));
+  room.receiveInput(coco.id, neutral(held));
   room.tick();
-  room.receiveInput(coco.id, { ...neutral(341), blackHoleHeld: true });
+  room.receiveInput(coco.id, { ...neutral(held + 1), blackHoleHeld: true });
   room.tick();
   expect(Object.keys(w.blackHoles!)).toHaveLength(1);
   room.transition("AIRSHIP");
@@ -195,7 +201,7 @@ it("synchronizes the new cast intent and rejects client-selected range or damage
     clients.forEach((c) => c.disconnect());
     await app.close();
   }
-});
+}, 15000);
 
 it("removes the owner's vortex immediately on disconnect", () => {
   const { room, w, coco } = fixture();

@@ -5,6 +5,7 @@ import {
   spawnEnemy,
   golemMelee,
 } from "../../../packages/shared/src/enemies.js";
+import { ticksFor } from "../../../packages/shared/src/constants.js";
 function setup() {
   const r = new GameRoom("ABC234", false, "FOREST_RUINS"),
     a = r.add("a"),
@@ -36,12 +37,12 @@ it("chooses close-range melee, hits once at contact, and completes the full punc
   const g = setup();
   g.step();
   expect(g.e.attackKind).toBe("melee");
-  g.step(11);
+  g.step(golemMelee.hitTicks - 1);
   expect(g.s.hp).toBe(100);
   g.step();
   expect(g.s.hp).toBe(72);
   expect(g.e.state).toBe("ATTACK");
-  g.step(12);
+  g.step(golemMelee.durationTicks - golemMelee.hitTicks);
   expect(g.e.state).toBe("CHASE");
   expect(g.hits).toEqual([g.s.id]);
   expect(g.w.projectiles).toEqual({});
@@ -54,13 +55,13 @@ it("chooses close-range melee, hits once at contact, and completes the full punc
 it("interrupts an unfinished beam charge when a hero rushes into melee range, with a fresh punch windup", () => {
   const g = setup();
   g.s.x = 600;
-  g.step(20);
+  g.step(ticksFor(0.667));
   expect(g.e.attackKind).toBe("beam");
   g.s.x = 760;
   g.step();
   expect(g.e.attackKind).toBe("melee");
   expect(g.e.attackStartedTick).toBe(g.w.serverTick);
-  g.step(11);
+  g.step(golemMelee.hitTicks - 1);
   expect(g.s.hp).toBe(100);
   g.step();
   expect(g.s.hp).toBe(72);
@@ -71,18 +72,18 @@ it("lets players dodge out of range or behind the locked punch direction", () =>
     const g = setup();
     g.step();
     g.s.x = x;
-    g.step(24);
+    g.step(golemMelee.durationTicks);
     expect(g.s.hp).toBe(100);
     expect(g.hits).toEqual([]);
   }
 });
 it("keeps ranged attacks when the next attack target moves away", () => {
   const g = setup();
-  g.step(25);
+  g.step(ticksFor(0.833));
   g.s.x = 600;
-  g.step(30);
+  g.step(ticksFor(1));
   expect(g.e.attackKind).toBe("beam");
-  g.step(36);
+  g.step(ticksFor(1.2));
   expect(Object.values(g.w.projectiles)[0]?.effect).toBe("golem_beam");
 });
 it("prioritizes the adjacent hero over a retained distant beam target", () => {
@@ -98,25 +99,25 @@ it("does not punch through a wall, hit disconnected heroes, or continue after de
   const g = setup();
   g.step();
   g.s.connected = false;
-  g.step(24);
+  g.step(golemMelee.durationTicks);
   expect(g.s.hp).toBe(100);
   const dead = setup();
   dead.step();
   damageEnemy(dead.e, 999, dead.w.serverTick);
-  dead.step(24);
+  dead.step(golemMelee.durationTicks);
   expect(dead.hits).toEqual([]);
   const wall = setup();
   Object.assign(wall.e, { x: 1030, y: 600 });
   Object.assign(wall.s, { x: 1070, y: 600 });
-  wall.step(60);
+  wall.step(ticksFor(2));
   expect(wall.hits).toEqual([]);
 });
 it("slows punch contact and recovery with Slow Time", () => {
   const g = setup();
-  g.w.slowTime = { owner: g.c.id, startedTick: 0, endsTick: 300 };
-  g.step(13);
+  g.w.slowTime = { owner: g.c.id, startedTick: 0, endsTick: ticksFor(10) };
+  g.step(ticksFor(0.433));
   expect(g.s.hp).toBe(100);
-  g.step(50);
+  g.step(ticksFor(1.667));
   expect(g.s.hp).toBe(72);
   expect(g.e.state).toBe("ATTACK");
   expect(g.hits).toHaveLength(1);
