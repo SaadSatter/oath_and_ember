@@ -4,6 +4,15 @@ import {
 } from "../../../../packages/shared/src/movement.js";
 import { maps, collisionRects } from "../../../../packages/shared/src/maps.js";
 import type { World } from "../../../../packages/shared/src/gameTypes.js";
+import {
+  INTERPOLATION_MS,
+  SERVER_HZ,
+} from "../../../../packages/shared/src/constants.js";
+// Beyond this backlog the playhead speeds up, by at most MAX_CATCH_UP, so it
+// drifts back toward the delay budget without a visible change of pace.
+const CATCH_UP_AFTER_MS = INTERPOLATION_MS * 2,
+  MAX_CATCH_UP = 0.06,
+  REANCHOR_AFTER_MS = 600;
 export class Interpolation {
   buffer: { time: number; world: World }[] = [];
   private playbackTime: number | null = null;
@@ -19,12 +28,12 @@ export class Interpolation {
     if (last && world.serverTick <= last.serverTick) return;
     if (!this.origin) {
       this.origin = { tick: world.serverTick, time: now };
-      this.playbackTime = now - 100;
+      this.playbackTime = now - INTERPOLATION_MS;
       this.renderTime = now;
     }
     this.buffer.push({
       time:
-        this.origin.time + ((world.serverTick - this.origin.tick) * 1000) / 30,
+        this.origin.time + ((world.serverTick - this.origin.tick) * 1000) / SERVER_HZ,
       world: structuredClone(world),
     });
     if (this.buffer.length > 20) this.buffer.shift();
@@ -39,14 +48,24 @@ export class Interpolation {
   ) {
     if (!this.buffer.length) return null;
     if (this.playbackTime === null) {
-      this.playbackTime = now - 100;
+      this.playbackTime = now - INTERPOLATION_MS;
       this.renderTime = now;
     }
     // Pause the playhead when the buffer runs dry. Absolute wall time used to
     // run beyond available snapshots, then jump across a whole receipt burst.
+    // Each pause used to add permanent delay, so remote heroes drifted further
+    // behind over a session. Play up to 6% faster while beyond the budget, and
+    // re-anchor after a long outage instead of scrubbing through stale history.
+    const latest = this.buffer.at(-1)!.time;
+    const lag = latest - this.playbackTime;
+    if (lag > REANCHOR_AFTER_MS) this.playbackTime = latest - INTERPOLATION_MS;
+    const rate =
+      lag > CATCH_UP_AFTER_MS
+        ? 1 + Math.min(MAX_CATCH_UP, (lag - CATCH_UP_AFTER_MS) / 2000)
+        : 1;
     this.playbackTime = Math.min(
-      this.playbackTime + Math.max(0, now - this.renderTime),
-      this.buffer.at(-1)!.time,
+      this.playbackTime + Math.max(0, now - this.renderTime) * rate,
+      latest,
     );
     this.renderTime = Math.max(this.renderTime, now);
     const t = this.playbackTime;

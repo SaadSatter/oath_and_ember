@@ -1,3 +1,4 @@
+import { DT, ticksFor } from "../../../packages/shared/src/constants.js";
 import { expect, it } from "vitest";
 import { GameRoom } from "../src/GameRoom.js";
 import { neutral } from "../../../packages/shared/src/gameTypes.js";
@@ -63,11 +64,11 @@ it("requires BOTH heavy weight on A and a frontal moving-target hit, then latche
   input(coco, { primaryHeld: true });
   ticks();
   input(coco, {});
-  ticks(15);
+  ticks(ticksFor(0.5));
   expect(s.targetHit).toBe(false);
   expect(s.firstGateOpen).toBe(false);
   Object.assign(sieg, { x: 288, y: 1448 });
-  for (let n = 0; n < 24; n++) {
+  for (let n = 0; n < ticksFor(0.8); n++) {
     input(sieg, { moveY: -1, pushHeld: true });
     ticks();
   }
@@ -77,7 +78,7 @@ it("requires BOTH heavy weight on A and a frontal moving-target hit, then latche
   input(coco, { primaryHeld: true });
   ticks();
   input(coco, {});
-  ticks(15);
+  ticks(ticksFor(0.5));
   expect(s.targetHit).toBe(true);
   expect(s.firstGateOpen).toBe(true);
   s.boulder.y = 1200;
@@ -92,7 +93,7 @@ it("shows the entry target only while the boulder weights A and rejects shots wh
   Object.assign(s.boulder, P.plateA);
   expect(bridgeEntryTargetVisible(s)).toBe(true);
   Object.assign(sieg, { x: 230, y: 1264 });
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < ticksFor(0.4); i++) {
     input(sieg, { moveX: 1, pushHeld: true });
     ticks();
   }
@@ -114,7 +115,7 @@ it("blocks Coco at her gate until her moving target is shot, even with the rock 
   const { coco, s, input, ticks } = fixture();
   Object.assign(s.boulder, P.plateA);
   Object.assign(coco, { x: 672, y: 1160 });
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < ticksFor(1); i++) {
     input(coco, { moveY: -1 });
     ticks();
   }
@@ -125,10 +126,10 @@ it("blocks Coco at her gate until her moving target is shot, even with the rock 
   input(coco, { primaryHeld: true });
   ticks();
   input(coco, {});
-  ticks(15);
+  ticks(ticksFor(0.5));
   expect(s.targetHit).toBe(true);
   expect(s.firstGateOpen).toBe(true);
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < ticksFor(1); i++) {
     input(coco, { moveY: -1 });
     ticks();
   }
@@ -178,7 +179,7 @@ it("never moves the boulder without nearby Sieg pushing intent", () => {
   const start = { ...s.boulder };
   input(sieg, { moveY: -1 });
   input(coco, { moveY: -1, pushHeld: true });
-  ticks(30);
+  ticks(ticksFor(1));
   expect(s.boulder).toEqual(start);
   Object.assign(sieg, { x: 288, y: 1408 });
   input(sieg, { moveY: -1, pushHeld: true });
@@ -189,7 +190,7 @@ it("keeps both characters on stone paths and blocks the surrounding grass", () =
   const { sieg, coco, input, ticks } = fixture();
   Object.assign(sieg, { x: 216, y: 600 });
   Object.assign(coco, { x: 744, y: 600 });
-  for (let n = 0; n < 30; n++) {
+  for (let n = 0; n < ticksFor(1); n++) {
     input(sieg, { moveX: -1 });
     input(coco, { moveX: 1 });
     ticks();
@@ -198,7 +199,7 @@ it("keeps both characters on stone paths and blocks the surrounding grass", () =
   expect(coco.x).toBeLessThanOrEqual(768);
   Object.assign(sieg, { x: 288, y: 1440 });
   Object.assign(coco, { x: 672, y: 1440 });
-  for (let n = 0; n < 30; n++) {
+  for (let n = 0; n < ticksFor(1); n++) {
     input(sieg, { moveY: 1 });
     input(coco, { moveY: 1 });
     ticks();
@@ -208,10 +209,10 @@ it("keeps both characters on stone paths and blocks the surrounding grass", () =
 });
 it("Super Speed doubles physical pushing normally and restores normal pushing during Slow Time", () => {
   for (const [slow, boost, expected] of [
-    [false, false, 190 / 30],
-    [false, true, 380 / 30],
-    [true, false, 38 / 30],
-    [true, true, 190 / 30],
+    [false, false, 190 * DT],
+    [false, true, 380 * DT],
+    [true, false, 38 * DT],
+    [true, true, 190 * DT],
   ] as const) {
     const { r, s, sieg, coco, input, ticks } = fixture();
     Object.assign(sieg, { x: 288, y: 1448 });
@@ -235,7 +236,7 @@ it("pushes the SAME boulder safely through all three traps using both abilities"
   r.unlock(sieg.id, "dash");
   r.unlock(coco.id, "slow_time");
   input(coco, { slowTimeHeld: true });
-  for (let n = 0; n < 61; n++) {
+  for (let n = 0; n < ticksFor(2.033); n++) {
     input(sieg, { moveY: -1, pushHeld: true, sprintHeld: n === 0 });
     ticks();
   }
@@ -251,7 +252,7 @@ it("sweeps fast pushes against stone walls and closed gates without clipping", (
   s.boulder.x = 360;
   s.boulder.y = 1312;
   Object.assign(sieg, { x: 320, y: 1312 });
-  for (let n = 0; n < 15; n++) {
+  for (let n = 0; n < ticksFor(0.5); n++) {
     input(sieg, { moveX: 1, pushHeld: true, sprintHeld: n === 0 });
     ticks();
   }
@@ -259,7 +260,7 @@ it("sweeps fast pushes against stone walls and closed gates without clipping", (
   s.boulder.x = 288;
   s.boulder.y = 1144;
   Object.assign(sieg, { x: 288, y: 1184 });
-  for (let n = 0; n < 15; n++) {
+  for (let n = 0; n < ticksFor(0.5); n++) {
     input(sieg, { moveY: -1, pushHeld: true });
     ticks();
   }
@@ -314,7 +315,7 @@ it("allows Coco to reach the center firing pad, but never bypass onto Sieg's ban
   s.stage = 3;
   Object.assign(s.boulder, P.plateB);
   Object.assign(coco, { x: 640, y: 832 });
-  for (let n = 0; n < 30; n++) {
+  for (let n = 0; n < ticksFor(1); n++) {
     input(coco, { moveX: -1 });
     ticks();
   }
@@ -349,13 +350,13 @@ it("the actual long-range spell opens both final gates and both final switches a
   input(coco, { primaryHeld: true });
   ticks();
   input(coco, {});
-  ticks(65);
+  ticks(ticksFor(2.167));
   expect(s.finalTargetHit).toBe(true);
   Object.assign(sieg, P.switchWest);
-  ticks(30);
+  ticks(ticksFor(1));
   expect(s.complete).toBe(false);
   Object.assign(coco, P.switchEast);
-  ticks(23);
+  ticks(ticksFor(0.767));
   expect(s.complete).toBe(true);
   expect(bridgeRects).toHaveLength(2);
   expect(P.firePad.y - P.target.y).toBe(416);
@@ -434,7 +435,7 @@ it("two real clients receive identical boulder movement and weight-plus-shot unl
     clients.forEach((c) => c.disconnect());
     await app.close();
   }
-});
+}, 15000);
 
 it("an occupancy collapse retries only the bridge, and final success permanently removes collapse conditions", () => {
   const { r, s, sieg, coco, ticks } = fixture();
@@ -463,7 +464,7 @@ it("an occupancy collapse retries only the bridge, and final success permanently
 it("cannot strand the boulder past the first plate before Coco unlocks gate 1", () => {
   const { s, sieg, input, ticks } = fixture();
   Object.assign(sieg, { x: 288, y: 1448 });
-  for (let n = 0; n < 50; n++) {
+  for (let n = 0; n < ticksFor(1.667); n++) {
     input(sieg, { moveY: -1, pushHeld: true });
     ticks();
   }

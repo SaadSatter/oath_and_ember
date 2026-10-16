@@ -1,0 +1,57 @@
+{
+  "group_id": "b35e5a33-2d19-4b0f-9837-db7c091196ce",
+  "states": [
+    {
+      "character": {
+        "id": "65c1b7d3-b84b-4ca3-88fa-e110071d6a63",
+        "name": "Holding shears to hi",
+        "prompt": "A standing Griffin bipedal ",
+        "size": {
+          "width": 128,
+          "height": 128
+        },
+        "template_id": "mannequin",
+        "directions": 4,
+        "view": "high top-down",
+        "created_at": "2026-10-16T17:32:24.516688+00:00"
+      },
+      "folder": "Holding_shears_to_hi",
+      "frames": {
+        "rotations": {
+          "south": "Holding_shears_to_hi/rotations/south.png",
+          "west": "Holding_shears_to_hi/rotations/west.png",
+          "east": "Holding_shears_to_hi/rotations/east.png",
+          "north": "Holding_shears_to_hi/rotations/north.png"
+        },
+        "animations": {
+          "The_character_raises_their_right_hand_holding_scis": {
+            "north": [
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/north/frame_000.png",
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/north/frame_001.png",
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/north/frame_002.png",
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/north/frame_003.png",
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/north/frame_004.png",
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/north/frame_005.png",
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/north/frame_006.png",
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/north/frame_007.png",
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/north/frame_008.png"
+            ],
+            "south": [
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/south/frame_000.png",
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/south/frame_001.png",
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/south/frame_002.png",
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/south/frame_003.png",
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/south/frame_004.png",
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/south/frame_005.png",
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/south/frame_006.png",
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/south/frame_007.png",
+              "Holding_shears_to_hi/animations/The_character_raises_their_right_hand_holding_scis/south/frame_008.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-16T18:25:58.563684"
+}

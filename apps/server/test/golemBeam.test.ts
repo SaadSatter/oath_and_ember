@@ -7,6 +7,7 @@ import {
   enemyDefinitions,
 } from "../../../packages/shared/src/enemies.js";
 import type { Projectile } from "../../../packages/shared/src/gameTypes.js";
+import { ticksFor } from "../../../packages/shared/src/constants.js";
 function setup() {
   const r = new GameRoom("ABC234", false, "FOREST_RUINS"),
     a = r.add("a"),
@@ -62,7 +63,7 @@ it("charges, locks its palm aim, and holds a continuous beam without duplicating
   tickEnemies(g.w, () => {});
   const facing = g.e.attackFacing;
   Object.assign(g.s, { x: 700, y: 600 });
-  for (let n = 0; n < 35; n++) {
+  for (let n = 0; n < enemyDefinitions.ironbound_sentinel.windupTicks - 1; n++) {
     g.w.serverTick++;
     tickEnemies(g.w, () => {});
   }
@@ -73,7 +74,7 @@ it("charges, locks its palm aim, and holds a continuous beam without duplicating
   expect(q.effect).toBe("golem_beam");
   expect(q.beamOrigin).toEqual({ x: 768, y: 405 });
   expect(g.e.attackFacing).toBe(facing);
-  for (let n = 0; n < 20; n++) {
+  for (let n = 0; n < ticksFor(0.667); n++) {
     g.w.serverTick++;
     tickEnemies(g.w, () => {});
     shotTick(g, q);
@@ -95,7 +96,7 @@ it("ends at first contact and applies its two-tile area damage only once per her
   expect(g.w.projectiles[q.id]).toBeDefined();
   expect(q.beamContact).toBe(`player:${g.s.id}`);
   expect(g.w.projectileImpacts).toHaveLength(1);
-  for (let n = 0; n < 20; n++) shotTick(g, q);
+  for (let n = 0; n < ticksFor(0.667); n++) shotTick(g, q);
   expect(g.s.hp).toBe(72);
   expect(g.c.hp).toBe(72);
   expect(g.w.projectileImpacts).toHaveLength(1);
@@ -130,8 +131,8 @@ it("clips its continuous ray against walls and prevents blast damage through the
 });
 it("Slow Time scales the charge and continuous duration while the palm remains attached", () => {
   const g = setup();
-  g.w.slowTime = { owner: g.c.id, startedTick: 0, endsTick: 300 };
-  for (let n = 0; n < 36; n++) {
+  g.w.slowTime = { owner: g.c.id, startedTick: 0, endsTick: ticksFor(10) };
+  for (let n = 0; n < ticksFor(1.2); n++) {
     g.w.serverTick++;
     tickEnemies(g.w, () => {});
   }
@@ -243,7 +244,7 @@ it("synchronizes the charged beam, impact position and area damage to both real 
     clients.forEach((c) => c.disconnect());
     await app.close();
   }
-});
+}, 15000);
 
 it("interrupts an active continuous beam for a fresh close-range melee attack", () => {
   const g = setup(),

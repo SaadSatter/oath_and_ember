@@ -1,3 +1,4 @@
+import { ticksFor } from "../../../packages/shared/src/constants.js";
 import { it, expect } from "vitest";
 import { GameRoom } from "../src/GameRoom.js";
 import { collisionRects } from "../../../packages/shared/src/maps.js";
@@ -103,12 +104,12 @@ it("walks both heroes from the maze spawn through all puzzle trials using author
   move(c, { x: 16.5 * 32, y: 34.5 * 32 });
   tick(c, { moveX: 1 });
   tick(c, { primaryHeld: true });
-  for (let n = 0; n < 90 && !maze.burned; n++) tick();
+  for (let n = 0; n < ticksFor(3) && !maze.burned; n++) tick();
   expect(maze.burned).toBe(true);
   move(c, { x: 20.5 * 32, y: 25.5 * 32 });
   tick(c, { moveX: 1 });
   tick(c, { blackHoleHeld: true });
-  for (let n = 0; n < 150 && !maze.cow.parked; n++) tick();
+  for (let n = 0; n < ticksFor(5) && !maze.cow.parked; n++) tick();
   expect(maze.cow.parked).toBe(true);
   move(s, { x: 27.5 * 32, y: 15.5 * 32 });
   move(c, { x: 32.5 * 32, y: 18.5 * 32 });
@@ -117,7 +118,7 @@ it("walks both heroes from the maze spawn through all puzzle trials using author
   expect(w.slowTime).toBeDefined();
   expect(s.sprintRemaining).toBeGreaterThan(0);
   let route: { x: number; y: number }[] = [];
-  for (let n = 0; n < 295 && !maze.runner.caught; n++) {
+  for (let n = 0; n < ticksFor(9.833) && !maze.runner.caught; n++) {
     if (Math.hypot(s.x - maze.runner.x, s.y - maze.runner.y) <= 40) {
       r.useItem(s.id, {
         requestId: "walkthrough-tag",
@@ -153,4 +154,4 @@ it("walks both heroes from the maze spawn through all puzzle trials using author
   expect(w.inventory!.counts.enchanted_shears).toBe(1);
   move(c, { x: 4.5 * 32, y: 34.5 * 32 });
   expect(w.inventory!.counts.enchanted_shears).toBe(1);
-}, 20000);
+}, 45000);

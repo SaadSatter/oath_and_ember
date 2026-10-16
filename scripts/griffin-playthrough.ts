@@ -17,6 +17,7 @@ import { io } from "socket.io-client";
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import assert from "node:assert/strict";
+import { ticksFor } from "../packages/shared/src/constants.js";
 const folder = resolve("docs/quests/bald-goddess/recording-griffin");
 await mkdir(folder, { recursive: true });
 type Step = {
@@ -84,7 +85,7 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
       }),
     );
     steps.push({ chapter });
-    for (let i = 0; i < 15; i++) tick();
+    for (let i = 0; i < ticksFor(0.5); i++) tick();
   }
   function move(p: Player, goal: { x: number; y: number }, limit = 1200) {
     let route: { x: number; y: number }[] = [];
@@ -177,7 +178,7 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
   let pulled = false;
   for (let attempt = 0; attempt < 4 && !pulled; attempt++) {
     let ready = false;
-    for (let n = 0; n < 1200; n++) {
+    for (let n = 0; n < ticksFor(40); n++) {
       const targetX = g.x - 192;
       if (
         Math.abs(c.x - targetX) < 16 &&
@@ -197,14 +198,14 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
     assert(ready, `No cast window: ${g.x},${g.phase},${c.x},${c.y}`);
     tick(c, { moveX: 1 });
     tick(c, { blackHoleHeld: true });
-    for (let n = 0; n < 220; n++) {
+    for (let n = 0; n < ticksFor(7.333); n++) {
       tick();
       if (g.grounded > 0) pulled = true;
     }
   }
   assert(pulled, "Could not pull Griffin ashore");
   mark("3 · Black Hole drags it ashore — Sieg baits a headbutt into a pillar");
-  for (let n = 0; n < 600 && !g.pillars.some(Boolean); n++) {
+  for (let n = 0; n < ticksFor(20) && !g.pillars.some(Boolean); n++) {
     if (g.phase === "HEADBUTT_CHARGE") tick(s, { moveX: 1 });
     else tick();
   }
@@ -216,8 +217,9 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
   move(c, { x: 640, y: 144 });
   mark("5 · Coco reaches the nest — offer the Vanity Mirror");
   item(1, GRIFFIN_NEST, "vanity_mirror");
-  mark("6 · The Griffin is distracted — use the Enchanted Shears");
+  mark("6 · Drop the Enchanted Shears — the Griffin checks and trims its hair");
   item(1, GRIFFIN_NEST, "enchanted_shears");
+  for (let n = 0; n < ticksFor(60) && !g.wigClaimed; n++) tick();
   assert.equal(w.inventory!.counts.griffin_wig, 1);
   mark("7 · Magnificent Griffin Wig in the shared backpack — return south");
   move(c, { x: 640, y: 1088 });
@@ -228,7 +230,7 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
   item(1, SHRINE_OFFERING, "griffin_wig");
   assert(shrineComplete(w));
   mark("9 · Quest complete — the goddess has divine volume");
-  for (let n = 0; n < 90; n++) tick();
+  for (let n = 0; n < ticksFor(3); n++) tick();
   return steps;
 }
 if (process.argv.includes("--plan-only")) {
@@ -369,7 +371,7 @@ try {
       advance();
       frame++;
     }
-    if (frame % 2 === 0) {
+    if (frame % ticksFor(1 / 15) === 0) {
       app.io.to(room.state.roomCode).emit("game:snapshot", room.state);
       due += 1000 / 30;
       await new Promise<void>((r) =>

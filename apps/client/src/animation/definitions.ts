@@ -42,6 +42,9 @@ export interface HeroAsset {
   frameHeight: number;
   clips: Record<MovementMode, Partial<Record<AnimationState, Clip>>>;
 }
+// 8fps made each stride cover far more ground than the feet travel at SPEED,
+// so heroes appeared to skate. Presentation only; movement is unchanged.
+export const WALK_FPS = 12;
 function directionalClips(walkFrames = 6): HeroAsset["clips"] {
   return {
     TOP_DOWN: {
@@ -57,7 +60,7 @@ function directionalClips(walkFrames = 6): HeroAsset["clips"] {
         ["walk_south", "walk_north", "walk_east", "walk_west"].map(
           (state, row) => [
             state,
-            { start: 4 + row * walkFrames, end: 3 + (row + 1) * walkFrames, fps: 8, repeat: -1 },
+            { start: 4 + row * walkFrames, end: 3 + (row + 1) * walkFrames, fps: WALK_FPS, repeat: -1 },
           ],
         ),
       ),

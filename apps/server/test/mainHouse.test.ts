@@ -61,3 +61,35 @@ it("shares house collision with prediction and leaves the exit reachable", () =>
   );
   expect(p.x).toBeGreaterThan(800);
 });
+it("offers a playtest shortcut from the starting map straight to the Goddess Shrine", () => {
+  const r = new GameRoom("HOU235"),
+    a = r.add("a"),
+    b = r.add("b");
+  r.select(a.playerId, "OATH");
+  r.select(b.playerId, "EMBER");
+  r.ready(a.playerId, true);
+  r.ready(b.playerId, true);
+  const p = r.state.players[a.playerId],
+    session = r.sessions.get(p.id)!;
+  const send = (input: object) => {
+    session.input = { ...neutral(session.input.seq + 1), ...input };
+    session.received = Date.now();
+    r.tick();
+  };
+  // Walk from spawn out of the yard and west to the sign with real movement.
+  const shrine = maps.MAIN_HOUSE.points.shrine;
+  for (const goal of [{ x: 480, y: 470 }, shrine]) {
+    for (let n = 0; n < 2000 && Math.hypot(p.x - goal.x, p.y - goal.y) > 4; n++)
+      send({
+        moveX: Math.abs(goal.x - p.x) > 2 ? Math.sign(goal.x - p.x) : 0,
+        moveY: Math.abs(goal.y - p.y) > 2 ? Math.sign(goal.y - p.y) : 0,
+      });
+    expect(Math.hypot(p.x - goal.x, p.y - goal.y)).toBeLessThanOrEqual(4);
+  }
+  expect(r.state.sceneId).toBe("MAIN_HOUSE");
+  send({ interactHeld: true });
+  expect(r.state.sceneId).toBe("GODDESS_SHRINE");
+  expect(r.state.players[b.playerId].sceneId ?? r.state.sceneId).toBe(
+    "GODDESS_SHRINE",
+  );
+});

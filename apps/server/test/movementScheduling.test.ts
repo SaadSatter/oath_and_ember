@@ -1,7 +1,7 @@
 import { expect, it, vi } from "vitest";
 import { GameRoom } from "../src/GameRoom.js";
 import { neutral } from "../../../packages/shared/src/gameTypes.js";
-import { DT } from "../../../packages/shared/src/constants.js";
+import { DT, ticksFor } from "../../../packages/shared/src/constants.js";
 import { maps } from "../../../packages/shared/src/maps.js";
 import {
   exteriorTrees,
@@ -34,10 +34,12 @@ it("does not retroactively expire scheduled movement when wall time stalls, then
       }),
     ).toBe(true);
     date.mockReturnValue(2000);
-    for (let tick = 1; tick <= 20; tick++) {
+    // Scheduled intent holds for a 250ms simulation lease past its target tick.
+    const leaseEnds = 6 + Math.ceil(0.25 / DT);
+    for (let tick = 1; tick <= leaseEnds + 6; tick++) {
       room.tick();
       expect(p.x).toBeCloseTo(
-        320 + Math.max(0, Math.min(tick, 14) - 5) * 190 * DT,
+        320 + Math.max(0, Math.min(tick, leaseEnds) - 5) * 190 * DT,
       );
     }
     expect(p.movementInput!.moveX).toBe(0);
@@ -178,7 +180,7 @@ it("validates bounded redundant intent packets over real sockets and publishes i
       sockets[n].emit("player:input", {
         frames: Array.from({ length: 6 }, (_, i) => ({
           ...neutral((n + 1) * 100 + i),
-          targetTick: start + 6 + i,
+          targetTick: start + ticksFor(0.2) + i,
           movementEpoch: epoch,
           moveX: 1,
         })),
@@ -199,7 +201,7 @@ it("validates bounded redundant intent packets over real sockets and publishes i
         frames: [
           {
             ...neutral(9997),
-            targetTick: start + 6,
+            targetTick: start + ticksFor(0.2),
             movementEpoch: epoch,
             moveX: -1,
             x: 99999,
@@ -225,4 +227,4 @@ it("validates bounded redundant intent packets over real sockets and publishes i
     sockets.forEach((s) => s.disconnect());
     await app.close();
   }
-});
+}, 15000);

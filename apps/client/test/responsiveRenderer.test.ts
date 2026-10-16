@@ -1,6 +1,9 @@
 import { afterEach, it, expect, vi } from "vitest";
 import type Phaser from "phaser";
-import { attachResponsiveRenderer } from "../src/rendering/ResponsiveRenderer.js";
+import {
+  attachResponsiveRenderer,
+  pixelZoom,
+} from "../src/rendering/ResponsiveRenderer.js";
 function harness() {
   let currentParent: ReturnType<typeof parent>;
   const frames = new Map<number, FrameRequestCallback>();
@@ -90,11 +93,11 @@ it("resizes one live presentation without reconnecting, resetting player or rest
   h.select(root);
   const cleanup = attachResponsiveRenderer(scene as unknown as Phaser.Scene);
   const identity = scene.player;
-  for (const [width, height, expected] of [
-    [1920, 1080, "640x360"],
-    [1440, 900, "607x379"],
-    [390, 844, "360x640"],
-    [844, 390, "640x360"],
+  for (const [width, height, expected, zoom] of [
+    [1920, 1080, "640x360", 3],
+    [1440, 900, "720x450", 2],
+    [390, 844, "390x693", 1],
+    [844, 390, "693x390", 1],
   ] as const) {
     root.size = { width, height };
     h.resize();
@@ -104,10 +107,12 @@ it("resizes one live presentation without reconnecting, resetting player or rest
     expect(scene.socket.disconnect).not.toHaveBeenCalled();
     expect(scene.anims.play).not.toHaveBeenCalled();
     expect(scene.events.emit).not.toHaveBeenCalled();
-    expect(scene.cameras.main.setZoom).toHaveBeenLastCalledWith(1);
+    // Art is enlarged by a whole-number camera zoom, never by CSS stretching.
+    expect(scene.cameras.main.setZoom).toHaveBeenLastCalledWith(zoom);
+    expect(pixelZoom(scene as unknown as Phaser.Scene)).toBe(zoom);
+    expect(scene.scale.zoom).toBe(1);
   }
-  // Orientation changes refresh the fitted scale; a no-op resize does not.
-  expect(scene.scale.setZoom).toHaveBeenLastCalledWith(390 / 360);
+  // Orientation changes refresh the canvas; a no-op resize does not.
   expect(scene.scale.setZoom).toHaveBeenCalledTimes(4);
   const refreshes = scene.scale.setZoom.mock.calls.length;
   h.resize();
@@ -126,15 +131,32 @@ it("maintains independent logical viewports for simultaneous clients sharing the
   h.select(mobile);
   const stopB = attachResponsiveRenderer(b as unknown as Phaser.Scene);
   expect(desktop.dataset.logicalSize).toBe("640x360");
-  expect(mobile.dataset.logicalSize).toBe("360x640");
+  expect(mobile.dataset.logicalSize).toBe("390x693");
   expect(a.player).toEqual(b.player);
-  expect(a.scale.zoom).toBe(3);
-  expect(b.scale.zoom).toBeCloseTo(390 / 360);
+  expect(pixelZoom(a as unknown as Phaser.Scene)).toBe(3);
+  expect(pixelZoom(b as unknown as Phaser.Scene)).toBe(1);
   mobile.size = { width: 844, height: 390 };
   h.resize();
-  expect(mobile.dataset.logicalSize).toBe("640x360");
+  expect(mobile.dataset.logicalSize).toBe("693x390");
   expect(desktop.dataset.displayScale).toBe("3");
   expect(a.player).toEqual(b.player);
   stopA();
   stopB();
+});
+it("renders a high-DPI screen at device resolution without revealing more world", () => {
+  const h = harness(),
+    root = h.parent(1440, 900),
+    scene = h.scene();
+  h.select(root);
+  vi.stubGlobal("window", {
+    devicePixelRatio: 2,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  });
+  const stop = attachResponsiveRenderer(scene as unknown as Phaser.Scene);
+  expect(scene.scale.resize).toHaveBeenLastCalledWith(2880, 1800);
+  expect(scene.scale.setZoom).toHaveBeenLastCalledWith(0.5);
+  expect(scene.cameras.main.setZoom).toHaveBeenLastCalledWith(5);
+  expect(root.dataset.logicalSize).toBe("576x360");
+  stop();
 });

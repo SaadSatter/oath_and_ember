@@ -21,6 +21,7 @@ import { io } from "socket.io-client";
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import assert from "node:assert/strict";
+import { ticksFor, SPEED, DT } from "../packages/shared/src/constants.js";
 const folder = resolve("docs/quests/bald-goddess/recording-pond");
 await mkdir(folder, { recursive: true });
 type Step = {
@@ -51,7 +52,7 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
     const horizontal = !!station.incoming.x,
       key = horizontal ? "y" : "x",
       target = horizontal ? station.shot.y : station.shot.x;
-    const step = (190 / 30) * (w.slowTime ? 0.2 : 1);
+    const step = SPEED * DT * (w.slowTime ? 0.2 : 1);
     let best = { a: 0, b: 0, error: Infinity, cost: Infinity };
     for (let a = -8; a <= 8; a++)
       for (let b = -8; b <= 8; b++) {
@@ -83,7 +84,7 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
   function mark(chapter: string) {
     console.log(chapter, "tick", w.serverTick);
     steps.push({ chapter });
-    for (let n = 0; n < 15; n++) tick();
+    for (let n = 0; n < ticksFor(0.5); n++) tick();
   }
   function path(player: Player, goal: { x: number; y: number }) {
     const walls = collisionRects(
@@ -153,7 +154,7 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
   function go(p: Player, x: number, y: number) {
     for (const v of [...path(p, { x, y }), { x, y }]) {
       let n = 0;
-      while (Math.hypot(p.x - v.x, p.y - v.y) > 4.3 && n++ < 180) {
+      while (Math.hypot(p.x - v.x, p.y - v.y) > 4.3 && n++ < ticksFor(6)) {
         const dx = v.x - p.x,
           dy = v.y - p.y;
         tick(p, {
@@ -161,7 +162,7 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
           moveY: Math.abs(dy) > 3 ? Math.sign(dy) : 0,
         });
       }
-      if (n >= 180)
+      if (n >= ticksFor(6))
         throw Error(`Blocked ${p.role} ${p.x},${p.y} -> ${v.x},${v.y}`);
     }
   }
@@ -180,7 +181,7 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
     while (Math.abs(Math.sin(pond.clock * 3.2)) < 0.85) tick();
     tick(c, { slowTimeHeld: true });
     tick(s, { sprintHeld: true });
-    for (let n = 0; n < 45 && s.x > 36.5 * 32; n++) tick(s, { moveX: -1 });
+    for (let n = 0; n < ticksFor(1.5) && s.x > 36.5 * 32; n++) tick(s, { moveX: -1 });
     crossed = s.x < 37 * 32;
   }
   assert(crossed);
@@ -221,9 +222,9 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
     align(c, p);
     tick(c, { moveX: p.incoming.x, moveY: p.incoming.y });
     tick(c, { primaryHeld: true });
-    for (let n = 0; n < 750 && !pond.torches[i]; n++) tick();
+    for (let n = 0; n < ticksFor(25) && !pond.torches[i]; n++) tick();
     assert(pond.torches[i], `Torch ${i + 1}`);
-    for (let n = 0; n < 25; n++) tick();
+    for (let n = 0; n < ticksFor(0.833); n++) tick();
     for (let n = 0; Math.abs(pond.mirrors[i] - p.rest) > 1e-7 && n < 241; n++)
       tick(s, { pushHeld: true });
     tick();
@@ -242,7 +243,7 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
   steps.push({ use: { actor: 1, targetId: POND_CHEST_TARGET } });
   tick();
   assert.equal(w.inventory!.counts.vanity_mirror, 1);
-  for (let n = 0; n < 90; n++) tick();
+  for (let n = 0; n < ticksFor(3); n++) tick();
   return steps;
 }
 if (process.argv.includes("--plan-only")) {
@@ -380,7 +381,7 @@ try {
       advance();
       frame++;
     }
-    if (frame % 2 === 0) {
+    if (frame % ticksFor(1 / 15) === 0) {
       app.io.to(room.state.roomCode).emit("game:snapshot", room.state);
       due += 1000 / 30;
       await new Promise<void>((r) =>

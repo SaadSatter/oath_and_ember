@@ -4,24 +4,27 @@ Responsiveness is exclusively client presentation. No screen size, device pixel 
 
 ## Logical viewport and display scaling
 
-`src/rendering/viewport.ts` defines a target area of **230,400 logical pixels**, equivalent to **640 × 360**. The viewport follows the device aspect ratio within **9:16 through 16:9**, keeping approximately equal visible world area. Landscape normally uses 640 × 360; portrait uses 360 × 640. Dimensions are rounded to whole logical pixels, with a negligible area difference for intermediate ratios. Neither axis exceeds 640 world units. Ultrawide and especially tall devices show letterboxing rather than exceeding these bounds. Different orientations reveal differently shaped areas, not an increasing total world budget.
+`src/rendering/viewport.ts` targets **230,400 world units of visible area**, equivalent to **640 × 360**. The fitted box follows the device aspect ratio within **9:16 through 16:9**. Ultrawide and especially tall devices are letterboxed rather than revealing more world.
 
-The Phaser Scale Manager uses `NONE` with explicit logical `resize()` and uniform display `setZoom()`. This Scale Manager zoom enlarges the canvas in CSS; it is separate from camera zoom. The camera stays at **1 logical pixel per world unit**. A ResizeObserver plus window/orientation/visual-viewport listeners coalesces updates using requestAnimationFrame. Only a change in logical dimensions resizes the renderer; display-only changes preserve its internal dimensions. Resize updates the existing camera viewport, never restarts scenes or creates a new game/socket.
+The canvas is rendered at **device resolution**: one canvas pixel is one physical pixel (the Scale Manager's CSS zoom is `1 / devicePixelRatio`). Art is enlarged by a **whole-number camera zoom** (`pixelZoom(scene)`), the integer closest to the ideal fit. Every art pixel is therefore the same size on screen, which removes the shimmer that fractional CSS stretching caused while scrolling. Because sprites and camera are snapped to physical pixels rather than whole art pixels, motion advances in sub-art-pixel steps.
 
-Display enlargement uses the largest integer scale that fits. Examples:
+A whole-number zoom cannot hit the target area exactly. The visible footprint may exceed the target by at most `MAX_REVEAL` (1.2×) per axis; beyond that the next zoom step is used, which shows somewhat less. Examples (CSS size @ device pixel ratio):
 
-| Screen      | Logical viewport | CSS enlargement | Rendered world canvas |
-| ----------- | ---------------- | --------------- | --------------------- |
-| 1920 × 1080 | 640 × 360        | 3×              | 1920 × 1080           |
-| 1440 × 900  | 607 × 379        | 2×              | 1214 × 758            |
-| 390 × 844   | 360 × 640        | 1×              | 360 × 640             |
-| 844 × 390   | 640 × 360        | 1×              | 640 × 360             |
-| 3840 × 2160 | 640 × 360        | 6×              | 3840 × 2160           |
-| 5120 × 1440 | 640 × 360        | 4×              | 2560 × 1440           |
+| Screen          | Camera zoom | Visible world |
+| --------------- | ----------- | ------------- |
+| 1920 × 1080 @1  | 3×          | 640 × 360     |
+| 1440 × 900 @1   | 2×          | 720 × 450     |
+| 1440 × 900 @2   | 5×          | 576 × 360     |
+| 390 × 844 @1    | 1×          | 390 × 693     |
+| 844 × 390 @1    | 1×          | 693 × 390     |
 
-The canvas is centered in the remaining screen area. Letterboxing intentionally trades some screen usage for crisp pixels and bounded visibility. When a window is smaller than its logical viewport, uniform fractional reduction with nearest-neighbor filtering keeps the whole image visible. Fractional operating-system/browser zoom or device pixel ratios may still produce uneven physical pixel spacing; the code never stretches one axis independently to compensate.
+A ResizeObserver plus window/orientation/visual-viewport and device-pixel-ratio listeners coalesce updates using requestAnimationFrame. Resize updates the existing camera viewport and zoom; it never restarts scenes or creates a new game/socket.
 
-Phaser `pixelArt` and `roundPixels` are enabled, and CSS uses `image-rendering: pixelated`. Camera transforms round rendered pixels. No per-device changes are made to PlayerView asset scale or collision dimensions. Viewport sizing needs no DPR multiplier: high-DPI screens do not reveal more world or inflate GPU buffers.
+Phaser `pixelArt` and `roundPixels` are enabled, and CSS uses `image-rendering: pixelated`. Phaser rounds vertices to physical pixels whenever the camera zoom is a whole number. Framed puzzle views that zoom out multiply the base zoom by a fraction; rounding is then skipped by Phaser for those frames. No per-device changes are made to PlayerView asset scale or collision dimensions.
+
+## Camera follow
+
+The camera trails the hero with a time-constant ease (`followCamera`, 0.15 per 60Hz frame, equivalent at any refresh rate) rather than locking to the hero every frame, so small per-frame unevenness in motion is absorbed instead of moving the whole screen. Jumps beyond 240 world units (teleports, respawns, scene changes) are taken at once. Framed areas still blend in and out on top of the eased position.
 
 ## Screen-space UI
 
@@ -33,7 +36,7 @@ Touch controls appear only for a coarse-pointer device during active gameplay, d
 
 Phaser animations retain their FPS/time-based playback through camera and canvas size changes. PlayerView chooses clips from player movement/action state; it does not receive screen size or restart a clip on resize. Hurt flashes use scene time. Rendered-player/camera smoothing now uses a delta-time convergence factor equivalent to the former 0.3 per frame at 60Hz. It has equivalent convergence at 120Hz and variable refresh rates.
 
-The client input sampler remains 30Hz, and server simulation/snapshot frequencies are unchanged. Resize callbacks do not send input, reset prediction, change player positions, clear animations, reset puzzles, or reconnect sockets.
+The client advances its input sampler with the 60Hz simulation clock. Resize callbacks do not send input, reset prediction, change player positions, clear animations, reset puzzles, or reconnect sockets.
 
 ## Authoring future assets
 
@@ -43,7 +46,7 @@ The sprite-sheet grid and semantic animations remain as documented in `SPRITE_AS
 
 ## Verification
 
-Automated layout tests cover 1920×1080, 1440×900, 390×844, 844×390, 4K, ultrawide and tiny windows, checking uniform scaling, containment and bounded visible world area. Tests also compare 60Hz and 120Hz camera-smoothing convergence. Existing multiplayer and animation tests remain required.
+Automated layout tests cover 1920×1080, 1440×900, 390×844, 844×390, 4K, ultrawide and tiny windows at 1×, 2× and 3× device pixel ratios, checking whole-number zoom, containment and bounded visible world area. Tests also compare 60Hz and 120Hz camera-smoothing and camera-follow convergence. Existing multiplayer and animation tests remain required.
 
 Manual browser QA should resize a connected playing client at all four required sizes, verify the same hero/session and world position persist, test sprite/geometric F4 toggling, inspect portrait/landscape touch controls and scrollable skills, and keep a second differently sized client in the same room. Device safe-area behavior and physical touch feel require real-device testing beyond desktop emulation.
 

@@ -1,0 +1,68 @@
+{
+  "group_id": "b35e5a33-2d19-4b0f-9837-db7c091196ce",
+  "states": [
+    {
+      "character": {
+        "id": "71504255-c51c-4421-9616-99278717544f",
+        "name": "Pretending to check",
+        "prompt": "A standing Griffin bipedal ",
+        "size": {
+          "width": 128,
+          "height": 128
+        },
+        "template_id": "mannequin",
+        "directions": 4,
+        "view": "high top-down",
+        "created_at": "2026-10-16T17:24:06.438100+00:00"
+      },
+      "folder": "Pretending_to_check",
+      "frames": {
+        "rotations": {
+          "south": "Pretending_to_check/rotations/south.png",
+          "west": "Pretending_to_check/rotations/west.png",
+          "east": "Pretending_to_check/rotations/east.png",
+          "north": "Pretending_to_check/rotations/north.png"
+        },
+        "animations": {
+          "The_character_raises_the_hedge_cutters_to_the_scal": {
+            "south": [
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/south/frame_000.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/south/frame_001.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/south/frame_002.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/south/frame_003.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/south/frame_004.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/south/frame_005.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/south/frame_006.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/south/frame_007.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/south/frame_008.png"
+            ],
+            "east": [
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/east/frame_000.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/east/frame_001.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/east/frame_002.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/east/frame_003.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/east/frame_004.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/east/frame_005.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/east/frame_006.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/east/frame_007.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/east/frame_008.png"
+            ],
+            "north": [
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/north/frame_000.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/north/frame_001.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/north/frame_002.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/north/frame_003.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/north/frame_004.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/north/frame_005.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/north/frame_006.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/north/frame_007.png",
+              "Pretending_to_check/animations/The_character_raises_the_hedge_cutters_to_the_scal/north/frame_008.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-16T18:26:11.808384"
+}
