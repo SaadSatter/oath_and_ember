@@ -35,7 +35,10 @@ export interface GriffinState {
   lastSiegY: number;
   mirrorDelivered: boolean;
   shearsDelivered?: boolean;
-  groomingStage?: "RETURN" | "STAND" | "SOUTH" | "NORTH" | "CUT" | "DONE";
+  groomingStage?:
+    "RETURN" | "STAND" | "SOUTH" | "NORTH" | "CUT" | "DEPART" | "DONE";
+  toolsTaken?: boolean;
+  wigDropped?: boolean;
   wigClaimed: boolean;
 }
 export const griffinNest = { x: 640, y: 112 };
@@ -44,6 +47,7 @@ export const griffinGroomDurations = {
   SOUTH: 2.7,
   NORTH: 2.7,
   CUT: 0.9,
+  DEPART: 2,
 } as const;
 export const griffinWakeDuration = 1;
 export const griffinSightRadius = 480; // Fifteen tiles; server-owned encounter detection.
@@ -112,7 +116,7 @@ export const griffinPuzzle = (): Puzzle => ({
 });
 export const griffinAirborne = (g: GriffinState) =>
   g.phase === "GROOMING"
-    ? g.groomingStage === "RETURN"
+    ? g.groomingStage === "RETURN" || g.groomingStage === "DEPART"
     : g.grounded <= 0 &&
       !["NEST", "WAKING", "STUNNED", "DEFEATED", "DISTRACTED"].includes(
         g.phase,

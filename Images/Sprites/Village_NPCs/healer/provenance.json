@@ -1,0 +1,23 @@
+{
+  "pixellabCharacterId": "53aeccfd-6b40-4c0a-98ee-1fbf4c6c1847",
+  "pixellabName": "Shop Owner for health",
+  "downloaded": "2026-10-16",
+  "files": [
+    {
+      "path": "rotations/south.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/53aeccfd-6b40-4c0a-98ee-1fbf4c6c1847/rotations/south.png"
+    },
+    {
+      "path": "rotations/east.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/53aeccfd-6b40-4c0a-98ee-1fbf4c6c1847/rotations/east.png"
+    },
+    {
+      "path": "rotations/north.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/53aeccfd-6b40-4c0a-98ee-1fbf4c6c1847/rotations/north.png"
+    },
+    {
+      "path": "rotations/west.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/53aeccfd-6b40-4c0a-98ee-1fbf4c6c1847/rotations/west.png"
+    }
+  ]
+}

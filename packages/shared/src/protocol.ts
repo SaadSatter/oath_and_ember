@@ -16,6 +16,11 @@ export interface ClientEvents {
     ack: Ack<import("./items.js").ItemOutcome>,
   ) => void;
   "room:leave": (p: Record<string, never>, ack: Ack) => void;
+  /** Start or end a conversation; the server pauses the villager for all. */
+  "npc:talk": (
+    p: { npcId: string; talking: boolean },
+    ack: Ack<{ talking: boolean }>,
+  ) => void;
   "room:create": (p: Record<string, never>, ack: Ack<Session>) => void;
   "room:join": (p: { roomCode: string }, ack: Ack<Session>) => void;
   "session:resume": (p: Session, ack: Ack<Session>) => void;

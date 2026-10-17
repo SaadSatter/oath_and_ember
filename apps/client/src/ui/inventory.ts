@@ -18,7 +18,7 @@ export class InventoryPanel {
   constructor(
     private net: NetworkClient,
     private clearControls: () => void,
-    private tell: (s: string) => void,
+    private tell: (s: string, target?: InventoryTarget) => void,
   ) {
     this.button.id = "inventory-toggle";
     this.button.textContent = "Inventory (I)";
@@ -118,13 +118,15 @@ export class InventoryPanel {
           ? {}
           : {
               itemId:
-                this.selected ??
-                (target.kind === "gate" ? target.itemId : undefined),
+                target.id === "griffin-nest"
+                  ? undefined
+                  : (this.selected ??
+                    (target.kind === "gate" ? target.itemId : undefined)),
             }),
       })) as { message: string };
-      this.tell(result.message);
+      this.tell(result.message, target);
     } catch (e) {
-      this.tell((e as Error).message);
+      this.tell((e as Error).message, target);
     } finally {
       this.pending = false;
       this.key = "";

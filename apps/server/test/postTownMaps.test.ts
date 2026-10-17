@@ -1,3 +1,9 @@
+import { pushableDefinitions } from "../../../packages/shared/src/pushables.js";
+import {
+  gladeSolved,
+  gladeState,
+  gladeStatueSolid,
+} from "../../../packages/shared/src/statueGlade.js";
 import { ticksFor } from "../../../packages/shared/src/constants.js";
 import { expect, it } from "vitest";
 import { GameRoom } from "../src/GameRoom.js";
@@ -42,9 +48,26 @@ it("takes both players through all four exports with server-validated exits and 
     postTownRoute,
   ) as (keyof typeof postTownRoute)[]) {
     expect(r.state.sceneId).toBe(id);
-    const revision = r.state.worldRevision;
     interact(r, false);
     expect(r.state.sceneId).toBe(id);
+    if (id === "PUZZLE_GLADE") {
+      // Sealed until the weeping statue has her chair back.
+      interact(r, true);
+      expect(r.state.sceneId).toBe(id);
+      interact(r, false);
+      // Fixture: the thicket is gone and the chair is beside her; the
+      // server's own rule then seats her on the next tick.
+      gladeState(r.state.puzzles)!.bushesBurned = true;
+      const chair = pushableDefinitions.find((d) => d.id === "puzzle-chair")!;
+      r.state.pushableOffsets = {
+        [chair.id]: {
+          x: gladeStatueSolid.x + gladeStatueSolid.w + 4 - chair.rect.x,
+          y: gladeStatueSolid.y - chair.rect.y,
+        },
+      };
+      r.tick();
+      expect(gladeSolved(r.state.puzzles)).toBe(true);
+    }
     if (id === "MONSTER_CLEARING") {
       expect(Object.keys(r.state.enemies)).toHaveLength(3);
       interact(r, true);
@@ -55,6 +78,7 @@ it("takes both players through all four exports with server-validated exits and 
     const skillPoints = Object.values(r.state.players).map(
       (p) => p.skillPoints,
     );
+    const revision = r.state.worldRevision;
     interact(r, true);
     expect(r.state.sceneId).toBe(postTownRoute[id].next);
     expect(r.state.worldRevision).toBe(revision + 1);
@@ -161,6 +185,7 @@ it("returns the whole party through every campaign entrance using server-validat
   const r = room();
   const route = [
     "MAIN_HOUSE",
+    "EMBERBROOK_VILLAGE",
     "TRANSITION_TRAIL",
     "GRASSLANDS",
     "PUZZLE_GLADE",
@@ -282,5 +307,6 @@ it("rejects return intent away from the entrance and prevents held-key transitio
   r.tick();
   r.receiveInput(p.id, { ...neutral(held + 1), interactHeld: true });
   r.tick();
-  expect(r.state.sceneId).toBe("MAIN_HOUSE");
+  // The trail now returns to Emberbrook Village, which sits after the house.
+  expect(r.state.sceneId).toBe("EMBERBROOK_VILLAGE");
 });

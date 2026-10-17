@@ -1,0 +1,12 @@
+{
+  "errors": [],
+  "claims": [
+    "pond-vanity-mirror-chest",
+    "hedge-shears-chest"
+  ],
+  "counts": {
+    "vanity_mirror": 1,
+    "enchanted_shears": 1
+  },
+  "checks": "two observers; both chests; opening, rising reward, final open and rejoin screenshots"
+}

@@ -1,0 +1,40 @@
+{
+  "purpose": "Puzzle Glade: the weeping statue takes her seat; dry bushes around her chair",
+  "generated": "2026-10-16",
+  "tool": "PixelLab (user account)",
+  "start-composite.png": "Composite of the glade export's statue (object 0a8d12ff\u2026) and chair (object 0aca693b\u2026), unaltered pixels, side by side on a 160x128 canvas",
+  "seated.png": {
+    "pixellab": "edit_image_pro_flash",
+    "job": "33894ec1-cd9f-4365-8dd1-b614516a07a5",
+    "source": "start-composite.png",
+    "prompt": "The same grey stone angel statue, now sitting peacefully on the wooden chair, which stands on her round stone pedestal. Her wings are folded, her hands rest gently in her lap and her face is uncovered and calm."
+  },
+  "sit-frames/0-8.png": {
+    "pixellab": "animate_image (interpolation)",
+    "job": "66cc9043-0f4d-4f17-a7e3-0dfc646fb4ce",
+    "first_frame": "start-composite.png",
+    "last_frame": "seated.png",
+    "action": "the stone angel statue slowly lowers her hands from her face and sits down onto the wooden chair beside her"
+  },
+  "dry-bush.png": {
+    "pixellab": "create_map_object",
+    "object": "f7e99b67-6a3b-4961-a889-3a064f5f31ac",
+    "prompt": "a low clump of dry dead brambles on the ground, tangled brown thorny twigs and dry tan grass, wider than tall, no trunk, not a tree",
+    "note": "Two earlier attempts (a2818c22\u2026, 69e1fb4d\u2026) drew trees and were not used."
+  },
+  "note": "statue-sit.png now uses the chair-behind version (2026-10-17): in the first version she sat beside the chair with its seat sticking out. seated.png and sit-frames/ are kept as history.",
+  "behind-composite.png": "The glade statue with her chair centred behind her (unaltered pixels), the base for the seated edit",
+  "seated-chair-behind.png": {
+    "pixellab": "edit_image_pro_flash",
+    "job": "4fafb785-c559-475e-83bd-e8f32f7c272e",
+    "source": "behind-composite.png",
+    "prompt": "The same grey stone angel statue, now sitting down on the wooden chair that stands directly behind her on her round pedestal. She faces the viewer ... The chair is behind her: only its wooden backrest shows above and around her shoulders and wings, and the seat is hidden beneath her."
+  },
+  "sit-frames-chair-behind/0-8.png": {
+    "pixellab": "animate_image (interpolation)",
+    "job": "8b0daea1-4c95-420d-8184-d77b16c50cb4",
+    "first_frame": "start-composite.png",
+    "last_frame": "seated-chair-behind.png",
+    "action": "the stone angel statue lowers her hands from her face, the wooden chair beside her slides behind her, and she sits down on it facing forward"
+  }
+}

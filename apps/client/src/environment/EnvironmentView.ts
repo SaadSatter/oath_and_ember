@@ -1,3 +1,12 @@
+import { shoreFrame } from "./settlementShore.js";
+import { settlementBuildingFrames } from "./settlementBuildings.js";
+import { settlementTreeArt } from "./settlementTrees.js";
+import {
+  settlements,
+  isSettlementScene,
+  settlementPortals,
+  settlementWaterTiles,
+} from "../../../../packages/shared/src/settlements.js";
 import { pushableDefinitions } from "../../../../packages/shared/src/pushables.js";
 import type { World } from "../../../../packages/shared/src/gameTypes.js";
 import Phaser from "phaser";
@@ -7,6 +16,12 @@ import { ENVIRONMENT_SCALE } from "../../../../packages/shared/src/maps.js";
 import houseTrees from "../../public/assets/environment/main-house/trees.json" with { type: "json" };
 import postTownMaps from "./postTownMaps.json" with { type: "json" };
 import { isPostTownScene } from "../../../../packages/shared/src/maps.js";
+import {
+  isVillageInterior,
+  villageInteriorIds,
+} from "../../../../packages/shared/src/villageInteriors.js";
+import lpcFurniture from "./lpcVillageFurniture.json" with { type: "json" };
+const interiorMapKey = (id: string) => `village-interior:${id}`;
 const treeNames = [
   "Tree1",
   "Tree2",
@@ -37,6 +52,15 @@ const sheets = [
   "Interior",
 ];
 export function preloadEnvironment(scene: Phaser.Scene) {
+  scene.load.image(
+    "lpc:kenney",
+    "/assets/environment/kenney-indoors/indoors.png",
+  );
+  for (const name of ["interior", "house_inside"])
+    scene.load.image(
+      `lpc:${name}`,
+      `/assets/environment/lpc-interiors/${name}.png`,
+    );
   for (const [id, map] of Object.entries(postTownMaps)) {
     const base = `/assets/environment/post-town/${map.folder}`;
     map.textures.forEach((t, i) => {
@@ -60,6 +84,11 @@ export function preloadEnvironment(scene: Phaser.Scene) {
     "house-interior",
     "/assets/environment/main-house/interior-map.json",
   );
+  for (const id of villageInteriorIds)
+    scene.load.tilemapTiledJSON(
+      interiorMapKey(id),
+      `/assets/environment/village-interiors/${id.toLowerCase()}.json`,
+    );
   for (const name of sheets)
     scene.load.image(
       `house:${name}`,
@@ -70,6 +99,8 @@ export function preloadEnvironment(scene: Phaser.Scene) {
 }
 export class EnvironmentView {
   private objects: Phaser.GameObjects.GameObject[] = [];
+  /** Post-town map object images by their export index, for scene views. */
+  private postTownObjects = new Map<number, Phaser.GameObjects.Image>();
   private map: Phaser.Tilemaps.Tilemap | null = null;
   private pushableImages: {
     id: string;
@@ -91,6 +122,13 @@ export class EnvironmentView {
       ]),
     ])
       scene.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+  }
+  /** Show or hide one authored object of the current post-town map. */
+  setObjectVisible(index: number, visible: boolean) {
+    this.postTownObjects.get(index)?.setVisible(visible);
+    for (const p of this.pushableImages)
+      if (p.image === this.postTownObjects.get(index))
+        p.label.setVisible(visible);
   }
   updatePushables(offsets: World["pushableOffsets"]) {
     for (const object of this.pushableImages) {
@@ -125,6 +163,7 @@ export class EnvironmentView {
           .setOrigin(0)
           .setDepth(o.groundY - 13);
         this.objects.push(image);
+        this.postTownObjects.set(i, image);
         const definition = pushableDefinitions.find(
           (d) => d.scene === id && d.objectIndex === i,
         );
@@ -149,14 +188,73 @@ export class EnvironmentView {
         }
       });
     }
-    if (id === "MAIN_HOUSE" || id === "HOUSE_INTERIOR") {
+    if (
+      id === "MAIN_HOUSE" ||
+      id === "HOUSE_INTERIOR" ||
+      isVillageInterior(id)
+    ) {
       this.map = this.scene.make.tilemap({
-        key: id === "MAIN_HOUSE" ? "main-house" : "house-interior",
+        key:
+          id === "MAIN_HOUSE"
+            ? "main-house"
+            : id === "HOUSE_INTERIOR"
+              ? "house-interior"
+              : interiorMapKey(id),
       });
       const sets = this.map.tilesets.map((t) =>
         this.map!.addTilesetImage(t.name, `house:${t.name.split(":")[0]}`)!,
       );
       this.map.layers.forEach((l, i) => {
+        if (isVillageInterior(id)) {
+          const furniture = lpcFurniture[id].find((o) => o.layer === l.name);
+          if (furniture) {
+            const texture = this.scene.textures.get(`lpc:${furniture.sheet}`);
+            texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+            const frame = furniture.frame.join(":");
+            if (!texture.has(frame))
+              texture.add(
+                frame,
+                0,
+                ...(furniture.frame as [number, number, number, number]),
+              );
+            const image = this.scene.add
+              .image(furniture.x, furniture.y, texture.key, frame)
+              .setOrigin(0.5, 1)
+              .setScale(
+                Math.min(
+                  furniture.width / furniture.frame[2],
+                  furniture.height / furniture.frame[3],
+                ),
+              )
+              .setDepth(furniture.depth);
+            this.objects.push(image);
+            return;
+          }
+          if (l.name === "Floor") {
+            const texture = this.scene.textures.get("lpc:interior");
+            texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+            if (!texture.has("wood-floor"))
+              texture.add("wood-floor", 0, 0, 96, 32, 32);
+            const tiles = l.data.flat().filter((t) => t.index >= 0);
+            const left = Math.min(...tiles.map((t) => t.x)) * 32;
+            const top = Math.min(...tiles.map((t) => t.y)) * 32;
+            const right = (Math.max(...tiles.map((t) => t.x)) + 1) * 32;
+            const bottom = (Math.max(...tiles.map((t) => t.y)) + 1) * 32;
+            const floor = this.scene.add
+              .tileSprite(
+                left,
+                top,
+                right - left,
+                bottom - top,
+                texture.key,
+                "wood-floor",
+              )
+              .setOrigin(0)
+              .setDepth(-100);
+            this.objects.push(floor);
+            return;
+          }
+        }
         const layer = this.map!.createLayer(
           i,
           sets,
@@ -170,6 +268,120 @@ export class EnvironmentView {
       });
       if (id === "MAIN_HOUSE")
         houseTrees.forEach((p, i) => this.tree(p.x, p.y, i, 2));
+    }
+    if (isSettlementScene(id)) {
+      const town = settlements[id];
+      const floor = this.scene.add
+        .tileSprite(0, 0, town.width, town.height, "TRANSITION_TRAIL:terrain:1")
+        .setOrigin(0)
+        .setDepth(-110);
+      this.objects.push(floor);
+      for (const r of town.paths)
+        this.objects.push(
+          this.scene.add
+            .tileSprite(r.x, r.y, r.w, r.h, "pond:stone", 12)
+            .setOrigin(0)
+            .setDepth(-100),
+        );
+      for (const tile of settlementWaterTiles(id))
+        this.objects.push(
+          this.scene.add
+            .image(tile.x, tile.y, "pond:water", shoreFrame(tile.mask))
+            .setOrigin(0)
+            .setDepth(-95),
+        );
+      for (const b of town.buildings) {
+        const key = `EMBERBROOK_VILLAGE:object:${b.art}`;
+        const texture = this.scene.textures.get(key);
+        if (!texture.has("building")) {
+          const [x, y, w, h] = settlementBuildingFrames[b.art];
+          texture.add("building", 0, x, y, w, h);
+        }
+        const image = this.scene.add
+          .image(b.x, b.y, key, "building")
+          .setOrigin(0)
+          .setDisplaySize(b.w, b.h)
+          .setDepth(b.y + b.h - 13);
+        this.objects.push(image);
+        // Enterable homes already have an E label; avoid two labels occupying the same spot.
+        if (!("interior" in b)) {
+          const text = this.scene.add
+            .text(b.x + b.w / 2, b.y + b.h + 52, b.label, {
+              fontFamily: "monospace",
+              fontSize: "12px",
+              color: "#f0dfaf",
+              backgroundColor: "#17262ae8",
+              padding: { x: 5, y: 3 },
+            })
+            .setOrigin(0.5)
+            .setDepth(1800);
+          this.objects.push(text);
+        }
+      }
+      for (const [i, t] of town.trees.entries()) {
+        const art = settlementTreeArt(i);
+        this.objects.push(
+          this.scene.add
+            .image(t.x, t.y, art.texture)
+            .setOrigin(art.originX, art.originY)
+            .setDisplaySize(art.size, art.size)
+            .setDepth(t.y),
+        );
+      }
+      // The original village well anchors both plazas with a grounded sprite.
+      this.objects.push(
+        this.scene.add
+          .image(town.width / 2, 484, "EMBERBROOK_VILLAGE:object:0")
+          .setOrigin(0.5, 1)
+          .setDisplaySize(96, 88)
+          .setDepth(471),
+      );
+      const texture = this.scene.textures.get("lpc:kenney");
+      texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      if (!texture.has("bench")) texture.add("bench", 0, 51, 0, 33, 16);
+      for (const dx of [-110, 110])
+        this.objects.push(
+          this.scene.add
+            .image(town.width / 2 + dx, 464, texture.key, "bench")
+            .setScale(2)
+            .setDepth(450),
+        );
+    }
+    for (const portal of settlementPortals.filter((p) => p.from === id)) {
+      const { x, y } = portal.at;
+      const art = this.scene.add.graphics().setDepth(y - 13);
+      if (portal.stairs) {
+        art.fillStyle(0x352721).fillRect(x - 26, y - 30, 52, 60);
+        for (let step = 0; step < 6; step++) {
+          art
+            .fillStyle(0x9e7851 + step * 0x080808)
+            .fillRect(x - 22, y - 26 + step * 9, 44, 7);
+          art
+            .lineStyle(1, 0xe5c594)
+            .lineBetween(x - 22, y - 26 + step * 9, x + 22, y - 26 + step * 9);
+        }
+      } else if (
+        isVillageInterior(portal.to) ||
+        isVillageInterior(portal.from)
+      ) {
+        // Doormats stay below the house silhouette instead of a board covering it.
+        art.fillStyle(0xb99866).fillRect(x - 22, y + 4, 44, 12);
+      } else {
+        art.fillStyle(0x765334).fillRect(x - 3, y - 18, 6, 36);
+        art.fillStyle(0xc9a16b).fillRoundedRect(x - 24, y - 24, 48, 25, 3);
+      }
+      this.objects.push(art);
+      const label = this.scene.add
+        .text(x, y + 40, portal.label, {
+          fontFamily: "monospace",
+          fontSize: "11px",
+          color: "#fff0c4",
+          backgroundColor: "#17262ae8",
+          padding: { x: 4, y: 3 },
+        })
+        .setOrigin(0.5)
+        .setDepth(1900);
+      this.objects.push(label);
     }
     if (id === "FOREST_RUINS") {
       for (let n = 0; n < 50; n++) {
@@ -227,6 +439,7 @@ export class EnvironmentView {
   }
   clear() {
     this.pushableImages = [];
+    this.postTownObjects.clear();
     for (const o of this.objects) o.destroy();
     this.objects = [];
     this.map?.destroy();

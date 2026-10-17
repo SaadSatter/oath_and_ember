@@ -11,6 +11,7 @@ import {
   pondSpikeTiming,
   pondTrial,
   pondCulvertMouth,
+  pondCulvert,
   pondSpawn,
   pondMirrorWall,
   normalizeMirrorAngle,
@@ -364,6 +365,49 @@ describe("Mirror Pond authoritative mechanics", () => {
     expect(walk({ x: 38.5 * 32, y: 30.5 * 32 }, -1, 60)).toBeGreaterThan(
       28 * 32,
     );
+  });
+  it("blocks Sieg at both dry banks of the full water culvert, including while sprinting or dashing", () => {
+    for (const raised of [false, true])
+      for (const abilities of [false, true])
+        for (const approach of [
+          { x: 38 * 32, y: 32 * 32 + HALF, moveY: -1, edge: 32 * 32 + HALF },
+          { x: 35 * 32, y: 26 * 32 - HALF, moveY: 1, edge: 26 * 32 - HALF },
+        ]) {
+          const g = setup();
+          g.pond.raised = raised;
+          Object.assign(g.s, { x: approach.x, y: approach.y });
+          g.s.unlockedSkills = ["dash"];
+          const predicted = structuredClone(g.s);
+          const walls = collisionRects(
+            "MIRROR_POND",
+            g.w.puzzles,
+            undefined,
+            undefined,
+            {},
+            0,
+            "OATH",
+          );
+          for (let n = 0; n < ticksFor(1); n++) {
+            const input = {
+              ...neutral(n + 1),
+              moveY: approach.moveY,
+              sprintHeld: abilities,
+              secondaryHeld: abilities,
+            };
+            g.r.receiveInput(g.s.id, input);
+            g.r.tick();
+            stepMovement(predicted, input, maps.MIRROR_POND, walls, DT);
+          }
+          expect(g.s.y).toBe(approach.edge);
+          expect(predicted.y).toBe(g.s.y);
+          for (const r of pondCulvert)
+            expect(
+              g.s.x + HALF > r.x &&
+                g.s.x - HALF < r.x + r.w &&
+                g.s.y + HALF > r.y &&
+                g.s.y - HALF < r.y + r.h,
+            ).toBe(false);
+        }
   });
   it("bars the culvert mouth to walkers so the spike entrance is Sieg's only way in", () => {
     const g = setup();

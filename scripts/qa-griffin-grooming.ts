@@ -105,7 +105,7 @@ try {
     app.io.to(room.state.roomCode).emit("game:snapshot", room.state);
     await pages[0].waitForTimeout(300);
   }
-  for (const stage of ["STAND", "SOUTH", "NORTH", "CUT", "DONE"]) {
+  for (const stage of ["STAND", "SOUTH", "NORTH", "CUT", "DEPART", "DONE"]) {
     let n = 0;
     while (g.groomingStage !== stage && n++ < ticksFor(20)) advance();
     if (g.groomingStage !== stage) throw Error(`Missing stage ${stage}`);
@@ -119,6 +119,9 @@ try {
       path: `docs/quests/bald-goddess/qa/griffin-groom-${stage.toLowerCase()}.png`,
     });
   }
+  if (!g.wigDropped || g.wigClaimed) throw Error("Expected a dropped, unclaimed wig");
+  Object.assign(c, { x: 640, y: 112, movementEpoch: (c.movementEpoch ?? 0) + 1 });
+  room.useItem(c.id, { requestId: "qa-pickup-wig", targetId: GRIFFIN_NEST });
   if (room.state.inventory!.counts.griffin_wig !== 1)
     throw Error("Expected one shared wig");
   if (errors.length) throw Error(errors.join("\n"));

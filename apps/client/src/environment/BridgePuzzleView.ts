@@ -123,8 +123,9 @@ export class BridgePuzzleView {
         48,
         2,
       );
-      this.entryTarget = this.image("magic-target", 672, 1160, 40, 48);
-      this.image("magic-target", 480, 416, 48, 48);
+      // Targets hover in front of the gate so their full silhouettes stay visible.
+      this.entryTarget = this.image("magic-target", 672, 1160, 40, 48, 2);
+      this.image("magic-target", 480, 416, 48, 48, 2);
       for (const point of [P.goldSwitch, P.switchWest, P.switchEast])
         this.image("gold-switch", point.x, point.y, 48, 48);
       this.label("A · WEIGHT SOCKET", 288, 1210);
@@ -135,13 +136,13 @@ export class BridgePuzzleView {
       this.label("PUSH SAME BOULDER\n1 + movement", 288, 1370);
       this.label("SPIKE TRIAL START", 288, 1172);
       this.label(
-        "FRONT WEAK POINT ↓\nTHIRD BRIDGE REMOVED",
+        "HIT TARGET FROM THE FRONT ↓\nTHIRD BRIDGE REMOVED",
         480,
         364,
         "#d7b8ff",
       );
       this.label(
-        "FIRING PAD · SHOOT NORTH ↑",
+        "FIRING PLATFORM · AIM AT TARGET ↑",
         480,
         P.firePad.y + 44,
         "#d7b8ff",
@@ -297,10 +298,12 @@ export class BridgePuzzleView {
     g.lineStyle(3, 0xe6b45b, 0.75);
     g.lineBetween(192, 1344, 384, 1344);
     g.lineStyle(3, 0x91dfed, 0.9);
-    g.strokeRect(P.firePad.x - 20, P.firePad.y - 20, 40, 40);
-    g.fillStyle(0xffefab);
-    if (targetVisible) g.fillCircle(target.x, target.y + 20, 6);
-    g.fillCircle(480, 436, 7);
+    g.strokeRect(
+      bridgeRects[1].x,
+      bridgeRects[1].y,
+      bridgeRects[1].w,
+      bridgeRects[1].h,
+    );
     if (!s.complete) {
       g.fillStyle(0x42514d, 0.95);
       g.fillRect(448, 96, 64, 192);

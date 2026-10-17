@@ -58,7 +58,7 @@ export const newBridgePuzzle = (): BridgePuzzleState => ({
   complete: false,
   failures: 0,
   message:
-    "Sieg: push the boulder onto plate A. Coco: shoot the moving target's front weak point.",
+    "Sieg: push the boulder onto plate A. Coco: hit any part of the moving target from the front.",
 });
 export const inside = (p: { x: number; y: number }, r: Rect) =>
   p.x > r.x && p.x < r.x + r.w && p.y > r.y && p.y < r.y + r.h;
@@ -398,7 +398,7 @@ export function tickBridgePuzzle(w: World) {
   }
   if (s.goldSwitchOpen && !s.finalTargetHit && heavyOnPlate(s, "B"))
     s.message =
-      "Leave the boulder on golden plate B. Coco: stand on the bridge center pad and shoot the distant target's front.";
+      "Leave the boulder on golden plate B. Coco: stand on the bridge platform and shoot the distant target's front.";
   if (s.finalTargetHit) {
     s.stage = 4;
     s.message = s.complete
@@ -415,12 +415,7 @@ export function tickBridgePuzzle(w: World) {
   }
 }
 function frontShot(q: Projectile, target: { x: number; y: number }) {
-  return (
-    q.vy < 0 &&
-    Math.abs(q.vx) <= -q.vy * 0.35 &&
-    !!q.castOrigin &&
-    q.castOrigin.y > target.y + 24
-  );
+  return q.vy < 0 && !!q.castOrigin && q.castOrigin.y > target.y + 24;
 }
 export function hitBridgeEntryTarget(w: World, owner: string, q?: Projectile) {
   const s = w.bridgePuzzle,
@@ -452,8 +447,10 @@ export function hitBridgeLock(w: World, owner: string, q?: Projectile) {
     p?.role !== "EMBER" ||
     !q ||
     !q.castOrigin ||
-    Math.abs(q.castOrigin.x - 480) > 20 ||
-    Math.abs(q.castOrigin.y - bridgePoints.firePad.y) > 20 ||
+    q.castOrigin.x < bridgeRects[1].x ||
+    q.castOrigin.x > bridgeRects[1].x + bridgeRects[1].w ||
+    q.castOrigin.y < bridgeRects[1].y ||
+    q.castOrigin.y > bridgeRects[1].y + bridgeRects[1].h ||
     !frontShot(q, bridgePoints.target) ||
     !heavyOnPlate(s, "B") ||
     !bridgeOpen(s, w, 1)

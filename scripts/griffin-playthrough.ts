@@ -219,7 +219,8 @@ function plan(room: GameRoom, advance = room.tick.bind(room)) {
   item(1, GRIFFIN_NEST, "vanity_mirror");
   mark("6 · Drop the Enchanted Shears — the Griffin checks and trims its hair");
   item(1, GRIFFIN_NEST, "enchanted_shears");
-  for (let n = 0; n < ticksFor(60) && !g.wigClaimed; n++) tick();
+  for (let n = 0; n < ticksFor(60) && g.groomingStage !== "DONE"; n++) tick();
+  item(1, GRIFFIN_NEST);
   assert.equal(w.inventory!.counts.griffin_wig, 1);
   mark("7 · Magnificent Griffin Wig in the shared backpack — return south");
   move(c, { x: 640, y: 1088 });

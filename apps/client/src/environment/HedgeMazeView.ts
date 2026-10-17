@@ -10,6 +10,7 @@ import {
 } from "../../../../packages/shared/src/hedgeMaze.js";
 import { EnemyView } from "../entities/EnemyView.js";
 import { spawnEnemy } from "../../../../packages/shared/src/enemies.js";
+import { TreasureChestView } from "./TreasureChestView.js";
 const hedgeDirections = [
   "north",
   "south",
@@ -53,7 +54,7 @@ export class HedgeMazeView {
   private key?: Phaser.GameObjects.Image;
   private graphics: Phaser.GameObjects.Graphics;
   private runnerLabel?: Phaser.GameObjects.Text;
-  private reward?: Phaser.GameObjects.Image;
+  private chest?: TreasureChestView;
   constructor(private scene: Phaser.Scene) {
     this.graphics = scene.add.graphics().setDepth(-20);
     for (const key of ["cow", "bush", "chest", "hedge-wall", "key", "shears"])
@@ -78,6 +79,8 @@ export class HedgeMazeView {
     return north ? "north" : "south";
   }
   clear() {
+    this.chest?.destroy();
+    this.chest = undefined;
     this.objects.forEach((o) => o.destroy());
     this.objects = [];
     this.dry = [];
@@ -187,10 +190,13 @@ export class HedgeMazeView {
         .setRotation(Math.PI / 2)
         .setDepth(448);
       this.label("E · key gate", 39 * 32, 16.8 * 32);
-      this.image("maze:chest", 44 * 32, 5 * 32).setDepth(160);
-      this.reward = this.image("maze:shears", 44 * 32, 5 * 32)
-        .setDisplaySize(48, 48)
-        .setDepth(162);
+      this.chest = new TreasureChestView(
+        this.scene,
+        44 * 32,
+        5 * 32,
+        "maze:shears",
+        "Enchanted Shears",
+      );
       this.label("E · Shears chest", 44 * 32, 7.2 * 32);
       this.label(
         "Slow Time + Super Speed\nChase the fleeing key carrier · E to tag",
@@ -216,14 +222,8 @@ export class HedgeMazeView {
     this.dry.forEach((image) => image.setVisible(!state.burned));
     this.cow?.setPosition(state.cow.x, state.cow.y).setDepth(state.cow.y);
     this.gate?.setVisible(!w.puzzles.hedgeGate.complete);
-    this.reward?.setAlpha(
-      w.inventory?.claimed.includes("hedge-shears-chest") ? 0.25 : 1,
-    );
+    this.chest?.update(!!w.inventory?.claimed.includes("hedge-shears-chest"));
     this.graphics.clear();
-    this.graphics.fillStyle(0x3b3524);
-    this.graphics.fillRoundedRect(44 * 32 - 27, 5 * 32 - 21, 54, 42, 4);
-    this.graphics.lineStyle(3, 0xc8a455);
-    this.graphics.strokeRect(44 * 32 - 27, 5 * 32 - 21, 54, 42);
     this.graphics.fillStyle(0x565f47);
     this.graphics.fillCircle(8 * 32, 20 * 32, 26);
     this.graphics.lineStyle(4, 0xadb09a);

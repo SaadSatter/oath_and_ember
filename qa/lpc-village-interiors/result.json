@@ -1,0 +1,9 @@
+{
+  "homes": [
+    "VILLAGE_COTTAGE",
+    "VILLAGE_ELDER_HOUSE",
+    "VILLAGE_APOTHECARY"
+  ],
+  "clients": 2,
+  "errors": []
+}

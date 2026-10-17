@@ -1,0 +1,443 @@
+{
+ "frames": [
+  {
+   "filename": "oath-and-ember-treasure-collect-shine 0.png",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 36,
+    "h": 39
+   },
+   "pivot": {
+    "x": 0.4444444444444444,
+    "y": 0.6410256410256411
+   },
+   "duration": 67
+  },
+  {
+   "filename": "oath-and-ember-treasure-collect-shine 1.png",
+   "frame": {
+    "x": 36,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 36,
+    "h": 39
+   },
+   "pivot": {
+    "x": 0.4444444444444444,
+    "y": 0.6410256410256411
+   },
+   "duration": 67
+  },
+  {
+   "filename": "oath-and-ember-treasure-collect-shine 2.png",
+   "frame": {
+    "x": 72,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 36,
+    "h": 39
+   },
+   "pivot": {
+    "x": 0.4444444444444444,
+    "y": 0.6410256410256411
+   },
+   "duration": 67
+  },
+  {
+   "filename": "oath-and-ember-treasure-collect-shine 3.png",
+   "frame": {
+    "x": 108,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 36,
+    "h": 39
+   },
+   "pivot": {
+    "x": 0.4444444444444444,
+    "y": 0.6410256410256411
+   },
+   "duration": 67
+  },
+  {
+   "filename": "oath-and-ember-treasure-collect-shine 4.png",
+   "frame": {
+    "x": 0,
+    "y": 39,
+    "w": 36,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 36,
+    "h": 39
+   },
+   "pivot": {
+    "x": 0.4444444444444444,
+    "y": 0.6410256410256411
+   },
+   "duration": 67
+  },
+  {
+   "filename": "oath-and-ember-treasure-collect-shine 5.png",
+   "frame": {
+    "x": 36,
+    "y": 39,
+    "w": 36,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 36,
+    "h": 39
+   },
+   "pivot": {
+    "x": 0.4444444444444444,
+    "y": 0.6410256410256411
+   },
+   "duration": 67
+  },
+  {
+   "filename": "oath-and-ember-treasure-collect-shine 6.png",
+   "frame": {
+    "x": 72,
+    "y": 39,
+    "w": 36,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 36,
+    "h": 39
+   },
+   "pivot": {
+    "x": 0.4444444444444444,
+    "y": 0.6410256410256411
+   },
+   "duration": 67
+  },
+  {
+   "filename": "oath-and-ember-treasure-collect-shine 7.png",
+   "frame": {
+    "x": 108,
+    "y": 39,
+    "w": 36,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 36,
+    "h": 39
+   },
+   "pivot": {
+    "x": 0.4444444444444444,
+    "y": 0.6410256410256411
+   },
+   "duration": 67
+  },
+  {
+   "filename": "oath-and-ember-treasure-collect-shine 8.png",
+   "frame": {
+    "x": 0,
+    "y": 78,
+    "w": 36,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 36,
+    "h": 39
+   },
+   "pivot": {
+    "x": 0.4444444444444444,
+    "y": 0.6410256410256411
+   },
+   "duration": 67
+  },
+  {
+   "filename": "oath-and-ember-treasure-collect-shine 9.png",
+   "frame": {
+    "x": 36,
+    "y": 78,
+    "w": 36,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 36,
+    "h": 39
+   },
+   "pivot": {
+    "x": 0.4444444444444444,
+    "y": 0.6410256410256411
+   },
+   "duration": 67
+  },
+  {
+   "filename": "oath-and-ember-treasure-collect-shine 10.png",
+   "frame": {
+    "x": 72,
+    "y": 78,
+    "w": 36,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 36,
+    "h": 39
+   },
+   "pivot": {
+    "x": 0.4444444444444444,
+    "y": 0.6410256410256411
+   },
+   "duration": 67
+  },
+  {
+   "filename": "oath-and-ember-treasure-collect-shine 11.png",
+   "frame": {
+    "x": 108,
+    "y": 78,
+    "w": 36,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 36,
+    "h": 39
+   },
+   "pivot": {
+    "x": 0.4444444444444444,
+    "y": 0.6410256410256411
+   },
+   "duration": 67
+  },
+  {
+   "filename": "oath-and-ember-treasure-collect-shine 12.png",
+   "frame": {
+    "x": 0,
+    "y": 117,
+    "w": 36,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 36,
+    "h": 39
+   },
+   "pivot": {
+    "x": 0.4444444444444444,
+    "y": 0.6410256410256411
+   },
+   "duration": 67
+  },
+  {
+   "filename": "oath-and-ember-treasure-collect-shine 13.png",
+   "frame": {
+    "x": 36,
+    "y": 117,
+    "w": 36,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 36,
+    "h": 39
+   },
+   "pivot": {
+    "x": 0.4444444444444444,
+    "y": 0.6410256410256411
+   },
+   "duration": 67
+  },
+  {
+   "filename": "oath-and-ember-treasure-collect-shine 14.png",
+   "frame": {
+    "x": 72,
+    "y": 117,
+    "w": 36,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 36,
+    "h": 39
+   },
+   "pivot": {
+    "x": 0.4444444444444444,
+    "y": 0.6410256410256411
+   },
+   "duration": 67
+  },
+  {
+   "filename": "oath-and-ember-treasure-collect-shine 15.png",
+   "frame": {
+    "x": 108,
+    "y": 117,
+    "w": 36,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 36,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 36,
+    "h": 39
+   },
+   "pivot": {
+    "x": 0.4444444444444444,
+    "y": 0.6410256410256411
+   },
+   "duration": 67
+  }
+ ],
+ "meta": {
+  "app": "PixelLab VFX Creator",
+  "image": "oath-and-ember-treasure-collect-shine.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 144,
+   "h": 156
+  },
+  "scale": "1",
+  "anchor": {
+   "kind": "origin",
+   "x": 16,
+   "y": 25
+  },
+  "frameTags": [
+   {
+    "name": "oath-and-ember-treasure-collect-shine",
+    "from": 0,
+    "to": 15,
+    "direction": "forward"
+   }
+  ]
+ }
+}

@@ -1,3 +1,4 @@
+import { settlementPortals } from "../../../packages/shared/src/settlements.js";
 import { ensureGriffin, tickGriffin, damageGriffin } from "./griffin.js";
 import {
   griffinState,
@@ -5,6 +6,19 @@ import {
   griffinAirborne,
 } from "../../../packages/shared/src/griffin.js";
 import { ensureShrine } from "./shrine.js";
+import { burnGladeBushes, ensureGlade, tickGlade } from "./statueGlade.js";
+import { gladeSolved } from "../../../packages/shared/src/statueGlade.js";
+import {
+  npcs,
+  npcPose,
+  NPC_TALK_RANGE,
+} from "../../../packages/shared/src/npcs.js";
+import {
+  isVillageInterior,
+  villageDoorPoint,
+  villageInteriorIds,
+  villageInteriors,
+} from "../../../packages/shared/src/villageInteriors.js";
 import {
   shrineComplete,
   shrinePoints,
@@ -312,6 +326,7 @@ export class GameRoom {
   }
   disconnect(id: string) {
     this.blackHoleRequests.delete(id);
+    this.releaseTalk(id);
     for (const [key, hole] of Object.entries(this.state.blackHoles ?? {}))
       if (hole.owner === id) delete this.state.blackHoles![key];
     const s = this.sessions.get(id);
@@ -471,6 +486,7 @@ export class GameRoom {
   }
   transition(scene: World["sceneId"], backwards = false) {
     this.pendingSwords.clear();
+    for (const id of Object.keys(this.state.players)) this.releaseTalk(id);
     const w = this.state;
     const previous = w.sceneId;
     const questTravel =
@@ -484,6 +500,7 @@ export class GameRoom {
     if (scene === "GRIFFIN_ENCLOSURE") ensureGriffin(w, this.inventory);
     if (scene === "GODDESS_SHRINE") ensureShrine(w, this.inventory);
     if (scene === "HEDGE_MAZE") ensureHedgeMaze(w, this.inventory);
+    if (scene === "PUZZLE_GLADE") ensureGlade(w);
     if (scene === "MIRROR_POND") {
       ensureMirrorPond(w, this.inventory);
       mirrorPondState(w.puzzles)!.entryPassed = false;
@@ -622,11 +639,55 @@ export class GameRoom {
       );
     }
   }
+  /**
+   * A hero opens or closes a conversation with a villager. While anyone is
+   * talking to it, the villager stands still for every client and faces them;
+   * afterwards it resumes its walk from the same spot.
+   */
+  talkToNpc(playerId: string, npcId: string, talking: boolean) {
+    const w = this.state,
+      p = w.players[playerId];
+    if (!p) throw Error("Join a room first.");
+    if (!talking) {
+      this.releaseTalk(playerId, npcId);
+      return { talking: false };
+    }
+    const npc = npcs.find((n) => n.id === npcId);
+    if (!npc) throw Error("There is nobody like that here.");
+    if (w.phase !== "PLAYING" || !p.connected || p.hp <= 0)
+      throw Error("You can't talk right now.");
+    if ((p.sceneId ?? w.sceneId) !== npc.scene)
+      throw Error("They aren't here.");
+    const pose = npcPose(npc, w.serverTick, w);
+    // Slack covers the villager's walk while the request was in flight.
+    if (Math.hypot(pose.x - p.x, pose.y - p.y) > NPC_TALK_RANGE + 32)
+      throw Error("Move closer to talk.");
+    this.releaseTalk(playerId);
+    const talk = ((w.npcTalks ??= {})[npcId] ??= {
+      since: w.serverTick,
+      listeners: [],
+    });
+    if (!talk.listeners.includes(playerId)) talk.listeners.push(playerId);
+    return { talking: true };
+  }
+  /** End a hero's conversation(s); a villager nobody talks to walks on. */
+  private releaseTalk(playerId: string, only?: string) {
+    const w = this.state;
+    for (const [id, talk] of Object.entries(w.npcTalks ?? {})) {
+      if (only && id !== only) continue;
+      talk.listeners = talk.listeners.filter((l) => l !== playerId);
+      if (talk.listeners.length) continue;
+      (w.npcOffsets ??= {})[id] =
+        (w.npcOffsets[id] ?? 0) + Math.max(0, w.serverTick - talk.since);
+      delete w.npcTalks![id];
+    }
+  }
   private relocate(
     p: Player,
     sceneId: SceneId,
     spawn: { x: number; y: number },
   ) {
+    this.releaseTalk(p.id);
     // Pick a nearby walkable arrival when the partner occupies the door spawn.
     const arrival =
       [0, 32, -32, 64, -64]
@@ -755,6 +816,10 @@ export class GameRoom {
     )
       return;
     if (w.slowTime && w.serverTick >= w.slowTime.endsTick) delete w.slowTime;
+    if (w.sceneId === "PUZZLE_GLADE") {
+      ensureGlade(w);
+      tickGlade(w);
+    }
     for (const id of this.slowTimeRequests) {
       const p = w.players[id],
         session = this.sessions.get(id);
@@ -1023,6 +1088,27 @@ export class GameRoom {
         this.relocate(p, "HOUSE_INTERIOR", maps.HOUSE_INTERIOR.spawn);
         continue;
       }
+      if (interactEdge && p.hp > 0) {
+        const portal = settlementPortals.find(
+          (t) => t.from === sceneId && near(p, t.at, 36),
+        );
+        if (portal) {
+          this.relocate(p, portal.to, portal.arrival);
+          continue;
+        }
+      }
+      // Village houses: each hero steps inside on their own, as at the main house.
+      if (interactEdge && sceneId === "EMBERBROOK_VILLAGE") {
+        const house = villageInteriorIds.find(
+          (id) =>
+            !villageInteriors[id].outsideScene &&
+            near(p, map.points[villageDoorPoint(id)], 42),
+        );
+        if (house) {
+          this.relocate(p, house, maps[house].spawn);
+          continue;
+        }
+      }
       if (interactEdge && p.hp > 0 && w.serverTick >= this.travelReadyTick) {
         if (
           sceneId === "FOREST_RUINS" &&
@@ -1052,14 +1138,20 @@ export class GameRoom {
       }
       if (
         interactEdge &&
-        sceneId === "HOUSE_INTERIOR" &&
+        (sceneId === "HOUSE_INTERIOR" || isVillageInterior(sceneId)) &&
         map.doorInteractionBounds &&
         p.x >= map.doorInteractionBounds.x &&
         p.x <= map.doorInteractionBounds.x + map.doorInteractionBounds.w &&
         p.y >= map.doorInteractionBounds.y &&
         p.y <= map.doorInteractionBounds.y + map.doorInteractionBounds.h
       ) {
-        this.relocate(p, "MAIN_HOUSE", { x: 480, y: 344 });
+        if (isVillageInterior(sceneId))
+          this.relocate(
+            p,
+            villageInteriors[sceneId].outsideScene ?? "EMBERBROOK_VILLAGE",
+            villageInteriors[sceneId].outside,
+          );
+        else this.relocate(p, "MAIN_HOUSE", { x: 480, y: 344 });
         continue;
       }
       if (
@@ -1112,7 +1204,7 @@ export class GameRoom {
           return;
         }
         if (sceneId === "MAIN_HOUSE" && near(p, map.points.exit, 50)) {
-          this.transition("TRANSITION_TRAIL");
+          this.transition("EMBERBROOK_VILLAGE");
           return;
         }
         // Playtest shortcut from the starting map to the Goddess Shrine hub.
@@ -1121,9 +1213,11 @@ export class GameRoom {
           return;
         }
         if (isPostTownScene(sceneId) && near(p, map.points.exit, 50)) {
+          // The glade's way onward stays sealed until the statue is seated.
           if (
-            sceneId !== "MONSTER_CLEARING" ||
-            Object.values(w.enemies).every((e) => e.hp <= 0)
+            (sceneId !== "MONSTER_CLEARING" ||
+              Object.values(w.enemies).every((e) => e.hp <= 0)) &&
+            (sceneId !== "PUZZLE_GLADE" || gladeSolved(w.puzzles))
           ) {
             this.transition(postTownRoute[sceneId].next);
             return;
@@ -1250,9 +1344,11 @@ export class GameRoom {
         w.serverTick,
       );
       const burnedBush =
-        (q.sceneId ?? w.sceneId) === "HEDGE_MAZE" &&
         q.faction !== "enemies" &&
-        burnMazeBush(w, q.owner, { x: ox, y: oy }, q);
+        ((q.sceneId ?? w.sceneId) === "HEDGE_MAZE"
+          ? burnMazeBush(w, q.owner, { x: ox, y: oy }, q)
+          : (q.sceneId ?? w.sceneId) === "PUZZLE_GLADE" &&
+            burnGladeBushes(w, q.owner, { x: ox, y: oy }, q));
       let collided =
         burnedBush ||
         ((q.sceneId ?? w.sceneId) === "MIRROR_POND"
@@ -1283,21 +1379,11 @@ export class GameRoom {
             oy,
             q.x,
             q.y,
-            { x: target.x - 20, y: target.y - 20, w: 40, h: 40 },
+            { x: target.x - 20, y: target.y - 24, w: 40, h: 48 },
             q.radius ?? 4,
           )
         ) {
-          if (
-            segmentHits(
-              ox,
-              oy,
-              q.x,
-              q.y,
-              { x: target.x - 10, y: target.y + 14, w: 20, h: 10 },
-              q.radius ?? 4,
-            )
-          )
-            hitBridgeEntryTarget(w, q.owner, q);
+          hitBridgeEntryTarget(w, q.owner, q);
           collided = true;
         }
       }
@@ -1319,22 +1405,7 @@ export class GameRoom {
           q.radius ?? 4,
         )
       ) {
-        if (
-          segmentHits(
-            ox,
-            oy,
-            q.x,
-            q.y,
-            {
-              x: bridgePoints.target.x - 10,
-              y: bridgePoints.target.y + 14,
-              w: 20,
-              h: 10,
-            },
-            q.radius ?? 4,
-          )
-        )
-          hitBridgeLock(w, q.owner, q);
+        hitBridgeLock(w, q.owner, q);
         collided = true;
       }
       const griffin = griffinState(w.puzzles);

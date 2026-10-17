@@ -217,8 +217,10 @@ export function pondCollisionWalls(
   role?: Role | null,
 ): Rect[] {
   const state = mirrorPondState(puzzles);
+  // The whole visible culvert is deep water for both walkers. Flight removes
+  // these terrain walls; role wards below remain separate.
   const water = subtractRects(
-    [pondWater, ...(role === "EMBER" ? pondCulvert : [pondCulvertMouth])],
+    [pondWater, ...pondCulvert],
     pondLand(state),
   ).map((r) => ({ ...r, terrain: "water" as const }));
   const wards =

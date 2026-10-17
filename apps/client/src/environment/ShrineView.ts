@@ -82,8 +82,8 @@ export class ShrineView {
       for (const p of shrineShrubs)
         this.image("maze:hedge:south", p.x, p.y, p.y);
       this.statue = this.image("shrine:crying", 640, 336, 437);
-      this.wig = this.image("shrine:wig", 640, 304, 438)
-        .setDisplaySize(16, 16)
+      this.wig = this.image("shrine:wig", 642, 310, 438)
+        .setDisplaySize(44, 44)
         .setVisible(false);
       this.image(
         "ruins:weight-plate",

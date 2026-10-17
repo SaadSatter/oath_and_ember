@@ -25,11 +25,11 @@ it("starts both heroes at the house and transitions only on server-accepted near
   p.y = maps.MAIN_HOUSE.points.exit.y;
   const revision = r.state.worldRevision;
   r.tick();
-  expect(r.state.sceneId).toBe("TRANSITION_TRAIL");
+  expect(r.state.sceneId).toBe("EMBERBROOK_VILLAGE");
   expect(r.state.worldRevision).toBe(revision + 1);
   expect(Object.keys(r.state.enemies)).toHaveLength(0);
   expect(r.state.players[b.playerId].x).toBe(
-    maps.TRANSITION_TRAIL.spawn.x + 50,
+    maps.EMBERBROOK_VILLAGE.spawn.x + 50,
   );
   expect(p.skillPoints).toBe(0);
   expect(r.state.puzzles.gate.complete).toBe(false);
