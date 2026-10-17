@@ -9,6 +9,7 @@ import {
   boulderRect,
   heavyOnPlate,
   bridgeEntryTargetVisible,
+  bridgeMovingTarget,
   hitBridgeEntryTarget,
   bridgeOpen,
   bridgeTrap,
@@ -491,4 +492,73 @@ it("Sieg touching a spike cannot teleport a boulder left on plate A into the spi
   expect(s.boulder).toEqual(before);
   expect(sieg.y).toBe(1160);
   expect(s.firstGateOpen && s.goldSwitchOpen).toBe(true);
+});
+
+it("accepts real fireballs along both edges of the visible target from off-center platform positions", () => {
+  for (const x of [460, 500]) {
+    for (const y of [808, 856]) {
+      const { r, s, coco, sieg, input, ticks } = fixture();
+      s.firstGateOpen = s.goldSwitchOpen = true;
+      s.stage = 3;
+      Object.assign(s.boulder, P.plateB);
+      Object.assign(sieg, { x: 288, y: 700 });
+      Object.assign(coco, { x, y, facing: -Math.PI / 2 });
+      input(coco, { primaryHeld: true });
+      ticks();
+      input(coco, {});
+      ticks(ticksFor(3));
+      expect(s.finalTargetHit, `cast at ${x},${y}`).toBe(true);
+    }
+  }
+});
+
+it("accepts an aimed frontal cast from either end of the platform while rejecting outside origins", () => {
+  const { r, s, coco } = fixture();
+  s.firstGateOpen = s.goldSwitchOpen = true;
+  Object.assign(s.boulder, P.plateB);
+  for (const x of [384, 576]) {
+    expect(
+      hitBridgeLock(
+        r.state,
+        coco.id,
+        shot(coco.id, x, 832, ((480 - x) / 416) * 180, -180),
+      ),
+    ).toBe(true);
+    s.finalTargetHit = false;
+  }
+  for (const [x, y] of [
+    [383, 832],
+    [577, 832],
+    [480, 799],
+    [480, 865],
+  ])
+    expect(hitBridgeLock(r.state, coco.id, shot(coco.id, x, y))).toBe(false);
+});
+
+it("counts off-center and angled front impacts anywhere on the first target's body", () => {
+  for (const offset of [-19, 19]) {
+    const { r, s, coco, ticks } = fixture();
+    Object.assign(s.boulder, P.plateA);
+    s.trapClock = 0;
+    const target = bridgeMovingTarget(DT);
+    const q = shot(coco.id, 672, 1216, offset < 0 ? 120 : -120, -180);
+    q.x = target.x + offset;
+    q.y = target.y + 4;
+    r.state.projectiles[q.id] = q;
+    ticks();
+    expect(s.targetHit).toBe(true);
+    expect(s.firstGateOpen).toBe(true);
+  }
+});
+
+it("counts body impacts from the front on the final target too", () => {
+  const { r, s, coco, ticks } = fixture();
+  s.firstGateOpen = s.goldSwitchOpen = true;
+  Object.assign(s.boulder, P.plateB);
+  const q = shot(coco.id, 480, 832, 120, -180);
+  q.x = P.target.x - 20;
+  q.y = P.target.y;
+  r.state.projectiles[q.id] = q;
+  ticks();
+  expect(s.finalTargetHit).toBe(true);
 });

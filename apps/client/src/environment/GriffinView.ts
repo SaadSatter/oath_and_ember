@@ -19,9 +19,12 @@ import {
   griffinWater,
   griffinTrees,
 } from "../../../../packages/shared/src/griffin.js";
+import { griffinProps } from "../animation/griffinProps.js";
 import { enemyDirection } from "../animation/EnemyPresentation.js";
 const dirs = ["south", "east", "north", "west"];
 export function preloadGriffin(s: Phaser.Scene) {
+  for (const item of ["vanity-mirror", "enchanted-shears", "griffin-wig"])
+    s.load.image(`griffin:${item}`, `/assets/ui/inventory/items/${item}.png`);
   s.load.spritesheet(
     "griffin:pillar",
     "/assets/environment/griffin/pillar.png",
@@ -59,6 +62,10 @@ export class GriffinView {
   private status?: Phaser.GameObjects.Text;
   private shadow?: Phaser.GameObjects.Ellipse;
   private mirror?: Phaser.GameObjects.Image;
+  private shears?: Phaser.GameObjects.Image;
+  private wig?: Phaser.GameObjects.Image;
+  private propClock = -1;
+  private propClockReceivedAt = 0;
   private charge?: Phaser.GameObjects.Image;
   private beamBody?: Phaser.GameObjects.TileSprite;
   private beamStart?: Phaser.GameObjects.Image;
@@ -108,6 +115,7 @@ export class GriffinView {
     this.fallenPillars = [];
     this.effects.clear();
     this.active = false;
+    this.propClock = -1;
   }
   private image(key: string, x: number, y: number, depth: number) {
     this.scene.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
@@ -202,12 +210,28 @@ export class GriffinView {
       this.label("SOUTH · GODDESS SHRINE\nE · Return", 640, 1100);
       this.label("NEST · Drop mirror + shears", 640, 230);
       this.mirror = this.image(
-        "pond:mirror",
-        griffinNest.x + 46,
+        "griffin:vanity-mirror",
+        griffinNest.x - 24,
         griffinNest.y,
         200,
       )
-        .setScale(0.5)
+        .setDisplaySize(42, 42)
+        .setVisible(false);
+      this.shears = this.image(
+        "griffin:enchanted-shears",
+        griffinNest.x + 24,
+        griffinNest.y,
+        200,
+      )
+        .setDisplaySize(42, 42)
+        .setVisible(false);
+      this.wig = this.image(
+        "griffin:griffin-wig",
+        griffinNest.x,
+        griffinNest.y,
+        201,
+      )
+        .setDisplaySize(42, 42)
         .setVisible(false);
       this.shadow = this.scene.add
         .ellipse(g.x, g.y, 76, 32, 0x0c1d23, 0.45)
@@ -293,7 +317,10 @@ export class GriffinView {
         .setPosition(g.x, g.y)
         .setAlpha(1);
     }
-    if (g.phase === "GROOMING" && g.groomingStage !== "RETURN") {
+    if (
+      g.phase === "GROOMING" &&
+      !["RETURN", "DEPART", "DONE"].includes(g.groomingStage ?? "")
+    ) {
       this.sprite!.anims.stop();
       if (g.groomingStage === "STAND") {
         this.sprite!.setTexture(
@@ -338,28 +365,58 @@ export class GriffinView {
       }
       this.fallenPillars[i] = fallen;
     });
-    this.mirror?.setVisible(
-      g.mirrorDelivered &&
-        (g.phase !== "GROOMING" ||
-          ["RETURN", "STAND"].includes(g.groomingStage ?? "")),
-    );
+    // Extrapolate only presentation between snapshots; the server owns stages,
+    // tool consumption and whether the dropped wig can be collected.
+    if (this.propClock !== g.clock) {
+      this.propClock = g.clock;
+      this.propClockReceivedAt = this.scene.time.now;
+    }
+    const ahead =
+      Math.min(
+        0.1,
+        Math.max(0, (this.scene.time.now - this.propClockReceivedAt) / 1000),
+      ) * (w.slowTime ? 0.2 : 1);
+    const props = griffinProps(g, ahead);
+    for (const key of ["mirror", "shears", "wig"] as const) {
+      const prop = props[key];
+      this[key]
+        ?.setVisible(prop.visible)
+        .setPosition(prop.x, prop.y)
+        .setRotation(prop.rotation);
+    }
+    const departed = g.groomingStage === "DONE";
+    this.sprite?.setVisible(!departed);
+    this.shadow?.setVisible(!departed);
+    this.status?.setVisible(!departed);
+    if (g.wigDropped && !g.wigClaimed)
+      this.status
+        ?.setVisible(true)
+        .setPosition(griffinNest.x, griffinNest.y + 52);
     this.status!.setPosition(
-      g.x,
-      g.phase === "GROOMING" ? g.y + 64 : g.y - 112,
+      g.wigDropped ? griffinNest.x : g.x,
+      g.wigDropped
+        ? griffinNest.y + 52
+        : g.phase === "GROOMING"
+          ? g.y + 64
+          : g.y - 112,
     ).setText(
       g.wigClaimed
         ? "WIG ACQUIRED · Return to shrine"
-        : g.phase === "GROOMING"
-          ? g.groomingStage === "RETURN"
-            ? "RETURNING TO THE NEST"
-            : g.groomingStage === "STAND"
-              ? "PICKING UP THE MIRROR"
-              : g.groomingStage === "CUT"
-                ? "A LITTLE TRIM…"
-                : "CHECKING THAT MAGNIFICENT HAIR"
-          : g.hp <= 0
-            ? "DEFEATED · E at nest for wig"
-            : `GRIFFIN ${g.hp}/320 · ${g.phase.replaceAll("_", " ")}`,
+        : g.wigDropped
+          ? "WIG DROPPED · E at nest to collect"
+          : g.groomingStage === "DEPART"
+            ? "FLYING AWAY"
+            : g.phase === "GROOMING"
+              ? g.groomingStage === "RETURN"
+                ? "RETURNING TO THE NEST"
+                : g.groomingStage === "STAND"
+                  ? "PICKING UP THE MIRROR"
+                  : g.groomingStage === "CUT"
+                    ? "A LITTLE TRIM…"
+                    : "CHECKING THAT MAGNIFICENT HAIR"
+              : g.hp <= 0
+                ? "DEFEATED · E at nest for wig"
+                : `GRIFFIN ${g.hp}/320 · ${g.phase.replaceAll("_", " ")}`,
     );
     const fx = this.effects;
     fx.clear();

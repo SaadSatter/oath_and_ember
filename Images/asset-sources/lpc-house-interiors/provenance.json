@@ -1,0 +1,20 @@
+{
+  "files": [
+    {
+      "file": "interior.png",
+      "download": "https://opengameart.org/sites/default/files/LPC_house_interior_0.zip",
+      "source": "https://opengameart.org/content/lpc-house-interior-and-decorations",
+      "license": "CC-BY-SA-3.0",
+      "sha256": "75da3be7ff3bfa993b04d6f4bda1b73e87ead9d98eaa4e94e113662519987a53",
+      "modifications": "Unmodified source sheet; rectangular frames selected at runtime."
+    },
+    {
+      "file": "house_inside.png",
+      "download": "https://opengameart.org/sites/default/files/house_inside_1.png",
+      "source": "https://opengameart.org/content/lpc-house-insides",
+      "license": "CC-BY-SA-3.0",
+      "sha256": "d703c86057bf32420bc52db28061e7d990a024d5090ed88195eed97dd97a48d2",
+      "modifications": "Unmodified source sheet; rectangular frames selected at runtime."
+    }
+  ]
+}

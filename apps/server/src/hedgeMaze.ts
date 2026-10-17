@@ -40,14 +40,19 @@ export function ensureHedgeMaze(w: World, inventory: InventoryService) {
       x: 0,
       y: 0,
       reward: "hedge_gate_key",
-      available: (state, player) =>
-        !!state.slowTime &&
-        player.role === "OATH" &&
-        (player.sprintRemaining ?? 0) > 0 &&
-        Math.hypot(
-          player.x - state.puzzles.hedgeMaze.maze!.runner.x,
-          player.y - state.puzzles.hedgeMaze.maze!.runner.y,
-        ) <= 42,
+      interact: (state, player, intent) => {
+        if (player.role !== "OATH")
+          throw Error("Sieg must take the key from the wolf.");
+        if (intent.itemId)
+          throw Error("Press E to take the key without offering an item.");
+        const bag = state.inventory!;
+        if (bag.claimed.includes(MAZE_RUNNER_TARGET))
+          return { message: "Already collected.", revision: bag.revision };
+        bag.counts.hedge_gate_key = (bag.counts.hedge_gate_key ?? 0) + 1;
+        bag.claimed.push(MAZE_RUNNER_TARGET);
+        bag.revision++;
+        return { message: "Collected Hedge Gate Key.", revision: bag.revision };
+      },
     });
     inventory.register(w, {
       id: MAZE_GATE_TARGET,
@@ -254,9 +259,7 @@ export function tickMazeRunner(w: World) {
   const runner = state.runner,
     present = Object.values(w.players).filter(
       (p) =>
-        p.connected &&
-        p.hp > 0 &&
-        (p.sceneId ?? w.sceneId) === "HEDGE_MAZE",
+        p.connected && p.hp > 0 && (p.sceneId ?? w.sceneId) === "HEDGE_MAZE",
     ),
     players = present.filter(
       (p) =>
@@ -309,7 +312,9 @@ export function tickMazeRunner(w: World) {
   // hero as distance 0 made every cell equal, so the wolf froze in place.
   const chasers = threats.filter((d) => d.has(start));
   const score = (key: number) =>
-    chasers.length ? Math.min(...chasers.map((d) => d.get(key) ?? Infinity)) : 0;
+    chasers.length
+      ? Math.min(...chasers.map((d) => d.get(key) ?? Infinity))
+      : 0;
   let goal: number;
   if (chasers.length) {
     runner.fleeing = true;
@@ -334,7 +339,9 @@ export function tickMazeRunner(w: World) {
         .sort((a, b) => a - b);
       // Deterministic pick from the server tick: no browser or Math.random.
       const pick = options.length
-        ? options[(Math.imul(w.serverTick + start, 2654435761) >>> 0) % options.length]
+        ? options[
+            (Math.imul(w.serverTick + start, 2654435761) >>> 0) % options.length
+          ]
         : start;
       runner.roam = { ...cells.get(pick)! };
       goal = pick;

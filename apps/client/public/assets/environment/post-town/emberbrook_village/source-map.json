@@ -1,0 +1,71 @@
+{
+  "version": "1.0.0",
+  "name": "Emberbrook Village",
+  "exportDate": "2026-10-14T22:32:10.844037Z",
+  "engine": "pixellab-map-editor",
+  "mapConfig": {
+    "tileSize": 64,
+    "dimensions": {
+      "width": 101,
+      "height": 101,
+      "pixelWidth": 6464,
+      "pixelHeight": 6464
+    },
+    "boundingBox": {
+      "maxX": 57,
+      "maxY": 54,
+      "minX": -43,
+      "minY": -46
+    }
+  },
+  "terrains": [
+    {
+      "id": 1,
+      "name": "town floor featuring winding cobblestone",
+      "color": "#9ca3af",
+      "baseTileId": "c3a4c79e-88f3-4636-a5d3-b0f3b8f85140",
+      "walkable": null
+    },
+    {
+      "id": 2,
+      "name": "simple grass lawn for homes ",
+      "color": "#22c55e",
+      "baseTileId": "5b3581be-3080-4ab7-875d-ecfd2a2f979e",
+      "walkable": null
+    }
+  ],
+  "tilesets": [
+    {
+      "id": "27f310bb-54aa-439b-af88-5d984d47e0a1",
+      "filename": "town floor featuring winding cobblestone-simple grass lawn for homes .png",
+      "lowerTerrain": "town floor featuring winding cobblestone",
+      "upperTerrain": "simple grass lawn for homes ",
+      "lowerTerrainId": 1,
+      "upperTerrainId": 2,
+      "transitionSize": 0,
+      "transitionDescription": "",
+      "tileSize": 64,
+      "gridLayout": "4x4",
+      "wangIndexMapping": "standard",
+      "view": "high top-down"
+    }
+  ],
+  "overlays": [
+    {
+      "id": 0,
+      "filename": "overlay-0.png",
+      "type": "inpainting",
+      "dimensions": {
+        "width": 128,
+        "height": 128
+      },
+      "worldCoordinates": {
+        "x": 64,
+        "y": 64
+      },
+      "layer": "custom"
+    }
+  ],
+  "background": null,
+  "mapId": "7ce5d626-e657-4e5a-ac4c-be12fc42e87a"
+}

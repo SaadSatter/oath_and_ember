@@ -9,6 +9,7 @@ export const pushableDefinitions = [
     label: "Pushable chair",
     rect: solids.PUZZLE_GLADE[0],
   },
+  // The statue doesn't want these — and says so when they're pushed to her.
   {
     id: "puzzle-gold-rock",
     scene: "PUZZLE_GLADE" as SceneId,

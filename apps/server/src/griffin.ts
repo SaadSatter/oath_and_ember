@@ -26,7 +26,7 @@ export function ensureGriffin(w: World, inventory: InventoryService) {
   if (inventory.targets.has(GRIFFIN_NEST)) return;
   inventory.register(w, {
     id: GRIFFIN_NEST,
-    name: "Griffin nest · drop mirror / shears",
+    name: "Griffin nest · drop mirror + shears",
     kind: "offering",
     sceneId: "GRIFFIN_ENCLOSURE",
     ...griffinNest,
@@ -40,16 +40,44 @@ export function ensureGriffin(w: World, inventory: InventoryService) {
           revision: bag.revision,
         };
       if (player.role !== "EMBER") throw Error("Coco must fly to the nest.");
+      if (g.wigDropped && g.groomingStage === "DONE") {
+        awardGriffinWig(world, g);
+        bag.revision++;
+        return {
+          message: "Picked up the Griffin Wig. Return to the goddess.",
+          revision: bag.revision,
+        };
+      }
+      if (g.toolsTaken)
+        return {
+          message:
+            "The Griffin is taking its tools and flying away. Collect the wig at the nest when it leaves.",
+          revision: bag.revision,
+        };
       if (intent.itemId && !(bag.counts[intent.itemId]! > 0))
         throw Error("That item is not in the shared backpack.");
+      // A plain interaction delivers every owned nest tool in one server action.
+      const dropBoth =
+        !intent.itemId &&
+        ((bag.counts.vanity_mirror ?? 0) > 0 ||
+          (bag.counts.enchanted_shears ?? 0) > 0);
       let message: string;
       if (
+        dropBoth ||
         intent.itemId === "vanity_mirror" ||
         intent.itemId === "enchanted_shears"
       ) {
-        if (intent.itemId === "vanity_mirror") g.mirrorDelivered = true;
-        else g.shearsDelivered = true;
-        if (g.hp <= 0 && intent.itemId === "enchanted_shears") {
+        if (
+          intent.itemId === "vanity_mirror" ||
+          (dropBoth && (bag.counts.vanity_mirror ?? 0) > 0)
+        )
+          g.mirrorDelivered = true;
+        if (
+          intent.itemId === "enchanted_shears" ||
+          (dropBoth && (bag.counts.enchanted_shears ?? 0) > 0)
+        )
+          g.shearsDelivered = true;
+        if (g.hp <= 0 && g.shearsDelivered) {
           awardGriffinWig(world, g);
         } else if (g.mirrorDelivered && g.hp > 0 && g.phase !== "GROOMING") {
           phase(g, "GROOMING", 0);
@@ -89,6 +117,15 @@ function awardGriffinWig(w: World, g: GriffinState) {
 }
 
 function tickGrooming(w: World, g: GriffinState, dt: number) {
+  if (g.groomingStage === "DONE") return;
+  if (g.groomingStage === "DEPART") {
+    // Fly beyond the northern edge; the dropped reward stays at the nest.
+    g.y -= 180 * dt;
+    g.facing = -Math.PI / 2;
+    if (g.timer <= 1.5) g.wigDropped = true;
+    if (g.timer <= 0) g.groomingStage = "DONE";
+    return;
+  }
   if (g.groomingStage === "RETURN") {
     const dx = griffinNest.x - g.x,
       dy = griffinNest.y - g.y;
@@ -122,13 +159,17 @@ function tickGrooming(w: World, g: GriffinState, dt: number) {
           ? g.shearsDelivered
             ? "CUT"
             : "NORTH"
-          : "DONE";
+          : "DEPART";
   g.groomingStage = next;
   g.facing = next === "SOUTH" ? Math.PI / 2 : -Math.PI / 2;
-  if (next === "DONE") {
-    awardGriffinWig(w, g);
-    w.inventory!.revision++;
-  } else g.timer = griffinGroomDurations[next];
+  if (next === "CUT" && !g.toolsTaken) {
+    const bag = w.inventory!;
+    for (const item of ["vanity_mirror", "enchanted_shears"] as const)
+      bag.counts[item] = Math.max(0, (bag.counts[item] ?? 0) - 1);
+    g.toolsTaken = true;
+    bag.revision++;
+  }
+  g.timer = griffinGroomDurations[next];
 }
 
 export function damageGriffin(w: World, amount: number) {

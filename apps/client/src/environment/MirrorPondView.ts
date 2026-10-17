@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { spikeTrapFrame } from "../animation/pondSpikes.js";
+import { TreasureChestView } from "./TreasureChestView.js";
 import type {
   World,
   SceneId,
@@ -60,10 +61,13 @@ export class MirrorPondView {
   private spikes: Phaser.GameObjects.Image[][] = [];
   private raised: Phaser.GameObjects.GameObject[] = [];
   private gfx: Phaser.GameObjects.Graphics;
+  private chest?: TreasureChestView;
   constructor(private scene: Phaser.Scene) {
     this.gfx = scene.add.graphics().setDepth(-4);
   }
   clear() {
+    this.chest?.destroy();
+    this.chest = undefined;
     this.objects.forEach((o) => o.destroy());
     this.objects = [];
     this.mirrors = [];
@@ -127,15 +131,25 @@ export class MirrorPondView {
       this.raised = [
         this.floor(pondCenter).setDepth(-79),
         this.floor(pondBridge).setDepth(-79),
-        this.image("maze:chest", pondChest.x, pondChest.y),
       ];
+      this.chest = new TreasureChestView(
+        this.scene,
+        pondChest.x,
+        pondChest.y,
+        "treasure:mirror",
+        "Vanity Mirror",
+      );
       // The blocked outer grass meets the stone walkway directly.
       for (let i = 0; i < 4; i++) {
         const p = pondStations[i];
         this.mirrors.push(this.image("pond:mirror", p.x, p.y));
         this.image("pond:brazier", p.torch.x, p.torch.y);
         this.angles.push(
-          this.label(`M${i + 1} · Hold 1 · opposite side reverses`, p.x, p.y + 78),
+          this.label(
+            `M${i + 1} · Hold 1 · opposite side reverses`,
+            p.x,
+            p.y + 78,
+          ),
         );
         this.scene.textures
           .get("pond:flame")
@@ -187,6 +201,10 @@ export class MirrorPondView {
     }
     for (const o of this.raised)
       (o as Phaser.GameObjects.Image).setVisible(state.raised);
+    this.chest?.update(
+      !!w.inventory?.claimed.includes("pond-vanity-mirror-chest"),
+      state.raised,
+    );
     this.mirrors.forEach((o, i) => {
       o.setRotation(state.mirrors[i]);
       this.angles[i].setText(

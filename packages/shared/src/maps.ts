@@ -1,3 +1,4 @@
+import { settlements, settlementWalls } from "./settlements.js";
 import {
   griffinBounds,
   griffinWater,
@@ -24,12 +25,20 @@ import {
   BRIDGE_SIZE,
 } from "./bridgePuzzle.js";
 import { pushableDefinitions, pushableRect } from "./pushables.js";
+import { gladeDynamicWalls, type GladeState } from "./statueGlade.js";
 import type { World } from "./gameTypes.js";
 import { interiorElements } from "./mapElements.js";
 import { exteriorTreeSolids, forestTreeSolids } from "./environmentSolids.js";
 import type { SceneId, Rect } from "./gameTypes.js";
 import postTownSolids from "./postTownSolids.json" with { type: "json" };
+import {
+  villageInteriors,
+  villageInteriorIds,
+  villageDoorPoint,
+  type VillageInterior,
+} from "./villageInteriors.js";
 export const postTownRoute = {
+  EMBERBROOK_VILLAGE: { name: "Emberbrook Village", next: "TRANSITION_TRAIL" },
   TRANSITION_TRAIL: { name: "Transition trail", next: "GRASSLANDS" },
   GRASSLANDS: { name: "Grasslands", next: "PUZZLE_GLADE" },
   PUZZLE_GLADE: { name: "Puzzle glade", next: "MONSTER_CLEARING" },
@@ -40,7 +49,8 @@ export const previousMap: Partial<Record<SceneId, SceneId>> = {
   GRIFFIN_ENCLOSURE: "GODDESS_SHRINE",
   MIRROR_POND: "GODDESS_SHRINE",
   HEDGE_MAZE: "GODDESS_SHRINE",
-  TRANSITION_TRAIL: "MAIN_HOUSE",
+  EMBERBROOK_VILLAGE: "MAIN_HOUSE",
+  TRANSITION_TRAIL: "EMBERBROOK_VILLAGE",
   GRASSLANDS: "TRANSITION_TRAIL",
   PUZZLE_GLADE: "GRASSLANDS",
   MONSTER_CLEARING: "PUZZLE_GLADE",
@@ -73,25 +83,61 @@ function postTownMap(
   id: PostTownScene,
   spawn: { x: number; y: number },
   exit: { x: number; y: number },
+  width = 1024,
+  height = 768,
 ): MapDefinition {
   return {
     id,
     mode: "TOP_DOWN",
-    width: 1024,
-    height: 768,
+    width,
+    height,
     spawn,
     // Reviewed static footprints. Art files are never loaded by the server.
     walls: [
-      { x: 0, y: 0, w: 1024, h: 32 },
-      { x: 0, y: 736, w: 1024, h: 32 },
-      { x: 0, y: 0, w: 32, h: 768 },
-      { x: 992, y: 0, w: 32, h: 768 },
+      { x: 0, y: 0, w: width, h: 32 },
+      { x: 0, y: height - 32, w: width, h: 32 },
+      { x: 0, y: 0, w: 32, h: height },
+      { x: width - 32, y: 0, w: 32, h: height },
       ...postTownSolids[id],
     ],
     points: { exit },
   };
 }
+function villageInteriorMap(id: VillageInterior): MapDefinition {
+  const room = villageInteriors[id];
+  return {
+    id,
+    mode: "TOP_DOWN",
+    width: room.width,
+    height: room.height,
+    spawn: { ...room.spawn },
+    cameraBounds: room.cameraBounds,
+    doorInteractionBounds: room.doorInteractionBounds,
+    walls: room.solids,
+    points: { leave: { ...room.leave } },
+  };
+}
 export const maps: Record<SceneId, MapDefinition> = {
+  ...(Object.fromEntries(
+    Object.entries(settlements).map(([id, room]) => [
+      id,
+      {
+        id,
+        mode: "TOP_DOWN",
+        width: room.width,
+        height: room.height,
+        spawn: room.spawn,
+        walls: settlementWalls(id as keyof typeof settlements),
+        points: {},
+      },
+    ]),
+  ) as Record<keyof typeof settlements, MapDefinition>),
+  ...(Object.fromEntries(
+    villageInteriorIds.map((id) => [id, villageInteriorMap(id)]),
+  ) as Record<VillageInterior, MapDefinition>),
+  VILLAGE_COTTAGE: villageInteriorMap("VILLAGE_COTTAGE"),
+  VILLAGE_ELDER_HOUSE: villageInteriorMap("VILLAGE_ELDER_HOUSE"),
+  VILLAGE_APOTHECARY: villageInteriorMap("VILLAGE_APOTHECARY"),
   GRIFFIN_ENCLOSURE: {
     id: "GRIFFIN_ENCLOSURE",
     mode: "TOP_DOWN",
@@ -136,6 +182,14 @@ export const maps: Record<SceneId, MapDefinition> = {
     walls: bridgeFixedWalls,
     points: { exit: { x: 480, y: 144 } },
   },
+  // Arrive on the west end of the plaza road; leave up the north road.
+  EMBERBROOK_VILLAGE: postTownMap(
+    "EMBERBROOK_VILLAGE",
+    { x: 96, y: 350 },
+    { x: 480, y: 64 },
+    1152,
+    832,
+  ),
   TRANSITION_TRAIL: postTownMap(
     "TRANSITION_TRAIL",
     { x: 100, y: 675 },
@@ -256,6 +310,14 @@ export const maps: Record<SceneId, MapDefinition> = {
     points: { anchor: { x: 820, y: 655 }, boss: { x: 970, y: 650 } },
   },
 };
+// Emberbrook Village houses: a door point on the village map for each.
+for (const id of villageInteriorIds.filter(
+  (id) => !villageInteriors[id].outsideScene,
+))
+  maps.EMBERBROOK_VILLAGE.points[villageDoorPoint(id)] = {
+    ...villageInteriors[id].door,
+  };
+export type { VillageInterior };
 // Return entrances are explicit shared interaction points, never client destinations.
 for (const scene of Object.keys(previousMap) as SceneId[])
   if (
@@ -273,6 +335,7 @@ export function collisionRects(
       maze?: HedgeMazeState;
       pond?: MirrorPondState;
       griffin?: GriffinState;
+      glade?: GladeState;
     }
   >,
   offsets?: World["pushableOffsets"],
@@ -285,6 +348,7 @@ export function collisionRects(
     ...(scene === "GRIFFIN_ENCLOSURE" ? griffinWalls(puzzles) : []),
     ...(scene === "MIRROR_POND" ? pondCollisionWalls(puzzles, role) : []),
     ...(scene === "HEDGE_MAZE" ? mazeDynamicWalls(puzzles) : []),
+    ...(scene === "PUZZLE_GLADE" ? gladeDynamicWalls(puzzles) : []),
     ...(scene === "BRIDGE_RUINS"
       ? [...bridgeDynamicWalls(bridge, players, tick), ...bridgeRoleWalls(role)]
       : []),

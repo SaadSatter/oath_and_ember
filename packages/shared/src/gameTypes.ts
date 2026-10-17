@@ -8,6 +8,10 @@ export type SceneId =
   | "BRIDGE_RUINS"
   | "HOUSE_INTERIOR"
   | "MAIN_HOUSE"
+  | "EMBERBROOK_VILLAGE"
+  | import("./villageInteriors.js").VillageInterior
+  | "WILLOWBANK_VILLAGE"
+  | "STONEBRIDGE_TOWN"
   | "TRANSITION_TRAIL"
   | "GRASSLANDS"
   | "PUZZLE_GLADE"
@@ -128,6 +132,7 @@ export interface Projectile {
   owner: string;
 }
 export interface Puzzle {
+  glade?: import("./statueGlade.js").GladeState;
   griffin?: import("./griffin.js").GriffinState;
   pond?: import("./mirrorPond.js").MirrorPondState;
   maze?: import("./hedgeMaze.js").HedgeMazeState;
@@ -152,6 +157,10 @@ export interface BlackHole {
   damaged: string[];
 }
 export interface World {
+  /** Villagers stopped mid-conversation: since which tick, and with whom. */
+  npcTalks?: Record<string, { since: number; listeners: string[] }>;
+  /** Ticks each villager has spent talking, so its walk resumes in place. */
+  npcOffsets?: Record<string, number>;
   inventory?: import("./items.js").InventoryState;
   inventoryTargets?: Record<string, import("./items.js").InventoryTarget>;
   blackHoles?: Record<string, BlackHole>;

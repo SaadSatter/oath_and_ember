@@ -176,6 +176,22 @@ export function createApp(
         return result;
       }),
     );
+    // Conversation is presentation, but pausing a villager is shared state:
+    // the server checks range and holds the villager for both clients.
+    socket.on("npc:talk", (p, ack) =>
+      request(ack, () => {
+        const intent = z
+          .object({
+            npcId: z.string().min(1).max(40).regex(/^[a-z0-9_-]+$/),
+            talking: z.boolean(),
+          })
+          .strict()
+          .parse(p);
+        const result = requireRoom().talkToNpc(id, intent.npcId, intent.talking);
+        sync();
+        return result;
+      }),
+    );
     socket.on("skill:unlock", (p, ack) =>
       request(ack, () => {
         requireRoom().unlock(id, z.string().parse(p?.nodeId));

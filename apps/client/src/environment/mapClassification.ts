@@ -1,5 +1,7 @@
 import type { SceneId } from "../../../../packages/shared/src/gameTypes.js";
 import type { MapElementCategory } from "../../../../packages/shared/src/mapElements.js";
+import { isVillageInterior } from "../../../../packages/shared/src/villageInteriors.js";
+import villageRegions from "./villageInteriorRegions.json" with { type: "json" };
 
 export interface TilePresentation {
   id: string;
@@ -112,6 +114,27 @@ export function classifyMapTile(
   x: number,
   y: number,
 ): TilePresentation {
+  // Generated village interiors carry their own regions, one per stamp layer.
+  if (isVillageInterior(scene)) {
+    const room = villageRegions[scene];
+    const stamp = room.regions.find(
+      (r) =>
+        r.layer === layer &&
+        x >= r.bounds[0] &&
+        y >= r.bounds[1] &&
+        x <= r.bounds[2] &&
+        y <= r.bounds[3],
+    );
+    if (stamp)
+      return {
+        id: stamp.id,
+        category: stamp.category === "path" ? "path" : "object",
+        groundY: stamp.groundY,
+      };
+    if (layer === "Walls" || layer === "Windows")
+      return { id: "room-shell", category: "wall", groundY: room.wallGroundY };
+    return { id: "floor-and-rugs", category: "path" };
+  }
   const found = (scene === "HOUSE_INTERIOR" ? interior : exterior).find(
     (r) =>
       r.layer === layer &&

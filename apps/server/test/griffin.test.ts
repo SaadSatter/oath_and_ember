@@ -36,12 +36,22 @@ function setup() {
     g: griffinState(w.puzzles)!,
   };
 }
-function finishGrooming(w: ReturnType<typeof setup>["w"]) {
-  const g = griffinState(w.puzzles)!;
-  for (let i = 0; i < ticksFor(60) && !g.wigClaimed; i++)
+function finishGrooming(r: ReturnType<typeof setup>["r"], collect = true) {
+  const w = r.state,
+    g = griffinState(w.puzzles)!;
+  for (let i = 0; i < ticksFor(60) && g.groomingStage !== "DONE"; i++)
     tickGriffin(w, () => {});
+  expect(g.wigDropped).toBe(true);
+  expect(g.wigClaimed).toBe(false);
+  if (!collect) return;
+  const coco = Object.values(w.players).find((p) => p.role === "EMBER")!;
+  r.useItem(coco.id, {
+    requestId: "collect-dropped-wig",
+    targetId: GRIFFIN_NEST,
+  });
   expect(g.wigClaimed).toBe(true);
 }
+
 it("connects the northern shrine trail in both directions and preserves completed trials", () => {
   const { r, w, s, g } = setup();
   g.pillars[0] = true;
@@ -226,11 +236,11 @@ it("validates nest range, ownership, role and order; awards one shared wig and f
   use("cut", "enchanted_shears");
   use("again", "enchanted_shears");
   expect(w.inventory!.counts.griffin_wig).toBeUndefined();
-  finishGrooming(w);
+  finishGrooming(r);
   use("finished", "enchanted_shears");
   expect(w.inventory!.counts).toEqual({
-    vanity_mirror: 1,
-    enchanted_shears: 1,
+    vanity_mirror: 0,
+    enchanted_shears: 0,
     griffin_wig: 1,
   });
   expect(g.wigClaimed).toBe(true);
@@ -289,7 +299,7 @@ it("walks and flies from the real spawn to the nest, delivers both earned tools,
     targetId: GRIFFIN_NEST,
     itemId: "enchanted_shears",
   });
-  finishGrooming(w);
+  finishGrooming(r);
   expect(g.wigClaimed).toBe(true);
   expect(w.inventory!.counts.griffin_wig).toBe(1);
   for (let n = 0; n < ticksFor(5.667) && c.y < 1080; n++) step(0, 1);
@@ -436,7 +446,25 @@ it("synchronizes Griffin attacks, pillar changes and a unique nest reward to two
     expect(history[0].get(groomingTick!).puzzles.griffin).toEqual(
       history[1].get(groomingTick!).puzzles.griffin,
     );
-    finishGrooming(w);
+    finishGrooming(room, false);
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    const droppedTicks = [...history[0].keys()].filter(
+      (t) =>
+        history[1].has(t) &&
+        griffinState(history[0].get(t).puzzles)?.wigDropped,
+    );
+    expect(droppedTicks.length).toBeGreaterThan(0);
+    for (const t of droppedTicks) {
+      expect(history[0].get(t).puzzles.griffin).toEqual(
+        history[1].get(t).puzzles.griffin,
+      );
+      expect(history[0].get(t).inventory.counts.vanity_mirror).toBe(0);
+      expect(history[0].get(t).inventory.counts.enchanted_shears).toBe(0);
+      expect(history[0].get(t).inventory.counts.griffin_wig).toBeUndefined();
+    }
+    const pickup = { requestId: "pickup-wig", targetId: GRIFFIN_NEST };
+    expect((await req(clients[1], "inventory:use", pickup)).ok).toBe(true);
+    expect((await req(clients[1], "inventory:use", pickup)).ok).toBe(true);
     await new Promise((resolve) => setTimeout(resolve, 150));
     const ticks = [...history[0].keys()].filter(
       (t) =>
@@ -655,9 +683,35 @@ it("returns to the nest and checks south then north before cutting; waits for sh
   }
   expect(sawCut).toBe(true);
   expect(g.groomingStage).toBe("DONE");
+  expect(g.toolsTaken).toBe(true);
+  expect(w.inventory!.counts.vanity_mirror).toBe(0);
+  expect(w.inventory!.counts.enchanted_shears).toBe(0);
+  expect(g.y).toBeLessThan(0);
+  expect(g.wigDropped).toBe(true);
+  expect(g.wigClaimed).toBe(false);
+  expect(w.inventory!.counts.griffin_wig).toBeUndefined();
+  expect(w.puzzles.griffin.complete).toBe(false);
+  r.useItem(c.id, { requestId: "pickup", targetId: GRIFFIN_NEST });
   expect(w.inventory!.counts.griffin_wig).toBe(1);
   expect(w.puzzles.griffin.complete).toBe(true);
   drop("again", "enchanted_shears");
   tickGriffin(w, () => {});
+  expect(w.inventory!.counts.griffin_wig).toBe(1);
+});
+
+it("drops both owned tools at the nest with one plain interaction and shares the delivery", () => {
+  const { r, w, c, g } = setup();
+  Object.assign(c, griffinNest);
+  w.inventory!.counts = { vanity_mirror: 1, enchanted_shears: 1 };
+  const intent = { requestId: "both-tools", targetId: GRIFFIN_NEST };
+  r.useItem(c.id, intent);
+  expect(g.mirrorDelivered).toBe(true);
+  expect(g.shearsDelivered).toBe(true);
+  expect(g.phase).toBe("GROOMING");
+  const revision = w.inventory!.revision;
+  r.useItem(c.id, intent);
+  expect(w.inventory!.revision).toBe(revision);
+  expect(w.inventory!.counts.griffin_wig).toBeUndefined();
+  finishGrooming(r);
   expect(w.inventory!.counts.griffin_wig).toBe(1);
 });

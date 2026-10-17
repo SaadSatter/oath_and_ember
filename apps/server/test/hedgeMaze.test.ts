@@ -24,6 +24,7 @@ import {
 import { DT, ticksFor } from "../../../packages/shared/src/constants.js";
 import { neutral } from "../../../packages/shared/src/gameTypes.js";
 import { tickBlackHoles } from "../src/blackHoles.js";
+import { segmentHits } from "../src/enemySimulation.js";
 import { tickEnemies } from "../src/enemySimulation.js";
 function setup() {
   const room = new GameRoom("ABC234", false, "HEDGE_MAZE"),
@@ -182,7 +183,8 @@ describe("Hedge Maze cooperative sequence", () => {
       });
       Object.assign(s, { x: 100, y: 464, sprintRemaining: sprint ? 10 : 0 });
       c.connected = false;
-      if (slow) w.slowTime = { owner: c.id, startedTick: 0, endsTick: ticksFor(10) };
+      if (slow)
+        w.slowTime = { owner: c.id, startedTick: 0, endsTick: ticksFor(10) };
       tickMazeRunner(w);
       return 800 - maze.runner.x;
     };
@@ -243,12 +245,12 @@ describe("Hedge Maze cooperative sequence", () => {
     const start = Math.hypot(s.x - maze.runner.x, s.y - maze.runner.y);
     for (let n = 0; n < ticksFor(0.5); n++) tickMazeRunner(w);
     expect(maze.runner.fleeing).toBe(true);
-    expect(Math.hypot(s.x - maze.runner.x, s.y - maze.runner.y)).toBeGreaterThan(
-      start + 64,
-    );
+    expect(
+      Math.hypot(s.x - maze.runner.x, s.y - maze.runner.y),
+    ).toBeGreaterThan(start + 64);
     expect(c.y).toBeGreaterThan(704);
   });
-  it("runner flees both heroes, respects walls, slows to .2, and requires the cooperative tag", () => {
+  it("runner flees both heroes, respects walls, slows to .2, and lets Sieg collect the key once he catches it", () => {
     const { room, w, s, c, maze } = setup();
     Object.assign(s, { x: 24 * 32, y: 14.5 * 32 });
     Object.assign(c, { x: 26 * 32, y: 18 * 32 });
@@ -271,7 +273,11 @@ describe("Hedge Maze cooperative sequence", () => {
       Object.assign(game.s, { x: 24 * 32, y: 14.5 * 32 });
       Object.assign(game.c, { x: 26 * 32, y: 18 * 32 });
     }
-    slow.w.slowTime = { owner: slow.c.id, startedTick: 0, endsTick: ticksFor(10) };
+    slow.w.slowTime = {
+      owner: slow.c.id,
+      startedTick: 0,
+      endsTick: ticksFor(10),
+    };
     const fx = fast.maze.runner.x,
       sx = slow.maze.runner.x;
     tickMazeRunner(fast.w);
@@ -299,7 +305,7 @@ describe("Hedge Maze cooperative sequence", () => {
     Object.assign(s, { x: maze.runner.x + dx, y: maze.runner.y + dy });
     updateHedgeMazeTargets(w, room.inventory);
     const intent = { requestId: "tag-fail", targetId: MAZE_RUNNER_TARGET };
-    expect(() => room.useItem(s.id, intent)).toThrow("Solve");
+    expect(() => room.useItem(s.id, intent)).not.toThrow();
     w.slowTime = { owner: c.id, startedTick: 0, endsTick: ticksFor(10) };
     s.sprintRemaining = 10;
     // Move target snapshot to the actual authoritative runner position.
@@ -330,4 +336,56 @@ describe("Hedge Maze cooperative sequence", () => {
     expect(hedgeMazeState(w.puzzles)!.runner.caught).toBe(true);
     expect(w.inventory!.counts.enchanted_shears).toBe(1);
   });
+});
+
+it("lets Sieg collect within the displayed E range without either timed ability, while enforcing role and distance", () => {
+  const { room, w, s, c, maze } = setup();
+  const walls = collisionRects("HEDGE_MAZE", w.puzzles);
+  const offset = [
+    [50, 0],
+    [-50, 0],
+    [0, 50],
+    [0, -50],
+  ].find(
+    ([dx, dy]) =>
+      !walls.some((r) =>
+        segmentHits(
+          maze.runner.x + dx,
+          maze.runner.y + dy,
+          maze.runner.x,
+          maze.runner.y,
+          r,
+          0,
+        ),
+      ),
+  )!;
+  expect(offset).toBeDefined();
+  const position = {
+    x: maze.runner.x + offset[0],
+    y: maze.runner.y + offset[1],
+  };
+  Object.assign(c, position);
+  updateHedgeMazeTargets(w, room.inventory);
+  expect(() =>
+    room.useItem(c.id, { requestId: "coco-key", targetId: MAZE_RUNNER_TARGET }),
+  ).toThrow("Sieg");
+  Object.assign(s, { x: maze.runner.x + 100, y: maze.runner.y });
+  expect(() =>
+    room.useItem(s.id, {
+      requestId: "remote-key",
+      targetId: MAZE_RUNNER_TARGET,
+    }),
+  ).toThrow("closer");
+  Object.assign(s, position, { sprintRemaining: 0 });
+  expect(w.slowTime).toBeUndefined();
+  room.useItem(s.id, { requestId: "near-key", targetId: MAZE_RUNNER_TARGET });
+  expect(maze.runner.caught).toBe(true);
+  expect(w.inventory!.counts.hedge_gate_key).toBe(1);
+  const revision = w.inventory!.revision;
+  room.useItem(s.id, {
+    requestId: "near-key-again",
+    targetId: MAZE_RUNNER_TARGET,
+  });
+  expect(w.inventory!.counts.hedge_gate_key).toBe(1);
+  expect(w.inventory!.revision).toBe(revision);
 });

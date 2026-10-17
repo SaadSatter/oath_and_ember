@@ -1,3 +1,7 @@
+import {
+  isSettlementScene,
+  settlements,
+} from "../../../packages/shared/src/settlements.js";
 import { GriffinView, preloadGriffin } from "./environment/GriffinView.js";
 import { griffinState } from "../../../packages/shared/src/griffin.js";
 import { ShrineView, preloadShrine } from "./environment/ShrineView.js";
@@ -45,6 +49,29 @@ import {
   registerEnemies,
 } from "./entities/EnemyView.js";
 import { renderAppearanceLobby } from "./ui/appearanceLobby.js";
+import { renderTitleScreen, stopTitleScreen } from "./ui/titleScreen.js";
+import { DialogueBox } from "./ui/dialogueBox.js";
+import {
+  StatueGladeView,
+  preloadStatueGlade,
+} from "./environment/StatueGladeView.js";
+import {
+  GLADE_STATUE_NAME,
+  gladeRejectLines,
+  gladeSolved,
+  gladeState,
+  gladeStatueLines,
+  nearGladeStatue,
+} from "../../../packages/shared/src/statueGlade.js";
+// The glade's way onward is not shown until the statue has her chair.
+const sealedExit = (sceneId: string, id: string, w: World) =>
+  sceneId === "PUZZLE_GLADE" && id === "exit" && !gladeSolved(w.puzzles);
+import { NpcView, preloadNpcs } from "./entities/NpcView.js";
+import { npcInReach } from "../../../packages/shared/src/npcs.js";
+import {
+  isVillageInterior,
+  villageInteriors,
+} from "../../../packages/shared/src/villageInteriors.js";
 import { preloadMagic, warmMagicTextures } from "./assets/magicTextures.js";
 import { ProjectileView } from "./entities/ProjectileView.js";
 import Phaser from "phaser";
@@ -60,7 +87,9 @@ import {
   blendCamera,
   type CameraFocus,
 } from "./rendering/viewport.js";
+import { griffinNestFocus } from "./rendering/griffinCamera.js";
 import { preloadHeroes, registerHeroes } from "./assets/heroLoader.js";
+import { preloadTreasure } from "./environment/TreasureChestView.js";
 import { PlayerView, type CharacterRendering } from "./entities/PlayerView.js";
 import "./styles.css";
 import { NetworkClient } from "./net/NetworkClient.js";
@@ -96,13 +125,93 @@ const tell = (s: string) => {
     if (notice.textContent === s) notice.textContent = "";
   }, 6000);
 };
+// Created before the inventory so that, while it is open, it sees keys first.
+const dialogue = new DialogueBox(() => {
+  keys.clear();
+  submitInput(true);
+});
 const inventory = new InventoryPanel(
   net,
   () => {
     keys.clear();
     submitInput(true);
   },
-  tell,
+  // Pickups, gates and the Bald Goddess all speak through the dialogue box.
+  (message, target) =>
+    dialogue.say({
+      speaker: target?.kind === "offering" ? target.name : undefined,
+      pages: [message],
+    }),
+);
+// Talk to villagers with E. Registered after the inventory, so an item or
+// gate in reach still takes E first. Conversation is local presentation.
+window.addEventListener(
+  "keydown",
+  (e) => {
+    if (
+      e.repeat ||
+      e.key.toLowerCase() !== "e" ||
+      dialogue.open ||
+      inventory.open ||
+      (e.target as HTMLElement).matches("input, textarea, select")
+    )
+      return;
+    const w = net.world,
+      me = w?.players[net.session?.playerId ?? ""],
+      hero = net.prediction.player ?? me;
+    if (!w || !me || !hero || w.phase !== "PLAYING") return;
+    const scene = me.sceneId ?? w.sceneId;
+    // The glade's weeping statue. While her way onward is still sealed she
+    // takes E even beside the (inactive) exit in front of her.
+    if (
+      scene === "PUZZLE_GLADE" &&
+      nearGladeStatue(hero) &&
+      !(
+        gladeSolved(w.puzzles) &&
+        Math.hypot(
+          hero.x - maps.PUZZLE_GLADE.points.exit.x,
+          hero.y - maps.PUZZLE_GLADE.points.exit.y,
+        ) <= 50
+      )
+    ) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      dialogue.say({
+        speaker: GLADE_STATUE_NAME,
+        pages: gladeStatueLines(gladeState(w.puzzles)),
+      });
+      return;
+    }
+    // Doors and exits keep E: never start a conversation beside one.
+    if (
+      Object.values(maps[scene].points).some(
+        (q) => Math.hypot(q.x - hero.x, q.y - hero.y) <= 50,
+      )
+    )
+      return;
+    const npc = npcInReach(
+      me.sceneId ?? w.sceneId,
+      hero,
+      net.clock.estimate(performance.now()),
+      w,
+    );
+    if (!npc) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    // The box opens at once; the server pauses the villager for both heroes
+    // and lets it walk on when the conversation closes.
+    const talk = (talking: boolean) =>
+      net
+        .request("npc:talk", { npcId: npc.id, talking })
+        .catch(() => undefined);
+    void talk(true);
+    dialogue.say({
+      speaker: npc.name,
+      pages: npc.lines,
+      onClose: () => void talk(false),
+    });
+  },
+  true,
 );
 net.onerror = tell;
 async function request(e: Parameters<typeof net.request>[0], p: unknown) {
@@ -224,24 +333,20 @@ function renderUI() {
   if (k === uiKey) return;
   uiKey = k;
   if (!net.session || !w) {
-    panel.className = "card";
-    panel.innerHTML =
-      '<div class="eyebrow">A COOPERATIVE ADVENTURE</div><h1>Oath <span>&</span> Ember</h1><p>Steel and sorcery. Two heroes. One shared fate.</p><button id="create">Create room</button><div class="join"><input id="code" aria-label="Room code" maxlength="6" placeholder="ROOM CODE"><button id="join">Join</button></div><small>Two browser sessions required • Working prototype</small>';
-    panel.querySelector("#create")!.addEventListener("click", async () => {
-      const s = await request("room:create", {});
-      if (s) net.save(s as never);
-    });
-    panel.querySelector("#join")!.addEventListener("click", async () => {
-      const s = await request("room:join", {
-        roomCode: (
-          panel.querySelector("#code") as HTMLInputElement
-        ).value.trim(),
-      });
-      if (s) net.save(s as never);
+    renderTitleScreen(panel, {
+      create: async () => {
+        const s = await request("room:create", {});
+        if (s) net.save(s as never);
+      },
+      join: async (roomCode) => {
+        const s = await request("room:join", { roomCode });
+        if (s) net.save(s as never);
+      },
     });
     hud.innerHTML = "";
     return;
   }
+  stopTitleScreen(panel);
   if (w.phase === "LOBBY") {
     panel.className = "card";
     panel.innerHTML = `<div class="eyebrow">GATHER YOUR PARTY</div><h1>Room ${w.roomCode}</h1><button id="leave">← Back to main page</button><button id="copy">Copy code</button><div class="roles"><button id="oath">Sieg<br><small>Guardian • sword & mechanisms</small></button><button id="ember">Coco<br><small>Arcanist • bolts & runes</small></button></div><p id="slots"></p><button id="ready">${me?.ready ? "Cancel ready" : "Ready for adventure"}</button>`;
@@ -304,7 +409,7 @@ function renderUI() {
 net.onchange = renderUI;
 renderUI();
 window.addEventListener("keydown", (e) => {
-  if (inventory.open) return;
+  if (inventory.open || dialogue.open) return;
   if (
     (e.target as HTMLElement).tagName === "INPUT" ||
     ((e.target as HTMLElement).closest("#special-abilities") &&
@@ -518,7 +623,7 @@ function submitInput(reliable = false) {
   )
     return;
   const held = (...names: string[]) =>
-    !inventory.open && names.some((k) => keys.has(k));
+    !inventory.open && !dialogue.open && names.some((k) => keys.has(k));
   const i = neutral(++net.seq);
   i.targetTick = net.clock.target(w.serverTick, performance.now());
   {
@@ -579,6 +684,8 @@ function shotTargets(w: World, sceneId: SceneId) {
 }
 class Adventure extends Phaser.Scene {
   temporalView!: TemporalView;
+  npcView!: NpcView;
+  gladeView!: StatueGladeView;
   gfx!: Phaser.GameObjects.Graphics;
   environment!: EnvironmentView;
   bridgeView!: BridgePuzzleView;
@@ -600,10 +707,13 @@ class Adventure extends Phaser.Scene {
     this.enemyViews.clear();
   }
   preload() {
+    preloadTreasure(this);
     preloadHedgeMaze(this);
     preloadMirrorPond(this);
     preloadShrine(this);
     preloadGriffin(this);
+    preloadNpcs(this);
+    preloadStatueGlade(this);
     preloadHeroes(this);
     preloadTemporal(this);
     preloadMagic(this);
@@ -646,11 +756,30 @@ class Adventure extends Phaser.Scene {
       this.clearEnemyViews();
     });
     this.temporalView = new TemporalView(this);
+    this.npcView = new NpcView(this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
+      this.npcView.destroy(),
+    );
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
       this.temporalView.destroy(),
     );
     this.gfx = this.add.graphics();
     this.environment = new EnvironmentView(this);
+    this.gladeView = new StatueGladeView(this, this.environment);
+    // She thanks the heroes once she has taken her seat.
+    this.gladeView.onSeated = () =>
+      dialogue.say({
+        speaker: GLADE_STATUE_NAME,
+        pages: gladeStatueLines(gladeState(net.world?.puzzles ?? {})),
+      });
+    this.gladeView.onRejected = (item) =>
+      dialogue.say({
+        speaker: GLADE_STATUE_NAME,
+        pages: gladeRejectLines[item],
+      });
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
+      this.gladeView.clear(),
+    );
     this.bridgeView = new BridgePuzzleView(this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
       this.bridgeView.clear(),
@@ -683,7 +812,8 @@ class Adventure extends Phaser.Scene {
     const me = w.players[net.session?.playerId || ""];
     if (!me) return;
     const sceneId = me.sceneId ?? w.sceneId;
-    const house = sceneId === "MAIN_HOUSE" || sceneId === "HOUSE_INTERIOR";
+    const indoors = sceneId === "HOUSE_INTERIOR" || isVillageInterior(sceneId);
+    const house = sceneId === "MAIN_HOUSE" || indoors;
     const map = maps[sceneId];
     const zoom = pixelZoom(this),
       viewWidth = this.scale.width / zoom,
@@ -692,7 +822,7 @@ class Adventure extends Phaser.Scene {
     else this.cameras.main.setBounds(0, 0, map.width, map.height);
     this.cameras.main.setZoom(zoom);
     this.cameras.main.setBackgroundColor(
-      sceneId === "HOUSE_INTERIOR" ? 0x2d2827 : house ? 0x29432c : 0x10202b,
+      indoors ? 0x2d2827 : house ? 0x29432c : 0x10202b,
     );
     const local = net.prediction.player || me;
     if (this.sceneKey !== sceneId) {
@@ -773,6 +903,9 @@ class Adventure extends Phaser.Scene {
         : undefined;
     const griffin =
       sceneId === "GRIFFIN_ENCLOSURE" ? griffinState(w.puzzles) : null;
+    const nestFocus = griffin
+      ? griffinNestFocus(this.rendered, viewWidth, viewHeight)
+      : null;
     if (frameTarget) {
       focus = {
         x: 480,
@@ -795,6 +928,8 @@ class Adventure extends Phaser.Scene {
           viewHeight / (bottom - top + 180),
         ),
       };
+    } else if (nestFocus) {
+      focus = nestFocus;
     } else if (
       griffin &&
       Math.abs(this.rendered.x - griffin.x) < viewWidth - 180 &&
@@ -869,6 +1004,7 @@ class Adventure extends Phaser.Scene {
     if (
       !house &&
       !isPostTownScene(sceneId) &&
+      !isSettlementScene(sceneId) &&
       sceneId !== "BRIDGE_RUINS" &&
       sceneId !== "HEDGE_MAZE" &&
       sceneId !== "MIRROR_POND" &&
@@ -895,6 +1031,7 @@ class Adventure extends Phaser.Scene {
       if (
         (house ||
           isPostTownScene(sceneId) ||
+          isSettlementScene(sceneId) ||
           sceneId === "BRIDGE_RUINS" ||
           sceneId === "HEDGE_MAZE" ||
           sceneId === "MIRROR_POND" ||
@@ -909,7 +1046,14 @@ class Adventure extends Phaser.Scene {
       g.strokeRect(r.x, r.y, r.w, r.h);
     }
     for (const [id, q] of Object.entries(map.points)) {
-      if (id === "boss" || id === "crate" || (house && id === "door")) continue;
+      if (
+        id === "boss" ||
+        id === "crate" ||
+        (house && id === "door") ||
+        (id === "leave" && sceneId.endsWith("_UPPER"))
+      )
+        continue;
+      if (sealedExit(sceneId, id, w)) continue;
       g.fillStyle(
         ["rune", "crystal", "core", "anchor"].includes(id)
           ? 0xbd93f9
@@ -925,6 +1069,15 @@ class Adventure extends Phaser.Scene {
       g.fillStyle(0xad8656);
       g.fillRect(q.x - 20, q.y - 20, 40, 40);
     }
+    this.gladeView.update(w, sceneId, characterRendering === "geometric");
+    this.npcView.update(
+      sceneId,
+      net.clock.estimate(performance.now()),
+      this.rendered,
+      characterRendering === "geometric",
+      w,
+      dialogue.open,
+    );
     for (const p of Object.values(w.players)) {
       if ((p.sceneId ?? w.sceneId) !== sceneId) continue;
       const pos =
@@ -940,11 +1093,7 @@ class Adventure extends Phaser.Scene {
       // The local cast pose starts on the predicted timeline, with its fireball.
       const predictedCast =
         p.id === me.id
-          ? casts.pose(
-              net.prediction.renderTick,
-              w.serverTick,
-              p.combat?.seq,
-            )
+          ? casts.pose(net.prediction.renderTick, w.serverTick, p.combat?.seq)
           : null;
       const shown = predictedCast ? { ...p, combat: predictedCast } : p;
       view.update(shown, motion, pos, map.mode, characterRendering, {
@@ -1053,21 +1202,33 @@ class Adventure extends Phaser.Scene {
     this.labels.forEach((t) => t.destroy());
     this.labels = [];
     for (const [id, q] of Object.entries(map.points)) {
-      if ((house && id === "door") || sceneId === "GODDESS_SHRINE") continue;
+      if (
+        (house && id === "door") ||
+        sceneId === "GODDESS_SHRINE" ||
+        (id === "leave" && sceneId.endsWith("_UPPER"))
+      )
+        continue;
+      if (sealedExit(sceneId, id, w)) continue;
       this.labels.push(
         this.add
           .text(
-            q.x,
-            q.y + 34,
+            // The doorway sits on the room's bottom edge where heroes arrive;
+            // label it beside the door so the hero never covers it.
+            id === "leave" ? q.x + 92 : q.x,
+            id === "leave" ? q.y - 12 : q.y + 34,
             id === "back"
               ? "E · RETURN"
-              : id === "shrine"
-                ? "E · GODDESS SHRINE"
-                : id === "maze"
-                  ? "E · HEDGE MAZE"
-                  : id === "pond"
-                    ? "E · MIRROR POND"
-                    : id.toUpperCase(),
+              : id.startsWith("door_")
+                ? "E · ENTER"
+                : id === "leave"
+                  ? "E · LEAVE"
+                  : id === "shrine"
+                    ? "E · GODDESS SHRINE"
+                    : id === "maze"
+                      ? "E · HEDGE MAZE"
+                      : id === "pond"
+                        ? "E · MIRROR POND"
+                        : id.toUpperCase(),
             {
               fontSize: "12px",
               color: "#ecdfc7",
@@ -1082,27 +1243,39 @@ class Adventure extends Phaser.Scene {
       stats.textContent = `${me.role ? heroNames[me.role] : "Choosing"} · HP ${Math.round(me.hp)} · Room ${w.roomCode} · ${net.socket.connected ? "Connected" : "Reconnecting"}`;
     let goal =
       sceneId === "MAIN_HOUSE"
-        ? "E by the front door: enter house. Follow the path east; E at the exit for the transition trail. Playtest shortcut: E at the west sign for the Goddess Shrine."
+        ? "E by the front door: enter house. Follow the path east; E at the exit for Emberbrook Village. Playtest shortcut: E at the west sign for the Goddess Shrine."
         : sceneId === "HOUSE_INTERIOR"
           ? "Explore the house. E near the lower-right doorway: return outside."
-          : isPostTownScene(sceneId)
-            ? sceneId === "MONSTER_CLEARING" &&
-              Object.values(w.enemies).some((e) => e.hp > 0)
-              ? "Defeat the monster wave, then press E at the east exit to enter Puzzle Map 2."
-              : sceneId === "MONSTER_CLEARING"
-                ? "Wave cleared! E at the east exit: Puzzle Map 2 — The Bridge That Hates Cooperation."
-                : `${postTownRoute[sceneId].name}: explore the paths; E at the golden exit to continue${sceneId === "PUZZLE_GLADE" ? " toward the monster clearing and ruins puzzles" : ""}.`
-            : sceneId === "FOREST_RUINS"
-              ? !w.puzzles.gate.complete
-                ? "Sieg: J at bramble. Coco: hold E at rune."
-                : !w.puzzles.bridge.complete
-                  ? "Sieg: hold 1 at crate to push to plate. Coco: E at crystal."
-                  : !shrineComplete(w)
-                    ? "Before boarding: E at GODDESS SHRINE in the south-west. Complete the maze and pond, obtain the Griffin wig, and offer it to the goddess."
-                    : "Shrine quest complete and both gates open. Explore east to board the airship."
-              : sceneId === "AIRSHIP"
-                ? `Hold E together: Sieg at crank, Coco at core. Engine ${Math.min(100, Math.round((w.puzzles.engine.progress / 3) * 100))}%`
-                : `Coco: hold E at anchor. Sieg: J near Warden. Shield: ${w.boss?.phase}`;
+          : isVillageInterior(sceneId)
+            ? `${villageInteriors[sceneId].name}. ${sceneId.endsWith("_UPPER") ? "E at the stairs to return downstairs." : "E at stairs to go upstairs; E at the doorway to leave."}`
+            : isSettlementScene(sceneId)
+              ? `${settlements[sceneId].name} · E at doors and travel signs. Explore the homes and their upper floors.`
+              : isPostTownScene(sceneId)
+                ? sceneId === "MONSTER_CLEARING" &&
+                  Object.values(w.enemies).some((e) => e.hp > 0)
+                  ? "Defeat the monster wave, then press E at the east exit to enter Puzzle Map 2."
+                  : sceneId === "MONSTER_CLEARING"
+                    ? "Wave cleared! E at the east exit: Puzzle Map 2 — The Bridge That Hates Cooperation."
+                    : sceneId === "EMBERBROOK_VILLAGE"
+                      ? "Emberbrook Village: E to talk with the villagers. The road north of the well leads on; E at the southeast sign visits Willowbank Village."
+                      : sceneId === "PUZZLE_GLADE"
+                        ? gladeSolved(w.puzzles)
+                          ? "The statue rests at last. E at the golden exit before her to continue."
+                          : gladeState(w.puzzles)?.bushesBurned
+                            ? "The thicket is ash. Sieg: hold Push (1) to bring the chair to the statue."
+                            : "Puzzle glade: E to speak with the weeping statue at the heart of the spiral."
+                        : `${postTownRoute[sceneId].name}: explore the paths; E at the golden exit to continue.`
+                : sceneId === "FOREST_RUINS"
+                  ? !w.puzzles.gate.complete
+                    ? "Sieg: J at bramble. Coco: hold E at rune."
+                    : !w.puzzles.bridge.complete
+                      ? "Sieg: hold 1 at crate to push to plate. Coco: E at crystal."
+                      : !shrineComplete(w)
+                        ? "Before boarding: E at GODDESS SHRINE in the south-west. Complete the maze and pond, obtain the Griffin wig, and offer it to the goddess."
+                        : "Shrine quest complete and both gates open. Explore east to board the airship."
+                  : sceneId === "AIRSHIP"
+                    ? `Hold E together: Sieg at crank, Coco at core. Engine ${Math.min(100, Math.round((w.puzzles.engine.progress / 3) * 100))}%`
+                    : `Coco: hold E at anchor. Sieg: J near Warden. Shield: ${w.boss?.phase}`;
     if (sceneId === "BRIDGE_RUINS")
       goal = `Puzzle Map 2 · Stage ${w.bridgePuzzle?.stage}/4 · ${w.bridgePuzzle?.message}`;
     if (map.points.back) goal += " · E at RETURN to travel back.";
@@ -1115,7 +1288,7 @@ class Adventure extends Phaser.Scene {
         : !maze.cow.parked
           ? "Coco: enter the side bay and cast Black Hole (3) into the cow's left flank. Clear its path."
           : !maze.runner.caught
-            ? "Coco: Slow Time (1). Sieg: Super Speed (2), chase the fleeing carrier and press E to tag it."
+            ? "Sieg: catch the wolf and press E to take its key. Super Speed (2) and Coco’s Slow Time (1) help you catch it."
             : !w.puzzles.hedgeGate.complete
               ? "Use the shared key at the eastern gate (E)."
               : "Open the shears chest with E, then return to the western entrance. Shared progress is retained.";
@@ -1130,7 +1303,9 @@ class Adventure extends Phaser.Scene {
       const g = griffinState(w.puzzles)!;
       goal = g.wigClaimed
         ? "Griffin Wig acquired · Return south to the goddess and offer it from the shared inventory."
-        : "Griffin · Coco: Fly to the northern nest; drop the Mirror and Shears for a haircut. Black Hole pulls it ashore. Sieg: stand to bait a headbutt, dodge behind a pillar. Slow Time helps both heroes dodge.";
+        : g.wigDropped
+          ? "Griffin Wig dropped · Coco: E at the northern nest to pick it up, then return to the goddess."
+          : "Griffin · Coco: Fly to the northern nest; drop the Mirror and Shears for a haircut. Black Hole pulls it ashore. Sieg: stand to bait a headbutt, dodge behind a pillar. Slow Time helps both heroes dodge.";
     }
     if (sceneId === "GODDESS_SHRINE")
       goal = shrineComplete(w)
