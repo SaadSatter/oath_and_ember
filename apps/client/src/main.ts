@@ -65,8 +65,26 @@ import {
 } from "../../../packages/shared/src/statueGlade.js";
 // The glade's way onward is not shown until the statue has her chair.
 const sealedExit = (sceneId: string, id: string, w: World) =>
-  sceneId === "PUZZLE_GLADE" && id === "exit" && !gladeSolved(w.puzzles);
+  (sceneId === "PUZZLE_GLADE" && id === "exit" && !gladeSolved(w.puzzles)) ||
+  // Prologue forest: story spots are never signposted, and the trail leads
+  // on only once the cart has been found.
+  sceneId === "PROLOGUE_CLEARING" ||
+  (sceneId === "PROLOGUE_TRAIL" &&
+    (id === "cart" ||
+      (id === "exit" && !w.story?.flags.includes("prologue.cart"))));
 import { NpcView, preloadNpcs } from "./entities/NpcView.js";
+import { AldenView, nearAlden, preloadAlden } from "./entities/AldenView.js";
+import { StoryDialogue } from "./ui/storyDialogue.js";
+import { isShopScene } from "../../../packages/shared/src/magicShop.js";
+import { isComposedScene } from "../../../packages/shared/src/composedScenes.js";
+import { StoryEffects } from "./entities/StoryEffects.js";
+import {
+  TRAIL_ONWARD,
+  aldenIdleLines,
+  graveVisible,
+  storyObjectives,
+  trailInspections,
+} from "../../../packages/shared/src/prologue.js";
 import { npcInReach } from "../../../packages/shared/src/npcs.js";
 import {
   isVillageInterior,
@@ -130,6 +148,15 @@ const dialogue = new DialogueBox(() => {
   keys.clear();
   submitInput(true);
 });
+// The prologue's shared scenes. The server picks each line; E marks it read.
+const story = new StoryDialogue(
+  (cutscene, line) =>
+    void net.request("story:read", { cutscene, line }).catch(() => undefined),
+  () => {
+    keys.clear();
+    submitInput(true);
+  },
+);
 const inventory = new InventoryPanel(
   net,
   () => {
@@ -152,6 +179,7 @@ window.addEventListener(
       e.repeat ||
       e.key.toLowerCase() !== "e" ||
       dialogue.open ||
+      story.open ||
       inventory.open ||
       (e.target as HTMLElement).matches("input, textarea, select")
     )
@@ -182,6 +210,22 @@ window.addEventListener(
       });
       return;
     }
+    // Spilled cargo on the prologue trail: each hero reads it their own way.
+    if (scene === "PROLOGUE_TRAIL" && me.role) {
+      const spot = Object.keys(trailInspections).find((id) => {
+        const q = maps.PROLOGUE_TRAIL.points[id];
+        return q && Math.hypot(q.x - hero.x, q.y - hero.y) <= 50;
+      });
+      if (spot) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        dialogue.say({
+          speaker: heroNames[me.role],
+          pages: trailInspections[spot][me.role],
+        });
+        return;
+      }
+    }
     // Doors and exits keep E: never start a conversation beside one.
     if (
       Object.values(maps[scene].points).some(
@@ -189,6 +233,17 @@ window.addEventListener(
       )
     )
       return;
+    if (me.role && nearAlden(w.story, scene, hero)) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      dialogue.say({
+        speaker: "Alden",
+        pages: aldenIdleLines[w.story!.stage]?.[me.role] ?? [
+          "Mind the shelves on your way past.",
+        ],
+      });
+      return;
+    }
     const npc = npcInReach(
       me.sceneId ?? w.sceneId,
       hero,
@@ -409,7 +464,7 @@ function renderUI() {
 net.onchange = renderUI;
 renderUI();
 window.addEventListener("keydown", (e) => {
-  if (inventory.open || dialogue.open) return;
+  if (inventory.open || dialogue.open || story.open) return;
   if (
     (e.target as HTMLElement).tagName === "INPUT" ||
     ((e.target as HTMLElement).closest("#special-abilities") &&
@@ -623,7 +678,10 @@ function submitInput(reliable = false) {
   )
     return;
   const held = (...names: string[]) =>
-    !inventory.open && !dialogue.open && names.some((k) => keys.has(k));
+    !inventory.open &&
+    !dialogue.open &&
+    !story.open &&
+    names.some((k) => keys.has(k));
   const i = neutral(++net.seq);
   i.targetTick = net.clock.target(w.serverTick, performance.now());
   {
@@ -685,6 +743,8 @@ function shotTargets(w: World, sceneId: SceneId) {
 class Adventure extends Phaser.Scene {
   temporalView!: TemporalView;
   npcView!: NpcView;
+  aldenView!: AldenView;
+  storyEffects!: StoryEffects;
   gladeView!: StatueGladeView;
   gfx!: Phaser.GameObjects.Graphics;
   environment!: EnvironmentView;
@@ -713,6 +773,7 @@ class Adventure extends Phaser.Scene {
     preloadShrine(this);
     preloadGriffin(this);
     preloadNpcs(this);
+    preloadAlden(this);
     preloadStatueGlade(this);
     preloadHeroes(this);
     preloadTemporal(this);
@@ -757,6 +818,14 @@ class Adventure extends Phaser.Scene {
     });
     this.temporalView = new TemporalView(this);
     this.npcView = new NpcView(this);
+    this.aldenView = new AldenView(this);
+    this.storyEffects = new StoryEffects(this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
+      this.storyEffects.destroy(),
+    );
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
+      this.aldenView.destroy(),
+    );
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
       this.npcView.destroy(),
     );
@@ -812,7 +881,7 @@ class Adventure extends Phaser.Scene {
     const me = w.players[net.session?.playerId || ""];
     if (!me) return;
     const sceneId = me.sceneId ?? w.sceneId;
-    const indoors = sceneId === "HOUSE_INTERIOR" || isVillageInterior(sceneId);
+    const indoors = isShopScene(sceneId) || isVillageInterior(sceneId);
     const house = sceneId === "MAIN_HOUSE" || indoors;
     const map = maps[sceneId];
     const zoom = pixelZoom(this),
@@ -838,6 +907,7 @@ class Adventure extends Phaser.Scene {
       casts.clear();
     }
     this.environment.updatePushables(w.pushableOffsets);
+    this.environment.setGraveVisible(graveVisible(w.story));
     this.bridgeView.update(w, sceneId);
     this.mazeView.update(w, sceneId);
     this.pondView.update(w, sceneId);
@@ -954,6 +1024,23 @@ class Adventure extends Phaser.Scene {
       // the whole plaza into this viewport discards detail before CSS upscales it.
       focus = { x: 640, y: 430, zoom: 1 };
     }
+    // Story scenes outdoors frame the local hero together with Alden.
+    const alden = w.story?.alden;
+    if (
+      !focus &&
+      !house &&
+      w.story?.cutscene &&
+      alden &&
+      alden.scene === sceneId
+    )
+      focus = {
+        x: (this.rendered.x + alden.x) / 2,
+        y:
+          (Math.min(this.rendered.y - 50, alden.y - 70) +
+            Math.max(this.rendered.y + 30, alden.y + 30)) /
+          2,
+        zoom: 1,
+      };
     if (this.focusScene !== sceneId) {
       // Arriving in a scene starts settled, never panning in from elsewhere.
       this.focusScene = sceneId;
@@ -1003,6 +1090,7 @@ class Adventure extends Phaser.Scene {
     g.clear();
     if (
       !house &&
+      !isComposedScene(sceneId) &&
       !isPostTownScene(sceneId) &&
       !isSettlementScene(sceneId) &&
       sceneId !== "BRIDGE_RUINS" &&
@@ -1030,6 +1118,7 @@ class Adventure extends Phaser.Scene {
     )) {
       if (
         (house ||
+          isComposedScene(sceneId) ||
           isPostTownScene(sceneId) ||
           isSettlementScene(sceneId) ||
           sceneId === "BRIDGE_RUINS" ||
@@ -1076,8 +1165,18 @@ class Adventure extends Phaser.Scene {
       this.rendered,
       characterRendering === "geometric",
       w,
-      dialogue.open,
+      dialogue.open || story.open,
     );
+    this.aldenView.update(
+      w.story,
+      sceneId,
+      this.rendered,
+      characterRendering === "geometric",
+      dialogue.open || story.open,
+      this.time.now,
+    );
+    story.sync(w, me.role, heroNames[me.role === "OATH" ? "EMBER" : "OATH"]);
+    this.storyEffects.update(w, sceneId, this.time.now);
     for (const p of Object.values(w.players)) {
       if ((p.sceneId ?? w.sceneId) !== sceneId) continue;
       const pos =
@@ -1209,26 +1308,50 @@ class Adventure extends Phaser.Scene {
       )
         continue;
       if (sealedExit(sceneId, id, w)) continue;
+      // During the prologue the road leads to Emberbrook (east) and the
+      // forest (west); neither opens until the story gets there.
+      const prologueSign =
+        sceneId === "MAIN_HOUSE" && w.story
+          ? (
+              { exit: "EMBERBROOK →", shrine: "← FOREST" } as Record<
+                string,
+                string
+              >
+            )[id]
+          : undefined;
       this.labels.push(
         this.add
           .text(
             // The doorway sits on the room's bottom edge where heroes arrive;
             // label it beside the door so the hero never covers it.
             id === "leave" ? q.x + 92 : q.x,
-            id === "leave" ? q.y - 12 : q.y + 34,
-            id === "back"
-              ? "E · RETURN"
-              : id.startsWith("door_")
-                ? "E · ENTER"
-                : id === "leave"
-                  ? "E · LEAVE"
-                  : id === "shrine"
-                    ? "E · GODDESS SHRINE"
-                    : id === "maze"
-                      ? "E · HEDGE MAZE"
-                      : id === "pond"
-                        ? "E · MIRROR POND"
-                        : id.toUpperCase(),
+            id === "leave"
+              ? q.y - 12
+              : id === "downstairs"
+                ? q.y - 46
+                : q.y + 34,
+            prologueSign ??
+              (id === "back"
+                ? "E · RETURN"
+                : id.startsWith("door_")
+                  ? "E · ENTER"
+                  : id === "leave"
+                    ? "E · LEAVE"
+                    : id === "crates" || id === "barrel"
+                      ? "E · INSPECT"
+                      : sceneId === "PROLOGUE_TRAIL" && id === "exit"
+                        ? "E · FOLLOW THE TRACKS"
+                        : id === "upstairs"
+                          ? "E · UPSTAIRS"
+                          : id === "downstairs"
+                            ? "E · DOWNSTAIRS"
+                            : id === "shrine"
+                              ? "E · GODDESS SHRINE"
+                              : id === "maze"
+                                ? "E · HEDGE MAZE"
+                                : id === "pond"
+                                  ? "E · MIRROR POND"
+                                  : id.toUpperCase()),
             {
               fontSize: "12px",
               color: "#ecdfc7",
@@ -1245,40 +1368,49 @@ class Adventure extends Phaser.Scene {
       sceneId === "MAIN_HOUSE"
         ? "E by the front door: enter house. Follow the path east; E at the exit for Emberbrook Village. Playtest shortcut: E at the west sign for the Goddess Shrine."
         : sceneId === "HOUSE_INTERIOR"
-          ? "Explore the house. E near the lower-right doorway: return outside."
-          : isVillageInterior(sceneId)
-            ? `${villageInteriors[sceneId].name}. ${sceneId.endsWith("_UPPER") ? "E at the stairs to return downstairs." : "E at stairs to go upstairs; E at the doorway to leave."}`
-            : isSettlementScene(sceneId)
-              ? `${settlements[sceneId].name} · E at doors and travel signs. Explore the homes and their upper floors.`
-              : isPostTownScene(sceneId)
-                ? sceneId === "MONSTER_CLEARING" &&
-                  Object.values(w.enemies).some((e) => e.hp > 0)
-                  ? "Defeat the monster wave, then press E at the east exit to enter Puzzle Map 2."
-                  : sceneId === "MONSTER_CLEARING"
-                    ? "Wave cleared! E at the east exit: Puzzle Map 2 — The Bridge That Hates Cooperation."
-                    : sceneId === "EMBERBROOK_VILLAGE"
-                      ? "Emberbrook Village: E to talk with the villagers. The road north of the well leads on; E at the southeast sign visits Willowbank Village."
-                      : sceneId === "PUZZLE_GLADE"
-                        ? gladeSolved(w.puzzles)
-                          ? "The statue rests at last. E at the golden exit before her to continue."
-                          : gladeState(w.puzzles)?.bushesBurned
-                            ? "The thicket is ash. Sieg: hold Push (1) to bring the chair to the statue."
-                            : "Puzzle glade: E to speak with the weeping statue at the heart of the spiral."
-                        : `${postTownRoute[sceneId].name}: explore the paths; E at the golden exit to continue.`
-                : sceneId === "FOREST_RUINS"
-                  ? !w.puzzles.gate.complete
-                    ? "Sieg: J at bramble. Coco: hold E at rune."
-                    : !w.puzzles.bridge.complete
-                      ? "Sieg: hold 1 at crate to push to plate. Coco: E at crystal."
-                      : !shrineComplete(w)
-                        ? "Before boarding: E at GODDESS SHRINE in the south-west. Complete the maze and pond, obtain the Griffin wig, and offer it to the goddess."
-                        : "Shrine quest complete and both gates open. Explore east to board the airship."
-                  : sceneId === "AIRSHIP"
-                    ? `Hold E together: Sieg at crank, Coco at core. Engine ${Math.min(100, Math.round((w.puzzles.engine.progress / 3) * 100))}%`
-                    : `Coco: hold E at anchor. Sieg: J near Warden. Shield: ${w.boss?.phase}`;
+          ? "Alden's Magic Shop. E at the stairs (north-west) to go up; E at the front door to go outside."
+          : sceneId === "HOUSE_UPPER"
+            ? "Upstairs. E at the stairwell to go back down."
+            : isVillageInterior(sceneId)
+              ? `${villageInteriors[sceneId].name}. ${sceneId.endsWith("_UPPER") ? "E at the stairs to return downstairs." : "E at stairs to go upstairs; E at the doorway to leave."}`
+              : isSettlementScene(sceneId)
+                ? `${settlements[sceneId].name} · E at doors and travel signs. Explore the homes and their upper floors.`
+                : isPostTownScene(sceneId)
+                  ? sceneId === "MONSTER_CLEARING" &&
+                    Object.values(w.enemies).some((e) => e.hp > 0)
+                    ? "Defeat the monster wave, then press E at the east exit to enter Puzzle Map 2."
+                    : sceneId === "MONSTER_CLEARING"
+                      ? "Wave cleared! E at the east exit: Puzzle Map 2 — The Bridge That Hates Cooperation."
+                      : sceneId === "EMBERBROOK_VILLAGE"
+                        ? "Emberbrook Village: E to talk with the villagers. The road north of the well leads on; E at the southeast sign visits Willowbank Village."
+                        : sceneId === "PUZZLE_GLADE"
+                          ? gladeSolved(w.puzzles)
+                            ? "The statue rests at last. E at the golden exit before her to continue."
+                            : gladeState(w.puzzles)?.bushesBurned
+                              ? "The thicket is ash. Sieg: hold Push (1) to bring the chair to the statue."
+                              : "Puzzle glade: E to speak with the weeping statue at the heart of the spiral."
+                          : `${postTownRoute[sceneId].name}: explore the paths; E at the golden exit to continue.`
+                  : sceneId === "FOREST_RUINS"
+                    ? !w.puzzles.gate.complete
+                      ? "Sieg: J at bramble. Coco: hold E at rune."
+                      : !w.puzzles.bridge.complete
+                        ? "Sieg: hold 1 at crate to push to plate. Coco: E at crystal."
+                        : !shrineComplete(w)
+                          ? "Before boarding: E at GODDESS SHRINE in the south-west. Complete the maze and pond, obtain the Griffin wig, and offer it to the goddess."
+                          : "Shrine quest complete and both gates open. Explore east to board the airship."
+                    : sceneId === "AIRSHIP"
+                      ? `Hold E together: Sieg at crank, Coco at core. Engine ${Math.min(100, Math.round((w.puzzles.engine.progress / 3) * 100))}%`
+                      : `Coco: hold E at anchor. Sieg: J near Warden. Shield: ${w.boss?.phase}`;
     if (sceneId === "BRIDGE_RUINS")
       goal = `Puzzle Map 2 · Stage ${w.bridgePuzzle?.stage}/4 · ${w.bridgePuzzle?.message}`;
     if (map.points.back) goal += " · E at RETURN to travel back.";
+    const storyGoal =
+      me.role && w.story
+        ? w.story.stage === "TRAIL" && w.story.flags.includes("prologue.cart")
+          ? TRAIL_ONWARD
+          : storyObjectives[w.story.stage]
+        : undefined;
+    if (storyGoal) goal = storyGoal[me.role!];
     if (Object.values(w.players).some((p) => !p.connected))
       goal = "Partner disconnected. Game paused for up to 30 seconds.";
     if (sceneId === "HEDGE_MAZE") {

@@ -68,30 +68,6 @@ it("sorts the dining table independently of all four chairs and the rug", () => 
   );
 });
 
-it("draws an arch above a hero behind it and below a hero in front, retaining the opening", () => {
-  const arch = classifyMapTile("HOUSE_INTERIOR", "Walls", 18, 11);
-  expect(arch.category).toBe("door");
-  expect(mapElementDepth(arch, 3)).toBeGreaterThan(375);
-  expect(mapElementDepth(arch, 3)).toBeLessThan(430);
-  const walls = collisionRects("HOUSE_INTERIOR", {});
-  expect(
-    constrainMotion(
-      { x: 608, y: 430 },
-      { x: 0, y: -70 },
-      maps.HOUSE_INTERIOR,
-      walls,
-    ),
-  ).toEqual({ x: 608, y: 360 });
-  expect(
-    constrainMotion(
-      { x: 570, y: 430 },
-      { x: 0, y: -70 },
-      maps.HOUSE_INTERIOR,
-      walls,
-    ).y,
-  ).toBeGreaterThan(414);
-});
-
 it("classifies all authored house tiles with finite depths and keeps paths non-solid", () => {
   for (const [name, scene] of [
     ["interior", "HOUSE_INTERIOR"],

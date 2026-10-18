@@ -25,6 +25,18 @@ import {
   shrineSpawn,
 } from "../../../packages/shared/src/shrine.js";
 import { tickGolemBeam, contact } from "./golemBeam.js";
+import { shopStairsFoot } from "../../../packages/shared/src/magicShop.js";
+import {
+  AMBUSH_FLOOR,
+  ambushProtects,
+  beginPrologue,
+  prologueBlocksExit,
+  readLine,
+  storyLocked,
+  storyTravel,
+  tickStory,
+  type StoryHost,
+} from "./prologue.js";
 // A shot that struck a body this tick is placed where it first touched it, so
 // its impact appears at the target rather than up to one step beyond it.
 function settleAtContact(
@@ -136,6 +148,11 @@ export class GameRoom {
     return result;
   }
   private travelReadyTick = 0;
+  /** The story moves heroes and the party through these. */
+  private storyHost: StoryHost = {
+    relocate: (p, scene, at) => this.relocate(p, scene, at),
+    travel: (scene) => this.transition(scene),
+  };
   private savedMaps = new Map<
     SceneId,
     {
@@ -185,6 +202,8 @@ export class GameRoom {
     code: string,
     readonly encounter = false,
     readonly startingScene: SceneId = "MAIN_HOUSE",
+    /** Open with the Chapter 0 prologue (only from the main house). */
+    readonly prologue = false,
   ) {
     this.state = {
       roomCode: code,
@@ -483,6 +502,16 @@ export class GameRoom {
         s.pushEdges = [];
       }
     });
+    delete w.story;
+    if (this.prologue && w.sceneId === "MAIN_HOUSE")
+      beginPrologue(w, this.storyHost);
+  }
+  /** A hero has read the current story line (see prologue.ts). */
+  readStoryLine(playerId: string, cutscene: string, line: number) {
+    if (!this.state.players[playerId]) throw Error("Join a room first.");
+    return {
+      accepted: readLine(this.state, this.storyHost, playerId, cutscene, line),
+    };
   }
   transition(scene: World["sceneId"], backwards = false) {
     this.pendingSwords.clear();
@@ -816,6 +845,8 @@ export class GameRoom {
     )
       return;
     if (w.slowTime && w.serverTick >= w.slowTime.endsTick) delete w.slowTime;
+    tickStory(w, this.storyHost);
+    const locked = storyLocked(w);
     if (w.sceneId === "PUZZLE_GLADE") {
       ensureGlade(w);
       tickGlade(w);
@@ -865,27 +896,36 @@ export class GameRoom {
         s.receivedTick === undefined
           ? Date.now() - s.received < 250
           : w.serverTick <= s.receivedTick + Math.ceil(0.25 / DT);
-      const edge = fresh ? s.primaryEdges?.shift() : undefined;
-      const i = fresh
-        ? {
-            ...s.input,
-            primaryHeld: edge?.held ?? s.input.primaryHeld,
-            pushHeld: s.pushEdges?.shift() ?? s.input.pushHeld,
-          }
-        : neutral(s.input.seq);
-      if (!fresh) {
+      const edge = fresh && !locked ? s.primaryEdges?.shift() : undefined;
+      const i =
+        fresh && !locked
+          ? {
+              ...s.input,
+              primaryHeld: edge?.held ?? s.input.primaryHeld,
+              pushHeld: s.pushEdges?.shift() ?? s.input.pushHeld,
+            }
+          : neutral(s.input.seq);
+      if (!fresh || locked) {
         s.primaryEdges = [];
         s.pushEdges = [];
         s.scheduledCasts = [];
+        this.blackHoleRequests.delete(p.id);
+        this.slowTimeRequests.delete(p.id);
       }
       const sceneId = p.sceneId ?? w.sceneId;
       const map = maps[sceneId];
-      const interactEdge = i.interactHeld && !this.interactWasHeld.get(p.id);
-      this.interactWasHeld.set(p.id, i.interactHeld);
+      // A key still held when a story scene ends must be released first.
+      const heldE = locked ? fresh && s.input.interactHeld : i.interactHeld;
+      const interactEdge = !locked && heldE && !this.interactWasHeld.get(p.id);
+      this.interactWasHeld.set(p.id, heldE);
       if (i.pushHeld && !i.primaryHeld && !i.secondaryHeld)
         pushPondMirror(w, p);
       let movement = i;
-      if (s.movementQueue) {
+      if (s.movementQueue && locked) {
+        s.movementQueue.clear();
+        s.movementInput = neutral(s.input.seq);
+        movement = neutral(s.input.seq);
+      } else if (s.movementQueue) {
         if (!fresh) s.movementQueue.clear();
         for (const [tick, command] of [...s.movementQueue].sort(
           (a, b) => a[0] - b[0],
@@ -899,10 +939,10 @@ export class GameRoom {
           ? (s.movementInput ?? neutral(p.lastProcessedInputSeq))
           : neutral(p.lastProcessedInputSeq);
       }
-      if (fresh && this.flightRequests.delete(p.id))
+      if (fresh && !locked && this.flightRequests.delete(p.id))
         movement = { ...movement, flightHeld: true };
       if (!fresh) this.flightRequests.delete(p.id);
-      if (fresh && this.sprintRequests.delete(p.id))
+      if (fresh && !locked && this.sprintRequests.delete(p.id))
         movement = { ...movement, sprintHeld: true };
       if (!fresh) this.sprintRequests.delete(p.id);
       p.lastProcessedInputSeq = movement.seq;
@@ -1088,6 +1128,23 @@ export class GameRoom {
         this.relocate(p, "HOUSE_INTERIOR", maps.HOUSE_INTERIOR.spawn);
         continue;
       }
+      // The shop's stairs: each hero climbs on their own, like the door.
+      if (
+        interactEdge &&
+        sceneId === "HOUSE_INTERIOR" &&
+        near(p, map.points.upstairs, 42)
+      ) {
+        this.relocate(p, "HOUSE_UPPER", maps.HOUSE_UPPER.spawn);
+        continue;
+      }
+      if (
+        interactEdge &&
+        sceneId === "HOUSE_UPPER" &&
+        near(p, map.points.downstairs, 42)
+      ) {
+        this.relocate(p, "HOUSE_INTERIOR", shopStairsFoot);
+        continue;
+      }
       if (interactEdge && p.hp > 0) {
         const portal = settlementPortals.find(
           (t) => t.from === sceneId && near(p, t.at, 36),
@@ -1110,6 +1167,14 @@ export class GameRoom {
         }
       }
       if (interactEdge && p.hp > 0 && w.serverTick >= this.travelReadyTick) {
+        // Roads the prologue controls (the forest trail, the clearing).
+        const point = Object.entries(map.points).find(([, q]) =>
+          near(p, q, 50),
+        )?.[0];
+        if (point && storyTravel(w, this.storyHost, sceneId, point)) {
+          if (w.sceneId !== sceneId && p.sceneId !== sceneId) return;
+          continue;
+        }
         if (
           sceneId === "FOREST_RUINS" &&
           near(p, maps.FOREST_RUINS.points.shrine, 48)
@@ -1203,12 +1268,20 @@ export class GameRoom {
           this.transition("GODDESS_SHRINE");
           return;
         }
-        if (sceneId === "MAIN_HOUSE" && near(p, map.points.exit, 50)) {
+        if (
+          sceneId === "MAIN_HOUSE" &&
+          near(p, map.points.exit, 50) &&
+          !prologueBlocksExit(w, sceneId, "exit")
+        ) {
           this.transition("EMBERBROOK_VILLAGE");
           return;
         }
         // Playtest shortcut from the starting map to the Goddess Shrine hub.
-        if (sceneId === "MAIN_HOUSE" && near(p, map.points.shrine, 50)) {
+        if (
+          sceneId === "MAIN_HOUSE" &&
+          near(p, map.points.shrine, 50) &&
+          !prologueBlocksExit(w, sceneId, "shrine")
+        ) {
           this.transition("GODDESS_SHRINE");
           return;
         }
@@ -1624,6 +1697,8 @@ export class GameRoom {
         tick: this.state.serverTick,
       };
     p.hp -= defended ? n * 0.25 : n;
+    // The prologue ambush is unwinnable but never fatal.
+    if (ambushProtects(this.state, p)) p.hp = Math.max(AMBUSH_FLOOR, p.hp);
     delete p.heavyCharge;
     if (p.hp <= 0) {
       p.hp = 100;

@@ -1,0 +1,4994 @@
+{
+ "frames": {
+  "tree-Tree1": [
+   0,
+   0,
+   128,
+   128
+  ],
+  "tree-Moss_tree1": [
+   129,
+   0,
+   128,
+   128
+  ],
+  "tree-Moss_tree3": [
+   258,
+   0,
+   64,
+   64
+  ],
+  "tree-Tree2": [
+   323,
+   0,
+   64,
+   64
+  ],
+  "tree-Tree3": [
+   388,
+   0,
+   64,
+   64
+  ],
+  "tree-Moss_tree2": [
+   0,
+   129,
+   64,
+   64
+  ],
+  "merchant-cart": [
+   65,
+   129,
+   70,
+   51
+  ],
+  "boulder": [
+   136,
+   129,
+   42,
+   49
+  ],
+  "pine-bush": [
+   179,
+   129,
+   45,
+   45
+  ],
+  "round-bush": [
+   225,
+   129,
+   43,
+   44
+  ],
+  "crates": [
+   269,
+   129,
+   27,
+   39
+  ],
+  "big-fern": [
+   297,
+   129,
+   38,
+   36
+  ],
+  "rock": [
+   336,
+   129,
+   36,
+   34
+  ],
+  "rock-2": [
+   373,
+   129,
+   36,
+   34
+  ],
+  "broken-trunk": [
+   410,
+   129,
+   25,
+   32
+  ],
+  "stump-2": [
+   436,
+   129,
+   39,
+   30
+  ],
+  "bush": [
+   476,
+   129,
+   29,
+   29
+  ],
+  "pine-bush-2": [
+   0,
+   194,
+   31,
+   29
+  ],
+  "mushrooms": [
+   32,
+   194,
+   25,
+   27
+  ],
+  "mushrooms-2": [
+   58,
+   194,
+   26,
+   27
+  ],
+  "barrel": [
+   85,
+   194,
+   18,
+   26
+  ],
+  "shrub": [
+   104,
+   194,
+   27,
+   24
+  ],
+  "log": [
+   132,
+   194,
+   38,
+   24
+  ],
+  "stump": [
+   171,
+   194,
+   31,
+   24
+  ],
+  "fern": [
+   203,
+   194,
+   23,
+   21
+  ],
+  "mushroom": [
+   227,
+   194,
+   18,
+   21
+  ],
+  "rock-small": [
+   246,
+   194,
+   24,
+   20
+  ],
+  "flowers-3": [
+   271,
+   194,
+   14,
+   20
+  ],
+  "crate": [
+   286,
+   194,
+   15,
+   19
+  ],
+  "pebbles": [
+   302,
+   194,
+   21,
+   18
+  ],
+  "flowers-2": [
+   324,
+   194,
+   16,
+   15
+  ],
+  "grass-tuft": [
+   341,
+   194,
+   12,
+   14
+  ],
+  "flowers": [
+   354,
+   194,
+   13,
+   14
+  ]
+ },
+ "scenes": {
+  "PROLOGUE_TRAIL": {
+   "name": "Forest Trail",
+   "backdrop": "trail",
+   "width": 1280,
+   "height": 768,
+   "cameraBounds": {
+    "x": 0,
+    "y": 0,
+    "w": 1280,
+    "h": 768
+   },
+   "spawn": {
+    "x": 1232,
+    "y": 400
+   },
+   "points": {
+    "cart": {
+     "x": 784,
+     "y": 268
+    },
+    "crates": {
+     "x": 691,
+     "y": 292
+    },
+    "barrel": {
+     "x": 877,
+     "y": 301
+    },
+    "exit": {
+     "x": 112,
+     "y": 51
+    }
+   },
+   "solids": [
+    {
+     "x": 0,
+     "y": 0,
+     "w": 32,
+     "h": 128
+    },
+    {
+     "x": 192,
+     "y": 0,
+     "w": 1088,
+     "h": 128
+    },
+    {
+     "x": 0,
+     "y": 128,
+     "w": 64,
+     "h": 64
+    },
+    {
+     "x": 224,
+     "y": 128,
+     "w": 512,
+     "h": 32
+    },
+    {
+     "x": 832,
+     "y": 128,
+     "w": 448,
+     "h": 32
+    },
+    {
+     "x": 256,
+     "y": 160,
+     "w": 416,
+     "h": 32
+    },
+    {
+     "x": 896,
+     "y": 160,
+     "w": 384,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 192,
+     "w": 96,
+     "h": 32
+    },
+    {
+     "x": 288,
+     "y": 192,
+     "w": 352,
+     "h": 32
+    },
+    {
+     "x": 928,
+     "y": 192,
+     "w": 352,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 224,
+     "w": 128,
+     "h": 64
+    },
+    {
+     "x": 320,
+     "y": 224,
+     "w": 320,
+     "h": 32
+    },
+    {
+     "x": 928,
+     "y": 224,
+     "w": 32,
+     "h": 32
+    },
+    {
+     "x": 1024,
+     "y": 224,
+     "w": 256,
+     "h": 32
+    },
+    {
+     "x": 352,
+     "y": 256,
+     "w": 288,
+     "h": 32
+    },
+    {
+     "x": 1056,
+     "y": 256,
+     "w": 224,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 288,
+     "w": 192,
+     "h": 32
+    },
+    {
+     "x": 384,
+     "y": 288,
+     "w": 288,
+     "h": 32
+    },
+    {
+     "x": 1120,
+     "y": 288,
+     "w": 160,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 320,
+     "w": 224,
+     "h": 32
+    },
+    {
+     "x": 416,
+     "y": 320,
+     "w": 288,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 352,
+     "w": 256,
+     "h": 32
+    },
+    {
+     "x": 448,
+     "y": 352,
+     "w": 224,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 384,
+     "w": 288,
+     "h": 32
+    },
+    {
+     "x": 480,
+     "y": 384,
+     "w": 128,
+     "h": 32
+    },
+    {
+     "x": 832,
+     "y": 384,
+     "w": 160,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 416,
+     "w": 320,
+     "h": 32
+    },
+    {
+     "x": 800,
+     "y": 416,
+     "w": 256,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 448,
+     "w": 352,
+     "h": 32
+    },
+    {
+     "x": 768,
+     "y": 448,
+     "w": 320,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 480,
+     "w": 384,
+     "h": 64
+    },
+    {
+     "x": 736,
+     "y": 480,
+     "w": 544,
+     "h": 32
+    },
+    {
+     "x": 704,
+     "y": 512,
+     "w": 576,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 544,
+     "w": 1280,
+     "h": 224
+    },
+    {
+     "x": 736,
+     "y": 208,
+     "w": 96,
+     "h": 40
+    },
+    {
+     "x": 668,
+     "y": 236,
+     "w": 46,
+     "h": 30
+    },
+    {
+     "x": 863,
+     "y": 253,
+     "w": 28,
+     "h": 22
+    },
+    {
+     "x": 827,
+     "y": 283,
+     "w": 22,
+     "h": 18
+    }
+   ],
+   "props": [
+    {
+     "art": "tree-Tree1",
+     "x": -167,
+     "y": -230,
+     "w": 256,
+     "h": 256,
+     "groundY": -32,
+     "id": "tree-Tree1-0"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 1056,
+     "y": -226,
+     "w": 256,
+     "h": 256,
+     "groundY": -32,
+     "id": "tree-Moss_tree1-1"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 93,
+     "y": -223,
+     "w": 256,
+     "h": 256,
+     "groundY": -29,
+     "id": "tree-Moss_tree1-2"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 795,
+     "y": -227,
+     "w": 256,
+     "h": 256,
+     "groundY": -29,
+     "id": "tree-Tree1-3"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 872,
+     "y": -223,
+     "w": 256,
+     "h": 256,
+     "groundY": -29,
+     "id": "tree-Moss_tree1-4"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 291,
+     "y": -222,
+     "w": 256,
+     "h": 256,
+     "groundY": -24,
+     "id": "tree-Tree1-5"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 747,
+     "y": -216,
+     "w": 256,
+     "h": 256,
+     "groundY": -22,
+     "id": "tree-Moss_tree1-6"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 677,
+     "y": -215,
+     "w": 256,
+     "h": 256,
+     "groundY": -21,
+     "id": "tree-Moss_tree1-7"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 1107,
+     "y": -219,
+     "w": 256,
+     "h": 256,
+     "groundY": -21,
+     "id": "tree-Tree1-8"
+    },
+    {
+     "art": "round-bush",
+     "x": -27,
+     "y": -108,
+     "w": 86,
+     "h": 88,
+     "groundY": -20,
+     "id": "round-bush-9"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 143,
+     "y": -217,
+     "w": 256,
+     "h": 256,
+     "groundY": -19,
+     "id": "tree-Tree1-10"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 413,
+     "y": -213,
+     "w": 256,
+     "h": 256,
+     "groundY": -19,
+     "id": "tree-Moss_tree1-11"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 229,
+     "y": -216,
+     "w": 256,
+     "h": 256,
+     "groundY": -18,
+     "id": "tree-Tree1-12"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 547,
+     "y": -210,
+     "w": 256,
+     "h": 256,
+     "groundY": -16,
+     "id": "tree-Moss_tree1-13"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 482,
+     "y": -213,
+     "w": 256,
+     "h": 256,
+     "groundY": -15,
+     "id": "tree-Tree1-14"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 593,
+     "y": -212,
+     "w": 256,
+     "h": 256,
+     "groundY": -14,
+     "id": "tree-Tree1-15"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 335,
+     "y": -203,
+     "w": 256,
+     "h": 256,
+     "groundY": -9,
+     "id": "tree-Moss_tree1-16"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 929,
+     "y": -203,
+     "w": 256,
+     "h": 256,
+     "groundY": -9,
+     "id": "tree-Moss_tree1-17"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 984,
+     "y": -203,
+     "w": 256,
+     "h": 256,
+     "groundY": -5,
+     "id": "tree-Tree1-18"
+    },
+    {
+     "art": "rock-small",
+     "x": -3,
+     "y": -11,
+     "w": 48,
+     "h": 40,
+     "groundY": 29,
+     "id": "rock-small-19"
+    },
+    {
+     "art": "round-bush",
+     "x": -57,
+     "y": -58,
+     "w": 86,
+     "h": 88,
+     "groundY": 30,
+     "id": "round-bush-20"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 426,
+     "y": -167,
+     "w": 256,
+     "h": 256,
+     "groundY": 31,
+     "id": "tree-Tree1-21"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 754,
+     "y": -166,
+     "w": 256,
+     "h": 256,
+     "groundY": 32,
+     "id": "tree-Tree1-22"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 920,
+     "y": -162,
+     "w": 256,
+     "h": 256,
+     "groundY": 32,
+     "id": "tree-Moss_tree1-23"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 169,
+     "y": -157,
+     "w": 256,
+     "h": 256,
+     "groundY": 37,
+     "id": "tree-Moss_tree1-24"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 996,
+     "y": -161,
+     "w": 256,
+     "h": 256,
+     "groundY": 37,
+     "id": "tree-Tree1-25"
+    },
+    {
+     "art": "round-bush",
+     "x": -17,
+     "y": -50,
+     "w": 86,
+     "h": 88,
+     "groundY": 38,
+     "id": "round-bush-26"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 216,
+     "y": -154,
+     "w": 256,
+     "h": 256,
+     "groundY": 40,
+     "id": "tree-Moss_tree1-27"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 270,
+     "y": -156,
+     "w": 256,
+     "h": 256,
+     "groundY": 42,
+     "id": "tree-Tree1-28"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 528,
+     "y": -152,
+     "w": 256,
+     "h": 256,
+     "groundY": 42,
+     "id": "tree-Moss_tree1-29"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 356,
+     "y": -155,
+     "w": 256,
+     "h": 256,
+     "groundY": 43,
+     "id": "tree-Tree1-30"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 1063,
+     "y": -154,
+     "w": 256,
+     "h": 256,
+     "groundY": 44,
+     "id": "tree-Tree1-31"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 863,
+     "y": -148,
+     "w": 256,
+     "h": 256,
+     "groundY": 46,
+     "id": "tree-Moss_tree1-32"
+    },
+    {
+     "art": "pine-bush",
+     "x": 178,
+     "y": -42,
+     "w": 90,
+     "h": 90,
+     "groundY": 48,
+     "id": "pine-bush-33"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 787,
+     "y": -150,
+     "w": 256,
+     "h": 256,
+     "groundY": 48,
+     "id": "tree-Tree1-34"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 623,
+     "y": -141,
+     "w": 256,
+     "h": 256,
+     "groundY": 53,
+     "id": "tree-Moss_tree1-35"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 1118,
+     "y": -139,
+     "w": 256,
+     "h": 256,
+     "groundY": 55,
+     "id": "tree-Moss_tree1-36"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 476,
+     "y": -137,
+     "w": 256,
+     "h": 256,
+     "groundY": 57,
+     "id": "tree-Moss_tree1-37"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 680,
+     "y": -135,
+     "w": 256,
+     "h": 256,
+     "groundY": 59,
+     "id": "tree-Moss_tree1-38"
+    },
+    {
+     "art": "round-bush",
+     "x": -31,
+     "y": -27,
+     "w": 86,
+     "h": 88,
+     "groundY": 61,
+     "id": "round-bush-39"
+    },
+    {
+     "art": "shrub",
+     "x": 182,
+     "y": 13,
+     "w": 54,
+     "h": 48,
+     "groundY": 61,
+     "id": "shrub-40"
+    },
+    {
+     "art": "pine-bush",
+     "x": 162,
+     "y": 1,
+     "w": 90,
+     "h": 90,
+     "groundY": 91,
+     "id": "pine-bush-41"
+    },
+    {
+     "art": "mushrooms",
+     "x": 188,
+     "y": 39,
+     "w": 50,
+     "h": 54,
+     "groundY": 93,
+     "id": "mushrooms-42"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 208,
+     "y": -96,
+     "w": 256,
+     "h": 256,
+     "groundY": 98,
+     "id": "tree-Moss_tree1-43"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 275,
+     "y": -95,
+     "w": 256,
+     "h": 256,
+     "groundY": 99,
+     "id": "tree-Moss_tree1-44"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 872,
+     "y": -94,
+     "w": 256,
+     "h": 256,
+     "groundY": 100,
+     "id": "tree-Moss_tree1-45"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 479,
+     "y": -97,
+     "w": 256,
+     "h": 256,
+     "groundY": 101,
+     "id": "tree-Tree1-46"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 810,
+     "y": -97,
+     "w": 256,
+     "h": 256,
+     "groundY": 101,
+     "id": "tree-Tree1-47"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 529,
+     "y": -92,
+     "w": 256,
+     "h": 256,
+     "groundY": 102,
+     "id": "tree-Moss_tree1-48"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 944,
+     "y": -95,
+     "w": 256,
+     "h": 256,
+     "groundY": 103,
+     "id": "tree-Tree1-49"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": -100,
+     "y": 4,
+     "w": 128,
+     "h": 128,
+     "groundY": 104,
+     "id": "tree-Moss_tree3-50"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 356,
+     "y": -92,
+     "w": 256,
+     "h": 256,
+     "groundY": 106,
+     "id": "tree-Tree1-51"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 1061,
+     "y": -87,
+     "w": 256,
+     "h": 256,
+     "groundY": 111,
+     "id": "tree-Tree1-52"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 607,
+     "y": -85,
+     "w": 256,
+     "h": 256,
+     "groundY": 113,
+     "id": "tree-Tree1-53"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 731,
+     "y": -85,
+     "w": 256,
+     "h": 256,
+     "groundY": 113,
+     "id": "tree-Tree1-54"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 993,
+     "y": -78,
+     "w": 256,
+     "h": 256,
+     "groundY": 116,
+     "id": "tree-Moss_tree1-55"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 1132,
+     "y": -81,
+     "w": 256,
+     "h": 256,
+     "groundY": 117,
+     "id": "tree-Tree1-56"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 161,
+     "y": -76,
+     "w": 256,
+     "h": 256,
+     "groundY": 122,
+     "id": "tree-Tree1-57"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 429,
+     "y": -71,
+     "w": 256,
+     "h": 256,
+     "groundY": 123,
+     "id": "tree-Moss_tree1-58"
+    },
+    {
+     "art": "log",
+     "x": -27,
+     "y": 77,
+     "w": 76,
+     "h": 48,
+     "groundY": 125,
+     "id": "log-59"
+    },
+    {
+     "art": "stump",
+     "x": 201,
+     "y": 77,
+     "w": 62,
+     "h": 48,
+     "groundY": 125,
+     "id": "stump-60"
+    },
+    {
+     "art": "rock-small",
+     "x": 689,
+     "y": 85,
+     "w": 48,
+     "h": 40,
+     "groundY": 125,
+     "id": "rock-small-61"
+    },
+    {
+     "art": "pine-bush",
+     "x": 703,
+     "y": 35,
+     "w": 90,
+     "h": 90,
+     "groundY": 125,
+     "id": "pine-bush-62"
+    },
+    {
+     "art": "pine-bush",
+     "x": 799,
+     "y": 35,
+     "w": 90,
+     "h": 90,
+     "groundY": 125,
+     "id": "pine-bush-63"
+    },
+    {
+     "art": "pine-bush",
+     "x": 7,
+     "y": 67,
+     "w": 90,
+     "h": 90,
+     "groundY": 157,
+     "id": "pine-bush-64"
+    },
+    {
+     "art": "shrub",
+     "x": 661,
+     "y": 109,
+     "w": 54,
+     "h": 48,
+     "groundY": 157,
+     "id": "shrub-65"
+    },
+    {
+     "art": "broken-trunk",
+     "x": 860,
+     "y": 93,
+     "w": 50,
+     "h": 64,
+     "groundY": 157,
+     "id": "broken-trunk-66"
+    },
+    {
+     "art": "bush",
+     "x": 888,
+     "y": 99,
+     "w": 58,
+     "h": 58,
+     "groundY": 157,
+     "id": "bush-67"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 429,
+     "y": -35,
+     "w": 256,
+     "h": 256,
+     "groundY": 159,
+     "id": "tree-Moss_tree1-68"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 784,
+     "y": -38,
+     "w": 256,
+     "h": 256,
+     "groundY": 160,
+     "id": "tree-Tree1-69"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 940,
+     "y": -34,
+     "w": 256,
+     "h": 256,
+     "groundY": 160,
+     "id": "tree-Moss_tree1-70"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 998,
+     "y": -32,
+     "w": 256,
+     "h": 256,
+     "groundY": 166,
+     "id": "tree-Tree1-71"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 177,
+     "y": -31,
+     "w": 256,
+     "h": 256,
+     "groundY": 167,
+     "id": "tree-Tree1-72"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 209,
+     "y": -24,
+     "w": 256,
+     "h": 256,
+     "groundY": 170,
+     "id": "tree-Moss_tree1-73"
+    },
+    {
+     "art": "tree-Tree2",
+     "x": -108,
+     "y": 47,
+     "w": 128,
+     "h": 128,
+     "groundY": 171,
+     "id": "tree-Tree2-74"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 846,
+     "y": -20,
+     "w": 256,
+     "h": 256,
+     "groundY": 174,
+     "id": "tree-Moss_tree1-75"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 277,
+     "y": -23,
+     "w": 256,
+     "h": 256,
+     "groundY": 175,
+     "id": "tree-Tree1-76"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 351,
+     "y": -22,
+     "w": 256,
+     "h": 256,
+     "groundY": 176,
+     "id": "tree-Tree1-77"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 555,
+     "y": 79,
+     "w": 128,
+     "h": 128,
+     "groundY": 179,
+     "id": "tree-Moss_tree3-78"
+    },
+    {
+     "art": "round-bush",
+     "x": 8,
+     "y": 92,
+     "w": 86,
+     "h": 88,
+     "groundY": 180,
+     "id": "round-bush-79"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 1038,
+     "y": -17,
+     "w": 256,
+     "h": 256,
+     "groundY": 181,
+     "id": "tree-Tree1-80"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 1121,
+     "y": -9,
+     "w": 256,
+     "h": 256,
+     "groundY": 185,
+     "id": "tree-Moss_tree1-81"
+    },
+    {
+     "art": "grass-tuft",
+     "x": 95,
+     "y": 158,
+     "w": 24,
+     "h": 28,
+     "groundY": 186,
+     "id": "grass-tuft-82"
+    },
+    {
+     "art": "flowers",
+     "x": 228,
+     "y": 158,
+     "w": 26,
+     "h": 28,
+     "groundY": 186,
+     "id": "flowers-83"
+    },
+    {
+     "art": "mushrooms-2",
+     "x": 635,
+     "y": 135,
+     "w": 52,
+     "h": 54,
+     "groundY": 189,
+     "id": "mushrooms-2-84"
+    },
+    {
+     "art": "mushroom",
+     "x": 249,
+     "y": 176,
+     "w": 36,
+     "h": 42,
+     "groundY": 218,
+     "id": "mushroom-85"
+    },
+    {
+     "art": "fern",
+     "x": 863,
+     "y": 176,
+     "w": 46,
+     "h": 42,
+     "groundY": 218,
+     "id": "fern-86"
+    },
+    {
+     "art": "broken-trunk",
+     "x": 16,
+     "y": 157,
+     "w": 50,
+     "h": 64,
+     "groundY": 221,
+     "id": "broken-trunk-87"
+    },
+    {
+     "art": "mushrooms-2",
+     "x": 49,
+     "y": 167,
+     "w": 52,
+     "h": 54,
+     "groundY": 221,
+     "id": "mushrooms-2-88"
+    },
+    {
+     "art": "round-bush",
+     "x": 257,
+     "y": 133,
+     "w": 86,
+     "h": 88,
+     "groundY": 221,
+     "id": "round-bush-89"
+    },
+    {
+     "art": "log",
+     "x": 306,
+     "y": 173,
+     "w": 76,
+     "h": 48,
+     "groundY": 221,
+     "id": "log-90"
+    },
+    {
+     "art": "log",
+     "x": 908,
+     "y": 173,
+     "w": 76,
+     "h": 48,
+     "groundY": 221,
+     "id": "log-91"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 427,
+     "y": 26,
+     "w": 256,
+     "h": 256,
+     "groundY": 224,
+     "id": "tree-Tree1-92"
+    },
+    {
+     "art": "pine-bush",
+     "x": -58,
+     "y": 135,
+     "w": 90,
+     "h": 90,
+     "groundY": 225,
+     "id": "pine-bush-93"
+    },
+    {
+     "art": "pine-bush",
+     "x": -31,
+     "y": 136,
+     "w": 90,
+     "h": 90,
+     "groundY": 226,
+     "id": "pine-bush-94"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 1056,
+     "y": 33,
+     "w": 256,
+     "h": 256,
+     "groundY": 227,
+     "id": "tree-Moss_tree1-95"
+    },
+    {
+     "art": "tree-Tree3",
+     "x": 1008,
+     "y": 131,
+     "w": 128,
+     "h": 128,
+     "groundY": 233,
+     "id": "tree-Tree3-96"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 999,
+     "y": 40,
+     "w": 256,
+     "h": 256,
+     "groundY": 234,
+     "id": "tree-Moss_tree1-97"
+    },
+    {
+     "art": "tree-Tree3",
+     "x": 300,
+     "y": 134,
+     "w": 128,
+     "h": 128,
+     "groundY": 236,
+     "id": "tree-Tree3-98"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 289,
+     "y": 38,
+     "w": 256,
+     "h": 256,
+     "groundY": 236,
+     "id": "tree-Tree1-99"
+    },
+    {
+     "art": "tree-Tree2",
+     "x": 543,
+     "y": 118,
+     "w": 128,
+     "h": 128,
+     "groundY": 242,
+     "id": "tree-Tree2-100"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 366,
+     "y": 46,
+     "w": 256,
+     "h": 256,
+     "groundY": 244,
+     "id": "tree-Tree1-101"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 1136,
+     "y": 50,
+     "w": 256,
+     "h": 256,
+     "groundY": 248,
+     "id": "tree-Tree1-102"
+    },
+    {
+     "art": "merchant-cart",
+     "x": 714,
+     "y": 146,
+     "w": 140,
+     "h": 102,
+     "groundY": 248,
+     "id": "merchant-cart-103"
+    },
+    {
+     "art": "flowers",
+     "x": 868,
+     "y": 222,
+     "w": 26,
+     "h": 28,
+     "groundY": 250,
+     "id": "flowers-104"
+    },
+    {
+     "art": "mushroom",
+     "x": 982,
+     "y": 208,
+     "w": 36,
+     "h": 42,
+     "groundY": 250,
+     "id": "mushroom-105"
+    },
+    {
+     "art": "mushrooms",
+     "x": 83,
+     "y": 199,
+     "w": 50,
+     "h": 54,
+     "groundY": 253,
+     "id": "mushrooms-106"
+    },
+    {
+     "art": "boulder",
+     "x": 289,
+     "y": 155,
+     "w": 84,
+     "h": 98,
+     "groundY": 253,
+     "id": "boulder-107"
+    },
+    {
+     "art": "rock",
+     "x": 329,
+     "y": 185,
+     "w": 72,
+     "h": 68,
+     "groundY": 253,
+     "id": "rock-108"
+    },
+    {
+     "art": "boulder",
+     "x": 910,
+     "y": 155,
+     "w": 84,
+     "h": 98,
+     "groundY": 253,
+     "id": "boulder-109"
+    },
+    {
+     "art": "stump",
+     "x": 1049,
+     "y": 205,
+     "w": 62,
+     "h": 48,
+     "groundY": 253,
+     "id": "stump-110"
+    },
+    {
+     "art": "crates",
+     "x": 664,
+     "y": 188,
+     "w": 54,
+     "h": 78,
+     "groundY": 266,
+     "id": "crates-111"
+    },
+    {
+     "art": "barrel",
+     "x": 859,
+     "y": 223,
+     "w": 36,
+     "h": 52,
+     "groundY": 275,
+     "id": "barrel-112"
+    },
+    {
+     "art": "pine-bush-2",
+     "x": 86,
+     "y": 227,
+     "w": 62,
+     "h": 58,
+     "groundY": 285,
+     "id": "pine-bush-2-113"
+    },
+    {
+     "art": "round-bush",
+     "x": 350,
+     "y": 197,
+     "w": 86,
+     "h": 88,
+     "groundY": 285,
+     "id": "round-bush-114"
+    },
+    {
+     "art": "rock",
+     "x": 1067,
+     "y": 217,
+     "w": 72,
+     "h": 68,
+     "groundY": 285,
+     "id": "rock-115"
+    },
+    {
+     "art": "bush",
+     "x": 1101,
+     "y": 227,
+     "w": 58,
+     "h": 58,
+     "groundY": 285,
+     "id": "bush-116"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 297,
+     "y": 92,
+     "w": 256,
+     "h": 256,
+     "groundY": 286,
+     "id": "tree-Moss_tree1-117"
+    },
+    {
+     "art": "tree-Tree2",
+     "x": -83,
+     "y": 164,
+     "w": 128,
+     "h": 128,
+     "groundY": 288,
+     "id": "tree-Tree2-118"
+    },
+    {
+     "art": "tree-Moss_tree2",
+     "x": 538,
+     "y": 169,
+     "w": 128,
+     "h": 128,
+     "groundY": 289,
+     "id": "tree-Moss_tree2-119"
+    },
+    {
+     "art": "round-bush",
+     "x": 50,
+     "y": 202,
+     "w": 86,
+     "h": 88,
+     "groundY": 290,
+     "id": "round-bush-120"
+    },
+    {
+     "art": "tree-Tree3",
+     "x": -36,
+     "y": 191,
+     "w": 128,
+     "h": 128,
+     "groundY": 293,
+     "id": "tree-Tree3-121"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 403,
+     "y": 103,
+     "w": 256,
+     "h": 256,
+     "groundY": 297,
+     "id": "tree-Moss_tree1-122"
+    },
+    {
+     "art": "crate",
+     "x": 823,
+     "y": 263,
+     "w": 30,
+     "h": 38,
+     "groundY": 301,
+     "id": "crate-123"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 339,
+     "y": 107,
+     "w": 256,
+     "h": 256,
+     "groundY": 305,
+     "id": "tree-Tree1-124"
+    },
+    {
+     "art": "pine-bush",
+     "x": 126,
+     "y": 222,
+     "w": 90,
+     "h": 90,
+     "groundY": 312,
+     "id": "pine-bush-125"
+    },
+    {
+     "art": "fern",
+     "x": 176,
+     "y": 272,
+     "w": 46,
+     "h": 42,
+     "groundY": 314,
+     "id": "fern-126"
+    },
+    {
+     "art": "mushroom",
+     "x": 1053,
+     "y": 272,
+     "w": 36,
+     "h": 42,
+     "groundY": 314,
+     "id": "mushroom-127"
+    },
+    {
+     "art": "big-fern",
+     "x": 131,
+     "y": 245,
+     "w": 76,
+     "h": 72,
+     "groundY": 317,
+     "id": "big-fern-128"
+    },
+    {
+     "art": "pine-bush-2",
+     "x": 406,
+     "y": 259,
+     "w": 62,
+     "h": 58,
+     "groundY": 317,
+     "id": "pine-bush-2-129"
+    },
+    {
+     "art": "mushrooms",
+     "x": 624,
+     "y": 263,
+     "w": 50,
+     "h": 54,
+     "groundY": 317,
+     "id": "mushrooms-130"
+    },
+    {
+     "art": "stump",
+     "x": 1098,
+     "y": 269,
+     "w": 62,
+     "h": 48,
+     "groundY": 317,
+     "id": "stump-131"
+    },
+    {
+     "art": "fern",
+     "x": 1139,
+     "y": 275,
+     "w": 46,
+     "h": 42,
+     "groundY": 317,
+     "id": "fern-132"
+    },
+    {
+     "art": "boulder",
+     "x": 1225,
+     "y": 219,
+     "w": 84,
+     "h": 98,
+     "groundY": 317,
+     "id": "boulder-133"
+    },
+    {
+     "art": "pine-bush",
+     "x": 170,
+     "y": 258,
+     "w": 90,
+     "h": 90,
+     "groundY": 348,
+     "id": "pine-bush-134"
+    },
+    {
+     "art": "stump-2",
+     "x": 136,
+     "y": 289,
+     "w": 78,
+     "h": 60,
+     "groundY": 349,
+     "id": "stump-2-135"
+    },
+    {
+     "art": "mushrooms-2",
+     "x": 184,
+     "y": 295,
+     "w": 52,
+     "h": 54,
+     "groundY": 349,
+     "id": "mushrooms-2-136"
+    },
+    {
+     "art": "bush",
+     "x": 402,
+     "y": 291,
+     "w": 58,
+     "h": 58,
+     "groundY": 349,
+     "id": "bush-137"
+    },
+    {
+     "art": "round-bush",
+     "x": 419,
+     "y": 261,
+     "w": 86,
+     "h": 88,
+     "groundY": 349,
+     "id": "round-bush-138"
+    },
+    {
+     "art": "pine-bush",
+     "x": 59,
+     "y": 260,
+     "w": 90,
+     "h": 90,
+     "groundY": 350,
+     "id": "pine-bush-139"
+    },
+    {
+     "art": "pine-bush",
+     "x": 127,
+     "y": 263,
+     "w": 90,
+     "h": 90,
+     "groundY": 353,
+     "id": "pine-bush-140"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 432,
+     "y": 158,
+     "w": 256,
+     "h": 256,
+     "groundY": 356,
+     "id": "tree-Tree1-141"
+    },
+    {
+     "art": "tree-Tree2",
+     "x": 526,
+     "y": 246,
+     "w": 128,
+     "h": 128,
+     "groundY": 370,
+     "id": "tree-Tree2-142"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": -89,
+     "y": 277,
+     "w": 128,
+     "h": 128,
+     "groundY": 377,
+     "id": "tree-Moss_tree3-143"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": -45,
+     "y": 277,
+     "w": 128,
+     "h": 128,
+     "groundY": 377,
+     "id": "tree-Moss_tree3-144"
+    },
+    {
+     "art": "fern",
+     "x": 410,
+     "y": 336,
+     "w": 46,
+     "h": 42,
+     "groundY": 378,
+     "id": "fern-145"
+    },
+    {
+     "art": "rock",
+     "x": 174,
+     "y": 313,
+     "w": 72,
+     "h": 68,
+     "groundY": 381,
+     "id": "rock-146"
+    },
+    {
+     "art": "mushrooms-2",
+     "x": 442,
+     "y": 327,
+     "w": 52,
+     "h": 54,
+     "groundY": 381,
+     "id": "mushrooms-2-147"
+    },
+    {
+     "art": "big-fern",
+     "x": 458,
+     "y": 309,
+     "w": 76,
+     "h": 72,
+     "groundY": 381,
+     "id": "big-fern-148"
+    },
+    {
+     "art": "pine-bush-2",
+     "x": 590,
+     "y": 323,
+     "w": 62,
+     "h": 58,
+     "groundY": 381,
+     "id": "pine-bush-2-149"
+    },
+    {
+     "art": "flowers-3",
+     "x": 426,
+     "y": 370,
+     "w": 28,
+     "h": 40,
+     "groundY": 410,
+     "id": "flowers-3-150"
+    },
+    {
+     "art": "round-bush",
+     "x": 194,
+     "y": 324,
+     "w": 86,
+     "h": 88,
+     "groundY": 412,
+     "id": "round-bush-151"
+    },
+    {
+     "art": "round-bush",
+     "x": 242,
+     "y": 325,
+     "w": 86,
+     "h": 88,
+     "groundY": 413,
+     "id": "round-bush-152"
+    },
+    {
+     "art": "mushrooms-2",
+     "x": 207,
+     "y": 359,
+     "w": 52,
+     "h": 54,
+     "groundY": 413,
+     "id": "mushrooms-2-153"
+    },
+    {
+     "art": "big-fern",
+     "x": 460,
+     "y": 341,
+     "w": 76,
+     "h": 72,
+     "groundY": 413,
+     "id": "big-fern-154"
+    },
+    {
+     "art": "pine-bush-2",
+     "x": 810,
+     "y": 355,
+     "w": 62,
+     "h": 58,
+     "groundY": 413,
+     "id": "pine-bush-2-155"
+    },
+    {
+     "art": "big-fern",
+     "x": 870,
+     "y": 341,
+     "w": 76,
+     "h": 72,
+     "groundY": 413,
+     "id": "big-fern-156"
+    },
+    {
+     "art": "tree-Tree3",
+     "x": -14,
+     "y": 319,
+     "w": 128,
+     "h": 128,
+     "groundY": 421,
+     "id": "tree-Tree3-157"
+    },
+    {
+     "art": "pine-bush",
+     "x": 70,
+     "y": 332,
+     "w": 90,
+     "h": 90,
+     "groundY": 422,
+     "id": "pine-bush-158"
+    },
+    {
+     "art": "pine-bush",
+     "x": 111,
+     "y": 332,
+     "w": 90,
+     "h": 90,
+     "groundY": 422,
+     "id": "pine-bush-159"
+    },
+    {
+     "art": "round-bush",
+     "x": 802,
+     "y": 335,
+     "w": 86,
+     "h": 88,
+     "groundY": 423,
+     "id": "round-bush-160"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -154,
+     "y": 238,
+     "w": 256,
+     "h": 256,
+     "groundY": 432,
+     "id": "tree-Moss_tree1-161"
+    },
+    {
+     "art": "pine-bush",
+     "x": 875,
+     "y": 342,
+     "w": 90,
+     "h": 90,
+     "groundY": 432,
+     "id": "pine-bush-162"
+    },
+    {
+     "art": "flowers",
+     "x": 770,
+     "y": 414,
+     "w": 26,
+     "h": 28,
+     "groundY": 442,
+     "id": "flowers-163"
+    },
+    {
+     "art": "bush",
+     "x": 246,
+     "y": 387,
+     "w": 58,
+     "h": 58,
+     "groundY": 445,
+     "id": "bush-164"
+    },
+    {
+     "art": "stump",
+     "x": 274,
+     "y": 397,
+     "w": 62,
+     "h": 48,
+     "groundY": 445,
+     "id": "stump-165"
+    },
+    {
+     "art": "pine-bush-2",
+     "x": 816,
+     "y": 387,
+     "w": 62,
+     "h": 58,
+     "groundY": 445,
+     "id": "pine-bush-2-166"
+    },
+    {
+     "art": "bush",
+     "x": 971,
+     "y": 387,
+     "w": 58,
+     "h": 58,
+     "groundY": 445,
+     "id": "bush-167"
+    },
+    {
+     "art": "flowers",
+     "x": 1221,
+     "y": 446,
+     "w": 26,
+     "h": 28,
+     "groundY": 474,
+     "id": "flowers-168"
+    },
+    {
+     "art": "round-bush",
+     "x": 827,
+     "y": 389,
+     "w": 86,
+     "h": 88,
+     "groundY": 477,
+     "id": "round-bush-169"
+    },
+    {
+     "art": "stump",
+     "x": 310,
+     "y": 429,
+     "w": 62,
+     "h": 48,
+     "groundY": 477,
+     "id": "stump-170"
+    },
+    {
+     "art": "stump-2",
+     "x": 776,
+     "y": 417,
+     "w": 78,
+     "h": 60,
+     "groundY": 477,
+     "id": "stump-2-171"
+    },
+    {
+     "art": "fern",
+     "x": 1020,
+     "y": 435,
+     "w": 46,
+     "h": 42,
+     "groundY": 477,
+     "id": "fern-172"
+    },
+    {
+     "art": "stump-2",
+     "x": 1037,
+     "y": 417,
+     "w": 78,
+     "h": 60,
+     "groundY": 477,
+     "id": "stump-2-173"
+    },
+    {
+     "art": "round-bush",
+     "x": 875,
+     "y": 390,
+     "w": 86,
+     "h": 88,
+     "groundY": 478,
+     "id": "round-bush-174"
+    },
+    {
+     "art": "pine-bush",
+     "x": 320,
+     "y": 404,
+     "w": 90,
+     "h": 90,
+     "groundY": 494,
+     "id": "pine-bush-175"
+    },
+    {
+     "art": "pine-bush",
+     "x": 1186,
+     "y": 405,
+     "w": 90,
+     "h": 90,
+     "groundY": 495,
+     "id": "pine-bush-176"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -86,
+     "y": 304,
+     "w": 256,
+     "h": 256,
+     "groundY": 498,
+     "id": "tree-Moss_tree1-177"
+    },
+    {
+     "art": "tree-Tree3",
+     "x": 19,
+     "y": 396,
+     "w": 128,
+     "h": 128,
+     "groundY": 498,
+     "id": "tree-Tree3-178"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -159,
+     "y": 305,
+     "w": 256,
+     "h": 256,
+     "groundY": 499,
+     "id": "tree-Moss_tree1-179"
+    },
+    {
+     "art": "pine-bush",
+     "x": 259,
+     "y": 409,
+     "w": 90,
+     "h": 90,
+     "groundY": 499,
+     "id": "pine-bush-180"
+    },
+    {
+     "art": "pine-bush",
+     "x": 937,
+     "y": 409,
+     "w": 90,
+     "h": 90,
+     "groundY": 499,
+     "id": "pine-bush-181"
+    },
+    {
+     "art": "pine-bush",
+     "x": 188,
+     "y": 411,
+     "w": 90,
+     "h": 90,
+     "groundY": 501,
+     "id": "pine-bush-182"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 78,
+     "y": 402,
+     "w": 128,
+     "h": 128,
+     "groundY": 502,
+     "id": "tree-Moss_tree3-183"
+    },
+    {
+     "art": "pine-bush",
+     "x": 738,
+     "y": 415,
+     "w": 90,
+     "h": 90,
+     "groundY": 505,
+     "id": "pine-bush-184"
+    },
+    {
+     "art": "round-bush",
+     "x": 1022,
+     "y": 418,
+     "w": 86,
+     "h": 88,
+     "groundY": 506,
+     "id": "round-bush-185"
+    },
+    {
+     "art": "flowers-2",
+     "x": 708,
+     "y": 476,
+     "w": 32,
+     "h": 30,
+     "groundY": 506,
+     "id": "flowers-2-186"
+    },
+    {
+     "art": "rock-small",
+     "x": 346,
+     "y": 469,
+     "w": 48,
+     "h": 40,
+     "groundY": 509,
+     "id": "rock-small-187"
+    },
+    {
+     "art": "round-bush",
+     "x": 736,
+     "y": 421,
+     "w": 86,
+     "h": 88,
+     "groundY": 509,
+     "id": "round-bush-188"
+    },
+    {
+     "art": "pine-bush-2",
+     "x": 1162,
+     "y": 451,
+     "w": 62,
+     "h": 58,
+     "groundY": 509,
+     "id": "pine-bush-2-189"
+    },
+    {
+     "art": "big-fern",
+     "x": 1191,
+     "y": 437,
+     "w": 76,
+     "h": 72,
+     "groundY": 509,
+     "id": "big-fern-190"
+    },
+    {
+     "art": "pebbles",
+     "x": 480,
+     "y": 502,
+     "w": 42,
+     "h": 36,
+     "groundY": 538,
+     "id": "pebbles-191"
+    },
+    {
+     "art": "round-bush",
+     "x": 931,
+     "y": 451,
+     "w": 86,
+     "h": 88,
+     "groundY": 539,
+     "id": "round-bush-192"
+    },
+    {
+     "art": "round-bush",
+     "x": 1154,
+     "y": 451,
+     "w": 86,
+     "h": 88,
+     "groundY": 539,
+     "id": "round-bush-193"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -51,
+     "y": 347,
+     "w": 256,
+     "h": 256,
+     "groundY": 541,
+     "id": "tree-Moss_tree1-194"
+    },
+    {
+     "art": "stump",
+     "x": 716,
+     "y": 493,
+     "w": 62,
+     "h": 48,
+     "groundY": 541,
+     "id": "stump-195"
+    },
+    {
+     "art": "tree-Tree3",
+     "x": 114,
+     "y": 440,
+     "w": 128,
+     "h": 128,
+     "groundY": 542,
+     "id": "tree-Tree3-196"
+    },
+    {
+     "art": "pine-bush",
+     "x": 1216,
+     "y": 453,
+     "w": 90,
+     "h": 90,
+     "groundY": 543,
+     "id": "pine-bush-197"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -176,
+     "y": 350,
+     "w": 256,
+     "h": 256,
+     "groundY": 544,
+     "id": "tree-Moss_tree1-198"
+    },
+    {
+     "art": "round-bush",
+     "x": 703,
+     "y": 460,
+     "w": 86,
+     "h": 88,
+     "groundY": 548,
+     "id": "round-bush-199"
+    },
+    {
+     "art": "tree-Moss_tree2",
+     "x": 167,
+     "y": 429,
+     "w": 128,
+     "h": 128,
+     "groundY": 549,
+     "id": "tree-Moss_tree2-200"
+    },
+    {
+     "art": "pine-bush",
+     "x": 1072,
+     "y": 461,
+     "w": 90,
+     "h": 90,
+     "groundY": 551,
+     "id": "pine-bush-201"
+    },
+    {
+     "art": "pine-bush",
+     "x": 1018,
+     "y": 462,
+     "w": 90,
+     "h": 90,
+     "groundY": 552,
+     "id": "pine-bush-202"
+    },
+    {
+     "art": "tree-Tree2",
+     "x": 223,
+     "y": 430,
+     "w": 128,
+     "h": 128,
+     "groundY": 554,
+     "id": "tree-Tree2-203"
+    },
+    {
+     "art": "round-bush",
+     "x": 328,
+     "y": 469,
+     "w": 86,
+     "h": 88,
+     "groundY": 557,
+     "id": "round-bush-204"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -90,
+     "y": 363,
+     "w": 256,
+     "h": 256,
+     "groundY": 561,
+     "id": "tree-Tree1-205"
+    },
+    {
+     "art": "tree-Tree3",
+     "x": 815,
+     "y": 460,
+     "w": 128,
+     "h": 128,
+     "groundY": 562,
+     "id": "tree-Tree3-206"
+    },
+    {
+     "art": "round-bush",
+     "x": 743,
+     "y": 477,
+     "w": 86,
+     "h": 88,
+     "groundY": 565,
+     "id": "round-bush-207"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 864,
+     "y": 467,
+     "w": 128,
+     "h": 128,
+     "groundY": 567,
+     "id": "tree-Moss_tree3-208"
+    },
+    {
+     "art": "pine-bush",
+     "x": 389,
+     "y": 479,
+     "w": 90,
+     "h": 90,
+     "groundY": 569,
+     "id": "pine-bush-209"
+    },
+    {
+     "art": "pine-bush",
+     "x": 559,
+     "y": 479,
+     "w": 90,
+     "h": 90,
+     "groundY": 569,
+     "id": "pine-bush-210"
+    },
+    {
+     "art": "round-bush",
+     "x": 501,
+     "y": 483,
+     "w": 86,
+     "h": 88,
+     "groundY": 571,
+     "id": "round-bush-211"
+    },
+    {
+     "art": "mushrooms-2",
+     "x": 340,
+     "y": 519,
+     "w": 52,
+     "h": 54,
+     "groundY": 573,
+     "id": "mushrooms-2-212"
+    },
+    {
+     "art": "mushrooms",
+     "x": 378,
+     "y": 519,
+     "w": 50,
+     "h": 54,
+     "groundY": 573,
+     "id": "mushrooms-213"
+    },
+    {
+     "art": "shrub",
+     "x": 441,
+     "y": 525,
+     "w": 54,
+     "h": 48,
+     "groundY": 573,
+     "id": "shrub-214"
+    },
+    {
+     "art": "stump",
+     "x": 466,
+     "y": 525,
+     "w": 62,
+     "h": 48,
+     "groundY": 573,
+     "id": "stump-215"
+    },
+    {
+     "art": "rock-small",
+     "x": 572,
+     "y": 533,
+     "w": 48,
+     "h": 40,
+     "groundY": 573,
+     "id": "rock-small-216"
+    },
+    {
+     "art": "mushrooms-2",
+     "x": 599,
+     "y": 519,
+     "w": 52,
+     "h": 54,
+     "groundY": 573,
+     "id": "mushrooms-2-217"
+    },
+    {
+     "art": "stump",
+     "x": 621,
+     "y": 525,
+     "w": 62,
+     "h": 48,
+     "groundY": 573,
+     "id": "stump-218"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -105,
+     "y": 411,
+     "w": 256,
+     "h": 256,
+     "groundY": 605,
+     "id": "tree-Moss_tree1-219"
+    },
+    {
+     "art": "tree-Moss_tree2",
+     "x": 152,
+     "y": 485,
+     "w": 128,
+     "h": 128,
+     "groundY": 605,
+     "id": "tree-Moss_tree2-220"
+    },
+    {
+     "art": "round-bush",
+     "x": 509,
+     "y": 517,
+     "w": 86,
+     "h": 88,
+     "groundY": 605,
+     "id": "round-bush-221"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 933,
+     "y": 506,
+     "w": 128,
+     "h": 128,
+     "groundY": 606,
+     "id": "tree-Moss_tree3-222"
+    },
+    {
+     "art": "pine-bush",
+     "x": 1197,
+     "y": 516,
+     "w": 90,
+     "h": 90,
+     "groundY": 606,
+     "id": "pine-bush-223"
+    },
+    {
+     "art": "tree-Moss_tree2",
+     "x": 229,
+     "y": 488,
+     "w": 128,
+     "h": 128,
+     "groundY": 608,
+     "id": "tree-Moss_tree2-224"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 796,
+     "y": 511,
+     "w": 128,
+     "h": 128,
+     "groundY": 611,
+     "id": "tree-Moss_tree3-225"
+    },
+    {
+     "art": "pine-bush",
+     "x": 1141,
+     "y": 521,
+     "w": 90,
+     "h": 90,
+     "groundY": 611,
+     "id": "pine-bush-226"
+    },
+    {
+     "art": "round-bush",
+     "x": 307,
+     "y": 525,
+     "w": 86,
+     "h": 88,
+     "groundY": 613,
+     "id": "round-bush-227"
+    },
+    {
+     "art": "round-bush",
+     "x": 680,
+     "y": 528,
+     "w": 86,
+     "h": 88,
+     "groundY": 616,
+     "id": "round-bush-228"
+    },
+    {
+     "art": "tree-Tree3",
+     "x": 866,
+     "y": 514,
+     "w": 128,
+     "h": 128,
+     "groundY": 616,
+     "id": "tree-Tree3-229"
+    },
+    {
+     "art": "pine-bush",
+     "x": 382,
+     "y": 527,
+     "w": 90,
+     "h": 90,
+     "groundY": 617,
+     "id": "pine-bush-230"
+    },
+    {
+     "art": "tree-Moss_tree2",
+     "x": 994,
+     "y": 498,
+     "w": 128,
+     "h": 128,
+     "groundY": 618,
+     "id": "tree-Moss_tree2-231"
+    },
+    {
+     "art": "tree-Tree3",
+     "x": 1075,
+     "y": 516,
+     "w": 128,
+     "h": 128,
+     "groundY": 618,
+     "id": "tree-Tree3-232"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -13,
+     "y": 428,
+     "w": 256,
+     "h": 256,
+     "groundY": 622,
+     "id": "tree-Moss_tree1-233"
+    },
+    {
+     "art": "pine-bush",
+     "x": 447,
+     "y": 533,
+     "w": 90,
+     "h": 90,
+     "groundY": 623,
+     "id": "pine-bush-234"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 48,
+     "y": 429,
+     "w": 256,
+     "h": 256,
+     "groundY": 627,
+     "id": "tree-Tree1-235"
+    },
+    {
+     "art": "round-bush",
+     "x": 563,
+     "y": 539,
+     "w": 86,
+     "h": 88,
+     "groundY": 627,
+     "id": "round-bush-236"
+    },
+    {
+     "art": "tree-Moss_tree2",
+     "x": 728,
+     "y": 507,
+     "w": 128,
+     "h": 128,
+     "groundY": 627,
+     "id": "tree-Moss_tree2-237"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -152,
+     "y": 438,
+     "w": 256,
+     "h": 256,
+     "groundY": 632,
+     "id": "tree-Moss_tree1-238"
+    },
+    {
+     "art": "pine-bush",
+     "x": 626,
+     "y": 542,
+     "w": 90,
+     "h": 90,
+     "groundY": 632,
+     "id": "pine-bush-239"
+    },
+    {
+     "art": "tree-Tree2",
+     "x": 1128,
+     "y": 547,
+     "w": 128,
+     "h": 128,
+     "groundY": 671,
+     "id": "tree-Tree2-240"
+    },
+    {
+     "art": "tree-Tree2",
+     "x": 725,
+     "y": 548,
+     "w": 128,
+     "h": 128,
+     "groundY": 672,
+     "id": "tree-Tree2-241"
+    },
+    {
+     "art": "tree-Tree2",
+     "x": 690,
+     "y": 551,
+     "w": 128,
+     "h": 128,
+     "groundY": 675,
+     "id": "tree-Tree2-242"
+    },
+    {
+     "art": "tree-Tree2",
+     "x": 939,
+     "y": 551,
+     "w": 128,
+     "h": 128,
+     "groundY": 675,
+     "id": "tree-Tree2-243"
+    },
+    {
+     "art": "tree-Tree3",
+     "x": 998,
+     "y": 575,
+     "w": 128,
+     "h": 128,
+     "groundY": 677,
+     "id": "tree-Tree3-244"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 27,
+     "y": 480,
+     "w": 256,
+     "h": 256,
+     "groundY": 678,
+     "id": "tree-Tree1-245"
+    },
+    {
+     "art": "tree-Moss_tree2",
+     "x": 348,
+     "y": 561,
+     "w": 128,
+     "h": 128,
+     "groundY": 681,
+     "id": "tree-Moss_tree2-246"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 466,
+     "y": 581,
+     "w": 128,
+     "h": 128,
+     "groundY": 681,
+     "id": "tree-Moss_tree3-247"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 146,
+     "y": 485,
+     "w": 256,
+     "h": 256,
+     "groundY": 683,
+     "id": "tree-Tree1-248"
+    },
+    {
+     "art": "tree-Tree2",
+     "x": 562,
+     "y": 559,
+     "w": 128,
+     "h": 128,
+     "groundY": 683,
+     "id": "tree-Tree2-249"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 1061,
+     "y": 584,
+     "w": 128,
+     "h": 128,
+     "groundY": 684,
+     "id": "tree-Moss_tree3-250"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 96,
+     "y": 492,
+     "w": 256,
+     "h": 256,
+     "groundY": 686,
+     "id": "tree-Moss_tree1-251"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 753,
+     "y": 496,
+     "w": 256,
+     "h": 256,
+     "groundY": 690,
+     "id": "tree-Moss_tree1-252"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -81,
+     "y": 497,
+     "w": 256,
+     "h": 256,
+     "groundY": 691,
+     "id": "tree-Moss_tree1-253"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -36,
+     "y": 493,
+     "w": 256,
+     "h": 256,
+     "groundY": 691,
+     "id": "tree-Tree1-254"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 784,
+     "y": 494,
+     "w": 256,
+     "h": 256,
+     "groundY": 692,
+     "id": "tree-Tree1-255"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -165,
+     "y": 495,
+     "w": 256,
+     "h": 256,
+     "groundY": 693,
+     "id": "tree-Tree1-256"
+    },
+    {
+     "art": "tree-Tree2",
+     "x": 429,
+     "y": 571,
+     "w": 128,
+     "h": 128,
+     "groundY": 695,
+     "id": "tree-Tree2-257"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 272,
+     "y": 596,
+     "w": 128,
+     "h": 128,
+     "groundY": 696,
+     "id": "tree-Moss_tree3-258"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 604,
+     "y": 597,
+     "w": 128,
+     "h": 128,
+     "groundY": 697,
+     "id": "tree-Moss_tree3-259"
+    },
+    {
+     "art": "tree-Tree3",
+     "x": 1176,
+     "y": 595,
+     "w": 128,
+     "h": 128,
+     "groundY": 697,
+     "id": "tree-Tree3-260"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 847,
+     "y": 534,
+     "w": 256,
+     "h": 256,
+     "groundY": 732,
+     "id": "tree-Tree1-261"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 817,
+     "y": 542,
+     "w": 256,
+     "h": 256,
+     "groundY": 736,
+     "id": "tree-Moss_tree1-262"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 143,
+     "y": 543,
+     "w": 256,
+     "h": 256,
+     "groundY": 737,
+     "id": "tree-Moss_tree1-263"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 1113,
+     "y": 543,
+     "w": 256,
+     "h": 256,
+     "groundY": 737,
+     "id": "tree-Moss_tree1-264"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -164,
+     "y": 540,
+     "w": 256,
+     "h": 256,
+     "groundY": 738,
+     "id": "tree-Tree1-265"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 272,
+     "y": 638,
+     "w": 128,
+     "h": 128,
+     "groundY": 738,
+     "id": "tree-Moss_tree3-266"
+    },
+    {
+     "art": "tree-Tree2",
+     "x": 368,
+     "y": 614,
+     "w": 128,
+     "h": 128,
+     "groundY": 738,
+     "id": "tree-Tree2-267"
+    },
+    {
+     "art": "tree-Moss_tree2",
+     "x": 487,
+     "y": 618,
+     "w": 128,
+     "h": 128,
+     "groundY": 738,
+     "id": "tree-Moss_tree2-268"
+    },
+    {
+     "art": "tree-Tree3",
+     "x": 608,
+     "y": 636,
+     "w": 128,
+     "h": 128,
+     "groundY": 738,
+     "id": "tree-Tree3-269"
+    },
+    {
+     "art": "tree-Moss_tree2",
+     "x": 662,
+     "y": 618,
+     "w": 128,
+     "h": 128,
+     "groundY": 738,
+     "id": "tree-Moss_tree2-270"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 31,
+     "y": 541,
+     "w": 256,
+     "h": 256,
+     "groundY": 739,
+     "id": "tree-Tree1-271"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -115,
+     "y": 547,
+     "w": 256,
+     "h": 256,
+     "groundY": 741,
+     "id": "tree-Moss_tree1-272"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -41,
+     "y": 543,
+     "w": 256,
+     "h": 256,
+     "groundY": 741,
+     "id": "tree-Tree1-273"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 78,
+     "y": 550,
+     "w": 256,
+     "h": 256,
+     "groundY": 744,
+     "id": "tree-Moss_tree1-274"
+    },
+    {
+     "art": "tree-Tree3",
+     "x": 553,
+     "y": 645,
+     "w": 128,
+     "h": 128,
+     "groundY": 747,
+     "id": "tree-Tree3-275"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 751,
+     "y": 549,
+     "w": 256,
+     "h": 256,
+     "groundY": 747,
+     "id": "tree-Tree1-276"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 657,
+     "y": 553,
+     "w": 256,
+     "h": 256,
+     "groundY": 751,
+     "id": "tree-Tree1-277"
+    },
+    {
+     "art": "tree-Moss_tree2",
+     "x": 424,
+     "y": 634,
+     "w": 128,
+     "h": 128,
+     "groundY": 754,
+     "id": "tree-Moss_tree2-278"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 925,
+     "y": 556,
+     "w": 256,
+     "h": 256,
+     "groundY": 754,
+     "id": "tree-Tree1-279"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 988,
+     "y": 566,
+     "w": 256,
+     "h": 256,
+     "groundY": 760,
+     "id": "tree-Moss_tree1-280"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 1065,
+     "y": 565,
+     "w": 256,
+     "h": 256,
+     "groundY": 763,
+     "id": "tree-Tree1-281"
+    }
+   ]
+  },
+  "PROLOGUE_CLEARING": {
+   "name": "Forest Clearing",
+   "backdrop": "clearing",
+   "width": 1024,
+   "height": 768,
+   "cameraBounds": {
+    "x": 0,
+    "y": 0,
+    "w": 1024,
+    "h": 768
+   },
+   "spawn": {
+    "x": 915,
+    "y": 557
+   },
+   "points": {
+    "north": {
+     "x": 512,
+     "y": 96
+    },
+    "centre": {
+     "x": 512,
+     "y": 384
+    }
+   },
+   "solids": [
+    {
+     "x": 0,
+     "y": 0,
+     "w": 1024,
+     "h": 128
+    },
+    {
+     "x": 0,
+     "y": 672,
+     "w": 1024,
+     "h": 96
+    },
+    {
+     "x": 0,
+     "y": 128,
+     "w": 448,
+     "h": 32
+    },
+    {
+     "x": 576,
+     "y": 128,
+     "w": 448,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 160,
+     "w": 320,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 544,
+     "w": 320,
+     "h": 32
+    },
+    {
+     "x": 704,
+     "y": 160,
+     "w": 320,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 192,
+     "w": 288,
+     "h": 32
+    },
+    {
+     "x": 736,
+     "y": 192,
+     "w": 288,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 224,
+     "w": 224,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 480,
+     "w": 224,
+     "h": 32
+    },
+    {
+     "x": 800,
+     "y": 224,
+     "w": 224,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 256,
+     "w": 192,
+     "h": 96
+    },
+    {
+     "x": 0,
+     "y": 416,
+     "w": 192,
+     "h": 64
+    },
+    {
+     "x": 832,
+     "y": 256,
+     "w": 192,
+     "h": 96
+    },
+    {
+     "x": 832,
+     "y": 416,
+     "w": 192,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 352,
+     "w": 160,
+     "h": 64
+    },
+    {
+     "x": 864,
+     "y": 352,
+     "w": 160,
+     "h": 64
+    },
+    {
+     "x": 896,
+     "y": 448,
+     "w": 128,
+     "h": 32
+    },
+    {
+     "x": 960,
+     "y": 480,
+     "w": 64,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 512,
+     "w": 256,
+     "h": 32
+    },
+    {
+     "x": 704,
+     "y": 544,
+     "w": 96,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 576,
+     "w": 416,
+     "h": 32
+    },
+    {
+     "x": 608,
+     "y": 576,
+     "w": 256,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 608,
+     "w": 928,
+     "h": 32
+    },
+    {
+     "x": 0,
+     "y": 640,
+     "w": 992,
+     "h": 32
+    }
+   ],
+   "props": [
+    {
+     "art": "tree-Tree1",
+     "x": 736,
+     "y": -234,
+     "w": 256,
+     "h": 256,
+     "groundY": -36,
+     "id": "tree-Tree1-0"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 847,
+     "y": -234,
+     "w": 256,
+     "h": 256,
+     "groundY": -36,
+     "id": "tree-Tree1-1"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 335,
+     "y": -229,
+     "w": 256,
+     "h": 256,
+     "groundY": -31,
+     "id": "tree-Tree1-2"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 606,
+     "y": -226,
+     "w": 256,
+     "h": 256,
+     "groundY": -28,
+     "id": "tree-Tree1-3"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 16,
+     "y": -225,
+     "w": 256,
+     "h": 256,
+     "groundY": -27,
+     "id": "tree-Tree1-4"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 680,
+     "y": -225,
+     "w": 256,
+     "h": 256,
+     "groundY": -27,
+     "id": "tree-Tree1-5"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 164,
+     "y": -218,
+     "w": 256,
+     "h": 256,
+     "groundY": -24,
+     "id": "tree-Moss_tree1-6"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 549,
+     "y": -219,
+     "w": 256,
+     "h": 256,
+     "groundY": -21,
+     "id": "tree-Tree1-7"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -44,
+     "y": -218,
+     "w": 256,
+     "h": 256,
+     "groundY": -20,
+     "id": "tree-Tree1-8"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -162,
+     "y": -213,
+     "w": 256,
+     "h": 256,
+     "groundY": -19,
+     "id": "tree-Moss_tree1-9"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 230,
+     "y": -215,
+     "w": 256,
+     "h": 256,
+     "groundY": -17,
+     "id": "tree-Tree1-10"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 420,
+     "y": -206,
+     "w": 256,
+     "h": 256,
+     "groundY": -12,
+     "id": "tree-Moss_tree1-11"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 293,
+     "y": -208,
+     "w": 256,
+     "h": 256,
+     "groundY": -10,
+     "id": "tree-Tree1-12"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 478,
+     "y": -208,
+     "w": 256,
+     "h": 256,
+     "groundY": -10,
+     "id": "tree-Tree1-13"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 796,
+     "y": -204,
+     "w": 256,
+     "h": 256,
+     "groundY": -10,
+     "id": "tree-Moss_tree1-14"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -98,
+     "y": -207,
+     "w": 256,
+     "h": 256,
+     "groundY": -9,
+     "id": "tree-Tree1-15"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 97,
+     "y": -206,
+     "w": 256,
+     "h": 256,
+     "groundY": -8,
+     "id": "tree-Tree1-16"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 89,
+     "y": -166,
+     "w": 256,
+     "h": 256,
+     "groundY": 28,
+     "id": "tree-Moss_tree1-17"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 232,
+     "y": -166,
+     "w": 256,
+     "h": 256,
+     "groundY": 28,
+     "id": "tree-Moss_tree1-18"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 627,
+     "y": -170,
+     "w": 256,
+     "h": 256,
+     "groundY": 28,
+     "id": "tree-Tree1-19"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 170,
+     "y": -167,
+     "w": 256,
+     "h": 256,
+     "groundY": 31,
+     "id": "tree-Tree1-20"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 718,
+     "y": -162,
+     "w": 256,
+     "h": 256,
+     "groundY": 32,
+     "id": "tree-Moss_tree1-21"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 299,
+     "y": -165,
+     "w": 256,
+     "h": 256,
+     "groundY": 33,
+     "id": "tree-Tree1-22"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 350,
+     "y": -165,
+     "w": 256,
+     "h": 256,
+     "groundY": 33,
+     "id": "tree-Tree1-23"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 477,
+     "y": -160,
+     "w": 256,
+     "h": 256,
+     "groundY": 34,
+     "id": "tree-Moss_tree1-24"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 43,
+     "y": -162,
+     "w": 256,
+     "h": 256,
+     "groundY": 36,
+     "id": "tree-Tree1-25"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 413,
+     "y": -155,
+     "w": 256,
+     "h": 256,
+     "groundY": 39,
+     "id": "tree-Moss_tree1-26"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 877,
+     "y": -158,
+     "w": 256,
+     "h": 256,
+     "groundY": 40,
+     "id": "tree-Tree1-27"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -35,
+     "y": -153,
+     "w": 256,
+     "h": 256,
+     "groundY": 45,
+     "id": "tree-Tree1-28"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 791,
+     "y": -142,
+     "w": 256,
+     "h": 256,
+     "groundY": 52,
+     "id": "tree-Moss_tree1-29"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 668,
+     "y": -143,
+     "w": 256,
+     "h": 256,
+     "groundY": 55,
+     "id": "tree-Tree1-30"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -171,
+     "y": -141,
+     "w": 256,
+     "h": 256,
+     "groundY": 57,
+     "id": "tree-Tree1-31"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 558,
+     "y": -136,
+     "w": 256,
+     "h": 256,
+     "groundY": 58,
+     "id": "tree-Moss_tree1-32"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -97,
+     "y": -135,
+     "w": 256,
+     "h": 256,
+     "groundY": 59,
+     "id": "tree-Moss_tree1-33"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 746,
+     "y": -101,
+     "w": 256,
+     "h": 256,
+     "groundY": 93,
+     "id": "tree-Moss_tree1-34"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 798,
+     "y": -105,
+     "w": 256,
+     "h": 256,
+     "groundY": 93,
+     "id": "tree-Tree1-35"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 169,
+     "y": -102,
+     "w": 256,
+     "h": 256,
+     "groundY": 96,
+     "id": "tree-Tree1-36"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 46,
+     "y": -101,
+     "w": 256,
+     "h": 256,
+     "groundY": 97,
+     "id": "tree-Tree1-37"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 536,
+     "y": -101,
+     "w": 256,
+     "h": 256,
+     "groundY": 97,
+     "id": "tree-Tree1-38"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 89,
+     "y": -99,
+     "w": 256,
+     "h": 256,
+     "groundY": 99,
+     "id": "tree-Tree1-39"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -115,
+     "y": -91,
+     "w": 256,
+     "h": 256,
+     "groundY": 103,
+     "id": "tree-Moss_tree1-40"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 231,
+     "y": -90,
+     "w": 256,
+     "h": 256,
+     "groundY": 104,
+     "id": "tree-Moss_tree1-41"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 292,
+     "y": -93,
+     "w": 256,
+     "h": 256,
+     "groundY": 105,
+     "id": "tree-Tree1-42"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 476,
+     "y": -89,
+     "w": 256,
+     "h": 256,
+     "groundY": 105,
+     "id": "tree-Moss_tree1-43"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 594,
+     "y": -91,
+     "w": 256,
+     "h": 256,
+     "groundY": 107,
+     "id": "tree-Tree1-44"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 856,
+     "y": -90,
+     "w": 256,
+     "h": 256,
+     "groundY": 108,
+     "id": "tree-Tree1-45"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -176,
+     "y": -88,
+     "w": 256,
+     "h": 256,
+     "groundY": 110,
+     "id": "tree-Tree1-46"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -46,
+     "y": -88,
+     "w": 256,
+     "h": 256,
+     "groundY": 110,
+     "id": "tree-Tree1-47"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 664,
+     "y": -77,
+     "w": 256,
+     "h": 256,
+     "groundY": 121,
+     "id": "tree-Tree1-48"
+    },
+    {
+     "art": "log",
+     "x": 388,
+     "y": 77,
+     "w": 76,
+     "h": 48,
+     "groundY": 125,
+     "id": "log-49"
+    },
+    {
+     "art": "bush",
+     "x": 469,
+     "y": 67,
+     "w": 58,
+     "h": 58,
+     "groundY": 125,
+     "id": "bush-50"
+    },
+    {
+     "art": "rock",
+     "x": 518,
+     "y": 57,
+     "w": 72,
+     "h": 68,
+     "groundY": 125,
+     "id": "rock-51"
+    },
+    {
+     "art": "stump",
+     "x": 563,
+     "y": 77,
+     "w": 62,
+     "h": 48,
+     "groundY": 125,
+     "id": "stump-52"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 731,
+     "y": -42,
+     "w": 256,
+     "h": 256,
+     "groundY": 156,
+     "id": "tree-Tree1-53"
+    },
+    {
+     "art": "big-fern",
+     "x": 337,
+     "y": 85,
+     "w": 76,
+     "h": 72,
+     "groundY": 157,
+     "id": "big-fern-54"
+    },
+    {
+     "art": "boulder",
+     "x": 395,
+     "y": 59,
+     "w": 84,
+     "h": 98,
+     "groundY": 157,
+     "id": "boulder-55"
+    },
+    {
+     "art": "rock-2",
+     "x": 590,
+     "y": 89,
+     "w": 72,
+     "h": 68,
+     "groundY": 157,
+     "id": "rock-2-56"
+    },
+    {
+     "art": "rock-2",
+     "x": 658,
+     "y": 89,
+     "w": 72,
+     "h": 68,
+     "groundY": 157,
+     "id": "rock-2-57"
+    },
+    {
+     "art": "boulder",
+     "x": 674,
+     "y": 59,
+     "w": 84,
+     "h": 98,
+     "groundY": 157,
+     "id": "boulder-58"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -176,
+     "y": -34,
+     "w": 256,
+     "h": 256,
+     "groundY": 160,
+     "id": "tree-Moss_tree1-59"
+    },
+    {
+     "art": "round-bush",
+     "x": 424,
+     "y": 72,
+     "w": 86,
+     "h": 88,
+     "groundY": 160,
+     "id": "round-bush-60"
+    },
+    {
+     "art": "pine-bush-2",
+     "x": 481,
+     "y": 102,
+     "w": 62,
+     "h": 58,
+     "groundY": 160,
+     "id": "pine-bush-2-61"
+    },
+    {
+     "art": "round-bush",
+     "x": 514,
+     "y": 72,
+     "w": 86,
+     "h": 88,
+     "groundY": 160,
+     "id": "round-bush-62"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 143,
+     "y": -33,
+     "w": 256,
+     "h": 256,
+     "groundY": 165,
+     "id": "tree-Tree1-63"
+    },
+    {
+     "art": "tree-Tree2",
+     "x": 686,
+     "y": 45,
+     "w": 128,
+     "h": 128,
+     "groundY": 169,
+     "id": "tree-Tree2-64"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 686,
+     "y": -20,
+     "w": 256,
+     "h": 256,
+     "groundY": 174,
+     "id": "tree-Moss_tree1-65"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -78,
+     "y": -22,
+     "w": 256,
+     "h": 256,
+     "groundY": 176,
+     "id": "tree-Tree1-66"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 78,
+     "y": -18,
+     "w": 256,
+     "h": 256,
+     "groundY": 176,
+     "id": "tree-Moss_tree1-67"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 784,
+     "y": -18,
+     "w": 256,
+     "h": 256,
+     "groundY": 176,
+     "id": "tree-Moss_tree1-68"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 48,
+     "y": -20,
+     "w": 256,
+     "h": 256,
+     "groundY": 178,
+     "id": "tree-Tree1-69"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 879,
+     "y": -15,
+     "w": 256,
+     "h": 256,
+     "groundY": 179,
+     "id": "tree-Moss_tree1-70"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -29,
+     "y": -9,
+     "w": 256,
+     "h": 256,
+     "groundY": 185,
+     "id": "tree-Moss_tree1-71"
+    },
+    {
+     "art": "flowers-2",
+     "x": 646,
+     "y": 156,
+     "w": 32,
+     "h": 30,
+     "groundY": 186,
+     "id": "flowers-2-72"
+    },
+    {
+     "art": "rock-2",
+     "x": 237,
+     "y": 121,
+     "w": 72,
+     "h": 68,
+     "groundY": 189,
+     "id": "rock-2-73"
+    },
+    {
+     "art": "rock",
+     "x": 269,
+     "y": 121,
+     "w": 72,
+     "h": 68,
+     "groundY": 189,
+     "id": "rock-74"
+    },
+    {
+     "art": "pine-bush-2",
+     "x": 718,
+     "y": 131,
+     "w": 62,
+     "h": 58,
+     "groundY": 189,
+     "id": "pine-bush-2-75"
+    },
+    {
+     "art": "grass-tuft",
+     "x": 492,
+     "y": 190,
+     "w": 24,
+     "h": 28,
+     "groundY": 218,
+     "id": "grass-tuft-76"
+    },
+    {
+     "art": "shrub",
+     "x": 212,
+     "y": 173,
+     "w": 54,
+     "h": 48,
+     "groundY": 221,
+     "id": "shrub-77"
+    },
+    {
+     "art": "rock-small",
+     "x": 797,
+     "y": 181,
+     "w": 48,
+     "h": 40,
+     "groundY": 221,
+     "id": "rock-small-78"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 724,
+     "y": 28,
+     "w": 256,
+     "h": 256,
+     "groundY": 226,
+     "id": "tree-Tree1-79"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 803,
+     "y": 31,
+     "w": 256,
+     "h": 256,
+     "groundY": 229,
+     "id": "tree-Tree1-80"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 850,
+     "y": 32,
+     "w": 256,
+     "h": 256,
+     "groundY": 230,
+     "id": "tree-Tree1-81"
+    },
+    {
+     "art": "tree-Tree3",
+     "x": 100,
+     "y": 133,
+     "w": 128,
+     "h": 128,
+     "groundY": 235,
+     "id": "tree-Tree3-82"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -31,
+     "y": 42,
+     "w": 256,
+     "h": 256,
+     "groundY": 236,
+     "id": "tree-Moss_tree1-83"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -143,
+     "y": 47,
+     "w": 256,
+     "h": 256,
+     "groundY": 241,
+     "id": "tree-Moss_tree1-84"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -98,
+     "y": 48,
+     "w": 256,
+     "h": 256,
+     "groundY": 246,
+     "id": "tree-Tree1-85"
+    },
+    {
+     "art": "mushrooms-2",
+     "x": 147,
+     "y": 199,
+     "w": 52,
+     "h": 54,
+     "groundY": 253,
+     "id": "mushrooms-2-86"
+    },
+    {
+     "art": "shrub",
+     "x": 820,
+     "y": 205,
+     "w": 54,
+     "h": 48,
+     "groundY": 253,
+     "id": "shrub-87"
+    },
+    {
+     "art": "flowers-2",
+     "x": 318,
+     "y": 252,
+     "w": 32,
+     "h": 30,
+     "groundY": 282,
+     "id": "flowers-2-88"
+    },
+    {
+     "art": "rock-small",
+     "x": 153,
+     "y": 245,
+     "w": 48,
+     "h": 40,
+     "groundY": 285,
+     "id": "rock-small-89"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -84,
+     "y": 93,
+     "w": 256,
+     "h": 256,
+     "groundY": 287,
+     "id": "tree-Moss_tree1-90"
+    },
+    {
+     "art": "round-bush",
+     "x": 806,
+     "y": 199,
+     "w": 86,
+     "h": 88,
+     "groundY": 287,
+     "id": "round-bush-91"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -41,
+     "y": 96,
+     "w": 256,
+     "h": 256,
+     "groundY": 290,
+     "id": "tree-Moss_tree1-92"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 876,
+     "y": 93,
+     "w": 256,
+     "h": 256,
+     "groundY": 291,
+     "id": "tree-Tree1-93"
+    },
+    {
+     "art": "tree-Moss_tree2",
+     "x": 91,
+     "y": 180,
+     "w": 128,
+     "h": 128,
+     "groundY": 300,
+     "id": "tree-Moss_tree2-94"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 818,
+     "y": 107,
+     "w": 256,
+     "h": 256,
+     "groundY": 305,
+     "id": "tree-Tree1-95"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -152,
+     "y": 120,
+     "w": 256,
+     "h": 256,
+     "groundY": 314,
+     "id": "tree-Moss_tree1-96"
+    },
+    {
+     "art": "grass-tuft",
+     "x": 616,
+     "y": 286,
+     "w": 24,
+     "h": 28,
+     "groundY": 314,
+     "id": "grass-tuft-97"
+    },
+    {
+     "art": "shrub",
+     "x": 818,
+     "y": 269,
+     "w": 54,
+     "h": 48,
+     "groundY": 317,
+     "id": "shrub-98"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -108,
+     "y": 162,
+     "w": 256,
+     "h": 256,
+     "groundY": 356,
+     "id": "tree-Moss_tree1-99"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -150,
+     "y": 166,
+     "w": 256,
+     "h": 256,
+     "groundY": 364,
+     "id": "tree-Tree1-100"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 855,
+     "y": 172,
+     "w": 256,
+     "h": 256,
+     "groundY": 370,
+     "id": "tree-Tree1-101"
+    },
+    {
+     "art": "pine-bush",
+     "x": 111,
+     "y": 283,
+     "w": 90,
+     "h": 90,
+     "groundY": 373,
+     "id": "pine-bush-102"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 801,
+     "y": 179,
+     "w": 256,
+     "h": 256,
+     "groundY": 373,
+     "id": "tree-Moss_tree1-103"
+    },
+    {
+     "art": "tree-Tree3",
+     "x": 34,
+     "y": 275,
+     "w": 128,
+     "h": 128,
+     "groundY": 377,
+     "id": "tree-Tree3-104"
+    },
+    {
+     "art": "round-bush",
+     "x": 836,
+     "y": 291,
+     "w": 86,
+     "h": 88,
+     "groundY": 379,
+     "id": "round-bush-105"
+    },
+    {
+     "art": "pine-bush-2",
+     "x": 847,
+     "y": 323,
+     "w": 62,
+     "h": 58,
+     "groundY": 381,
+     "id": "pine-bush-2-106"
+    },
+    {
+     "art": "grass-tuft",
+     "x": 262,
+     "y": 382,
+     "w": 24,
+     "h": 28,
+     "groundY": 410,
+     "id": "grass-tuft-107"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -32,
+     "y": 214,
+     "w": 256,
+     "h": 256,
+     "groundY": 412,
+     "id": "tree-Tree1-108"
+    },
+    {
+     "art": "round-bush",
+     "x": 114,
+     "y": 324,
+     "w": 86,
+     "h": 88,
+     "groundY": 412,
+     "id": "round-bush-109"
+    },
+    {
+     "art": "log",
+     "x": 843,
+     "y": 365,
+     "w": 76,
+     "h": 48,
+     "groundY": 413,
+     "id": "log-110"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -166,
+     "y": 220,
+     "w": 256,
+     "h": 256,
+     "groundY": 414,
+     "id": "tree-Moss_tree1-111"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -102,
+     "y": 231,
+     "w": 256,
+     "h": 256,
+     "groundY": 425,
+     "id": "tree-Moss_tree1-112"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 814,
+     "y": 237,
+     "w": 256,
+     "h": 256,
+     "groundY": 431,
+     "id": "tree-Moss_tree1-113"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 877,
+     "y": 248,
+     "w": 256,
+     "h": 256,
+     "groundY": 442,
+     "id": "tree-Moss_tree1-114"
+    },
+    {
+     "art": "grass-tuft",
+     "x": 742,
+     "y": 414,
+     "w": 24,
+     "h": 28,
+     "groundY": 442,
+     "id": "grass-tuft-115"
+    },
+    {
+     "art": "mushrooms",
+     "x": 854,
+     "y": 391,
+     "w": 50,
+     "h": 54,
+     "groundY": 445,
+     "id": "mushrooms-116"
+    },
+    {
+     "art": "fern",
+     "x": 885,
+     "y": 403,
+     "w": 46,
+     "h": 42,
+     "groundY": 445,
+     "id": "fern-117"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 33,
+     "y": 377,
+     "w": 128,
+     "h": 128,
+     "groundY": 477,
+     "id": "tree-Moss_tree3-118"
+    },
+    {
+     "art": "mushrooms-2",
+     "x": 153,
+     "y": 423,
+     "w": 52,
+     "h": 54,
+     "groundY": 477,
+     "id": "mushrooms-2-119"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -157,
+     "y": 284,
+     "w": 256,
+     "h": 256,
+     "groundY": 482,
+     "id": "tree-Tree1-120"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": 873,
+     "y": 289,
+     "w": 256,
+     "h": 256,
+     "groundY": 483,
+     "id": "tree-Moss_tree1-121"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -96,
+     "y": 297,
+     "w": 256,
+     "h": 256,
+     "groundY": 495,
+     "id": "tree-Tree1-122"
+    },
+    {
+     "art": "pine-bush",
+     "x": 179,
+     "y": 407,
+     "w": 90,
+     "h": 90,
+     "groundY": 497,
+     "id": "pine-bush-123"
+    },
+    {
+     "art": "fern",
+     "x": 627,
+     "y": 464,
+     "w": 46,
+     "h": 42,
+     "groundY": 506,
+     "id": "fern-124"
+    },
+    {
+     "art": "pine-bush",
+     "x": 117,
+     "y": 417,
+     "w": 90,
+     "h": 90,
+     "groundY": 507,
+     "id": "pine-bush-125"
+    },
+    {
+     "art": "big-fern",
+     "x": 143,
+     "y": 437,
+     "w": 76,
+     "h": 72,
+     "groundY": 509,
+     "id": "big-fern-126"
+    },
+    {
+     "art": "mushrooms",
+     "x": 956,
+     "y": 455,
+     "w": 50,
+     "h": 54,
+     "groundY": 509,
+     "id": "mushrooms-127"
+    },
+    {
+     "art": "rock",
+     "x": 973,
+     "y": 441,
+     "w": 72,
+     "h": 68,
+     "groundY": 509,
+     "id": "rock-128"
+    },
+    {
+     "art": "tree-Tree3",
+     "x": 91,
+     "y": 450,
+     "w": 128,
+     "h": 128,
+     "groundY": 552,
+     "id": "tree-Tree3-129"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -82,
+     "y": 361,
+     "w": 256,
+     "h": 256,
+     "groundY": 559,
+     "id": "tree-Tree1-130"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -175,
+     "y": 365,
+     "w": 256,
+     "h": 256,
+     "groundY": 563,
+     "id": "tree-Tree1-131"
+    },
+    {
+     "art": "pine-bush",
+     "x": 244,
+     "y": 476,
+     "w": 90,
+     "h": 90,
+     "groundY": 566,
+     "id": "pine-bush-132"
+    },
+    {
+     "art": "round-bush",
+     "x": 742,
+     "y": 478,
+     "w": 86,
+     "h": 88,
+     "groundY": 566,
+     "id": "round-bush-133"
+    },
+    {
+     "art": "tree-Tree2",
+     "x": 40,
+     "y": 443,
+     "w": 128,
+     "h": 128,
+     "groundY": 567,
+     "id": "tree-Tree2-134"
+    },
+    {
+     "art": "pine-bush",
+     "x": 180,
+     "y": 477,
+     "w": 90,
+     "h": 90,
+     "groundY": 567,
+     "id": "pine-bush-135"
+    },
+    {
+     "art": "flowers-2",
+     "x": 550,
+     "y": 540,
+     "w": 32,
+     "h": 30,
+     "groundY": 570,
+     "id": "flowers-2-136"
+    },
+    {
+     "art": "fern",
+     "x": 242,
+     "y": 531,
+     "w": 46,
+     "h": 42,
+     "groundY": 573,
+     "id": "fern-137"
+    },
+    {
+     "art": "mushrooms-2",
+     "x": 271,
+     "y": 519,
+     "w": 52,
+     "h": 54,
+     "groundY": 573,
+     "id": "mushrooms-2-138"
+    },
+    {
+     "art": "rock-small",
+     "x": 724,
+     "y": 533,
+     "w": 48,
+     "h": 40,
+     "groundY": 573,
+     "id": "rock-small-139"
+    },
+    {
+     "art": "fern",
+     "x": 758,
+     "y": 531,
+     "w": 46,
+     "h": 42,
+     "groundY": 573,
+     "id": "fern-140"
+    },
+    {
+     "art": "pebbles",
+     "x": 569,
+     "y": 566,
+     "w": 42,
+     "h": 36,
+     "groundY": 602,
+     "id": "pebbles-141"
+    },
+    {
+     "art": "pine-bush",
+     "x": 696,
+     "y": 515,
+     "w": 90,
+     "h": 90,
+     "groundY": 605,
+     "id": "pine-bush-142"
+    },
+    {
+     "art": "mushrooms-2",
+     "x": 313,
+     "y": 551,
+     "w": 52,
+     "h": 54,
+     "groundY": 605,
+     "id": "mushrooms-2-143"
+    },
+    {
+     "art": "mushrooms-2",
+     "x": 700,
+     "y": 551,
+     "w": 52,
+     "h": 54,
+     "groundY": 605,
+     "id": "mushrooms-2-144"
+    },
+    {
+     "art": "round-bush",
+     "x": 296,
+     "y": 520,
+     "w": 86,
+     "h": 88,
+     "groundY": 608,
+     "id": "round-bush-145"
+    },
+    {
+     "art": "pine-bush",
+     "x": 229,
+     "y": 519,
+     "w": 90,
+     "h": 90,
+     "groundY": 609,
+     "id": "pine-bush-146"
+    },
+    {
+     "art": "pine-bush",
+     "x": 815,
+     "y": 519,
+     "w": 90,
+     "h": 90,
+     "groundY": 609,
+     "id": "pine-bush-147"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -157,
+     "y": 421,
+     "w": 256,
+     "h": 256,
+     "groundY": 615,
+     "id": "tree-Moss_tree1-148"
+    },
+    {
+     "art": "round-bush",
+     "x": 561,
+     "y": 529,
+     "w": 86,
+     "h": 88,
+     "groundY": 617,
+     "id": "round-bush-149"
+    },
+    {
+     "art": "round-bush",
+     "x": 745,
+     "y": 530,
+     "w": 86,
+     "h": 88,
+     "groundY": 618,
+     "id": "round-bush-150"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -111,
+     "y": 425,
+     "w": 256,
+     "h": 256,
+     "groundY": 619,
+     "id": "tree-Moss_tree1-151"
+    },
+    {
+     "art": "tree-Tree2",
+     "x": 108,
+     "y": 495,
+     "w": 128,
+     "h": 128,
+     "groundY": 619,
+     "id": "tree-Tree2-152"
+    },
+    {
+     "art": "round-bush",
+     "x": 163,
+     "y": 533,
+     "w": 86,
+     "h": 88,
+     "groundY": 621,
+     "id": "round-bush-153"
+    },
+    {
+     "art": "pine-bush",
+     "x": 624,
+     "y": 532,
+     "w": 90,
+     "h": 90,
+     "groundY": 622,
+     "id": "pine-bush-154"
+    },
+    {
+     "art": "tree-Tree3",
+     "x": 32,
+     "y": 523,
+     "w": 128,
+     "h": 128,
+     "groundY": 625,
+     "id": "tree-Tree3-155"
+    },
+    {
+     "art": "round-bush",
+     "x": 869,
+     "y": 541,
+     "w": 86,
+     "h": 88,
+     "groundY": 629,
+     "id": "round-bush-156"
+    },
+    {
+     "art": "round-bush",
+     "x": 420,
+     "y": 546,
+     "w": 86,
+     "h": 88,
+     "groundY": 634,
+     "id": "round-bush-157"
+    },
+    {
+     "art": "big-fern",
+     "x": 518,
+     "y": 565,
+     "w": 76,
+     "h": 72,
+     "groundY": 637,
+     "id": "big-fern-158"
+    },
+    {
+     "art": "big-fern",
+     "x": 551,
+     "y": 565,
+     "w": 76,
+     "h": 72,
+     "groundY": 637,
+     "id": "big-fern-159"
+    },
+    {
+     "art": "mushrooms",
+     "x": 607,
+     "y": 583,
+     "w": 50,
+     "h": 54,
+     "groundY": 637,
+     "id": "mushrooms-160"
+    },
+    {
+     "art": "shrub",
+     "x": 818,
+     "y": 589,
+     "w": 54,
+     "h": 48,
+     "groundY": 637,
+     "id": "shrub-161"
+    },
+    {
+     "art": "bush",
+     "x": 855,
+     "y": 579,
+     "w": 58,
+     "h": 58,
+     "groundY": 637,
+     "id": "bush-162"
+    },
+    {
+     "art": "bush",
+     "x": 880,
+     "y": 579,
+     "w": 58,
+     "h": 58,
+     "groundY": 637,
+     "id": "bush-163"
+    },
+    {
+     "art": "pine-bush",
+     "x": 773,
+     "y": 578,
+     "w": 90,
+     "h": 90,
+     "groundY": 668,
+     "id": "pine-bush-164"
+    },
+    {
+     "art": "pine-bush-2",
+     "x": 883,
+     "y": 611,
+     "w": 62,
+     "h": 58,
+     "groundY": 669,
+     "id": "pine-bush-2-165"
+    },
+    {
+     "art": "round-bush",
+     "x": 365,
+     "y": 582,
+     "w": 86,
+     "h": 88,
+     "groundY": 670,
+     "id": "round-bush-166"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -93,
+     "y": 479,
+     "w": 256,
+     "h": 256,
+     "groundY": 673,
+     "id": "tree-Moss_tree1-167"
+    },
+    {
+     "art": "round-bush",
+     "x": 298,
+     "y": 585,
+     "w": 86,
+     "h": 88,
+     "groundY": 673,
+     "id": "round-bush-168"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -20,
+     "y": 477,
+     "w": 256,
+     "h": 256,
+     "groundY": 675,
+     "id": "tree-Tree1-169"
+    },
+    {
+     "art": "round-bush",
+     "x": 830,
+     "y": 587,
+     "w": 86,
+     "h": 88,
+     "groundY": 675,
+     "id": "round-bush-170"
+    },
+    {
+     "art": "round-bush",
+     "x": 930,
+     "y": 587,
+     "w": 86,
+     "h": 88,
+     "groundY": 675,
+     "id": "round-bush-171"
+    },
+    {
+     "art": "tree-Moss_tree2",
+     "x": 146,
+     "y": 558,
+     "w": 128,
+     "h": 128,
+     "groundY": 678,
+     "id": "tree-Moss_tree2-172"
+    },
+    {
+     "art": "round-bush",
+     "x": 630,
+     "y": 592,
+     "w": 86,
+     "h": 88,
+     "groundY": 680,
+     "id": "round-bush-173"
+    },
+    {
+     "art": "pine-bush",
+     "x": 557,
+     "y": 598,
+     "w": 90,
+     "h": 90,
+     "groundY": 688,
+     "id": "pine-bush-174"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 677,
+     "y": 590,
+     "w": 128,
+     "h": 128,
+     "groundY": 690,
+     "id": "tree-Moss_tree3-175"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 105,
+     "y": 592,
+     "w": 128,
+     "h": 128,
+     "groundY": 692,
+     "id": "tree-Moss_tree3-176"
+    },
+    {
+     "art": "round-bush",
+     "x": 255,
+     "y": 604,
+     "w": 86,
+     "h": 88,
+     "groundY": 692,
+     "id": "round-bush-177"
+    },
+    {
+     "art": "round-bush",
+     "x": 885,
+     "y": 604,
+     "w": 86,
+     "h": 88,
+     "groundY": 692,
+     "id": "round-bush-178"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -152,
+     "y": 501,
+     "w": 256,
+     "h": 256,
+     "groundY": 695,
+     "id": "tree-Moss_tree1-179"
+    },
+    {
+     "art": "pine-bush",
+     "x": 454,
+     "y": 606,
+     "w": 90,
+     "h": 90,
+     "groundY": 696,
+     "id": "pine-bush-180"
+    },
+    {
+     "art": "round-bush",
+     "x": 491,
+     "y": 609,
+     "w": 86,
+     "h": 88,
+     "groundY": 697,
+     "id": "round-bush-181"
+    },
+    {
+     "art": "rock-small",
+     "x": 947,
+     "y": 661,
+     "w": 48,
+     "h": 40,
+     "groundY": 701,
+     "id": "rock-small-182"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 223,
+     "y": 637,
+     "w": 128,
+     "h": 128,
+     "groundY": 737,
+     "id": "tree-Moss_tree3-183"
+    },
+    {
+     "art": "tree-Tree2",
+     "x": 589,
+     "y": 615,
+     "w": 128,
+     "h": 128,
+     "groundY": 739,
+     "id": "tree-Tree2-184"
+    },
+    {
+     "art": "pine-bush",
+     "x": 955,
+     "y": 649,
+     "w": 90,
+     "h": 90,
+     "groundY": 739,
+     "id": "pine-bush-185"
+    },
+    {
+     "art": "round-bush",
+     "x": 500,
+     "y": 652,
+     "w": 86,
+     "h": 88,
+     "groundY": 740,
+     "id": "round-bush-186"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 719,
+     "y": 641,
+     "w": 128,
+     "h": 128,
+     "groundY": 741,
+     "id": "tree-Moss_tree3-187"
+    },
+    {
+     "art": "round-bush",
+     "x": 441,
+     "y": 655,
+     "w": 86,
+     "h": 88,
+     "groundY": 743,
+     "id": "round-bush-188"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 677,
+     "y": 644,
+     "w": 128,
+     "h": 128,
+     "groundY": 744,
+     "id": "tree-Moss_tree3-189"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 369,
+     "y": 645,
+     "w": 128,
+     "h": 128,
+     "groundY": 745,
+     "id": "tree-Moss_tree3-190"
+    },
+    {
+     "art": "tree-Moss_tree1",
+     "x": -144,
+     "y": 555,
+     "w": 256,
+     "h": 256,
+     "groundY": 749,
+     "id": "tree-Moss_tree1-191"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -78,
+     "y": 551,
+     "w": 256,
+     "h": 256,
+     "groundY": 749,
+     "id": "tree-Tree1-192"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 290,
+     "y": 650,
+     "w": 128,
+     "h": 128,
+     "groundY": 750,
+     "id": "tree-Moss_tree3-193"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": 34,
+     "y": 555,
+     "w": 256,
+     "h": 256,
+     "groundY": 753,
+     "id": "tree-Tree1-194"
+    },
+    {
+     "art": "tree-Tree2",
+     "x": 550,
+     "y": 631,
+     "w": 128,
+     "h": 128,
+     "groundY": 755,
+     "id": "tree-Tree2-195"
+    },
+    {
+     "art": "tree-Tree1",
+     "x": -27,
+     "y": 559,
+     "w": 256,
+     "h": 256,
+     "groundY": 757,
+     "id": "tree-Tree1-196"
+    },
+    {
+     "art": "round-bush",
+     "x": 869,
+     "y": 672,
+     "w": 86,
+     "h": 88,
+     "groundY": 760,
+     "id": "round-bush-197"
+    },
+    {
+     "art": "tree-Moss_tree3",
+     "x": 156,
+     "y": 661,
+     "w": 128,
+     "h": 128,
+     "groundY": 761,
+     "id": "tree-Moss_tree3-198"
+    },
+    {
+     "art": "tree-Moss_tree2",
+     "x": 783,
+     "y": 643,
+     "w": 128,
+     "h": 128,
+     "groundY": 763,
+     "id": "tree-Moss_tree2-199"
+    }
+   ]
+  }
+ }
+}

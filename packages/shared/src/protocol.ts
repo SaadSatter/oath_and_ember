@@ -21,6 +21,11 @@ export interface ClientEvents {
     p: { npcId: string; talking: boolean },
     ack: Ack<{ talking: boolean }>,
   ) => void;
+  /** "I've read this story line"; the server moves the scene on. */
+  "story:read": (
+    p: { cutscene: string; line: number },
+    ack: Ack<{ accepted: boolean }>,
+  ) => void;
   "room:create": (p: Record<string, never>, ack: Ack<Session>) => void;
   "room:join": (p: { roomCode: string }, ack: Ack<Session>) => void;
   "session:resume": (p: Session, ack: Ack<Session>) => void;
