@@ -43,6 +43,8 @@ it("starts beside the actual doorway with unchanged tile/world proportions", () 
   expect(ENVIRONMENT_TILE_SIZE * ENVIRONMENT_SCALE).toBe(32);
   expect(maps.HOUSE_INTERIOR.width).toBe(26 * 32);
 });
+const shop = maps.HOUSE_INTERIOR;
+const inside = shop.spawn;
 it("validates door distance, supports independent entry/exit, and requires E release", () => {
   const { r, a, b } = pair();
   a.x = 700;
@@ -54,7 +56,7 @@ it("validates door distance, supports independent entry/exit, and requires E rel
   expect(a.sceneId).toBe("HOUSE_INTERIOR");
   expect(b.sceneId).toBe("MAIN_HOUSE");
   expect(r.state.sceneId).toBe("MAIN_HOUSE");
-  expect([a.x, a.y]).toEqual([608, 454]);
+  expect([a.x, a.y]).toEqual([inside.x, inside.y]);
   input(r, a.id, true);
   expect(a.sceneId).toBe("HOUSE_INTERIOR");
   Object.assign(b, { x: 480, y: 344 });
@@ -69,68 +71,127 @@ it("validates door distance, supports independent entry/exit, and requires E rel
   expect(a.sceneId).toBe("MAIN_HOUSE");
   expect(a.skillPoints).toBe(0);
 });
-it("returns outside after walking into the exit arch, without accepting distant interactions", () => {
+it("lets both heroes leave after walking all the way into the front doorway", () => {
+  const { r, a, b } = pair();
+  for (const hero of [a, b]) {
+    Object.assign(hero, maps.MAIN_HOUSE.points.door);
+    input(r, hero.id, true);
+    expect(hero.sceneId).toBe("HOUSE_INTERIOR");
+    const session = r.sessions.get(hero.id)!;
+    for (let tick = 0; tick < ticksFor(1); tick++) {
+      session.input = { ...neutral(session.input.seq + 1), moveY: 1 };
+      session.received = Date.now();
+      r.tick();
+    }
+    expect(hero.y).toBe(579);
+    input(r, hero.id, true);
+    expect(hero.sceneId).toBe("MAIN_HOUSE");
+    expect(Math.hypot(hero.x - 480, hero.y - 344)).toBeLessThan(42);
+  }
+});
+it("leaves only from the front door, never from across the shop", () => {
   const { r, a, b } = pair();
   Object.assign(a, { x: 480, y: 344 });
   input(r, a.id, true);
   expect(a.sceneId).toBe("HOUSE_INTERIOR");
   input(r, a.id, false);
-  // Approach through real server movement, rather than teleporting to the trigger.
+  // Walk away from the door with real server movement: E no longer leaves.
   const session = r.sessions.get(a.id)!;
-  for (let tick = 0; tick < ticksFor(0.467); tick++) {
-    session.input = { ...neutral(session.input.seq + 1), moveY: -1 };
+  for (let tick = 0; tick < ticksFor(0.5); tick++) {
+    session.input = { ...neutral(session.input.seq + 1), moveX: -1 };
     session.received = Date.now();
     r.tick();
   }
-  expect(a.y).toBeLessThan(388); // outside the old 42px interaction radius
+  expect(a.x).toBeLessThan(shop.doorInteractionBounds!.x);
+  input(r, a.id, true);
+  expect(a.sceneId).toBe("HOUSE_INTERIOR");
+  input(r, a.id, false);
+  Object.assign(a, inside);
   input(r, a.id, true);
   expect(a.sceneId).toBe("MAIN_HOUSE");
   expect(b.sceneId).toBe("MAIN_HOUSE");
-  // An occupied arrival may use a nearby safe point beside the outside door.
   expect(Math.hypot(a.x - 480, a.y - 326)).toBeLessThan(42);
-  input(r, a.id, true);
-  expect(a.sceneId).toBe("MAIN_HOUSE");
-  input(r, a.id, false);
-  input(r, a.id, true);
-  expect(a.sceneId).toBe("HOUSE_INTERIOR");
-  input(r, a.id, false);
-  Object.assign(a, { x: 650, y: 454 });
-  input(r, a.id, true);
-  expect(a.sceneId).toBe("HOUSE_INTERIOR");
 });
-it("blocks interior furniture and boundary bases but permits the door corridor", () => {
+it("blocks shop furniture and walls but keeps the door corridor open", () => {
   const { a } = pair();
   a.sceneId = "HOUSE_INTERIOR";
-  a.x = 608;
-  a.y = 454;
-  move(
-    a,
-    { ...neutral(), moveY: -1 },
-    maps.HOUSE_INTERIOR,
-    collisionRects("HOUSE_INTERIOR", {}),
-    0.15,
-  );
-  expect(a.y).toBeLessThan(454);
-  a.x = 400;
-  a.y = 488;
-  move(
-    a,
-    { ...neutral(), moveY: -1 },
-    maps.HOUSE_INTERIOR,
-    collisionRects("HOUSE_INTERIOR", {}),
-    0.1,
-  );
-  expect(a.y).toBe(475);
-  a.x = 640;
-  a.y = 480;
-  move(
-    a,
-    { ...neutral(), moveX: 1 },
-    maps.HOUSE_INTERIOR,
-    collisionRects("HOUSE_INTERIOR", {}),
-    0.1,
-  );
-  expect(a.x).toBe(659);
+  const walk = (x: number, y: number, mx: number, my: number, ticks = 30) => {
+    Object.assign(a, { x, y });
+    for (let n = 0; n < ticks; n++)
+      move(a, { ...neutral(), moveX: mx, moveY: my }, shop, shop.walls, 1 / 30);
+    return { x: a.x, y: a.y };
+  };
+  // North from the door, the counter stops the hero at its base.
+  const counter = shop.walls.find(
+    (r) => r.x <= 620 && r.x + r.w >= 620 && r.y > 350 && r.h < 100,
+  )!;
+  expect(walk(620, 500, 0, -1).y).toBe(counter.y + counter.h + 13);
+  // The back wall stops a hero in an open stretch of floor.
+  expect(walk(330, 320, 0, -1).y).toBe(256 + 13);
+  // The door corridor is open from the spawn up to the shop floor.
+  expect(walk(inside.x, inside.y, 0, -1, 4).y).toBeLessThan(inside.y - 20);
+  // And the bottom wall holds below the door.
+  expect(walk(inside.x, inside.y, 0, 1).y).toBeLessThan(600);
+});
+it("climbs the stairs and comes back down, each hero on their own", () => {
+  const { r, a, b } = pair();
+  Object.assign(a, { sceneId: "HOUSE_INTERIOR" }, shop.points.upstairs);
+  input(r, a.id, true);
+  expect(a).toMatchObject({
+    sceneId: "HOUSE_UPPER",
+    ...maps.HOUSE_UPPER.spawn,
+  });
+  expect(b.sceneId).toBe("MAIN_HOUSE");
+  input(r, a.id, true);
+  expect(a.sceneId).toBe("HOUSE_UPPER");
+  input(r, a.id, false);
+  Object.assign(a, maps.HOUSE_UPPER.points.downstairs);
+  input(r, a.id, true);
+  expect(a.sceneId).toBe("HOUSE_INTERIOR");
+  expect(
+    Math.hypot(a.x - shop.points.upstairs.x, a.y - shop.points.upstairs.y),
+  ).toBeLessThan(42);
+});
+it("lets a hero walk from the door to every stair, door and story spot", () => {
+  const clear = (
+    scene: "HOUSE_INTERIOR" | "HOUSE_UPPER",
+    x: number,
+    y: number,
+  ) =>
+    x > 13 &&
+    y > 13 &&
+    !maps[scene].walls.some(
+      (r) =>
+        x + 13 > r.x &&
+        x - 13 < r.x + r.w &&
+        y + 13 > r.y &&
+        y - 13 < r.y + r.h,
+    );
+  const reach = (
+    scene: "HOUSE_INTERIOR" | "HOUSE_UPPER",
+    from: { x: number; y: number },
+  ) => {
+    const step = 4,
+      seen = new Set<string>(),
+      queue = [[Math.round(from.x / step), Math.round(from.y / step)]];
+    while (queue.length) {
+      const [cx, cy] = queue.pop()!,
+        key = `${cx},${cy}`;
+      if (seen.has(key) || !clear(scene, cx * step, cy * step)) continue;
+      seen.add(key);
+      queue.push([cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]);
+    }
+    return (p: { x: number; y: number }) =>
+      [...seen].some((k) => {
+        const [x, y] = k.split(",").map((n) => Number(n) * step);
+        return Math.hypot(x - p.x, y - p.y) < 30;
+      });
+  };
+  const ground = reach("HOUSE_INTERIOR", inside);
+  for (const p of Object.values(shop.points)) expect(ground(p)).toBe(true);
+  const upper = reach("HOUSE_UPPER", maps.HOUSE_UPPER.spawn);
+  for (const p of Object.values(maps.HOUSE_UPPER.points))
+    expect(upper(p)).toBe(true);
 });
 it("keeps cross-location projectiles and enemies from hitting an interior hero", () => {
   const { r, a, b } = pair();
@@ -280,25 +341,3 @@ it("keeps the latest movement intent when validated packets arrive in the same b
     await app.close();
   }
 }, 15000);
-it("allows walking across open rug margins and into stair treads while retaining furniture and wall barriers", () => {
-  const { a } = pair();
-  a.sceneId = "HOUSE_INTERIOR";
-  const m = maps.HOUSE_INTERIOR;
-  const walk = (
-    x: number,
-    y: number,
-    mx: number,
-    my: number,
-    ticks: number,
-  ) => {
-    Object.assign(a, { x, y });
-    for (let n = 0; n < ticks; n++)
-      move(a, { ...neutral(), moveX: mx, moveY: my }, m, m.walls, 1 / 30);
-    return { x: a.x, y: a.y };
-  };
-  expect(walk(320, 470, 1, 0, 8).x).toBeCloseTo(320 + (8 * 190) / 30);
-  expect(walk(224, 331, 0, -1, 30).y).toBe(237);
-  expect(walk(400, 327, 0, -1, 30).y).toBe(237);
-  expect(walk(400, 475, 0, -1, 30).y).toBe(475);
-  expect(walk(488, 370, 0, -1, 30).y).toBe(347);
-});
