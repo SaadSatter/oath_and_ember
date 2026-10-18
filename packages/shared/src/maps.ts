@@ -27,7 +27,7 @@ import {
 import { pushableDefinitions, pushableRect } from "./pushables.js";
 import { gladeDynamicWalls, type GladeState } from "./statueGlade.js";
 import type { World } from "./gameTypes.js";
-import { interiorElements } from "./mapElements.js";
+import { composedScenes, type ComposedScene } from "./composedScenes.js";
 import { exteriorTreeSolids, forestTreeSolids } from "./environmentSolids.js";
 import type { SceneId, Rect } from "./gameTypes.js";
 import postTownSolids from "./postTownSolids.json" with { type: "json" };
@@ -101,6 +101,22 @@ function postTownMap(
       ...postTownSolids[id],
     ],
     points: { exit },
+  };
+}
+function composedMap(id: ComposedScene): MapDefinition {
+  const floor = composedScenes[id];
+  return {
+    id,
+    mode: "TOP_DOWN",
+    width: floor.width,
+    height: floor.height,
+    spawn: { ...floor.spawn },
+    cameraBounds: floor.cameraBounds,
+    doorInteractionBounds: floor.doorInteractionBounds,
+    walls: floor.solids,
+    points: Object.fromEntries(
+      Object.entries(floor.points).map(([k, p]) => [k, { ...p }]),
+    ),
   };
 }
 function villageInteriorMap(id: VillageInterior): MapDefinition {
@@ -237,17 +253,12 @@ export const maps: Record<SceneId, MapDefinition> = {
       shrine: { x: 130, y: 500 },
     },
   },
-  HOUSE_INTERIOR: {
-    id: "HOUSE_INTERIOR",
-    mode: "TOP_DOWN",
-    width: 832,
-    height: 704,
-    spawn: { x: 608, y: 454 },
-    cameraBounds: { x: 160, y: 160, w: 512, h: 352 },
-    doorInteractionBounds: { x: 592, y: 344, w: 32, h: 128 },
-    walls: interiorElements.flatMap((element) => element.solids),
-    points: { door: { x: 608, y: 430 } },
-  },
+  // Alden's magic shop (scripts/build-magic-shop.py).
+  HOUSE_INTERIOR: composedMap("HOUSE_INTERIOR"),
+  HOUSE_UPPER: composedMap("HOUSE_UPPER"),
+  // Chapter 0 prologue forest (scripts/build-prologue-forest.py).
+  PROLOGUE_TRAIL: composedMap("PROLOGUE_TRAIL"),
+  PROLOGUE_CLEARING: composedMap("PROLOGUE_CLEARING"),
   FOREST_RUINS: {
     id: "FOREST_RUINS",
     mode: "TOP_DOWN",

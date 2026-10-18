@@ -1,0 +1,21 @@
+{
+  "source": "PixelLab create_map_object (style-matched against the house's own floor/grass/road pixels), downloaded 2026-10-17",
+  "files": {
+    "cauldron.png": {
+      "pixellabObjectId": "851276a8-24b1-4ece-9df9-94f1d0151d49",
+      "description": "small black iron witch's cauldron on three short legs, bubbling green potion with a few glowing bubbles and wisps of steam",
+      "background": "house wood floor tiles (walls_floor.png 64,144,64,32)"
+    },
+    "grave.png": {
+      "pixellabObjectId": "d06d34ed-6bc3-44d4-a6d8-badf171cf666",
+      "description": "fresh grave: a low oval mound of dark brown dirt with a small rounded grey stone tombstone standing at its head, a few tiny wildflowers",
+      "background": "exterior grass (house exterior map)"
+    },
+    "merchant_cart.png": {
+      "pixellabObjectId": "7c09c282-f716-4bd1-9f47-0d5431ac0129",
+      "description": "abandoned wooden merchant cart tipped on its side with one broken wheel, torn canvas cover, spilled wooden crates, cloth sacks and a few glass potion bottles on the ground",
+      "background": "exterior dirt road (house exterior map)"
+    }
+  },
+  "notes": "Game copies are trimmed to their opaque bounds; pixels unchanged."
+}
