@@ -5,6 +5,7 @@ export class RoomManager {
   constructor(
     readonly encounter = false,
     readonly startingScene: SceneId = "MAIN_HOUSE",
+    readonly prologue = false,
   ) {}
   rooms = new Map<string, GameRoom>();
   create() {
@@ -16,7 +17,12 @@ export class RoomManager {
         () => alphabet[randomInt(alphabet.length)],
       ).join("");
     } while (this.rooms.has(code));
-    const room = new GameRoom(code, this.encounter, this.startingScene);
+    const room = new GameRoom(
+      code,
+      this.encounter,
+      this.startingScene,
+      this.prologue,
+    );
     this.rooms.set(code, room);
     return room;
   }

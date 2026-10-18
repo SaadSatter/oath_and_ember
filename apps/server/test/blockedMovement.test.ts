@@ -171,9 +171,23 @@ it("keeps house spawns, arrivals and door approaches outside every solid footpri
     [
       "HOUSE_INTERIOR",
       [
-        [608, 454],
-        [640, 454],
-        [608, 430],
+        [maps.HOUSE_INTERIOR.spawn.x, maps.HOUSE_INTERIOR.spawn.y],
+        [maps.HOUSE_INTERIOR.spawn.x + 32, maps.HOUSE_INTERIOR.spawn.y],
+        [maps.HOUSE_INTERIOR.points.leave.x, maps.HOUSE_INTERIOR.points.leave.y],
+        [
+          maps.HOUSE_INTERIOR.points.upstairs.x,
+          maps.HOUSE_INTERIOR.points.upstairs.y,
+        ],
+      ],
+    ],
+    [
+      "HOUSE_UPPER",
+      [
+        [maps.HOUSE_UPPER.spawn.x, maps.HOUSE_UPPER.spawn.y],
+        [
+          maps.HOUSE_UPPER.points.downstairs.x,
+          maps.HOUSE_UPPER.points.downstairs.y,
+        ],
       ],
     ],
   ] as const) {

@@ -993,3 +993,27 @@ button[data-timer-phase="ready"] .speed-icon::before {
     animation: none;
   }
 }
+/* Prologue story lines: each voice keeps its own name colour. */
+.story-box[data-voice="ALDEN"] .dialogue-speaker {
+  color: #ffb347;
+}
+.story-box[data-voice="COCO"] .dialogue-speaker {
+  color: #ff7a6b;
+}
+.story-box[data-voice="SIEG"] .dialogue-speaker {
+  color: #8fc4ff;
+}
+.story-box[data-voice="NARRATION"] .dialogue-text,
+.story-box.story-thought .dialogue-text {
+  color: #d9d2c3;
+  font-style: italic;
+}
+.story-status {
+  margin-top: 10px;
+  font-size: 8px;
+  line-height: 8px;
+  color: #9a9a9a;
+}
+.story-status:empty {
+  display: none;
+}

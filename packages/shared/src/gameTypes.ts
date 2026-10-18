@@ -7,6 +7,9 @@ export type SceneId =
   | "HEDGE_MAZE"
   | "BRIDGE_RUINS"
   | "HOUSE_INTERIOR"
+  | "HOUSE_UPPER"
+  | "PROLOGUE_TRAIL"
+  | "PROLOGUE_CLEARING"
   | "MAIN_HOUSE"
   | "EMBERBROOK_VILLAGE"
   | import("./villageInteriors.js").VillageInterior
@@ -156,7 +159,32 @@ export interface BlackHole {
   life: number;
   damaged: string[];
 }
+/** Server-owned Chapter 0 prologue progress (see prologue.ts). */
+export interface StoryState {
+  stage: import("./prologue.js").StoryStage;
+  /** The scene being played, if any; heroes cannot move while it runs. */
+  cutscene?: {
+    id: string;
+    line: number;
+    /** Players who have read the current line. */
+    acks: string[];
+    /** Tick the current line appeared. */
+    since: number;
+    /** Tick the first reader finished it; the line moves on soon after. */
+    firstAck?: number;
+  };
+  /** Permanent story flags, in the order they were earned. */
+  flags: string[];
+  /** Tick the ambush fight began. */
+  fightStart?: number;
+  alden?: import("./prologue.js").AldenPose & {
+    action: import("./prologue.js").AldenAction;
+    /** Where he is walking to. */
+    target?: { x: number; y: number };
+  };
+}
 export interface World {
+  story?: StoryState;
   /** Villagers stopped mid-conversation: since which tick, and with whom. */
   npcTalks?: Record<string, { since: number; listeners: string[] }>;
   /** Ticks each villager has spent talking, so its walk resumes in place. */

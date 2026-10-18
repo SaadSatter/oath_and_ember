@@ -42,11 +42,19 @@ const inputPacketSchema = z.union([
   z.object({ frames: z.array(inputSchema).min(1).max(6) }).strict(),
 ]);
 export function createApp(
-  options: { encounter?: boolean; startingScene?: SceneId } = {},
+  options: {
+    encounter?: boolean;
+    startingScene?: SceneId;
+    prologue?: boolean;
+  } = {},
 ) {
   const app = express(),
     http = createServer(app),
-    manager = new RoomManager(options.encounter, options.startingScene);
+    manager = new RoomManager(
+      options.encounter,
+      options.startingScene,
+      options.prologue,
+    );
   const io = new Server<ClientEvents, ServerEvents>(http);
   app.get("/healthz", (_req, res) =>
     res.json({ ok: true, rooms: manager.rooms.size }),
@@ -188,6 +196,28 @@ export function createApp(
           .strict()
           .parse(p);
         const result = requireRoom().talkToNpc(id, intent.npcId, intent.talking);
+        sync();
+        return result;
+      }),
+    );
+    socket.on("story:read", (p, ack) =>
+      request(ack, () => {
+        const intent = z
+          .object({
+            cutscene: z
+              .string()
+              .min(1)
+              .max(40)
+              .regex(/^[a-z0-9_-]+$/),
+            line: z.number().int().min(0).max(500),
+          })
+          .strict()
+          .parse(p);
+        const result = requireRoom().readStoryLine(
+          id,
+          intent.cutscene,
+          intent.line,
+        );
         sync();
         return result;
       }),

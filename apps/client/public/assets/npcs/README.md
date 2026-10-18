@@ -14,3 +14,8 @@ west. Column 0 is the standing rotation; columns 1–8 are the 8-frame walk.
 | wizard.png | A Wizard NPC (11ddf472…) | 4 dir |
 | townsfolk.png | Common townfolk woman (5232997b…) | 4 dir (generated 2026-10-16) |
 | healer.png | Shop Owner for health (53aeccfd…) | standing only |
+
+`alden.png` (story NPC) is packed separately by `node scripts/import-alden.mjs`
+from `Images/Sprites/Story_NPCs/alden/` (PixelLab character fce323ef…): 112px
+cells; rows south/east/north/west (standing + 8 walk, west = east mirrored);
+row 4 is the 9-frame south spellcast. See `docs/PROLOGUE.md`.

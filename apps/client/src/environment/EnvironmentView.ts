@@ -21,6 +21,12 @@ import {
   villageInteriorIds,
 } from "../../../../packages/shared/src/villageInteriors.js";
 import lpcFurniture from "./lpcVillageFurniture.json" with { type: "json" };
+import { aldenGrave } from "../../../../packages/shared/src/prologue.js";
+import {
+  composedFrames,
+  composedScenes,
+  isComposedScene,
+} from "../../../../packages/shared/src/composedScenes.js";
 const interiorMapKey = (id: string) => `village-interior:${id}`;
 const treeNames = [
   "Tree1",
@@ -52,6 +58,16 @@ const sheets = [
   "Interior",
 ];
 export function preloadEnvironment(scene: Phaser.Scene) {
+  scene.load.image("story:grave", "/assets/environment/story/grave.png");
+  for (const [atlas, names] of [
+    ["magic-shop", ["ground", "upper", "props"]],
+    ["prologue-forest", ["trail", "clearing", "props"]],
+  ] as const)
+    for (const name of names)
+      scene.load.image(
+        `${atlas}:${name}`,
+        `/assets/environment/${atlas}/${name}.png`,
+      );
   scene.load.image(
     "lpc:kenney",
     "/assets/environment/kenney-indoors/indoors.png",
@@ -102,6 +118,10 @@ export class EnvironmentView {
   /** Post-town map object images by their export index, for scene views. */
   private postTownObjects = new Map<number, Phaser.GameObjects.Image>();
   private map: Phaser.Tilemaps.Tilemap | null = null;
+  private grave: Phaser.GameObjects.Image | null = null;
+  setGraveVisible(visible: boolean) {
+    this.grave?.setVisible(visible);
+  }
   private pushableImages: {
     id: string;
     image: Phaser.GameObjects.Image;
@@ -114,6 +134,13 @@ export class EnvironmentView {
     // These source sheets use square pixels. Never interpolate their texels,
     // including tilemap sheets, when the renderer or viewport changes size.
     for (const key of [
+      "story:grave",
+      "magic-shop:ground",
+      "magic-shop:upper",
+      "magic-shop:props",
+      "prologue-forest:trail",
+      "prologue-forest:clearing",
+      "prologue-forest:props",
       ...sheets.map((name) => `house:${name}`),
       ...treeNames.map((name) => `tree:${name}`),
       ...Object.entries(postTownMaps).flatMap(([id, map]) => [
@@ -188,18 +215,34 @@ export class EnvironmentView {
         }
       });
     }
-    if (
-      id === "MAIN_HOUSE" ||
-      id === "HOUSE_INTERIOR" ||
-      isVillageInterior(id)
-    ) {
+    if (isComposedScene(id)) {
+      // Built scenes (the shop, the prologue forest): one backdrop under the
+      // heroes, and every prop depth-sorted by its base like other objects.
+      const floor = composedScenes[id];
+      this.objects.push(
+        this.scene.add
+          .image(0, 0, `${floor.atlas}:${floor.backdrop}`)
+          .setOrigin(0)
+          .setScale(ENVIRONMENT_SCALE)
+          .setDepth(-100),
+      );
+      const key = `${floor.atlas}:props`,
+        props = this.scene.textures.get(key),
+        frames = composedFrames[floor.atlas];
+      for (const prop of floor.props) {
+        if (!props.has(prop.art)) props.add(prop.art, 0, ...frames[prop.art]);
+        this.objects.push(
+          this.scene.add
+            .image(prop.x, prop.y, key, prop.art)
+            .setOrigin(0)
+            .setScale(ENVIRONMENT_SCALE)
+            .setDepth(prop.groundY - 13)
+            .setName(`prop:${prop.id}`),
+        );
+      }
+    } else if (id === "MAIN_HOUSE" || isVillageInterior(id)) {
       this.map = this.scene.make.tilemap({
-        key:
-          id === "MAIN_HOUSE"
-            ? "main-house"
-            : id === "HOUSE_INTERIOR"
-              ? "house-interior"
-              : interiorMapKey(id),
+        key: id === "MAIN_HOUSE" ? "main-house" : interiorMapKey(id),
       });
       const sets = this.map.tilesets.map((t) =>
         this.map!.addTilesetImage(t.name, `house:${t.name.split(":")[0]}`)!,
@@ -266,8 +309,18 @@ export class EnvironmentView {
         this.objects.push(layer);
         this.sortElements(layer, id, l.name, i);
       });
-      if (id === "MAIN_HOUSE")
+      if (id === "MAIN_HOUSE") {
         houseTrees.forEach((p, i) => this.tree(p.x, p.y, i, 2));
+        // Alden's grave under the west tree (hidden until the story has one).
+        this.grave = this.scene.add
+          .image(aldenGrave.x, aldenGrave.y, "story:grave")
+          .setOrigin(0)
+          .setScale(ENVIRONMENT_SCALE)
+          .setDepth(aldenGrave.groundY - 13)
+          .setName("story:grave")
+          .setVisible(false);
+        this.objects.push(this.grave);
+      }
     }
     if (isSettlementScene(id)) {
       const town = settlements[id];
@@ -442,6 +495,7 @@ export class EnvironmentView {
     this.postTownObjects.clear();
     for (const o of this.objects) o.destroy();
     this.objects = [];
+    this.grave = null;
     this.map?.destroy();
     this.map = null;
   }

@@ -1,0 +1,22 @@
+{
+  "errors": [
+    "client 0: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "log": [
+    "visit: visit",
+    "read until LEAVING ",
+    "read until FOREST_BOUND ",
+    "trail: PROLOGUE_TRAIL TRAIL",
+    "read until TRAIL ",
+    "clearing: PROLOGUE_CLEARING ambush",
+    "read until FIGHT ",
+    "fight hp: 20 60; enemies 8",
+    "rescue: rescue sieg hp 15",
+    "read until HOME home",
+    "home: MAIN_HOUSE HOUSE_UPPER hp 100/100, enemies 0",
+    "read until HOME farewell",
+    "read until HOME morning",
+    "read until DONE ",
+    "done: flags prologue.visit,prologue.detour,prologue.cart,prologue.ambush,prologue.rescue,prologue.home,prologue.farewell,prologue.complete"
+  ]
+}
