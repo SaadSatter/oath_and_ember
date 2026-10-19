@@ -765,7 +765,13 @@ button[data-timer-phase="ready"] .speed-icon::before {
   pointer-events: none;
   background:
     radial-gradient(ellipse at 50% 42%, transparent 45%, #05080bcc 100%),
-    linear-gradient(to bottom, #05080b99, transparent 28%, transparent 62%, #05080bcc);
+    linear-gradient(
+      to bottom,
+      #05080b99,
+      transparent 28%,
+      transparent 62%,
+      #05080bcc
+    );
 }
 .title-logo,
 .title-dialog {
@@ -857,6 +863,166 @@ button[data-timer-phase="ready"] .speed-icon::before {
   display: flex;
   gap: 12px;
   align-items: stretch;
+}
+.title-content {
+  max-height: calc(100dvh - 235px);
+  overflow-y: auto;
+  scrollbar-color: #a48651 #112029;
+  padding: 2px 4px 2px 2px;
+}
+.story-starts {
+  padding: 0;
+  margin: 12px 0 20px;
+  border: 0;
+  min-width: 0;
+}
+.story-starts legend {
+  padding: 0 0 10px;
+  color: #d7ba83;
+  font: 600 11px system-ui;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.story-start-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.story-start {
+  position: relative;
+  cursor: pointer;
+}
+.story-start input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.story-start-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 100%;
+  padding: 12px;
+  border: 1px solid #536064;
+  border-radius: 3px;
+  background: #09161eb3;
+  transition:
+    border-color 150ms,
+    background 150ms;
+}
+.story-start-card strong {
+  display: block;
+  color: #e9dfca;
+  font-size: 15px;
+  line-height: 1.25;
+}
+.story-start-description {
+  display: block;
+  margin-top: 4px;
+  color: #a9b5b7;
+  font: 12px/1.45 system-ui;
+}
+.story-start-number {
+  color: #849292;
+  font:
+    13px Georgia,
+    serif;
+}
+.story-start-check {
+  color: #e2c07e;
+  visibility: hidden;
+  margin-left: auto;
+  font-size: 10px;
+}
+.story-start:hover .story-start-card {
+  border-color: #b69960;
+}
+.story-start input:checked + .story-start-card {
+  border-color: #e2c07e;
+  background: linear-gradient(110deg, #71552b55, #192b31);
+  box-shadow: inset 0 0 0 1px #c9a46233;
+}
+.story-start
+  input:checked
+  + .story-start-card
+  :is(strong, .story-start-number) {
+  color: #ffe1a5;
+}
+.story-start input:checked + .story-start-card .story-start-check {
+  visibility: visible;
+}
+.story-start input:focus-visible + .story-start-card {
+  outline: 2px solid #fff0c9;
+  outline-offset: 2px;
+}
+.lobby-story-start {
+  color: #e2c07e;
+  margin: -6px 0 18px;
+}
+@media (max-width: 560px) {
+  .title-dialog {
+    padding: 24px 16px 14px;
+  }
+  .story-start-card {
+    padding: 10px 8px;
+    gap: 6px;
+  }
+  .story-start-card strong {
+    font-size: 14px;
+  }
+  .story-start-description {
+    font-size: 11px;
+  }
+  .story-start-number {
+    display: none;
+  }
+}
+@media (max-height: 560px) {
+  .title-logo {
+    top: 10px;
+  }
+  .title-logo h1 {
+    font-size: 36px;
+  }
+  .title-logo .eyebrow {
+    font-size: 10px;
+  }
+  .title-dialog {
+    bottom: 12px;
+    padding-top: 20px;
+    padding-bottom: 12px;
+  }
+  .title-content {
+    max-height: calc(100dvh - 150px);
+  }
+  .title-line {
+    min-height: 1.6em;
+    font-size: 16px;
+  }
+  .story-starts {
+    margin: 6px 0 10px;
+  }
+  .story-starts legend {
+    padding-bottom: 6px;
+  }
+  .story-start-grid {
+    gap: 6px;
+  }
+  .story-start-card {
+    padding: 8px 10px;
+  }
+  .story-start-description {
+    display: none;
+  }
+  .title-dialog small {
+    margin-top: 6px;
+    font-size: 11px;
+    line-height: 1.4;
+  }
 }
 .title-actions #create {
   flex: 0 0 auto;
@@ -1016,4 +1182,55 @@ button[data-timer-phase="ready"] .speed-icon::before {
 }
 .story-status:empty {
   display: none;
+}
+/* Chapter 0 voices. */
+.story-box[data-voice="QUEST"] .dialogue-speaker,
+.story-box[data-voice="QUEST"] .dialogue-text {
+  color: #f6d36b;
+}
+.story-box[data-voice="BRYNN"] .dialogue-speaker,
+.story-box[data-voice="SHOPKEEPER"] .dialogue-speaker,
+.story-box[data-voice="BAKER"] .dialogue-speaker,
+.story-box[data-voice="MOTHER"] .dialogue-speaker {
+  color: #b7e39a;
+}
+/* A hero the story has set aside (Sieg during Coco's errand). */
+.offstage-card {
+  position: fixed;
+  left: 50%;
+  top: 112px;
+  transform: translateX(-50%);
+  max-width: min(560px, calc(100vw - 32px));
+  padding: 8px 14px;
+  background: #050505d9;
+  border: 2px solid #f6e6bf55;
+  color: #e9dfc8;
+  font-family: "Press Start 2P", monospace;
+  font-size: 8px;
+  line-height: 14px;
+  text-align: center;
+  z-index: 30;
+  pointer-events: none;
+}
+.offstage-card[hidden] {
+  display: none;
+}
+.story-box[data-voice="STRANGER"] .dialogue-speaker {
+  color: #b9a3ff;
+}
+/* Sieg remembering Alden: a softer, sepia voice. */
+.story-box.story-memory .dialogue-speaker,
+.story-box.story-memory .dialogue-text {
+  color: #e2c99a;
+  font-style: italic;
+}
+.story-box[data-voice="BERTRAM"] .dialogue-speaker,
+.story-box[data-voice="MERCHANT"] .dialogue-speaker {
+  color: #b7e39a;
+}
+/* Alden's journal: his own words, read aloud. */
+.story-box[data-voice="JOURNAL"] .dialogue-speaker,
+.story-box[data-voice="JOURNAL"] .dialogue-text {
+  color: #e2c99a;
+  font-style: italic;
 }

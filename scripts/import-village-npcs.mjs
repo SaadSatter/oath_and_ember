@@ -15,8 +15,19 @@ const CELL = 96,
 // clean east walk, mirrored, reads correctly. Her source west frames are kept.
 const MIRROR_WEST_WALK = new Set(["mother"]);
 fs.mkdirSync(out, { recursive: true });
-for (const slug of fs.readdirSync(root).sort()) {
-  const dir = `${root}/${slug}`;
+// Story NPCs packed the same way: [slug, folder, rotations subfolder].
+const STORY = [
+  // The stranger's face is shaded into her hood (scripts/stranger-hood-shadow.py).
+  ["stranger", "Images/Sprites/Story_NPCs/stranger", "hooded"],
+];
+const sources = [
+  ...fs
+    .readdirSync(root)
+    .sort()
+    .map((slug) => [slug, `${root}/${slug}`, "rotations"]),
+  ...STORY,
+];
+for (const [slug, dir, rotations] of sources) {
   if (!fs.existsSync(`${dir}/provenance.json`)) continue;
   const walks = fs.existsSync(`${dir}/walk`);
   const cols = walks ? 1 + WALK : 1;
@@ -33,7 +44,7 @@ for (const slug of fs.readdirSync(root).sort()) {
       }
   };
   DIRECTIONS.forEach((direction, row) => {
-    blit(`${dir}/rotations/${direction}.png`, 0, row);
+    blit(`${dir}/${rotations}/${direction}.png`, 0, row);
     const mirror = direction === "west" && MIRROR_WEST_WALK.has(slug);
     if (walks)
       for (let i = 0; i < WALK; i++)

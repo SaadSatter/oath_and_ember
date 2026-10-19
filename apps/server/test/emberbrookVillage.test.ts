@@ -84,7 +84,17 @@ it("follows the main house and leads on to the transition trail, both ways", () 
 it("keeps every villager on open ground, inside the village, at a steady pace", () => {
   const villagers = npcsIn("EMBERBROOK_VILLAGE");
   expect(villagers.map((n) => n.sprite).sort()).toEqual(
-    ["healer", "mother", "old_man", "townsfolk", "wizard"].sort(),
+    [
+      "healer",
+      "mother",
+      "old_man",
+      "townsfolk",
+      "wizard",
+      // Chapter 0's market stalls.
+      "shopkeeper",
+      "baker",
+      "merchant",
+    ].sort(),
   );
   // Plain checks per tick, one assertion per villager: same coverage, fast.
   for (const npc of villagers) {

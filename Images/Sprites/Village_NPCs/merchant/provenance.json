@@ -1,0 +1,33 @@
+{
+  "pixellabCharacterId": "97469cb6-8555-4089-a27e-9013a1128999",
+  "pixellabName": "Traveling Merchant",
+  "downloaded": "2026-10-18",
+  "generation": {
+    "mode": "standard",
+    "size": 58,
+    "view": "high top-down",
+    "directions": 4,
+    "outline": "single color black outline",
+    "shading": "basic shading",
+    "detail": "medium detail",
+    "description": "weathered traveling merchant man, wide-brimmed dusty green hat, short grey-black beard, patched brown travel coat with many pouches, red scarf, big leather backpack with rolled blanket"
+  },
+  "files": [
+    {
+      "path": "rotations/south.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/97469cb6-8555-4089-a27e-9013a1128999/rotations/south.png"
+    },
+    {
+      "path": "rotations/east.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/97469cb6-8555-4089-a27e-9013a1128999/rotations/east.png"
+    },
+    {
+      "path": "rotations/north.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/97469cb6-8555-4089-a27e-9013a1128999/rotations/north.png"
+    },
+    {
+      "path": "rotations/west.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/97469cb6-8555-4089-a27e-9013a1128999/rotations/west.png"
+    }
+  ]
+}

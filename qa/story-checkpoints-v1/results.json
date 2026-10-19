@@ -1,0 +1,42 @@
+{
+  "results": [
+    {
+      "checkpoint": "prologue",
+      "stage": "ARRIVAL",
+      "inventory": {}
+    },
+    {
+      "checkpoint": "shopping",
+      "stage": "ERRAND",
+      "cutscene": "errand",
+      "inventory": {}
+    },
+    {
+      "checkpoint": "funeral",
+      "stage": "MOURNING",
+      "cutscene": "next-day",
+      "inventory": {
+        "moonleaf": 1,
+        "crystal_vial": 2,
+        "candlewick": 1,
+        "fresh_bread": 1,
+        "honey_pastry": 1
+      }
+    },
+    {
+      "checkpoint": "investigation",
+      "stage": "INVESTIGATION",
+      "inventory": {
+        "moonleaf": 1,
+        "crystal_vial": 2,
+        "candlewick": 1,
+        "fresh_bread": 1,
+        "honey_pastry": 1,
+        "wooden_sword": 0,
+        "river_stone": 0,
+        "wildflowers": 0
+      }
+    }
+  ],
+  "errors": []
+}

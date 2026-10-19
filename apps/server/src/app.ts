@@ -4,6 +4,7 @@ import { createServer } from "node:http";
 import { resolve } from "node:path";
 import { Server } from "socket.io";
 import { z } from "zod";
+import { storyCheckpointIds } from "../../../packages/shared/src/storyCheckpoints.js";
 import { RoomManager } from "./RoomManager.js";
 import type {
   ClientEvents,
@@ -104,10 +105,14 @@ export function createApp(
         id = "";
       }),
     );
-    socket.on("room:create", (_p, ack) =>
+    socket.on("room:create", (p, ack) =>
       request(ack, () => {
         if (room) throw Error("Already in a room.");
-        const r = manager.create(),
+        const parsed = z
+          .object({ checkpoint: z.enum(storyCheckpointIds).optional() })
+          .strict()
+          .parse(p);
+        const r = manager.create(parsed.checkpoint),
           s = r.add(socket.id);
         attach(r, s);
         return s;
@@ -131,11 +136,16 @@ export function createApp(
       request(ack, () => {
         if (room) throw Error("Already in a room.");
         const r = manager.get(z.string().parse(p?.roomCode));
+        const playerId = z.string().parse(p?.playerId);
+        const prior = r.sessions.get(playerId)?.socketId;
         const s = r.resume(
-          z.string().parse(p?.playerId),
+          playerId,
           z.string().parse(p?.reconnectToken),
           socket.id,
         );
+        // The session's old socket (if it is somehow still open) is closed.
+        if (prior && prior !== socket.id)
+          io.sockets.sockets.get(prior)?.disconnect(true);
         attach(r, s);
         return s;
       }),
@@ -190,12 +200,20 @@ export function createApp(
       request(ack, () => {
         const intent = z
           .object({
-            npcId: z.string().min(1).max(40).regex(/^[a-z0-9_-]+$/),
+            npcId: z
+              .string()
+              .min(1)
+              .max(40)
+              .regex(/^[a-z0-9_-]+$/),
             talking: z.boolean(),
           })
           .strict()
           .parse(p);
-        const result = requireRoom().talkToNpc(id, intent.npcId, intent.talking);
+        const result = requireRoom().talkToNpc(
+          id,
+          intent.npcId,
+          intent.talking,
+        );
         sync();
         return result;
       }),
@@ -251,7 +269,7 @@ export function createApp(
     );
     socket.on("disconnect", () => {
       if (room) {
-        room.disconnect(id);
+        room.disconnect(id, socket.id);
         io.to(room.state.roomCode).emit("connection:status", {
           connected: false,
         });

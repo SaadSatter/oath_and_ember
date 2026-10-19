@@ -22,6 +22,8 @@ import { maps, collisionRects } from "../../../packages/shared/src/maps.js";
 import { steerTarget } from "./enemyNavigation.js";
 const distance = (a: { x: number; y: number }, b: { x: number; y: number }) =>
   Math.hypot(a.x - b.x, a.y - b.y);
+/** Story marches (Enemy.march), in world units per second. */
+const MARCH_SPEED = 90;
 export function damageEnemy(e: Enemy, amount: number, tick: number) {
   if (e.state === "DEAD" || amount <= 0) return;
   e.hp = Math.max(0, e.hp - amount);
@@ -126,6 +128,23 @@ export function tickEnemies(w: World, damage: (p: Player, n: number) => void) {
     if (e.passive) {
       e.state = "IDLE";
       e.attackStartedTick = null;
+      // A held monster the story marches somewhere walks there (no attacks).
+      if (e.march) {
+        const dx = e.march.x - e.x,
+          dy = e.march.y - e.y,
+          d = Math.hypot(dx, dy),
+          step = MARCH_SPEED * DT;
+        if (d <= step) {
+          Object.assign(e, e.march);
+          delete e.march;
+        } else {
+          e.vx = (dx / d) * MARCH_SPEED;
+          e.vy = (dy / d) * MARCH_SPEED;
+          e.x += e.vx * DT;
+          e.y += e.vy * DT;
+          e.facing = Math.atan2(dy, dx);
+        }
+      }
       continue;
     }
     const d = enemyDefinitions[e.type];
