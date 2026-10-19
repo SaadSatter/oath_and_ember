@@ -28,8 +28,14 @@ import { pushableDefinitions, pushableRect } from "./pushables.js";
 import { gladeDynamicWalls, type GladeState } from "./statueGlade.js";
 import type { World } from "./gameTypes.js";
 import { composedScenes, type ComposedScene } from "./composedScenes.js";
-import { exteriorTreeSolids, forestTreeSolids } from "./environmentSolids.js";
+import {
+  exteriorTreeSolids,
+  forestTreeSolids,
+  aldenYardObjectSolids,
+  aldenYardFenceSolids,
+} from "./environmentSolids.js";
 import type { SceneId, Rect } from "./gameTypes.js";
+import { stallSolids } from "./storyProps.js";
 import postTownSolids from "./postTownSolids.json" with { type: "json" };
 import {
   villageInteriors,
@@ -230,6 +236,8 @@ export const maps: Record<SceneId, MapDefinition> = {
     spawn: { x: 456, y: 354 },
     walls: [
       ...exteriorTreeSolids,
+      ...aldenYardObjectSolids,
+      ...aldenYardFenceSolids,
       { x: 0, y: 0, w: 864, h: 16 },
       { x: 0, y: 624, w: 864, h: 16 },
       { x: 0, y: 0, w: 16, h: 640 },
@@ -237,14 +245,6 @@ export const maps: Record<SceneId, MapDefinition> = {
       { x: 280, y: 250, w: 184, h: 64 },
       { x: 496, y: 250, w: 48, h: 64 },
       { x: 464, y: 250, w: 32, h: 48 },
-      { x: 276, y: 314, w: 44, h: 42 },
-      { x: 540, y: 322, w: 28, h: 36 },
-      { x: 346, y: 534, w: 188, h: 90 },
-      { x: 590, y: 524, w: 44, h: 80 },
-      { x: 212, y: 200, w: 8, h: 240 },
-      { x: 616, y: 200, w: 8, h: 240 },
-      { x: 212, y: 432, w: 252, h: 8 },
-      { x: 496, y: 432, w: 128, h: 8 },
     ],
     points: {
       door: { x: 480, y: 326 },
@@ -321,6 +321,8 @@ export const maps: Record<SceneId, MapDefinition> = {
     points: { anchor: { x: 820, y: 655 }, boss: { x: 970, y: 650 } },
   },
 };
+// Emberbrook's market stalls (storyProps.ts) stand on the south lawn.
+maps.EMBERBROOK_VILLAGE.walls.push(...stallSolids);
 // Emberbrook Village houses: a door point on the village map for each.
 for (const id of villageInteriorIds.filter(
   (id) => !villageInteriors[id].outsideScene,

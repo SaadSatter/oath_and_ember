@@ -1,6 +1,7 @@
 import type { SceneId } from "../../../packages/shared/src/gameTypes.js";
 import { randomInt } from "node:crypto";
 import { GameRoom } from "./GameRoom.js";
+import type { StoryCheckpointId } from "../../../packages/shared/src/storyCheckpoints.js";
 export class RoomManager {
   constructor(
     readonly encounter = false,
@@ -8,7 +9,7 @@ export class RoomManager {
     readonly prologue = false,
   ) {}
   rooms = new Map<string, GameRoom>();
-  create() {
+  create(checkpoint?: StoryCheckpointId) {
     const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     let code;
     do {
@@ -19,9 +20,10 @@ export class RoomManager {
     } while (this.rooms.has(code));
     const room = new GameRoom(
       code,
-      this.encounter,
-      this.startingScene,
-      this.prologue,
+      checkpoint ? false : this.encounter,
+      checkpoint ? "MAIN_HOUSE" : this.startingScene,
+      checkpoint ? true : this.prologue,
+      checkpoint,
     );
     this.rooms.set(code, room);
     return room;

@@ -32,8 +32,12 @@ import {
   beginPrologue,
   prologueBlocksExit,
   readLine,
+  storyBlocksDoor,
+  storyConversation,
+  storyInteract,
   storyLocked,
   storyTravel,
+  storyWalkInput,
   tickStory,
   type StoryHost,
 } from "./prologue.js";
@@ -98,6 +102,7 @@ import {
   validAppearance,
 } from "../../../packages/shared/src/appearance.js";
 import { randomUUID } from "node:crypto";
+import { beginStoryCheckpoint } from "./storyCheckpoints.js";
 import {
   heavyTiming,
   swordContactTicks,
@@ -204,9 +209,11 @@ export class GameRoom {
     readonly startingScene: SceneId = "MAIN_HOUSE",
     /** Open with the Chapter 0 prologue (only from the main house). */
     readonly prologue = false,
+    readonly storyStart?: import("../../../packages/shared/src/storyCheckpoints.js").StoryCheckpointId,
   ) {
     this.state = {
       roomCode: code,
+      storyStart,
       phase: "LOBBY",
       sceneId: "FOREST_RUINS",
       serverTick: 0,
@@ -319,7 +326,9 @@ export class GameRoom {
     const s = this.sessions.get(id);
     if (!s || s.token !== token || s.expires < Date.now())
       throw Error("Reconnect failed. Create or join a new room.");
-    if (s.socketId) throw Error("This session is already connected.");
+    // A client that reconnects before the server has noticed its old socket
+    // drop takes the session over (the app closes the old socket); refusing
+    // it sent the player back to the title screen mid-game.
     s.socketId = socketId;
     s.expires = Infinity;
     s.input = neutral();
@@ -343,7 +352,13 @@ export class GameRoom {
       reconnectToken: token,
     };
   }
-  disconnect(id: string) {
+  /**
+   * A player's socket closed. `socketId` names which one: a socket the
+   * session has already moved on from (a reconnect took over) changes nothing.
+   */
+  disconnect(id: string, socketId?: string) {
+    const session = this.sessions.get(id);
+    if (socketId && session && session.socketId !== socketId) return;
     this.blackHoleRequests.delete(id);
     this.releaseTalk(id);
     for (const [key, hole] of Object.entries(this.state.blackHoles ?? {}))
@@ -503,7 +518,9 @@ export class GameRoom {
       }
     });
     delete w.story;
-    if (this.prologue && w.sceneId === "MAIN_HOUSE")
+    if (this.storyStart && w.sceneId === "MAIN_HOUSE")
+      beginStoryCheckpoint(w, this.storyHost, this.storyStart);
+    else if (this.prologue && w.sceneId === "MAIN_HOUSE")
       beginPrologue(w, this.storyHost);
   }
   /** A hero has read the current story line (see prologue.ts). */
@@ -691,6 +708,9 @@ export class GameRoom {
     // Slack covers the villager's walk while the request was in flight.
     if (Math.hypot(pose.x - p.x, pose.y - p.y) > NPC_TALK_RANGE + 32)
       throw Error("Move closer to talk.");
+    // Some conversations are story scenes (the errand, later the questions).
+    if (!storyLocked(w, p) && storyConversation(w, this.storyHost, p, npcId))
+      return { talking: false, story: true };
     this.releaseTalk(playerId);
     const talk = ((w.npcTalks ??= {})[npcId] ??= {
       since: w.serverTick,
@@ -846,7 +866,6 @@ export class GameRoom {
       return;
     if (w.slowTime && w.serverTick >= w.slowTime.endsTick) delete w.slowTime;
     tickStory(w, this.storyHost);
-    const locked = storyLocked(w);
     if (w.sceneId === "PUZZLE_GLADE") {
       ensureGlade(w);
       tickGlade(w);
@@ -892,6 +911,12 @@ export class GameRoom {
     ) => Math.hypot(p.x - q.x, p.y - q.y) < d;
     for (const p of Object.values(w.players)) {
       const s = this.sessions.get(p.id)!;
+      // Story scenes hold only the heroes in them (and anyone offstage).
+      const locked = storyLocked(w, p);
+      // Announced but not yet begun, a story walk lets the hero's own movement
+      // play out (their screen already predicted it): no snap back.
+      const mark = w.story?.walks?.[p.id];
+      const lockMove = locked && !(mark && w.serverTick < mark.start);
       const fresh =
         s.receivedTick === undefined
           ? Date.now() - s.received < 250
@@ -921,7 +946,7 @@ export class GameRoom {
       if (i.pushHeld && !i.primaryHeld && !i.secondaryHeld)
         pushPondMirror(w, p);
       let movement = i;
-      if (s.movementQueue && locked) {
+      if (s.movementQueue && lockMove) {
         s.movementQueue.clear();
         s.movementInput = neutral(s.input.seq);
         movement = neutral(s.input.seq);
@@ -945,6 +970,9 @@ export class GameRoom {
       if (fresh && !locked && this.sprintRequests.delete(p.id))
         movement = { ...movement, sprintHeld: true };
       if (!fresh) this.sprintRequests.delete(p.id);
+      // A hero the story is walking into place moves on the story's input.
+      const walk = storyWalkInput(w, p, w.serverTick);
+      if (walk) movement = { ...neutral(movement.seq), ...walk };
       p.lastProcessedInputSeq = movement.seq;
       p.movementInput = { ...movement };
       pushBridgeBoulder(w, p, movement);
@@ -1120,12 +1148,15 @@ export class GameRoom {
         if (p.hp > 0 && sceneId === pendingSword.scene)
           this.resolveSword(p, sceneId, 25, pendingSword.facing);
       }
+      // The story's own E spots (gathering for the funeral, and so on).
+      if (interactEdge && storyInteract(w, p)) continue;
       if (
         interactEdge &&
         sceneId === "MAIN_HOUSE" &&
         near(p, map.points.door, 42)
       ) {
-        this.relocate(p, "HOUSE_INTERIOR", maps.HOUSE_INTERIOR.spawn);
+        if (!storyBlocksDoor(w, p, "HOUSE_INTERIOR"))
+          this.relocate(p, "HOUSE_INTERIOR", maps.HOUSE_INTERIOR.spawn);
         continue;
       }
       // The shop's stairs: each hero climbs on their own, like the door.
@@ -1162,7 +1193,8 @@ export class GameRoom {
             near(p, map.points[villageDoorPoint(id)], 42),
         );
         if (house) {
-          this.relocate(p, house, maps[house].spawn);
+          if (!storyBlocksDoor(w, p, house))
+            this.relocate(p, house, maps[house].spawn);
           continue;
         }
       }
@@ -1171,7 +1203,7 @@ export class GameRoom {
         const point = Object.entries(map.points).find(([, q]) =>
           near(p, q, 50),
         )?.[0];
-        if (point && storyTravel(w, this.storyHost, sceneId, point)) {
+        if (point && storyTravel(w, this.storyHost, sceneId, point, p)) {
           if (w.sceneId !== sceneId && p.sceneId !== sceneId) return;
           continue;
         }
@@ -1216,7 +1248,8 @@ export class GameRoom {
             villageInteriors[sceneId].outsideScene ?? "EMBERBROOK_VILLAGE",
             villageInteriors[sceneId].outside,
           );
-        else this.relocate(p, "MAIN_HOUSE", { x: 480, y: 344 });
+        else if (!storyBlocksDoor(w, p, "MAIN_HOUSE"))
+          this.relocate(p, "MAIN_HOUSE", { x: 480, y: 344 });
         continue;
       }
       if (

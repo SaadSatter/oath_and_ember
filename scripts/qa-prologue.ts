@@ -78,7 +78,7 @@ try {
     until: () => boolean,
     shots: Record<string, string> = {},
   ) => {
-    for (let guard = 0; guard < 400 && !until(); guard++) {
+    for (let guard = 0; guard < (process.env.QUICK ? 20 : 400) && !until(); guard++) {
       const run = w.story?.cutscene;
       if (!run) {
         await sleep(100);
@@ -162,7 +162,11 @@ try {
     `fight hp: ${Math.round(sieg.hp)} ${Math.round(coco.hp)}; enemies ${Object.keys(w.enemies).length}`,
   );
   room.damage(sieg, 500);
-  await sleep(1200);
+  // The rest of the eight march in around the heroes before Alden comes.
+  await sleep(1600);
+  await shot("11b-march-in");
+  await sleep(2500);
+  await shot("11c-surrounded");
   log.push(`rescue: ${w.story?.cutscene?.id} sieg hp ${sieg.hp}`);
   await read(() => w.story?.cutscene?.id === "home", {
     "rescue:0": "12-rescue-glow",

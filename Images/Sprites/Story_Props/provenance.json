@@ -15,6 +15,69 @@
       "pixellabObjectId": "7c09c282-f716-4bd1-9f47-0d5431ac0129",
       "description": "abandoned wooden merchant cart tipped on its side with one broken wheel, torn canvas cover, spilled wooden crates, cloth sacks and a few glass potion bottles on the ground",
       "background": "exterior dirt road (house exterior map)"
+    },
+    "stall_general.png": {
+      "pixellabObjectId": "d97fd755-56c8-40a2-8beb-82737aca63e1",
+      "description": "small wooden village market stall seen from above at an angle, sloped canvas awning with dark green and cream stripes on four posts, wooden counter in front with rows of small glass crystal vials, bundles of candlewick, coils of rope and a few wooden crates beside it",
+      "background": "Emberbrook Village grass (post-town map, 176,640 160x160), rectangle 80%",
+      "downloaded": "2026-10-18"
+    },
+    "stall_bakery.png": {
+      "pixellabObjectId": "aa61e368-903e-47f9-a823-40e5aca4144e",
+      "description": "small wooden village bakery market stall seen from above at an angle, sloped canvas awning with warm red and cream stripes on four posts, wooden counter in front piled with golden bread loaves, round honey pastries and baskets of rolls, a flour sack beside it",
+      "background": "Emberbrook Village grass (post-town map, 176,640 160x160), rectangle 80%",
+      "downloaded": "2026-10-18"
+    },
+    "shopping_bag.png": {
+      "pixellabObjectId": "f7411902-7b25-4c4e-ba1d-a10ce176e2e8",
+      "description": "a small dropped brown paper shopping bag tipped over on its side on the floor, a loaf of bread and two tiny glass vials spilling out",
+      "background": "magic shop floor (magic-shop/ground.png 250,230 64x64), oval 55%",
+      "downloaded": "2026-10-18"
+    },
+    "stone.png": {
+      "pixellabObjectId": "d6878f10-bc64-43a4-ac2d-fd423993945b",
+      "description": "a single smooth rounded grey river stone lying on the grass, palm sized, soft highlight",
+      "background": "house-style grass edge (prologue-forest/clearing.png 160,120 64x64), oval 30%",
+      "downloaded": "2026-10-19"
+    },
+    "flower_patch.png": {
+      "pixellabObjectId": "8b05d225-cc5d-4763-b04f-2a2dd2c57e87",
+      "description": "a small patch of wildflowers growing in the grass, white daisies and little blue flowers with green leaves",
+      "background": "house-style grass edge (prologue-forest/clearing.png 160,120 64x64), oval 40%",
+      "downloaded": "2026-10-19"
+    },
+    "bouquet.png": {
+      "pixellabObjectId": "b87a230c-beb1-4a4e-8388-4e7817022e6d",
+      "description": "a small hand-picked bouquet of white daisies and little blue wildflowers tied with a thin ribbon, lying flat on the grass",
+      "background": "house-style grass edge (prologue-forest/clearing.png 160,120 64x64), oval 40%",
+      "downloaded": "2026-10-19"
+    },
+    "grave_pit.png": {
+      "pixellabObjectId": "3480adb0-fe86-4c81-acbf-3fc73f43ac8a",
+      "description": "a freshly dug rectangular grave pit in the grass, dark brown loose earth with a small heap of dug soil beside it",
+      "background": "house-style grass edge (prologue-forest/clearing.png 160,120 64x64), oval 60%",
+      "downloaded": "2026-10-19"
+    },
+    "wooden_sword_source.png": {
+      "pixellabObjectId": "e6873905-c165-4015-bf0a-d6c85977c9fb",
+      "description": "a small worn wooden practice sword for a child, plain wood blade and simple crossguard with a leather-wrapped grip, lying on the grass (came out with a steel blade)",
+      "background": "house-style grass edge (prologue-forest/clearing.png 160,120 64x64), oval 50%",
+      "downloaded": "2026-10-19"
+    },
+    "wooden_sword.png": {
+      "derivedFrom": "wooden_sword_source.png",
+      "by": "scripts/wooden-sword-recolour.py: the steel blade and brass guard recoloured tone for tone to wood; shape, outline and grip unchanged"
+    },
+    "old_tree.png": {
+      "pixellabImageJob": "289132ea-a94f-40ad-bbee-1307654ec3d2",
+      "tool": "create_image_pixflux 160x160, transparent, high top-down",
+      "description": "single huge ancient tree, very old wide gnarled trunk with hollow knot, twisting roots, broad canopy of deep red and orange ember-colored leaves, standing alone, top-down RPG map object",
+      "use": "the old tree over Alden's grave (MAIN_HOUSE), drawn at 2x; trunk base at source (80,135)",
+      "downloaded": "2026-10-19"
+    },
+    "sword_planted.png": {
+      "source": "hand-drawn by scripts/planted-sword.py in the palette of wooden_sword.png",
+      "use": "Sieg's wooden practice sword standing in the grave's soil, drawn at 2x"
     }
   },
   "notes": "Game copies are trimmed to their opaque bounds; pixels unchanged."

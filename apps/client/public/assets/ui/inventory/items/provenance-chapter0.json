@@ -1,0 +1,53 @@
+{
+  "source": "PixelLab create_map_object, basic mode, 48x48, side view, single color outline, medium shading, medium detail; downloaded 2026-10-18. Pixels unchanged.",
+  "files": {
+    "moonleaf.png": {
+      "pixellabObjectId": "c948bc2e-9824-4547-b34b-9283d95555a4",
+      "description": "inventory item icon: a small bundle of fresh moonleaf herbs, silvery-blue pointed leaves tied with twine, faint pale glow"
+    },
+    "crystal-vial.png": {
+      "pixellabObjectId": "46a996f1-0973-47c3-8aff-3a6795824671",
+      "description": "inventory item icon: two small empty clear crystal glass vials with cork stoppers standing side by side, light blue glint"
+    },
+    "fresh-bread.png": {
+      "pixellabObjectId": "abe4f18a-3f20-4df4-8102-73915df8c0bd",
+      "description": "inventory item icon: a fresh golden-brown crusty loaf of bread with scored top"
+    },
+    "candlewick.png": {
+      "pixellabObjectId": "6196789a-52d1-4e1d-b11c-51b82d4ff1fc",
+      "description": "inventory item icon: a coiled bundle of white cotton candlewick string tied with a small red thread"
+    },
+    "honey-pastry.png": {
+      "pixellabObjectId": "f364c643-20ed-4445-bdb4-677c114727ae",
+      "description": "inventory item icon: a round flaky honey pastry glazed with golden honey drizzle"
+    },
+    "river-stone.png": {
+      "from": "Images/Sprites/Story_Props/stone.png",
+      "note": "the story prop, trimmed and centred on a square canvas; pixels unchanged"
+    },
+    "wildflowers.png": {
+      "from": "Images/Sprites/Story_Props/bouquet.png",
+      "note": "the story prop, trimmed and centred on a square canvas; pixels unchanged"
+    },
+    "wooden-sword.png": {
+      "from": "Images/Sprites/Story_Props/wooden_sword.png",
+      "note": "the story prop, trimmed and centred on a square canvas; pixels unchanged"
+    },
+    "alden-journal.png": {
+      "pixellabObjectId": "f0ec5810-c626-480a-af9e-a619478f9b20",
+      "description": "inventory item icon: a worn old leather-bound journal with a brass clasp, a few loose pages sticking out"
+    },
+    "strange-cloth.png": {
+      "pixellabObjectId": "ce20812f-1a6a-4339-9de3-81b4475acf41",
+      "description": "inventory item icon: a soft folded scrap of faded cream linen fabric with frayed edges, a small embroidered silver crescent-and-flame emblem in one corner",
+      "source": "Images/Sprites/Story_Props/icon_sources/strange-cloth.png",
+      "edit": "scripts/chapter0-icon-touchups.py stitches a small symbol in place of the faint generated one"
+    },
+    "star-drawing.png": {
+      "pixellabObjectId": "5bc053cd-6948-4274-b66c-89cd67f12400",
+      "description": "inventory item icon: an old curled yellowed parchment sheet; drawn on it in black ink, a solid black filled circle in the middle with seven small black stars evenly spaced in a ring around it",
+      "source": "Images/Sprites/Story_Props/icon_sources/star-drawing.png",
+      "edit": "scripts/chapter0-icon-touchups.py inks the centre circle dark (it was generated light)"
+    }
+  }
+}
