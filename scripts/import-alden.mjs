@@ -3,7 +3,8 @@
 // copied, never repainted; every frame is centred across a 112px cell.
 // Rows 0-3: south, east, north, west. Column 0 is standing, columns 1-8 the
 // walk. West is east mirrored. Row 4: the south spellcast, 9 frames, staff
-// raised.
+// raised. Row 5: the south collapse, 8 frames (6 wounded, 7 still), with his
+// feet where they stood.
 // Standing: south and north use stand/ (the rotations with the staff erased,
 // see scripts/alden-unstaff.py), so both legs show; east uses a planted walk
 // frame. Each pose set is placed so its planted feet end on the same cell row.
@@ -28,7 +29,7 @@ const feetOf = (png) => {
       if (png.data[(y * png.width + x) * 4 + 3]) return y + 1;
   return png.height;
 };
-const sheet = new PNG({ width: COLS * CELL, height: 5 * CELL });
+const sheet = new PNG({ width: COLS * CELL, height: 6 * CELL });
 /** `top` is the frame's row inside the cell; by default it is centred. */
 const blit = (png, col, row, mirror = false, top) => {
   const ox = col * CELL + Math.floor((CELL - png.width) / 2),
@@ -51,5 +52,10 @@ DIRECTIONS.forEach((direction, row) => {
   walk.forEach((png, i) => blit(png, 1 + i, row, mirror, top));
 });
 for (let i = 0; i < 9; i++) blit(read(`${dir}/cast/south/${i}.png`), i, 4);
+const collapse = [...Array(8)].map((_, i) =>
+  read(`${dir}/collapse/south/${i}.png`),
+);
+const collapseTop = FEET - feetOf(collapse[0]);
+collapse.forEach((png, i) => blit(png, i, 5, false, collapseTop));
 fs.writeFileSync(out, PNG.sync.write(sheet));
-console.log(`alden: ${COLS}x5 cells of ${CELL}px`);
+console.log(`alden: ${COLS}x6 cells of ${CELL}px`);

@@ -97,6 +97,43 @@ function harness() {
     view: new PlayerView(scene as unknown as Phaser.Scene),
   };
 }
+it("plays Sieg's walk cycle during a story approach even while E stays held", () => {
+  const h = harness();
+  const sieg = Object.freeze({
+    ...player(),
+    sceneId: "HOUSE_INTERIOR" as const,
+    facing: -Math.PI / 2,
+    movementIntent: { x: 0, y: -1 },
+    vy: -190,
+  });
+  for (let frame = 0; frame < 12; frame++) {
+    h.scene.time.now = frame * 16;
+    h.view.update(
+      sieg,
+      sieg,
+      { x: 624, y: 546 - frame * 3 },
+      "TOP_DOWN",
+      "sprite",
+      {
+        interacting: true,
+        scriptedWalking: true,
+      },
+    );
+  }
+  expect(h.sprite.play).toHaveBeenCalledTimes(1);
+  expect(h.sprite.play).toHaveBeenLastCalledWith(
+    animationKey("OATH", "TOP_DOWN", "walk_north"),
+  );
+  const arrived = { ...sieg, vx: 0, vy: 0, movementIntent: { x: 0, y: 0 } };
+  h.view.update(arrived, arrived, arrived, "TOP_DOWN", "sprite", {
+    scriptedWalking: true,
+    interacting: true,
+  });
+  expect(h.sprite.play).toHaveBeenLastCalledWith(
+    animationKey("OATH", "TOP_DOWN", "idle_up"),
+  );
+});
+
 it("shows the approved art for both heroes from immutable state and transitions to walking without restarting each render frame", () => {
   for (const role of ["OATH", "EMBER"] as const) {
     const h = harness(),

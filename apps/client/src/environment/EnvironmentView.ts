@@ -1,3 +1,8 @@
+import {
+  storyProps,
+  storyPropsIn,
+  type StoryProp,
+} from "../../../../packages/shared/src/storyProps.js";
 import { shoreFrame } from "./settlementShore.js";
 import { settlementBuildingFrames } from "./settlementBuildings.js";
 import { settlementTreeArt } from "./settlementTrees.js";
@@ -8,7 +13,10 @@ import {
   settlementWaterTiles,
 } from "../../../../packages/shared/src/settlements.js";
 import { pushableDefinitions } from "../../../../packages/shared/src/pushables.js";
-import type { World } from "../../../../packages/shared/src/gameTypes.js";
+import type {
+  StoryState,
+  World,
+} from "../../../../packages/shared/src/gameTypes.js";
 import Phaser from "phaser";
 import { classifyMapTile, mapElementDepth } from "./mapClassification.js";
 import type { SceneId } from "../../../../packages/shared/src/gameTypes.js";
@@ -22,12 +30,29 @@ import {
 } from "../../../../packages/shared/src/villageInteriors.js";
 import lpcFurniture from "./lpcVillageFurniture.json" with { type: "json" };
 import { aldenGrave } from "../../../../packages/shared/src/prologue.js";
+import { oldTree } from "../../../../packages/shared/src/environmentSolids.js";
 import {
   composedFrames,
   composedScenes,
   isComposedScene,
 } from "../../../../packages/shared/src/composedScenes.js";
+import { RuinedShopView } from "./RuinedShopView.js";
 const interiorMapKey = (id: string) => `village-interior:${id}`;
+// Around Alden's grave the yard is cleared (a rock, a mushroom, a fern and
+// some flowers), so the grave and the old tree stand on their own. Tiles of
+// the exterior map, by layer index: [column, row] in 16px tiles. The matching
+// solids are gone from environmentSolids.ts.
+const graveClearing: Record<number, [number, number][]> = {
+  5: [[5, 12]],
+  9: [
+    [1, 8], [2, 8], [3, 8], [1, 9], [2, 9], [3, 9], [4, 9],
+    [2, 10], [3, 10], [4, 10], [1, 12], [2, 12],
+  ],
+  10: [[2, 8], [3, 8], [2, 9], [3, 9]],
+  11: [[4, 10], [5, 10], [4, 11], [5, 11], [4, 12], [5, 12]],
+  12: [[2, 12], [3, 12], [2, 13], [3, 13]],
+  19: [[0, 9], [2, 9], [3, 9], [3, 10], [3, 11]],
+};
 const treeNames = [
   "Tree1",
   "Tree2",
@@ -57,8 +82,11 @@ const sheets = [
   "walls_floor",
   "Interior",
 ];
+const storyKey = (image: string) => `story:${image}`;
 export function preloadEnvironment(scene: Phaser.Scene) {
   scene.load.image("story:grave", "/assets/environment/story/grave.png");
+  for (const image of new Set(storyProps.map((p) => p.image)))
+    scene.load.image(storyKey(image), `/assets/environment/story/${image}`);
   for (const [atlas, names] of [
     ["magic-shop", ["ground", "upper", "props"]],
     ["prologue-forest", ["trail", "clearing", "props"]],
@@ -119,8 +147,18 @@ export class EnvironmentView {
   private postTownObjects = new Map<number, Phaser.GameObjects.Image>();
   private map: Phaser.Tilemaps.Tilemap | null = null;
   private grave: Phaser.GameObjects.Image | null = null;
+  private ruinedShop: RuinedShopView | null = null;
   setGraveVisible(visible: boolean) {
     this.grave?.setVisible(visible);
+  }
+  /** Story set dressing in the current scene (storyProps.ts). */
+  private storyImages: { prop: StoryProp; image: Phaser.GameObjects.Image }[] =
+    [];
+  /** Show each story prop only while the story says it is there. */
+  updateStory(story: StoryState | undefined) {
+    this.ruinedShop?.update(story);
+    for (const { prop, image } of this.storyImages)
+      image.setVisible(prop.shown?.(story) ?? true);
   }
   private pushableImages: {
     id: string;
@@ -135,6 +173,7 @@ export class EnvironmentView {
     // including tilemap sheets, when the renderer or viewport changes size.
     for (const key of [
       "story:grave",
+      ...storyProps.map((p) => storyKey(p.image)),
       "magic-shop:ground",
       "magic-shop:upper",
       "magic-shop:props",
@@ -170,6 +209,17 @@ export class EnvironmentView {
   }
   show(id: SceneId) {
     this.clear();
+    for (const prop of storyPropsIn(id)) {
+      const image = this.scene.add
+        .image(prop.x, prop.y, storyKey(prop.image))
+        .setOrigin(0)
+        .setScale(prop.scale)
+        .setDepth(prop.groundY - 13)
+        .setName(`story:${prop.id}`)
+        .setVisible(!prop.shown);
+      this.objects.push(image);
+      this.storyImages.push({ prop, image });
+    }
     if (isPostTownScene(id)) {
       const map = postTownMaps[id];
       for (const tile of map.tiles) {
@@ -219,6 +269,8 @@ export class EnvironmentView {
       // Built scenes (the shop, the prologue forest): one backdrop under the
       // heroes, and every prop depth-sorted by its base like other objects.
       const floor = composedScenes[id];
+      if (id === "HOUSE_INTERIOR")
+        this.ruinedShop = new RuinedShopView(this.scene);
       this.objects.push(
         this.scene.add
           .image(0, 0, `${floor.atlas}:${floor.backdrop}`)
@@ -231,14 +283,14 @@ export class EnvironmentView {
         frames = composedFrames[floor.atlas];
       for (const prop of floor.props) {
         if (!props.has(prop.art)) props.add(prop.art, 0, ...frames[prop.art]);
-        this.objects.push(
-          this.scene.add
-            .image(prop.x, prop.y, key, prop.art)
-            .setOrigin(0)
-            .setScale(ENVIRONMENT_SCALE)
-            .setDepth(prop.groundY - 13)
-            .setName(`prop:${prop.id}`),
-        );
+        const image = this.scene.add
+          .image(prop.x, prop.y, key, prop.art)
+          .setOrigin(0)
+          .setScale(ENVIRONMENT_SCALE)
+          .setDepth(prop.groundY - 13)
+          .setName(`prop:${prop.id}`);
+        this.objects.push(image);
+        this.ruinedShop?.add(prop, image);
       }
     } else if (id === "MAIN_HOUSE" || isVillageInterior(id)) {
       this.map = this.scene.make.tilemap({
@@ -306,11 +358,15 @@ export class EnvironmentView {
           false,
         )! as Phaser.Tilemaps.TilemapLayer;
         layer.setScale(ENVIRONMENT_SCALE).setDepth(-100 + i);
+        if (id === "MAIN_HOUSE")
+          for (const [x, y] of graveClearing[i] ?? []) layer.removeTileAt(x, y);
         this.objects.push(layer);
         this.sortElements(layer, id, l.name, i);
       });
       if (id === "MAIN_HOUSE") {
-        houseTrees.forEach((p, i) => this.tree(p.x, p.y, i, 2));
+        houseTrees.forEach((p, i) => {
+          if (!oldTree.replaces.includes(i)) this.tree(p.x, p.y, i, 2);
+        });
         // Alden's grave under the west tree (hidden until the story has one).
         this.grave = this.scene.add
           .image(aldenGrave.x, aldenGrave.y, "story:grave")
@@ -491,7 +547,10 @@ export class EnvironmentView {
     this.objects.push(im);
   }
   clear() {
+    this.ruinedShop?.destroy();
+    this.ruinedShop = null;
     this.pushableImages = [];
+    this.storyImages = [];
     this.postTownObjects.clear();
     for (const o of this.objects) o.destroy();
     this.objects = [];

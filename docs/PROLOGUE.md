@@ -6,7 +6,7 @@ The prologue is opt-in for now, so the normal campaign start is unchanged:
 npm run prologue   # build, then serve with PROLOGUE=1 on http://localhost:3019
 ```
 
-Create a room in two tabs, choose Sieg and Coco, and ready both. The whole prologue plays in about 8–12 minutes and ends with the road to Emberbrook open; the regular campaign continues from there.
+Create a room in two tabs, choose Sieg and Coco, and ready both. The whole prologue plays in about 8–12 minutes, then Chapter 0, Part 1 continues with Coco's errand (`docs/CHAPTER0_PART1.md`).
 
 ## Scenes
 
@@ -17,22 +17,28 @@ Create a room in two tabs, choose Sieg and Coco, and ready both. The whole prolo
 | — | (travel) | Shop road → `PROLOGUE_TRAIL` | E at `← FOREST` (west) | Emberbrook (east) stays closed until the end |
 | 3a | `cart` | Forest trail | Either hero comes within 96 units of the cart | Crates and barrel: E to inspect, with a different line for each hero |
 | — | (travel) | Trail → `PROLOGUE_CLEARING` | E at `FOLLOW THE TRACKS` | Only after the cart has been found |
-| 3b | `ambush` | Clearing | Arriving | The 4 golems (Ironbound Sentinel) and 4 Cinder Wisps rise and hold still until the lines end. Their sprites, AI, stats and attacks are unchanged |
-| — | fight | Clearing | `ambush` ends | Heroes cannot fall below 15 HP |
-| 3c | `rescue` | Clearing | Either hero at 25 HP or less, 45 s pass, or every monster is down | Enemies freeze and their shots vanish. Alden walks in from the north path while the clearing glows, then casts. On the flash line all eight die on the same server tick |
+| 3b | `ambush` | Clearing | Arriving | A golem (Ironbound Sentinel) and a Cinder Wisp rise and hold still until the lines end. Their sprites, AI, stats and attacks are unchanged |
+| — | fight | Clearing | `ambush` ends | Monsters rise one at a time, every 3 s, at the nearest free spot a safe distance from the heroes. Each one beaten is replaced, up to 8 at once (4 golems, 4 wisps). Heroes cannot fall below 15 HP |
+| 3c | `rescue` | Clearing | Either hero at 25 HP or less, or 45 s pass. First the fight freezes and the ambush fills to eight from the clearing's rim; all eight walk in and ring the heroes, leaving the north open. Then Alden enters | Enemies freeze and their shots vanish. Alden walks in from the north path while the clearing glows, then casts. On the flash line every monster standing dies on the same server tick |
 | 4–5 | `home` | Shop upstairs, that evening | Chained | Both heroes healed. Scolding, "You always do.", the marriage joke, Sieg's goodnight |
 | 5 | `farewell` | The garden gate | Chained | Private to Sieg; Coco is downstairs and sees a narration line |
-| 6 | `morning` | Shop ground floor | Chained | Private to Coco; Sieg's screen shows him at home with an old wooden practice sword. The first two rules of magic are not revealed |
-| end | — | Shop road | `morning` ends | Stage `DONE`, flag `prologue.complete`; Emberbrook opens |
+| 6 | `morning` | Shop ground floor | Chained | Private to Coco; Sieg is in his room at home (above Hearthside Cottage), polishing an old wooden practice sword. The first two rules of magic are not revealed. Alden's list matches Part 1's errand |
+| end | — | Shop road | `morning` ends | Flag `prologue.complete`; Chapter 0, Part 1 begins with Coco's errand (see `docs/CHAPTER0_PART1.md`) |
 
 Coco calls Alden "Papa" throughout.
 
 ## How it works
 
 - **Script as data:** `packages/shared/src/prologue.ts` holds the stages, every line, each hero's placement (optionally in different scenes), Alden's position and walk target, line cues (`alden-enter`, `alden-cast`, `flash`, `glow`), objectives, the trail inspection lines and the ambush tuning.
+- **Walking into place:** when a scene starts, the story takes the controls and walks each hero in it to their mark from wherever they are, around obstacles, before the first line. Only a hero on another map is moved there instead.
+  - **Smooth:** the walk is announced a moment before its first step (`storyWalk.ts`). The walking hero's own client then predicts it tick by tick with the same function the server uses, so it is as smooth as ordinary movement.
+  - **Nobody is sent back:** the hero whose own movement starts a scene (reaching the road, the cart, the shop door…) stops where they are. Their partner takes their place beside them in the scene's arrangement. Until the walk's first step, the hero's own movement plays out on the server just as their screen showed it, so nothing snaps back. Only `exact` scenes (Coco kneeling beside Alden; the reunion) walk everyone to fixed marks.
+  - **Never stuck:** a walk that is blocked finishes in place, and no scene waits more than 12 s for its cast to walk in.
+  - **Measuring it:** `node --import tsx scripts/qa-walk.ts` records every frame of a walk in two browsers and reports the largest single-frame step and any direction reversals.
 - **Server-owned:** `apps/server/src/prologue.ts` runs it. It starts scenes from triggers and handles chaining, party travel and enemy spawns. It enforces the fight's HP floor and timing, walks Alden, and runs the spell. While a scene plays, the room ignores movement, attacks, abilities and doors.
-- **Reading lines:** the only client message is `story:read {cutscene, line}`. A line moves on when every hero meant to read it has done so, or 8 s after the first reader. Stale, repeated or wrong-line reads are ignored, so nothing skips or plays twice. Lines with an `audience` are private: only that hero can advance them, and the partner sees the `elsewhere` text.
+- **Reading lines:** the only client message is `story:read {cutscene, line}`. One read is enough: whichever hero presses E first moves the line on for both. Stale, repeated or wrong-line reads (including both pressing at once) are ignored, so nothing skips or plays twice. Lines with an `audience` are private: only that hero can advance them, and the partner sees the `elsewhere` text.
 - **Disconnects:** while a partner is away the room is paused, so scenes, the fight timer and Alden all wait. A reconnecting hero lands on the same line, because the story lives in `World.story`.
+  - A client that reconnects before the server has noticed its old socket close now takes the session over, instead of being refused and sent back to the title screen. The old socket's late close is ignored.
 - **Presentation:**
   - `ui/storyDialogue.ts`: the shared dialogue box.
   - `entities/AldenView.ts`: Alden, from `World.story.alden`.
@@ -104,7 +110,7 @@ Both builders copy source pixels; they never repaint them.
   - placements on clear ground;
   - free roam before triggers;
   - the lock during scenes;
-  - read receipts, the partner timeout, and the disconnect wait and reconnect;
+  - first-read advance, stale reads, and the disconnect wait and reconnect;
   - private lines;
   - trail travel and the closed exits;
   - the cart and the ambush spawn;

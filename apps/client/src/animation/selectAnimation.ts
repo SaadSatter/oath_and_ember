@@ -11,6 +11,7 @@ export interface VisualHints {
   hurt?: boolean;
   serverTick?: number;
   interacting?: boolean;
+  scriptedWalking?: boolean;
 }
 // Reads state only. Visual hints never change HP, movement, cooldowns or actions.
 export function selectAnimation(
@@ -22,7 +23,10 @@ export function selectAnimation(
   if (player.actionState === "attack") return "primary_attack";
   if (player.actionState === "guard" || player.actionState === "secondary")
     return "secondary_ability";
-  if (hints.interacting || ["interact", "channel"].includes(player.actionState))
+  if (
+    (hints.interacting && !hints.scriptedWalking) ||
+    ["interact", "channel"].includes(player.actionState)
+  )
     return "interact_channel";
   const vx = player.movementIntent?.x ?? player.vx;
   const vy = player.movementIntent?.y ?? player.vy;

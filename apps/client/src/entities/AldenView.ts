@@ -7,7 +7,8 @@ import { NPC_TALK_RANGE } from "../../../../packages/shared/src/npcs.js";
 
 // Alden, drawn wherever the server's story state puts him. Sheet from
 // scripts/import-alden.mjs: 112px cells; rows south/east/north/west with
-// column 0 standing and 1..8 the walk; row 4 the 9-frame south spellcast.
+// column 0 standing and 1..8 the walk; row 4 the 9-frame south spellcast;
+// row 5 his collapse (column 6 lying wounded, column 7 lying still).
 const CELL = 112,
   COLUMNS = 9,
   WALK_FPS = 9,
@@ -33,6 +34,8 @@ export function aldenFrame(
 ) {
   if (alden.action === "cast")
     return 4 * COLUMNS + Math.min(8, Math.floor(seconds * CAST_FPS));
+  if (alden.action === "wounded") return 5 * COLUMNS + 6;
+  if (alden.action === "still") return 5 * COLUMNS + 7;
   const row = ROWS.indexOf(alden.facing) * COLUMNS;
   return alden.action === "walk"
     ? row + 1 + (Math.floor(seconds * WALK_FPS) % 8)
@@ -49,6 +52,7 @@ export function nearAlden(
   return (
     !!alden &&
     !story.cutscene &&
+    (alden.action === "idle" || alden.action === "walk") &&
     alden.scene === sceneId &&
     Math.hypot(alden.x - at.x, alden.y - at.y) <= NPC_TALK_RANGE
   );

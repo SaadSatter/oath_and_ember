@@ -50,6 +50,7 @@ import {
 } from "./entities/EnemyView.js";
 import { renderAppearanceLobby } from "./ui/appearanceLobby.js";
 import { renderTitleScreen, stopTitleScreen } from "./ui/titleScreen.js";
+import { storyCheckpoints } from "../../../packages/shared/src/storyCheckpoints.js";
 import { DialogueBox } from "./ui/dialogueBox.js";
 import {
   StatueGladeView,
@@ -69,11 +70,17 @@ const sealedExit = (sceneId: string, id: string, w: World) =>
   // Prologue forest: story spots are never signposted, and the trail leads
   // on only once the cart has been found.
   sceneId === "PROLOGUE_CLEARING" ||
+  // Chapter 0: the road north to the shrine opens when the chapter ends.
+  (sceneId === "EMBERBROOK_VILLAGE" &&
+    id === "exit" &&
+    !!w.story &&
+    w.story.stage !== "DONE") ||
   (sceneId === "PROLOGUE_TRAIL" &&
     (id === "cart" ||
       (id === "exit" && !w.story?.flags.includes("prologue.cart"))));
 import { NpcView, preloadNpcs } from "./entities/NpcView.js";
 import { AldenView, nearAlden, preloadAlden } from "./entities/AldenView.js";
+import { StrangerView, preloadStranger } from "./entities/StrangerView.js";
 import { StoryDialogue } from "./ui/storyDialogue.js";
 import { isShopScene } from "../../../packages/shared/src/magicShop.js";
 import { isComposedScene } from "../../../packages/shared/src/composedScenes.js";
@@ -81,10 +88,21 @@ import { StoryEffects } from "./entities/StoryEffects.js";
 import {
   TRAIL_ONWARD,
   aldenIdleLines,
+  castOf,
+  cutscenes,
   graveVisible,
   storyObjectives,
   trailInspections,
 } from "../../../packages/shared/src/prologue.js";
+import {
+  chapter0Objective,
+  offstageFor,
+  SHRINE_QUEST,
+  SHRINE_QUEST_OBJECTIVE,
+  spotsFor,
+  storyTalk,
+  villagerLines,
+} from "../../../packages/shared/src/chapter0.js";
 import { npcInReach } from "../../../packages/shared/src/npcs.js";
 import {
   isVillageInterior,
@@ -130,6 +148,7 @@ const net = new NetworkClient(),
   panel = document.querySelector<HTMLDivElement>("#panel")!,
   hud = document.querySelector<HTMLDivElement>("#hud")!,
   notice = document.querySelector<HTMLDivElement>("#notice")!;
+const storyQA = new URLSearchParams(location.search).has("storyQA");
 let debug = false,
   uiKey = "",
   keys = new Set<string>();
@@ -148,6 +167,11 @@ const dialogue = new DialogueBox(() => {
   keys.clear();
   submitInput(true);
 });
+// A hero the story has put offstage (Sieg during Coco's errand) sees a card.
+const offstageCard = document.createElement("div");
+offstageCard.className = "offstage-card";
+offstageCard.hidden = true;
+document.body.append(offstageCard);
 // The prologue's shared scenes. The server picks each line; E marks it read.
 const story = new StoryDialogue(
   (cutscene, line) =>
@@ -253,6 +277,13 @@ window.addEventListener(
     if (!npc) return;
     e.preventDefault();
     e.stopImmediatePropagation();
+    // The story's own conversations (the errand) play as a shared scene.
+    if (storyTalk(w.story, me.role, npc.id, cutscenes)) {
+      void net
+        .request("npc:talk", { npcId: npc.id, talking: true })
+        .catch(() => undefined);
+      return;
+    }
     // The box opens at once; the server pauses the villager for both heroes
     // and lets it walk on when the conversation closes.
     const talk = (talking: boolean) =>
@@ -262,7 +293,8 @@ window.addEventListener(
     void talk(true);
     dialogue.say({
       speaker: npc.name,
-      pages: npc.lines,
+      // After Alden's death the village speaks differently.
+      pages: villagerLines(npc.id, npc.lines, w.story),
       onClose: () => void talk(false),
     });
   },
@@ -389,8 +421,8 @@ function renderUI() {
   uiKey = k;
   if (!net.session || !w) {
     renderTitleScreen(panel, {
-      create: async () => {
-        const s = await request("room:create", {});
+      create: async (checkpoint) => {
+        const s = await request("room:create", { checkpoint });
         if (s) net.save(s as never);
       },
       join: async (roomCode) => {
@@ -424,6 +456,12 @@ function renderUI() {
           `${p.id === me?.id ? "You" : "Partner"}: ${p.role ? heroNames[p.role] : "choosing"} · ${p.connected ? (p.ready ? "ready" : "not ready") : "disconnected"}`,
       )
       .join(" / ");
+    if (w.storyStart) {
+      const start = document.createElement("p");
+      start.className = "lobby-story-start";
+      start.textContent = `Starting chapter · ${storyCheckpoints[w.storyStart].title}`;
+      panel.querySelector("h1")!.after(start);
+    }
     for (const [selector, role] of [
       ["#oath", "OATH"],
       ["#ember", "EMBER"],
@@ -677,10 +715,18 @@ function submitInput(reliable = false) {
     Object.values(w.players).some((p) => !p.connected)
   )
     return;
+  const myRole = w.players[net.session.playerId]?.role ?? null;
+  const run = w.story?.cutscene;
+  // A hero in a playing scene (or being walked into place for one), or one
+  // the story has set aside, sends no movement: the story has the controls.
+  const offstage =
+    !!offstageFor(w.story, myRole) ||
+    (!!run && !!myRole && castOf(cutscenes[run.id]).includes(myRole));
   const held = (...names: string[]) =>
     !inventory.open &&
     !dialogue.open &&
     !story.open &&
+    !offstage &&
     names.some((k) => keys.has(k));
   const i = neutral(++net.seq);
   i.targetTick = net.clock.target(w.serverTick, performance.now());
@@ -744,6 +790,7 @@ class Adventure extends Phaser.Scene {
   temporalView!: TemporalView;
   npcView!: NpcView;
   aldenView!: AldenView;
+  strangerView!: StrangerView;
   storyEffects!: StoryEffects;
   gladeView!: StatueGladeView;
   gfx!: Phaser.GameObjects.Graphics;
@@ -774,6 +821,7 @@ class Adventure extends Phaser.Scene {
     preloadGriffin(this);
     preloadNpcs(this);
     preloadAlden(this);
+    preloadStranger(this);
     preloadStatueGlade(this);
     preloadHeroes(this);
     preloadTemporal(this);
@@ -819,6 +867,10 @@ class Adventure extends Phaser.Scene {
     this.temporalView = new TemporalView(this);
     this.npcView = new NpcView(this);
     this.aldenView = new AldenView(this);
+    this.strangerView = new StrangerView(this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
+      this.strangerView.destroy(),
+    );
     this.storyEffects = new StoryEffects(this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
       this.storyEffects.destroy(),
@@ -880,7 +932,14 @@ class Adventure extends Phaser.Scene {
     }
     const me = w.players[net.session?.playerId || ""];
     if (!me) return;
-    const sceneId = me.sceneId ?? w.sceneId;
+    // Offstage and watching: this screen follows the partner's scene.
+    const away = offstageFor(w.story, me.role);
+    const watched = away?.watch
+      ? Object.values(w.players).find((p) => p.id !== me.id)
+      : undefined;
+    offstageCard.hidden = !away;
+    offstageCard.textContent = away?.text ?? "";
+    const sceneId = (watched ?? me).sceneId ?? w.sceneId;
     const indoors = isShopScene(sceneId) || isVillageInterior(sceneId);
     const house = sceneId === "MAIN_HOUSE" || indoors;
     const map = maps[sceneId];
@@ -893,7 +952,7 @@ class Adventure extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(
       indoors ? 0x2d2827 : house ? 0x29432c : 0x10202b,
     );
-    const local = net.prediction.player || me;
+    const local = watched ?? (net.prediction.player || me);
     if (this.sceneKey !== sceneId) {
       this.clearPlayerViews();
       this.clearEnemyViews();
@@ -908,16 +967,19 @@ class Adventure extends Phaser.Scene {
     }
     this.environment.updatePushables(w.pushableOffsets);
     this.environment.setGraveVisible(graveVisible(w.story));
+    this.environment.updateStory(w.story);
     this.bridgeView.update(w, sceneId);
     this.mazeView.update(w, sceneId);
     this.pondView.update(w, sceneId);
     this.griffinView.update(w, sceneId);
     this.shrineView.update(w, sceneId);
-    const glide = (net.prediction.player &&
-      net.prediction.renderPosition(performance.now())) || {
-      x: local.x,
-      y: local.y,
-    };
+    const glide = watched
+      ? net.interpolation.position(watched.id, "players") || watched
+      : (net.prediction.player &&
+          net.prediction.renderPosition(performance.now())) || {
+          x: local.x,
+          y: local.y,
+        };
     const err = Math.hypot(
       this.rendered.x - glide.x,
       this.rendered.y - glide.y,
@@ -1024,12 +1086,14 @@ class Adventure extends Phaser.Scene {
       // the whole plaza into this viewport discards detail before CSS upscales it.
       focus = { x: 640, y: 430, zoom: 1 };
     }
-    // Story scenes outdoors frame the local hero together with Alden.
+    // Story scenes outdoors frame the local hero together with Alden, once
+    // the scene is under way (not while everyone is still walking in).
     const alden = w.story?.alden;
     if (
       !focus &&
       !house &&
       w.story?.cutscene &&
+      w.story.cutscene.line >= 0 &&
       alden &&
       alden.scene === sceneId
     )
@@ -1165,14 +1229,20 @@ class Adventure extends Phaser.Scene {
       this.rendered,
       characterRendering === "geometric",
       w,
-      dialogue.open || story.open,
+      dialogue.open || story.open || !!away,
     );
     this.aldenView.update(
       w.story,
       sceneId,
       this.rendered,
       characterRendering === "geometric",
-      dialogue.open || story.open,
+      dialogue.open || story.open || !!away,
+      this.time.now,
+    );
+    this.strangerView.update(
+      w.story,
+      sceneId,
+      characterRendering === "geometric",
       this.time.now,
     );
     story.sync(w, me.role, heroNames[me.role === "OATH" ? "EMBER" : "OATH"]);
@@ -1197,6 +1267,7 @@ class Adventure extends Phaser.Scene {
       const shown = predictedCast ? { ...p, combat: predictedCast } : p;
       view.update(shown, motion, pos, map.mode, characterRendering, {
         serverTick: w.serverTick,
+        scriptedWalking: !!w.story?.walks?.[p.id],
         timeScale:
           w.slowTime && !(p.role === "OATH" && (p.sprintRemaining ?? 0) > 0)
             ? SLOW_TIME_SCALE
@@ -1311,7 +1382,7 @@ class Adventure extends Phaser.Scene {
       // During the prologue the road leads to Emberbrook (east) and the
       // forest (west); neither opens until the story gets there.
       const prologueSign =
-        sceneId === "MAIN_HOUSE" && w.story
+        sceneId === "MAIN_HOUSE" && w.story && w.story.stage !== "DONE"
           ? (
               { exit: "EMBERBROOK →", shrine: "← FOREST" } as Record<
                 string,
@@ -1361,6 +1432,19 @@ class Adventure extends Phaser.Scene {
           .setOrigin(0.5),
       );
     }
+    // The story's own E spots this hero can use now (gathering for the funeral).
+    for (const spot of spotsFor(w.story, me.role))
+      if (spot.scene === sceneId)
+        this.labels.push(
+          this.add
+            .text(spot.x, spot.y - 30, spot.label.toUpperCase(), {
+              fontSize: "12px",
+              color: "#ecdfc7",
+              backgroundColor: "#15232b",
+            })
+            .setOrigin(0.5)
+            .setDepth(1800),
+        );
     const stats = hud.querySelector("#stats");
     if (stats)
       stats.textContent = `${me.role ? heroNames[me.role] : "Choosing"} · HP ${Math.round(me.hp)} · Room ${w.roomCode} · ${net.socket.connected ? "Connected" : "Reconnecting"}`;
@@ -1411,6 +1495,18 @@ class Adventure extends Phaser.Scene {
           : storyObjectives[w.story.stage]
         : undefined;
     if (storyGoal) goal = storyGoal[me.role!];
+    const chapterGoal =
+      me.role && w.story && chapter0Objective(w.story, me.role);
+    if (chapterGoal) goal = chapterGoal;
+    // Chapter 0 over: the quest it unlocked, on the maps it began from.
+    if (
+      w.story?.flags.includes(SHRINE_QUEST) &&
+      (sceneId === "MAIN_HOUSE" ||
+        sceneId === "EMBERBROOK_VILLAGE" ||
+        isShopScene(sceneId) ||
+        isVillageInterior(sceneId))
+    )
+      goal = SHRINE_QUEST_OBJECTIVE;
     if (Object.values(w.players).some((p) => !p.connected))
       goal = "Partner disconnected. Game paused for up to 30 seconds.";
     if (sceneId === "HEDGE_MAZE") {
@@ -1451,6 +1547,9 @@ class Adventure extends Phaser.Scene {
     this.temporalView.update(w, sceneId, this.playerViews, this.time.now);
     const root = document.querySelector<HTMLDivElement>("#game")!;
     root.dataset.playerId = me.id;
+    // QA (scripts/qa-walk.ts): where this screen draws its hero, every frame.
+    if (storyQA)
+      root.dataset.hero = `${this.rendered.x.toFixed(2)},${this.rendered.y.toFixed(2)},${sceneId}`;
     if (new URLSearchParams(location.search).has("enemyQA")) {
       root.dataset.enemyState = JSON.stringify({
         serverTick: w.serverTick,

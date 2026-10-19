@@ -1,5 +1,11 @@
 import type { Role, SceneId } from "./gameTypes.js";
+import type { ItemId } from "./items.js";
 import type { NpcFacing } from "./npcs.js";
+import {
+  BURIAL_FLAG,
+  aldenErrandLines,
+  chapter0Cutscenes,
+} from "./chapter0.js";
 
 // Chapter 0 prologue, "A Promise Kept", as data. The server walks this script
 // (apps/server/src/prologue.ts) and owns every stage change. Clients only show
@@ -14,19 +20,54 @@ export const storyStages = [
   "AMBUSH", // The clearing: the monsters rise.
   "FIGHT", // A survival fight nobody is meant to win.
   "HOME", // Rescued, healed, scolded; Sieg's farewell; the next morning.
-  "DONE", // Coco has left for Emberbrook. Chapter 0 continues.
+  // Chapter 0, Part 1: The Forgotten Oath (chapter0.ts).
+  "ERRAND", // Coco shops in Emberbrook; Sieg watches from home.
+  "HOMEWARD", // Everything on the list: back to Papa.
+  "SILENT_SHOP", // The shop is quiet. Coco looks around, and finds him.
+  "STRANGER", // Meanwhile: Sieg sets out for the shop; someone is waiting.
+  "RUSHING", // "There's a fire at the shop." Sieg runs.
+  "FINDING", // No fire. No answer. Sieg goes in.
+  "MOURNING", // Sieg is with Coco.
+  "FUNERAL_PREP", // The next day: stones, flowers, the grave beneath the old tree.
+  "INVESTIGATION", // After the funeral: asking around Emberbrook.
+  "JOURNAL", // Back to the shop: the locked compartment in Papa's desk.
+  "DECISION", // The road ahead (Phase 6).
+  "DONE", // Chapter 0 is over; the regular campaign continues.
 ] as const;
 export type StoryStage = (typeof storyStages)[number];
 
-export type StorySpeaker = "ALDEN" | "COCO" | "SIEG" | "NARRATION";
+export type StorySpeaker =
+  | "ALDEN"
+  | "COCO"
+  | "SIEG"
+  | "NARRATION"
+  | "QUEST"
+  | "BRYNN"
+  | "SHOPKEEPER"
+  | "BAKER"
+  | "MOTHER"
+  | "STRANGER"
+  | "BERTRAM"
+  | "MERCHANT"
+  | "JOURNAL";
 export const storySpeakerNames: Record<StorySpeaker, string> = {
   ALDEN: "Alden",
   COCO: "Coco",
   SIEG: "Sieg",
   NARRATION: "",
+  QUEST: "Quest",
+  BRYNN: "Brynn",
+  SHOPKEEPER: "Shopkeeper",
+  BAKER: "Baker",
+  MOTHER: "Mother",
+  STRANGER: "Mysterious Woman",
+  BERTRAM: "Elder Bertram",
+  MERCHANT: "Traveling Merchant",
+  JOURNAL: "Alden's Journal",
 };
 
-export type AldenAction = "idle" | "walk" | "cast";
+/** Lying wounded and lying still are Alden's last poses (chapter0.ts). */
+export type AldenAction = "idle" | "walk" | "cast" | "wounded" | "still";
 export interface AldenPose {
   scene: SceneId;
   x: number;
@@ -38,7 +79,10 @@ export interface AldenPose {
 export type StoryCue =
   | "alden-enter" // Alden walks to the scene's `aldenTarget`.
   | "alden-cast" // Alden raises his staff.
-  | "flash"; // The spell lands: every monster falls on this tick.
+  | "flash" // The spell lands: every monster falls on this tick.
+  | "drop-bag" // Coco drops the shopping bag (it stays where it fell).
+  | "alden-still" // Alden's hand falls still.
+  | "stranger-vanish"; // The stranger is gone.
 
 export interface StoryLine {
   speaker: StorySpeaker;
@@ -51,6 +95,18 @@ export interface StoryLine {
   cue?: StoryCue;
   /** The clearing glows with Alden's spell circle while this line shows. */
   glow?: boolean;
+  /** Coco's healing light gathers on Alden, and fails (it always fails). */
+  heal?: "attempt" | "fail";
+  /** Shown under the line to the hero who moves it on, e.g. "E · Heal". */
+  prompt?: string;
+  /** A remembered line (Sieg recalling the prologue). */
+  memory?: boolean;
+  /** A permanent story flag recorded as the line appears (e.g. the burial). */
+  setFlag?: string;
+  /** Shared-backpack items used up as the line appears (laid on the grave). */
+  take?: Partial<Record<ItemId, number>>;
+  /** Shared-backpack items found as the line appears. */
+  give?: Partial<Record<ItemId, number>>;
 }
 
 export interface StoryPlacement {
@@ -65,10 +121,40 @@ export interface StoryPlacement {
 export interface StoryCutscene {
   id: string;
   scene: SceneId;
-  /** Both heroes are brought here for the scene, wherever they were. */
-  placement: Record<Role, StoryPlacement>;
+  /**
+   * Heroes in the scene (default both). Only they are held still and read its
+   * lines; anyone else carries on (or watches, see `offstage`).
+   */
+  cast?: Role[];
+  /**
+   * Where the cast is brought for the scene; a hero left out stays put. When a
+   * hero's own movement starts the scene, that hero simply stops where they
+   * are and the others take their places around them, keeping the same
+   * arrangement; unless the scene is `exact` (every mark matters).
+   */
+  placement: Partial<Record<Role, StoryPlacement>>;
+  exact?: boolean;
+  /** Shared-backpack items handed over when the scene ends (once). */
+  gives?: Partial<Record<ItemId, number>>;
   /** Where Alden is for the scene (absent: he stays where he was). */
   alden?: AldenPose;
+  /** What Alden is doing there (default: standing idle). */
+  aldenAction?: AldenAction;
+  /** The cloaked stranger appears here for the scene. */
+  stranger?: AldenPose;
+  /** Alden is no longer shown from this scene on (he has been laid to rest). */
+  aldenGone?: boolean;
+  /**
+   * A conversation with this villager, started by either hero talking to
+   * them: the villager stops and turns to them, the hero who spoke stays put,
+   * and the partner comes to stand beside them.
+   */
+  talkTo?: string;
+  /**
+   * A villager this hero walks up to for the scene (they stop and face each
+   * other), instead of a fixed placement.
+   */
+  meet?: { npc: string; role: Role };
   /** Where the "alden-enter" cue walks him. */
   aldenTarget?: { x: number; y: number };
   lines: StoryLine[];
@@ -101,6 +187,13 @@ export const prologueStart: Record<
   OATH: { scene: "MAIN_HOUSE", x: 760, y: 490, facing: WEST },
   // Coco is already home, rummaging through the shelves.
   EMBER: { scene: "HOUSE_INTERIOR", x: 590, y: 322, facing: NORTH },
+};
+
+/** Sieg's room above Hearthside Cottage, where he waits out Coco's errand. */
+export const siegAtHome = {
+  scene: "VILLAGE_COTTAGE_UPPER" as SceneId,
+  x: 420,
+  y: 330,
 };
 
 export const cutscenes: Record<string, StoryCutscene> = {
@@ -224,6 +317,11 @@ export const AMBUSH_HP_FLOOR = 15;
 export const AMBUSH_RESCUE_HP = 25;
 /** ...or after this long, so the fight never drags. */
 export const AMBUSH_SECONDS = 45;
+/** Monsters rise one at a time, this far apart, up to this many at once. */
+export const AMBUSH_RISE_SECONDS = 3;
+export const AMBUSH_MAX = ambushEnemies.length;
+/** Rising with the ambush scene, before the fight begins. */
+export const AMBUSH_OPENING = 2;
 /** A hero this close to the cart finds it. */
 export const CART_REACH = 96;
 
@@ -279,7 +377,7 @@ cutscenes.ambush = {
     },
     {
       speaker: "NARRATION",
-      text: "Stone golems tear free of the earth. Cinder wisps flicker to life between the trunks.",
+      text: "A stone golem tears free of the earth. A cinder wisp flickers to life between the trunks. More stir beneath the moss.",
     },
     { speaker: "SIEG", text: "Coco. Please tell me you have a plan." },
     { speaker: "COCO", text: "Obviously." },
@@ -481,12 +579,14 @@ cutscenes.morning = {
   id: "morning",
   scene: "HOUSE_INTERIOR",
   placement: {
-    OATH: { scene: "MAIN_HOUSE", x: 760, y: 490, facing: WEST },
+    // Sieg is at home: his screen shows his own room while Alden and Coco talk.
+    OATH: { ...siegAtHome, facing: NORTH },
     EMBER: { x: 492, y: 404, facing: NORTH },
   },
   alden: { scene: "HOUSE_INTERIOR", x: 392, y: 398, facing: "east" },
   flag: "prologue.complete",
-  next: "DONE",
+  next: "ERRAND",
+  chain: "errand",
   lines: [
     {
       speaker: "NARRATION",
@@ -528,7 +628,7 @@ cutscenes.morning = {
       speaker: "ALDEN",
       audience: "EMBER",
       elsewhere: SIEG_AWAY,
-      text: "I need a few things from Emberbrook. Moonpetal, sea salt, and a new ladle. The old one is no longer a ladle.",
+      text: "I need a few things from Emberbrook. Moonleaf from Brynn, two crystal vials and some candlewick from the general store, and a fresh loaf from the bakery. Bread, Coco. Not cake.",
     },
     {
       speaker: "COCO",
@@ -560,16 +660,38 @@ cutscenes.morning = {
     },
   ],
 };
-/** Where everyone stands once the prologue is over. */
+// Chapter 0, Part 1 continues the same script.
+Object.assign(cutscenes, chapter0Cutscenes);
+
+/**
+ * Where everyone stands once the prologue is over: Coco on the road to
+ * Emberbrook, Sieg at home (his room above Hearthside Cottage).
+ */
 export const prologueEnd: Record<Role, StoryPlacement & { scene: SceneId }> = {
-  OATH: { scene: "MAIN_HOUSE", x: 760, y: 490, facing: WEST },
+  OATH: { ...siegAtHome, facing: SOUTH },
   EMBER: { scene: "MAIN_HOUSE", x: 520, y: 490, facing: EAST },
 };
 
+/** Heroes in a cutscene (everyone unless it names its cast). */
+export const castOf = (scene: StoryCutscene): Role[] =>
+  scene.cast ?? ["OATH", "EMBER"];
+
 /** Players who must confirm a line before it moves on. */
-export function lineReaders(line: StoryLine, roles: (Role | null)[]) {
-  return roles.filter((r) => !line.audience || r === line.audience);
+export function lineReaders(
+  line: StoryLine,
+  roles: (Role | null)[],
+  cast: Role[] = ["OATH", "EMBER"],
+) {
+  return roles.filter(
+    (r) => !!r && cast.includes(r) && (!line.audience || r === line.audience),
+  );
 }
+
+/** Whether the story has reached `stage` (stages only move forward). */
+export const stageReached = (
+  story: { stage: StoryStage } | undefined,
+  stage: StoryStage,
+) => !!story && storyStages.indexOf(story.stage) >= storyStages.indexOf(stage);
 
 /** Free-roam objective for each hero at each stage. */
 export const storyObjectives: Partial<
@@ -641,6 +763,7 @@ export const aldenIdleLines: Partial<
     EMBER: ["Emberbrook, Coco. The market. Not anywhere else."],
     OATH: ["Go on, she won't wait for you. She never has."],
   },
+  ERRAND: { EMBER: aldenErrandLines, OATH: aldenErrandLines },
 };
 
 /** The road west out of the shop, toward the forest. */
@@ -655,6 +778,6 @@ export const reachedRoadFork = (p: { x: number; y: number }) => p.y >= 456;
  * shows whenever no prologue is running.
  */
 export const aldenGrave = { x: 60, y: 352, w: 80, h: 76, groundY: 440 };
-export const BURIAL_FLAG = "chapter0.burial";
+export { BURIAL_FLAG };
 export const graveVisible = (story: { flags: string[] } | undefined) =>
   !story || story.flags.includes(BURIAL_FLAG);
