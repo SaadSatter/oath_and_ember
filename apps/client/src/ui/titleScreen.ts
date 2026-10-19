@@ -8,6 +8,11 @@
 // heroes pass behind lamp posts and trees and never over a house or the well.
 import postTownMaps from "../environment/postTownMaps.json" with { type: "json" };
 import { heroAssets, WALK_FPS } from "../animation/definitions.js";
+import {
+  storyCheckpointIds,
+  storyCheckpoints,
+  type StoryCheckpointId,
+} from "../../../../packages/shared/src/storyCheckpoints.js";
 const village = postTownMaps.EMBERBROOK_VILLAGE;
 const VILLAGE_DIR = `/assets/environment/post-town/${village.folder}`;
 export const TITLE_WORLD = { width: 1152, height: 832 };
@@ -57,7 +62,12 @@ export function typewriter(elapsedMs: number, lines = TITLE_LINES) {
   while (t >= durations[index]) t -= durations[index++];
   const line = lines[index],
     shown = Math.min(line.length, Math.floor((t / 1000) * TITLE_TYPE_CPS));
-  return { index, line, text: line.slice(0, shown), done: shown >= line.length };
+  return {
+    index,
+    line,
+    text: line.slice(0, shown),
+    done: shown >= line.length,
+  };
 }
 // Where a hero stands on the road and which walk frame shows. Both heroes
 // share one loop so they stay in step; `lead` offsets the follower. `road` is
@@ -98,7 +108,10 @@ export function stopTitleScreen(panel: HTMLElement) {
 }
 export function renderTitleScreen(
   panel: HTMLElement,
-  actions: { create(): void; join(code: string): void },
+  actions: {
+    create(checkpoint: StoryCheckpointId): void;
+    join(code: string): void;
+  },
 ) {
   // Re-renders for unrelated reasons (e.g. the socket connecting) keep the
   // scene that is already playing instead of restarting the load-in.
@@ -117,22 +130,47 @@ export function renderTitleScreen(
     </header>
     <section class="title-dialog" aria-label="Start a game">
       <div class="title-speaker">Emberbrook Village</div>
+      <div class="title-content">
       <p class="title-line" aria-live="off"><span class="title-typed"></span><span class="title-caret" aria-hidden="true">▾</span></p>
+      <fieldset class="story-starts">
+        <legend>Choose where your story begins</legend>
+        <div class="story-start-grid">
+          ${storyCheckpointIds
+            .map(
+              (id, index) => `
+            <label class="story-start">
+              <input type="radio" name="story-start" value="${id}" ${index === 0 ? "checked" : ""}>
+              <span class="story-start-card">
+                <span class="story-start-number" aria-hidden="true">0${index + 1}</span>
+                <span><strong>${storyCheckpoints[id].title}</strong><span class="story-start-description">${storyCheckpoints[id].description}</span></span>
+                <span class="story-start-check" aria-hidden="true">◆</span>
+              </span>
+            </label>`,
+            )
+            .join("")}
+        </div>
+      </fieldset>
       <div class="title-actions">
         <button id="create">Create room</button>
         <div class="join"><input id="code" aria-label="Room code" maxlength="6" placeholder="ROOM CODE" autocomplete="off"><button id="join">Join</button></div>
       </div>
-      <small>Two browser sessions required • Working prototype</small>
+      <small>Creating a room starts both heroes at your chosen chapter. Joining follows the room’s chapter.</small>
+      </div>
     </section>
     <div class="title-loader" role="status">
       <div class="title-loader-label">Loading Emberbrook…</div>
       <div class="title-loader-bar"><span></span></div>
     </div>`;
-  panel.querySelector("#create")!.addEventListener("click", () => actions.create());
+  panel.querySelector("#create")!.addEventListener("click", () => {
+    const selected = panel.querySelector<HTMLInputElement>(
+      'input[name="story-start"]:checked',
+    )!;
+    actions.create(selected.value as StoryCheckpointId);
+  });
   const code = panel.querySelector<HTMLInputElement>("#code")!;
-  panel.querySelector("#join")!.addEventListener("click", () =>
-    actions.join(code.value.trim()),
-  );
+  panel
+    .querySelector("#join")!
+    .addEventListener("click", () => actions.join(code.value.trim()));
   code.addEventListener("keydown", (e) => {
     if (e.key === "Enter") actions.join(code.value.trim());
   });
@@ -174,7 +212,8 @@ export function renderTitleScreen(
       ground: o.groundY,
       paint: () => {
         const img = images.get(o.url);
-        if (img?.naturalWidth) ctx.drawImage(img, Math.round(o.x), Math.round(o.y));
+        if (img?.naturalWidth)
+          ctx.drawImage(img, Math.round(o.x), Math.round(o.y));
       },
     }));
     heroes.forEach((hero, n) => {
@@ -187,7 +226,15 @@ export function renderTitleScreen(
         paint: () => {
           ctx.fillStyle = "#00000040";
           ctx.beginPath();
-          ctx.ellipse(Math.round(x), TITLE_LANE.y - 1, 12, 4, 0, 0, Math.PI * 2);
+          ctx.ellipse(
+            Math.round(x),
+            TITLE_LANE.y - 1,
+            12,
+            4,
+            0,
+            0,
+            Math.PI * 2,
+          );
           ctx.fill();
           if (sheet?.naturalWidth)
             ctx.drawImage(

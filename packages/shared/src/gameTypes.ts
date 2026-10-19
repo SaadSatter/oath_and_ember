@@ -88,6 +88,8 @@ export interface Player {
   lastProcessedInputSeq: number;
 }
 export interface Enemy {
+  /** A held (passive) monster walking to this spot (story scenes). */
+  march?: { x: number; y: number };
   attackKind?: "melee" | "beam";
   attackHit?: boolean;
   passive?: boolean;
@@ -166,17 +168,40 @@ export interface StoryState {
   cutscene?: {
     id: string;
     line: number;
-    /** Players who have read the current line. */
+    /** The player who moved the current line on (reset on each line). */
     acks: string[];
     /** Tick the current line appeared. */
     since: number;
-    /** Tick the first reader finished it; the line moves on soon after. */
-    firstAck?: number;
+    /** The villager this scene is a conversation with (they face the speaker). */
+    villager?: string;
   };
   /** Permanent story flags, in the order they were earned. */
   flags: string[];
   /** Tick the ambush fight began. */
   fightStart?: number;
+  /**
+   * Heroes the story is walking into place before a scene's first line
+   * (player id → where they are headed, and how they will face).
+   */
+  walks?: Record<
+    string,
+    {
+      x: number;
+      y: number;
+      facing: number;
+      /** First tick of the walk; until then the hero moves as they were. */
+      start: number;
+      /**
+       * Where the mark is decided at `start`: "stay" stops the hero where they
+       * are by then; "beside" puts it at this offset from that hero.
+       */
+      pending?: "stay" | { beside: string; dx: number; dy: number };
+    }
+  >;
+  /** The ambush: monsters raised so far, and when the next one rises. */
+  ambush?: { raised: number; nextTick: number };
+  /** The cloaked stranger, while she is there. */
+  stranger?: import("./prologue.js").AldenPose;
   alden?: import("./prologue.js").AldenPose & {
     action: import("./prologue.js").AldenAction;
     /** Where he is walking to. */
@@ -184,6 +209,7 @@ export interface StoryState {
   };
 }
 export interface World {
+  storyStart?: import("./storyCheckpoints.js").StoryCheckpointId;
   story?: StoryState;
   /** Villagers stopped mid-conversation: since which tick, and with whom. */
   npcTalks?: Record<string, { since: number; listeners: string[] }>;

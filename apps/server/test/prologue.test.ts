@@ -2,7 +2,6 @@ import { expect, it } from "vitest";
 import { io } from "socket.io-client";
 import { GameRoom } from "../src/GameRoom.js";
 import { createApp } from "../src/app.js";
-import { STORY_PARTNER_WAIT_TICKS } from "../src/prologue.js";
 import { collisionRects, maps } from "../../../packages/shared/src/maps.js";
 import {
   neutral,
@@ -12,9 +11,11 @@ import {
 } from "../../../packages/shared/src/gameTypes.js";
 import {
   AMBUSH_HP_FLOOR,
+  AMBUSH_MAX,
+  AMBUSH_OPENING,
+  AMBUSH_RISE_SECONDS,
   AMBUSH_SECONDS,
   aldenAtShop,
-  ambushEnemies,
   cutscenes,
   prologueStart,
 } from "../../../packages/shared/src/prologue.js";
@@ -39,6 +40,16 @@ function input(r: GameRoom, id: string, frame: Partial<InputFrame> = {}) {
   s.input = { ...neutral(s.input.seq + 1), ...frame };
   s.received = Date.now();
   r.tick();
+  settle(r);
+}
+/** Let heroes the story is walking into place arrive (the scene then starts). */
+function settle(r: GameRoom) {
+  for (
+    let i = 0;
+    i < 60 * 8 && r.state.story?.cutscene?.line === -1;
+    i++
+  )
+    r.tick();
 }
 const blocked = (scene: SceneId, p: { x: number; y: number }) =>
   collisionRects(scene, {}).some(
@@ -51,7 +62,8 @@ const blocked = (scene: SceneId, p: { x: number; y: number }) =>
 /** Both heroes read every remaining line of the running scene. */
 function readAll(r: GameRoom, players: Player[]) {
   for (let guard = 0; r.state.story?.cutscene && guard < 100; guard++) {
-    const run = r.state.story.cutscene;
+    settle(r);
+    const run = r.state.story.cutscene!;
     for (const p of players) r.readStoryLine(p.id, run.id, run.line);
   }
 }
@@ -97,17 +109,16 @@ it("leaves both heroes free to explore until Sieg walks into the shop", () => {
   expect(r.state.story!.cutscene).toBeUndefined();
   enterShop(r, sieg);
   expect(r.state.story!.cutscene).toMatchObject({ id: "visit", line: 0 });
-  const { OATH, EMBER } = cutscenes.visit.placement;
-  expect(sieg).toMatchObject({
-    sceneId: "HOUSE_INTERIOR",
-    x: OATH.x,
-    y: OATH.y,
-  });
-  expect(coco).toMatchObject({
-    sceneId: "HOUSE_INTERIOR",
-    x: EMBER.x,
-    y: EMBER.y,
-  });
+  // Sieg set the scene off by walking in: he stays where he stopped, and Coco
+  // walks over to take her place beside him, as the scene arranges them.
+  const OATH = cutscenes.visit.placement.OATH!,
+    EMBER = cutscenes.visit.placement.EMBER!;
+  const entered = maps.HOUSE_INTERIOR.spawn;
+  expect(sieg.sceneId).toBe("HOUSE_INTERIOR");
+  expect(Math.hypot(sieg.x - entered.x, sieg.y - entered.y)).toBeLessThan(4);
+  expect(coco.sceneId).toBe("HOUSE_INTERIOR");
+  expect(coco.x - sieg.x).toBeCloseTo(EMBER.x - OATH.x, 0);
+  expect(coco.y - sieg.y).toBeCloseTo(EMBER.y - OATH.y, 0);
 });
 
 it("holds heroes still, and keeps doors and attacks closed, while a scene plays", () => {
@@ -148,30 +159,20 @@ it("lets Coco and Sieg leave through the prologue shop threshold after the visit
   }
 });
 
-it("moves a line on once both heroes read it, ignoring stale and repeated reads", () => {
+it("moves a line on as soon as either hero reads it, ignoring stale and repeated reads", () => {
   const { r, sieg, coco } = pair();
   enterShop(r, sieg);
   const run = () => r.state.story!.cutscene!;
-  expect(r.readStoryLine(sieg.id, "visit", 0).accepted).toBe(true);
-  expect(r.readStoryLine(sieg.id, "visit", 0).accepted).toBe(true);
-  expect(run().line).toBe(0);
   expect(r.readStoryLine(coco.id, "visit", 3).accepted).toBe(false);
   expect(r.readStoryLine(coco.id, "fork", 0).accepted).toBe(false);
-  expect(r.readStoryLine(coco.id, "visit", 0).accepted).toBe(true);
+  expect(r.readStoryLine(sieg.id, "visit", 0).accepted).toBe(true);
   expect(run()).toMatchObject({ line: 1, acks: [] });
-  // A late duplicate of the previous line cannot skip this one.
+  // Both pressing at once, or a late duplicate, cannot skip the next line.
+  expect(r.readStoryLine(coco.id, "visit", 0).accepted).toBe(false);
   expect(r.readStoryLine(sieg.id, "visit", 0).accepted).toBe(false);
   expect(run().line).toBe(1);
-});
-
-it("gives a slow reader time, then moves on without them", () => {
-  const { r, sieg, coco } = pair();
-  enterShop(r, sieg);
-  r.readStoryLine(coco.id, "visit", 0);
-  for (let i = 0; i < STORY_PARTNER_WAIT_TICKS - 1; i++) input(r, coco.id);
-  expect(r.state.story!.cutscene!.line).toBe(0);
-  input(r, coco.id);
-  expect(r.state.story!.cutscene!.line).toBe(1);
+  expect(r.readStoryLine(coco.id, "visit", 1).accepted).toBe(true);
+  expect(run().line).toBe(2);
 });
 
 it("waits for a disconnected partner instead of moving on", () => {
@@ -179,7 +180,7 @@ it("waits for a disconnected partner instead of moving on", () => {
   enterShop(r, sieg);
   r.disconnect(coco.id);
   r.readStoryLine(sieg.id, "visit", 0);
-  for (let i = 0; i < STORY_PARTNER_WAIT_TICKS + 10; i++) r.tick();
+  for (let i = 0; i < 600; i++) r.tick();
   expect(r.state.story!.cutscene!.line).toBe(0);
   const token = r.sessions.get(coco.id)!.token;
   r.resume(coco.id, token, "b2");
@@ -200,8 +201,9 @@ it("plays the road fork when either hero reaches the road, and closes both roads
   Object.assign(coco, { sceneId: "MAIN_HOUSE", x: 480, y: 470 });
   input(r, coco.id);
   expect(r.state.story!.cutscene).toMatchObject({ id: "fork", line: 0 });
+  // Coco stops where she reached the road; Sieg, still inside, is brought out.
+  expect(coco).toMatchObject({ sceneId: "MAIN_HOUSE", x: 480, y: 470 });
   expect(sieg).toMatchObject({ sceneId: "MAIN_HOUSE", x: 540, y: 492 });
-  expect(coco).toMatchObject({ sceneId: "MAIN_HOUSE", x: 440, y: 492 });
   // Sieg's thoughts are his alone: Coco cannot read them, Sieg moves them on.
   const thought = cutscenes.fork.lines.findIndex((l) => l.audience);
   while (r.state.story!.cutscene!.line < thought)
@@ -282,7 +284,9 @@ it("synchronizes story lines to two real sockets, validates reads and survives r
     expect(room.state.story?.stage).toBe("ARRIVAL");
     Object.assign(room.state.players[a.playerId], maps.MAIN_HOUSE.points.door);
     sockets[0].emit("player:input", { ...neutral(1), interactHeld: true });
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    // The heroes walk into place before the first line shows.
+    for (let i = 0; i < 100 && room.state.story?.cutscene?.line !== 0; i++)
+      await new Promise((resolve) => setTimeout(resolve, 100));
     expect(room.state.story?.cutscene).toMatchObject({ id: "visit", line: 0 });
     // Outcomes cannot be sent: only a well-formed "read" is accepted.
     for (const bad of [
@@ -327,6 +331,7 @@ function readScene(r: GameRoom, players: Player[], id: string) {
     r.state.story?.cutscene?.id === id && guard < 200;
     guard++
   ) {
+    settle(r);
     const run = r.state.story.cutscene;
     for (const p of players) r.readStoryLine(p.id, run.id, run.line);
   }
@@ -386,16 +391,57 @@ it("follows Coco west into the forest, where the cart opens the way on", () => {
   expect(r.state.sceneId).toBe("PROLOGUE_CLEARING");
   input(r, coco.id);
   expect(r.state.story!.cutscene?.id).toBe("ambush");
-  // The eight existing monsters rise, and hold still while the scene plays.
+  // The first golem and wisp rise, and hold still while the scene plays.
   const enemies = Object.values(r.state.enemies);
-  expect(enemies.map((e) => e.type).sort()).toEqual(
-    ambushEnemies.map((e) => e.type).sort(),
-  );
+  expect(enemies.map((e) => e.type).sort()).toEqual([
+    "cinder_wisp",
+    "ironbound_sentinel",
+  ]);
   expect(enemies.every((e) => e.passive)).toBe(true);
   for (const e of enemies) expect(blocked("PROLOGUE_CLEARING", e)).toBe(false);
   readAll(r, [sieg, coco]);
   expect(r.state.story!.stage).toBe("FIGHT");
   expect(Object.values(r.state.enemies).every((e) => !e.passive)).toBe(true);
+});
+
+it("raises the ambush one monster at a time, and replaces each one beaten", () => {
+  const { r, sieg, coco } = toFight();
+  const alive = () =>
+    Object.values(r.state.enemies).filter((e) => e.state !== "DEAD");
+  // Nobody gets hurt in this test: it is about the monsters.
+  const hold = () => {
+    for (const p of [sieg, coco]) p.hp = 100;
+  };
+  expect(alive()).toHaveLength(AMBUSH_OPENING);
+  const rise = ticksFor(AMBUSH_RISE_SECONDS);
+  for (let i = 0; i < rise; i++) {
+    hold();
+    input(r, coco.id);
+  }
+  expect(alive()).toHaveLength(AMBUSH_OPENING + 1);
+  // Beat one: the count drops, then a new one rises in its place.
+  const victim = alive()[0];
+  victim.hp = 0;
+  hold();
+  input(r, coco.id);
+  const after = alive().length;
+  for (let i = 0; i < rise; i++) {
+    hold();
+    input(r, coco.id);
+  }
+  expect(alive().length).toBe(after + 1);
+  // Never more than eight at once (four golems, four wisps), on clear ground.
+  for (let i = 0; i < rise * 12 && r.state.story!.stage === "FIGHT"; i++) {
+    hold();
+    r.state.story!.fightStart = r.state.serverTick; // keep Alden away
+    input(r, coco.id);
+  }
+  const all = alive();
+  expect(all).toHaveLength(AMBUSH_MAX);
+  for (const type of ["ironbound_sentinel", "cinder_wisp"])
+    expect(all.filter((e) => e.type === type)).toHaveLength(AMBUSH_MAX / 2);
+  for (const e of all) expect(blocked("PROLOGUE_CLEARING", e)).toBe(false);
+  expect(new Set(all.map((e) => e.id)).size).toBe(all.length);
 });
 
 it("never lets a hero fall in the ambush, and sends Alden when one is nearly down", () => {
@@ -419,18 +465,34 @@ it("never lets a hero fall in the ambush, and sends Alden when one is nearly dow
   expect(story.cutscene?.id).toBe("rescue");
   expect(r.state.projectiles.shot).toBeUndefined();
   expect(Object.values(r.state.enemies).every((e) => e.passive)).toBe(true);
+  // Just before Alden comes, eight monsters have walked in around the heroes,
+  // leaving the north open for him.
+  const ring = Object.values(r.state.enemies).filter((e) => e.state !== "DEAD");
+  expect(ring).toHaveLength(AMBUSH_MAX);
+  expect(ring.every((e) => !e.march)).toBe(true);
+  const centre = { x: (sieg.x + coco.x) / 2, y: (sieg.y + coco.y) / 2 };
+  for (const e of ring) {
+    const d = Math.hypot(e.x - centre.x, e.y - centre.y);
+    expect(d).toBeGreaterThan(100);
+    expect(d).toBeLessThan(260);
+    expect(e.y < centre.y - 100 && Math.abs(e.x - centre.x) < 60).toBe(false);
+    expect(blocked("PROLOGUE_CLEARING", e)).toBe(false);
+  }
   expect(story.alden).toMatchObject({ scene: "PROLOGUE_CLEARING" });
   // Alden walks in from the north while the clearing glows.
   const startY = story.alden!.y;
   for (let i = 0; i < 30; i++) input(r, coco.id);
   expect(story.alden!.y).toBeGreaterThan(startY);
-  // The spell lands: all eight fall on one tick.
+  // The spell lands: every monster standing falls on one tick.
+  const standing = Object.values(r.state.enemies).filter(
+    (e) => e.state !== "DEAD",
+  ).length;
   const flash = cutscenes.rescue.lines.findIndex((l) => l.cue === "flash");
   while (story.cutscene!.line < flash)
     for (const p of [sieg, coco])
       r.readStoryLine(p.id, "rescue", story.cutscene!.line);
   const dead = Object.values(r.state.enemies).map((e) => e.deadTick);
-  expect(dead).toHaveLength(8);
+  expect(dead).toHaveLength(standing);
   expect(new Set(dead)).toEqual(new Set([r.state.serverTick]));
   // Home: both healed and waking upstairs at the shop.
   readScene(r, [sieg, coco], "rescue");
@@ -452,7 +514,7 @@ it("sends Alden after a while even if nobody is hurt", () => {
   expect(r.state.story!.cutscene?.id).toBe("rescue");
 });
 
-it("ends with Sieg's farewell, Coco's morning, and the road to Emberbrook open", () => {
+it("ends with Sieg's farewell, Coco's morning, and Coco off on her errand alone", () => {
   const { r, sieg, coco } = toFight();
   r.damage(coco, 500);
   input(r, coco.id);
@@ -468,7 +530,11 @@ it("ends with Sieg's farewell, Coco's morning, and the road to Emberbrook open",
   expect(coco.sceneId).toBe("HOUSE_INTERIOR");
   expect(r.readStoryLine(sieg.id, "morning", 0).accepted).toBe(false);
   readScene(r, [sieg, coco], "morning");
-  expect(r.state.story).toMatchObject({ stage: "DONE" });
+  // Chapter 0, Part 1 picks up at once: Coco's errand, which Sieg watches.
+  expect(r.state.story!.cutscene?.id).toBe("errand");
+  expect(r.readStoryLine(sieg.id, "errand", 0).accepted).toBe(false);
+  readScene(r, [coco], "errand");
+  expect(r.state.story).toMatchObject({ stage: "ERRAND" });
   expect(r.state.story!.flags).toEqual([
     "prologue.visit",
     "prologue.detour",
@@ -478,9 +544,51 @@ it("ends with Sieg's farewell, Coco's morning, and the road to Emberbrook open",
     "prologue.home",
     "prologue.farewell",
     "prologue.complete",
+    "chapter0.errand",
   ]);
   expect(r.state.story!.alden).toMatchObject(aldenAtShop);
+  expect(sieg.sceneId).toBe("VILLAGE_COTTAGE_UPPER");
   r.state.serverTick += 120;
   press(r, coco, maps.MAIN_HOUSE.points.exit);
-  expect(r.state.sceneId).toBe("EMBERBROOK_VILLAGE");
+  // Coco walks to Emberbrook by herself; the party stays where it was.
+  expect(coco.sceneId).toBe("EMBERBROOK_VILLAGE");
+  expect(sieg.sceneId).toBe("VILLAGE_COTTAGE_UPPER");
+  expect(r.state.sceneId).toBe("MAIN_HOUSE");
+});
+
+it("never waits forever for a walk-in, whatever holds a hero up", () => {
+  const { r, sieg, coco } = pair();
+  Object.assign(sieg, maps.MAIN_HOUSE.points.door);
+  // Sieg steps in; then something keeps Coco from ever finishing her walk.
+  sieg.sceneId = "MAIN_HOUSE";
+  const s = r.sessions.get(sieg.id)!;
+  s.input = { ...neutral(s.input.seq + 1), interactHeld: true };
+  s.received = Date.now();
+  r.tick();
+  r.tick(); // the visit starts once he is inside
+  expect(r.state.story!.cutscene).toMatchObject({ id: "visit", line: -1 });
+  r.state.story!.walks![coco.id] = {
+    ...r.state.story!.walks![coco.id],
+    pending: { beside: "nobody-left", dx: 0, dy: 0 },
+  };
+  for (let i = 0; i < 60 * 13 && r.state.story!.cutscene!.line === -1; i++)
+    r.tick();
+  expect(r.state.story!.cutscene!.line).toBe(0);
+  expect(r.state.story!.walks).toBeUndefined();
+});
+
+it("lets a client back in that reconnects before its old socket is noticed gone", () => {
+  const { r, sieg } = pair();
+  const s = r.sessions.get(sieg.id)!;
+  // The old socket has not been reported closed yet.
+  s.socketId = "old-socket";
+  const back = r.resume(sieg.id, s.token, "new-socket");
+  expect(back.playerId).toBe(sieg.id);
+  expect(s.socketId).toBe("new-socket");
+  // When the old socket's close arrives late, it changes nothing.
+  r.disconnect(sieg.id, "old-socket");
+  expect(sieg.connected).toBe(true);
+  // The current socket closing still counts.
+  r.disconnect(sieg.id, "new-socket");
+  expect(sieg.connected).toBe(false);
 });

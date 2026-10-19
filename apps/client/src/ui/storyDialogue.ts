@@ -1,13 +1,16 @@
 import type { Role, World } from "../../../../packages/shared/src/gameTypes.js";
 import {
+  castOf,
   cutscenes,
   storySpeakerNames,
 } from "../../../../packages/shared/src/prologue.js";
+import { offstageFor } from "../../../../packages/shared/src/chapter0.js";
 import { dialogueLayout, typedText } from "./dialogueBox.js";
 
 // The prologue's shared dialogue. The server decides which line is on screen;
 // this box types it out, and E (or a tap) tells the server it has been read.
-// Both heroes see the same line; inner narration shows only to its hero.
+// Both heroes see the same line, and either one's E moves it on for both;
+// inner narration shows only to its hero, who alone moves it on.
 
 export interface StoryView {
   key: string;
@@ -19,6 +22,12 @@ export interface StoryView {
   text: string;
   /** This hero is meant to confirm the line (false for a partner's thoughts). */
   reader: boolean;
+  /** Offstage, following the partner's scene without taking part. */
+  watching: boolean;
+  /** A remembered line. */
+  memory: boolean;
+  /** What pressing on means here, e.g. "E · Cast healing magic". */
+  prompt: string;
 }
 
 /** What this hero should see for the world's current story line, if any. */
@@ -28,16 +37,27 @@ export function storyView(
 ): StoryView | null {
   const run = w?.story?.cutscene;
   const line = run && cutscenes[run.id]?.lines[run.line];
-  if (!run || !line) return null;
-  const reader = !line.audience || line.audience === role;
+  if (!run || !line || !role) return null;
+  const cast = castOf(cutscenes[run.id]);
+  // A hero outside the scene sees nothing of it, unless they are watching
+  // their partner from offstage: then they see it as the partner does.
+  const watching = !cast.includes(role);
+  if (watching && !offstageFor(w.story, role)?.watch) return null;
+  const viewer = watching ? cast[0] : role;
+  const shown = !line.audience || line.audience === viewer;
   return {
     key: `${run.id}:${run.line}`,
     cutscene: run.id,
     line: run.line,
-    speaker: reader ? storySpeakerNames[line.speaker] : "",
-    voice: reader ? line.speaker : "NARRATION",
-    text: reader ? line.text : (line.elsewhere ?? "…"),
-    reader,
+    speaker: shown
+      ? storySpeakerNames[line.speaker] + (line.memory ? " · memory" : "")
+      : "",
+    voice: shown ? line.speaker : "NARRATION",
+    text: shown ? line.text : (line.elsewhere ?? "…"),
+    reader: shown && !watching,
+    watching,
+    memory: shown && !!line.memory,
+    prompt: shown && !watching ? (line.prompt ?? "") : "",
   };
 }
 
@@ -105,7 +125,11 @@ export class StoryDialogue {
       this.speakerEl.textContent = view.speaker;
       this.speakerEl.hidden = !view.speaker;
       this.root.dataset.voice = view.voice;
-      this.root.classList.toggle("story-thought", !view.reader);
+      this.root.classList.toggle(
+        "story-thought",
+        !view.reader && !view.watching,
+      );
+      this.root.classList.toggle("story-memory", view.memory);
       if (this.root.hidden) {
         this.root.hidden = false;
         this.place();
@@ -113,11 +137,11 @@ export class StoryDialogue {
       }
       this.startPage();
     }
-    this.statusEl.textContent = !view.reader
-      ? ""
+    this.statusEl.textContent = view.watching
+      ? `Watching ${partnerName}…`
       : this.sent
-        ? `Waiting for ${partnerName}…`
-        : "";
+        ? ""
+        : view.prompt;
   }
   /** Finish typing, else tell the server this line has been read. */
   advance() {

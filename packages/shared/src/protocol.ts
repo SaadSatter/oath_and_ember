@@ -19,14 +19,17 @@ export interface ClientEvents {
   /** Start or end a conversation; the server pauses the villager for all. */
   "npc:talk": (
     p: { npcId: string; talking: boolean },
-    ack: Ack<{ talking: boolean }>,
+    ack: Ack<{ talking: boolean; story?: boolean }>,
   ) => void;
   /** "I've read this story line"; the server moves the scene on. */
   "story:read": (
     p: { cutscene: string; line: number },
     ack: Ack<{ accepted: boolean }>,
   ) => void;
-  "room:create": (p: Record<string, never>, ack: Ack<Session>) => void;
+  "room:create": (
+    p: { checkpoint?: import("./storyCheckpoints.js").StoryCheckpointId },
+    ack: Ack<Session>,
+  ) => void;
   "room:join": (p: { roomCode: string }, ack: Ack<Session>) => void;
   "session:resume": (p: Session, ack: Ack<Session>) => void;
   "role:select": (p: { role: Role }, ack: Ack) => void;

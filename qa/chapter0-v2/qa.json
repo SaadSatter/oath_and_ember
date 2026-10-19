@@ -1,0 +1,31 @@
+{
+  "errors": [
+    "client 0: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "log": [
+    "read until ERRAND errand",
+    "read until ERRAND ",
+    "errand: sieg VILLAGE_COTTAGE_UPPER, coco MAIN_HOUSE",
+    "coco to EMBERBROOK_VILLAGE; party MAIN_HOUSE",
+    "talk healer: errand-brynn",
+    "read until ERRAND ",
+    "talk shopkeeper: errand-store",
+    "read until ERRAND ",
+    "talk baker: errand-bakery",
+    "read until HOMEWARD ",
+    "inventory: {\"moonleaf\":1,\"crystal_vial\":2,\"candlewick\":1,\"fresh_bread\":1,\"honey_pastry\":1}",
+    "coco home: MAIN_HOUSE at 714,500",
+    "read until SILENT_SHOP ",
+    "read until SILENT_SHOP ",
+    "discovery: discovery",
+    "read until STRANGER sets-out",
+    "read until STRANGER ",
+    "sieg: EMBERBROOK_VILLAGE; stranger {\"scene\":\"MAIN_HOUSE\",\"x\":566,\"y\":488,\"facing\":\"east\"}",
+    "sieg road: MAIN_HOUSE party MAIN_HOUSE",
+    "read until RUSHING ",
+    "read until RUSHING ",
+    "read until FINDING ",
+    "read until MOURNING ",
+    "end: stage MOURNING, coco HOUSE_INTERIOR 436,400, alden {\"scene\":\"HOUSE_INTERIOR\",\"x\":380,\"y\":392,\"facing\":\"south\",\"action\":\"still\"}"
+  ]
+}

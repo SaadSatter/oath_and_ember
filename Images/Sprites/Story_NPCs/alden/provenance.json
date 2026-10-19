@@ -14,7 +14,8 @@
     "animations": {
       "walk": "east: template walking-8-frames (west is east mirrored). south and north (re-made 2026-10-18 because the template walk showed only one leg): v3 custom, 8 frames, starting from stand/<dir>.png, 'walking toward/away from the viewer at a calm pace, left and right legs alternating, both feet clearly visible below the robe, arms swinging gently'",
       "cast": "v3 custom, south: plants his feet and raises the glowing staff high overhead with both hands, casting a powerful spell, then holds the pose",
-      "stand": "stand/south.png and stand/north.png are rotations/south.png and rotations/north.png with the staff erased by scripts/alden-unstaff.py (staff pixels cleared, the cut edge closed with the outline colour). No other pixels changed."
+      "stand": "stand/south.png and stand/north.png are rotations/south.png and rotations/north.png with the staff erased by scripts/alden-unstaff.py (staff pixels cleared, the cut edge closed with the outline colour). No other pixels changed.",
+      "collapse": "v3 custom, south, 8 frames, starting from stand/south.png: 'wounded and exhausted, slowly sinks to his knees and then slumps down sideways onto the floor, ending lying still on his side with eyes closed'. Frame 6 is used for 'wounded' (eyes half open), frame 7 for 'still' (eyes closed)."
     },
     "notes": "Generated west rotation dropped the staff; the sheet uses the east rotation mirrored for west. Source west.png is kept unchanged."
   },
@@ -174,6 +175,38 @@
     {
       "path": "stand/north.png",
       "source": "derived from rotations/north.png by scripts/alden-unstaff.py"
+    },
+    {
+      "path": "collapse/south/0.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/fce323ef-89bc-4186-b30b-7baafd59b0c2/animations/145372db-f686-4513-a434-87d7ff6d3ba5/south/0.png"
+    },
+    {
+      "path": "collapse/south/1.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/fce323ef-89bc-4186-b30b-7baafd59b0c2/animations/145372db-f686-4513-a434-87d7ff6d3ba5/south/1.png"
+    },
+    {
+      "path": "collapse/south/2.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/fce323ef-89bc-4186-b30b-7baafd59b0c2/animations/145372db-f686-4513-a434-87d7ff6d3ba5/south/2.png"
+    },
+    {
+      "path": "collapse/south/3.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/fce323ef-89bc-4186-b30b-7baafd59b0c2/animations/145372db-f686-4513-a434-87d7ff6d3ba5/south/3.png"
+    },
+    {
+      "path": "collapse/south/4.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/fce323ef-89bc-4186-b30b-7baafd59b0c2/animations/145372db-f686-4513-a434-87d7ff6d3ba5/south/4.png"
+    },
+    {
+      "path": "collapse/south/5.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/fce323ef-89bc-4186-b30b-7baafd59b0c2/animations/145372db-f686-4513-a434-87d7ff6d3ba5/south/5.png"
+    },
+    {
+      "path": "collapse/south/6.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/fce323ef-89bc-4186-b30b-7baafd59b0c2/animations/145372db-f686-4513-a434-87d7ff6d3ba5/south/6.png"
+    },
+    {
+      "path": "collapse/south/7.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/fce323ef-89bc-4186-b30b-7baafd59b0c2/animations/145372db-f686-4513-a434-87d7ff6d3ba5/south/7.png"
     }
   ]
 }

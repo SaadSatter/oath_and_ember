@@ -13,7 +13,15 @@ export interface NpcDefinition {
   id: string;
   name: string;
   /** Sheet under /assets/npcs (see its README). */
-  sprite: "old_man" | "mother" | "wizard" | "townsfolk" | "healer";
+  sprite:
+    | "old_man"
+    | "mother"
+    | "wizard"
+    | "townsfolk"
+    | "healer"
+    | "shopkeeper"
+    | "baker"
+    | "merchant";
   scene: SceneId;
   /** Closed loop of waypoints in world units; one point means standing still. */
   route: { x: number; y: number }[];
@@ -70,7 +78,7 @@ export const npcs: NpcDefinition[] = [
   },
   {
     id: "wizard",
-    name: "Wizard Alder",
+    name: "Wizard Orrin",
     sprite: "wizard",
     scene: "EMBERBROOK_VILLAGE",
     // Paces the north road, clear of the apothecary door and the village exit.
@@ -118,6 +126,52 @@ export const npcs: NpcDefinition[] = [
     lines: [
       "Bumps and bruises? You know where to find me, dears.",
       "My shop is open, and advice is free: never fight a golem at its own range.",
+    ],
+  },
+  // Emberbrook's market stalls (storyProps.ts), beside their counters.
+  {
+    id: "shopkeeper",
+    name: "Shopkeeper",
+    sprite: "shopkeeper",
+    scene: "EMBERBROOK_VILLAGE",
+    route: [{ x: 326, y: 728 }],
+    speed: 0,
+    pause: 0,
+    phase: 0,
+    facing: "west",
+    lines: [
+      "Rope, wick, vials, nails. If it's useful, I sell it.",
+      "If it isn't useful, I probably sell that too.",
+    ],
+  },
+  {
+    id: "merchant",
+    name: "Traveling Merchant",
+    sprite: "merchant",
+    scene: "EMBERBROOK_VILLAGE",
+    // On the east lawn, by the road out toward the other villages.
+    route: [{ x: 960, y: 430 }],
+    speed: 0,
+    pause: 0,
+    phase: 0,
+    facing: "west",
+    lines: [
+      "Wares from beyond the hills! Rope, lamp oil, and stories, free of charge.",
+      "I don't stay anywhere long. The roads have been strange lately.",
+    ],
+  },
+  {
+    id: "baker",
+    name: "Baker",
+    sprite: "baker",
+    scene: "EMBERBROOK_VILLAGE",
+    route: [{ x: 616, y: 752 }],
+    speed: 0,
+    pause: 0,
+    phase: 0,
+    facing: "west",
+    lines: [
+      "Fresh loaves every morning. Honey pastries if you're quick.",
     ],
   },
 ];

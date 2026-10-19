@@ -7,6 +7,10 @@ import type {
 import { stepMovement } from "../../../../packages/shared/src/movement.js";
 import { maps, collisionRects } from "../../../../packages/shared/src/maps.js";
 import {
+  WALK_ARRIVE,
+  storyWalkInput,
+} from "../../../../packages/shared/src/storyWalk.js";
+import {
   DT,
   MAX_PREDICTION_LEAD,
   SERVER_HZ,
@@ -67,9 +71,21 @@ export class Prediction {
       for (const i of this.pending)
         if (i.targetTick! <= this.tick && i.seq > input.seq) input = i;
       const scene = this.player.sceneId ?? w.sceneId;
+      // Walked into place by the story: the walk is worked out afresh each
+      // tick from the predicted position, exactly as the server does it.
+      const walk = storyWalkInput(w, this.player, this.tick);
+      const mark = w.story?.walks?.[this.player.id];
+      if (
+        mark &&
+        !mark.pending &&
+        this.tick >= mark.start &&
+        Math.hypot(mark.x - this.player.x, mark.y - this.player.y) <=
+          WALK_ARRIVE
+      )
+        Object.assign(this.player, { x: mark.x, y: mark.y, vx: 0, vy: 0 });
       stepMovement(
         this.player,
-        input,
+        walk ? { ...neutral(input.seq), ...walk } : input,
         maps[scene],
         collisionRects(
           scene,

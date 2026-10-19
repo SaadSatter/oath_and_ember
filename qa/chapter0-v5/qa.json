@@ -1,0 +1,36 @@
+{
+  "errors": [
+    "client 0: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "log": [
+    "read until ERRAND errand",
+    "read until ERRAND ",
+    "errand: sieg VILLAGE_COTTAGE_UPPER, coco MAIN_HOUSE",
+    "coco to EMBERBROOK_VILLAGE; party MAIN_HOUSE",
+    "talk healer: errand-brynn",
+    "read until ERRAND ",
+    "talk shopkeeper: errand-store",
+    "read until ERRAND ",
+    "talk baker: errand-bakery",
+    "read until HOMEWARD ",
+    "inventory: {\"moonleaf\":1,\"crystal_vial\":2,\"candlewick\":1,\"fresh_bread\":1,\"honey_pastry\":1}",
+    "coco home: MAIN_HOUSE at 714,500",
+    "read until SILENT_SHOP ",
+    "read until SILENT_SHOP ",
+    "discovery: discovery",
+    "read until STRANGER sets-out",
+    "read until STRANGER ",
+    "sieg: EMBERBROOK_VILLAGE; stranger {\"scene\":\"EMBERBROOK_VILLAGE\",\"x\":120,\"y\":296,\"facing\":\"east\"}",
+    "read until RUSHING ",
+    "sieg road: MAIN_HOUSE party MAIN_HOUSE",
+    "read until RUSHING ",
+    "read until FINDING ",
+    "read until MOURNING next-day",
+    "read until FUNERAL_PREP ",
+    "gathered: {\"moonleaf\":1,\"crystal_vial\":2,\"candlewick\":1,\"fresh_bread\":1,\"honey_pastry\":1,\"wooden_sword\":1,\"river_stone\":3,\"wildflowers\":3}",
+    "funeral: funeral",
+    "read until INVESTIGATION ",
+    "after: flags chapter0.errand,chapter0.moonleaf,chapter0.store,chapter0.bakery,chapter0.errand-done,chapter0.homecoming,chapter0.silent,chapter0.bag,chapter0.last-words,chapter0.sets-out,chapter0.stranger,chapter0.glance,chapter0.no-fire,chapter0.reunion,chapter0.next-day,chapter0.stone-1,chapter0.stone-2,chapter0.stone-3,chapter0.flower-1,chapter0.flower-2,chapter0.flower-3,chapter0.site-ready,chapter0.ready-OATH,chapter0.ready-EMBER,chapter0.burial,chapter0.flowers,chapter0.sword,chapter0.funeral",
+    "end: stage INVESTIGATION, coco MAIN_HOUSE 300,500, alden undefined"
+  ]
+}

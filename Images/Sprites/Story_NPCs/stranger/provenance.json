@@ -1,0 +1,50 @@
+{
+  "pixellabCharacterId": "67e28653-6777-47d3-9166-50b016147518",
+  "pixellabName": "Mysterious Cloaked Woman",
+  "downloaded": "2026-10-18",
+  "generation": {
+    "mode": "standard",
+    "size": 58,
+    "view": "high top-down",
+    "directions": 4,
+    "outline": "single color black outline",
+    "shading": "basic shading",
+    "detail": "medium detail",
+    "description": "tall slender mysterious woman in a long deep charcoal-violet hooded travelling cloak that reaches the ground, hood pulled low so her face is hidden in shadow except a pale chin, a thin silver clasp at the collar, hands hidden inside the cloak, calm still posture"
+  },
+  "files": [
+    {
+      "path": "rotations/south.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/67e28653-6777-47d3-9166-50b016147518/rotations/south.png"
+    },
+    {
+      "path": "rotations/east.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/67e28653-6777-47d3-9166-50b016147518/rotations/east.png"
+    },
+    {
+      "path": "rotations/north.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/67e28653-6777-47d3-9166-50b016147518/rotations/north.png"
+    },
+    {
+      "path": "rotations/west.png",
+      "source": "https://backblaze.pixellab.ai/file/pixellab-characters/15de7a9f-713b-4068-9b49-31d214f971b3/67e28653-6777-47d3-9166-50b016147518/rotations/west.png"
+    },
+    {
+      "path": "hooded/south.png",
+      "source": "derived from rotations/south.png by scripts/stranger-hood-shadow.py"
+    },
+    {
+      "path": "hooded/east.png",
+      "source": "derived from rotations/east.png by scripts/stranger-hood-shadow.py"
+    },
+    {
+      "path": "hooded/north.png",
+      "source": "derived from rotations/north.png by scripts/stranger-hood-shadow.py"
+    },
+    {
+      "path": "hooded/west.png",
+      "source": "derived from rotations/west.png by scripts/stranger-hood-shadow.py"
+    }
+  ],
+  "notes": "hooded/ is rotations/ with the face pixels above the chin shaded to the hood's darkest violets by scripts/stranger-hood-shadow.py, so her identity stays hidden. rotations/ is kept unchanged."
+}
