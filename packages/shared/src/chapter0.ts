@@ -755,7 +755,8 @@ chapter0Cutscenes.decision = {
     EMBER: { x: 110, y: 486, facing: NORTH },
   },
   flag: SHRINE_QUEST,
-  next: "DONE",
+  // The finale (chapter0Finale.ts) picks up on the road north.
+  next: "SHRINE_ROAD",
   lines: [
     {
       speaker: "SIEG",
@@ -792,13 +793,10 @@ chapter0Cutscenes.decision = {
     { speaker: "QUEST", text: "Quest unlocked: The Forgotten Shrine." },
     {
       speaker: "QUEST",
-      text: "Objective: Investigate the abandoned shrine and discover what Alden knew about the Ember.",
+      text: "Objective: Find the Forgotten Shrine.",
     },
   ],
 };
-/** The quest Chapter 0, Part 1 ends on, shown once it is unlocked. */
-export const SHRINE_QUEST_OBJECTIVE =
-  "Quest · The Forgotten Shrine: investigate the abandoned shrine and discover what Alden knew about the Ember. The road north out of Emberbrook leads on.";
 
 /**
  * Things a hero does with E at a spot during the story (Act V's quiet work).

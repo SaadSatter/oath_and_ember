@@ -5,6 +5,10 @@ import {
   storySpeakerNames,
 } from "../../../../packages/shared/src/prologue.js";
 import { offstageFor } from "../../../../packages/shared/src/chapter0.js";
+import {
+  motivationText,
+  motivations,
+} from "../../../../packages/shared/src/chapter0Finale.js";
 import { dialogueLayout, typedText } from "./dialogueBox.js";
 
 // The prologue's shared dialogue. The server decides which line is on screen;
@@ -28,6 +32,10 @@ export interface StoryView {
   memory: boolean;
   /** What pressing on means here, e.g. "E · Cast healing magic". */
   prompt: string;
+  /** A choosing line: this hero's own options, until they have chosen. */
+  choices?: { id: string; text: string }[];
+  /** A choosing line this hero has answered: waiting on the partner. */
+  chosen?: boolean;
 }
 
 /** What this hero should see for the world's current story line, if any. */
@@ -45,6 +53,27 @@ export function storyView(
   if (watching && !offstageFor(w.story, role)?.watch) return null;
   const viewer = watching ? cast[0] : role;
   const shown = !line.audience || line.audience === viewer;
+  if (line.choose) {
+    const mine = w.story?.motivations?.[role];
+    return {
+      key: `${run.id}:${run.line}`,
+      cutscene: run.id,
+      line: run.line,
+      speaker: "",
+      voice: "NARRATION",
+      text: line.text,
+      reader: false,
+      watching,
+      memory: false,
+      prompt: "",
+      choices: !watching && !mine ? motivations[role] : undefined,
+      chosen: !!mine,
+    };
+  }
+  // A hero speaking the reason they chose.
+  const text = line.motivation
+    ? (motivationText(w.story, line.motivation) ?? "…")
+    : line.text;
   return {
     key: `${run.id}:${run.line}`,
     cutscene: run.id,
@@ -53,7 +82,7 @@ export function storyView(
       ? storySpeakerNames[line.speaker] + (line.memory ? " · memory" : "")
       : "",
     voice: shown ? line.speaker : "NARRATION",
-    text: shown ? line.text : (line.elsewhere ?? "…"),
+    text: shown ? text : (line.elsewhere ?? "…"),
     reader: shown && !watching,
     watching,
     memory: shown && !!line.memory,
@@ -66,6 +95,8 @@ export class StoryDialogue {
   private speakerEl = document.createElement("div");
   private textEl = document.createElement("p");
   private statusEl = document.createElement("div");
+  private choicesEl = document.createElement("ol");
+  private picked = 0;
   private view: StoryView | null = null;
   private started = 0;
   private finished = false;
@@ -74,6 +105,8 @@ export class StoryDialogue {
   constructor(
     private read: (cutscene: string, line: number) => void,
     private onOpen: () => void,
+    private choose: (cutscene: string, line: number, choice: string) => void = () =>
+      undefined,
   ) {
     this.root.className = "dialogue-box story-box";
     this.root.hidden = true;
@@ -82,11 +115,19 @@ export class StoryDialogue {
     this.speakerEl.className = "dialogue-speaker";
     this.textEl.className = "dialogue-text";
     this.statusEl.className = "story-status";
+    this.choicesEl.className = "story-choices";
+    this.choicesEl.hidden = true;
     const arrow = document.createElement("span");
     arrow.className = "dialogue-next";
     arrow.setAttribute("aria-hidden", "true");
     arrow.textContent = "▼";
-    this.root.append(this.speakerEl, this.textEl, this.statusEl, arrow);
+    this.root.append(
+      this.speakerEl,
+      this.textEl,
+      this.choicesEl,
+      this.statusEl,
+      arrow,
+    );
     this.root.addEventListener("pointerdown", (e) => {
       e.preventDefault();
       this.advance();
@@ -100,7 +141,16 @@ export class StoryDialogue {
         e.preventDefault();
         e.stopImmediatePropagation();
         if (e.repeat) return;
-        if (["e", " ", "enter"].includes(e.key.toLowerCase())) this.advance();
+        const key = e.key.toLowerCase();
+        const options = this.view?.choices;
+        if (options && !this.sent) {
+          if (["1", "2", "3"].includes(key)) this.pick(Number(key) - 1);
+          else if (["arrowup", "w"].includes(key)) this.highlight(-1);
+          else if (["arrowdown", "s"].includes(key)) this.highlight(1);
+          else if (["e", " ", "enter"].includes(key)) this.pick(this.picked);
+          return;
+        }
+        if (["e", " ", "enter"].includes(key)) this.advance();
       },
       true,
     );
@@ -119,8 +169,14 @@ export class StoryDialogue {
       }
       return;
     }
-    if (view.key !== this.view?.key) {
+    if (
+      view.key !== this.view?.key ||
+      !!view.choices !== !!this.view?.choices
+    ) {
+      const fresh = view.key !== this.view?.key;
       this.view = view;
+      this.renderChoices();
+      if (!fresh) return;
       this.sent = false;
       this.speakerEl.textContent = view.speaker;
       this.speakerEl.hidden = !view.speaker;
@@ -139,9 +195,56 @@ export class StoryDialogue {
     }
     this.statusEl.textContent = view.watching
       ? `Watching ${partnerName}…`
-      : this.sent
-        ? ""
-        : view.prompt;
+      : view.chosen
+        ? `Waiting for ${partnerName} to choose…`
+        : view.choices
+          ? "1–3 or ↑↓ then E · Choose"
+          : this.sent
+            ? ""
+            : view.prompt;
+  }
+  private renderChoices() {
+    const options = this.view?.choices;
+    this.choicesEl.replaceChildren();
+    this.choicesEl.hidden = !options;
+    if (!options) return;
+    this.picked = 0;
+    options.forEach((option, index) => {
+      const item = document.createElement("li");
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = `${index + 1}. ${option.text}`;
+      button.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.pick(index);
+      });
+      item.append(button);
+      this.choicesEl.append(item);
+    });
+    this.highlight(0);
+  }
+  private highlight(step: number) {
+    const buttons = [...this.choicesEl.querySelectorAll("button")];
+    if (!buttons.length) return;
+    this.picked = (this.picked + step + buttons.length) % buttons.length;
+    buttons.forEach((b, i) =>
+      b.setAttribute("aria-selected", String(i === this.picked)),
+    );
+  }
+  /** Send this hero's choice (once; the server keeps the first). */
+  private pick(index: number) {
+    const view = this.view,
+      option = view?.choices?.[index];
+    if (!view || !option || this.sent) return;
+    this.sent = true;
+    this.choicesEl
+      .querySelectorAll("button")
+      .forEach((b, i) => {
+        b.disabled = true;
+        b.setAttribute("aria-selected", String(i === index));
+      });
+    this.choose(view.cutscene, view.line, option.id);
   }
   /** Finish typing, else tell the server this line has been read. */
   advance() {

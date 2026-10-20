@@ -112,7 +112,7 @@ try {
   );
   if (errors.length) throw Error(errors.join("\n"));
   console.log(
-    "All four story starts work through the title UI for both players; desktop, mobile and landscape choices are accessible.",
+    "All story starts work through the title UI for both players; desktop, mobile and landscape choices are accessible.",
   );
 } finally {
   await browser.close();

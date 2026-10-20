@@ -6,6 +6,7 @@ import {
   aldenErrandLines,
   chapter0Cutscenes,
 } from "./chapter0.js";
+import { finaleCutscenes } from "./chapter0Finale.js";
 
 // Chapter 0 prologue, "A Promise Kept", as data. The server walks this script
 // (apps/server/src/prologue.ts) and owns every stage change. Clients only show
@@ -32,6 +33,11 @@ export const storyStages = [
   "INVESTIGATION", // After the funeral: asking around Emberbrook.
   "JOURNAL", // Back to the shop: the locked compartment in Papa's desk.
   "DECISION", // The road ahead (Phase 6).
+  // Chapter 0's finale (chapter0Finale.ts).
+  "SHRINE_ROAD", // Find the Forgotten Shrine: the Weeping Angel's glade.
+  "TRIALS", // The Three Trials (Puzzle Map 2).
+  "GODDESS", // Speak to the Guardian Goddess.
+  "WIG", // Recover her wig; she remembers; each hero decides.
   "DONE", // Chapter 0 is over; the regular campaign continues.
 ] as const;
 export type StoryStage = (typeof storyStages)[number];
@@ -49,7 +55,10 @@ export type StorySpeaker =
   | "STRANGER"
   | "BERTRAM"
   | "MERCHANT"
-  | "JOURNAL";
+  | "JOURNAL"
+  | "ANGEL"
+  | "GODDESS"
+  | "INSCRIPTION";
 export const storySpeakerNames: Record<StorySpeaker, string> = {
   ALDEN: "Alden",
   COCO: "Coco",
@@ -64,6 +73,9 @@ export const storySpeakerNames: Record<StorySpeaker, string> = {
   BERTRAM: "Elder Bertram",
   MERCHANT: "Traveling Merchant",
   JOURNAL: "Alden's Journal",
+  ANGEL: "Weeping Angel",
+  GODDESS: "Goddess",
+  INSCRIPTION: "Inscription",
 };
 
 /** Lying wounded and lying still are Alden's last poses (chapter0.ts). */
@@ -107,6 +119,13 @@ export interface StoryLine {
   take?: Partial<Record<ItemId, number>>;
   /** Shared-backpack items found as the line appears. */
   give?: Partial<Record<ItemId, number>>;
+  /**
+   * Each hero in the scene picks one of their own reasons (chapter0Finale's
+   * `motivations`); the line moves on once every hero has chosen.
+   */
+  choose?: boolean;
+  /** This hero speaks the reason they chose (the line's text is theirs). */
+  motivation?: Role;
 }
 
 export interface StoryPlacement {
@@ -164,6 +183,12 @@ export interface StoryCutscene {
   flag: string;
   /** The scene that plays straight after this one. */
   chain?: string;
+  /** Monsters (and the griffin) on the map wait while the scene plays. */
+  hold?: boolean;
+  /** The camera frames this point (with the hero, when both fit). */
+  focus?: { x: number; y: number };
+  /** The cloaked stranger leaves when the scene ends. */
+  strangerLeaves?: boolean;
 }
 
 const EAST = 0,
@@ -662,6 +687,8 @@ cutscenes.morning = {
 };
 // Chapter 0, Part 1 continues the same script.
 Object.assign(cutscenes, chapter0Cutscenes);
+// ...and its finale.
+Object.assign(cutscenes, finaleCutscenes);
 
 /**
  * Where everyone stands once the prologue is over: Coco on the road to

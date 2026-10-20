@@ -177,6 +177,8 @@ export interface StoryState {
   };
   /** Permanent story flags, in the order they were earned. */
   flags: string[];
+  /** Each hero's reason to go on, chosen at the end of Chapter 0. */
+  motivations?: Partial<Record<Role, string>>;
   /** Tick the ambush fight began. */
   fightStart?: number;
   /**

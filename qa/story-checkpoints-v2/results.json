@@ -36,6 +36,23 @@
         "river_stone": 0,
         "wildflowers": 0
       }
+    },
+    {
+      "checkpoint": "shrine",
+      "stage": "SHRINE_ROAD",
+      "inventory": {
+        "moonleaf": 1,
+        "crystal_vial": 2,
+        "candlewick": 1,
+        "fresh_bread": 1,
+        "honey_pastry": 1,
+        "wooden_sword": 0,
+        "river_stone": 0,
+        "wildflowers": 0,
+        "alden_journal": 1,
+        "strange_cloth": 1,
+        "star_drawing": 1
+      }
     }
   ],
   "errors": []

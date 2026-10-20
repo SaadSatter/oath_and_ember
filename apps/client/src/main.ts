@@ -74,7 +74,12 @@ const sealedExit = (sceneId: string, id: string, w: World) =>
   (sceneId === "EMBERBROOK_VILLAGE" &&
     id === "exit" &&
     !!w.story &&
-    w.story.stage !== "DONE") ||
+    !roadsOpen(w.story)) ||
+  // The playtest shortcut to the shrine stays shut until Chapter 0 is over.
+  (sceneId === "MAIN_HOUSE" &&
+    id === "shrine" &&
+    roadsOpen(w.story) &&
+    w.story!.stage !== "DONE") ||
   (sceneId === "PROLOGUE_TRAIL" &&
     (id === "cart" ||
       (id === "exit" && !w.story?.flags.includes("prologue.cart"))));
@@ -82,6 +87,17 @@ import { NpcView, preloadNpcs } from "./entities/NpcView.js";
 import { AldenView, nearAlden, preloadAlden } from "./entities/AldenView.js";
 import { StrangerView, preloadStranger } from "./entities/StrangerView.js";
 import { StoryDialogue } from "./ui/storyDialogue.js";
+import { StoryBanners } from "./ui/storyBanners.js";
+import { TrialInscriptionView } from "./environment/TrialInscriptionView.js";
+import {
+  INSCRIPTION_REACH,
+  finaleObjective,
+  inscriptionLines,
+  questHomeScenes,
+  roadsOpen,
+  trialInscription,
+} from "../../../packages/shared/src/chapter0Finale.js";
+import { shrineComplete as offeredToGoddess } from "../../../packages/shared/src/shrine.js";
 import { isShopScene } from "../../../packages/shared/src/magicShop.js";
 import { isComposedScene } from "../../../packages/shared/src/composedScenes.js";
 import { StoryEffects } from "./entities/StoryEffects.js";
@@ -98,7 +114,6 @@ import {
   chapter0Objective,
   offstageFor,
   SHRINE_QUEST,
-  SHRINE_QUEST_OBJECTIVE,
   spotsFor,
   storyTalk,
   villagerLines,
@@ -177,10 +192,18 @@ const story = new StoryDialogue(
   (cutscene, line) =>
     void net.request("story:read", { cutscene, line }).catch(() => undefined),
   () => {
+    // A shared scene takes over from any local conversation.
+    if (dialogue.open) dialogue.close();
     keys.clear();
     submitInput(true);
   },
+  (cutscene, line, choice) =>
+    void net
+      .request("story:choose", { cutscene, line, choice })
+      .catch(() => undefined),
 );
+// Trials passed, and Chapter 0's end, as they happen.
+const banners = new StoryBanners();
 const inventory = new InventoryPanel(
   net,
   () => {
@@ -229,9 +252,24 @@ window.addEventListener(
       e.preventDefault();
       e.stopImmediatePropagation();
       dialogue.say({
-        speaker: GLADE_STATUE_NAME,
+        // In the story she is the Weeping Angel.
+        speaker: roadsOpen(w.story) ? "Weeping Angel" : GLADE_STATUE_NAME,
         pages: gladeStatueLines(gladeState(w.puzzles)),
       });
+      return;
+    }
+    // The trials' inscription at the entrance of Puzzle Map 2.
+    if (
+      scene === "BRIDGE_RUINS" &&
+      w.story &&
+      Math.hypot(
+        hero.x - trialInscription.x,
+        hero.y - trialInscription.y,
+      ) <= INSCRIPTION_REACH
+    ) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      dialogue.say({ speaker: "Inscription", pages: inscriptionLines });
       return;
     }
     // Spilled cargo on the prologue trail: each hero reads it their own way.
@@ -796,6 +834,7 @@ class Adventure extends Phaser.Scene {
   gfx!: Phaser.GameObjects.Graphics;
   environment!: EnvironmentView;
   bridgeView!: BridgePuzzleView;
+  inscriptionView!: TrialInscriptionView;
   labels: Phaser.GameObjects.Text[] = [];
   sceneKey = "";
   rendered = { x: 0, y: 0 };
@@ -905,6 +944,10 @@ class Adventure extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
       this.bridgeView.clear(),
     );
+    this.inscriptionView = new TrialInscriptionView(this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
+      this.inscriptionView.clear(),
+    );
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () =>
       this.environment.clear(),
     );
@@ -920,6 +963,7 @@ class Adventure extends Phaser.Scene {
       this.gfx.clear();
       this.environment.clear();
       this.bridgeView.clear();
+      this.inscriptionView.clear();
       this.mazeView.clear();
       this.pondView.clear();
       this.shrineView.clear();
@@ -969,6 +1013,8 @@ class Adventure extends Phaser.Scene {
     this.environment.setGraveVisible(graveVisible(w.story));
     this.environment.updateStory(w.story);
     this.bridgeView.update(w, sceneId);
+    this.inscriptionView.update(w, sceneId);
+    banners.update(w);
     this.mazeView.update(w, sceneId);
     this.pondView.update(w, sceneId);
     this.griffinView.update(w, sceneId);
@@ -1105,6 +1151,25 @@ class Adventure extends Phaser.Scene {
           2,
         zoom: 1,
       };
+    // A story scene can frame a point of its own (the angel, the goddess, the
+    // watcher): with the hero when both fit, else on the point alone.
+    const scripted =
+      w.story?.cutscene && w.story.cutscene.line >= 0
+        ? cutscenes[w.story.cutscene.id]
+        : undefined;
+    if (scripted?.focus && scripted.scene === sceneId && !house) {
+      const f = scripted.focus;
+      const fits =
+        Math.abs(this.rendered.x - f.x) < viewWidth - 160 &&
+        Math.abs(this.rendered.y - f.y) < viewHeight - 140;
+      focus = fits
+        ? {
+            x: (this.rendered.x + f.x) / 2,
+            y: (this.rendered.y + f.y) / 2,
+            zoom: 1,
+          }
+        : { x: f.x, y: f.y, zoom: 1 };
+    }
     if (this.focusScene !== sceneId) {
       // Arriving in a scene starts settled, never panning in from elsewhere.
       this.focusScene = sceneId;
@@ -1382,7 +1447,7 @@ class Adventure extends Phaser.Scene {
       // During the prologue the road leads to Emberbrook (east) and the
       // forest (west); neither opens until the story gets there.
       const prologueSign =
-        sceneId === "MAIN_HOUSE" && w.story && w.story.stage !== "DONE"
+        sceneId === "MAIN_HOUSE" && w.story && !roadsOpen(w.story)
           ? (
               { exit: "EMBERBROOK →", shrine: "← FOREST" } as Record<
                 string,
@@ -1432,6 +1497,17 @@ class Adventure extends Phaser.Scene {
           .setOrigin(0.5),
       );
     }
+    if (sceneId === "BRIDGE_RUINS" && w.story)
+      this.labels.push(
+        this.add
+          .text(trialInscription.x, trialInscription.y - 56, "E · INSCRIPTION", {
+            fontSize: "12px",
+            color: "#ecdfc7",
+            backgroundColor: "#15232b",
+          })
+          .setOrigin(0.5)
+          .setDepth(1800),
+      );
     // The story's own E spots this hero can use now (gathering for the funeral).
     for (const spot of spotsFor(w.story, me.role))
       if (spot.scene === sceneId)
@@ -1498,17 +1574,6 @@ class Adventure extends Phaser.Scene {
     const chapterGoal =
       me.role && w.story && chapter0Objective(w.story, me.role);
     if (chapterGoal) goal = chapterGoal;
-    // Chapter 0 over: the quest it unlocked, on the maps it began from.
-    if (
-      w.story?.flags.includes(SHRINE_QUEST) &&
-      (sceneId === "MAIN_HOUSE" ||
-        sceneId === "EMBERBROOK_VILLAGE" ||
-        isShopScene(sceneId) ||
-        isVillageInterior(sceneId))
-    )
-      goal = SHRINE_QUEST_OBJECTIVE;
-    if (Object.values(w.players).some((p) => !p.connected))
-      goal = "Partner disconnected. Game paused for up to 30 seconds.";
     if (sceneId === "HEDGE_MAZE") {
       const maze = hedgeMazeState(w.puzzles)!;
       goal = !maze.burned
@@ -1539,6 +1604,18 @@ class Adventure extends Phaser.Scene {
       goal = shrineComplete(w)
         ? "The Bald Goddess · Quest complete! E at the south-east golden switch to continue to Forest Ruins; south returns to Puzzle Map 2."
         : "Goddess Shrine · E at the offering bowl for a clue. West: Mirror Pond for the mirror. East: Hedge Maze for shears. North: Griffin for the wig. Return here to offer it. I opens the shared backpack.";
+    // The finale's quest: on home ground it is the whole goal; along the
+    // route it leads the map's own hint.
+    const quest =
+      w.story?.flags.includes(SHRINE_QUEST) &&
+      finaleObjective(w.story, w.inventory?.counts, offeredToGoddess(w));
+    if (quest)
+      goal =
+        questHomeScenes.includes(sceneId) || isVillageInterior(sceneId)
+          ? quest
+          : `${quest} · ${goal}`;
+    if (Object.values(w.players).some((p) => !p.connected))
+      goal = "Partner disconnected. Game paused for up to 30 seconds.";
     document.querySelector<HTMLDivElement>("#objective")!.textContent = goal;
     const debugPanel = document.querySelector<HTMLDivElement>("#debug")!;
     debugPanel.hidden = !debug;
