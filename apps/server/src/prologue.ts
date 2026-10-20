@@ -51,6 +51,8 @@ import {
   storyTalk,
 } from "../../../packages/shared/src/chapter0.js";
 import { BAG_FLAG } from "../../../packages/shared/src/storyProps.js";
+import { roadsOpen } from "../../../packages/shared/src/chapter0Finale.js";
+import { everyoneChose, tickFinale } from "./chapter0Finale.js";
 import type { ItemId } from "../../../packages/shared/src/items.js";
 import { damageEnemy } from "./enemySimulation.js";
 import {
@@ -619,6 +621,7 @@ function endCutscene(w: World, host: StoryHost) {
   if (villager) releaseVillager(w, villager);
   if (scene.id === "rescue")
     for (const p of Object.values(w.players)) p.hp = p.maxHp;
+  if (scene.strangerLeaves) delete story.stranger;
   if (scene.id === "morning") {
     story.alden = { ...aldenAtShop, action: "idle" };
     for (const p of Object.values(w.players)) {
@@ -649,6 +652,8 @@ export function readLine(
   if (!cast.includes(p.role)) return false;
   const current = cutscenes[id].lines[line];
   if (current.audience && current.audience !== p.role) return false;
+  // A choosing line moves on once everyone has chosen (story:choose).
+  if (current.choose) return false;
   // While a partner is away the scene waits for them.
   if (Object.values(w.players).some((q) => !q.connected)) return true;
   // One read is enough: whichever hero presses on first moves the line on
@@ -700,6 +705,8 @@ export function tickStory(w: World, host: StoryHost) {
   }
   const run = story.cutscene;
   if (run) {
+    // A choosing line moves on once every hero in it has chosen.
+    if (everyoneChose(w)) return nextLine(w, host);
     // Heroes walk into place first (and any monsters marching in); the first
     // line shows once everyone is there.
     if (run.line !== -1) return;
@@ -869,6 +876,9 @@ export function tickStory(w: World, host: StoryHost) {
     );
     if (first) startCutscene(w, "decision", host, first);
   }
+  // Chapter 0's finale: the shrine road, the trials, the goddess.
+  if (!story.cutscene)
+    tickFinale(w, (id, by) => startCutscene(w, id, host, by), coco, sieg);
 }
 
 /**
@@ -927,7 +937,7 @@ const soloRoadStages = [
 /** A door the story keeps shut for now (the hero simply stays put). */
 export function storyBlocksDoor(w: World, p: Player, to: SceneId) {
   const story = w.story;
-  if (!story || story.stage === "DONE") return false;
+  if (!story || roadsOpen(story)) return false;
   // Sieg is upstairs at home while Coco runs the errand.
   if (to === "VILLAGE_COTTAGE" && errandStages.includes(story.stage))
     return true;
@@ -961,7 +971,7 @@ export function storyTravel(
   p: Player,
 ) {
   const story = w.story;
-  if (!story || story.stage === "DONE") return false;
+  if (!story || roadsOpen(story)) return false;
   // During the errand the road to Emberbrook is Coco's alone: she walks it
   // without moving the party.
   if (soloRoadStages.includes(story.stage)) {
@@ -1000,9 +1010,13 @@ export function storyTravel(
 
 /** Road exits the prologue keeps closed (also while E is held down). */
 export function prologueBlocksExit(w: World, scene: SceneId, point: string) {
-  if (!w.story || w.story.stage === "DONE") return false;
+  const story = w.story;
+  if (!story || story.stage === "DONE") return false;
+  // The playtest shortcut to the shrine would skip the angel and the trials.
+  if (scene === "MAIN_HOUSE" && point === "shrine") return true;
+  if (roadsOpen(story)) return false;
   return (
-    (scene === "MAIN_HOUSE" && (point === "exit" || point === "shrine")) ||
+    (scene === "MAIN_HOUSE" && point === "exit") ||
     (scene === "EMBERBROOK_VILLAGE" && point === "exit")
   );
 }

@@ -894,7 +894,8 @@ it("decides by the old tree, unlocks the Forgotten Shrine once, and opens the ro
   expect(Math.hypot(coco.x - (graveFront.x + 60), coco.y - (graveFront.y + 20))).toBeLessThan(4);
   expect(sieg.sceneId).toBe("MAIN_HOUSE");
   readScene(r, [sieg, coco], "decision");
-  expect(story.stage).toBe("DONE");
+  // The finale picks up on the road north (chapter0Finale.test.ts).
+  expect(story.stage).toBe("SHRINE_ROAD");
   expect(story.flags.filter((f) => f === SHRINE_QUEST)).toHaveLength(1);
   // Back at the grave, nothing replays.
   Object.assign(coco, { x: graveFront.x, y: graveFront.y });

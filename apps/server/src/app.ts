@@ -240,6 +240,34 @@ export function createApp(
         return result;
       }),
     );
+    socket.on("story:choose", (p, ack) =>
+      request(ack, () => {
+        const intent = z
+          .object({
+            cutscene: z
+              .string()
+              .min(1)
+              .max(40)
+              .regex(/^[a-z0-9_-]+$/),
+            line: z.number().int().min(0).max(500),
+            choice: z
+              .string()
+              .min(1)
+              .max(24)
+              .regex(/^[a-z0-9_-]+$/),
+          })
+          .strict()
+          .parse(p);
+        const result = requireRoom().chooseStoryLine(
+          id,
+          intent.cutscene,
+          intent.line,
+          intent.choice,
+        );
+        sync();
+        return result;
+      }),
+    );
     socket.on("skill:unlock", (p, ack) =>
       request(ack, () => {
         requireRoom().unlock(id, z.string().parse(p?.nodeId));

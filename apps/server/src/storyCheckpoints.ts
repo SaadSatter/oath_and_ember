@@ -38,6 +38,15 @@ const beforeFuneral = [
   "reunion",
 ];
 
+const afterInvestigation = [
+  "ask-bertram",
+  "ask-brynn",
+  "ask-merchant",
+  "clues-done",
+  "journal",
+  "decision",
+];
+
 export function beginStoryCheckpoint(
   w: World,
   host: StoryHost,
@@ -108,13 +117,28 @@ export function beginStoryCheckpoint(
     complete("funeral");
     delete w.story!.alden;
     w.story!.stage = "INVESTIGATION";
+    // The Forgotten Shrine: the questions asked, the journal found, the
+    // decision made; the road north out of Emberbrook is open.
+    if (checkpoint === "shrine") {
+      for (const id of afterInvestigation) complete(id);
+      for (const spot of storySpots.filter((s) => s.stage === "JOURNAL"))
+        flag(spot.flag);
+      w.story!.stage = "SHRINE_ROAD";
+    }
     host.travel("EMBERBROOK_VILLAGE");
+    const north = maps.EMBERBROOK_VILLAGE.points.exit;
     Object.values(w.players).forEach((player, index) => {
-      host.relocate(player, "EMBERBROOK_VILLAGE", {
-        x: maps.EMBERBROOK_VILLAGE.spawn.x + index * 40,
-        y: maps.EMBERBROOK_VILLAGE.spawn.y,
-      });
-      player.facing = 0;
+      host.relocate(
+        player,
+        "EMBERBROOK_VILLAGE",
+        checkpoint === "shrine"
+          ? { x: north.x - 20 + index * 40, y: north.y + 72 }
+          : {
+              x: maps.EMBERBROOK_VILLAGE.spawn.x + index * 40,
+              y: maps.EMBERBROOK_VILLAGE.spawn.y,
+            },
+      );
+      player.facing = checkpoint === "shrine" ? -Math.PI / 2 : 0;
     });
   }
   w.checkpoint = storyCheckpoints[checkpoint].title;
