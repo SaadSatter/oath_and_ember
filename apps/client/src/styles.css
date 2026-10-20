@@ -1234,3 +1234,143 @@ button[data-timer-phase="ready"] .speed-icon::before {
   color: #e2c99a;
   font-style: italic;
 }
+/* Chapter 0 finale voices. */
+.story-box[data-voice="ANGEL"] .dialogue-speaker {
+  color: #c9dcf2;
+}
+.story-box[data-voice="GODDESS"] .dialogue-speaker {
+  color: #ffd86b;
+}
+.story-box[data-voice="INSCRIPTION"] .dialogue-speaker,
+.story-box[data-voice="INSCRIPTION"] .dialogue-text {
+  color: #cfc6b4;
+  letter-spacing: 1px;
+}
+/* Each hero's own reasons to go on (one choice, sent once). */
+.story-choices {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.story-choices[hidden] {
+  display: none;
+}
+.story-choices button {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  font-size: 10px;
+  line-height: 14px;
+  padding: 6px 8px;
+  color: #ecdfc7;
+  background: #15232b;
+  border: 2px solid #f6e6bf33;
+  cursor: pointer;
+}
+.story-choices button[aria-selected="true"] {
+  border-color: #f6d36b;
+  color: #f6d36b;
+}
+.story-choices button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.story-choices button:disabled[aria-selected="true"] {
+  opacity: 1;
+}
+/* A trial passed: a banner that never stops play. */
+.story-banner {
+  position: fixed;
+  left: 50%;
+  top: 152px;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 32px);
+  padding: 10px 18px;
+  background: #050505e6;
+  border: 2px solid #f6d36b;
+  color: #f6d36b;
+  font-family: "Press Start 2P", monospace;
+  font-size: 10px;
+  line-height: 14px;
+  text-align: center;
+  z-index: 35;
+  pointer-events: none;
+}
+.story-banner[hidden] {
+  display: none;
+}
+.story-banner.shown {
+  animation: story-banner 3.6s ease-out forwards;
+}
+@keyframes story-banner {
+  0% {
+    opacity: 0;
+  }
+  10%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/* Chapter 0's end: fade to black, the title card, then back to the world. */
+.chapter-curtain {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  display: grid;
+  place-items: center;
+  z-index: 60;
+  pointer-events: none;
+  animation: chapter-curtain 8.2s ease-in-out forwards;
+}
+.chapter-curtain[hidden] {
+  display: none;
+}
+.chapter-curtain-title {
+  color: #f6e6bf;
+  font-family: "Press Start 2P", monospace;
+  font-size: 18px;
+  line-height: 28px;
+  letter-spacing: 2px;
+  text-align: center;
+  padding: 0 16px;
+  animation: chapter-title 8.2s ease-in-out forwards;
+}
+@keyframes chapter-curtain {
+  0% {
+    opacity: 0;
+  }
+  18%,
+  78% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes chapter-title {
+  0%,
+  22% {
+    opacity: 0;
+  }
+  32%,
+  70% {
+    opacity: 1;
+  }
+  80%,
+  100% {
+    opacity: 0;
+  }
+}
+/* Reduced motion: no fades; the card simply shows, then goes. */
+@media (prefers-reduced-motion: reduce) {
+  .story-banner.shown,
+  .chapter-curtain,
+  .chapter-curtain-title {
+    animation: none;
+  }
+}

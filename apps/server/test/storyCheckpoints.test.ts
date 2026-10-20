@@ -26,6 +26,7 @@ const stage = {
   shopping: "ERRAND",
   funeral: "MOURNING",
   investigation: "INVESTIGATION",
+  shrine: "SHRINE_ROAD",
 } as const;
 function opening(room: ReturnType<RoomManager["create"]>) {
   for (let guard = 0; room.state.story?.cutscene && guard < 300; guard++) {
