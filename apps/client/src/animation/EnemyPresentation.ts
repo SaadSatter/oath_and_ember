@@ -42,6 +42,7 @@ export class EnemyPresentation {
         e.state === "ATTACK" &&
         (this.previous?.state !== "ATTACK" ||
           this.previous.attackSeq !== e.attackSeq);
+      if (newAttack) this.interrupted = null;
       this.displaced =
         !newAttack &&
         !!this.previous &&
