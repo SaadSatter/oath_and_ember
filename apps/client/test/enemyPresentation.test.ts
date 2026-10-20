@@ -89,3 +89,28 @@ it("does not mistake movement before a new windup for displacement during that a
   e.y -= 5;
   expect(m.update(e, 5)).toMatchObject({ moving: true, attacking: false });
 });
+
+it("animates the first attack after a restart reuses a previously interrupted mossling id", () => {
+  const view = new EnemyPresentation();
+  const enemy = spawnEnemy("moss", "mossling", 500, 500);
+  Object.assign(enemy, {
+    state: "ATTACK",
+    attackSeq: 1,
+    attackFacing: 0,
+    facing: 0,
+  });
+  expect(view.update(enemy, 1).attacking).toBe(true);
+  enemy.y -= 10;
+  expect(view.update(enemy, 2).attacking).toBe(false);
+  Object.assign(enemy, { state: "DEAD", hp: 0 });
+  view.update(enemy, 3);
+  const restarted = spawnEnemy("moss", "mossling", 500, 500);
+  view.update(restarted, 4);
+  Object.assign(restarted, {
+    state: "ATTACK",
+    attackSeq: 1,
+    attackFacing: 0,
+    facing: 0,
+  });
+  expect(view.update(restarted, 5).attacking).toBe(true);
+});

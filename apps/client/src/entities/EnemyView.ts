@@ -3,6 +3,7 @@ import {
   enemyDirection,
 } from "../animation/EnemyPresentation.js";
 import { SERVER_HZ } from "../../../../packages/shared/src/constants.js";
+import { MosslingAttackPresentation } from "../animation/mosslingAttack.js";
 export { enemyDirection } from "../animation/EnemyPresentation.js";
 import {
   preloadGolemAttack,
@@ -50,8 +51,11 @@ export function registerEnemies(scene: Phaser.Scene) {
 }
 export class EnemyView {
   private presentation = new EnemyPresentation();
+  private mossling = new MosslingAttackPresentation();
+  private mosslingPose: ReturnType<MosslingAttackPresentation["update"]> = null;
   private sprite: Phaser.GameObjects.Sprite;
   private bar: Phaser.GameObjects.Graphics;
+  private swipe: Phaser.GameObjects.Graphics;
   private charge: Phaser.GameObjects.Image;
   private text: Phaser.GameObjects.Text;
   constructor(
@@ -75,6 +79,7 @@ export class EnemyView {
         .get(golemKey(kind))
         .setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.bar = scene.add.graphics();
+    this.swipe = scene.add.graphics();
     this.text = scene.add
       .text(0, 0, "", {
         fontSize: "9px",
@@ -98,6 +103,9 @@ export class EnemyView {
   ) {
     this.sprite.anims.timeScale = timeScale;
     const motion = this.presentation.update(e, tick);
+    this.mosslingPose = this.visualOverride
+      ? null
+      : this.mossling.update(e, tick, motion.attacking);
     const c = this.contract(e),
       direction = enemyDirection(motion.facing, c.directions.length),
       resolved = externalDirection(c, direction);
@@ -107,6 +115,7 @@ export class EnemyView {
       .setPosition(pos.x, pos.y)
       .setDepth(pos.y)
       .setFlipX(resolved.flipX)
+      .setRotation(0)
       .setScale(scales?.[direction] ?? c.scale);
     const animated =
       e.state !== "DEAD" && (motion.moving || c.motion === "hover");
@@ -160,10 +169,59 @@ export class EnemyView {
         this.sprite.setFrame(externalStandingFrame(c, direction));
       }
     }
-    // Other enemies retain their existing windup presentation; dead sprites remain hidden.
+    this.swipe.clear().setDepth(pos.y + 1);
+    const mossling = this.mosslingPose;
+    if (mossling) {
+      const facing = enemyDirection(mossling.facing);
+      this.sprite.anims.stop();
+      this.sprite
+        .setFrame(externalStandingFrame(c, facing))
+        .setPosition(pos.x + mossling.offsetX, pos.y + mossling.offsetY)
+        .setScale(c.scale * mossling.scaleX, c.scale * mossling.scaleY)
+        .setRotation(mossling.lean);
+      const centerX = pos.x + Math.cos(mossling.facing) * 12;
+      const centerY = pos.y - 14 + Math.sin(mossling.facing) * 12;
+      if (mossling.slashAlpha > 0) {
+        for (let claw = 0; claw < 3; claw++) {
+          const points = Array.from({ length: 10 }, (_, index) => {
+            const angle =
+              mossling.facing - 1.1 + (index / 9) * 1.7 * mossling.swing;
+            const radius = 23 + claw * 4;
+            return new Phaser.Math.Vector2(
+              Math.round((centerX + Math.cos(angle) * radius) / 2) * 2,
+              Math.round((centerY + Math.sin(angle) * radius) / 2) * 2,
+            );
+          });
+          this.swipe
+            .lineStyle(4, 0x39442a, mossling.slashAlpha * 0.65)
+            .strokePoints(points);
+          this.swipe
+            .lineStyle(2, claw === 1 ? 0xffedb4 : 0xc5dc83, mossling.slashAlpha)
+            .strokePoints(points);
+        }
+      }
+      for (let leaf = 0; leaf < 4; leaf++) {
+        const spread =
+          mossling.swing > 0 ? mossling.swing * 16 : mossling.crouch * 5;
+        const angle = mossling.facing + (leaf - 1.5) * 0.7;
+        const x = pos.x + Math.cos(angle) * (12 + spread);
+        const y =
+          pos.y - 10 + Math.sin(angle) * (12 + spread) - mossling.crouch * 5;
+        this.swipe
+          .fillStyle(
+            leaf % 2 ? 0xc7b46b : 0x719747,
+            Math.max(mossling.crouch, mossling.slashAlpha) * 0.8,
+          )
+          .fillRect(Math.round(x / 2) * 2, Math.round(y / 2) * 2, 4, 2);
+      }
+    }
     this.sprite.setVisible(e.state !== "DEAD");
     this.bar.clear().setDepth(pos.y + 1);
-    if (motion.attacking && !charging)
+    if (
+      motion.attacking &&
+      !charging &&
+      (e.type !== "mossling" || !!this.visualOverride)
+    )
       this.bar
         .lineStyle(2, 0xff9b32, 0.85)
         .strokeCircle(
@@ -194,6 +252,7 @@ export class EnemyView {
       frame: Number(this.sprite.frame.name),
       texture: this.sprite.texture.key,
       charging: this.charge.visible,
+      attackPose: this.mosslingPose,
       flipX: this.sprite.flipX,
       animation: this.sprite.anims.currentAnim?.key,
       playing: this.sprite.anims.isPlaying,
@@ -204,6 +263,7 @@ export class EnemyView {
     this.sprite.destroy();
     this.charge.destroy();
     this.bar.destroy();
+    this.swipe.destroy();
     this.text.destroy();
   }
 }
