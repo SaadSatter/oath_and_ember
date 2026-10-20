@@ -104,6 +104,11 @@ import {
 import { randomUUID } from "node:crypto";
 import { beginStoryCheckpoint } from "./storyCheckpoints.js";
 import {
+  chooseMotivation,
+  finaleBlocksExit,
+  finaleHoldsWorld,
+} from "./chapter0Finale.js";
+import {
   heavyTiming,
   swordContactTicks,
   inSwordArc,
@@ -528,6 +533,18 @@ export class GameRoom {
     if (!this.state.players[playerId]) throw Error("Join a room first.");
     return {
       accepted: readLine(this.state, this.storyHost, playerId, cutscene, line),
+    };
+  }
+  /** A hero picks their reason to go on (Chapter 0's last choice). */
+  chooseStoryLine(
+    playerId: string,
+    cutscene: string,
+    line: number,
+    choice: string,
+  ) {
+    if (!this.state.players[playerId]) throw Error("Join a room first.");
+    return {
+      accepted: chooseMotivation(this.state, playerId, cutscene, line, choice),
     };
   }
   transition(scene: World["sceneId"], backwards = false) {
@@ -1215,7 +1232,11 @@ export class GameRoom {
           return;
         }
         if (sceneId === "GODDESS_SHRINE") {
-          if (shrineComplete(w) && near(p, shrinePoints.exit, 48)) {
+          if (
+            shrineComplete(w) &&
+            !finaleBlocksExit(w, sceneId) &&
+            near(p, shrinePoints.exit, 48)
+          ) {
             this.transition("FOREST_RUINS");
             return;
           }
@@ -1296,6 +1317,7 @@ export class GameRoom {
         if (
           sceneId === "BRIDGE_RUINS" &&
           w.bridgePuzzle?.complete &&
+          !finaleBlocksExit(w, sceneId) &&
           near(p, map.points.exit, 50)
         ) {
           this.transition("GODDESS_SHRINE");
@@ -1323,7 +1345,8 @@ export class GameRoom {
           if (
             (sceneId !== "MONSTER_CLEARING" ||
               Object.values(w.enemies).every((e) => e.hp <= 0)) &&
-            (sceneId !== "PUZZLE_GLADE" || gladeSolved(w.puzzles))
+            (sceneId !== "PUZZLE_GLADE" ||
+              (gladeSolved(w.puzzles) && !finaleBlocksExit(w, sceneId)))
           ) {
             this.transition(postTownRoute[sceneId].next);
             return;
@@ -1594,8 +1617,12 @@ export class GameRoom {
     const recoveryEpochs = new Map(
       Object.values(w.players).map((p) => [p.id, p.movementEpoch]),
     );
-    tickBridgePuzzle(w);
-    tickMirrorPond(w, beforeMovement);
+    // A story scene that holds the world: monsters and traps wait for it.
+    const held = finaleHoldsWorld(w);
+    if (!held) {
+      tickBridgePuzzle(w);
+      tickMirrorPond(w, beforeMovement);
+    }
     updatePondChest(w, this.inventory);
     for (const p of Object.values(w.players))
       if (p.movementEpoch !== recoveryEpochs.get(p.id)) {
@@ -1612,10 +1639,12 @@ export class GameRoom {
         p.movementInput = neutral(p.lastProcessedInputSeq);
         p.movementIntent = { x: 0, y: 0 };
       }
-    tickEnemies(w, (p, n) => this.damage(p, n));
-    tickBlackHoles(w);
-    tickGriffin(w, (p, n) => this.damage(p, n));
-    tickMazeRunner(w);
+    if (!held) {
+      tickEnemies(w, (p, n) => this.damage(p, n));
+      tickBlackHoles(w);
+      tickGriffin(w, (p, n) => this.damage(p, n));
+      tickMazeRunner(w);
+    }
     updateHedgeMazeTargets(w, this.inventory);
     if (w.sceneId === "FOREST_RUINS") {
       w.puzzles.bridge.physical = near(

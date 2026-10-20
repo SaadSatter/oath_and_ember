@@ -129,10 +129,10 @@ Sieg walks the roads between Emberbrook and the shop by himself (the party's sce
 ## The road ahead (Phase 6)
 
 - **The decision (`decision`).** It starts when either hero comes to the old tree by the grave. That hero stays where they are; the other walks over, or is brought out of the shop. The brief's lines play.
-- **The quest.** "Quest unlocked: The Forgotten Shrine", then its objective, are recorded once (`chapter0.shrine-quest`), and the story reaches `DONE`.
+- **The quest.** "Quest unlocked: The Forgotten Shrine", then "Objective: Find the Forgotten Shrine.", are recorded once (`chapter0.shrine-quest`), and the story reaches `SHRINE_ROAD`: the chapter's finale (docs/CHAPTER0_FINALE.md).
   - The road north out of Emberbrook opens.
   - Travel is shared again, as in the regular campaign.
-  - On the chapter's own maps (home, the shop, Emberbrook and its houses), the objective shows the quest: "investigate the abandoned shrine and discover what Alden knew about the Ember."
+  - The objective now follows the finale's quest (see docs/CHAPTER0_FINALE.md).
   - The grave stays dressed as the funeral left it.
 
 ## Conversations

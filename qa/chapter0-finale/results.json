@@ -1,0 +1,114 @@
+{
+  "log": [
+    {
+      "scene": "angel-meet",
+      "stage": "SHRINE_ROAD"
+    },
+    {
+      "scene": "angel-blessing",
+      "stage": "TRIALS"
+    },
+    {
+      "scene": "trials-inscription",
+      "stage": "TRIALS"
+    },
+    {
+      "scene": "trials-done",
+      "stage": "GODDESS"
+    },
+    {
+      "scene": "goddess-meet",
+      "stage": "WIG"
+    },
+    {
+      "scene": "maze-banter",
+      "stage": "WIG"
+    },
+    {
+      "scene": "revelation",
+      "stage": "WIG"
+    },
+    {
+      "scene": "resolve",
+      "stage": "WIG"
+    },
+    {
+      "scene": "watcher",
+      "stage": "DONE"
+    },
+    {
+      "curtain": [
+        "CHAPTER 0 COMPLETE",
+        "CHAPTER 0 COMPLETE"
+      ],
+      "motivations": {
+        "OATH": "promise",
+        "EMBER": "scared"
+      }
+    }
+  ],
+  "errors": [],
+  "flags": [
+    "prologue.visit",
+    "prologue.detour",
+    "prologue.cart",
+    "prologue.ambush",
+    "prologue.rescue",
+    "prologue.home",
+    "prologue.farewell",
+    "prologue.complete",
+    "chapter0.errand",
+    "chapter0.moonleaf",
+    "chapter0.store",
+    "chapter0.bakery",
+    "chapter0.errand-done",
+    "chapter0.homecoming",
+    "chapter0.silent",
+    "chapter0.bag",
+    "chapter0.last-words",
+    "chapter0.sets-out",
+    "chapter0.stranger",
+    "chapter0.glance",
+    "chapter0.no-fire",
+    "chapter0.reunion",
+    "chapter0.next-day",
+    "chapter0.stone-1",
+    "chapter0.stone-2",
+    "chapter0.stone-3",
+    "chapter0.flower-1",
+    "chapter0.flower-2",
+    "chapter0.flower-3",
+    "chapter0.site-ready",
+    "chapter0.ready-OATH",
+    "chapter0.ready-EMBER",
+    "chapter0.burial",
+    "chapter0.flowers",
+    "chapter0.sword",
+    "chapter0.funeral",
+    "chapter0.clue-bertram",
+    "chapter0.clue-brynn",
+    "chapter0.clue-merchant",
+    "chapter0.clues-done",
+    "chapter0.journal",
+    "chapter0.shrine-quest",
+    "chapter0.drawer-forced",
+    "chapter0.seal-undone",
+    "chapter0.angel-meet",
+    "chapter0.angel-blessing",
+    "chapter0.trials-inscription",
+    "chapter0.trial-cooperation",
+    "chapter0.trial-ingenuity",
+    "chapter0.trial-courage",
+    "chapter0.trials-passed",
+    "chapter0.goddess-meet",
+    "chapter0.maze-banter",
+    "chapter0.mirror-banter",
+    "chapter0.griffin-banter",
+    "chapter0.wig-banter",
+    "chapter0.revelation",
+    "chapter0.motivation-OATH-promise",
+    "chapter0.motivation-EMBER-scared",
+    "chapter0.resolve",
+    "chapter0.complete"
+  ]
+}

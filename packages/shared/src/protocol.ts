@@ -26,6 +26,11 @@ export interface ClientEvents {
     p: { cutscene: string; line: number },
     ack: Ack<{ accepted: boolean }>,
   ) => void;
+  /** "This is my reason" at a choosing story line (each hero, once). */
+  "story:choose": (
+    p: { cutscene: string; line: number; choice: string },
+    ack: Ack<{ accepted: boolean }>,
+  ) => void;
   "room:create": (
     p: { checkpoint?: import("./storyCheckpoints.js").StoryCheckpointId },
     ack: Ack<Session>,
