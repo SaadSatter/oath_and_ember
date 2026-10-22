@@ -85,7 +85,7 @@ it("connects the campaign forest entrance to every hub branch and back using E w
   expect(new GameRoom("DEF234").startingScene).toBe("MAIN_HOUSE");
 });
 
-it("puts the shrine directly after Puzzle Map 2 and unlocks its onward route only after the offering", () => {
+it("puts the shrine after Puzzle Map 2 without a debug forest shortcut", () => {
   const { r, w, s, c } = setup();
   r.transition("BRIDGE_RUINS");
   w.bridgePuzzle!.complete = true;
@@ -104,7 +104,7 @@ it("puts the shrine directly after Puzzle Map 2 and unlocks its onward route onl
     r.receiveInput(s.id, { ...neutral(seq + 2), interactHeld: true });
     r.tick();
   };
-  use(shrinePoints.exit);
+  use({ x: 848, y: 688 });
   expect(w.sceneId).toBe("GODDESS_SHRINE");
   w.inventory!.counts.griffin_wig = 1;
   Object.assign(c, shrinePoints.offering);
@@ -113,10 +113,9 @@ it("puts the shrine directly after Puzzle Map 2 and unlocks its onward route onl
     targetId: SHRINE_OFFERING,
     itemId: "griffin_wig",
   });
-  use(shrinePoints.exit);
-  expect(w.sceneId).toBe("FOREST_RUINS");
-  use(maps.FOREST_RUINS.points.back);
+  use({ x: 848, y: 688 });
   expect(w.sceneId).toBe("GODDESS_SHRINE");
+  expect(maps.GODDESS_SHRINE.points).not.toHaveProperty("exit");
   use(shrinePoints.back);
   expect(w.sceneId).toBe("BRIDGE_RUINS");
   expect(w.bridgePuzzle!.complete).toBe(true);

@@ -55,6 +55,7 @@ export class PlayerView {
   private appearanceTexture = "";
   private role: Player["role"] = null;
   private cardinal: Cardinal | null = null;
+  private presence = 1;
   constructor(private scene: Phaser.Scene) {
     this.graphics = scene.add.graphics();
   }
@@ -567,6 +568,17 @@ export class PlayerView {
           flipX: body.flipX,
         }
       : null;
+  }
+  /**
+   * How present this hero is in the story's shot (1 normally): fading out as
+   * they leave a scene, hidden once gone. Call after update.
+   */
+  setPresence(presence: number) {
+    const changed = presence !== this.presence;
+    this.presence = presence;
+    if (presence >= 1 && !changed) return;
+    for (const part of [this.sprite, this.effects, this.defenseSprite, this.graphics])
+      part?.setAlpha(presence);
   }
   destroy() {
     this.defenseSprite?.destroy();

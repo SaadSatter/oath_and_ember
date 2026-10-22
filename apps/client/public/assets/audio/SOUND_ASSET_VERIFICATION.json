@@ -1,0 +1,554 @@
+{
+  "commit": "4ca93507c152752c9de34a8300dd02f683004c42",
+  "verification": "Downloaded ZIP members; nonempty audio signatures checked; not auditioned",
+  "packs": {
+    "U": {
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/interface-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
+      "sha256": "f2193d072726d6758a5f7871b2dcc54dcce0d5c35c6f0a62f92549b327c81232",
+      "archive_bytes": 834536
+    },
+    "I": {
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/impact-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip",
+      "sha256": "029d734af1582474edf3a694d1b0cebc97c1c152f2f39fa34d4c2bafc5de77f8",
+      "archive_bytes": 800850
+    },
+    "K": {
+      "creator": "Kenney Vleugels",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/rpg-audio",
+      "download_url": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip",
+      "sha256": "6dbeaf8544da958d8f2adcb4a4a4b76c1ade34a05f8ab9edccd327da7375f38b",
+      "archive_bytes": 964837
+    },
+    "R": {
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "sha256": "1c2f06ff4e8563b5b8b745b23cf213c1474142a69bb82bd8f5e10d9b3f7a7bbd",
+      "archive_bytes": 1845114,
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    "A": {
+      "creator": "artisticdude",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/rpg-sound-pack",
+      "download_url": "https://opengameart.org/sites/default/files/rpg_sound_pack.zip",
+      "sha256": "f80754a9c04854e30c9da89d0186540ad097309d98b41387b6e83029e2601421",
+      "archive_bytes": 12465564,
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    }
+  },
+  "selected_assets": [
+    {
+      "id": "click",
+      "pack": "U",
+      "member": "Audio/click_001.ogg",
+      "bytes": 4876,
+      "sha256": "ccfb7fa0cccdd9faec0eb16033c732b1e308d139d80f799161495d58f7adcdb9",
+      "signature": "OggS"
+    },
+    {
+      "id": "open",
+      "pack": "U",
+      "member": "Audio/open_001.ogg",
+      "bytes": 9834,
+      "sha256": "a27c6bb0df7da1e6af5dd5937593c98bc58b6e513f42fe6a3254cd6a6949c648",
+      "signature": "OggS"
+    },
+    {
+      "id": "close",
+      "pack": "U",
+      "member": "Audio/close_001.ogg",
+      "bytes": 9915,
+      "sha256": "44af8249b933e0fd35ec957a638bb1a0b01f85b53fbe9674bf77bd3ca3168ef4",
+      "signature": "OggS"
+    },
+    {
+      "id": "select",
+      "pack": "U",
+      "member": "Audio/select_001.ogg",
+      "bytes": 5468,
+      "sha256": "aec0c31ea934a35936ae0d2ab8fac8123c93aa5647f935853a58dbaf90278b7a",
+      "signature": "OggS"
+    },
+    {
+      "id": "ok",
+      "pack": "U",
+      "member": "Audio/confirmation_001.ogg",
+      "bytes": 8968,
+      "sha256": "063564703b6094d70718a3e787a55cc9141611e4ecd6b6637f8828f79b4a8c3a",
+      "signature": "OggS"
+    },
+    {
+      "id": "error",
+      "pack": "U",
+      "member": "Audio/error_001.ogg",
+      "bytes": 7373,
+      "sha256": "46e67425d16339772e8d328fb36a49426c9467418686e11beeb71ff84b0f6433",
+      "signature": "OggS"
+    },
+    {
+      "id": "tick",
+      "pack": "U",
+      "member": "Audio/tick_001.ogg",
+      "bytes": 4497,
+      "sha256": "9d057b918024c787bbe6c00beed13a7ef72a3fa0c259add3cef36582792f4230",
+      "signature": "OggS"
+    },
+    {
+      "id": "question",
+      "pack": "U",
+      "member": "Audio/question_001.ogg",
+      "bytes": 11700,
+      "sha256": "abb8f9e4eb2071491b0b15f84ee302386b1847609310c1b000ae174639a6cc5a",
+      "signature": "OggS"
+    },
+    {
+      "id": "switch",
+      "pack": "U",
+      "member": "Audio/switch_001.ogg",
+      "bytes": 6753,
+      "sha256": "3b74efad87f1e69dbd1d05c5ad952ab90859b5a3d11da6ec5bd79b4f03b42afa",
+      "signature": "OggS"
+    },
+    {
+      "id": "back",
+      "pack": "U",
+      "member": "Audio/back_001.ogg",
+      "bytes": 6997,
+      "sha256": "07db973f79f6ae0f2edc34561e7592e24d0577455919fb602cb8ecc0da991dcf",
+      "signature": "OggS"
+    },
+    {
+      "id": "scroll",
+      "pack": "U",
+      "member": "Audio/scroll_001.ogg",
+      "bytes": 21633,
+      "sha256": "320c6aafb2c7a503eae508dc443b72d7f7c0a317bfd16813157ed400cd04cf16",
+      "signature": "OggS"
+    },
+    {
+      "id": "bong",
+      "pack": "U",
+      "member": "Audio/bong_001.ogg",
+      "bytes": 4848,
+      "sha256": "d21d0f0b782445db579d11e2506b24cd1ac9d664ee33aeaf807761aa7b6fd710",
+      "signature": "OggS"
+    },
+    {
+      "id": "grass",
+      "pack": "I",
+      "member": "Audio/footstep_grass_000.ogg",
+      "bytes": 8290,
+      "sha256": "9d49497777405d78d7cf7f2888e28277f3a23192300cfd1d79d54876b20f479f",
+      "signature": "OggS"
+    },
+    {
+      "id": "stoneStep",
+      "pack": "I",
+      "member": "Audio/footstep_concrete_000.ogg",
+      "bytes": 5808,
+      "sha256": "d7267e183067757c92c169de2a379abea592cfca6b39bb2e8feea15221ad79fe",
+      "signature": "OggS"
+    },
+    {
+      "id": "woodStep",
+      "pack": "I",
+      "member": "Audio/footstep_wood_000.ogg",
+      "bytes": 5949,
+      "sha256": "5f1c252942a220d658121bd9417448cd19649ded9fff2ff15f6e50899373ce8e",
+      "signature": "OggS"
+    },
+    {
+      "id": "soft",
+      "pack": "I",
+      "member": "Audio/impactSoft_medium_000.ogg",
+      "bytes": 5351,
+      "sha256": "7d3ba0bb5e60a11b5d3e558c141303dcf494256675fbf753c0d252d2cf0481e3",
+      "signature": "OggS"
+    },
+    {
+      "id": "punch",
+      "pack": "I",
+      "member": "Audio/impactPunch_heavy_000.ogg",
+      "bytes": 11617,
+      "sha256": "b33a8f14068aec24ec69ba85e5e87fdc41228975f6a1a3e44a6e7d6fc3d9f8d8",
+      "signature": "OggS"
+    },
+    {
+      "id": "metalHit",
+      "pack": "I",
+      "member": "Audio/impactMetal_heavy_000.ogg",
+      "bytes": 6110,
+      "sha256": "e07045693e4a2b3d165c424e3dab4c781d9ff8880a386880ac89a51315d7f831",
+      "signature": "OggS"
+    },
+    {
+      "id": "metalLight",
+      "pack": "I",
+      "member": "Audio/impactMetal_light_000.ogg",
+      "bytes": 7651,
+      "sha256": "33b5e6e37c6e9d54e07bf5a89b12c76e879f40c1ea83cdd82714df1d6f9fec6d",
+      "signature": "OggS"
+    },
+    {
+      "id": "plank",
+      "pack": "I",
+      "member": "Audio/impactPlank_medium_000.ogg",
+      "bytes": 12016,
+      "sha256": "8403cd7a043f0391574c88c55dd205743725b5363d2407f6de145f201690b68f",
+      "signature": "OggS"
+    },
+    {
+      "id": "woodHit",
+      "pack": "I",
+      "member": "Audio/impactWood_light_000.ogg",
+      "bytes": 6343,
+      "sha256": "eb45e35b4bed784d3f120de4afec4b0d6ac09d9e143cce8cfcb7d739e1b1f3c3",
+      "signature": "OggS"
+    },
+    {
+      "id": "mining",
+      "pack": "I",
+      "member": "Audio/impactMining_000.ogg",
+      "bytes": 12035,
+      "sha256": "36b4ea107222d073c67ca64dde26944975609202d5090b2f2021213c1a7e35cd",
+      "signature": "OggS"
+    },
+    {
+      "id": "bell",
+      "pack": "I",
+      "member": "Audio/impactBell_heavy_000.ogg",
+      "bytes": 13915,
+      "sha256": "94b8bb5f2d43ab65e4bcc32b28562416e9bc2c51d9fd4be1e333660ee52f977f",
+      "signature": "OggS"
+    },
+    {
+      "id": "bookOpen",
+      "pack": "K",
+      "member": "Audio/bookOpen.ogg",
+      "bytes": 8273,
+      "sha256": "953390534377222bee89ac8cd9e60a58fdc037c71a4d7c18c43cd647c7f34ba8",
+      "signature": "OggS"
+    },
+    {
+      "id": "bookFlip",
+      "pack": "K",
+      "member": "Audio/bookFlip1.ogg",
+      "bytes": 18248,
+      "sha256": "fa81ac2fedc8c641661b87e349630a36c9800e795e0c800e029214efdbe26a7d",
+      "signature": "OggS"
+    },
+    {
+      "id": "bookClose",
+      "pack": "K",
+      "member": "Audio/bookClose.ogg",
+      "bytes": 9292,
+      "sha256": "81e976532565f4372abd14e83d2684195fa548d0a28d345de221e56052454f32",
+      "signature": "OggS"
+    },
+    {
+      "id": "cloth",
+      "pack": "K",
+      "member": "Audio/cloth1.ogg",
+      "bytes": 16508,
+      "sha256": "ddb93a3671233f95da0e0b10367f082f7eb42fa6caaddcf776410aa8833c747d",
+      "signature": "OggS"
+    },
+    {
+      "id": "cloth2",
+      "pack": "K",
+      "member": "Audio/cloth2.ogg",
+      "bytes": 11787,
+      "sha256": "8a7451193c38bc05483aec25dd193e163a15d44cf7fff04ac7912573231b0201",
+      "signature": "OggS"
+    },
+    {
+      "id": "leatherDrop",
+      "pack": "K",
+      "member": "Audio/dropLeather.ogg",
+      "bytes": 11695,
+      "sha256": "097e1d3b74949b0145fda0519d40b7e0773ab82ec4858727f95be830927e1a45",
+      "signature": "OggS"
+    },
+    {
+      "id": "doorOpen",
+      "pack": "K",
+      "member": "Audio/doorOpen_1.ogg",
+      "bytes": 22848,
+      "sha256": "4ab93bab96522d8eb109ff96dc57cb6765deb02448fe14c10472084be5bb2a0b",
+      "signature": "OggS"
+    },
+    {
+      "id": "doorClose",
+      "pack": "K",
+      "member": "Audio/doorClose_1.ogg",
+      "bytes": 18564,
+      "sha256": "834d29c60a8a8bfb50b158cdb6b7dfa8f02812a408a1ee9703d038dfab0b1aeb",
+      "signature": "OggS"
+    },
+    {
+      "id": "creak",
+      "pack": "K",
+      "member": "Audio/creak1.ogg",
+      "bytes": 15761,
+      "sha256": "8a346186fd297254248cab8e8117060a52a5cf2a84f603153a762108550ea95e",
+      "signature": "OggS"
+    },
+    {
+      "id": "latch",
+      "pack": "K",
+      "member": "Audio/metalLatch.ogg",
+      "bytes": 10208,
+      "sha256": "ba9ba60b172b3ebc131a940f25793cd2e207aca7af73dc80d637277f060f1708",
+      "signature": "OggS"
+    },
+    {
+      "id": "coins",
+      "pack": "K",
+      "member": "Audio/handleCoins.ogg",
+      "bytes": 25394,
+      "sha256": "8a91f969e932df709df80ee124d86a51389eed9b67f22e5e716bc2bbf60d8dab",
+      "signature": "OggS"
+    },
+    {
+      "id": "slice",
+      "pack": "K",
+      "member": "Audio/knifeSlice.ogg",
+      "bytes": 15532,
+      "sha256": "4cd96dc630bed9840c15f1dd2306da2cc56a4da26a5d3f1a03c5a7265ac5e54f",
+      "signature": "OggS"
+    },
+    {
+      "id": "blade",
+      "pack": "R",
+      "member": "blade_01.ogg",
+      "bytes": 15142,
+      "sha256": "caf7a7cb9b25cda4bd487c1d12d18b74a34bb18c816fd67277cf3c8d7ef32a3a",
+      "signature": "OggS"
+    },
+    {
+      "id": "blade2",
+      "pack": "R",
+      "member": "blade_02.ogg",
+      "bytes": 17776,
+      "sha256": "c770afec8f62f14d3d082d5437c5cec28e2751d393df645ddd938eabc2588abd",
+      "signature": "OggS"
+    },
+    {
+      "id": "spell",
+      "pack": "R",
+      "member": "spell_01.ogg",
+      "bytes": 29121,
+      "sha256": "09821a53c418c5eeeac4fa25bada9d245e822fed302eeeae9ae4151522a45ae5",
+      "signature": "OggS"
+    },
+    {
+      "id": "spell2",
+      "pack": "R",
+      "member": "spell_02.ogg",
+      "bytes": 25118,
+      "sha256": "bf9c48b76921e56aa266172d969a2c08215d6ce0ffae7c3584f23fa05d3f8bd4",
+      "signature": "OggS"
+    },
+    {
+      "id": "fire",
+      "pack": "R",
+      "member": "spell_fire_01.ogg",
+      "bytes": 39482,
+      "sha256": "02fa3a2c6e79e868e546802f45127c5cdda69aba6d5a24ac997ea66f81a816cb",
+      "signature": "OggS"
+    },
+    {
+      "id": "fire2",
+      "pack": "R",
+      "member": "spell_fire_02.ogg",
+      "bytes": 33115,
+      "sha256": "bf1eef4993f0adb4bd3a1c1ec91f8f6e4ddeb32d922671a14561846d5b7cab98",
+      "signature": "OggS"
+    },
+    {
+      "id": "fire3",
+      "pack": "R",
+      "member": "spell_fire_03.ogg",
+      "bytes": 71801,
+      "sha256": "2e4edee4ff8d7898198f1ab5213e086965e14a665cb947d53759505e28ddd3e4",
+      "signature": "OggS"
+    },
+    {
+      "id": "fire4",
+      "pack": "R",
+      "member": "spell_fire_04.ogg",
+      "bytes": 59036,
+      "sha256": "64d653cd0cc6eb71bb45a1dfbba29eaa769ed5b663cce275082d6971e4f2ca8e",
+      "signature": "OggS"
+    },
+    {
+      "id": "fire5",
+      "pack": "R",
+      "member": "spell_fire_05.ogg",
+      "bytes": 54658,
+      "sha256": "18025b21a4ecb3b41acc0dccb0697a8930262109ea198ff8c5ef0853d3ed1cfa",
+      "signature": "OggS"
+    },
+    {
+      "id": "fire6",
+      "pack": "R",
+      "member": "spell_fire_06.ogg",
+      "bytes": 53074,
+      "sha256": "66fa753e8033d08f3837d6ef1706b0450297db68c0d4b21782a03fd9ae960d63",
+      "signature": "OggS"
+    },
+    {
+      "id": "fire7",
+      "pack": "R",
+      "member": "spell_fire_07.ogg",
+      "bytes": 24862,
+      "sha256": "bb13cef9c0b0b4ec7f9335c356b14814c88418abd85dd3747cb62469e9ada93f",
+      "signature": "OggS"
+    },
+    {
+      "id": "chain",
+      "pack": "R",
+      "member": "chain_01.ogg",
+      "bytes": 23007,
+      "sha256": "d376caf0f61384b1d2e0b447f64f06be56d0ee0622ba70dd01cfdd78b3a10687",
+      "signature": "OggS"
+    },
+    {
+      "id": "lock",
+      "pack": "R",
+      "member": "lock_01.ogg",
+      "bytes": 17452,
+      "sha256": "e828ad2a936e34a0212f3309c5ac706c0ded412b9b383a87f10bcfa1d1445271",
+      "signature": "OggS"
+    },
+    {
+      "id": "gem",
+      "pack": "R",
+      "member": "item_gem_01.ogg",
+      "bytes": 14690,
+      "sha256": "8a5d2964febb0c69cc4df2ee5257d173f2cae6960d9534df0001dbf356f27028",
+      "signature": "OggS"
+    },
+    {
+      "id": "stone",
+      "pack": "R",
+      "member": "stones_01.ogg",
+      "bytes": 27110,
+      "sha256": "d11ce95031c2c36ae2a00979620fa95a7a3f5c6d6f2ac86962ed292aa556be8d",
+      "signature": "OggS"
+    },
+    {
+      "id": "stone2",
+      "pack": "R",
+      "member": "stones_02.ogg",
+      "bytes": 35982,
+      "sha256": "57dc6b85ee986e68ddc4b7fb2b41cc1c885151677d32439fdb299492a3103a65",
+      "signature": "OggS"
+    },
+    {
+      "id": "itemStone",
+      "pack": "R",
+      "member": "item_stone_01.ogg",
+      "bytes": 34170,
+      "sha256": "ca630a5d7420d031588b4f5f4e60273d5e6e30b71c6e5a34ec733fb10089b829",
+      "signature": "OggS"
+    },
+    {
+      "id": "wood",
+      "pack": "R",
+      "member": "wood_01.ogg",
+      "bytes": 13512,
+      "sha256": "55d4527a1f7d8e158eff0921f7a533340ab6be69a7b9b52fdac7a19b9d8e1cb2",
+      "signature": "OggS"
+    },
+    {
+      "id": "hurt",
+      "pack": "R",
+      "member": "creature_hurt_01.ogg",
+      "bytes": 17185,
+      "sha256": "9948f9ce067e1aae7bd780e974d51ceae03f2611a52afffb0e092ba47e9dc8e1",
+      "signature": "OggS"
+    },
+    {
+      "id": "roar",
+      "pack": "R",
+      "member": "creature_roar_01.ogg",
+      "bytes": 15061,
+      "sha256": "ca1b9198490f29037e6e6487dd6db6165ca8b2583a445c0edd6b9f474d2d1f5f",
+      "signature": "OggS"
+    },
+    {
+      "id": "roar2",
+      "pack": "R",
+      "member": "creature_roar_02.ogg",
+      "bytes": 22480,
+      "sha256": "4da0cf77a3506e1b573ec40e3688dc66400d1734853510db357fb3f843cde242",
+      "signature": "OggS"
+    },
+    {
+      "id": "die",
+      "pack": "R",
+      "member": "creature_die_01.ogg",
+      "bytes": 15883,
+      "sha256": "b34a816a401c5d80c77a61dabbedef7d1918a01320bbb67286c70f22db4acd43",
+      "signature": "OggS"
+    },
+    {
+      "id": "breath",
+      "pack": "R",
+      "member": "creature_misc_01.ogg",
+      "bytes": 16406,
+      "sha256": "62cbd7cc9b898932d15d05d62dc262dafb3381123ec778c4cf0e65f6ea341088",
+      "signature": "OggS"
+    },
+    {
+      "id": "slime",
+      "pack": "R",
+      "member": "creature_slime_01.ogg",
+      "bytes": 35353,
+      "sha256": "746d6ef073abfadd43fe184c50c6a2528350d4f566f2c0f54cd51ff0eb665118",
+      "signature": "OggS"
+    },
+    {
+      "id": "swing",
+      "pack": "A",
+      "member": "RPG Sound Pack/battle/swing.wav",
+      "bytes": 61462,
+      "sha256": "c7d50b9cb20ccda5aee6c023f4450915594061e36f3f9e78af241ca9fde0f817",
+      "signature": "RIFF"
+    },
+    {
+      "id": "bubble",
+      "pack": "A",
+      "member": "RPG Sound Pack/inventory/bubble.wav",
+      "bytes": 121630,
+      "sha256": "c5f15d81e2b169784b737d31876ef67eb6957232f3e9c8186dde12c2370c822e",
+      "signature": "RIFF"
+    },
+    {
+      "id": "bottle",
+      "pack": "A",
+      "member": "RPG Sound Pack/inventory/bottle.wav",
+      "bytes": 127698,
+      "sha256": "b80e52ce602f0e8f75b3a80516771a759b815416f749888f72cadcd9448ecea0",
+      "signature": "RIFF"
+    },
+    {
+      "id": "magic",
+      "pack": "A",
+      "member": "RPG Sound Pack/battle/magic1.wav",
+      "bytes": 232576,
+      "sha256": "cadea162f3fe91c27666ab2a0516fa3bf156997d92d4f8145919126bca7b1e8a",
+      "signature": "RIFF"
+    }
+  ]
+}

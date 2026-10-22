@@ -1,0 +1,12 @@
+{
+  "errors": [
+    "client 1: Cannot read properties of undefined (reading 'setVisible')",
+    "client 0: Cannot read properties of undefined (reading 'setVisible')"
+  ],
+  "log": [
+    "shot 0: targetHit false message Sieg: push the boulder onto plate A. Coco: hit any part of the moving target from the front.",
+    "shot 1: targetHit false message Sieg: push the boulder onto plate A. Coco: hit any part of the moving target from the front.",
+    "shot 2: targetHit false message Sieg: push the boulder onto plate A. Coco: hit any part of the moving target from the front.",
+    "shot 3: targetHit true message Coco: pass Gate 1 and hold E at the golden switch. Sieg: retrieve the same boulder."
+  ]
+}

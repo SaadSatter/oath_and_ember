@@ -23,6 +23,7 @@ export class NetworkClient {
   seq = 0;
   private leaving = false;
   onchange = () => {};
+  onworld = (_world: World) => {};
   onerror = (s: string) => console.warn(s);
   constructor() {
     try {
@@ -102,6 +103,11 @@ export class NetworkClient {
     } else if (p) this.prediction.reconcile(p, w);
     if (p) this.seq = Math.max(this.seq, p.lastProcessedInputSeq);
     this.interpolation.push(w);
+    try {
+      this.onworld(w);
+    } catch (error) {
+      console.warn("Optional audio presentation failed", error);
+    }
     this.onchange();
   }
   sendInput(input: InputFrame, reliable: boolean) {

@@ -4,32 +4,48 @@ import type {
   World,
 } from "../../../../packages/shared/src/gameTypes.js";
 import { cutscenes } from "../../../../packages/shared/src/prologue.js";
+import { watcherPose } from "../../../../packages/shared/src/chapter0Finale.js";
 import { maps } from "../../../../packages/shared/src/maps.js";
+import { WaterDragonView } from "./WaterDragonView.js";
 
 // Presentation for the prologue's story cues: the spell circle that glows
-// under the clearing while Alden casts, and the white flash as it lands.
+// under the clearing while Alden casts, and the water dragon it calls up.
 // Drawn from the server's current line only; it never changes the world.
 export class StoryEffects {
   private circle: Phaser.GameObjects.Graphics;
   private healing: Phaser.GameObjects.Graphics;
+  private dragon: WaterDragonView;
+  /** Mist gathering where the Mistress of the Mist takes shape. */
+  private mistBack: Phaser.GameObjects.Graphics;
+  private mistFront: Phaser.GameObjects.Graphics;
+  private mist: { since: number; until?: number } | null = null;
   private shownKey = "";
   private shownAt = 0;
   constructor(private phaser: Phaser.Scene) {
     // Above the ground (-100) and floor decals, below every hero and prop.
     this.circle = phaser.add.graphics().setDepth(-40);
     this.healing = phaser.add.graphics();
+    this.mistBack = phaser.add.graphics();
+    this.mistFront = phaser.add.graphics();
+    const clearing = maps.PROLOGUE_CLEARING;
+    this.dragon = new WaterDragonView(phaser, clearing.width, clearing.height);
   }
-  update(w: World, sceneId: SceneId, now: number) {
+  /** `tick` is the server tick on screen (the clock monsters are drawn at). */
+  update(w: World, sceneId: SceneId, now: number, tick: number) {
     const run = w.story?.cutscene;
     const line = run ? cutscenes[run.id]?.lines[run.line] : undefined;
     const key = run ? `${run.id}:${run.line}` : "";
     if (key !== this.shownKey) {
       this.shownKey = key;
       this.shownAt = now;
-      if (line?.cue === "flash" && cutscenes[run!.id].scene === sceneId)
-        this.phaser.cameras.main.flash(900, 255, 250, 225);
     }
+    this.dragon.update(
+      w.story?.dragon,
+      sceneId === "PROLOGUE_CLEARING",
+      tick,
+    );
     this.drawHealing(w, sceneId, line?.heal, (now - this.shownAt) / 1000, now);
+    this.drawMist(w, sceneId, now);
     this.circle.clear();
     if (!line?.glow || sceneId !== "PROLOGUE_CLEARING") return;
     const c = maps.PROLOGUE_CLEARING.points.centre,
@@ -97,8 +113,73 @@ export class StoryEffects {
       g.fillRect(x - 36 + i * 14, y - 4 - phase * 34, 2, 2);
     }
   }
+  /**
+   * The final cinematic: from the line the mist gathers, pale fog drifts in
+   * toward the shrine's entrance and thickens where she takes shape; when the
+   * scene is over it thins away.
+   */
+  private drawMist(w: World, sceneId: SceneId, now: number) {
+    const run = w.story?.cutscene,
+      scene = run && cutscenes[run.id],
+      gather = scene?.lines.findIndex((l) => l.cue === "mist-gather") ?? -1,
+      pose = scene?.stranger;
+    const active =
+      !!run && gather >= 0 && run.line >= gather && pose?.scene === sceneId;
+    if (active && !this.mist) this.mist = { since: now };
+    if (active && this.mist) this.mist.until = undefined;
+    if (!active && this.mist && this.mist.until === undefined)
+      this.mist.until = now;
+    this.mistBack.clear();
+    this.mistFront.clear();
+    if (!this.mist) return;
+    const at = pose ?? watcherPose;
+    if (at.scene !== sceneId) return;
+    const t = (now - this.mist.since) / 1000,
+      fading =
+        this.mist.until === undefined ? 1 : 1 - (now - this.mist.until) / 1800;
+    if (fading <= 0) {
+      this.mist = null;
+      return;
+    }
+    // It drifts in from wide around, gathering close over a few seconds.
+    const gathered = Math.min(1, t / 3),
+      strength = Math.min(1, t / 1.2) * fading;
+    this.mistBack.setDepth(at.y - 2);
+    this.mistFront.setDepth(at.y + 4);
+    for (let i = 0; i < 30; i++) {
+      const seed = Math.sin(i * 91.7) * 0.5 + 0.5,
+        orbit = t * (0.25 + seed * 0.35) + i * 2.4,
+        reach = (110 - 75 * gathered) * (0.45 + 0.55 * seed),
+        x = at.x + Math.cos(orbit) * reach * 1.3,
+        y = at.y - 6 + Math.sin(orbit) * reach * 0.45,
+        front = Math.sin(orbit) > 0,
+        g = front ? this.mistFront : this.mistBack;
+      g.fillStyle(i % 3 ? 0xe4ecf0 : 0xc9d6de, (0.1 + 0.12 * seed) * strength);
+      g.fillEllipse(
+        Math.round(x / 2) * 2,
+        Math.round(y / 2) * 2,
+        40 + seed * 46,
+        14 + seed * 10,
+      );
+    }
+    // Wisps curling up where she stands.
+    for (let i = 0; i < 8; i++) {
+      const rise = (t * 0.35 + i / 8) % 1,
+        x = at.x + Math.sin(t * 1.4 + i * 1.9) * (14 + i * 2);
+      this.mistFront.fillStyle(0xf2f6f8, 0.18 * (1 - rise) * strength * gathered);
+      this.mistFront.fillEllipse(
+        Math.round(x / 2) * 2,
+        Math.round((at.y - 4 - rise * 56) / 2) * 2,
+        12 + rise * 16,
+        8 + rise * 6,
+      );
+    }
+  }
   destroy() {
+    this.mistBack.destroy();
+    this.mistFront.destroy();
     this.circle.destroy();
     this.healing.destroy();
+    this.dragon.destroy();
   }
 }

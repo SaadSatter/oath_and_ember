@@ -2,11 +2,13 @@ import { expect, it } from "vitest";
 import {
   spawnEnemy,
   enemyDefinitions,
+  mosslingSpike,
 } from "../../../packages/shared/src/enemies.js";
 import {
   MosslingAttackPresentation,
   mosslingAttackPose,
   mosslingRecoveryTicks,
+  MOSSLING_ARM_LENGTH,
 } from "../src/animation/mosslingAttack.js";
 
 const windup = enemyDefinitions.mossling.windupTicks;
@@ -19,7 +21,7 @@ const attack = (facing = 0) => ({
   facing,
 });
 
-it("crouches away, lunges at the authoritative hit tick, then settles in all four directions", () => {
+it("hardens its arm, shoots the spike to full reach on the hit tick, then pulls back", () => {
   for (const facing of [0, Math.PI / 2, Math.PI, -Math.PI / 2]) {
     const wind = mosslingAttackPose(windup / 2, facing);
     expect(wind.phase).toBe("windup");
@@ -27,21 +29,33 @@ it("crouches away, lunges at the authoritative hit tick, then settles in all fou
     expect(
       wind.offsetX * Math.cos(facing) + wind.offsetY * Math.sin(facing),
     ).toBeLessThan(0);
-    expect(wind.slashAlpha).toBe(0);
+    // Still an arm's length, turning to wood, with the warning on the ground.
+    expect(wind.length).toBeLessThan(MOSSLING_ARM_LENGTH + 1);
+    expect(wind.wood).toBeGreaterThan(0);
+    expect(wind.telegraph).toBeGreaterThan(0);
+    // The point reaches exactly as far as the server strikes, on its tick.
     const strike = mosslingAttackPose(windup, facing);
-    expect(strike.offsetX).toBeCloseTo(Math.cos(facing) * 9);
-    expect(strike.offsetY).toBeCloseTo(Math.sin(facing) * 9);
-    expect(strike.slashAlpha).toBe(1);
+    expect(strike.length).toBeCloseTo(mosslingSpike.reach);
+    expect(strike.wood).toBe(1);
+    expect(strike.telegraph).toBe(0);
+    expect(strike.burst).toBe(1);
+    const held = mosslingAttackPose(windup + mosslingSpike.holdTicks, facing);
+    expect(held.length).toBeCloseTo(mosslingSpike.reach);
+    // Before it, never further than the arm and the shot so far.
+    expect(mosslingAttackPose(windup - 3, facing).length).toBeLessThan(
+      mosslingSpike.reach,
+    );
     const end = mosslingAttackPose(windup + mosslingRecoveryTicks, facing);
     expect(end.offsetX).toBeCloseTo(0);
     expect(end.offsetY).toBeCloseTo(0);
     expect(end.scaleX).toBe(1);
     expect(end.scaleY).toBe(1);
-    expect(end.slashAlpha).toBe(0);
+    expect(end.wood).toBe(0);
+    expect(end.length).toBeLessThan(MOSSLING_ARM_LENGTH + 1);
   }
 });
 
-it("finishes the swipe after the server leaves ATTACK without replaying the old sequence", () => {
+it("keeps the spike out after the server leaves ATTACK without replaying the old sequence", () => {
   const enemy = attack();
   const view = new MosslingAttackPresentation();
   view.update(enemy, 100, true);
@@ -51,8 +65,8 @@ it("finishes the swipe after the server leaves ATTACK without replaying the old 
     attackStartedTick: null,
   };
   expect(
-    view.update(resolved, 100 + windup + 1, false)?.slashAlpha,
-  ).toBeGreaterThan(0);
+    view.update(resolved, 100 + windup + 1, false)?.length,
+  ).toBeCloseTo(mosslingSpike.reach);
   expect(
     view.update(resolved, 100 + windup + mosslingRecoveryTicks, false),
   ).toBeNull();

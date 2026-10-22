@@ -160,6 +160,24 @@ it("rejects moving-target back and side hits, and Sieg projectiles", () => {
     expect(s.targetHit).toBe(false);
   }
 });
+it("tells Coco when her fireball strikes the moving target from the wrong side", () => {
+  for (const owner of ["coco", "sieg"] as const) {
+    const { r, sieg, coco, s, ticks } = fixture();
+    Object.assign(s.boulder, P.plateA);
+    s.trapClock = 0.75;
+    const before = s.message;
+    // From the east, flying west into the target's side.
+    const q = shot(owner === "coco" ? coco.id : sieg.id, 780, 1160, -180, 0);
+    q.x = bridgeMovingTarget(s.trapClock).x + 26;
+    r.state.projectiles[q.id] = q;
+    ticks(4);
+    expect(s.targetHit).toBe(false);
+    // The shot stops on the target either way.
+    expect(r.state.projectiles[q.id]).toBeUndefined();
+    if (owner === "coco") expect(s.message).toMatch(/glanced off/);
+    else expect(s.message).toBe(before);
+  }
+});
 it("Coco's golden switch permanently releases the spike entry after her first gate", () => {
   const { s, coco, input, ticks } = fixture();
   Object.assign(coco, P.goldSwitch);

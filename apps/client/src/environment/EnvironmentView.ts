@@ -45,13 +45,46 @@ const interiorMapKey = (id: string) => `village-interior:${id}`;
 const graveClearing: Record<number, [number, number][]> = {
   5: [[5, 12]],
   9: [
-    [1, 8], [2, 8], [3, 8], [1, 9], [2, 9], [3, 9], [4, 9],
-    [2, 10], [3, 10], [4, 10], [1, 12], [2, 12],
+    [1, 8],
+    [2, 8],
+    [3, 8],
+    [1, 9],
+    [2, 9],
+    [3, 9],
+    [4, 9],
+    [2, 10],
+    [3, 10],
+    [4, 10],
+    [1, 12],
+    [2, 12],
   ],
-  10: [[2, 8], [3, 8], [2, 9], [3, 9]],
-  11: [[4, 10], [5, 10], [4, 11], [5, 11], [4, 12], [5, 12]],
-  12: [[2, 12], [3, 12], [2, 13], [3, 13]],
-  19: [[0, 9], [2, 9], [3, 9], [3, 10], [3, 11]],
+  10: [
+    [2, 8],
+    [3, 8],
+    [2, 9],
+    [3, 9],
+  ],
+  11: [
+    [4, 10],
+    [5, 10],
+    [4, 11],
+    [5, 11],
+    [4, 12],
+    [5, 12],
+  ],
+  12: [
+    [2, 12],
+    [3, 12],
+    [2, 13],
+    [3, 13],
+  ],
+  19: [
+    [0, 9],
+    [2, 9],
+    [3, 9],
+    [3, 10],
+    [3, 11],
+  ],
 };
 const treeNames = [
   "Tree1",
@@ -163,7 +196,7 @@ export class EnvironmentView {
   private pushableImages: {
     id: string;
     image: Phaser.GameObjects.Image;
-    label: Phaser.GameObjects.Text;
+    label?: Phaser.GameObjects.Text;
     x: number;
     y: number;
     groundY: number;
@@ -194,7 +227,7 @@ export class EnvironmentView {
     this.postTownObjects.get(index)?.setVisible(visible);
     for (const p of this.pushableImages)
       if (p.image === this.postTownObjects.get(index))
-        p.label.setVisible(visible);
+        p.label?.setVisible(visible);
   }
   updatePushables(offsets: World["pushableOffsets"]) {
     for (const object of this.pushableImages) {
@@ -203,7 +236,7 @@ export class EnvironmentView {
         .setPosition(object.x + offset.x, object.y + offset.y)
         .setDepth(object.groundY + offset.y - 13);
       object.label
-        .setPosition(object.x + offset.x + 40, object.groundY + offset.y + 6)
+        ?.setPosition(object.x + offset.x + 40, object.groundY + offset.y + 6)
         .setDepth(object.groundY + offset.y + 1);
     }
   }
@@ -245,15 +278,18 @@ export class EnvironmentView {
           (d) => d.scene === id && d.objectIndex === i,
         );
         if (definition) {
-          const label = this.scene.add
-            .text(o.x + 40, o.groundY + 6, "↔ Push", {
-              fontSize: "11px",
-              color: "#ffdfac",
-              backgroundColor: "#10202bdd",
-            })
-            .setOrigin(0.5, 0)
-            .setDepth(o.groundY + 1);
-          this.objects.push(label);
+          const label =
+            id === "PUZZLE_GLADE"
+              ? undefined
+              : this.scene.add
+                  .text(o.x + 40, o.groundY + 6, "↔ Push", {
+                    fontSize: "11px",
+                    color: "#ffdfac",
+                    backgroundColor: "#10202bdd",
+                  })
+                  .setOrigin(0.5, 0)
+                  .setDepth(o.groundY + 1);
+          if (label) this.objects.push(label);
           this.pushableImages.push({
             id: definition.id,
             image,

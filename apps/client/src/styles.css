@@ -555,18 +555,24 @@ button[data-timer-phase="ready"] .speed-icon::before {
   opacity: 1;
 }
 
-#inventory-toggle {
+#hud-buttons {
   position: fixed;
   top: 12px;
   right: 16px;
   z-index: 20;
+  display: flex;
+  gap: 8px;
+}
+#inventory-toggle,
+#quest-toggle {
   color: #efc66f;
   border: 3px ridge #ad8645;
   background: #102521;
   padding: 10px 18px;
   min-height: 44px;
 }
-#inventory-toggle[hidden] {
+#inventory-toggle[hidden],
+#quest-toggle[hidden] {
   display: none;
 }
 .inventory-panel {
@@ -696,9 +702,20 @@ button[data-timer-phase="ready"] .speed-icon::before {
   .inventory-panel h2 {
     font-size: 22px;
   }
-  #inventory-toggle {
+  #hud-buttons {
     top: 8px;
     right: 8px;
+    gap: 6px;
+  }
+  /* Touch screens have no Q or I key; keep the HUD text clear of the buttons. */
+  #hud-buttons .key-hint {
+    display: none;
+  }
+  body[data-playing="true"] #screen-ui {
+    padding-right: 160px;
+  }
+  #inventory-toggle,
+  #quest-toggle {
     font-size: 13px;
     padding: 8px;
   }
@@ -1372,5 +1389,85 @@ button[data-timer-phase="ready"] .speed-icon::before {
   .chapter-curtain,
   .chapter-curtain-title {
     animation: none;
+  }
+}
+
+/* Sound controls are local presentation, outside gameplay input surfaces. */
+#audio-settings { position: fixed; right: 12px; top: calc(var(--safe-top) + 64px); z-index: 12000; color: #f1e9d1; font: 12px system-ui; max-width: min(300px, calc(100vw - 24px)); border: 1px solid #746044; border-radius: 8px; background: #18221ded; }
+#audio-settings summary { cursor: pointer; padding: 9px 12px; }
+#audio-settings .audio-controls { display: grid; gap: 14px; padding: 8px 14px 14px; }
+#audio-settings label { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+#audio-settings input { accent-color: #e7bd7c; }
+#audio-settings p { max-width: 240px; margin: 0; opacity: .7; line-height: 1.5; font-size: 11px; }
+
+/* Quest journal (Q): shares the backpack's frame. */
+.quest-panel {
+  width: min(760px, 96vw);
+}
+.quest-content {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 24px;
+}
+.quest-done {
+  border-left: 1px solid #776037;
+  padding-left: 24px;
+}
+.quest-panel h3 {
+  font-size: 20px;
+  margin: 12px 0 8px;
+}
+.quest-name {
+  color: #efc66f;
+  margin: 0 0 6px;
+}
+.quest-goal {
+  background: #10202b;
+  border: 1px solid #776037;
+  padding: 10px 12px;
+  line-height: 1.5;
+}
+.quest-steps,
+.quest-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+  line-height: 1.6;
+}
+.quest-steps li::before,
+.quest-checklist li::before {
+  display: inline-block;
+  width: 1.4em;
+  content: "·";
+}
+.quest-steps li.done,
+.quest-checklist li.done {
+  color: #9fb79a;
+}
+.quest-steps li.done::before,
+.quest-checklist li.done::before {
+  content: "✓";
+}
+.quest-steps li.now {
+  color: #f5de9f;
+}
+.quest-steps li.now::before {
+  content: "➤";
+}
+.quest-done details {
+  margin: 6px 0;
+}
+.quest-done summary {
+  cursor: pointer;
+  color: #ecd097;
+}
+@media (max-width: 600px) {
+  .quest-content {
+    grid-template-columns: 1fr;
+  }
+  .quest-done {
+    border-left: 0;
+    border-top: 1px solid #776037;
+    padding: 12px 0 0;
   }
 }

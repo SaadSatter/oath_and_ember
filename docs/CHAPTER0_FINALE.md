@@ -60,7 +60,9 @@ The three branches, the shared backpack, Coco's and Sieg's abilities, and the gr
 
 ## Act VI: the goddess remembers
 
-`revelation` plays when the existing offering accepts the wig (either hero offers it) and both heroes are at the shrine. Her statue turns happy as before.
+`revelation` plays when the existing offering accepts the wig (either hero offers it) and both heroes are at the shrine. Her statue turns happy as before, now wearing the wig: it sits on her head and falls to her shoulders, with her face shown in front of it. Offering the wig closes both heroes' backpacks as her scene begins. Whenever she speaks, the camera keeps her face and the heroes in view above the dialogue box, zooming out a step if it must.
+
+She celebrates her hair, then looks at Coco and knows her name. Turning to Sieg, she senses only that something about him is familiar. She never calls him Sieg (nobody has introduced him to her). She half-remembers the name "Sigurd", cannot say who that was, and turns away troubled: "Forgive me. There is much I have forgotten." The talk then turns to Alden, the Ember and the seven divine relics as before.
 
 What stays unrevealed:
 
@@ -69,10 +71,10 @@ What stays unrevealed:
 - whether Alden had the Ember;
 - who came with him to the shrine;
 - Coco's mother's fate;
-- why the goddess knows Sieg's name;
+- who Sigurd was, and any link between Sigurd and Sieg (ancestry, rebirth or otherwise);
 - the full meaning of the oath.
 
-## Act VII: the decision, and the watcher
+## Act VII: the decision, and the Mistress of the Mist
 
 `resolve` follows straight after the revelation.
 
@@ -89,8 +91,14 @@ What stays unrevealed:
 | Sieg | `promise`, `duty`, `together` |
 
 - Each hero then speaks their chosen line, and the closing lines play.
-- `watcher`: the heroes walk south to leave. The camera pans to the cloaked woman (existing sprite, face hidden) at the north-west edge of the shrine: "So... the oath survives." She vanishes, then both screens fade to black: **CHAPTER 0 COMPLETE**.
-  - This plays once, live; it does not replay on reconnect.
+- `depart`: Coco and Sieg walk out toward the south entrance and fade from view as "Coco and Sieg leave the shrine" shows. They stop short of the road back, so pressing E to read can never carry them off the map.
+- `watcher`, the final cinematic, plays without the heroes (they stay hidden):
+  - The goddess, alone at her altar, calls out: "Show yourself, Mistress of the Mist."
+  - Mist gathers right in front of the altar, between it and the offering bowl (`mist-gather`). The cloaked woman takes shape out of it, facing south, her face hidden (`stranger-appear`; she fades in).
+  - Their exchange follows ("So... the oath lives on.", the offering, "nothing in this world comes without sacrifice").
+  - One shot holds the goddess and the woman together, with no panning; on the last line the camera glides back a little further. The shrine's signs are hidden while any of its scenes play.
+  - The mist thins and she fades, then both screens fade to black: **CHAPTER 0 COMPLETE**. The heroes are back at the south road afterwards.
+  - Each part plays once. After a reconnect the ending picks up where it was (`depart`, then `watcher`).
 - The story reaches `DONE` with `chapter0.complete`. The shrine's south-east path to the Forest Ruins opens, and later campaign content is reachable as before.
 
 Story state lives in the room's memory. It survives reconnects and travel; nothing is written to disk (AGENTS.md).
@@ -103,7 +111,7 @@ Where the brief gave stage directions, lines were added:
 - "A sealed gate opens, revealing the path to the Goddess Shrine.";
 - the narration lines for the goddess's looks, pauses and silences;
 - the choice prompt;
-- the two watcher narration lines;
+- the narration for the heroes leaving, the mist and the final shot;
 - the "New objective" lines after the goddess's introduction.
 
 ## Verification

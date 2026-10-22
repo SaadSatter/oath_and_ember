@@ -110,6 +110,30 @@ it("burns the whole thicket from one of Coco's fireballs, never from enemy fire"
   }
 });
 
+it("catches a fireball aimed between two stacked bushes", () => {
+  const { r, coco } = glade();
+  // Midway between the 2nd and 3rd bush of the north–south column, where
+  // their footings leave a gap but their drawn bodies touch.
+  const y = (gladeBushes[1].y + gladeBushes[2].y) / 2;
+  for (const aim of [y - 6, y, y + 6]) {
+    gladeState(r.state.puzzles)!.bushesBurned = false;
+    Object.assign(coco, { x: gladeBushes[1].x - 90, y: aim });
+    r.state.projectiles.shot = {
+      id: "shot",
+      owner: coco.id,
+      sceneId: "PUZZLE_GLADE",
+      x: coco.x + 20,
+      y: aim,
+      vx: 380,
+      vy: 0,
+      life: 2,
+    };
+    for (let n = 0; n < ticksFor(0.5); n++) r.tick();
+    expect(gladeState(r.state.puzzles)!.bushesBurned, `aim ${aim}`).toBe(true);
+    expect(r.state.projectiles.shot).toBeUndefined();
+  }
+});
+
 it("lets Sieg push the chair from its corner to the statue, who sits and opens the way", () => {
   const { r, sieg, coco, chair } = glade();
   Object.assign(coco, { x: 120, y: 660 });

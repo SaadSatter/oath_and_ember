@@ -8,7 +8,8 @@ export const siegSprintAsset = {
 };
 export function siegSprintFrame(direction: CombatDirection, now: number) {
   const clip = metadata.directions[direction];
-  let age = now % clip.durations.reduce((sum, duration) => sum + duration, 0);
+  // Super Speed doubles his stride cadence; this clock only selects artwork.
+  let age = (now * 2) % clip.durations.reduce((sum, duration) => sum + duration, 0);
   for (let i = 0; i < clip.durations.length; i++) {
     if (age < clip.durations[i]) return clip.start + i;
     age -= clip.durations[i];

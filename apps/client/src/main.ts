@@ -1,3 +1,4 @@
+import { GameAudio } from "./audio/GameAudio.js";
 import {
   isSettlementScene,
   settlements,
@@ -22,15 +23,19 @@ import {
 } from "./environment/HedgeMazeView.js";
 import { hedgeMazeState } from "../../../packages/shared/src/hedgeMaze.js";
 import { InventoryPanel } from "./ui/inventory.js";
+import { QuestPanel } from "./ui/quests.js";
 import {
   bridgePoints,
   bridgeRects,
+  bridgeEntryTargetVisible,
+  bridgeMovingTarget,
 } from "../../../packages/shared/src/bridgePuzzle.js";
 import {
   BridgePuzzleView,
   preloadBridgePuzzle,
 } from "./environment/BridgePuzzleView.js";
 import {
+  INTERPOLATION_MS,
   SERVER_HZ,
   SLOW_TIME_SCALE,
 } from "../../../packages/shared/src/constants.js";
@@ -107,6 +112,7 @@ import {
   castOf,
   cutscenes,
   graveVisible,
+  HEROES_FADE_SECONDS,
   storyObjectives,
   trailInspections,
 } from "../../../packages/shared/src/prologue.js";
@@ -144,7 +150,11 @@ import { preloadTreasure } from "./environment/TreasureChestView.js";
 import { PlayerView, type CharacterRendering } from "./entities/PlayerView.js";
 import "./styles.css";
 import { NetworkClient } from "./net/NetworkClient.js";
-import { CastPrediction, staffOrigin } from "./net/castPrediction.js";
+import {
+  CastPrediction,
+  shotLead,
+  staffOrigin,
+} from "./net/castPrediction.js";
 import { fireballLevel } from "../../../packages/shared/src/abilities.js";
 import {
   maps,
@@ -177,12 +187,72 @@ const tell = (s: string) => {
     if (notice.textContent === s) notice.textContent = "";
   }, 6000);
 };
-// Created before the inventory so that, while it is open, it sees keys first.
-const dialogue = new DialogueBox(() => {
+const gameAudio = new GameAudio(() => {
   keys.clear();
   submitInput(true);
 });
+net.onworld = (w) => gameAudio.observe(w, net.session?.playerId ?? "");
+net.socket.on("disconnect", () => gameAudio.reset());
+
+// The quest journal (Q). Created first so that, while open, it sees keys first.
+const quests = new QuestPanel(
+  () => net.session?.playerId,
+  () => dialogue.open || story.open || inventory.open,
+  () => {
+    keys.clear();
+    submitInput(true);
+  },
+  (name) => gameAudio.ui(name),
+);
+// Created before the inventory so that, while it is open, it sees keys first.
+const dialogue = new DialogueBox(
+  () => {
+    gameAudio.ui("Ordinary NPC conversation open / close");
+    keys.clear();
+    submitInput(true);
+  },
+  (name) => gameAudio.ui(name),
+);
 // A hero the story has put offstage (Sieg during Coco's errand) sees a card.
+// The server runs a different build of the story than this page: lines would
+// show the wrong words. Say so plainly (story scripts are in each bundle).
+import { storyOutdated } from "../../../packages/shared/src/storyVersion.js";
+import { storyFraming } from "./rendering/storyFraming.js";
+/**
+ * How visible the heroes are in a story scene they have left: fading out as
+ * they go, then gone (the final cinematic plays without them).
+ */
+function heroPresence(w: World) {
+  const run = w.story?.cutscene,
+    scene = run && cutscenes[run.id];
+  if (!scene?.heroes || run!.line < 0) return 1;
+  if (scene.heroes === "gone") return 0;
+  const seconds = (w.serverTick - run!.since) / SERVER_HZ;
+  return Math.max(0, 1 - seconds / HEROES_FADE_SECONDS);
+}
+const outdatedCard = document.createElement("div");
+outdatedCard.className = "outdated-card";
+outdatedCard.hidden = true;
+outdatedCard.setAttribute("role", "alert");
+outdatedCard.textContent =
+  "This page and the game server are running different versions of the story. Restart the server, then reload this page (both players), to see the latest scenes and dialogue.";
+Object.assign(outdatedCard.style, {
+  position: "fixed",
+  left: "50%",
+  top: "8px",
+  transform: "translateX(-50%)",
+  maxWidth: "min(620px, calc(100vw - 32px))",
+  padding: "10px 14px",
+  background: "#3a0d0dee",
+  border: "2px solid #ffb4a0",
+  color: "#fff1e8",
+  fontFamily: '"Press Start 2P", monospace',
+  fontSize: "9px",
+  lineHeight: "15px",
+  zIndex: "1000",
+  textAlign: "center",
+});
+document.body.append(outdatedCard);
 const offstageCard = document.createElement("div");
 offstageCard.className = "offstage-card";
 offstageCard.hidden = true;
@@ -190,10 +260,17 @@ document.body.append(offstageCard);
 // The prologue's shared scenes. The server picks each line; E marks it read.
 const story = new StoryDialogue(
   (cutscene, line) =>
-    void net.request("story:read", { cutscene, line }).catch(() => undefined),
+    net
+      .request("story:read", { cutscene, line })
+      .then((r) => !!(r as { accepted?: boolean } | undefined)?.accepted)
+      .catch(() => false),
   () => {
-    // A shared scene takes over from any local conversation.
+    // A shared scene takes over from any local conversation, and from the
+    // backpack (offering the wig starts the goddess's scene for both heroes,
+    // while one of them may still have the inventory open).
     if (dialogue.open) dialogue.close();
+    inventory.close();
+    quests.close();
     keys.clear();
     submitInput(true);
   },
@@ -216,7 +293,16 @@ const inventory = new InventoryPanel(
       speaker: target?.kind === "offering" ? target.name : undefined,
       pages: [message],
     }),
+  (name) => gameAudio.ui(name),
 );
+// Quests sit beside the backpack in the top-right corner.
+const hudButtons = document.createElement("div");
+hudButtons.id = "hud-buttons";
+hudButtons.append(
+  quests.button,
+  document.getElementById("inventory-toggle")!,
+);
+document.body.append(hudButtons);
 // Talk to villagers with E. Registered after the inventory, so an item or
 // gate in reach still takes E first. Conversation is local presentation.
 window.addEventListener(
@@ -228,6 +314,7 @@ window.addEventListener(
       dialogue.open ||
       story.open ||
       inventory.open ||
+      quests.open ||
       (e.target as HTMLElement).matches("input, textarea, select")
     )
       return;
@@ -262,10 +349,8 @@ window.addEventListener(
     if (
       scene === "BRIDGE_RUINS" &&
       w.story &&
-      Math.hypot(
-        hero.x - trialInscription.x,
-        hero.y - trialInscription.y,
-      ) <= INSCRIPTION_REACH
+      Math.hypot(hero.x - trialInscription.x, hero.y - trialInscription.y) <=
+        INSCRIPTION_REACH
     ) {
       e.preventDefault();
       e.stopImmediatePropagation();
@@ -349,9 +434,12 @@ async function request(e: Parameters<typeof net.request>[0], p: unknown) {
 }
 function renderUI() {
   inventory.render();
+  quests.update(net.world ?? undefined);
   const w = net.world,
     me = w?.players[net.session?.playerId || ""];
   document.body.dataset.playing = String(w?.phase === "PLAYING");
+  // Warn in the lobby too, before anyone plays through a mismatched story.
+  outdatedCard.hidden = !storyOutdated(w?.storyVersion);
   const abilityBar =
     document.querySelector<HTMLDivElement>("#special-abilities")!;
   abilityBar.hidden = w?.phase !== "PLAYING" || !me?.role;
@@ -540,7 +628,7 @@ function renderUI() {
 net.onchange = renderUI;
 renderUI();
 window.addEventListener("keydown", (e) => {
-  if (inventory.open || dialogue.open || story.open) return;
+  if (inventory.open || quests.open || dialogue.open || story.open) return;
   if (
     (e.target as HTMLElement).tagName === "INPUT" ||
     ((e.target as HTMLElement).closest("#special-abilities") &&
@@ -762,6 +850,7 @@ function submitInput(reliable = false) {
     (!!run && !!myRole && castOf(cutscenes[run.id]).includes(myRole));
   const held = (...names: string[]) =>
     !inventory.open &&
+    !quests.open &&
     !dialogue.open &&
     !story.open &&
     !offstage &&
@@ -822,7 +911,48 @@ function shotTargets(w: World, sceneId: SceneId) {
   const griffin =
     sceneId === "GRIFFIN_ENCLOSURE" ? griffinState(w.puzzles) : null;
   if (griffin && griffin.hp > 0) targets.push(box(griffin, 30));
+  // The bridge's targets stop a fireball on the server (see GameRoom), so the
+  // drawn shot bursts on them too rather than sailing through.
+  const s = w.bridgePuzzle;
+  if (sceneId === "BRIDGE_RUINS" && s) {
+    if (!s.firstGateOpen && bridgeEntryTargetVisible(s)) {
+      const t = bridgeMovingTarget(
+        s.trapClock + shotLead(w, net.prediction.renderTick),
+      );
+      targets.push({ x: t.x - 20, y: t.y - 24, w: 40, h: 48 });
+    }
+    targets.push(box(bridgePoints.target, 24));
+  }
   return targets;
+}
+/**
+ * A fireball burst on the bridge's moving target rides along with the target
+ * as drawn. Coco sees the target on her shots' timeline, ahead of the server,
+ * so a burst left where the server struck would hang beside it.
+ */
+function bridgeTargetBurst(
+  hit: NonNullable<World["projectileImpacts"]>[number],
+  shooter: boolean,
+) {
+  const s = net.world?.bridgePuzzle;
+  if (!s || (hit.sceneId ?? net.world?.sceneId) !== "BRIDGE_RUINS") return;
+  const w = net.world!,
+    scale = w.slowTime ? SLOW_TIME_SCALE : 1;
+  const struck = bridgeMovingTarget(
+    s.trapClock - ((w.serverTick - hit.tick) / SERVER_HZ) * scale,
+  );
+  const dx = hit.x - struck.x,
+    dy = hit.y - struck.y;
+  if (Math.abs(dx) > 28 || Math.abs(dy) > 32) return;
+  return () => {
+    const now = net.world;
+    if (!now?.bridgePuzzle) return { x: hit.x, y: hit.y };
+    const t = bridgeMovingTarget(
+      now.bridgePuzzle.trapClock +
+        (shooter ? shotLead(now, net.prediction.renderTick) : 0),
+    );
+    return { x: t.x + dx, y: t.y + dy };
+  };
 }
 class Adventure extends Phaser.Scene {
   temporalView!: TemporalView;
@@ -846,6 +976,8 @@ class Adventure extends Phaser.Scene {
   movementTrace: string[] = [];
   lastMovementTrace = 0;
   playerViews = new Map<string, PlayerView>();
+  /** Where a story scene's camera is gliding from (see the focus code). */
+  storyGlide: { x: number; y: number; zoom: number } | null = null;
   projectileView!: ProjectileView;
   enemyViews = new Map<string, EnemyView>();
   clearEnemyViews() {
@@ -982,6 +1114,7 @@ class Adventure extends Phaser.Scene {
       ? Object.values(w.players).find((p) => p.id !== me.id)
       : undefined;
     offstageCard.hidden = !away;
+    outdatedCard.hidden = !storyOutdated(w.storyVersion);
     offstageCard.textContent = away?.text ?? "";
     const sceneId = (watched ?? me).sceneId ?? w.sceneId;
     const indoors = isShopScene(sceneId) || isVillageInterior(sceneId);
@@ -1012,7 +1145,13 @@ class Adventure extends Phaser.Scene {
     this.environment.updatePushables(w.pushableOffsets);
     this.environment.setGraveVisible(graveVisible(w.story));
     this.environment.updateStory(w.story);
-    this.bridgeView.update(w, sceneId);
+    // Coco's own fireballs are drawn ahead of the server; the moving target
+    // she aims at is drawn on that same timeline.
+    this.bridgeView.update(
+      w,
+      sceneId,
+      me.role === "EMBER" ? shotLead(w, net.prediction.renderTick) : 0,
+    );
     this.inscriptionView.update(w, sceneId);
     banners.update(w);
     this.mazeView.update(w, sceneId);
@@ -1157,19 +1296,46 @@ class Adventure extends Phaser.Scene {
       w.story?.cutscene && w.story.cutscene.line >= 0
         ? cutscenes[w.story.cutscene.id]
         : undefined;
-    if (scripted?.focus && scripted.scene === sceneId && !house) {
-      const f = scripted.focus;
-      const fits =
-        Math.abs(this.rendered.x - f.x) < viewWidth - 160 &&
-        Math.abs(this.rendered.y - f.y) < viewHeight - 140;
-      focus = fits
-        ? {
-            x: (this.rendered.x + f.x) / 2,
-            y: (this.rendered.y + f.y) / 2,
-            zoom: 1,
-          }
-        : { x: f.x, y: f.y, zoom: 1 };
+    // A line can move the camera on its own (the final cinematic), and a
+    // scene the heroes have left frames its point alone.
+    const scriptedLine = scripted?.lines[w.story!.cutscene!.line];
+    const target = scriptedLine?.focus ?? scripted?.focus;
+    if (target && scripted!.scene === sceneId && !house)
+      focus = storyFraming(
+        target,
+        scripted!.heroes || scriptedLine?.focus ? null : this.rendered,
+        viewWidth,
+        viewHeight,
+        zoom,
+      );
+    // The forest ambush and Alden's rescue pull back to show the whole
+    // clearing: monsters push out of the bushes at its edges, and the water
+    // dragon coils around all of it. The zoom snaps to whole screen pixels
+    // when it can, so the pixel art stays even.
+    if (
+      sceneId === "PROLOGUE_CLEARING" &&
+      scripted &&
+      (scripted.id === "ambush" || scripted.id === "rescue")
+    ) {
+      const fit = Math.min(1, viewWidth / 780, viewHeight / 540),
+        whole = Math.floor(fit * zoom);
+      focus = { x: 512, y: 384, zoom: whole >= 1 ? whole / zoom : fit };
     }
+    // Within a story scene the camera glides from one framing to the next
+    // (a slow pan, or pulling back), rather than cutting.
+    if (focus && scripted && this.storyGlide && this.focusScene === sceneId) {
+      const k = 1 - Math.exp(-delta / 900),
+        from = this.storyGlide;
+      focus = {
+        x: from.x + (focus.x - from.x) * k,
+        y: from.y + (focus.y - from.y) * k,
+        zoom: from.zoom + (focus.zoom - from.zoom) * k,
+      };
+      // Settled on whole pixels once it arrives.
+      if (Math.abs(focus.zoom - Math.round(focus.zoom * zoom) / zoom) < 0.002)
+        focus.zoom = Math.round(focus.zoom * zoom) / zoom;
+    }
+    this.storyGlide = focus && scripted ? { ...focus } : null;
     if (this.focusScene !== sceneId) {
       // Arriving in a scene starts settled, never panning in from elsewhere.
       this.focusScene = sceneId;
@@ -1268,7 +1434,8 @@ class Adventure extends Phaser.Scene {
         id === "boss" ||
         id === "crate" ||
         (house && id === "door") ||
-        (id === "leave" && sceneId.endsWith("_UPPER"))
+        // Doorways out of a room need no marker; E at the door still works.
+        id === "leave"
       )
         continue;
       if (sealedExit(sceneId, id, w)) continue;
@@ -1311,7 +1478,22 @@ class Adventure extends Phaser.Scene {
       this.time.now,
     );
     story.sync(w, me.role, heroNames[me.role === "OATH" ? "EMBER" : "OATH"]);
-    this.storyEffects.update(w, sceneId, this.time.now);
+    // Story effects run on the same (interpolated) clock as the monsters,
+    // kept within the snapshots received: a server running behind real time
+    // must never let the dragon get ahead of the monsters it eats.
+    const lag = (INTERPOLATION_MS * SERVER_HZ) / 1000;
+    this.storyEffects.update(
+      w,
+      sceneId,
+      this.time.now,
+      Math.min(
+        w.serverTick,
+        Math.max(
+          w.serverTick - lag * 2,
+          net.clock.estimate(performance.now()) - lag,
+        ),
+      ),
+    );
     for (const p of Object.values(w.players)) {
       if ((p.sceneId ?? w.sceneId) !== sceneId) continue;
       const pos =
@@ -1346,6 +1528,7 @@ class Adventure extends Phaser.Scene {
           net.socket.connected &&
           Object.values(w.players).every((hero) => hero.connected),
       });
+      view.setPresence(heroPresence(w));
     }
     for (const [id, view] of this.playerViews) {
       if (!w.players[id] || (w.players[id].sceneId ?? w.sceneId) !== sceneId) {
@@ -1424,6 +1607,7 @@ class Adventure extends Phaser.Scene {
           : at;
       },
       characterRendering === "geometric",
+      (hit) => bridgeTargetBurst(hit, me.role === "EMBER"),
     );
     if (w.boss && sceneId === w.sceneId) {
       const p = map.points.boss;
@@ -1440,7 +1624,9 @@ class Adventure extends Phaser.Scene {
       if (
         (house && id === "door") ||
         sceneId === "GODDESS_SHRINE" ||
-        (id === "leave" && sceneId.endsWith("_UPPER"))
+        sceneId === "PUZZLE_GLADE" ||
+        sceneId === "BRIDGE_RUINS" ||
+        id === "leave"
       )
         continue;
       if (sealedExit(sceneId, id, w)) continue;
@@ -1497,20 +1683,13 @@ class Adventure extends Phaser.Scene {
           .setOrigin(0.5),
       );
     }
-    if (sceneId === "BRIDGE_RUINS" && w.story)
-      this.labels.push(
-        this.add
-          .text(trialInscription.x, trialInscription.y - 56, "E · INSCRIPTION", {
-            fontSize: "12px",
-            color: "#ecdfc7",
-            backgroundColor: "#15232b",
-          })
-          .setOrigin(0.5)
-          .setDepth(1800),
-      );
     // The story's own E spots this hero can use now (gathering for the funeral).
     for (const spot of spotsFor(w.story, me.role))
-      if (spot.scene === sceneId)
+      if (
+        spot.scene === sceneId &&
+        sceneId !== "PUZZLE_GLADE" &&
+        sceneId !== "BRIDGE_RUINS"
+      )
         this.labels.push(
           this.add
             .text(spot.x, spot.y - 30, spot.label.toUpperCase(), {
@@ -1602,7 +1781,7 @@ class Adventure extends Phaser.Scene {
     }
     if (sceneId === "GODDESS_SHRINE")
       goal = shrineComplete(w)
-        ? "The Bald Goddess · Quest complete! E at the south-east golden switch to continue to Forest Ruins; south returns to Puzzle Map 2."
+        ? "The Bald Goddess · Quest complete! South returns to Puzzle Map 2."
         : "Goddess Shrine · E at the offering bowl for a clue. West: Mirror Pond for the mirror. East: Hedge Maze for shears. North: Griffin for the wig. Return here to offer it. I opens the shared backpack.";
     // The finale's quest: on home ground it is the whole goal; along the
     // route it leads the map's own hint.
@@ -1617,6 +1796,7 @@ class Adventure extends Phaser.Scene {
     if (Object.values(w.players).some((p) => !p.connected))
       goal = "Partner disconnected. Game paused for up to 30 seconds.";
     document.querySelector<HTMLDivElement>("#objective")!.textContent = goal;
+    quests.update(w, goal);
     const debugPanel = document.querySelector<HTMLDivElement>("#debug")!;
     debugPanel.hidden = !debug;
     if (debug)

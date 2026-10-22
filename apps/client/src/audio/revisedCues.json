@@ -1,0 +1,1592 @@
+{
+  "revision": "2026-10-21",
+  "sources": {
+    "uiSelect": {
+      "url": "/assets/audio/uiSelect.ogg"
+    },
+    "uiConfirm": {
+      "url": "/assets/audio/uiConfirm.ogg"
+    },
+    "uiConfirmSoft": {
+      "url": "/assets/audio/uiConfirmSoft.ogg"
+    },
+    "uiError": {
+      "url": "/assets/audio/uiError.ogg"
+    },
+    "uiReady": {
+      "url": "/assets/audio/uiReady.ogg"
+    },
+    "shimmer": {
+      "url": "/assets/audio/shimmer.ogg"
+    },
+    "bagOpen": {
+      "url": "/assets/audio/bagOpen.ogg",
+      "offset": 0.06
+    },
+    "bagClose": {
+      "url": "/assets/audio/bagClose.ogg",
+      "offset": 0.08
+    },
+    "clockTock": {
+      "url": "/assets/audio/clockTock.ogg",
+      "offset": 0.08
+    },
+    "punchMed": {
+      "url": "/assets/audio/punchMed.ogg"
+    },
+    "softHeavy": {
+      "url": "/assets/audio/softHeavy.ogg"
+    },
+    "glassHit": {
+      "url": "/assets/audio/glassHit.ogg"
+    },
+    "metalMed": {
+      "url": "/assets/audio/metalMed.ogg"
+    },
+    "swing2": {
+      "url": "/assets/audio/swing2.wav"
+    },
+    "swing3": {
+      "url": "/assets/audio/swing3.wav"
+    },
+    "giant2": {
+      "url": "/assets/audio/giant2.wav"
+    },
+    "bite": {
+      "url": "/assets/audio/bite.wav"
+    },
+    "roar3": {
+      "url": "/assets/audio/roar3.ogg"
+    },
+    "stone3": {
+      "url": "/assets/audio/stone3.ogg"
+    },
+    "boom": {
+      "url": "/assets/audio/boom.ogg"
+    },
+    "crunch": {
+      "url": "/assets/audio/crunch.ogg"
+    },
+    "hum": {
+      "url": "/assets/audio/hum.ogg"
+    },
+    "rumble": {
+      "url": "/assets/audio/rumble.ogg"
+    },
+    "beamRoar": {
+      "url": "/assets/audio/beamRoar.ogg"
+    },
+    "flameJet": {
+      "url": "/assets/audio/flameJet.ogg"
+    },
+    "grind": {
+      "url": "/assets/audio/grind.ogg"
+    },
+    "splashBig": {
+      "url": "/assets/audio/splashBig.ogg"
+    },
+    "splashBurst": {
+      "url": "/assets/audio/splashBurst.ogg"
+    },
+    "splashBite": {
+      "url": "/assets/audio/splashBite.ogg"
+    },
+    "waterRush": {
+      "url": "/assets/audio/waterRush.ogg"
+    },
+    "rain": {
+      "url": "/assets/audio/rain.ogg"
+    },
+    "wingFlap": {
+      "url": "/assets/audio/wings.ogg",
+      "offset": 1.02,
+      "duration": 0.6
+    },
+    "whoosh": {
+      "url": "/assets/audio/whoosh.wav",
+      "offset": 0.2
+    },
+    "crackle": {
+      "url": "/assets/audio/crackle.ogg"
+    },
+    "mist": {
+      "url": "/assets/audio/mist.ogg"
+    },
+    "siegHurt1": {
+      "url": "/assets/audio/siegHurt1.wav",
+      "offset": 0.26
+    },
+    "siegHurt2": {
+      "url": "/assets/audio/siegHurt2.wav",
+      "offset": 0.14
+    },
+    "siegHurt3": {
+      "url": "/assets/audio/siegHurt3.wav",
+      "offset": 0.25
+    },
+    "cocoHurt1": {
+      "url": "/assets/audio/cocoHurt1.mp3"
+    },
+    "cocoHurt2": {
+      "url": "/assets/audio/cocoHurt2.mp3"
+    },
+    "cocoHurt3": {
+      "url": "/assets/audio/cocoHurt3.mp3"
+    },
+    "grass1": {
+      "url": "/assets/audio/grass1.ogg"
+    },
+    "stoneStep1": {
+      "url": "/assets/audio/stoneStep1.ogg"
+    },
+    "woodStep1": {
+      "url": "/assets/audio/woodStep1.ogg"
+    },
+    "grass2": {
+      "url": "/assets/audio/grass2.ogg"
+    },
+    "stoneStep2": {
+      "url": "/assets/audio/stoneStep2.ogg"
+    },
+    "woodStep2": {
+      "url": "/assets/audio/woodStep2.ogg"
+    },
+    "grass3": {
+      "url": "/assets/audio/grass3.ogg"
+    },
+    "stoneStep3": {
+      "url": "/assets/audio/stoneStep3.ogg"
+    },
+    "woodStep3": {
+      "url": "/assets/audio/woodStep3.ogg"
+    },
+    "grass4": {
+      "url": "/assets/audio/grass4.ogg"
+    },
+    "stoneStep4": {
+      "url": "/assets/audio/stoneStep4.ogg"
+    },
+    "woodStep4": {
+      "url": "/assets/audio/woodStep4.ogg"
+    }
+  },
+  "cues": {
+    "Title/checkpoint selection, create/join/back": {
+      "tracks": [
+        {
+          "assetId": "uiSelect",
+          "gain": 0.32,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Role / appearance selection": {
+      "tracks": [
+        {
+          "assetId": "uiSelect",
+          "gain": 0.38,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Ready / cancel-ready / start": {
+      "tracks": [
+        {
+          "assetId": "uiConfirm",
+          "gain": 0.35,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Inventory open": {
+      "tracks": [
+        {
+          "assetId": "bagOpen",
+          "gain": 0.45,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Inventory close / Escape": {
+      "tracks": [
+        {
+          "assetId": "bagClose",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Select inventory item": {
+      "tracks": [
+        {
+          "assetId": "uiSelect",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Inventory Use/Open/Speak button": {
+      "tracks": [
+        {
+          "assetId": "click",
+          "gain": 0.22,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Rejected item / out-of-range / blocked / unavailable action": {
+      "tracks": [
+        {
+          "assetId": "uiError",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Successful generic chest / quest pickup": {
+      "tracks": [
+        {
+          "assetId": "uiConfirm",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        },
+        {
+          "assetId": "gem",
+          "gain": 0.25,
+          "delay": 60,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Ordinary NPC conversation open / close": {
+      "tracks": [
+        {
+          "assetId": "uiSelect",
+          "gain": 0.2,
+          "delay": 0,
+          "rate": 0.85,
+          "loop": false
+        }
+      ]
+    },
+    "Motivation option highlight": {
+      "tracks": [
+        {
+          "assetId": "uiSelect",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Motivation accepted": {
+      "tracks": [
+        {
+          "assetId": "uiConfirmSoft",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Each hero chooses why to continue": {
+      "tracks": [
+        {
+          "assetId": "uiSelect",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Copy room code": {
+      "tracks": [
+        {
+          "assetId": "uiSelect",
+          "gain": 0.32,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Restart after completed game": {
+      "tracks": [
+        {
+          "assetId": "uiConfirm",
+          "gain": 0.35,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Skill recharge ready": {
+      "tracks": [
+        {
+          "assetId": "uiReady",
+          "gain": 0.2,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Flight recharge ready": {
+      "tracks": [
+        {
+          "assetId": "uiReady",
+          "gain": 0.2,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Sieg Super Speed expires / ready": {
+      "tracks": [
+        {
+          "assetId": "uiReady",
+          "gain": 0.2,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Black Hole expires / recharge ready": {
+      "tracks": [
+        {
+          "assetId": "uiReady",
+          "gain": 0.2,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Footsteps on grass / garden / maze": {
+      "tracks": [
+        {
+          "assetId": "grass1",
+          "gain": 0.14,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ],
+      "variants": [
+        "grass1",
+        "grass2",
+        "grass3",
+        "grass4"
+      ],
+      "jitter": 0.06
+    },
+    "Footsteps on paved ruins / shrine / village": {
+      "tracks": [
+        {
+          "assetId": "stoneStep1",
+          "gain": 0.14,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ],
+      "variants": [
+        "stoneStep1",
+        "stoneStep2",
+        "stoneStep3",
+        "stoneStep4"
+      ],
+      "jitter": 0.06
+    },
+    "Footsteps indoors / wood": {
+      "tracks": [
+        {
+          "assetId": "woodStep1",
+          "gain": 0.13,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ],
+      "variants": [
+        "woodStep1",
+        "woodStep2",
+        "woodStep3",
+        "woodStep4"
+      ],
+      "jitter": 0.06
+    },
+    "Door / stairs / map travel": {
+      "tracks": [
+        {
+          "assetId": "doorOpen",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Sieg normal sword swing": {
+      "tracks": [
+        {
+          "assetId": "swing",
+          "gain": 0.6,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ],
+      "variants": [
+        "swing",
+        "swing2",
+        "swing3"
+      ],
+      "jitter": 0.07
+    },
+    "Sieg Guard raised / lowered": {
+      "tracks": [
+        {
+          "assetId": "cloth",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Sieg Guard absorbs hit": {
+      "tracks": [
+        {
+          "assetId": "metalMed",
+          "gain": 0.5,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        },
+        {
+          "assetId": "punchMed",
+          "gain": 0.25,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ],
+      "variants": [
+        "metalMed",
+        "metalLight"
+      ],
+      "jitter": 0.05
+    },
+    "Sieg Super Speed starts": {
+      "tracks": [
+        {
+          "assetId": "whoosh",
+          "gain": 0.6,
+          "delay": 0,
+          "rate": 1.1,
+          "loop": false
+        }
+      ]
+    },
+    "Sieg short K movement burst": {
+      "tracks": [
+        {
+          "assetId": "whoosh",
+          "gain": 0.45,
+          "delay": 0,
+          "rate": 1.35,
+          "loop": false
+        }
+      ],
+      "jitter": 0.05
+    },
+    "Heavy Break charge": {
+      "tracks": [
+        {
+          "assetId": "hum",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 0.8,
+          "loop": false
+        }
+      ]
+    },
+    "Heavy Break release / early normal release": {
+      "tracks": [
+        {
+          "assetId": "swing",
+          "gain": 0.55,
+          "delay": 0,
+          "rate": 0.8,
+          "loop": false
+        },
+        {
+          "assetId": "whoosh",
+          "gain": 0.35,
+          "delay": 0,
+          "rate": 1.2,
+          "loop": false
+        }
+      ]
+    },
+    "Optional Coco Blink short K burst": {
+      "tracks": [
+        {
+          "assetId": "shimmer",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        },
+        {
+          "assetId": "whoosh",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 1.5,
+          "loop": false
+        }
+      ]
+    },
+    "Sieg hurt": {
+      "tracks": [
+        {
+          "assetId": "siegHurt1",
+          "gain": 0.55,
+          "delay": 0,
+          "rate": 1.12,
+          "loop": false
+        },
+        {
+          "assetId": "punchMed",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ],
+      "variants": [
+        "siegHurt1",
+        "siegHurt2",
+        "siegHurt3"
+      ],
+      "jitter": 0.04
+    },
+    "Sieg alone hits spikes / resets": {
+      "tracks": [
+        {
+          "assetId": "siegHurt1",
+          "gain": 0.55,
+          "delay": 0,
+          "rate": 1.12,
+          "loop": false
+        },
+        {
+          "assetId": "punchMed",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ],
+      "variants": [
+        "siegHurt1",
+        "siegHurt2",
+        "siegHurt3"
+      ],
+      "jitter": 0.04
+    },
+    "Sieg spike contact resets to courtyard": {
+      "tracks": [
+        {
+          "assetId": "siegHurt1",
+          "gain": 0.55,
+          "delay": 0,
+          "rate": 1.12,
+          "loop": false
+        },
+        {
+          "assetId": "punchMed",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ],
+      "variants": [
+        "siegHurt1",
+        "siegHurt2",
+        "siegHurt3"
+      ],
+      "jitter": 0.04
+    },
+    "Coco Fireball cast, level 1": {
+      "tracks": [
+        {
+          "assetId": "fire6",
+          "gain": 0.55,
+          "delay": 0,
+          "rate": 1.1,
+          "loop": false
+        },
+        {
+          "assetId": "whoosh",
+          "gain": 0.25,
+          "delay": 0,
+          "rate": 1.4,
+          "loop": false
+        }
+      ],
+      "jitter": 0.05
+    },
+    "Fireball upgrades II–IV": {
+      "tracks": [
+        {
+          "assetId": "fire6",
+          "gain": 0.6,
+          "delay": 0,
+          "rate": 0.95,
+          "loop": false
+        },
+        {
+          "assetId": "whoosh",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 1.2,
+          "loop": false
+        }
+      ],
+      "jitter": 0.05
+    },
+    "Coco Fireball impact": {
+      "tracks": [
+        {
+          "assetId": "softHeavy",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        },
+        {
+          "assetId": "fire7",
+          "gain": 0.5,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ],
+      "jitter": 0.05
+    },
+    "Coco Ward raised / lowered": {
+      "tracks": [
+        {
+          "assetId": "spell",
+          "gain": 0.35,
+          "delay": 0,
+          "rate": 1.1,
+          "loop": false
+        }
+      ]
+    },
+    "Coco Ward struck": {
+      "tracks": [
+        {
+          "assetId": "glassHit",
+          "gain": 0.45,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        },
+        {
+          "assetId": "hum",
+          "gain": 0.25,
+          "delay": 0,
+          "rate": 1.4,
+          "loop": false
+        }
+      ]
+    },
+    "Coco Flight takeoff": {
+      "tracks": [
+        {
+          "assetId": "wingFlap",
+          "gain": 0.55,
+          "delay": 0,
+          "rate": 1.25,
+          "loop": false
+        },
+        {
+          "assetId": "whoosh",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 1.2,
+          "loop": false
+        }
+      ]
+    },
+    "Coco Flight movement": {
+      "tracks": [
+        {
+          "assetId": "wingFlap",
+          "gain": 0.32,
+          "delay": 0,
+          "rate": 1.35,
+          "loop": false
+        }
+      ],
+      "jitter": 0.08
+    },
+    "Coco Flight landing / expiry recovery": {
+      "tracks": [
+        {
+          "assetId": "soft",
+          "gain": 0.35,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Coco Slow Time begins": {
+      "tracks": [
+        {
+          "assetId": "magic",
+          "gain": 0.5,
+          "delay": 0,
+          "rate": 1,
+          "loop": false,
+          "rateEnd": 0.5,
+          "rampMs": 900
+        },
+        {
+          "assetId": "hum",
+          "gain": 0.45,
+          "delay": 0,
+          "rate": 1.2,
+          "loop": false,
+          "rateEnd": 0.45,
+          "rampMs": 1000
+        }
+      ]
+    },
+    "Coco Slow Time active clock": {
+      "tracks": [
+        {
+          "assetId": "clockTock",
+          "gain": 0.18,
+          "delay": 0,
+          "rate": 0.7,
+          "loop": false
+        }
+      ]
+    },
+    "Coco Slow Time ends / recharge ready": {
+      "tracks": [
+        {
+          "assetId": "hum",
+          "gain": 0.35,
+          "delay": 0,
+          "rate": 0.5,
+          "loop": false,
+          "rateEnd": 1.2,
+          "rampMs": 600
+        }
+      ]
+    },
+    "Coco Black Hole launch": {
+      "tracks": [
+        {
+          "assetId": "spell2",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 0.7,
+          "loop": false
+        },
+        {
+          "assetId": "whoosh",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 0.75,
+          "loop": false
+        }
+      ]
+    },
+    "Black Hole opens / pulls": {
+      "tracks": [
+        {
+          "assetId": "rumble",
+          "gain": 0.45,
+          "delay": 0,
+          "rate": 0.8,
+          "loop": false
+        },
+        {
+          "assetId": "mist",
+          "gain": 0.35,
+          "delay": 0,
+          "rate": 1.3,
+          "loop": false
+        }
+      ]
+    },
+    "Black Hole affects an enemy": {
+      "tracks": [
+        {
+          "assetId": "softHeavy",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 0.8,
+          "loop": false
+        },
+        {
+          "assetId": "hum",
+          "gain": 0.2,
+          "delay": 0,
+          "rate": 1.6,
+          "loop": false
+        }
+      ]
+    },
+    "Coco hurt": {
+      "tracks": [
+        {
+          "assetId": "cocoHurt1",
+          "gain": 0.5,
+          "delay": 0,
+          "rate": 1.05,
+          "loop": false
+        },
+        {
+          "assetId": "punchMed",
+          "gain": 0.22,
+          "delay": 0,
+          "rate": 1.2,
+          "loop": false
+        }
+      ],
+      "variants": [
+        "cocoHurt1",
+        "cocoHurt2",
+        "cocoHurt3"
+      ],
+      "jitter": 0.04
+    },
+    "Player takes unguarded damage / safe respawn": {
+      "tracks": [
+        {
+          "assetId": "punchMed",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Mossling attack windup": {
+      "tracks": [
+        {
+          "assetId": "slime",
+          "gain": 0.45,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Cinder Wisp windup": {
+      "tracks": [
+        {
+          "assetId": "fire7",
+          "gain": 0.35,
+          "delay": 0,
+          "rate": 1.3,
+          "loop": false
+        }
+      ]
+    },
+    "Cinder Wisp projectile release": {
+      "tracks": [
+        {
+          "assetId": "fire6",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 1.35,
+          "loop": false
+        }
+      ]
+    },
+    "Cinder Wisp projectile impact": {
+      "tracks": [
+        {
+          "assetId": "fire7",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 1.25,
+          "loop": false
+        },
+        {
+          "assetId": "soft",
+          "gain": 0.2,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Ironbound Sentinel melee windup / punch": {
+      "tracks": [
+        {
+          "assetId": "stone3",
+          "gain": 0.45,
+          "delay": 0,
+          "rate": 0.8,
+          "loop": false
+        },
+        {
+          "assetId": "giant2",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 0.7,
+          "loop": false
+        }
+      ]
+    },
+    "Ironbound Sentinel beam charge": {
+      "tracks": [
+        {
+          "assetId": "hum",
+          "gain": 0.45,
+          "delay": 0,
+          "rate": 0.7,
+          "loop": false,
+          "rateEnd": 1.3,
+          "rampMs": 900
+        }
+      ]
+    },
+    "Ironbound Sentinel palm beam active": {
+      "tracks": [
+        {
+          "assetId": "beamRoar",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 0.8,
+          "loop": false
+        },
+        {
+          "assetId": "hum",
+          "gain": 0.25,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Ironbound Sentinel contact blast": {
+      "tracks": [
+        {
+          "assetId": "boom",
+          "gain": 0.6,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        },
+        {
+          "assetId": "crunch",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Enemy hurt": {
+      "tracks": [
+        {
+          "assetId": "hurt",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ],
+      "jitter": 0.06
+    },
+    "Sentinel hurt / defeat": {
+      "tracks": [
+        {
+          "assetId": "mining",
+          "gain": 0.5,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ],
+      "jitter": 0.05
+    },
+    "Sentinel defeated": {
+      "tracks": [
+        {
+          "assetId": "stone2",
+          "gain": 0.5,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        },
+        {
+          "assetId": "boom",
+          "gain": 0.35,
+          "delay": 0,
+          "rate": 1.3,
+          "loop": false
+        }
+      ]
+    },
+    "Mossling / Wisp defeated": {
+      "tracks": [
+        {
+          "assetId": "die",
+          "gain": 0.45,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Golem and Wisp rise; later reinforcements": {
+      "tracks": [
+        {
+          "assetId": "stone2",
+          "gain": 0.55,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Burn thicket blocking chair": {
+      "tracks": [
+        {
+          "assetId": "fire6",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        },
+        {
+          "assetId": "crackle",
+          "gain": 0.5,
+          "delay": 150,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Burn amber maze bush": {
+      "tracks": [
+        {
+          "assetId": "fire6",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        },
+        {
+          "assetId": "crackle",
+          "gain": 0.5,
+          "delay": 150,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Torch 1–4 ignites from valid reflected contact": {
+      "tracks": [
+        {
+          "assetId": "fire6",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 1.1,
+          "loop": false
+        },
+        {
+          "assetId": "crackle",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Lit braziers sustain": {
+      "tracks": [
+        {
+          "assetId": "crackle",
+          "gain": 0.22,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Wrong pad/direction / unreflected torch shot / wall hit": {
+      "tracks": [
+        {
+          "assetId": "fire7",
+          "gain": 0.35,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        },
+        {
+          "assetId": "soft",
+          "gain": 0.2,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Griffin patrol flight / nest defense pursuit": {
+      "tracks": [
+        {
+          "assetId": "wingFlap",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 0.8,
+          "loop": false
+        }
+      ],
+      "jitter": 0.05
+    },
+    "Griffin ordinary takeoff after grounded timer": {
+      "tracks": [
+        {
+          "assetId": "wingFlap",
+          "gain": 0.55,
+          "delay": 0,
+          "rate": 0.85,
+          "loop": false
+        },
+        {
+          "assetId": "whoosh",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 0.8,
+          "loop": false
+        }
+      ]
+    },
+    "Waking stand-up finishes / first flight": {
+      "tracks": [
+        {
+          "assetId": "wingFlap",
+          "gain": 0.5,
+          "delay": 0,
+          "rate": 0.85,
+          "loop": false
+        }
+      ]
+    },
+    "Griffin returns to grooming nest": {
+      "tracks": [
+        {
+          "assetId": "wingFlap",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 0.85,
+          "loop": false
+        }
+      ]
+    },
+    "Griffin headbutt rush": {
+      "tracks": [
+        {
+          "assetId": "whoosh",
+          "gain": 0.55,
+          "delay": 0,
+          "rate": 0.8,
+          "loop": false
+        }
+      ]
+    },
+    "Griffin mouth beam charge": {
+      "tracks": [
+        {
+          "assetId": "hum",
+          "gain": 0.35,
+          "delay": 0,
+          "rate": 1.2,
+          "loop": false
+        },
+        {
+          "assetId": "crackle",
+          "gain": 0.25,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Griffin mouth beam active": {
+      "tracks": [
+        {
+          "assetId": "flameJet",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        },
+        {
+          "assetId": "fire4",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Griffin beam contact tail after beam ends": {
+      "tracks": [
+        {
+          "assetId": "crackle",
+          "gain": 0.25,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Black Hole pulls Griffin ashore": {
+      "tracks": [
+        {
+          "assetId": "whoosh",
+          "gain": 0.35,
+          "delay": 0,
+          "rate": 0.7,
+          "loop": false
+        },
+        {
+          "assetId": "wingFlap",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 0.8,
+          "loop": false
+        }
+      ]
+    },
+    "Griffin lands / grounded window": {
+      "tracks": [
+        {
+          "assetId": "softHeavy",
+          "gain": 0.5,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Griffin hurt / defeated": {
+      "tracks": [
+        {
+          "assetId": "hurt",
+          "gain": 0.5,
+          "delay": 0,
+          "rate": 0.8,
+          "loop": false
+        }
+      ]
+    },
+    "Sieg physically pushes chair/rock/crate or teammate": {
+      "tracks": [
+        {
+          "assetId": "stone",
+          "gain": 0.25,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ],
+      "jitter": 0.08
+    },
+    "Push glade rocks / chair": {
+      "tracks": [
+        {
+          "assetId": "stone",
+          "gain": 0.25,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ],
+      "jitter": 0.08
+    },
+    "Sieg pushes persistent boulder": {
+      "tracks": [
+        {
+          "assetId": "stone",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 0.85,
+          "loop": false
+        }
+      ],
+      "jitter": 0.08
+    },
+    "Three moving spike sleds": {
+      "tracks": [
+        {
+          "assetId": "grind",
+          "gain": 0.18,
+          "delay": 0,
+          "rate": 0.8,
+          "loop": false
+        }
+      ]
+    },
+    "Water dragon rises / roars": {
+      "tracks": [
+        {
+          "assetId": "splashBig",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        },
+        {
+          "assetId": "roar3",
+          "gain": 0.45,
+          "delay": 250,
+          "rate": 0.65,
+          "loop": false
+        },
+        {
+          "assetId": "giant2",
+          "gain": 0.25,
+          "delay": 300,
+          "rate": 0.6,
+          "loop": false
+        }
+      ]
+    },
+    "Water dragon rushes": {
+      "tracks": [
+        {
+          "assetId": "waterRush",
+          "gain": 0.35,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Water dragon swallows a monster": {
+      "tracks": [
+        {
+          "assetId": "splashBite",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        },
+        {
+          "assetId": "bite",
+          "gain": 0.35,
+          "delay": 0,
+          "rate": 0.6,
+          "loop": false
+        }
+      ],
+      "jitter": 0.05
+    },
+    "Water dragon bursts into rain": {
+      "tracks": [
+        {
+          "assetId": "splashBurst",
+          "gain": 0.5,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        },
+        {
+          "assetId": "rain",
+          "gain": 0.35,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Mist gathers": {
+      "tracks": [
+        {
+          "assetId": "mist",
+          "gain": 0.5,
+          "delay": 0,
+          "rate": 0.85,
+          "loop": false
+        },
+        {
+          "assetId": "hum",
+          "gain": 0.2,
+          "delay": 0,
+          "rate": 0.5,
+          "loop": false
+        }
+      ]
+    },
+    "Stranger takes shape": {
+      "tracks": [
+        {
+          "assetId": "shimmer",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 0.8,
+          "loop": false
+        },
+        {
+          "assetId": "magic",
+          "gain": 0.3,
+          "delay": 0,
+          "rate": 0.7,
+          "loop": false
+        }
+      ]
+    },
+    "Monster Clearing wave completed": {
+      "tracks": [
+        {
+          "assetId": "uiConfirmSoft",
+          "gain": 0.4,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Coco starts errand": {
+      "tracks": [
+        {
+          "assetId": "uiConfirmSoft",
+          "gain": 0.272,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Shopping list complete / return objective": {
+      "tracks": [
+        {
+          "assetId": "uiConfirmSoft",
+          "gain": 0.35200000000000004,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Investigation complete / search desk": {
+      "tracks": [
+        {
+          "assetId": "uiConfirmSoft",
+          "gain": 0.24,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Decision by grave / shrine quest unlock": {
+      "tracks": [
+        {
+          "assetId": "uiConfirmSoft",
+          "gain": 0.35200000000000004,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Trial Cooperation / Ingenuity / Courage passed": {
+      "tracks": [
+        {
+          "assetId": "uiConfirmSoft",
+          "gain": 0.384,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Cow parked / lane cleared": {
+      "tracks": [
+        {
+          "assetId": "uiConfirmSoft",
+          "gain": 0.32000000000000006,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Postchapter route opens": {
+      "tracks": [
+        {
+          "assetId": "uiConfirmSoft",
+          "gain": 0.256,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Optional skill unlock accepted": {
+      "tracks": [
+        {
+          "assetId": "uiConfirmSoft",
+          "gain": 0.36800000000000005,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    },
+    "Later Warden victory / game complete": {
+      "tracks": [
+        {
+          "assetId": "uiConfirmSoft",
+          "gain": 0.45,
+          "delay": 0,
+          "rate": 1,
+          "loop": false
+        }
+      ]
+    }
+  }
+}

@@ -46,6 +46,13 @@ export class BridgePuzzleView {
   private gates: Phaser.GameObjects.Image[] = [];
   private active = false;
   private entryTarget?: Phaser.GameObjects.Image;
+  private finalTarget?: Phaser.GameObjects.Image;
+  /**
+   * Green copies laid over a struck target, letting its rings show through,
+   * so it lights up (a multiplied tint would darken the purple instead).
+   */
+  private entryGlow?: Phaser.GameObjects.Image;
+  private finalGlow?: Phaser.GameObjects.Image;
   private rock?: Phaser.GameObjects.Image;
   private plates: Phaser.GameObjects.Image[] = [];
   constructor(private scene: Phaser.Scene) {
@@ -78,21 +85,26 @@ export class BridgePuzzleView {
     this.objects.push(im);
     return im;
   }
-  private label(text: string, x: number, y: number, color = "#e9dfb8") {
-    const t = this.scene.add
-      .text(x, y, text, {
-        fontSize: "11px",
-        fontFamily: "monospace",
-        color,
-        backgroundColor: "#17262ae8",
-        align: "center",
-        padding: { x: 4, y: 3 },
-      })
-      .setOrigin(0.5)
-      .setDepth(5);
-    this.objects.push(t);
+  private glow(target: Phaser.GameObjects.Image) {
+    const glow = this.image(
+      "magic-target",
+      target.x,
+      target.y,
+      target.displayWidth,
+      target.displayHeight,
+      3,
+    )
+      .setTint(0x5ef0a0)
+      .setTintMode(Phaser.TintModes.FILL)
+      .setVisible(false);
+    return glow;
   }
-  update(w: World, sceneId: SceneId) {
+  /**
+   * `lead` is how far ahead (seconds) the local player's own shots are drawn,
+   * so the moving target is drawn on that same timeline and a fireball meets
+   * it where the server does.
+   */
+  update(w: World, sceneId: SceneId, lead = 0) {
     if (sceneId !== "BRIDGE_RUINS" || !w.bridgePuzzle) {
       if (this.active) this.clear();
       return;
@@ -110,7 +122,6 @@ export class BridgePuzzleView {
             -6,
           ).setOrigin(0.5, 0.87);
       this.image("temple", 480, 72, 176, 136);
-      this.label("CASTLE EXIT", 480, 16);
       this.plates = [
         this.image("weight-plate", 288, 1264, 80, 80),
         this.image("weight-plate", 288, 736, 104, 80),
@@ -125,32 +136,11 @@ export class BridgePuzzleView {
       );
       // Targets hover in front of the gate so their full silhouettes stay visible.
       this.entryTarget = this.image("magic-target", 672, 1160, 40, 48, 2);
-      this.image("magic-target", 480, 416, 48, 48, 2);
+      this.entryGlow = this.glow(this.entryTarget);
+      this.finalTarget = this.image("magic-target", 480, 416, 48, 48, 2);
+      this.finalGlow = this.glow(this.finalTarget);
       for (const point of [P.goldSwitch, P.switchWest, P.switchEast])
         this.image("gold-switch", point.x, point.y, 48, 48);
-      this.label("A · WEIGHT SOCKET", 288, 1210);
-      this.label("B · BOULDER ONLY", 288, 676);
-      this.label("COCO · FRONT SHOT ↑", 672, 1252, "#d7b8ff");
-      this.label("GATE · TARGET + ROCK ON A", 672, 1108);
-      this.label("GOLD SWITCH · HOLD E", 672, 1048);
-      this.label("PUSH SAME BOULDER\n1 + movement", 288, 1370);
-      this.label("SPIKE TRIAL START", 288, 1172);
-      this.label(
-        "HIT TARGET FROM THE FRONT ↓\nTHIRD BRIDGE REMOVED",
-        480,
-        364,
-        "#d7b8ff",
-      );
-      this.label(
-        "FIRING PLATFORM · AIM AT TARGET ↑",
-        480,
-        P.firePad.y + 44,
-        "#d7b8ff",
-      );
-      this.label("FINAL SWITCH", 288, 248);
-      this.label("FINAL SWITCH", 672, 248);
-      this.label("WEST · SIEG ONLY", 288, 1418);
-      this.label("EAST · COCO ONLY", 672, 1418, "#d7b8ff");
       for (const r of bridgeRects)
         this.bridges.push(this.image("bridge", 480, r.y + 32, 224, 64, -20));
       for (let i = 0; i < 3; i++) {
@@ -168,12 +158,16 @@ export class BridgePuzzleView {
     }
     const s = w.bridgePuzzle;
     this.rock?.setPosition(s.boulder.x, s.boulder.y);
-    const target = bridgeMovingTarget(s.trapClock);
+    // The server's target, drawn on the shooter's timeline.
+    const target = bridgeMovingTarget(s.trapClock + lead);
     const targetVisible = bridgeEntryTargetVisible(s);
-    this.entryTarget
-      ?.setVisible(targetVisible)
+    const pulse = 0.6 + 0.15 * Math.sin(this.scene.time.now / 180);
+    this.entryTarget?.setVisible(targetVisible).setPosition(target.x, target.y);
+    this.entryGlow
+      ?.setVisible(targetVisible && s.targetHit)
       .setPosition(target.x, target.y)
-      .setTint(s.targetHit ? 0x80e9b0 : 0xffffff);
+      .setAlpha(pulse);
+    this.finalGlow?.setVisible(s.finalTargetHit).setAlpha(pulse);
     this.plates.forEach((im, i) =>
       im.setTint(heavyOnPlate(s, i === 0 ? "A" : "B") ? 0x80e9b0 : 0xffd36c),
     );
@@ -206,104 +200,6 @@ export class BridgePuzzleView {
         g.lineStyle(2, 0x8e9b81, 0.8);
         g.strokeRect(x - 20, y - 24, 40, 48);
       }
-    if (!s.firstGateOpen) {
-      g.lineStyle(4, 0xe6b45b, 0.8);
-      g.lineBetween(192, 1240, 384, 1240);
-    }
-    const wire = (points: number[][], color: number) => {
-      g.lineStyle(6, color, 0.18);
-      g.beginPath();
-      g.moveTo(points[0][0], points[0][1]);
-      points.slice(1).forEach((p) => g.lineTo(p[0], p[1]));
-      g.strokePath();
-      g.lineStyle(2, color, 0.9);
-      g.beginPath();
-      g.moveTo(points[0][0], points[0][1]);
-      points.slice(1).forEach((p) => g.lineTo(p[0], p[1]));
-      g.strokePath();
-    };
-    wire(
-      [
-        [288, 1264],
-        [352, 1264],
-        [608, 1264],
-        [608, 1128],
-        [672, 1128],
-      ],
-      s.firstGateOpen ? 0x80e9b0 : 0xe6b45b,
-    );
-    if (targetVisible)
-      wire(
-        [
-          [target.x, target.y],
-          [744, 1160],
-          [744, 1128],
-          [672, 1128],
-        ],
-        s.targetHit ? 0x80e9b0 : 0xb887f5,
-      );
-    wire(
-      [
-        [672, 1088],
-        [608, 1088],
-        [352, 1088],
-        [288, 1096],
-      ],
-      s.goldSwitchOpen ? 0x80e9b0 : 0xe6b45b,
-    );
-    wire(
-      [
-        [288, 736],
-        [352, 736],
-        [352, P.firePad.y],
-        [480, P.firePad.y],
-      ],
-      heavyOnPlate(s, "B") || s.finalTargetHit ? 0x80e9b0 : 0xe6b45b,
-    );
-    wire(
-      [
-        [480, 416],
-        [480, 320],
-        [288, 320],
-        [288, 296],
-      ],
-      s.finalTargetHit ? 0x80e9b0 : 0xb887f5,
-    );
-    wire(
-      [
-        [480, 320],
-        [672, 320],
-        [672, 296],
-      ],
-      s.finalTargetHit ? 0x80e9b0 : 0xb887f5,
-    );
-    wire(
-      [
-        [288, 208],
-        [288, 160],
-        [672, 160],
-        [672, 208],
-      ],
-      s.complete ? 0x80e9b0 : 0xe6b45b,
-    );
-    for (const y of [1040, 960, 880]) {
-      g.lineStyle(2, 0xe8928e, 0.6);
-      g.lineBetween(256, y, 480, y);
-    }
-    g.lineStyle(3, 0xb887f5, 0.75);
-    g.lineBetween(576, 288, 576, bridgeRects[1].y);
-    g.lineBetween(448, bridgeRects[1].y, 448, bridgeRects[1].y + 64);
-    g.lineBetween(576, bridgeRects[1].y + 64, 576, 1344);
-    g.lineBetween(576, 1344, 768, 1344);
-    g.lineStyle(3, 0xe6b45b, 0.75);
-    g.lineBetween(192, 1344, 384, 1344);
-    g.lineStyle(3, 0x91dfed, 0.9);
-    g.strokeRect(
-      bridgeRects[1].x,
-      bridgeRects[1].y,
-      bridgeRects[1].w,
-      bridgeRects[1].h,
-    );
     if (!s.complete) {
       g.fillStyle(0x42514d, 0.95);
       g.fillRect(448, 96, 64, 192);

@@ -19,8 +19,10 @@ import {
   AMBUSH_OPENING,
   AMBUSH_RESCUE_HP,
   AMBUSH_RISE_SECONDS,
+  AMBUSH_REACH,
   AMBUSH_SECONDS,
   CART_REACH,
+  ambushEntries,
   aldenAtShop,
   ambushEnemies,
   castOf,
@@ -29,6 +31,7 @@ import {
   prologueEnd,
   prologueStart,
   reachedRoadFork,
+  storyLineHeld,
 } from "../../../packages/shared/src/prologue.js";
 import {
   DISCOVERY_REACH,
@@ -55,6 +58,7 @@ import { roadsOpen } from "../../../packages/shared/src/chapter0Finale.js";
 import { everyoneChose, tickFinale } from "./chapter0Finale.js";
 import type { ItemId } from "../../../packages/shared/src/items.js";
 import { damageEnemy } from "./enemySimulation.js";
+import { castDragon } from "../../../packages/shared/src/waterDragon.js";
 import {
   WALK_ARRIVE,
   WALK_BODY,
@@ -164,7 +168,12 @@ export function startCutscene(
   if (talkingTo) story.cutscene.villager = talkingTo;
   if (scene.alden)
     story.alden = { ...scene.alden, action: scene.aldenAction ?? "idle" };
-  if (scene.stranger) story.stranger = { ...scene.stranger };
+  // The stranger is there from the start, unless a line has her appear.
+  if (
+    scene.stranger &&
+    !scene.lines.some((line) => line.cue === "stranger-appear")
+  )
+    story.stranger = { ...scene.stranger };
   if (scene.aldenGone) delete story.alden;
   delete story.walks;
   const progress = new Map<
@@ -426,23 +435,25 @@ function walksDone(w: World, host: StoryHost) {
   return !story.walks;
 }
 
-/** The ambush opens with a couple of monsters; the rest rise during the fight. */
+/**
+ * The clearing is quiet until the heroes reach its middle. The first golem
+ * and wisp come out of the bushes during the scene (the "ambush-emerge" cue);
+ * the rest follow during the fight.
+ */
 function spawnAmbush(w: World) {
   w.enemies = {};
   w.story!.ambush = { raised: 0, nextTick: 0 };
-  for (let i = 0; i < AMBUSH_OPENING; i++) {
-    const enemy = raiseOne(w);
-    if (enemy) enemy.passive = true; // they hold still until the scene ends
-  }
 }
 
-/** A monster never rises closer to a hero than this. */
+/** A monster never takes a spot closer to a hero than this. */
 const RISE_CLEARANCE = 140;
 /**
- * Raise one more monster: whichever kind is fewer (four golems and four
- * wisps at most), at the nearest free spot a safe distance from the heroes.
+ * Bring in one more monster: whichever kind is fewer (four golems and four
+ * wisps at most), bound for the nearest free spot a safe distance from the
+ * heroes. It pushes out of the bushes on that spot's side of the clearing and
+ * walks there, held (passive) until it arrives.
  */
-function raiseOne(w: World, rim = false) {
+function raiseOne(w: World, rim = false, side?: "west" | "east") {
   const ambush = w.story!.ambush!;
   const alive = Object.values(w.enemies).filter((e) => e.state !== "DEAD");
   if (alive.length >= AMBUSH_MAX) return null;
@@ -454,12 +465,17 @@ function raiseOne(w: World, rim = false) {
   const heroes = Object.values(w.players).filter(
     (p) => p.sceneId === "PROLOGUE_CLEARING",
   );
+  const half = maps.PROLOGUE_CLEARING.width / 2;
   const slot = ambushEnemies
     .filter((e) => e.type === type)
+    .filter((e) => !side || (side === "west") === e.x < half)
     .map((e) => ({
       e,
       clearance: Math.min(
-        ...alive.map((a) => Math.hypot(a.x - e.x, a.y - e.y)),
+        ...alive.map((a) => {
+          const at = a.march ?? a;
+          return Math.hypot(at.x - e.x, at.y - e.y);
+        }),
         Infinity,
       ),
       away: Math.min(
@@ -478,7 +494,14 @@ function raiseOne(w: World, rim = false) {
           : b.away - a.away),
     )[0].e;
   const id = `ambush-${ambush.raised++}`;
-  const enemy = spawnEnemy(id, slot.type, slot.x, slot.y);
+  const entries = slot.x < half ? ambushEntries.west : ambushEntries.east;
+  const entry = [...entries].sort(
+    (a, b) => Math.abs(a.y - slot.y) - Math.abs(b.y - slot.y),
+  )[0];
+  const enemy = spawnEnemy(id, slot.type, entry.x, entry.y);
+  enemy.passive = true;
+  enemy.march = { x: slot.x, y: slot.y };
+  enemy.facing = Math.atan2(slot.y - entry.y, slot.x - entry.x);
   w.enemies[id] = enemy;
   return enemy;
 }
@@ -573,6 +596,8 @@ function nextLine(w: World, host: StoryHost) {
   if (line.cue === "drop-bag" && !story.flags.includes(BAG_FLAG))
     story.flags.push(BAG_FLAG);
   if (line.cue === "stranger-vanish") delete story.stranger;
+  if (line.cue === "stranger-appear" && scene.stranger)
+    story.stranger = { ...scene.stranger };
   if (line.setFlag && !story.flags.includes(line.setFlag))
     story.flags.push(line.setFlag);
   if (line.give && w.inventory) {
@@ -585,10 +610,19 @@ function nextLine(w: World, host: StoryHost) {
       w.inventory.counts[id] = Math.max(0, (w.inventory.counts[id] ?? 0) - n);
     w.inventory.revision++;
   }
-  // The spell lands: every monster in the clearing falls on the same tick.
-  if (line.cue === "flash")
-    for (const e of Object.values(w.enemies))
-      if (e.state !== "DEAD") damageEnemy(e, e.hp, w.serverTick);
+  // As the narration has it: the golem from the west, the wisp from the east.
+  if (line.cue === "ambush-emerge")
+    for (let i = 0; i < AMBUSH_OPENING; i++)
+      raiseOne(w, false, i % 2 ? "east" : "west");
+  // Alden's water dragon rises; each monster dies as its jaws reach it.
+  if (line.cue === "dragon")
+    story.dragon = castDragon(
+      w.serverTick,
+      maps.PROLOGUE_CLEARING.points.centre,
+      Object.values(w.enemies)
+        .filter((e) => e.state !== "DEAD")
+        .map((e) => ({ id: e.id, x: e.x, y: e.y })),
+    );
   // A line meant only for a hero who is not in the room reads itself.
   const readers = lineReaders(
     line,
@@ -612,15 +646,21 @@ function endCutscene(w: World, host: StoryHost) {
   if (!story.flags.includes(scene.flag)) story.flags.push(scene.flag);
   story.stage = scene.next;
   if (scene.id === "ambush") {
-    for (const e of Object.values(w.enemies)) e.passive = false;
+    // Monsters still on their way in are released as they arrive.
+    for (const e of Object.values(w.enemies)) if (!e.march) e.passive = false;
     story.fightStart = w.serverTick;
     story.ambush!.nextTick = w.serverTick + ticksFor(AMBUSH_RISE_SECONDS);
   }
   if (scene.meet) releaseVillager(w, scene.meet.npc);
   if (scene.talkTo) releaseVillager(w, scene.talkTo);
   if (villager) releaseVillager(w, villager);
-  if (scene.id === "rescue")
+  if (scene.id === "rescue") {
     for (const p of Object.values(w.players)) p.hp = p.maxHp;
+    // Nothing the dragon was owed survives the scene.
+    for (const e of Object.values(w.enemies))
+      if (e.state !== "DEAD") damageEnemy(e, e.hp, w.serverTick);
+    delete story.dragon;
+  }
   if (scene.strangerLeaves) delete story.stranger;
   if (scene.id === "morning") {
     story.alden = { ...aldenAtShop, action: "idle" };
@@ -656,6 +696,9 @@ export function readLine(
   if (current.choose) return false;
   // While a partner is away the scene waits for them.
   if (Object.values(w.players).some((q) => !q.connected)) return true;
+  // Alden reaches his place before he casts, and his dragon finishes its
+  // meal, before the story moves on.
+  if (storyLineHeld(w.story!, current, w.serverTick)) return false;
   // One read is enough: whichever hero presses on first moves the line on
   // for both. (Private lines can only be moved on by their own hero.)
   run.acks.push(playerId);
@@ -693,6 +736,12 @@ export function tickStory(w: World, host: StoryHost) {
   const story = w.story;
   if (!story) return;
   walkAlden(w);
+  // The dragon's jaws close on each monster at its appointed tick.
+  for (const bite of story.dragon?.prey ?? []) {
+    const e = w.enemies[bite.id];
+    if (e && e.state !== "DEAD" && w.serverTick >= bite.at)
+      damageEnemy(e, e.hp, w.serverTick);
+  }
   // A hero offstage stays where the story put them (also after reconnecting).
   for (const p of Object.values(w.players)) {
     const away = offstageFor(story, p.role);
@@ -772,8 +821,19 @@ export function tickStory(w: World, host: StoryHost) {
           Math.hypot(p.x - cart.x, p.y - cart.y) <= CART_REACH,
       ),
     );
-  else if (story.stage === "AMBUSH") startCutscene(w, "ambush", host);
-  else if (story.stage === "FIGHT") {
+  else if (story.stage === "AMBUSH") {
+    // The clearing stays quiet until a hero walks into its middle.
+    const centre = maps.PROLOGUE_CLEARING.points.centre;
+    const there = players.find(
+      (p) =>
+        p.sceneId === "PROLOGUE_CLEARING" &&
+        Math.hypot(p.x - centre.x, p.y - centre.y) <= AMBUSH_REACH,
+    );
+    if (there) startCutscene(w, "ambush", host, there);
+  } else if (story.stage === "FIGHT") {
+    // Monsters join the fight once they are out of the bushes.
+    for (const e of Object.values(w.enemies))
+      if (e.passive && !e.march && e.state !== "DEAD") e.passive = false;
     // One at a time: a new monster rises every few seconds, and each one
     // beaten is replaced, until eight stand together.
     const ambush = story.ambush;

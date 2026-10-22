@@ -426,15 +426,22 @@ export function hitBridgeEntryTarget(w: World, owner: string, q?: Projectile) {
     !bridgeEntryTargetVisible(s) ||
     p?.role !== "EMBER" ||
     (p.sceneId ?? w.sceneId) !== "BRIDGE_RUINS" ||
-    !q ||
+    !q
+  )
+    return false;
+  if (
     !frontShot(q, bridgeMovingTarget(s.trapClock)) ||
     !q.castOrigin ||
     q.castOrigin.x < 576 ||
     q.castOrigin.x > 768 ||
     q.castOrigin.y < 1188 ||
     q.castOrigin.y >= 1344
-  )
+  ) {
+    // Struck, but not from the front: say so rather than fizzle silently.
+    s.message =
+      "That shot glanced off. Coco: stand on the stone landing right below the target and fire north at its face.";
     return false;
+  }
   s.targetHit = true;
   return true;
 }

@@ -4,6 +4,12 @@ import {
 } from "../animation/EnemyPresentation.js";
 import { SERVER_HZ } from "../../../../packages/shared/src/constants.js";
 import { MosslingAttackPresentation } from "../animation/mosslingAttack.js";
+import {
+  SPIKE_HEIGHT,
+  SPIKE_MID,
+  SPIKE_WIDTH,
+  paintSpike,
+} from "../animation/mosslingSpikeArt.js";
 export { enemyDirection } from "../animation/EnemyPresentation.js";
 import {
   preloadGolemAttack,
@@ -18,6 +24,7 @@ import type { Enemy } from "../../../../packages/shared/src/gameTypes.js";
 import {
   enemyDefinitions,
   golemMelee,
+  mosslingSpike,
 } from "../../../../packages/shared/src/enemies.js";
 import { enemyVisuals } from "../assets/enemyVisuals.js";
 import {
@@ -49,6 +56,16 @@ export function registerEnemies(scene: Phaser.Scene) {
         repeat: -1,
       });
 }
+/**
+ * Where the Mossling's arm meets its body, per facing, from its feet (world
+ * units, at its sprite's scale). Facing north the arm is behind it.
+ */
+const MOSSLING_HANDS: Record<string, { x: number; y: number; behind?: boolean }> = {
+  south: { x: 16, y: -22 },
+  north: { x: -16, y: -24, behind: true },
+  east: { x: 6, y: -22 },
+  west: { x: -6, y: -22 },
+};
 export class EnemyView {
   private presentation = new EnemyPresentation();
   private mossling = new MosslingAttackPresentation();
@@ -56,6 +73,16 @@ export class EnemyView {
   private sprite: Phaser.GameObjects.Sprite;
   private bar: Phaser.GameObjects.Graphics;
   private swipe: Phaser.GameObjects.Graphics;
+  /** The warning line on the ground under a Mossling's coming spike. */
+  private telegraph: Phaser.GameObjects.Graphics;
+  /** The Mossling's arm as a wooden spike (made on its first attack). */
+  private spike?: {
+    key: string;
+    texture: Phaser.Textures.CanvasTexture;
+    image: Phaser.GameObjects.Image;
+    pixels: ImageData;
+  };
+  private static spikes = 0;
   private charge: Phaser.GameObjects.Image;
   private text: Phaser.GameObjects.Text;
   constructor(
@@ -80,6 +107,7 @@ export class EnemyView {
         .setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.bar = scene.add.graphics();
     this.swipe = scene.add.graphics();
+    this.telegraph = scene.add.graphics().setDepth(-35);
     this.text = scene.add
       .text(0, 0, "", {
         fontSize: "9px",
@@ -170,7 +198,9 @@ export class EnemyView {
       }
     }
     this.swipe.clear().setDepth(pos.y + 1);
+    this.telegraph.clear();
     const mossling = this.mosslingPose;
+    if (this.spike) this.spike.image.setVisible(false);
     if (mossling) {
       const facing = enemyDirection(mossling.facing);
       this.sprite.anims.stop();
@@ -179,41 +209,7 @@ export class EnemyView {
         .setPosition(pos.x + mossling.offsetX, pos.y + mossling.offsetY)
         .setScale(c.scale * mossling.scaleX, c.scale * mossling.scaleY)
         .setRotation(mossling.lean);
-      const centerX = pos.x + Math.cos(mossling.facing) * 12;
-      const centerY = pos.y - 14 + Math.sin(mossling.facing) * 12;
-      if (mossling.slashAlpha > 0) {
-        for (let claw = 0; claw < 3; claw++) {
-          const points = Array.from({ length: 10 }, (_, index) => {
-            const angle =
-              mossling.facing - 1.1 + (index / 9) * 1.7 * mossling.swing;
-            const radius = 23 + claw * 4;
-            return new Phaser.Math.Vector2(
-              Math.round((centerX + Math.cos(angle) * radius) / 2) * 2,
-              Math.round((centerY + Math.sin(angle) * radius) / 2) * 2,
-            );
-          });
-          this.swipe
-            .lineStyle(4, 0x39442a, mossling.slashAlpha * 0.65)
-            .strokePoints(points);
-          this.swipe
-            .lineStyle(2, claw === 1 ? 0xffedb4 : 0xc5dc83, mossling.slashAlpha)
-            .strokePoints(points);
-        }
-      }
-      for (let leaf = 0; leaf < 4; leaf++) {
-        const spread =
-          mossling.swing > 0 ? mossling.swing * 16 : mossling.crouch * 5;
-        const angle = mossling.facing + (leaf - 1.5) * 0.7;
-        const x = pos.x + Math.cos(angle) * (12 + spread);
-        const y =
-          pos.y - 10 + Math.sin(angle) * (12 + spread) - mossling.crouch * 5;
-        this.swipe
-          .fillStyle(
-            leaf % 2 ? 0xc7b46b : 0x719747,
-            Math.max(mossling.crouch, mossling.slashAlpha) * 0.8,
-          )
-          .fillRect(Math.round(x / 2) * 2, Math.round(y / 2) * 2, 4, 2);
-      }
+      this.drawSpike(pos, mossling, facing, debug);
     }
     this.sprite.setVisible(e.state !== "DEAD");
     this.bar.clear().setDepth(pos.y + 1);
@@ -259,7 +255,90 @@ export class EnemyView {
       visible: this.sprite.visible,
     };
   }
+  /**
+   * The arm, hardening into a wooden spike that shoots out along the locked
+   * aim. Its point lies on the line the server strikes along.
+   */
+  private drawSpike(
+    pos: { x: number; y: number },
+    pose: NonNullable<EnemyView["mosslingPose"]>,
+    facing: string,
+    debug: boolean,
+  ) {
+    if (!this.spike) {
+      const key = `mossling-spike:${EnemyView.spikes++}`;
+      const texture = this.scene.textures.createCanvas(
+        key,
+        SPIKE_WIDTH,
+        SPIKE_HEIGHT,
+      )!;
+      texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      this.spike = {
+        key,
+        texture,
+        image: this.scene.add
+          .image(0, 0, key)
+          .setOrigin(0, SPIKE_MID / SPIKE_HEIGHT),
+        pixels: texture.getContext().createImageData(SPIKE_WIDTH, SPIKE_HEIGHT),
+      };
+    }
+    const hand = MOSSLING_HANDS[facing] ?? MOSSLING_HANDS.south,
+      cos = Math.cos(pose.facing),
+      sin = Math.sin(pose.facing),
+      body = { x: pos.x + pose.offsetX, y: pos.y + pose.offsetY },
+      from = { x: body.x + hand.x, y: body.y + hand.y },
+      to = {
+        x: body.x + cos * pose.length,
+        y: body.y + sin * pose.length + hand.y * 0.6,
+      },
+      length = Math.hypot(to.x - from.x, to.y - from.y);
+    paintSpike(this.spike.pixels, length, pose.wood);
+    this.spike.texture.getContext().putImageData(this.spike.pixels, 0, 0);
+    this.spike.texture.refresh();
+    this.spike.image
+      .setVisible(!debug)
+      .setPosition(Math.round(from.x), Math.round(from.y))
+      .setRotation(Math.atan2(to.y - from.y, to.x - from.x))
+      // Pointing west it would be upside down: keep the lit, mossy side up.
+      .setFlipY(to.x < from.x)
+      // Thrust north, the arm is behind the body; otherwise in front.
+      .setDepth(pos.y + (hand.behind ? -1 : 1));
+    // A faint line on the ground shows where it will strike.
+    if (pose.telegraph > 0)
+      for (let d = 16; d <= mosslingSpike.reach; d += 8)
+        this.telegraph
+          .fillStyle(0x2c3a1a, 0.45 * pose.telegraph * (1 - d / 260))
+          .fillRect(
+            Math.round(pos.x + cos * d) - 1,
+            Math.round(pos.y + sin * d) - 1,
+            3,
+            3,
+          );
+    // Splinters and leaves burst from the point as it lands.
+    if (pose.burst > 0) {
+      const spread = (1 - pose.burst) * 18;
+      for (let i = 0; i < 7; i++) {
+        const a = pose.facing + (i - 3) * 0.55;
+        this.swipe
+          .fillStyle(
+            i % 3 === 0 ? 0x9cc25a : i % 2 ? 0xc39a63 : 0x6e4b2c,
+            pose.burst,
+          )
+          .fillRect(
+            Math.round(to.x + Math.cos(a) * (4 + spread)),
+            Math.round(to.y + Math.sin(a) * (4 + spread) - spread * 0.3),
+            i % 3 === 0 ? 3 : 2,
+            2,
+          );
+      }
+    }
+  }
   destroy() {
+    this.telegraph.destroy();
+    if (this.spike) {
+      this.spike.image.destroy();
+      this.scene.textures.remove(this.spike.key);
+    }
     this.sprite.destroy();
     this.charge.destroy();
     this.bar.destroy();

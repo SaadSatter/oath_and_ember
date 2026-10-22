@@ -1,0 +1,7 @@
+{
+  "errors": [],
+  "log": [
+    "shot 0: targetHit false message Sieg: push the boulder onto plate A. Coco: hit any part of the moving target from the front.",
+    "shot 1: targetHit true message Coco: pass Gate 1 and hold E at the golden switch. Sieg: retrieve the same boulder."
+  ]
+}
