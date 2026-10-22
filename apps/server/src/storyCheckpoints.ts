@@ -8,6 +8,10 @@ import {
 } from "../../../packages/shared/src/prologue.js";
 import { storySpots } from "../../../packages/shared/src/chapter0.js";
 import { maps } from "../../../packages/shared/src/maps.js";
+import {
+  FINALE,
+  trialOrder,
+} from "../../../packages/shared/src/chapter0Finale.js";
 import { BAG_FLAG } from "../../../packages/shared/src/storyProps.js";
 import { beginPrologue, startCutscene, type StoryHost } from "./prologue.js";
 
@@ -46,6 +50,8 @@ const afterInvestigation = [
   "journal",
   "decision",
 ];
+// The Weeping Angel's blessing and the Three Trials, all passed.
+const beforeGoddess = ["angel-meet", "angel-blessing", "trials-inscription"];
 
 export function beginStoryCheckpoint(
   w: World,
@@ -119,11 +125,22 @@ export function beginStoryCheckpoint(
     w.story!.stage = "INVESTIGATION";
     // The Forgotten Shrine: the questions asked, the journal found, the
     // decision made; the road north out of Emberbrook is open.
-    if (checkpoint === "shrine") {
+    if (checkpoint === "shrine" || checkpoint === "goddess") {
       for (const id of afterInvestigation) complete(id);
       for (const spot of storySpots.filter((s) => s.stage === "JOURNAL"))
         flag(spot.flag);
       w.story!.stage = "SHRINE_ROAD";
+    }
+    // The Bald Goddess: the angel and the trials behind them, the party
+    // arrives at her shrine; her greeting plays as they reach it.
+    if (checkpoint === "goddess") {
+      for (const id of beforeGoddess) complete(id);
+      for (const t of trialOrder) flag(FINALE.trials[t]);
+      complete("trials-done");
+      w.story!.stage = "GODDESS";
+      host.travel("GODDESS_SHRINE");
+      w.checkpoint = storyCheckpoints[checkpoint].title;
+      return;
     }
     host.travel("EMBERBROOK_VILLAGE");
     const north = maps.EMBERBROOK_VILLAGE.points.exit;

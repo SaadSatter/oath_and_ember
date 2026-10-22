@@ -13,7 +13,8 @@ import {
   pondCulvertMouth,
   pondCulvert,
   pondSpawn,
-  pondMirrorWall,
+  pondMirrorWalls,
+  pondPushTurn,
   normalizeMirrorAngle,
   POND_ROTATION_STEP,
   pondFenceWalls,
@@ -89,7 +90,7 @@ function trace(game: ReturnType<typeof setup>, q: Projectile) {
 describe("Mirror Pond authoritative mechanics", () => {
   it("retains quick Push taps, rotates while held, and stops on release", () => {
     const g = setup();
-    Object.assign(g.s, { x: 38 * 32, y: 15 * 32, facing: -Math.PI / 2 });
+    Object.assign(g.s, { x: 38 * 32 + 24, y: 15 * 32, facing: -Math.PI / 2 });
     g.r.receiveInput(g.s.id, { ...neutral(1), pushHeld: true });
     g.r.receiveInput(g.s.id, { ...neutral(2), pushHeld: false });
     g.r.tick();
@@ -112,14 +113,19 @@ describe("Mirror Pond authoritative mechanics", () => {
       pondStations[0].rest + 3 * POND_ROTATION_STEP,
     );
   });
-  it("allows a complete 360 degree turn without snapping to solution angles", () => {
+  it("swings like a fan blade from one spot until the mirror faces Sieg, without snapping", () => {
     const g = setup();
-    Object.assign(g.s, { x: 38 * 32, y: 15 * 32, facing: -Math.PI / 2 });
-    const start = g.pond.mirrors[0];
-    for (let n = 0; n < 240; n++) expect(pushPondMirror(g.w, g.s)).toBe(true);
-    expect(g.pond.mirrors[0]).toBeCloseTo(start, 9);
-    pushPondMirror(g.w, g.s);
-    expect(g.pond.mirrors[0]).toBeCloseTo(start + POND_ROTATION_STEP);
+    Object.assign(g.s, { x: 38 * 32 + 24, y: 15 * 32, facing: -Math.PI / 2 });
+    let turns = 0;
+    while (pushPondMirror(g.w, g.s) && turns < 240) turns++;
+    // Pushing below the pivot swings the upright mirror clockwise until its
+    // center faces Sieg; then he must step to a new spot to keep turning.
+    const s = pondStations[0],
+      facesSieg = Math.atan2(g.s.y - s.y, g.s.x - s.x) + Math.PI / 2;
+    expect(turns).toBeGreaterThan(40);
+    expect(turns).toBeLessThan(60);
+    expect(g.pond.mirrors[0]).toBeCloseTo(s.rest + turns * POND_ROTATION_STEP);
+    expect(Math.abs(g.pond.mirrors[0] - facesSieg)).toBeLessThan(0.1);
   });
   it("reflects at the actual chosen angle; incorrect angles miss rather than auto-correct", () => {
     const g = setup();
@@ -185,7 +191,7 @@ describe("Mirror Pond authoritative mechanics", () => {
   });
   it("Push changes angle only for Sieg, blocks the next section when deployed, and refuses to embed a player", () => {
     const g = setup();
-    Object.assign(g.s, { x: 38 * 32, y: 15 * 32, facing: -Math.PI / 2 });
+    Object.assign(g.s, { x: 38 * 32 + 24, y: 15 * 32, facing: -Math.PI / 2 });
     Object.assign(g.c, { x: 28 * 32, y: 12 * 32 });
     expect(pushPondMirror(g.w, g.c)).toBe(false);
     expect(pushPondMirror(g.w, g.s)).toBe(true);
@@ -193,8 +199,10 @@ describe("Mirror Pond authoritative mechanics", () => {
       pondStations[0].rest + POND_ROTATION_STEP,
     );
     g.pond.mirrors[0] = normalizeMirrorAngle(pondStations[0].angle);
-    const wall = pondMirrorWall(0, g.pond.mirrors[0]);
-    expect(wall.w).toBeGreaterThan(128);
+    const walls = pondMirrorWalls(0, g.pond.mirrors[0]);
+    const left = Math.min(...walls.map((r) => r.x)),
+      right = Math.max(...walls.map((r) => r.x + r.w));
+    expect(right - left).toBeGreaterThan(128);
     const blocked = constrainMotion(
       g.s,
       { x: 0, y: -200 },
@@ -210,16 +218,20 @@ describe("Mirror Pond authoritative mechanics", () => {
       ),
     );
     expect(blocked.y).toBeGreaterThan(pondStations[0].y);
+    // Pushing up on the right half from below turns it counter-clockwise.
+    Object.assign(g.s, blocked);
     expect(pushPondMirror(g.w, g.s)).toBe(true);
     expect(g.pond.mirrors[0]).toBeCloseTo(
-      normalizeMirrorAngle(pondStations[0].angle + POND_ROTATION_STEP),
+      normalizeMirrorAngle(pondStations[0].angle - POND_ROTATION_STEP),
     );
-    Object.assign(g.s, {
-      x: pondStations[0].x - 40,
-      y: pondStations[0].y,
-      facing: 0,
-    });
+    // Coco just above the rising tip stops the frame instead of being swept.
+    const tip = pondMirrorWalls(0, g.pond.mirrors[0]).reduce((a, b) =>
+      b.x > a.x ? b : a,
+    );
+    Object.assign(g.c, { x: tip.x + 7, y: tip.y - HALF - 0.5 });
+    const before = g.pond.mirrors[0];
     expect(pushPondMirror(g.w, g.s)).toBe(false);
+    expect(g.pond.mirrors[0]).toBe(before);
   });
   it("Coco cannot enter the perimeter even in Flight; the separate culvert is traversable only while flying", () => {
     const g = setup();
@@ -527,7 +539,7 @@ it("synchronizes numeric mirror angles to both clients and rejects client-suppli
     await req(clients[1], "lobby:ready", { ready: true });
     const room = app.manager.get(a.roomCode),
       s = room.state.players[a.playerId];
-    Object.assign(s, { x: 38 * 32, y: 15 * 32, facing: -Math.PI / 2 });
+    Object.assign(s, { x: 38 * 32 + 24, y: 15 * 32, facing: -Math.PI / 2 });
     clients[0].emit("player:input", {
       ...neutral(1),
       pushHeld: true,
@@ -721,7 +733,7 @@ it("leaves the fence open in front of every mirror, while water still bars walke
     for (let step = 0; step < 240; step++)
       expect(
         fence.some((r) =>
-          touches(pondMirrorWall(i, (step * Math.PI) / 120), r),
+          pondMirrorWalls(i, (step * Math.PI) / 120).some((m) => touches(m, r)),
         ),
       ).toBe(false);
     // The shot lane from the firing pad to the mirror is clear of rails.
@@ -754,14 +766,45 @@ it("leaves the fence open in front of every mirror, while water still bars walke
   expect(g.s.x).toBeCloseTo(36 * 32 + HALF);
 });
 
-it("rotates in opposite directions when Sieg pushes from opposite banks of the pivot", () => {
+it("turns like a fan blade: the pushed half and the pushed face set the direction", () => {
   const g = setup(),
-    station = pondStations[0];
-  const start = g.pond.mirrors[0];
-  Object.assign(g.s, { x: station.x, y: station.y + 96, facing: -Math.PI / 2 });
+    i = 1,
+    station = pondStations[i];
+  // Mirror 2 rests horizontal. Clockwise is +1 (screen y points down).
+  expect(g.pond.mirrors[i]).toBe(0);
+  const push = (dx: number, dy: number) => {
+    const at = { x: station.x + dx, y: station.y + dy };
+    return pondPushTurn(g.pond, {
+      ...at,
+      facing: Math.atan2(-dy, -dx),
+    });
+  };
+  // From below: left half clockwise, right half counter-clockwise.
+  expect(push(-40, 30)).toEqual({ index: i, direction: 1 });
+  expect(push(40, 30)).toEqual({ index: i, direction: -1 });
+  // From above, both reverse.
+  expect(push(-40, -30)).toEqual({ index: i, direction: -1 });
+  expect(push(40, -30)).toEqual({ index: i, direction: 1 });
+  // Pushing the pivot itself, or square onto an end, does nothing.
+  expect(push(0, 30)).toBeNull();
+  expect(push(-90, 0)).toBeNull();
+  // Facing away from the mirror does nothing.
+  expect(
+    pondPushTurn(g.pond, {
+      x: station.x - 40,
+      y: station.y + 30,
+      facing: Math.PI / 2,
+    }),
+  ).toBeNull();
+  // The server applies the same rule.
+  Object.assign(g.s, {
+    x: station.x - 40,
+    y: station.y + 30,
+    facing: Math.atan2(-30, 40),
+  });
   expect(pushPondMirror(g.w, g.s)).toBe(true);
-  expect(g.pond.mirrors[0]).toBeCloseTo(start + POND_ROTATION_STEP);
-  Object.assign(g.s, { y: station.y - 96, facing: Math.PI / 2 });
+  expect(g.pond.mirrors[i]).toBeCloseTo(POND_ROTATION_STEP);
+  Object.assign(g.s, { x: station.x + 40, facing: Math.atan2(-30, -40) });
   expect(pushPondMirror(g.w, g.s)).toBe(true);
-  expect(g.pond.mirrors[0]).toBeCloseTo(start);
+  expect(g.pond.mirrors[i]).toBeCloseTo(0);
 });

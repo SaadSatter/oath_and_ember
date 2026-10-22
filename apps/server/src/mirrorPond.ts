@@ -17,8 +17,9 @@ import {
   mirrorPondState,
   pondChest,
   pondGuardrails,
-  pondMirrorWall,
+  pondMirrorWalls,
   pondPuzzle,
+  pondPushTurn,
   pondSpawn,
   pondSpikes,
   pondStations,
@@ -63,32 +64,20 @@ export function pushPondMirror(w: World, p: Player) {
     return false;
   const pond = mirrorPondState(w.puzzles);
   if (!pond) return false;
-  const choices = pondStations
-    .map((s, i) => ({ s, i, d: Math.hypot(p.x - s.x, p.y - s.y) }))
-    .filter(({ d }) => d <= 104)
-    .sort((a, b) => a.d - b.d);
-  const chosen = choices[0];
-  if (!chosen) return false;
-  const { s, i, d } = chosen;
-  if (
-    d > 1 &&
-    ((s.x - p.x) * Math.cos(p.facing) + (s.y - p.y) * Math.sin(p.facing)) / d <
-      0.45
-  )
-    return false;
-  // Use a fixed bank-relative side so holding Push can complete a full turn.
-  const side = (p.x - s.x) * -s.incoming.y + (p.y - s.y) * s.incoming.x;
-  const direction = side < -1 ? -1 : 1;
+  const turn = pondPushTurn(pond, p);
+  if (!turn) return false;
+  const { index: i, direction } = turn;
   const angle = normalizeMirrorAngle(
       pond.mirrors[i] + direction * POND_ROTATION_STEP,
     ),
-    wall = pondMirrorWall(i, angle);
+    walls = pondMirrorWalls(i, angle);
+  // The turning frame stops rather than sweeping through a player.
   if (
     Object.values(w.players).some(
       (q) =>
         q.connected &&
         (q.sceneId ?? w.sceneId) === "MIRROR_POND" &&
-        overlaps(q, wall),
+        walls.some((wall) => overlaps(q, wall)),
     )
   )
     return false;

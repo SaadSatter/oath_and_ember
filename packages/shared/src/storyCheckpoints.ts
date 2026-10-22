@@ -4,6 +4,7 @@ export const storyCheckpointIds = [
   "funeral",
   "investigation",
   "shrine",
+  "goddess",
 ] as const;
 export type StoryCheckpointId = (typeof storyCheckpointIds)[number];
 export const storyCheckpoints: Record<
@@ -29,5 +30,9 @@ export const storyCheckpoints: Record<
   shrine: {
     title: "The Forgotten Shrine",
     description: "Follow Papa’s clues past the Weeping Angel and the trials.",
+  },
+  goddess: {
+    title: "The Bald Goddess",
+    description: "Begin at her shrine and recover the Divine Wig.",
   },
 };

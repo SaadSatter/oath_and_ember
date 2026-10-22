@@ -1769,7 +1769,7 @@ class Adventure extends Phaser.Scene {
       const pond = mirrorPondState(w.puzzles)!;
       goal = pond.raised
         ? "All four flames lit! The sanctuary has risen. Open the shared mirror chest (E), then return east."
-        : `Mirror Pond · ${pond.torches.filter(Boolean).length}/4 torches · Sieg: Speed through east spikes; hold Push (1) on opposite sides to turn mirrors in opposite directions. Coco: Flight (2) through water culvert; Fireball (J) from A1–A4.`;
+        : `Mirror Pond · ${pond.torches.filter(Boolean).length}/4 torches · Sieg: Speed through east spikes; mirrors spin on a center pivot — hold Push (1) against one end to swing it; push the other end or the other face to turn it back. Coco: Flight (2) through water culvert; Fireball (J) from A1–A4.`;
     }
     if (sceneId === "GRIFFIN_ENCLOSURE") {
       const g = griffinState(w.puzzles)!;

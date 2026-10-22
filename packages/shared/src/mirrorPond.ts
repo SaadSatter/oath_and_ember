@@ -203,11 +203,60 @@ export const pondFixedWalls = [
 export const POND_ROTATION_STEP = Math.PI / 120; // 1.5 degrees per server tick: 45 degrees/second.
 export const normalizeMirrorAngle = (angle: number) =>
   ((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-export function pondMirrorWall(index: number, angle: number): Rect {
-  const s = pondStations[index];
-  const halfX = Math.abs(Math.cos(angle)) * (POND_MIRROR_REACH - 7) + 7,
-    halfY = Math.abs(Math.sin(angle)) * (POND_MIRROR_REACH - 7) + 7;
-  return { x: s.x - halfX, y: s.y - halfY, w: halfX * 2, h: halfY * 2 };
+// Pushes this close to the pivot, or square onto a mirror's end, do not turn it.
+export const POND_PUSH_DEAD_ZONE = 6;
+// Which mirror Sieg's Push would turn, and which way: +1 clockwise on screen,
+// -1 counter-clockwise. A mirror spins on a center pivot like a fan blade:
+// pushing one half of a face turns it one way, the other half the other way,
+// and pushing the same half from the opposite face reverses it. Shared so the
+// client hint matches the server exactly.
+export function pondPushTurn(
+  pond: MirrorPondState,
+  p: { x: number; y: number; facing: number },
+): { index: number; direction: 1 | -1 } | null {
+  const chosen = pondStations
+    .map((s, i) => ({ s, i, d: Math.hypot(p.x - s.x, p.y - s.y) }))
+    .filter(({ d }) => d <= 104)
+    .sort((a, b) => a.d - b.d)[0];
+  if (!chosen) return null;
+  const { s, i, d } = chosen;
+  if (
+    d > 1 &&
+    ((s.x - p.x) * Math.cos(p.facing) + (s.y - p.y) * Math.sin(p.facing)) / d <
+      0.45
+  )
+    return null;
+  const angle = pond.mirrors[i],
+    rx = p.x - s.x,
+    ry = p.y - s.y;
+  // Where along the mirror Sieg pushes, and which face he pushes from.
+  const along = rx * Math.cos(angle) + ry * Math.sin(angle),
+    side = -rx * Math.sin(angle) + ry * Math.cos(angle);
+  if (
+    Math.abs(along) < POND_PUSH_DEAD_ZONE ||
+    Math.abs(side) < POND_PUSH_DEAD_ZONE
+  )
+    return null;
+  // Torque of a push into the face at that point (screen y points down).
+  return { index: i, direction: along * side < 0 ? 1 : -1 };
+}
+// A mirror's solid frame follows the rotated bar as a chain of overlapping
+// 14px squares, so Sieg can step right up to either end and push it.
+export const POND_MIRROR_SEGMENTS = 17;
+export function pondMirrorWalls(index: number, angle: number): Rect[] {
+  const s = pondStations[index],
+    half = POND_MIRROR_REACH - 7,
+    walls: Rect[] = [];
+  for (let n = 0; n < POND_MIRROR_SEGMENTS; n++) {
+    const k = -half + (2 * half * n) / (POND_MIRROR_SEGMENTS - 1);
+    walls.push({
+      x: s.x + Math.cos(angle) * k - 7,
+      y: s.y + Math.sin(angle) * k - 7,
+      w: 14,
+      h: 14,
+    });
+  }
+  return walls;
 }
 export function pondLand(state: MirrorPondState | undefined) {
   return [...pondPads, ...(state?.raised ? [pondCenter, pondBridge] : [])];
@@ -242,8 +291,8 @@ export function pondCollisionWalls(
     ...pondFenceWalls(puzzles),
     ...water,
     ...wards,
-    ...pondStations.map((_, i) =>
-      pondMirrorWall(i, state?.mirrors[i] ?? pondStations[i].rest),
+    ...pondStations.flatMap((_, i) =>
+      pondMirrorWalls(i, state?.mirrors[i] ?? pondStations[i].rest),
     ),
   ];
 }

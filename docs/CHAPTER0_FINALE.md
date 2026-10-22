@@ -6,6 +6,7 @@ Picks up after Part 1's decision by the grave (docs/CHAPTER0_PART1.md) and ends 
 - **When each scene plays:** `apps/server/src/chapter0Finale.ts`, called from the story tick.
 - **Stages:** `DECISION` → `SHRINE_ROAD` → `TRIALS` → `GODDESS` → `WIG` → `DONE`.
 - **Start point:** "The Forgotten Shrine" on the title screen begins at `SHRINE_ROAD`, in Emberbrook by the north road.
+- **Start point:** "The Bald Goddess" on the title screen begins at `GODDESS` on the Goddess Shrine map, with the angel's blessing and all three trials passed; her greeting (`goddess-meet`) plays on arrival.
 
 ## Rules
 

@@ -23,6 +23,7 @@ import {
   pondFenceWalls,
   pondSpikeColumns,
   pondSpikeState,
+  pondPushTurn,
 } from "../../../../packages/shared/src/mirrorPond.js";
 export function preloadMirrorPond(s: Phaser.Scene) {
   for (const key of ["mirror", "brazier"])
@@ -145,11 +146,7 @@ export class MirrorPondView {
         this.mirrors.push(this.image("pond:mirror", p.x, p.y));
         this.image("pond:brazier", p.torch.x, p.torch.y);
         this.angles.push(
-          this.label(
-            `M${i + 1} · Hold 1 · opposite side reverses`,
-            p.x,
-            p.y + 78,
-          ),
+          this.label(`M${i + 1} · Hold 1 near one end`, p.x, p.y + 78),
         );
         this.scene.textures
           .get("pond:flame")
@@ -208,7 +205,7 @@ export class MirrorPondView {
     this.mirrors.forEach((o, i) => {
       o.setRotation(state.mirrors[i]);
       this.angles[i].setText(
-        `M${i + 1} · ${Number((((state.mirrors[i] * 180) / Math.PI) % 360).toFixed(1))}°\nHold 1 · opposite side reverses`,
+        `M${i + 1} · ${Number((((state.mirrors[i] * 180) / Math.PI) % 360).toFixed(1))}°\nPush one end · other end reverses`,
       );
     });
     const durations = this.scene.cache.json.get("pond:flame-meta")
@@ -256,6 +253,39 @@ export class MirrorPondView {
       for (const y of [m.y + 4, m.y + m.h - 8]) {
         g.fillStyle(0x23262e).fillRect(m.x, y + 1, m.w, 4);
         g.fillStyle(0x7d8494).fillRect(m.x, y, m.w, 4);
+      }
+    }
+    // Turn hint: which way Sieg's Push would spin the mirror he faces.
+    const sieg = Object.values(w.players).find(
+      (q) =>
+        q.role === "OATH" &&
+        q.hp > 0 &&
+        (q.sceneId ?? w.sceneId) === "MIRROR_POND",
+    );
+    const turn = sieg && pondPushTurn(state, sieg);
+    if (turn) {
+      const s = pondStations[turn.index],
+        angle = state.mirrors[turn.index],
+        r = 76,
+        span = 0.7 * turn.direction;
+      g.lineStyle(3, 0xffe08a, 0.85);
+      for (const tip of [angle, angle + Math.PI]) {
+        const end = tip + span;
+        g.beginPath();
+        g.arc(s.x, s.y, r, tip, end, turn.direction < 0);
+        g.strokePath();
+        const ex = s.x + Math.cos(end) * r,
+          ey = s.y + Math.sin(end) * r,
+          tx = -Math.sin(end) * turn.direction,
+          ty = Math.cos(end) * turn.direction;
+        g.fillStyle(0xffe08a, 0.95).fillTriangle(
+          ex + tx * 9,
+          ey + ty * 9,
+          ex - tx * 3 + ty * 6,
+          ey - ty * 3 - tx * 6,
+          ex - tx * 3 - ty * 6,
+          ey - ty * 3 + tx * 6,
+        );
       }
     }
     for (let i = 0; i < 4; i++) {

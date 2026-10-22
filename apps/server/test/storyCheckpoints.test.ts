@@ -19,6 +19,7 @@ import {
   graveVisible,
 } from "../../../packages/shared/src/prologue.js";
 import type { World } from "../../../packages/shared/src/gameTypes.js";
+import { FINALE } from "../../../packages/shared/src/chapter0Finale.js";
 import { storyVersion } from "../../../packages/shared/src/storyVersion.js";
 import type { Session, Result } from "../../../packages/shared/src/protocol.js";
 
@@ -28,6 +29,7 @@ const stage = {
   funeral: "MOURNING",
   investigation: "INVESTIGATION",
   shrine: "SHRINE_ROAD",
+  goddess: "GODDESS",
 } as const;
 function opening(room: ReturnType<RoomManager["create"]>) {
   for (let guard = 0; room.state.story?.cutscene && guard < 300; guard++) {
@@ -109,6 +111,24 @@ for (const checkpoint of storyCheckpointIds) {
       expect(storyTalk(state.story, "OATH", "elder", cutscenes)).toBe(
         "ask-bertram",
       );
+    }
+    if (checkpoint === "goddess") {
+      expect(state.sceneId).toBe("GODDESS_SHRINE");
+      for (const player of Object.values(state.players))
+        expect(player.sceneId).toBe("GODDESS_SHRINE");
+      for (const flag of [
+        FINALE.blessing,
+        ...Object.values(FINALE.trials),
+        FINALE.trialsPassed,
+      ])
+        expect(state.story!.flags).toContain(flag);
+      expect(state.story!.flags).not.toContain(FINALE.goddessMeet);
+      // Her greeting plays on arrival and opens the hunt for the wig.
+      room.tick();
+      expect(state.story!.cutscene?.id).toBe("goddess-meet");
+      opening(room);
+      expect(state.story!.stage).toBe("WIG");
+      expect(state.story!.flags).toContain(FINALE.goddessMeet);
     }
     const expected = structuredClone(state.inventory);
     room.reset();
