@@ -14,7 +14,7 @@ export function ensureShrine(w: World, inventory: InventoryService) {
       ...shrinePoints.offering,
       itemId: "griffin_wig",
       dialogue: {
-        idle: "“My crown is cold. Seek a boastful creature whose glory grows above its eyes. Bring me something with… volume.”",
+        idle: "“My crown is cold. My glorious hair is missing! Search every corner of this land and bring it back to me.”",
         wrong: {
           enchanted_shears:
             "“A trim? Darling, that ship has sailed. Bring me something to trim first.”",

@@ -48,7 +48,7 @@ The trials are Puzzle Map 2's own phases:
 
 ## Act IV: the Bald Goddess
 
-`goddess-meet` plays on first arrival at the shrine, with the heroes before her statue. It ends with "Recover the Divine Wig". Her power had already faded; the wig is only her latest humiliation, and the script never says otherwise.
+`goddess-meet` plays on first arrival at the shrine, with the heroes before her statue. It ends with "Recover the Divine Wig". Her power had already faded; the wig is only her latest humiliation, and the script never says otherwise. She only says the wig is missing, never who took it, so the heroes search the pond and maze too; the quest tracker shows "Wig (missing)" until they have met the griffin.
 
 ## Act V: the wig
 

@@ -1735,7 +1735,7 @@ class Adventure extends Phaser.Scene {
                       : !w.puzzles.bridge.complete
                         ? "Sieg: hold 1 at crate to push to plate. Coco: E at crystal."
                         : !shrineComplete(w)
-                          ? "Before boarding: E at GODDESS SHRINE in the south-west. Complete the maze and pond, obtain the Griffin wig, and offer it to the goddess."
+                          ? "Before boarding: E at GODDESS SHRINE in the south-west. Find the goddess's missing wig and offer it to her."
                           : "Shrine quest complete and both gates open. Explore east to board the airship."
                     : sceneId === "AIRSHIP"
                       ? `Hold E together: Sieg at crank, Coco at core. Engine ${Math.min(100, Math.round((w.puzzles.engine.progress / 3) * 100))}%`
@@ -1782,7 +1782,7 @@ class Adventure extends Phaser.Scene {
     if (sceneId === "GODDESS_SHRINE")
       goal = shrineComplete(w)
         ? "The Bald Goddess · Quest complete! South returns to Puzzle Map 2."
-        : "Goddess Shrine · E at the offering bowl for a clue. West: Mirror Pond for the mirror. East: Hedge Maze for shears. North: Griffin for the wig. Return here to offer it. I opens the shared backpack.";
+        : "Goddess Shrine · The goddess's wig is missing. Search West: Mirror Pond. East: Hedge Maze. North: Griffin Enclosure. Return here and E at the offering bowl to offer it. I opens the shared backpack.";
     // The finale's quest: on home ground it is the whole goal; along the
     // route it leads the map's own hint.
     const quest =

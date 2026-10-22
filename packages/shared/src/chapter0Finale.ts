@@ -324,7 +324,7 @@ export const finaleCutscenes: Record<string, StoryCutscene> = {
       { speaker: "COCO", text: "I was just asking!" },
       {
         speaker: "GODDESS",
-        text: "My glorious hair has been stolen by that wretched griffin!",
+        text: "My glorious hair is MISSING! Vanished from my very own shrine!",
       },
       {
         speaker: "COCO",
@@ -352,7 +352,7 @@ export const finaleCutscenes: Record<string, StoryCutscene> = {
       { speaker: "COCO", text: "I wouldn't go that far." },
       {
         speaker: "QUEST",
-        text: "New objective: Recover the Divine Wig. East: the Hedge Maze. West: the Mirror Pond. North: the Griffin Enclosure.",
+        text: "New objective: Recover the Divine Wig. No one knows where it went: search the Mirror Pond to the west, the Hedge Maze to the east, and the Griffin Enclosure to the north.",
       },
     ],
   },
@@ -734,7 +734,7 @@ export function finaleObjective(
       return "Quest · Speak to the Guardian Goddess at her shrine, beyond the castle exit.";
     case "WIG":
       if (offered) return "Quest · The goddess remembers.";
-      return `Quest · Recover the Divine Wig  ${tick((bag.enchanted_shears ?? 0) > 0)} Shears (east maze)  ${tick((bag.vanity_mirror ?? 0) > 0)} Mirror (west pond)  ${tick((bag.griffin_wig ?? 0) > 0)} Wig (north griffin), then offer it at the bowl`;
+      return `Quest · Recover the Divine Wig  ${tick((bag.enchanted_shears ?? 0) > 0)} Shears (east maze)  ${tick((bag.vanity_mirror ?? 0) > 0)} Mirror (west pond)  ${tick((bag.griffin_wig ?? 0) > 0)} Wig (${has(FINALE.griffin) ? "north griffin" : "missing"}), then offer it at the bowl`;
     case "DONE":
       return has(FINALE.complete)
         ? "Chapter 0 complete. The south-east path from the shrine leads on to the Forest Ruins."

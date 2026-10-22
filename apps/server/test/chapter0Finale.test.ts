@@ -9,6 +9,7 @@ import {
   type Player,
   type World,
 } from "../../../packages/shared/src/gameTypes.js";
+import { cutscenes } from "../../../packages/shared/src/prologue.js";
 import { SHRINE_QUEST } from "../../../packages/shared/src/chapter0.js";
 import {
   FINALE,
@@ -59,7 +60,11 @@ function settle(r: GameRoom) {
 }
 /** Read a scene to its end (choosing lines are answered by `choose`). */
 function readScene(r: GameRoom, players: Player[], id: string) {
-  for (let guard = 0; r.state.story?.cutscene?.id === id && guard < 300; guard++) {
+  for (
+    let guard = 0;
+    r.state.story?.cutscene?.id === id && guard < 300;
+    guard++
+  ) {
     settle(r);
     const run = r.state.story!.cutscene!;
     if (finaleCutscenes[id]?.lines[run.line]?.choose) return;
@@ -160,7 +165,8 @@ it("reads the inscription, then passes each trial as the bridge's own latches cl
   expect(story.stage).toBe("TRIALS");
   expect(flagCount(story, FINALE.inscription)).toBe(1);
   const s = r.state.bridgePuzzle!;
-  const trials = () => Object.values(FINALE.trials).filter((f) => story.flags.includes(f));
+  const trials = () =>
+    Object.values(FINALE.trials).filter((f) => story.flags.includes(f));
   r.tick();
   expect(trials()).toEqual([]);
   // Cooperation: Gate 1 and the golden switch.
@@ -172,7 +178,10 @@ it("reads the inscription, then passes each trial as the bridge's own latches cl
   // Ingenuity: the boulder on plate B, past the spikes.
   Object.assign(s.boulder, bridgePoints.plateB);
   r.tick();
-  expect(trials()).toEqual([FINALE.trials.cooperation, FINALE.trials.ingenuity]);
+  expect(trials()).toEqual([
+    FINALE.trials.cooperation,
+    FINALE.trials.ingenuity,
+  ]);
   // Courage: the long shot and the switches held apart. The castle exit
   // waits for the scene.
   s.finalTargetHit = true;
@@ -184,7 +193,8 @@ it("reads the inscription, then passes each trial as the bridge's own latches cl
   expect(story.cutscene?.id).toBe("trials-done");
   readScene(r, [sieg, coco], "trials-done");
   expect(story.stage).toBe("GODDESS");
-  for (const f of Object.values(FINALE.trials)) expect(flagCount(story, f)).toBe(1);
+  for (const f of Object.values(FINALE.trials))
+    expect(flagCount(story, f)).toBe(1);
   // The heroes reunite either side of the castle exit; E there goes on.
   r.state.serverTick += 120;
   input(r, sieg.id, { interactHeld: true });
@@ -200,7 +210,9 @@ it("keeps a reconnecting hero's trials, and the inscription readable on clear gr
   expect(story.flags).toContain(FINALE.trials.cooperation);
   // The stone stands in the courtyard, away from the boulder's lane.
   expect(trialInscription.y).toBeGreaterThan(1344);
-  expect(Math.abs(trialInscription.x - bridgePoints.boulderStart.x)).toBeGreaterThan(60);
+  expect(
+    Math.abs(trialInscription.x - bridgePoints.boulderStart.x),
+  ).toBeGreaterThan(60);
 });
 
 /** Through the trials to the goddess's first words. */
@@ -231,7 +243,27 @@ it("meets the Bald Goddess on arrival, once, then sends them after her wig", () 
   r.transition("GODDESS_SHRINE");
   for (let i = 0; i < 10; i++) r.tick();
   expect(story.cutscene).toBeUndefined();
-  expect(finaleObjective(story, r.state.inventory?.counts)).toMatch(/Recover the Divine Wig/);
+  expect(finaleObjective(story, r.state.inventory?.counts)).toMatch(
+    /Recover the Divine Wig/,
+  );
+});
+
+it("only says the wig is missing until the heroes have met the griffin", () => {
+  const { r, story } = toWig();
+  // She never names who took it, so the pond and maze are worth searching.
+  const meet = cutscenes["goddess-meet"].lines;
+  for (const line of meet.filter((l) => l.speaker !== "QUEST"))
+    expect(line.text).not.toMatch(/griffin/i);
+  expect(meet.find((l) => l.speaker === "QUEST")!.text).not.toMatch(
+    /griffin (has|took|stole)/i,
+  );
+  expect(finaleObjective(story)).toMatch(/Wig \(missing\)/);
+  expect(finaleObjective(story)).not.toMatch(/north griffin/);
+  story.flags.push(FINALE.griffin);
+  expect(finaleObjective(story)).toMatch(/Wig \(north griffin\)/);
+  expect(
+    r.inventory.targets.get(SHRINE_OFFERING)?.dialogue?.idle ?? "",
+  ).not.toMatch(/creature|griffin/i);
 });
 
 it("holds the maze's monsters while its words play, then lets them loose", () => {
@@ -245,7 +277,9 @@ it("holds the maze's monsters while its words play, then lets them loose", () =>
   const hp = [sieg.hp, coco.hp];
   for (let i = 0; i < 120; i++) r.tick();
   expect(
-    JSON.stringify(Object.values(r.state.enemies).map((e) => [e.x, e.y, e.state])),
+    JSON.stringify(
+      Object.values(r.state.enemies).map((e) => [e.x, e.y, e.state]),
+    ),
   ).toBe(before);
   expect([sieg.hp, coco.hp]).toEqual(hp);
   readScene(r, [sieg, coco], "maze-banter");
@@ -286,7 +320,10 @@ it("speaks once each over the mirror, the griffin and the wig, without touching 
 /** Offer the wig through the existing offering interaction. */
 function offer(r: GameRoom, hero: Player) {
   r.state.inventory!.counts.griffin_wig = 1;
-  Object.assign(hero, { x: shrinePoints.offering.x, y: shrinePoints.offering.y + 40 });
+  Object.assign(hero, {
+    x: shrinePoints.offering.x,
+    y: shrinePoints.offering.y + 40,
+  });
   return r.useItem(hero.id, {
     requestId: "offer-wig-1",
     targetId: SHRINE_OFFERING,
@@ -309,20 +346,36 @@ it("remembers only after the wig, then waits for each hero's own choice", () => 
   const line = story.cutscene!.line;
   // Reading cannot skip a choice; nor can a wrong role, id or line.
   expect(r.readStoryLine(sieg.id, "resolve", line).accepted).toBe(false);
-  expect(r.chooseStoryLine(sieg.id, "resolve", line, "truth").accepted).toBe(false);
-  expect(r.chooseStoryLine(sieg.id, "resolve", line, "nonsense").accepted).toBe(false);
-  expect(r.chooseStoryLine(sieg.id, "resolve", line + 1, "promise").accepted).toBe(false);
-  expect(r.chooseStoryLine(sieg.id, "revelation", line, "promise").accepted).toBe(false);
+  expect(r.chooseStoryLine(sieg.id, "resolve", line, "truth").accepted).toBe(
+    false,
+  );
+  expect(r.chooseStoryLine(sieg.id, "resolve", line, "nonsense").accepted).toBe(
+    false,
+  );
+  expect(
+    r.chooseStoryLine(sieg.id, "resolve", line + 1, "promise").accepted,
+  ).toBe(false);
+  expect(
+    r.chooseStoryLine(sieg.id, "revelation", line, "promise").accepted,
+  ).toBe(false);
   // Sieg chooses; the line waits for Coco.
-  expect(r.chooseStoryLine(sieg.id, "resolve", line, "promise").accepted).toBe(true);
+  expect(r.chooseStoryLine(sieg.id, "resolve", line, "promise").accepted).toBe(
+    true,
+  );
   for (let i = 0; i < 5; i++) r.tick();
   expect(story.cutscene?.line).toBe(line);
   // A changed mind is not accepted: the first choice stands.
-  expect(r.chooseStoryLine(sieg.id, "resolve", line, "duty").accepted).toBe(false);
-  expect(r.chooseStoryLine(sieg.id, "resolve", line, "promise").accepted).toBe(true);
+  expect(r.chooseStoryLine(sieg.id, "resolve", line, "duty").accepted).toBe(
+    false,
+  );
+  expect(r.chooseStoryLine(sieg.id, "resolve", line, "promise").accepted).toBe(
+    true,
+  );
   // Coco's choice arrives while Sieg is away: the line waits for him.
   r.disconnect(sieg.id);
-  expect(r.chooseStoryLine(coco.id, "resolve", line, "scared").accepted).toBe(true);
+  expect(r.chooseStoryLine(coco.id, "resolve", line, "scared").accepted).toBe(
+    true,
+  );
   for (let i = 0; i < 5; i++) r.tick();
   expect(story.cutscene?.line).toBe(line);
   sieg.connected = true;
@@ -376,7 +429,9 @@ it("remembers only after the wig, then waits for each hero's own choice", () => 
 
 it("has the goddess sense something familiar in Sieg, and only recall the name Sigurd", () => {
   const lines = finaleCutscenes.revelation.lines;
-  const goddess = lines.filter((l) => l.speaker === "GODDESS").map((l) => l.text);
+  const goddess = lines
+    .filter((l) => l.speaker === "GODDESS")
+    .map((l) => l.text);
   // She never names him: nobody has introduced him to her.
   for (const text of goddess) expect(text).not.toMatch(/\bSieg\b/);
   expect(goddess).toContain("...Sigurd.");
@@ -461,7 +516,12 @@ it("syncs each hero's choice over real sockets, validates it, and keeps it on re
     // Straight to the choosing line.
     story.flags.push(FINALE.revelation);
     story.stage = "WIG";
-    story.cutscene = { id: "resolve", line: 0, acks: [], since: room.state.serverTick };
+    story.cutscene = {
+      id: "resolve",
+      line: 0,
+      acks: [],
+      since: room.state.serverTick,
+    };
     // Malformed and unknown requests change nothing.
     for (const payload of [
       { cutscene: "resolve", line: 0 },
@@ -469,36 +529,55 @@ it("syncs each hero's choice over real sockets, validates it, and keeps it on re
       { cutscene: "resolve", line: 0, choice: "<script>" },
       null,
     ])
-      expect((await request(sockets[0], "story:choose", payload)).ok).toBe(false);
-    const sieg = await request<{ accepted: boolean }>(sockets[0], "story:choose", {
-      cutscene: "resolve",
-      line: 0,
-      choice: "duty",
-    });
+      expect((await request(sockets[0], "story:choose", payload)).ok).toBe(
+        false,
+      );
+    const sieg = await request<{ accepted: boolean }>(
+      sockets[0],
+      "story:choose",
+      {
+        cutscene: "resolve",
+        line: 0,
+        choice: "duty",
+      },
+    );
     expect(sieg.ok && sieg.data.accepted).toBe(true);
     // Sieg reconnects; his choice is still his.
     sockets[0].disconnect();
     const back = connected(sockets[0]);
     sockets[0].connect();
     await back;
-    expect((await request(sockets[0], "session:resume", session)).ok).toBe(true);
+    expect((await request(sockets[0], "session:resume", session)).ok).toBe(
+      true,
+    );
     expect(states[0].story!.motivations).toEqual({ OATH: "duty" });
     // Coco's choice from Sieg's side is refused; from hers it is taken.
-    const wrong = await request<{ accepted: boolean }>(sockets[0], "story:choose", {
-      cutscene: "resolve",
-      line: 0,
-      choice: "truth",
-    });
+    const wrong = await request<{ accepted: boolean }>(
+      sockets[0],
+      "story:choose",
+      {
+        cutscene: "resolve",
+        line: 0,
+        choice: "truth",
+      },
+    );
     expect(wrong.ok && wrong.data.accepted).toBe(false);
-    const coco = await request<{ accepted: boolean }>(sockets[1], "story:choose", {
-      cutscene: "resolve",
-      line: 0,
-      choice: "truth",
-    });
+    const coco = await request<{ accepted: boolean }>(
+      sockets[1],
+      "story:choose",
+      {
+        cutscene: "resolve",
+        line: 0,
+        choice: "truth",
+      },
+    );
     expect(coco.ok && coco.data.accepted).toBe(true);
     for (let i = 0; i < 3; i++) room.tick();
     expect(room.state.story!.cutscene?.line).toBe(1);
-    expect(room.state.story!.motivations).toEqual({ OATH: "duty", EMBER: "truth" });
+    expect(room.state.story!.motivations).toEqual({
+      OATH: "duty",
+      EMBER: "truth",
+    });
     // Both screens agree on the story.
     await request(sockets[0], "clock:probe", {});
     await request(sockets[1], "clock:probe", {});

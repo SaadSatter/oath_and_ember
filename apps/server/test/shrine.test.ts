@@ -76,7 +76,7 @@ it("starts both heroes together in the approved 40x32 top-down shrine and keeps 
     expect(Math.hypot(g.s.x - goal.x, g.s.y - goal.y)).toBeLessThan(6);
   }
 });
-it("offers cryptic dialogue without naming the wig, rejects tools humorously, and consumes the correct offering once", () => {
+it("says her hair is missing without naming the wig or who took it, rejects tools humorously, and consumes the correct offering once", () => {
   const g = setup();
   Object.assign(g.s, shrinePoints.offering);
   Object.assign(g.c, { x: 672, y: 544 });
@@ -86,6 +86,8 @@ it("offers cryptic dialogue without naming the wig, rejects tools humorously, an
   });
   expect(talk.message).toContain("crown");
   expect(talk.message.toLowerCase()).not.toContain("wig");
+  expect(talk.message).toContain("missing");
+  expect(talk.message.toLowerCase()).not.toMatch(/griffin|creature/);
   expect(g.w.inventory!.revision).toBe(0);
   expect(g.w.inventoryTargets![SHRINE_OFFERING].itemId).toBeUndefined();
   g.w.inventory!.counts.enchanted_shears = 1;
