@@ -13,8 +13,9 @@ import {
 } from "../../../../packages/shared/src/constants.js";
 import {
   mirrorPondState,
-  pondStations,
-  pondMirrorContact,
+  pondFirstMirror,
+  pondReflect,
+  pondShotReflects,
 } from "../../../../packages/shared/src/mirrorPond.js";
 import { combatDirection } from "../animation/combat.js";
 
@@ -102,39 +103,31 @@ export function pondTravel(
 ) {
   if ((q.sceneId ?? world.sceneId) !== "MIRROR_POND")
     return { at: travel(q, { x: q.vx, y: q.vy }, seconds, walls), velocity: q };
-  if (q.pondReflection !== undefined)
-    return { at: travel(q, { x: q.vx, y: q.vy }, seconds, []), velocity: q };
   const pond = mirrorPondState(world.puzzles);
-  const to = travel(q, { x: q.vx, y: q.vy }, seconds, walls);
+  // Reflected magic flies freely over the perimeter, as on the server.
+  const to = travel(
+    q,
+    { x: q.vx, y: q.vy },
+    seconds,
+    q.pondReflection === undefined ? walls : [],
+  );
   if (!pond) return { at: to, velocity: q };
-  let first = Infinity,
-    index = -1;
-  pondStations.forEach((_, i) => {
-    const t = pondMirrorContact(q, to, i, pond.mirrors[i]);
-    if (t < first) {
-      first = t;
-      index = i;
-    }
-  });
-  if (index < 0) return { at: to, velocity: q };
-  const station = pondStations[index],
-    origin = q.castOrigin;
-  const hit = { x: q.x + (to.x - q.x) * first, y: q.y + (to.y - q.y) * first };
+  const mirror = pondFirstMirror(
+    q,
+    to,
+    pond.mirrors,
+    q.radius ?? 4,
+    q.pondReflection,
+  );
+  if (!mirror) return { at: to, velocity: q };
+  const hit = {
+    x: q.x + (to.x - q.x) * mirror.t,
+    y: q.y + (to.y - q.y) * mirror.t,
+  };
   const speed = Math.hypot(q.vx, q.vy);
-  if (
-    !origin ||
-    q.faction === "enemies" ||
-    world.players[q.owner]?.role !== "EMBER" ||
-    Math.abs(origin.x - station.shot.x) > 32 ||
-    Math.abs(origin.y - station.shot.y) > 32 ||
-    speed < 1 ||
-    (q.vx * station.incoming.x + q.vy * station.incoming.y) / speed < 0.98
-  )
+  if (speed < 1 || !pondShotReflects(q, world.players))
     return { at: hit, velocity: q };
-  const tx = Math.cos(pond.mirrors[index]),
-    ty = Math.sin(pond.mirrors[index]);
-  const dot = q.vx * tx + q.vy * ty;
-  const velocity = { vx: 2 * dot * tx - q.vx, vy: 2 * dot * ty - q.vy };
+  const velocity = pondReflect(q, pond.mirrors[mirror.index]);
   const remaining = Math.hypot(to.x - hit.x, to.y - hit.y) / speed;
   return {
     at: {

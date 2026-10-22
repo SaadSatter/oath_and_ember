@@ -352,23 +352,71 @@ export const pondPuzzle = (): Puzzle => ({
   pond: newMirrorPond(),
 });
 
+// The visible frame: glass reaches 58px either side of the pivot, and its face
+// sits 6px in front of the pivot line on both sides.
+export const POND_MIRROR_HALF_LENGTH = 58;
+export const POND_MIRROR_FACE = 6;
+/**
+ * When a shot of this radius, moving from -> to, first touches mirror `index`
+ * at `angle`: the fraction of the move (0..1), or Infinity. Contact is where
+ * the shot's edge meets either glass face, within the frame's length.
+ */
 export function pondMirrorContact(
   from: { x: number; y: number },
   to: { x: number; y: number },
   index: number,
   angle: number,
+  radius = 0,
 ) {
   const s = pondStations[index],
     tangent = { x: Math.cos(angle), y: Math.sin(angle) },
     normal = { x: -tangent.y, y: tangent.x };
   const d0 = (from.x - s.x) * normal.x + (from.y - s.y) * normal.y,
-    d1 = (to.x - s.x) * normal.x + (to.y - s.y) * normal.y;
-  if (Math.abs(d0 - d1) < 1e-10) return Infinity;
-  const t = d0 / (d0 - d1);
+    d1 = (to.x - s.x) * normal.x + (to.y - s.y) * normal.y,
+    face = POND_MIRROR_FACE + radius;
+  // Already touching (or behind) the glass: it cannot be struck from here.
+  if (Math.abs(d0) <= face) return Infinity;
+  const side = Math.sign(d0),
+    plane = side * face;
+  if (side * d1 > face) return Infinity;
+  const t = (d0 - plane) / (d0 - d1);
   if (t < 0 || t > 1) return Infinity;
   const x = from.x + (to.x - from.x) * t,
     y = from.y + (to.y - from.y) * t;
-  return Math.abs((x - s.x) * tangent.x + (y - s.y) * tangent.y) <= 66.4
+  return Math.abs((x - s.x) * tangent.x + (y - s.y) * tangent.y) <=
+    POND_MIRROR_HALF_LENGTH + radius
     ? t
     : Infinity;
+}
+/** A velocity mirrored off glass at `angle` (angle of incidence = reflection). */
+export function pondReflect(v: { vx: number; vy: number }, angle: number) {
+  const tx = Math.cos(angle),
+    ty = Math.sin(angle),
+    dot = v.vx * tx + v.vy * ty;
+  return { vx: 2 * dot * tx - v.vx, vy: 2 * dot * ty - v.vy };
+}
+/** Coco's own magic reflects; anything else striking a mirror is stopped. */
+export const pondShotReflects = (
+  q: { faction?: string; owner: string },
+  players: Record<string, { role?: Role | null }>,
+) => q.faction !== "enemies" && players[q.owner]?.role === "EMBER";
+/** The first mirror a shot touches on this move, skipping the one it left. */
+export function pondFirstMirror(
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+  mirrors: number[],
+  radius: number,
+  skip?: number,
+) {
+  let t = Infinity,
+    index = -1;
+  for (let i = 0; i < mirrors.length; i++) {
+    if (i === skip) continue;
+    const hit = pondMirrorContact(from, to, i, mirrors[i], radius);
+    if (hit < t) {
+      t = hit;
+      index = i;
+    }
+  }
+  return index < 0 ? null : { t, index };
 }

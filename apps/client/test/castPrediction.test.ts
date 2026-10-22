@@ -184,13 +184,16 @@ it("turns a predicted pond shot at the mirror instead of overshooting while awai
   w.players = { c: coco() };
   const station = pondStations[0];
   const q = {
-    ...shot("q", 1, station.x - 10, station.y),
+    ...shot("q", 1, station.x - 40, station.y),
     castOrigin: station.shot,
   };
   const before = structuredClone(q);
-  const predicted = pondTravel(q, 20 / FIREBALL_SPEED, w, []);
-  expect(predicted.at.x).toBeCloseTo(station.x);
-  expect(predicted.at.y).toBeCloseTo(station.y + 10);
+  const predicted = pondTravel(q, 60 / FIREBALL_SPEED, w, []);
+  // It turns where its edge (radius 4) meets the glass face, 6px off the
+  // pivot line: 10px from the line, i.e. 10·√2 before the pivot on this path.
+  const reach = 10 * Math.SQRT2;
+  expect(predicted.at.x).toBeCloseTo(station.x - reach);
+  expect(predicted.at.y).toBeCloseTo(station.y + 60 - (40 - reach));
   expect(predicted.velocity.vx).toBeCloseTo(0);
   expect(predicted.velocity.vy).toBeCloseTo(FIREBALL_SPEED);
   expect(q).toEqual(before);

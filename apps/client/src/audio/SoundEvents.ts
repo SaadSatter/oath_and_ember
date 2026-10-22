@@ -353,7 +353,7 @@ export class SoundEvents {
         if (
           q.pondReflection !== undefined &&
           prev &&
-          prev.pondReflection === undefined
+          prev.pondReflection !== q.pondReflection
         )
           emit("Coco fireball reflected from mirror", q);
       }

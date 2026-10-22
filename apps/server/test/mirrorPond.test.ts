@@ -17,6 +17,9 @@ import {
   pondPushTurn,
   normalizeMirrorAngle,
   POND_ROTATION_STEP,
+  POND_MIRROR_FACE,
+  POND_MIRROR_HALF_LENGTH,
+  pondMirrorContact,
   pondFenceWalls,
 } from "../../../packages/shared/src/mirrorPond.js";
 import { collisionRects, maps } from "../../../packages/shared/src/maps.js";
@@ -176,18 +179,85 @@ describe("Mirror Pond authoritative mechanics", () => {
         ),
       ).toBe(false);
   });
-  it("requires a correctly aimed mirror and its firing pad; direct, backward, and wrong-pad shots cannot light torches", () => {
+  it("lights torches only by reflection; resting mirrors and direct shots cannot", () => {
     for (let i = 0; i < 4; i++) {
       const g = setup();
       trace(g, shot(g, i));
       expect(g.pond.torches).toEqual([false, false, false, false]);
-      g.pond.mirrors[i] = normalizeMirrorAngle(pondStations[i].angle);
-      trace(g, shot(g, i, { castOrigin: { x: 0, y: 0 } }));
-      expect(g.pond.torches[i]).toBe(false);
       const t = pondStations[i].torch;
       trace(g, shot(g, i, { x: t.x - 30, y: t.y, vx: 180, vy: 0 }));
       expect(g.pond.torches[i]).toBe(false);
     }
+  });
+  it("reflects any of Coco's shots by the angle and point where it strikes the glass", () => {
+    const g = setup(),
+      s = pondStations[0],
+      angle = -Math.PI / 6;
+    g.pond.mirrors[0] = angle;
+    // A diagonal shot, cast far from any firing pad, aimed 30px left of the
+    // pivot on the glass's lower face.
+    const t0 = { x: Math.cos(angle), y: Math.sin(angle) },
+      aim = {
+        x: s.x - 30 * t0.x - (POND_MIRROR_FACE + 4) * t0.y,
+        y: s.y - 30 * t0.y + (POND_MIRROR_FACE + 4) * t0.x,
+      },
+      v = { vx: 120, vy: -90 },
+      start = { x: aim.x - v.vx, y: aim.y - v.vy };
+    const q = shot(g, 0, { ...start, ...v, castOrigin: { ...start } });
+    const end = { x: aim.x + v.vx / 2, y: aim.y + v.vy / 2 };
+    expect(tracePondFireball(g.w, q, start, end)).toBe(false);
+    expect(q.pondReflection).toBe(0);
+    // Law of reflection about the glass: the along-glass part is kept and the
+    // across-glass part flips.
+    const t = { x: Math.cos(angle), y: Math.sin(angle) },
+      n = { x: -t.y, y: t.x };
+    expect(q.vx * t.x + q.vy * t.y).toBeCloseTo(v.vx * t.x + v.vy * t.y);
+    expect(q.vx * n.x + q.vy * n.y).toBeCloseTo(-(v.vx * n.x + v.vy * n.y));
+    // It turned where its edge met the glass face, then flew on.
+    const bounce = pondMirrorContact(start, end, 0, angle, 4),
+      at = {
+        x: start.x + (end.x - start.x) * bounce,
+        y: start.y + (end.y - start.y) * bounce,
+      };
+    expect(Math.abs((at.x - s.x) * n.x + (at.y - s.y) * n.y)).toBeCloseTo(
+      POND_MIRROR_FACE + 4,
+    );
+    const along = (at.x - s.x) * t.x + (at.y - s.y) * t.y;
+    expect(along).toBeCloseTo(-30);
+    expect(at.x).toBeCloseTo(aim.x);
+    expect(at.y).toBeCloseTo(aim.y);
+    // The same shot passing just beyond the frame's end is not reflected.
+    const wide = shot(g, 0, {
+      x: s.x - 160,
+      y: s.y + 60,
+      vx: 0,
+      vy: -180,
+    });
+    expect(
+      tracePondFireball(g.w, wide, wide, { x: wide.x, y: wide.y - 180 }),
+    ).toBe(false);
+    expect(wide.pondReflection).toBeUndefined();
+    // Monster magic is stopped by the glass, not reflected.
+    const enemy = shot(g, 0, { ...start, ...v, faction: "enemies" });
+    expect(tracePondFireball(g.w, enemy, start, end)).toBe(true);
+    expect(enemy.pondReflection).toBeUndefined();
+  });
+  it("bounces a reflected shot off a second mirror it reaches", () => {
+    const g = setup(),
+      b = pondStations[1];
+    // A shot already reflected by mirror 1 flies west into mirror 2 at 45°.
+    g.pond.mirrors[1] = Math.PI / 4;
+    const q = shot(g, 0, {
+      x: b.x + 200,
+      y: b.y,
+      vx: -180,
+      vy: 0,
+      pondReflection: 0,
+    });
+    expect(tracePondFireball(g.w, q, q, { x: b.x - 40, y: b.y })).toBe(false);
+    expect(q.pondReflection).toBe(1);
+    expect(q.vx).toBeCloseTo(0);
+    expect(q.vy).toBeCloseTo(-180);
   });
   it("Push changes angle only for Sieg, blocks the next section when deployed, and refuses to embed a player", () => {
     const g = setup();
@@ -628,7 +698,7 @@ it("gives a real mirror reflection enough lifetime to visibly fly off screen", (
     s = pondStations[0];
   g.pond.mirrors[0] = Math.PI / 4;
   const q = shot(g, 0, { life: 0.02 });
-  tracePondFireball(g.w, q, { x: s.x - 8, y: s.y }, { x: s.x + 8, y: s.y });
+  tracePondFireball(g.w, q, { x: s.x - 40, y: s.y }, { x: s.x + 8, y: s.y });
   expect(q.pondReflection).toBe(0);
   expect(q.life).toBeGreaterThan(10);
   expect(q.vy).toBeCloseTo(180);

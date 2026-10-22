@@ -12,7 +12,9 @@ import {
 } from "../../../packages/shared/src/constants.js";
 import {
   POND_ROTATION_STEP,
-  pondMirrorContact,
+  pondFirstMirror,
+  pondReflect,
+  pondShotReflects,
   normalizeMirrorAngle,
   mirrorPondState,
   pondChest,
@@ -199,9 +201,16 @@ export function tracePondFireball(
   if (q.pondReflection === undefined)
     for (const wall of [...pondStoneWalls, ...pondGuardrails])
       consider(contact(from, to, wall, q.radius ?? 4), "wall", 0);
+  // Glass reflects on every pass; a reflected shot skips the mirror it left.
+  const mirror = pondFirstMirror(
+    from,
+    to,
+    pond.mirrors,
+    q.radius ?? 4,
+    q.pondReflection,
+  );
+  if (mirror) consider(mirror.t, "mirror", mirror.index);
   for (let i = 0; i < 4; i++) {
-    if (q.pondReflection === undefined)
-      consider(pondMirrorContact(from, to, i, pond.mirrors[i]), "mirror", i);
     const t = pondStations[i].torch;
     consider(
       torchContact(from, to, t, POND_TORCH_RADIUS + (q.radius ?? 4)),
@@ -232,8 +241,7 @@ export function tracePondFireball(
     index: number;
   };
   if (resolved.kind === "wall") return true;
-  const i = resolved.index,
-    s = pondStations[i];
+  const i = resolved.index;
   if (resolved.kind === "torch") {
     if (
       q.pondReflection !== undefined &&
@@ -248,25 +256,9 @@ export function tracePondFireball(
     }
     return true;
   }
-  const speed = Math.hypot(q.vx, q.vy),
-    origin = q.castOrigin;
-  if (
-    bounce >= 1 ||
-    q.pondReflection !== undefined ||
-    q.faction === "enemies" ||
-    w.players[q.owner]?.role !== "EMBER" ||
-    !origin ||
-    Math.abs(origin.x - s.shot.x) > 32 ||
-    Math.abs(origin.y - s.shot.y) > 32 ||
-    speed < 1 ||
-    (q.vx * s.incoming.x + q.vy * s.incoming.y) / speed < 0.98
-  )
-    return true;
-  const tx = Math.cos(pond.mirrors[i]),
-    ty = Math.sin(pond.mirrors[i]),
-    dot = q.vx * tx + q.vy * ty;
-  q.vx = 2 * dot * tx - q.vx;
-  q.vy = 2 * dot * ty - q.vy;
+  const speed = Math.hypot(q.vx, q.vy);
+  if (bounce >= 4 || speed < 1 || !pondShotReflects(q, w.players)) return true;
+  Object.assign(q, pondReflect(q, pond.mirrors[i]));
   q.pondReflection = i;
   q.life = Math.max(
     q.life,
