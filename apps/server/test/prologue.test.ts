@@ -59,12 +59,18 @@ const blocked = (scene: SceneId, p: { x: number; y: number }) =>
       p.y + 13 > q.y &&
       p.y - 13 < q.y + q.h,
   );
-/** Both heroes read every remaining line of the running scene. */
+/**
+ * Both heroes read every remaining line of the running scene. A line that is
+ * held (Alden's dragon still eating) is read again once time has moved on.
+ */
 function readAll(r: GameRoom, players: Player[]) {
-  for (let guard = 0; r.state.story?.cutscene && guard < 100; guard++) {
+  for (let guard = 0; r.state.story?.cutscene && guard < 2000; guard++) {
     settle(r);
     const run = r.state.story.cutscene!;
-    for (const p of players) r.readStoryLine(p.id, run.id, run.line);
+    const read = players.map(
+      (p) => r.readStoryLine(p.id, run.id, run.line).accepted,
+    );
+    if (!read.some(Boolean)) r.tick();
   }
 }
 function enterShop(r: GameRoom, sieg: Player) {
@@ -328,12 +334,16 @@ it("synchronizes story lines to two real sockets, validates reads and survives r
 function readScene(r: GameRoom, players: Player[], id: string) {
   for (
     let guard = 0;
-    r.state.story?.cutscene?.id === id && guard < 200;
+    r.state.story?.cutscene?.id === id && guard < 2000;
     guard++
   ) {
     settle(r);
     const run = r.state.story.cutscene;
-    for (const p of players) r.readStoryLine(p.id, run.id, run.line);
+    const read = players.map(
+      (p) => r.readStoryLine(p.id, run.id, run.line).accepted,
+    );
+    // A held line (the dragon still eating) is read again a tick later.
+    if (!read.some(Boolean)) r.tick();
   }
 }
 const press = (r: GameRoom, p: Player, point: { x: number; y: number }) => {
@@ -364,6 +374,9 @@ function toFight() {
   r.state.serverTick += 120;
   press(r, coco, maps.PROLOGUE_TRAIL.points.exit);
   input(r, coco.id);
+  // The clearing is quiet until a hero walks into its middle.
+  Object.assign(sieg, maps.PROLOGUE_CLEARING.points.centre);
+  input(r, sieg.id);
   readAll(r, [sieg, coco]);
   return room;
 }
@@ -389,18 +402,44 @@ it("follows Coco west into the forest, where the cart opens the way on", () => {
   r.state.serverTick += 120;
   press(r, coco, maps.PROLOGUE_TRAIL.points.exit);
   expect(r.state.sceneId).toBe("PROLOGUE_CLEARING");
-  input(r, coco.id);
+  // Nothing stirs while the heroes look around the edge of the clearing...
+  for (let i = 0; i < 120; i++) input(r, coco.id);
+  expect(r.state.story!.cutscene).toBeUndefined();
+  expect(Object.keys(r.state.enemies)).toHaveLength(0);
+  // ...until one of them walks into the middle.
+  const centre = maps.PROLOGUE_CLEARING.points.centre;
+  Object.assign(sieg, { x: centre.x + 60, y: centre.y + 40 });
+  input(r, sieg.id);
   expect(r.state.story!.cutscene?.id).toBe("ambush");
-  // The first golem and wisp rise, and hold still while the scene plays.
+  expect(Object.keys(r.state.enemies)).toHaveLength(0);
+  // The first golem and wisp push out of the bushes on the clearing's west
+  // and east edges, and walk in, held, while the scene plays.
+  const emerge = cutscenes.ambush.lines.findIndex(
+    (l) => l.cue === "ambush-emerge",
+  );
+  while (r.state.story!.cutscene!.line < emerge)
+    r.readStoryLine(coco.id, "ambush", r.state.story!.cutscene!.line);
   const enemies = Object.values(r.state.enemies);
   expect(enemies.map((e) => e.type).sort()).toEqual([
     "cinder_wisp",
     "ironbound_sentinel",
   ]);
-  expect(enemies.every((e) => e.passive)).toBe(true);
-  for (const e of enemies) expect(blocked("PROLOGUE_CLEARING", e)).toBe(false);
+  expect(enemies.every((e) => e.passive && e.march)).toBe(true);
+  const golem = enemies.find((e) => e.type === "ironbound_sentinel")!,
+    wisp = enemies.find((e) => e.type === "cinder_wisp")!;
+  expect(golem.x).toBeLessThan(200);
+  expect(wisp.x).toBeGreaterThan(820);
+  for (const e of enemies) {
+    expect(blocked("PROLOGUE_CLEARING", e.march!)).toBe(false);
+  }
+  for (let i = 0; i < 60 * 5; i++) r.tick();
+  for (const e of enemies) {
+    expect(e.march).toBeUndefined();
+    expect(blocked("PROLOGUE_CLEARING", e)).toBe(false);
+  }
   readAll(r, [sieg, coco]);
   expect(r.state.story!.stage).toBe("FIGHT");
+  input(r, coco.id);
   expect(Object.values(r.state.enemies).every((e) => !e.passive)).toBe(true);
 });
 
@@ -440,7 +479,8 @@ it("raises the ambush one monster at a time, and replaces each one beaten", () =
   expect(all).toHaveLength(AMBUSH_MAX);
   for (const type of ["ironbound_sentinel", "cinder_wisp"])
     expect(all.filter((e) => e.type === type)).toHaveLength(AMBUSH_MAX / 2);
-  for (const e of all) expect(blocked("PROLOGUE_CLEARING", e)).toBe(false);
+  for (const e of all)
+    expect(blocked("PROLOGUE_CLEARING", e.march ?? e)).toBe(false);
   expect(new Set(all.map((e) => e.id)).size).toBe(all.length);
 });
 
@@ -483,17 +523,47 @@ it("never lets a hero fall in the ambush, and sends Alden when one is nearly dow
   const startY = story.alden!.y;
   for (let i = 0; i < 30; i++) input(r, coco.id);
   expect(story.alden!.y).toBeGreaterThan(startY);
-  // The spell lands: every monster standing falls on one tick.
+  // Alden's water dragon rises and eats the monsters one by one, each on the
+  // tick its jaws reach it.
   const standing = Object.values(r.state.enemies).filter(
     (e) => e.state !== "DEAD",
-  ).length;
-  const flash = cutscenes.rescue.lines.findIndex((l) => l.cue === "flash");
-  while (story.cutscene!.line < flash)
-    for (const p of [sieg, coco])
-      r.readStoryLine(p.id, "rescue", story.cutscene!.line);
-  const dead = Object.values(r.state.enemies).map((e) => e.deadTick);
-  expect(dead).toHaveLength(standing);
-  expect(new Set(dead)).toEqual(new Set([r.state.serverTick]));
+  );
+  const rises = cutscenes.rescue.lines.findIndex((l) => l.cue === "dragon");
+  // Alden walks all the way in before he casts: his line holds until then.
+  expect(r.readStoryLine(sieg.id, "rescue", 0).accepted).toBe(false);
+  while (story.cutscene!.line < rises) {
+    const read = [sieg, coco].map(
+      (p) => r.readStoryLine(p.id, "rescue", story.cutscene!.line).accepted,
+    );
+    if (!read.some(Boolean)) r.tick();
+  }
+  expect(story.alden).toMatchObject(cutscenes.rescue.aldenTarget!);
+  const dragon = story.dragon!;
+  expect(dragon.start).toBe(r.state.serverTick);
+  expect(dragon.prey.map((p) => p.id).sort()).toEqual(
+    standing.map((e) => e.id).sort(),
+  );
+  const bites = dragon.prey.map((p) => p.at);
+  expect(new Set(bites).size).toBe(bites.length);
+  expect([...bites].sort((a, b) => a - b)).toEqual(bites);
+  // The story waits for the dragon to finish: reads are held until it bursts.
+  expect(r.readStoryLine(sieg.id, "rescue", rises).accepted).toBe(false);
+  for (const [i, bite] of dragon.prey.entries()) {
+    while (r.state.serverTick < bite.at - 1) r.tick();
+    expect(r.state.enemies[bite.id].state).not.toBe("DEAD");
+    r.tick();
+    expect(r.state.enemies[bite.id]).toMatchObject({
+      state: "DEAD",
+      deadTick: bite.at,
+    });
+    for (const later of dragon.prey.slice(i + 1))
+      expect(r.state.enemies[later.id].state).not.toBe("DEAD");
+  }
+  while (r.state.serverTick < dragon.end) {
+    expect(r.readStoryLine(coco.id, "rescue", rises).accepted).toBe(false);
+    r.tick();
+  }
+  expect(r.readStoryLine(coco.id, "rescue", rises).accepted).toBe(true);
   // Home: both healed and waking upstairs at the shop.
   readScene(r, [sieg, coco], "rescue");
   expect(story.cutscene?.id).toBe("home");

@@ -4,6 +4,9 @@ import {
   golemBeamFade,
   golemBlastDuration,
   golemBeamTipFrame,
+  golemRayTrim,
+  matchedBeamTip,
+  GOLEM_TIP_ANCHOR_X,
 } from "../animation/golem.js";
 import { SERVER_HZ } from "../../../../packages/shared/src/constants.js";
 import { fireballLevel } from "../../../../packages/shared/src/abilities.js";
@@ -25,6 +28,8 @@ import {
   magicKey,
 } from "../animation/projectile.js";
 /** Positions/impacts are authoritative; ribbon frame timing is purely cosmetic. */
+/** The beam tip's scale: its shaft then matches the ray's solid band. */
+const TIP_SCALE = 0.6;
 export class ProjectileView {
   private flights = new Map<
     string,
@@ -61,6 +66,7 @@ export class ProjectileView {
       start: number;
       palette: string;
       base?: boolean;
+      follow?: () => { x: number; y: number };
     }
   >();
   private graphics: Phaser.GameObjects.Graphics;
@@ -71,6 +77,11 @@ export class ProjectileView {
     world: Readonly<World>,
     position: (id: string) => { x: number; y: number } | null | undefined,
     debug: boolean,
+    // Where a burst should ride along with something moving it landed on (the
+    // bridge's moving target), instead of hanging where it struck.
+    follow?: (
+      hit: NonNullable<World["projectileImpacts"]>[number],
+    ) => (() => { x: number; y: number }) | undefined,
   ) {
     const now = this.scene.time.now,
       g = this.graphics;
@@ -135,26 +146,26 @@ export class ProjectileView {
           this.scene.textures.get(golemKey("beam-middle")).setFilter(0);
           this.golemRays.set(p.id, ray);
         }
+        const tipFrame = golemBeamTipFrame(elapsed);
         ray
           .setPosition(origin.x, origin.y)
-          .setSize(Math.max(1, length), 128)
+          .setSize(Math.max(1, length - golemRayTrim(tipFrame) * TIP_SCALE), 128)
           .setFrame(Math.floor(elapsed / 0.08) % 10)
           .setRotation(angle)
           .setVisible(!debug);
         let tip = this.golemTips.get(p.id);
         if (!tip) {
           tip = this.scene.add
-            .image(p.x, p.y, golemKey("beam-tip"))
-            .setOrigin(112 / 128, 0.5)
-            .setScale(0.6)
+            .image(p.x, p.y, matchedBeamTip(this.scene))
+            .setOrigin(GOLEM_TIP_ANCHOR_X / 128, 0.5)
+            .setScale(TIP_SCALE)
             .setDepth(1802);
-          this.scene.textures.get(golemKey("beam-tip")).setFilter(0);
           this.golemTips.set(p.id, tip);
         }
         tip
           .setPosition(p.x, p.y)
           .setRotation(angle)
-          .setFrame(golemBeamTipFrame(elapsed))
+          .setFrame(tipFrame)
           .setVisible(!debug);
         continue;
       }
@@ -307,6 +318,7 @@ export class ProjectileView {
             base,
             start: now - age,
             palette,
+            follow: follow?.(hit),
           });
         }
       }
@@ -346,6 +358,10 @@ export class ProjectileView {
         )
         .setVisible(!debug)
         .setAlpha(elapsed > duration - 100 ? (duration - elapsed) / 100 : 1);
+      if (b.follow) {
+        const at = b.follow();
+        b.sprite.setPosition(at.x, at.y);
+      }
     }
   }
   // Read-only presentation diagnostics; never consumed by simulation or networking.

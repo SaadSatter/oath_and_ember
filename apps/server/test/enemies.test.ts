@@ -3,6 +3,8 @@ import {
   spawnEnemy,
   enemyDefinitions,
   forestEncounter,
+  mosslingSpike,
+  mosslingSpikeHits,
 } from "../../../packages/shared/src/enemies.js";
 import { neutral } from "../../../packages/shared/src/gameTypes.js";
 import { DT, ticksFor } from "../../../packages/shared/src/constants.js";
@@ -109,6 +111,48 @@ describe("deterministic authoritative enemy architecture", () => {
     f.a.x = 650;
     step(f, mossling.windupTicks);
     expect(f.a.hp).toBe(100);
+  });
+  it("thrusts the Mossling's spike out to its reach, striking every hero on its line", () => {
+    const f = fixture();
+    // Well beyond an arm's length, but within the spike's reach.
+    f.a.x = 800 - mosslingSpike.reach + 15;
+    f.b.x = 800 - mosslingSpike.reach / 2;
+    step(f);
+    expect(f.e.state).toBe("ATTACK");
+    expect(f.e.attackFacing).toBeCloseTo(Math.PI);
+    // Off to one side, but still within the spike's width.
+    f.a.y = 450 + mosslingSpike.radius - 4;
+    step(f, mossling.windupTicks);
+    // Both heroes stood on the line, so both are skewered.
+    expect([f.a.hp, f.b.hp]).toEqual([90, 90]);
+  });
+  it("misses a hero who steps off the spike's line, or beyond its point", () => {
+    const f = fixture();
+    f.a.x = 760;
+    f.b.x = 300;
+    step(f);
+    expect(f.e.state).toBe("ATTACK");
+    // Sidestep during the windup: the aim stays locked.
+    f.a.y = 450 + mosslingSpike.radius + 14;
+    step(f, mossling.windupTicks);
+    expect(f.a.hp).toBe(100);
+    // Behind the point is out of reach as well.
+    const g = fixture();
+    g.a.x = 760;
+    g.b.x = 300;
+    step(g);
+    g.a.x = 800 - mosslingSpike.reach - 20;
+    step(g, mossling.windupTicks);
+    expect(g.a.hp).toBe(100);
+  });
+  it("matches the spike's reach to where Mosslings start their attack", () => {
+    expect(mossling.attackRange).toBeLessThan(mosslingSpike.reach);
+    expect(mossling.attackRange).toBeGreaterThan(80);
+    const e = { x: 0, y: 0, attackFacing: 0 };
+    expect(mosslingSpikeHits(e, { x: mosslingSpike.reach, y: 0 })).toBe(true);
+    expect(mosslingSpikeHits(e, { x: mosslingSpike.reach + 1, y: 0 })).toBe(false);
+    expect(mosslingSpikeHits(e, { x: 60, y: mosslingSpike.radius + 1 })).toBe(false);
+    expect(mosslingSpikeHits(e, { x: -40, y: 0 })).toBe(false);
   });
   it("clamps damage, records death, cancels attack and despawns after one second", () => {
     const f = fixture();

@@ -78,10 +78,12 @@ export function tickFinale(
     start("goddess-meet");
   else if (story.stage === "WIG") {
     if (shrineComplete(w) && on("GODDESS_SHRINE")) {
-      // The goddess remembers; then each hero decides; then the watcher.
-      // Each follows the last, and picks up again after a reconnect.
+      // The goddess remembers; each hero decides; they leave; then the
+      // goddess and the Mistress of the Mist. Each follows the last, and
+      // picks up again after a reconnect.
       if (!has(FINALE.revelation)) start("revelation");
       else if (!has(FINALE.resolve)) start("resolve");
+      else if (!has(FINALE.departed)) start("depart");
       else if (!has(FINALE.complete)) start("watcher");
     } else if (on("HEDGE_MAZE") && !has(FINALE.maze)) start("maze-banter");
     else if (

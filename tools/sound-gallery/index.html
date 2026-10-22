@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Oath & Ember · Sound Gallery</title>
+    <link rel="stylesheet" href="/gallery.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/"
+        >OATH <i>&</i> EMBER <span>/ AUDIO WORKSHOP</span></a
+      ><span class="dev-tag">DEVELOPMENT ONLY</span>
+    </header>
+    <main>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">LISTEN. COMPARE. CHOOSE.</p>
+          <h1>Sound, with intent.</h1>
+          <p class="lede">
+            A listening room for the world of Oath & Ember.<br />Every cue is a
+            proposal. Your selections stay out of the game.
+          </p>
+        </div>
+        <div class="totals" id="totals"></div>
+      </section>
+      <div class="review-notice">
+        <strong>Phase 1 is ready for your ears.</strong> 28 core cues are
+        proposed first. Your provisional approvals remain editable. Approval
+        here records a review decision; it never activates gameplay audio.
+      </div>
+      <section class="controls" aria-label="Gallery controls">
+        <div class="view-tabs" role="group" aria-label="View">
+          <button data-view="phase1" aria-pressed="true">
+            Phase 1 <span>28</span></button
+          ><button data-view="events" aria-pressed="false">
+            All events <span>204</span></button
+          ><button data-view="sources" aria-pressed="false">
+            Source clips <span>63</span></button
+          ><button data-view="gaps" aria-pressed="false">Protocol gaps</button>
+        </div>
+        <div class="utility">
+          <button id="export">Export review ↓</button
+          ><button id="import">Import review ↑</button
+          ><input
+            id="import-file"
+            type="file"
+            accept="application/json,.json"
+            hidden
+          /><button id="stop" class="stop">■ Stop all</button
+          ><label class="master"
+            >Master
+            <input
+              id="master"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.65"
+              aria-label="Master audition volume"
+            /><output id="master-value">65%</output></label
+          >
+        </div>
+      </section>
+      <nav id="groups" aria-label="Sound categories"></nav>
+      <div class="filters">
+        <label class="search"
+          ><span>⌕</span
+          ><input
+            id="search"
+            type="search"
+            placeholder="Find an event, source clip, or code trigger…"
+            aria-label="Search sounds" /></label
+        ><label
+          >Review status
+          <select id="status-filter">
+            <option>All statuses</option>
+            <option>Pending</option>
+            <option>Approved</option>
+            <option>Needs Revision</option>
+          </select></label
+        ><span id="result-count"></span>
+      </div>
+      <div id="message" role="status" aria-live="polite"></div>
+      <div class="workspace">
+        <section id="results" aria-label="Sound list"></section>
+        <aside id="detail" aria-label="Selected sound review"></aside>
+      </div>
+      <section class="principles">
+        <div>
+          <h3>Silence is a selection.</h3>
+          <p>
+            15 intentional silence cues remain protected, including Alden’s
+            death, the funeral pauses and the revelation. They have no sound
+            controls or layer assignments.
+          </p>
+        </div>
+        <div>
+          <h3>A review, never a game hook.</h3>
+          <p>
+            Manual playback only. No game imports, sockets or automatic story
+            playback. Approvals are saved in this browser and can be exported
+            for review.
+          </p>
+        </div>
+        <div>
+          <h3>Originals, traceable.</h3>
+          <p>
+            63 unchanged clips, verified against the source hashes. Raw samples
+            are not mastered or seamless loops. Mixes here are audition
+            sketches.
+          </p>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <span>PLAN BASELINE · <code>4ca9350</code></span
+      ><a href="/reference/SOUND_DESIGN_PLAN.md" target="_blank"
+        >Original plan ↗</a
+      ><a href="/reference/SOUND_ASSET_VERIFICATION.json" target="_blank"
+        >Asset verification ↗</a
+      ><span>CC0 · Credits retained with every source</span>
+    </footer>
+    <script type="module" src="/gallery.js"></script>
+  </body>
+</html>

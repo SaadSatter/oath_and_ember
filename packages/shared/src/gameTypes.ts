@@ -202,6 +202,8 @@ export interface StoryState {
   >;
   /** The ambush: monsters raised so far, and when the next one rises. */
   ambush?: { raised: number; nextTick: number };
+  /** Alden's water dragon, from the moment it rises until it bursts. */
+  dragon?: import("./waterDragon.js").DragonCast;
   /** The cloaked stranger, while she is there. */
   stranger?: import("./prologue.js").AldenPose;
   alden?: import("./prologue.js").AldenPose & {
@@ -211,6 +213,8 @@ export interface StoryState {
   };
 }
 export interface World {
+  /** The server's story script fingerprint (storyVersion.ts). */
+  storyVersion?: string;
   storyStart?: import("./storyCheckpoints.js").StoryCheckpointId;
   story?: StoryState;
   /** Villagers stopped mid-conversation: since which tick, and with whom. */

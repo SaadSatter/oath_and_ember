@@ -12,7 +12,9 @@ const CELL = 96,
   ROWS = ["south", "east", "north", "west"] as const;
 const ORIGIN_Y = (CELL / 2 + 28) / CELL,
   FEET_OFFSET = 13,
-  FADE_MS = 700;
+  FADE_MS = 700,
+  /** She takes shape slowly, out of the mist. */
+  APPEAR_MS = 1600;
 const KEY = "npc:stranger";
 
 export function preloadStranger(scene: Phaser.Scene) {
@@ -25,6 +27,7 @@ export function preloadStranger(scene: Phaser.Scene) {
 export class StrangerView {
   private sprite: Phaser.GameObjects.Sprite | null = null;
   private fadingSince: number | null = null;
+  private appearingSince: number | null = null;
   private scene: SceneId | null = null;
   constructor(private phaser: Phaser.Scene) {}
   update(
@@ -44,13 +47,21 @@ export class StrangerView {
           .setOrigin(0.5, ORIGIN_Y)
           .setName("npc:stranger");
       }
+      // Appearing (not already there): she fades in where she stands.
+      if (!this.sprite.visible || this.fadingSince !== null)
+        this.appearingSince = now;
       this.fadingSince = null;
       this.scene = sceneId;
+      const shown =
+        this.appearingSince === null
+          ? 1
+          : Math.min(1, (now - this.appearingSince) / APPEAR_MS);
+      if (shown >= 1) this.appearingSince = null;
       this.sprite
         .setPosition(her.x, her.y + FEET_OFFSET)
         .setFrame(ROWS.indexOf(her.facing))
         .setDepth(her.y)
-        .setAlpha(1)
+        .setAlpha(shown)
         .setVisible(true);
       return;
     }

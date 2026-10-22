@@ -16,4 +16,4 @@ The plaza camera frames both the goddess and offering area during interactions. 
 
 The shrine now retains camera zoom 1 throughout. Near the offering it centers on the statue and bowl without resampling sprites; outside that area it follows the player. This replaces the reduced-resolution whole-plaza framing.
 
-Campaign placement: the completed exit of Puzzle Map 2 (Bridge Ruins) now enters this hub directly. South RETURN leads back to that bridge. Once the wig offering is complete, E at the south-east golden switch continues to Forest Ruins. Forest Ruins returns to the hub. Branch return locations and earlier bridge completion persist.
+Campaign placement: the completed exit of Puzzle Map 2 (Bridge Ruins) now enters this hub directly. South RETURN leads back to that bridge. The former south-east debug Forest Ruins shortcut, switch, and exit marker have been removed; completing the offering does not add a forest entrance. Branch return locations and earlier bridge completion persist.

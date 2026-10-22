@@ -1,10 +1,14 @@
 # Chapter 0 prologue: A Promise Kept
 
-The prologue is opt-in for now, so the normal campaign start is unchanged:
+The prologue is the default start for `npm run dev` and `npm start`:
 
 ```sh
-npm run prologue   # build, then serve with PROLOGUE=1 on http://localhost:3019
+npm run dev               # prologue on (Vite on http://localhost:5173)
+npm run prologue          # build, then serve on http://localhost:3019
+PROLOGUE=0 npm run dev    # old free-roam start, without the story
 ```
+
+`npm run playtest` and `npm run enemy:encounter` set `PROLOGUE=0` and skip the story.
 
 Create a room in two tabs, choose Sieg and Coco, and ready both. The whole prologue plays in about 8–12 minutes, then Chapter 0, Part 1 continues with Coco's errand (`docs/CHAPTER0_PART1.md`).
 
@@ -17,9 +21,9 @@ Create a room in two tabs, choose Sieg and Coco, and ready both. The whole prolo
 | — | (travel) | Shop road → `PROLOGUE_TRAIL` | E at `← FOREST` (west) | Emberbrook (east) stays closed until the end |
 | 3a | `cart` | Forest trail | Either hero comes within 96 units of the cart | Crates and barrel: E to inspect, with a different line for each hero |
 | — | (travel) | Trail → `PROLOGUE_CLEARING` | E at `FOLLOW THE TRACKS` | Only after the cart has been found |
-| 3b | `ambush` | Clearing | Arriving | A golem (Ironbound Sentinel) and a Cinder Wisp rise and hold still until the lines end. Their sprites, AI, stats and attacks are unchanged |
-| — | fight | Clearing | `ambush` ends | Monsters rise one at a time, every 3 s, at the nearest free spot a safe distance from the heroes. Each one beaten is replaced, up to 8 at once (4 golems, 4 wisps). Heroes cannot fall below 15 HP |
-| 3c | `rescue` | Clearing | Either hero at 25 HP or less, or 45 s pass. First the fight freezes and the ambush fills to eight from the clearing's rim; all eight walk in and ring the heroes, leaving the north open. Then Alden enters | Enemies freeze and their shots vanish. Alden walks in from the north path while the clearing glows, then casts. On the flash line every monster standing dies on the same server tick |
+| 3b | `ambush` | Clearing | Either hero walks within 110 units of the clearing's middle. Until then the clearing is empty and quiet | On the second line (`ambush-emerge`) a golem (Ironbound Sentinel) pushes out of the west bushes and a Cinder Wisp out of the east bushes. They walk in to their spots, held, until the lines end. Their sprites, AI, stats and attacks are unchanged |
+| — | fight | Clearing | `ambush` ends | Monsters come one at a time, every 3 s, out of the bushes on the west or east edge, whichever side their spot is on. Each one walks to the nearest free spot a safe distance from the heroes and joins the fight when it arrives. Each one beaten is replaced, up to 8 at once (4 golems, 4 wisps). Heroes cannot fall below 15 HP |
+| 3c | `rescue` | Clearing | Either hero at 25 HP or less, or 45 s pass. First the fight freezes and the ambush fills to eight from the bushes; all eight walk in and ring the heroes, leaving the north open. Then Alden enters | Enemies freeze and their shots vanish. Alden walks in from the north path while the clearing glows; his line holds until he arrives. He casts, and on the `dragon` line his water dragon rises out of the circle, laps the whole clearing and eats the monsters one by one. The line holds until the dragon bursts into rain |
 | 4–5 | `home` | Shop upstairs, that evening | Chained | Both heroes healed. Scolding, "You always do.", the marriage joke, Sieg's goodnight |
 | 5 | `farewell` | The garden gate | Chained | Private to Sieg; Coco is downstairs and sees a narration line |
 | 6 | `morning` | Shop ground floor | Chained | Private to Coco; Sieg is in his room at home (above Hearthside Cottage), polishing an old wooden practice sword. The first two rules of magic are not revealed. Alden's list matches Part 1's errand |
@@ -37,13 +41,23 @@ Coco calls Alden "Papa" throughout.
   - **Measuring it:** `node --import tsx scripts/qa-walk.ts` records every frame of a walk in two browsers and reports the largest single-frame step and any direction reversals.
 - **Server-owned:** `apps/server/src/prologue.ts` runs it. It starts scenes from triggers and handles chaining, party travel and enemy spawns. It enforces the fight's HP floor and timing, walks Alden, and runs the spell. While a scene plays, the room ignores movement, attacks, abilities and doors.
 - **Reading lines:** the only client message is `story:read {cutscene, line}`. One read is enough: whichever hero presses E first moves the line on for both. Stale, repeated or wrong-line reads (including both pressing at once) are ignored, so nothing skips or plays twice. Lines with an `audience` are private: only that hero can advance them, and the partner sees the `elsewhere` text.
+- **Story version:** each browser shows the words from its own copy of the script; the server only says which scene and line are playing. The server sends a fingerprint of the whole script (`packages/shared/src/storyVersion.ts`), and a page whose script differs (a tab opened before a rebuild, or a server still running an older build) shows a warning to restart the server and reload.
 - **Disconnects:** while a partner is away the room is paused, so scenes, the fight timer and Alden all wait. A reconnecting hero lands on the same line, because the story lives in `World.story`.
   - A client that reconnects before the server has noticed its old socket close now takes the session over, instead of being refused and sent back to the title screen. The old socket's late close is ignored.
+- **Held lines:** a line can't be moved on while Alden is still walking in to cast, or while his dragon is still eating (`storyLineHeld` in `packages/shared/src/prologue.ts`). The server refuses reads, and the client hides the ▼ and waits. If a read is refused anyway, E works again.
+- **The water dragon** (`packages/shared/src/waterDragon.ts`):
+  - On the `dragon` cue the server records the cast in `World.story.dragon`: the start tick, and each monster with the tick it is eaten.
+  - The route is a pure function of the cast. It comes out of the circle, laps the clearing once, passes through each monster in turn around the ring, then rises north and bursts.
+  - The server kills each monster on the tick the head reaches it. Clients draw the dragon from the same route, on the same clock they draw monsters at, so the bite lands as the monster dies.
+  - About 7 s in all: the bites fall between 3.5 s and 5.3 s, then 1 s of burst.
 - **Presentation:**
   - `ui/storyDialogue.ts`: the shared dialogue box.
   - `entities/AldenView.ts`: Alden, from `World.story.alden`.
-  - `entities/StoryEffects.ts`: the spell circle and the white flash.
+  - `entities/StoryEffects.ts`: the spell circle.
+  - `entities/WaterDragonView.ts` and `entities/waterDragonArt.ts`: the dragon. It is a scaly serpent of water with pale belly plates, a spiky crest, and a horned head in profile whose jaw opens for each bite. It is painted at half the world's resolution, then every pixel is snapped to a 12-colour water palette, with ordered dithering for fades, so it reads as pixel art. Its shadow and the pool it breaks out of lie under everyone; the body, head, bite splashes and rain are over everyone.
+  - Its clock is the one monsters are drawn at, never ahead of the latest server snapshot, so a slow server cannot make it bite early.
   - Outdoors, the camera frames the local hero together with Alden during his scenes.
+  - In the clearing, the `ambush` and `rescue` scenes pull the camera back to show the whole clearing, at a whole-pixel zoom when the screen allows.
 
 ## Maps
 
@@ -106,7 +120,8 @@ Both builders copy source pixels; they never repaint them.
 
 ## Tests and QA
 
-- `apps/server/test/prologue.test.ts` (14 tests):
+- `apps/client/test/rescueStory.test.ts`: held lines on the client, and the dragon's route (through every monster, in order, all the way around the clearing).
+- `apps/server/test/prologue.test.ts`:
   - placements on clear ground;
   - free roam before triggers;
   - the lock during scenes;
@@ -114,7 +129,8 @@ Both builders copy source pixels; they never repaint them.
   - private lines;
   - trail travel and the closed exits;
   - the cart and the ambush spawn;
-  - the HP floor, the rescue trigger and timer, and all eight enemies dying on one tick;
+  - the HP floor, the rescue trigger and timer;
+  - Alden's held entrance, and the dragon eating each monster on its own tick, in order, with the line held until it bursts;
   - home, farewell, morning and the open road;
   - real-socket sync, including rejecting malformed reads.
 - `apps/server/test/houseInterior.test.ts`:
@@ -122,11 +138,11 @@ Both builders copy source pixels; they never repaint them.
   - furniture and wall collision;
   - every door, stair and story spot reachable from the entrance.
 - `node --import tsx scripts/qa-prologue.ts qa/<fresh>`: two real browsers play the whole prologue, with every line read via E. Latest run: `qa/prologue-v2`.
+- `node --import tsx scripts/qa-forest-ambush.ts qa/<fresh>`: two real browsers in the clearing. It covers the quiet arrival, the walk to the middle, monsters coming out of the bushes, a golem beam, and the dragon, timed on the server clock.
 - `node --import tsx scripts/qa-magic-shop.ts qa/<fresh>`: both shop floors and the grave in real browsers. Latest run: `qa/magic-shop-v1`.
 
 ## Known limits
 
-- The prologue is still opt-in (`PROLOGUE=1`). Making it the default start is a one-line change in `apps/server/src/index.ts`.
 - The old house interior's Tiled map is no longer drawn. It remains the source for the village interior builder, and `mapClassification.ts` still classifies it.
 - The later Chapter 0 scenes are not built yet:
   - Coco finding Alden;

@@ -9,6 +9,7 @@ import {
   besideStatue,
   chairDelivered,
   gladeRocks,
+  gladeBushFireRect,
   gladeBushRect,
   gladeBushes,
   gladeState,
@@ -43,7 +44,7 @@ export function burnGladeBushes(
   )
     return false;
   const hit = Math.min(
-    ...gladeBushes.map((b) => contact(from, to, gladeBushRect(b), 4)),
+    ...gladeBushes.map((b) => contact(from, to, gladeBushFireRect(b), 4)),
   );
   if (!Number.isFinite(hit)) return false;
   // A tree, rock, chair or other solid in front of the thicket shields it

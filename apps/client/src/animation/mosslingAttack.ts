@@ -1,29 +1,64 @@
 import type { Enemy } from "../../../../packages/shared/src/gameTypes.js";
-import { enemyDefinitions } from "../../../../packages/shared/src/enemies.js";
-import { ticksFor } from "../../../../packages/shared/src/constants.js";
+import {
+  enemyDefinitions,
+  mosslingSpike,
+} from "../../../../packages/shared/src/enemies.js";
 
-export const mosslingRecoveryTicks = ticksFor(0.2);
+/** The spike stays out a moment, then pulls back into an arm. */
+export const mosslingRecoveryTicks =
+  mosslingSpike.holdTicks + mosslingSpike.retractTicks;
 const clamp = (value: number) => Math.max(0, Math.min(1, value));
+/** Length of the arm once it has turned to wood, before it shoots out. */
+export const MOSSLING_ARM_LENGTH = 22;
 
+/**
+ * The Mossling's spike attack at `age` ticks into it. It crouches while its arm
+ * hardens into a thorny wooden spike, then the spike shoots out to its full
+ * reach exactly on the server's hit tick (the end of the windup), holds, and
+ * pulls back. Presentation only: the server decides who is struck.
+ */
 export function mosslingAttackPose(age: number, facing: number) {
-  const windup = enemyDefinitions.mossling.windupTicks;
-  const preparation = clamp(age / (windup * 0.7));
-  const swing = clamp((age - windup * 0.7) / (windup * 0.3));
-  const recovery = clamp((age - windup) / mosslingRecoveryTicks);
-  const thrust = Math.sin((swing * Math.PI) / 2) * (1 - recovery);
-  const crouch = preparation * (1 - swing);
-  const offset = thrust * 9 - crouch * 4;
+  const windup = enemyDefinitions.mossling.windupTicks,
+    launch = windup - mosslingSpike.extendTicks;
+  // Winding up: crouch, and the arm turns to wood.
+  const preparation = clamp(age / launch);
+  // Shooting out, fast at first and settling at full reach on the hit tick.
+  const extend = clamp((age - launch) / mosslingSpike.extendTicks),
+    shot = 1 - (1 - extend) ** 3;
+  // Pulling back after the hold.
+  const back = clamp(
+    (age - windup - mosslingSpike.holdTicks) / mosslingSpike.retractTicks,
+  );
+  const crouch = preparation * (1 - extend);
+  const thrust = extend * (1 - back);
+  const offset = thrust * 6 - crouch * 4;
+  // How far the spike's point is from the Mossling's feet, along its aim.
+  const length =
+    MOSSLING_ARM_LENGTH * (0.6 + 0.4 * preparation) +
+    (mosslingSpike.reach - MOSSLING_ARM_LENGTH) * shot * (1 - back);
   return {
-    phase: age < windup * 0.7 ? "windup" : age < windup ? "strike" : "recovery",
+    phase:
+      age < launch
+        ? "windup"
+        : age < windup
+          ? "strike"
+          : age < windup + mosslingSpike.holdTicks
+            ? "hold"
+            : "recovery",
     facing,
     offsetX: Math.cos(facing) * offset,
     offsetY: Math.sin(facing) * offset,
-    scaleX: 1 + crouch * 0.12 - thrust * 0.06,
-    scaleY: 1 - crouch * 0.18 + thrust * 0.1,
-    lean: Math.cos(facing) * (crouch * -0.08 + thrust * 0.12),
+    scaleX: 1 + crouch * 0.1 - thrust * 0.05,
+    scaleY: 1 - crouch * 0.15 + thrust * 0.08,
+    lean: Math.cos(facing) * (crouch * -0.08 + thrust * 0.1),
     crouch,
-    swing,
-    slashAlpha: swing * (1 - recovery),
+    /** 0 while it is an arm, 1 once it is a full wooden spike. */
+    wood: Math.min(1, preparation * 1.4) * (1 - clamp((back - 0.6) / 0.4)),
+    length,
+    /** A faint line on the ground warns where the spike will go. */
+    telegraph: preparation * (1 - extend),
+    /** Splinters and leaves burst off as it lands. */
+    burst: extend >= 1 ? clamp(1 - (age - windup) / mosslingSpike.holdTicks) : 0,
   };
 }
 

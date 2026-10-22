@@ -7,7 +7,6 @@ export const shrinePoints = {
   east: { x: 1184, y: 576 },
   north: { x: 640, y: 80 },
   back: { x: 640, y: 960 },
-  exit: { x: 848, y: 688 },
   offering: { x: 640, y: 544 },
 };
 export const shrineSpawn = (role: Role | null) => ({

@@ -1,0 +1,3649 @@
+{
+  "planSha256": "95a4fa32da8b64bab7aa4abd4f49e817e3971b06a1cef1c93732cf358083d161",
+  "planCommit": "4ca93507c152752c9de34a8300dd02f683004c42",
+  "review": {
+    "version": 1,
+    "planSha256": "95a4fa32da8b64bab7aa4abd4f49e817e3971b06a1cef1c93732cf358083d161",
+    "events": {
+      "80c42858f0a0": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.16,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "5629f0ce0877": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.13,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "dae4938167f5": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.12,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "b4ba315fe772": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.12,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "80a781de3740": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "click",
+            "gain": 0.16,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "64640b904d9a": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.22,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "becca910ded6": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "open",
+            "gain": 0.18,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "60d4e123f4e3": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "close",
+            "gain": 0.16,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "b3fcd7bc0a70": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "click",
+            "gain": 0.1,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "3d43e7b05c8b": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "error",
+            "gain": 0.16,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "10a391b609d4": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.22,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "8099f01068d9": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "open",
+            "gain": 0.12,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "7a128af66e67": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "tick",
+            "gain": 0.07,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "00bb4710a61a": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.2,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "a1e45a657b09": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "click",
+            "gain": 0.12,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "61b0a99739bc": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.18,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "80dff2b0b7bf": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "grass",
+            "gain": 0.16,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "7bc1300faace": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "stoneStep",
+            "gain": 0.16,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "8f18da751730": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "woodStep",
+            "gain": 0.14,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "6748c76910a8": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "doorOpen",
+            "gain": 0.22,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "9affc7c5bd37": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "swing",
+            "gain": 0.42,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "798d2f9fa6eb": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "punch",
+            "gain": 0.4,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "c2321c4baf7e": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "cloth",
+            "gain": 0.18,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "bb4f0712be64": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "metalLight",
+            "gain": 0.36,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "4dea465de744": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "blade",
+            "gain": 0.3,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "ac85f4f9bdec": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "tick",
+            "gain": 0.1,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "939a36bfd2f2": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "blade2",
+            "gain": 0.22,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "cf668c89a284": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "fire",
+            "gain": 0.4,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "aaa03e397226": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "fire2",
+            "gain": 0.38,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "083dbd0ceeba": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "spell",
+            "gain": 0.23,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "20e0100edfbc": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "gem",
+            "gain": 0.32,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "1c20478501a9": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "blade2",
+            "gain": 0.25,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "58cec8609ca0": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "cloth2",
+            "gain": 0.1,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "a22c4c22781d": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "soft",
+            "gain": 0.22,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "bb5e8fc6e6c7": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "tick",
+            "gain": 0.1,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "eb54fc2c85cd": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "spell2",
+            "gain": 0.3,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "4678ef686bf6": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "tick",
+            "gain": 0.07,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "9702786143a1": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "back",
+            "gain": 0.12,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "be07f28c7109": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "magic",
+            "gain": 0.32,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "0aabcc54eb4f": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "spell2",
+            "gain": 0.18,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "c0f7d47497a0": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "soft",
+            "gain": 0.25,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "7fb835ed5c9c": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "back",
+            "gain": 0.12,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "79093696edf7": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "soft",
+            "gain": 0.32,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "a178e66e2342": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "stone",
+            "gain": 0.15,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "825312db7b7d": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "slime",
+            "gain": 0.27,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "5c36f7955ffc": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "soft",
+            "gain": 0.34,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "649b8ce9515e": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "fire3",
+            "gain": 0.22,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "94df84b82298": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "fire4",
+            "gain": 0.32,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "6a12fff5f83f": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "fire5",
+            "gain": 0.3,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "5f15c97fce91": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "punch",
+            "gain": 0.46,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "fea322d6bef0": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "spell",
+            "gain": 0.3,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "17beb0338c20": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "fire6",
+            "gain": 0.34,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "6bfa8f0dbcf3": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "metalHit",
+            "gain": 0.48,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "c7bc38c987aa": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "hurt",
+            "gain": 0.24,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "5a47bc7a377e": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "mining",
+            "gain": 0.36,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "14f1e0f2d3c8": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "die",
+            "gain": 0.3,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "885c62a43a55": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.25,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "d9d96ccd8d1b": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "doorOpen",
+            "gain": 0.2,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "07007936f03d": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "cloth",
+            "gain": 0.1,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "411f60d1bfc6": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "scroll",
+            "gain": 0.13,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "f9a47285978d": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "question",
+            "gain": 0.16,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "31816cad7ac2": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "woodHit",
+            "gain": 0.14,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "8acba809b17b": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": []
+      },
+      "2f1eddf465bf": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "stone2",
+            "gain": 0.38,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "59ce51d1f265": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": []
+      },
+      "652948d920de": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "magic",
+            "gain": 0.35,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "216032c1e0c3": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "magic",
+            "gain": 0.48,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "d39d249a33ab": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "gem",
+            "gain": 0.2,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "8f1fff0d3534": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "scroll",
+            "gain": 0.1,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "43dc401a18fb": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "cloth",
+            "gain": 0.08,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "1eac1405ee95": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "bubble",
+            "gain": 0.08,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "ff95b2f49252": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.17,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "5c347f8e58c0": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "cloth",
+            "gain": 0.14,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "0ee63ef4697f": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "bottle",
+            "gain": 0.18,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "14454e769bbc": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "cloth",
+            "gain": 0.16,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "d495157112a2": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.22,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "0f8512648adb": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "scroll",
+            "gain": 0.09,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "6668b7f809f2": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": []
+      },
+      "54bf452c7d0d": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "leatherDrop",
+            "gain": 0.32,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "fb0de5feaa3c": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "spell",
+            "gain": 0.18,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "91b186138572": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "back",
+            "gain": 0.09,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "4de5fce74224": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": []
+      },
+      "964182564420": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "doorOpen",
+            "gain": 0.16,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "1df35466bb76": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "question",
+            "gain": 0.12,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "1692e11b8d63": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": []
+      },
+      "8cffa97f8f00": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": []
+      },
+      "85f13d829d70": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "cloth",
+            "gain": 0.08,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "22b38bcb49a1": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "woodHit",
+            "gain": 0.1,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "360e6b9580a5": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "itemStone",
+            "gain": 0.13,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "eacfe083eada": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "cloth",
+            "gain": 0.1,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "2372f3d3a3bc": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "stone",
+            "gain": 0.12,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "90028fa64969": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": []
+      },
+      "8b665c3ff51c": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": []
+      },
+      "bfc2de8ebf20": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "cloth",
+            "gain": 0.07,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "a7aa80304ed6": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "woodHit",
+            "gain": 0.09,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "c514b4f1acb3": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": []
+      },
+      "9e0e967f172c": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "question",
+            "gain": 0.12,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "cb15f7afdbfd": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.15,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "eba2d4541131": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "creak",
+            "gain": 0.23,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "68089cce38ff": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "spell2",
+            "gain": 0.22,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "f87171039a64": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "latch",
+            "gain": 0.2,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "03abff2e603e": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "bookOpen",
+            "gain": 0.18,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "b51a399a06eb": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "cloth",
+            "gain": 0.1,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "694e14d45836": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.22,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "e07a81efbdc7": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "question",
+            "gain": 0.16,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "aa34faf2dee9": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "fire3",
+            "gain": 0.35,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "b1c1d3271e0c": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "stone",
+            "gain": 0.18,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "38c67e4028de": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "question",
+            "gain": 0.14,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "69a4e5a97afb": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "creak",
+            "gain": 0.2,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "e6abf88702d4": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "gem",
+            "gain": 0.25,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "ddc67a159450": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "scroll",
+            "gain": 0.15,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "b3a62cffec08": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "stone",
+            "gain": 0.22,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "ea37626bdf37": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "itemStone",
+            "gain": 0.28,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "57375a49e8f9": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "latch",
+            "gain": 0.21,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "ed39428eaefc": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "metalLight",
+            "gain": 0.32,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "8c3a982e5992": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "chain",
+            "gain": 0.32,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "af3e4aefddc5": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "switch",
+            "gain": 0.27,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "d68fb1a12c72": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "metalLight",
+            "gain": 0.14,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "f22125e5501e": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "metalHit",
+            "gain": 0.4,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "9d315c923313": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "soft",
+            "gain": 0.3,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "e2c889ea2d7d": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "creak",
+            "gain": 0.24,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "2b8f9c685bf6": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "plank",
+            "gain": 0.38,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "abfab6be5fe0": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "metalLight",
+            "gain": 0.38,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "cc23152b3153": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "chain",
+            "gain": 0.3,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "be3ee5f324b2": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "switch",
+            "gain": 0.2,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "dab186148d9c": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "stone2",
+            "gain": 0.38,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "a6eba90459b5": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.24,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "7339f7b19529": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "gem",
+            "gain": 0.22,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "9191a0b48ad7": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "gem",
+            "gain": 0.25,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "d6dd162e759e": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "open",
+            "gain": 0.13,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "0e2c26c06f7a": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "question",
+            "gain": 0.18,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "9abb381cd27b": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "scroll",
+            "gain": 0.16,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "f17e9a22d81c": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "fire3",
+            "gain": 0.34,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "7afd53aa4e39": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": []
+      },
+      "3c59ed0f92d7": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "grass",
+            "gain": 0.14,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "ab0575ce7b76": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.2,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "822bf56a3b2d": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "grass",
+            "gain": 0.13,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "9198cfb6198c": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "latch",
+            "gain": 0.26,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "5dd05f47f0bb": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "lock",
+            "gain": 0.3,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "e08e8e6abdc0": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "creak",
+            "gain": 0.24,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "89a7b1e0f0fd": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "metalLight",
+            "gain": 0.22,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "569df29c0565": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "scroll",
+            "gain": 0.12,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "bb19f4b3368d": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "scroll",
+            "gain": 0.12,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "8287875c2575": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "metalLight",
+            "gain": 0.16,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "82607e631ff2": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "soft",
+            "gain": 0.31,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "fb79658d10b5": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "metalLight",
+            "gain": 0.14,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "3ed75a65aa76": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "gem",
+            "gain": 0.3,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "47bae439bb25": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "fire2",
+            "gain": 0.25,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "6074301d4635": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "fire3",
+            "gain": 0.3,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "002175b6cae4": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "fire5",
+            "gain": 0.08,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "7babafc9f1d4": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "stone2",
+            "gain": 0.4,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "6f2bbdabb3c1": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "creak",
+            "gain": 0.23,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "63f0717f5f8d": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "gem",
+            "gain": 0.25,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "63d26035fac6": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "metalLight",
+            "gain": 0.14,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "7e41ea959cd6": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "breath",
+            "gain": 0.08,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "7a3a5bd8717c": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "roar",
+            "gain": 0.36,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "3a9c4a000f60": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "cloth2",
+            "gain": 0.28,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "288d8462707f": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "cloth2",
+            "gain": 0.2,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "ddce8996fc38": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "soft",
+            "gain": 0.39,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "cf687e30835e": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "fire7",
+            "gain": 0.4,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "ab027c35026f": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "fire4",
+            "gain": 0.45,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "31563dfe712c": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "fire2",
+            "gain": 0.37,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "0d1fa7a5f092": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "fire5",
+            "gain": 0.13,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "39977b72679a": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "soft",
+            "gain": 0.3,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "157059b4956f": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "cloth",
+            "gain": 0.18,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "63243f654a1b": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "soft",
+            "gain": 0.38,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "39707d33b270": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "roar2",
+            "gain": 0.37,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "81c862b2db5d": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "blade2",
+            "gain": 0.4,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "3afb1f038547": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "punch",
+            "gain": 0.48,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "6ce43182305f": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "stone2",
+            "gain": 0.52,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "430d019d2931": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "breath",
+            "gain": 0.16,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "e819082a902f": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "cloth2",
+            "gain": 0.3,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "a56a23f97e43": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "hurt",
+            "gain": 0.38,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "f60883b0f2b0": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "metalLight",
+            "gain": 0.2,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "7eb78962bb62": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "cloth2",
+            "gain": 0.17,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "45e1acdcb0e3": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "cloth",
+            "gain": 0.12,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "ee489775ff9b": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "slice",
+            "gain": 0.23,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "cff394db80da": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "leatherDrop",
+            "gain": 0.2,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "93e6a5fc648c": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "gem",
+            "gain": 0.32,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "2358bd133630": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "scroll",
+            "gain": 0.12,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "3fc2c626f1c4": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "scroll",
+            "gain": 0.12,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "231163787ace": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "gem",
+            "gain": 0.34,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "817921bfe123": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": []
+      },
+      "16c6aa5854a3": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "question",
+            "gain": 0.12,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "dbfdf86522ae": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "spell2",
+            "gain": 0.15,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "f1880a176fd3": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": []
+      },
+      "3e8b19cf76d8": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": []
+      },
+      "feefa55aa876": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": []
+      },
+      "83bd507d616b": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "cloth",
+            "gain": 0.1,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "6db1e8bd6dc0": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": []
+      },
+      "a429a7b041d7": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "bell",
+            "gain": 0.2,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "6c4e3d17027c": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.16,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "512bb472a702": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.23,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "8ee041b997f9": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "blade2",
+            "gain": 0.25,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "41cda6b6647b": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "blade",
+            "gain": 0.45,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "f956e71f1f6b": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "fire",
+            "gain": 0.4,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "55d86cff7777": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "blade2",
+            "gain": 0.22,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "784deff741fe": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "wood",
+            "gain": 0.28,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "e2dfaa0139e1": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "gem",
+            "gain": 0.25,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "d3675e577fbf": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "chain",
+            "gain": 0.2,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "02b44efc42fb": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "soft",
+            "gain": 0.2,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "b96e51c22a3f": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "spell",
+            "gain": 0.3,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "283deba9dcf6": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "soft",
+            "gain": 0.28,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      },
+      "2bade7754b28": {
+        "status": "Approved",
+        "notes": "",
+        "tracks": [
+          {
+            "assetId": "ok",
+            "gain": 0.35,
+            "delay": 0,
+            "rate": 1,
+            "loop": false
+          }
+        ]
+      }
+    },
+    "assets": {
+      "click": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "open": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "close": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "select": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "ok": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "error": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "tick": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "question": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "switch": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "back": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "scroll": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "bong": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "grass": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "stoneStep": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "woodStep": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "soft": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "punch": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "metalHit": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "metalLight": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "plank": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "woodHit": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "mining": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "bell": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "bookOpen": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "bookFlip": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "bookClose": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "cloth": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "cloth2": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "leatherDrop": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "doorOpen": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "doorClose": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "creak": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "latch": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "coins": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "slice": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "blade": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "blade2": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "spell": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "spell2": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "fire": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "fire2": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "fire3": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "fire4": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "fire5": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "fire6": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "fire7": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "chain": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "lock": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "gem": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "stone": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "stone2": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "itemStone": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "wood": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "hurt": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "roar": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "roar2": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "die": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "breath": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "slime": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "swing": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "bubble": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "bottle": {
+        "notes": "",
+        "status": "Approved"
+      },
+      "magic": {
+        "notes": "",
+        "status": "Approved"
+      }
+    },
+    "appliedUpdates": [
+      "selection-ok-2026-10-20",
+      "provisional-approve-all-2026-10-20"
+    ]
+  },
+  "assets": [
+    {
+      "id": "click",
+      "pack": "U",
+      "member": "Audio/click_001.ogg",
+      "bytes": 4876,
+      "sha256": "ccfb7fa0cccdd9faec0eb16033c732b1e308d139d80f799161495d58f7adcdb9",
+      "signature": "OggS",
+      "url": "/assets/click.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/interface-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip"
+    },
+    {
+      "id": "open",
+      "pack": "U",
+      "member": "Audio/open_001.ogg",
+      "bytes": 9834,
+      "sha256": "a27c6bb0df7da1e6af5dd5937593c98bc58b6e513f42fe6a3254cd6a6949c648",
+      "signature": "OggS",
+      "url": "/assets/open.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/interface-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip"
+    },
+    {
+      "id": "close",
+      "pack": "U",
+      "member": "Audio/close_001.ogg",
+      "bytes": 9915,
+      "sha256": "44af8249b933e0fd35ec957a638bb1a0b01f85b53fbe9674bf77bd3ca3168ef4",
+      "signature": "OggS",
+      "url": "/assets/close.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/interface-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip"
+    },
+    {
+      "id": "select",
+      "pack": "U",
+      "member": "Audio/select_001.ogg",
+      "bytes": 5468,
+      "sha256": "aec0c31ea934a35936ae0d2ab8fac8123c93aa5647f935853a58dbaf90278b7a",
+      "signature": "OggS",
+      "url": "/assets/select.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/interface-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip"
+    },
+    {
+      "id": "ok",
+      "pack": "U",
+      "member": "Audio/confirmation_001.ogg",
+      "bytes": 8968,
+      "sha256": "063564703b6094d70718a3e787a55cc9141611e4ecd6b6637f8828f79b4a8c3a",
+      "signature": "OggS",
+      "url": "/assets/ok.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/interface-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip"
+    },
+    {
+      "id": "error",
+      "pack": "U",
+      "member": "Audio/error_001.ogg",
+      "bytes": 7373,
+      "sha256": "46e67425d16339772e8d328fb36a49426c9467418686e11beeb71ff84b0f6433",
+      "signature": "OggS",
+      "url": "/assets/error.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/interface-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip"
+    },
+    {
+      "id": "tick",
+      "pack": "U",
+      "member": "Audio/tick_001.ogg",
+      "bytes": 4497,
+      "sha256": "9d057b918024c787bbe6c00beed13a7ef72a3fa0c259add3cef36582792f4230",
+      "signature": "OggS",
+      "url": "/assets/tick.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/interface-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip"
+    },
+    {
+      "id": "question",
+      "pack": "U",
+      "member": "Audio/question_001.ogg",
+      "bytes": 11700,
+      "sha256": "abb8f9e4eb2071491b0b15f84ee302386b1847609310c1b000ae174639a6cc5a",
+      "signature": "OggS",
+      "url": "/assets/question.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/interface-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip"
+    },
+    {
+      "id": "switch",
+      "pack": "U",
+      "member": "Audio/switch_001.ogg",
+      "bytes": 6753,
+      "sha256": "3b74efad87f1e69dbd1d05c5ad952ab90859b5a3d11da6ec5bd79b4f03b42afa",
+      "signature": "OggS",
+      "url": "/assets/switch.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/interface-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip"
+    },
+    {
+      "id": "back",
+      "pack": "U",
+      "member": "Audio/back_001.ogg",
+      "bytes": 6997,
+      "sha256": "07db973f79f6ae0f2edc34561e7592e24d0577455919fb602cb8ecc0da991dcf",
+      "signature": "OggS",
+      "url": "/assets/back.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/interface-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip"
+    },
+    {
+      "id": "scroll",
+      "pack": "U",
+      "member": "Audio/scroll_001.ogg",
+      "bytes": 21633,
+      "sha256": "320c6aafb2c7a503eae508dc443b72d7f7c0a317bfd16813157ed400cd04cf16",
+      "signature": "OggS",
+      "url": "/assets/scroll.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/interface-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip"
+    },
+    {
+      "id": "bong",
+      "pack": "U",
+      "member": "Audio/bong_001.ogg",
+      "bytes": 4848,
+      "sha256": "d21d0f0b782445db579d11e2506b24cd1ac9d664ee33aeaf807761aa7b6fd710",
+      "signature": "OggS",
+      "url": "/assets/bong.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/interface-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip"
+    },
+    {
+      "id": "grass",
+      "pack": "I",
+      "member": "Audio/footstep_grass_000.ogg",
+      "bytes": 8290,
+      "sha256": "9d49497777405d78d7cf7f2888e28277f3a23192300cfd1d79d54876b20f479f",
+      "signature": "OggS",
+      "url": "/assets/grass.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/impact-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip"
+    },
+    {
+      "id": "stoneStep",
+      "pack": "I",
+      "member": "Audio/footstep_concrete_000.ogg",
+      "bytes": 5808,
+      "sha256": "d7267e183067757c92c169de2a379abea592cfca6b39bb2e8feea15221ad79fe",
+      "signature": "OggS",
+      "url": "/assets/stoneStep.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/impact-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip"
+    },
+    {
+      "id": "woodStep",
+      "pack": "I",
+      "member": "Audio/footstep_wood_000.ogg",
+      "bytes": 5949,
+      "sha256": "5f1c252942a220d658121bd9417448cd19649ded9fff2ff15f6e50899373ce8e",
+      "signature": "OggS",
+      "url": "/assets/woodStep.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/impact-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip"
+    },
+    {
+      "id": "soft",
+      "pack": "I",
+      "member": "Audio/impactSoft_medium_000.ogg",
+      "bytes": 5351,
+      "sha256": "7d3ba0bb5e60a11b5d3e558c141303dcf494256675fbf753c0d252d2cf0481e3",
+      "signature": "OggS",
+      "url": "/assets/soft.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/impact-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip"
+    },
+    {
+      "id": "punch",
+      "pack": "I",
+      "member": "Audio/impactPunch_heavy_000.ogg",
+      "bytes": 11617,
+      "sha256": "b33a8f14068aec24ec69ba85e5e87fdc41228975f6a1a3e44a6e7d6fc3d9f8d8",
+      "signature": "OggS",
+      "url": "/assets/punch.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/impact-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip"
+    },
+    {
+      "id": "metalHit",
+      "pack": "I",
+      "member": "Audio/impactMetal_heavy_000.ogg",
+      "bytes": 6110,
+      "sha256": "e07045693e4a2b3d165c424e3dab4c781d9ff8880a386880ac89a51315d7f831",
+      "signature": "OggS",
+      "url": "/assets/metalHit.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/impact-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip"
+    },
+    {
+      "id": "metalLight",
+      "pack": "I",
+      "member": "Audio/impactMetal_light_000.ogg",
+      "bytes": 7651,
+      "sha256": "33b5e6e37c6e9d54e07bf5a89b12c76e879f40c1ea83cdd82714df1d6f9fec6d",
+      "signature": "OggS",
+      "url": "/assets/metalLight.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/impact-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip"
+    },
+    {
+      "id": "plank",
+      "pack": "I",
+      "member": "Audio/impactPlank_medium_000.ogg",
+      "bytes": 12016,
+      "sha256": "8403cd7a043f0391574c88c55dd205743725b5363d2407f6de145f201690b68f",
+      "signature": "OggS",
+      "url": "/assets/plank.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/impact-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip"
+    },
+    {
+      "id": "woodHit",
+      "pack": "I",
+      "member": "Audio/impactWood_light_000.ogg",
+      "bytes": 6343,
+      "sha256": "eb45e35b4bed784d3f120de4afec4b0d6ac09d9e143cce8cfcb7d739e1b1f3c3",
+      "signature": "OggS",
+      "url": "/assets/woodHit.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/impact-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip"
+    },
+    {
+      "id": "mining",
+      "pack": "I",
+      "member": "Audio/impactMining_000.ogg",
+      "bytes": 12035,
+      "sha256": "36b4ea107222d073c67ca64dde26944975609202d5090b2f2021213c1a7e35cd",
+      "signature": "OggS",
+      "url": "/assets/mining.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/impact-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip"
+    },
+    {
+      "id": "bell",
+      "pack": "I",
+      "member": "Audio/impactBell_heavy_000.ogg",
+      "bytes": 13915,
+      "sha256": "94b8bb5f2d43ab65e4bcc32b28562416e9bc2c51d9fd4be1e333660ee52f977f",
+      "signature": "OggS",
+      "url": "/assets/bell.ogg",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/impact-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip"
+    },
+    {
+      "id": "bookOpen",
+      "pack": "K",
+      "member": "Audio/bookOpen.ogg",
+      "bytes": 8273,
+      "sha256": "953390534377222bee89ac8cd9e60a58fdc037c71a4d7c18c43cd647c7f34ba8",
+      "signature": "OggS",
+      "url": "/assets/bookOpen.ogg",
+      "creator": "Kenney Vleugels",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/rpg-audio",
+      "download_url": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip"
+    },
+    {
+      "id": "bookFlip",
+      "pack": "K",
+      "member": "Audio/bookFlip1.ogg",
+      "bytes": 18248,
+      "sha256": "fa81ac2fedc8c641661b87e349630a36c9800e795e0c800e029214efdbe26a7d",
+      "signature": "OggS",
+      "url": "/assets/bookFlip.ogg",
+      "creator": "Kenney Vleugels",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/rpg-audio",
+      "download_url": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip"
+    },
+    {
+      "id": "bookClose",
+      "pack": "K",
+      "member": "Audio/bookClose.ogg",
+      "bytes": 9292,
+      "sha256": "81e976532565f4372abd14e83d2684195fa548d0a28d345de221e56052454f32",
+      "signature": "OggS",
+      "url": "/assets/bookClose.ogg",
+      "creator": "Kenney Vleugels",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/rpg-audio",
+      "download_url": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip"
+    },
+    {
+      "id": "cloth",
+      "pack": "K",
+      "member": "Audio/cloth1.ogg",
+      "bytes": 16508,
+      "sha256": "ddb93a3671233f95da0e0b10367f082f7eb42fa6caaddcf776410aa8833c747d",
+      "signature": "OggS",
+      "url": "/assets/cloth.ogg",
+      "creator": "Kenney Vleugels",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/rpg-audio",
+      "download_url": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip"
+    },
+    {
+      "id": "cloth2",
+      "pack": "K",
+      "member": "Audio/cloth2.ogg",
+      "bytes": 11787,
+      "sha256": "8a7451193c38bc05483aec25dd193e163a15d44cf7fff04ac7912573231b0201",
+      "signature": "OggS",
+      "url": "/assets/cloth2.ogg",
+      "creator": "Kenney Vleugels",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/rpg-audio",
+      "download_url": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip"
+    },
+    {
+      "id": "leatherDrop",
+      "pack": "K",
+      "member": "Audio/dropLeather.ogg",
+      "bytes": 11695,
+      "sha256": "097e1d3b74949b0145fda0519d40b7e0773ab82ec4858727f95be830927e1a45",
+      "signature": "OggS",
+      "url": "/assets/leatherDrop.ogg",
+      "creator": "Kenney Vleugels",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/rpg-audio",
+      "download_url": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip"
+    },
+    {
+      "id": "doorOpen",
+      "pack": "K",
+      "member": "Audio/doorOpen_1.ogg",
+      "bytes": 22848,
+      "sha256": "4ab93bab96522d8eb109ff96dc57cb6765deb02448fe14c10472084be5bb2a0b",
+      "signature": "OggS",
+      "url": "/assets/doorOpen.ogg",
+      "creator": "Kenney Vleugels",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/rpg-audio",
+      "download_url": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip"
+    },
+    {
+      "id": "doorClose",
+      "pack": "K",
+      "member": "Audio/doorClose_1.ogg",
+      "bytes": 18564,
+      "sha256": "834d29c60a8a8bfb50b158cdb6b7dfa8f02812a408a1ee9703d038dfab0b1aeb",
+      "signature": "OggS",
+      "url": "/assets/doorClose.ogg",
+      "creator": "Kenney Vleugels",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/rpg-audio",
+      "download_url": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip"
+    },
+    {
+      "id": "creak",
+      "pack": "K",
+      "member": "Audio/creak1.ogg",
+      "bytes": 15761,
+      "sha256": "8a346186fd297254248cab8e8117060a52a5cf2a84f603153a762108550ea95e",
+      "signature": "OggS",
+      "url": "/assets/creak.ogg",
+      "creator": "Kenney Vleugels",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/rpg-audio",
+      "download_url": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip"
+    },
+    {
+      "id": "latch",
+      "pack": "K",
+      "member": "Audio/metalLatch.ogg",
+      "bytes": 10208,
+      "sha256": "ba9ba60b172b3ebc131a940f25793cd2e207aca7af73dc80d637277f060f1708",
+      "signature": "OggS",
+      "url": "/assets/latch.ogg",
+      "creator": "Kenney Vleugels",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/rpg-audio",
+      "download_url": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip"
+    },
+    {
+      "id": "coins",
+      "pack": "K",
+      "member": "Audio/handleCoins.ogg",
+      "bytes": 25394,
+      "sha256": "8a91f969e932df709df80ee124d86a51389eed9b67f22e5e716bc2bbf60d8dab",
+      "signature": "OggS",
+      "url": "/assets/coins.ogg",
+      "creator": "Kenney Vleugels",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/rpg-audio",
+      "download_url": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip"
+    },
+    {
+      "id": "slice",
+      "pack": "K",
+      "member": "Audio/knifeSlice.ogg",
+      "bytes": 15532,
+      "sha256": "4cd96dc630bed9840c15f1dd2306da2cc56a4da26a5d3f1a03c5a7265ac5e54f",
+      "signature": "OggS",
+      "url": "/assets/slice.ogg",
+      "creator": "Kenney Vleugels",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/rpg-audio",
+      "download_url": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip"
+    },
+    {
+      "id": "blade",
+      "pack": "R",
+      "member": "blade_01.ogg",
+      "bytes": 15142,
+      "sha256": "caf7a7cb9b25cda4bd487c1d12d18b74a34bb18c816fd67277cf3c8d7ef32a3a",
+      "signature": "OggS",
+      "url": "/assets/blade.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "blade2",
+      "pack": "R",
+      "member": "blade_02.ogg",
+      "bytes": 17776,
+      "sha256": "c770afec8f62f14d3d082d5437c5cec28e2751d393df645ddd938eabc2588abd",
+      "signature": "OggS",
+      "url": "/assets/blade2.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "spell",
+      "pack": "R",
+      "member": "spell_01.ogg",
+      "bytes": 29121,
+      "sha256": "09821a53c418c5eeeac4fa25bada9d245e822fed302eeeae9ae4151522a45ae5",
+      "signature": "OggS",
+      "url": "/assets/spell.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "spell2",
+      "pack": "R",
+      "member": "spell_02.ogg",
+      "bytes": 25118,
+      "sha256": "bf9c48b76921e56aa266172d969a2c08215d6ce0ffae7c3584f23fa05d3f8bd4",
+      "signature": "OggS",
+      "url": "/assets/spell2.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "fire",
+      "pack": "R",
+      "member": "spell_fire_01.ogg",
+      "bytes": 39482,
+      "sha256": "02fa3a2c6e79e868e546802f45127c5cdda69aba6d5a24ac997ea66f81a816cb",
+      "signature": "OggS",
+      "url": "/assets/fire.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "fire2",
+      "pack": "R",
+      "member": "spell_fire_02.ogg",
+      "bytes": 33115,
+      "sha256": "bf1eef4993f0adb4bd3a1c1ec91f8f6e4ddeb32d922671a14561846d5b7cab98",
+      "signature": "OggS",
+      "url": "/assets/fire2.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "fire3",
+      "pack": "R",
+      "member": "spell_fire_03.ogg",
+      "bytes": 71801,
+      "sha256": "2e4edee4ff8d7898198f1ab5213e086965e14a665cb947d53759505e28ddd3e4",
+      "signature": "OggS",
+      "url": "/assets/fire3.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "fire4",
+      "pack": "R",
+      "member": "spell_fire_04.ogg",
+      "bytes": 59036,
+      "sha256": "64d653cd0cc6eb71bb45a1dfbba29eaa769ed5b663cce275082d6971e4f2ca8e",
+      "signature": "OggS",
+      "url": "/assets/fire4.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "fire5",
+      "pack": "R",
+      "member": "spell_fire_05.ogg",
+      "bytes": 54658,
+      "sha256": "18025b21a4ecb3b41acc0dccb0697a8930262109ea198ff8c5ef0853d3ed1cfa",
+      "signature": "OggS",
+      "url": "/assets/fire5.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "fire6",
+      "pack": "R",
+      "member": "spell_fire_06.ogg",
+      "bytes": 53074,
+      "sha256": "66fa753e8033d08f3837d6ef1706b0450297db68c0d4b21782a03fd9ae960d63",
+      "signature": "OggS",
+      "url": "/assets/fire6.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "fire7",
+      "pack": "R",
+      "member": "spell_fire_07.ogg",
+      "bytes": 24862,
+      "sha256": "bb13cef9c0b0b4ec7f9335c356b14814c88418abd85dd3747cb62469e9ada93f",
+      "signature": "OggS",
+      "url": "/assets/fire7.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "chain",
+      "pack": "R",
+      "member": "chain_01.ogg",
+      "bytes": 23007,
+      "sha256": "d376caf0f61384b1d2e0b447f64f06be56d0ee0622ba70dd01cfdd78b3a10687",
+      "signature": "OggS",
+      "url": "/assets/chain.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "lock",
+      "pack": "R",
+      "member": "lock_01.ogg",
+      "bytes": 17452,
+      "sha256": "e828ad2a936e34a0212f3309c5ac706c0ded412b9b383a87f10bcfa1d1445271",
+      "signature": "OggS",
+      "url": "/assets/lock.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "gem",
+      "pack": "R",
+      "member": "item_gem_01.ogg",
+      "bytes": 14690,
+      "sha256": "8a5d2964febb0c69cc4df2ee5257d173f2cae6960d9534df0001dbf356f27028",
+      "signature": "OggS",
+      "url": "/assets/gem.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "stone",
+      "pack": "R",
+      "member": "stones_01.ogg",
+      "bytes": 27110,
+      "sha256": "d11ce95031c2c36ae2a00979620fa95a7a3f5c6d6f2ac86962ed292aa556be8d",
+      "signature": "OggS",
+      "url": "/assets/stone.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "stone2",
+      "pack": "R",
+      "member": "stones_02.ogg",
+      "bytes": 35982,
+      "sha256": "57dc6b85ee986e68ddc4b7fb2b41cc1c885151677d32439fdb299492a3103a65",
+      "signature": "OggS",
+      "url": "/assets/stone2.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "itemStone",
+      "pack": "R",
+      "member": "item_stone_01.ogg",
+      "bytes": 34170,
+      "sha256": "ca630a5d7420d031588b4f5f4e60273d5e6e30b71c6e5a34ec733fb10089b829",
+      "signature": "OggS",
+      "url": "/assets/itemStone.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "wood",
+      "pack": "R",
+      "member": "wood_01.ogg",
+      "bytes": 13512,
+      "sha256": "55d4527a1f7d8e158eff0921f7a533340ab6be69a7b9b52fdac7a19b9d8e1cb2",
+      "signature": "OggS",
+      "url": "/assets/wood.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "hurt",
+      "pack": "R",
+      "member": "creature_hurt_01.ogg",
+      "bytes": 17185,
+      "sha256": "9948f9ce067e1aae7bd780e974d51ceae03f2611a52afffb0e092ba47e9dc8e1",
+      "signature": "OggS",
+      "url": "/assets/hurt.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "roar",
+      "pack": "R",
+      "member": "creature_roar_01.ogg",
+      "bytes": 15061,
+      "sha256": "ca1b9198490f29037e6e6487dd6db6165ca8b2583a445c0edd6b9f474d2d1f5f",
+      "signature": "OggS",
+      "url": "/assets/roar.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "roar2",
+      "pack": "R",
+      "member": "creature_roar_02.ogg",
+      "bytes": 22480,
+      "sha256": "4da0cf77a3506e1b573ec40e3688dc66400d1734853510db357fb3f843cde242",
+      "signature": "OggS",
+      "url": "/assets/roar2.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "die",
+      "pack": "R",
+      "member": "creature_die_01.ogg",
+      "bytes": 15883,
+      "sha256": "b34a816a401c5d80c77a61dabbedef7d1918a01320bbb67286c70f22db4acd43",
+      "signature": "OggS",
+      "url": "/assets/die.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "breath",
+      "pack": "R",
+      "member": "creature_misc_01.ogg",
+      "bytes": 16406,
+      "sha256": "62cbd7cc9b898932d15d05d62dc262dafb3381123ec778c4cf0e65f6ea341088",
+      "signature": "OggS",
+      "url": "/assets/breath.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "slime",
+      "pack": "R",
+      "member": "creature_slime_01.ogg",
+      "bytes": 35353,
+      "sha256": "746d6ef073abfadd43fe184c50c6a2528350d4f566f2c0f54cd51ff0eb665118",
+      "signature": "OggS",
+      "url": "/assets/slime.ogg",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "swing",
+      "pack": "A",
+      "member": "RPG Sound Pack/battle/swing.wav",
+      "bytes": 61462,
+      "sha256": "c7d50b9cb20ccda5aee6c023f4450915594061e36f3f9e78af241ca9fde0f817",
+      "signature": "RIFF",
+      "url": "/assets/swing.wav",
+      "creator": "artisticdude",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/rpg-sound-pack",
+      "download_url": "https://opengameart.org/sites/default/files/rpg_sound_pack.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "bubble",
+      "pack": "A",
+      "member": "RPG Sound Pack/inventory/bubble.wav",
+      "bytes": 121630,
+      "sha256": "c5f15d81e2b169784b737d31876ef67eb6957232f3e9c8186dde12c2370c822e",
+      "signature": "RIFF",
+      "url": "/assets/bubble.wav",
+      "creator": "artisticdude",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/rpg-sound-pack",
+      "download_url": "https://opengameart.org/sites/default/files/rpg_sound_pack.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "bottle",
+      "pack": "A",
+      "member": "RPG Sound Pack/inventory/bottle.wav",
+      "bytes": 127698,
+      "sha256": "b80e52ce602f0e8f75b3a80516771a759b815416f749888f72cadcd9448ecea0",
+      "signature": "RIFF",
+      "url": "/assets/bottle.wav",
+      "creator": "artisticdude",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/rpg-sound-pack",
+      "download_url": "https://opengameart.org/sites/default/files/rpg_sound_pack.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    },
+    {
+      "id": "magic",
+      "pack": "A",
+      "member": "RPG Sound Pack/battle/magic1.wav",
+      "bytes": 232576,
+      "sha256": "cadea162f3fe91c27666ab2a0516fa3bf156997d92d4f8145919126bca7b1e8a",
+      "signature": "RIFF",
+      "url": "/assets/magic.wav",
+      "creator": "artisticdude",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/rpg-sound-pack",
+      "download_url": "https://opengameart.org/sites/default/files/rpg_sound_pack.zip",
+      "license_evidence": "CC0 on original OpenGameArt pack page; no bundled license text found"
+    }
+  ]
+}

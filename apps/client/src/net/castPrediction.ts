@@ -27,6 +27,14 @@ import { combatDirection } from "../animation/combat.js";
 const ATTACK_COOLDOWN = 0.6;
 export const MATCH_TICKS = ticksFor(0.067);
 const MAX_LEAD_TICKS = ticksFor(0.5);
+/** How far ahead of the snapshot (in game seconds) own shots are drawn. */
+export function shotLead(world: Readonly<World>, renderTick: number) {
+  const ticks = Math.max(
+    0,
+    Math.min(MAX_LEAD_TICKS, renderTick - world.serverTick),
+  );
+  return ticks * DT * (world.slowTime ? SLOW_TIME_SCALE : 1);
+}
 
 // Staff tip relative to the simulated position, measured from Coco's cast sheet
 // (ground anchor 13px below the position). The offset fades over the first
@@ -238,12 +246,13 @@ export class CastPrediction {
         continue;
       }
       const key = this.keyFor(q.id);
-      const lead = Math.max(
-        0,
-        Math.min(MAX_LEAD_TICKS, renderTick - world.serverTick),
-      );
       out[key] = { ...q, id: key };
-      const predicted = pondTravel(q, lead * DT * scale, world, blockers);
+      const predicted = pondTravel(
+        q,
+        shotLead(world, renderTick),
+        world,
+        blockers,
+      );
       Object.assign(out[key], predicted.velocity, { id: key });
       positions.set(key, predicted.at);
     }

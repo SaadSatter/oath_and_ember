@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import { createApp } from "../apps/server/src/app.js";
 import type { GameRoom } from "../apps/server/src/GameRoom.js";
 import { FINALE } from "../packages/shared/src/chapter0Finale.js";
+import { cutscenes } from "../packages/shared/src/prologue.js";
 import { gladeState } from "../packages/shared/src/statueGlade.js";
 import { bridgePoints } from "../packages/shared/src/bridgePuzzle.js";
 import {
@@ -148,7 +149,13 @@ try {
     targetId: SHRINE_OFFERING,
     itemId: "griffin_wig",
   });
-  await play("revelation", { 0: "10-beauty-returned", 48: "11-baby" });
+  const said = (id: string, start: string) =>
+    cutscenes[id].lines.findIndex((l) => l.text.startsWith(start));
+  await play("revelation", {
+    0: "10-beauty-returned",
+    [said("revelation", "...Sigurd.")]: "10b-sigurd",
+    [said("revelation", "Many years ago")]: "11-baby",
+  });
   // Act VII: each hero chooses with their own keys.
   const choosing = await play("resolve");
   if (choosing !== 0) throw Error("Choice line did not wait");
@@ -162,7 +169,12 @@ try {
   if (JSON.stringify(story().motivations) !== '{"OATH":"promise","EMBER":"scared"}')
     throw Error(`Wrong motivations ${JSON.stringify(story().motivations)}`);
   await play("resolve", { 1: "14-coco-reason", 2: "15-sieg-reason" });
-  await play("watcher", { 0: "16-watcher", 2: "17-oath-survives" });
+  await play("depart", { 0: "16-depart" });
+  await play("watcher", {
+    [said("watcher", "Pale mist")]: "16b-mist",
+    [said("watcher", "So... the oath lives on.")]: "17-oath-lives-on",
+    [cutscenes.watcher.lines.length - 1]: "17b-pull-back",
+  });
   await wait(2600);
   await shot("18-chapter-complete");
   await wait(6500);

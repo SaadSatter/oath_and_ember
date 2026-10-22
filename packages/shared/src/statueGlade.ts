@@ -64,6 +64,17 @@ export const gladeBushRect = (b: { x: number; y: number }): Rect => ({
   w: 52,
   h: 28,
 });
+/**
+ * Where fire catches a bush: its whole drawn body (the art rises about 40
+ * above its ground centre), not just the footing heroes bump into. Stacked
+ * bushes touch, so a fireball can't slip between them.
+ */
+export const gladeBushFireRect = (b: { x: number; y: number }): Rect => ({
+  x: b.x - 26,
+  y: b.y - 36,
+  w: 52,
+  h: 50,
+});
 export function gladeDynamicWalls(
   puzzles: Record<string, Pick<Puzzle, "glade">>,
 ): Rect[] {
