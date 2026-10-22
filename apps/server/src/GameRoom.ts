@@ -147,6 +147,7 @@ import {
   fireballDamage,
 } from "../../../packages/shared/src/abilities.js";
 type Aim = { x: number; y: number };
+import { storyVersion } from "../../../packages/shared/src/storyVersion.js";
 export class GameRoom {
   state: World;
   readonly inventory = new InventoryService();
@@ -219,6 +220,7 @@ export class GameRoom {
     this.state = {
       roomCode: code,
       storyStart,
+      storyVersion,
       phase: "LOBBY",
       sceneId: "FOREST_RUINS",
       serverTick: 0,
@@ -668,9 +670,7 @@ export class GameRoom {
             ? { x: 160, y: 576 }
             : previous === "HEDGE_MAZE"
               ? { x: 1120, y: 576 }
-              : previous === "FOREST_RUINS"
-                ? shrinePoints.exit
-                : null;
+              : null;
       for (const p of Object.values(w.players))
         this.relocate(p, scene, arrival ?? shrineSpawn(p.role));
     }
@@ -1232,14 +1232,6 @@ export class GameRoom {
           return;
         }
         if (sceneId === "GODDESS_SHRINE") {
-          if (
-            shrineComplete(w) &&
-            !finaleBlocksExit(w, sceneId) &&
-            near(p, shrinePoints.exit, 48)
-          ) {
-            this.transition("FOREST_RUINS");
-            return;
-          }
           if (near(p, shrinePoints.north, 48)) {
             this.transition("GRIFFIN_ENCLOSURE");
             return;

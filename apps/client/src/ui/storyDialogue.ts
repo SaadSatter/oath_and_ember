@@ -2,6 +2,7 @@ import type { Role, World } from "../../../../packages/shared/src/gameTypes.js";
 import {
   castOf,
   cutscenes,
+  storyLineHeld,
   storySpeakerNames,
 } from "../../../../packages/shared/src/prologue.js";
 import { offstageFor } from "../../../../packages/shared/src/chapter0.js";
@@ -32,6 +33,8 @@ export interface StoryView {
   memory: boolean;
   /** What pressing on means here, e.g. "E · Cast healing magic". */
   prompt: string;
+  /** The line cannot be moved on yet (Alden walking in, his dragon eating). */
+  held: boolean;
   /** A choosing line: this hero's own options, until they have chosen. */
   choices?: { id: string; text: string }[];
   /** A choosing line this hero has answered: waiting on the partner. */
@@ -66,6 +69,7 @@ export function storyView(
       watching,
       memory: false,
       prompt: "",
+      held: false,
       choices: !watching && !mine ? motivations[role] : undefined,
       chosen: !!mine,
     };
@@ -87,6 +91,7 @@ export function storyView(
     watching,
     memory: shown && !!line.memory,
     prompt: shown && !watching ? (line.prompt ?? "") : "",
+    held: storyLineHeld(w.story!, line, w.serverTick),
   };
 }
 
@@ -101,9 +106,11 @@ export class StoryDialogue {
   private started = 0;
   private finished = false;
   private sent = false;
+  private held = false;
   private frame = 0;
   constructor(
-    private read: (cutscene: string, line: number) => void,
+    /** Resolves false when the server did not take the read. */
+    private read: (cutscene: string, line: number) => Promise<boolean>,
     private onOpen: () => void,
     private choose: (cutscene: string, line: number, choice: string) => void = () =>
       undefined,
@@ -175,6 +182,7 @@ export class StoryDialogue {
     ) {
       const fresh = view.key !== this.view?.key;
       this.view = view;
+      this.held = view.held;
       this.renderChoices();
       if (!fresh) return;
       this.sent = false;
@@ -192,6 +200,12 @@ export class StoryDialogue {
         this.onOpen();
       }
       this.startPage();
+    }
+    // A held line becomes readable in place: the ▼ comes back with it.
+    if (view.held !== this.held) {
+      this.held = view.held;
+      this.view = view;
+      this.draw();
     }
     this.statusEl.textContent = view.watching
       ? `Watching ${partnerName}…`
@@ -255,10 +269,16 @@ export class StoryDialogue {
       this.draw();
       return;
     }
-    if (!view.reader || this.sent) return;
+    if (!view.reader || this.sent || view.held) return;
     this.sent = true;
     this.draw();
-    this.read(view.cutscene, view.line);
+    void this.read(view.cutscene, view.line).then((accepted) => {
+      // Refused (e.g. the line was held after all): E works again.
+      if (!accepted && this.view?.key === view.key) {
+        this.sent = false;
+        this.draw();
+      }
+    });
   }
   private startPage() {
     this.started = performance.now();
@@ -280,7 +300,7 @@ export class StoryDialogue {
     this.textEl.textContent = typed.text;
     this.textEl.setAttribute("aria-label", page);
     this.root.dataset.done = String(
-      this.finished && !!this.view?.reader && !this.sent,
+      this.finished && !!this.view?.reader && !this.sent && !this.view?.held,
     );
   }
   private place() {

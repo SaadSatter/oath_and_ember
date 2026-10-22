@@ -33,7 +33,10 @@ export class DialogueBox {
   private started = 0;
   private finished = false;
   private frame = 0;
-  constructor(private onOpen: () => void) {
+  constructor(
+    private onOpen: () => void,
+    private sound: (name: string) => void = () => {},
+  ) {
     this.root.className = "dialogue-box";
     this.root.hidden = true;
     this.root.setAttribute("role", "dialog");
@@ -81,6 +84,7 @@ export class DialogueBox {
   /** Finish the page being typed, else turn the page, else close. */
   advance() {
     if (!this.current) return;
+    this.sound("Dialogue next page / finish typing");
     if (!this.finished) {
       this.finished = true;
       this.draw();
@@ -92,6 +96,7 @@ export class DialogueBox {
     } else this.next();
   }
   close() {
+    if (this.open) this.sound("Ordinary NPC conversation open / close");
     for (const request of [this.current, ...this.queue]) request?.onClose?.();
     this.queue = [];
     this.current = null;

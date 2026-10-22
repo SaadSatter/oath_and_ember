@@ -333,24 +333,64 @@ it("remembers only after the wig, then waits for each hero's own choice", () => 
   expect(story.flags).toContain(motivationFlag("EMBER", "scared"));
   expect(flagCount(story, motivationFlag("OATH", "promise"))).toBe(1);
   readScene(r, [sieg, coco], "resolve");
-  // The watcher: she appears far from them, then is gone; the chapter ends.
+  // They leave by the south road...
+  expect(story.cutscene?.id).toBe("depart");
+  settle(r);
+  for (const p of [sieg, coco]) {
+    expect(p.y).toBeGreaterThan(900);
+    // Clear of the road back, so pressing E to read cannot leave the map.
+    for (const point of Object.values(shrinePoints))
+      expect(Math.hypot(p.x - point.x, p.y - point.y)).toBeGreaterThan(60);
+  }
+  expect(story.stranger).toBeUndefined();
+  readScene(r, [sieg, coco], "depart");
+  expect(flagCount(story, FINALE.departed)).toBe(1);
+  // ...and the goddess calls out the Mistress of the Mist, who takes shape
+  // at the entrance only once the mist has gathered.
   expect(story.cutscene?.id).toBe("watcher");
   settle(r);
+  const lines = finaleCutscenes.watcher.lines,
+    appears = lines.findIndex((l) => l.cue === "stranger-appear");
+  expect(lines.findIndex((l) => l.cue === "mist-gather")).toBeLessThan(appears);
+  while (story.cutscene!.line < appears) {
+    expect(story.stranger).toBeUndefined();
+    r.readStoryLine(sieg.id, "watcher", story.cutscene!.line);
+  }
   expect(story.stranger).toEqual(watcherPose);
-  expect(Math.hypot(sieg.x - watcherPose.x, sieg.y - watcherPose.y)).toBeGreaterThan(300);
+  expect(watcherPose.facing).toBe("south");
+  expect(story.stage).toBe("WIG");
   readScene(r, [sieg, coco], "watcher");
   expect(story.stranger).toBeUndefined();
   expect(story.stage).toBe("DONE");
   expect(flagCount(story, FINALE.complete)).toBe(1);
   expect(finaleObjective(story)).toMatch(/Chapter 0 complete/);
-  // Nothing replays; the road on to the Forest Ruins opens.
+  // Nothing replays, and the former debug forest shortcut stays removed.
   for (let i = 0; i < 20; i++) r.tick();
   expect(story.cutscene).toBeUndefined();
   r.state.serverTick += 120;
-  Object.assign(sieg, shrinePoints.exit);
+  Object.assign(sieg, { x: 848, y: 688 });
   input(r, sieg.id, { interactHeld: true });
   input(r, sieg.id);
-  expect(r.state.sceneId).toBe("FOREST_RUINS");
+  expect(r.state.sceneId).toBe("GODDESS_SHRINE");
+});
+
+it("has the goddess sense something familiar in Sieg, and only recall the name Sigurd", () => {
+  const lines = finaleCutscenes.revelation.lines;
+  const goddess = lines.filter((l) => l.speaker === "GODDESS").map((l) => l.text);
+  // She never names him: nobody has introduced him to her.
+  for (const text of goddess) expect(text).not.toMatch(/\bSieg\b/);
+  expect(goddess).toContain("...Sigurd.");
+  expect(goddess).toContain("There's something familiar about you.");
+  // Nothing says who Sigurd was.
+  const sigurd = lines.findIndex((l) => l.text === "...Sigurd.");
+  expect(lines[sigurd + 2]).toMatchObject({
+    speaker: "GODDESS",
+    text: "I... cannot remember.",
+  });
+  // Then the talk turns to Alden and the Ember, as before.
+  const forgive = lines.findIndex((l) => l.text.startsWith("Forgive me."));
+  expect(lines[forgive + 1].text).toBe("Enough riddles. Did you know Papa?");
+  expect(lines.some((l) => /seven divine relics/.test(l.text))).toBe(true);
 });
 
 it("never lets the shrine's road on open before the chapter ends", () => {
@@ -368,10 +408,12 @@ it("never lets the shrine's road on open before the chapter ends", () => {
   delete story.cutscene;
   story.flags.push(FINALE.revelation, FINALE.resolve);
   r.state.serverTick += 120;
-  Object.assign(sieg, shrinePoints.exit);
+  Object.assign(sieg, { x: 848, y: 688 });
   input(r, sieg.id, { interactHeld: true });
   expect(r.state.sceneId).toBe("GODDESS_SHRINE");
-  // The watcher picks up where the chain left off.
+  // The ending picks up where the chain left off: they leave, then the mist.
+  expect(r.state.story!.cutscene?.id).toBe("depart");
+  readScene(r, [sieg], "depart");
   expect(r.state.story!.cutscene?.id).toBe("watcher");
 });
 

@@ -467,7 +467,8 @@ chapter0Cutscenes["next-day"] = {
   scene: "MAIN_HOUSE",
   placement: {
     EMBER: { x: 180, y: 440, facing: WEST },
-    OATH: { x: 250, y: 510, facing: WEST },
+    // On the open road east of the old oak, not hidden under its leaves.
+    OATH: { x: 330, y: 500, facing: WEST },
   },
   aldenGone: true,
   // Sieg brought his old practice sword from home.
@@ -819,8 +820,9 @@ export interface StorySpot {
 }
 const stoneAt = [
   { x: 330, y: 560 },
-  { x: 690, y: 575 },
-  { x: 250, y: 510 },
+  // Both on the open road, clear of the two trees' canopies.
+  { x: 590, y: 522 },
+  { x: 410, y: 495 },
 ];
 const flowerAt = [
   { x: 256, y: 392 },

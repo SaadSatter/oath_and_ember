@@ -1,0 +1,461 @@
+{
+  "date": "2026-10-21",
+  "purpose": "Sound remapping revision: clips added on top of the original 63. Files are unedited downloads; trims are applied at playback via offsets in revisedCues.json.",
+  "verification": "Downloaded originals; analyzed for duration/onset/loudness; not auditioned by a human yet",
+  "packs": {
+    "U": {
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/interface-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip"
+    },
+    "I": {
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/impact-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip"
+    },
+    "K": {
+      "creator": "Kenney Vleugels",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/rpg-audio",
+      "download_url": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip"
+    },
+    "S": {
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "source_page": "https://kenney.nl/assets/sci-fi-sounds",
+      "download_url": "https://kenney.nl/media/pages/assets/sci-fi-sounds/6b296f9ecf-1677589334/kenney_sci-fi-sounds.zip"
+    },
+    "R": {
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip"
+    },
+    "A": {
+      "creator": "artisticdude",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/rpg-sound-pack",
+      "download_url": "https://opengameart.org/sites/default/files/rpg_sound_pack.zip"
+    },
+    "W": {
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/40-cc0-water-splash-slime-sfx",
+      "download_url": "https://opengameart.org/sites/default/files/water-splash-slime-sfx.zip"
+    },
+    "G": {
+      "creator": "AntumDeluge (from dave.des, freesound 127197)",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/large-wings-flap",
+      "download_url": "https://opengameart.org/sites/default/files/wings_flap_large.zip"
+    },
+    "M": {
+      "creator": "Almitory",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/air-woosh-move",
+      "download_url": "https://opengameart.org/sites/default/files/air_move.wav"
+    },
+    "F": {
+      "creator": "AntumDeluge",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/fire-crackling",
+      "download_url": "https://opengameart.org/sites/default/files/fire-1_0.ogg"
+    },
+    "N": {
+      "creator": "SketchMan3",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/wind-whoosh-loop",
+      "download_url": "https://opengameart.org/sites/default/files/wind%20woosh%20loop.ogg"
+    },
+    "H": {
+      "creator": "HaelDB",
+      "license": "CC0-1.0 (dual-listed OGA-BY 3.0 / CC0; used under CC0)",
+      "source_page": "https://opengameart.org/content/male-gruntyelling-sounds",
+      "download_url": "https://opengameart.org/sites/default/files/yelling%20sounds.zip"
+    },
+    "E": {
+      "creator": "EZduzziteh",
+      "license": "CC0-1.0",
+      "source_page": "https://opengameart.org/content/hurt-sound-effects",
+      "download_url": "https://opengameart.org/sites/default/files/"
+    }
+  },
+  "assets": [
+    {
+      "file": "uiSelect.ogg",
+      "pack": "U",
+      "member": "Audio/drop_002.ogg",
+      "bytes": 6411,
+      "sha256": "4ac4d1cef7e936965cbf795852ca2020300b9e2ba7daa59f2bf4f1f7bf416218"
+    },
+    {
+      "file": "uiConfirm.ogg",
+      "pack": "U",
+      "member": "Audio/confirmation_002.ogg",
+      "bytes": 14169,
+      "sha256": "33b17a9a9a2397c62b285c52c33a907fdffb476909c99e42dde603f6a7a8b12c"
+    },
+    {
+      "file": "uiConfirmSoft.ogg",
+      "pack": "U",
+      "member": "Audio/confirmation_004.ogg",
+      "bytes": 12391,
+      "sha256": "568967a3d9f8a8f6af54ea01729c4882284308f2a27d78c07ffd7ee0d6951661"
+    },
+    {
+      "file": "uiError.ogg",
+      "pack": "U",
+      "member": "Audio/error_004.ogg",
+      "bytes": 6393,
+      "sha256": "0b574cea597d96507e782ae9764f88482ce49f46e931e57054bf7150047f2d69"
+    },
+    {
+      "file": "uiReady.ogg",
+      "pack": "U",
+      "member": "Audio/glass_001.ogg",
+      "bytes": 6103,
+      "sha256": "183eebee20eb0a532b0b85104d139cbf2673eb66d95c3cc733ac9ea98362e7e8"
+    },
+    {
+      "file": "shimmer.ogg",
+      "pack": "U",
+      "member": "Audio/glass_004.ogg",
+      "bytes": 8323,
+      "sha256": "2379b58f953e3d86982aa8cddcae763022c6258e9820171bf905ce58b4e97766"
+    },
+    {
+      "file": "bagOpen.ogg",
+      "pack": "K",
+      "member": "Audio/handleSmallLeather.ogg",
+      "bytes": 10492,
+      "sha256": "ae3cbf695aa0a8b98b5a80a835be5a3ccbd5446a24db2235cd4c3cd6fc92ed96"
+    },
+    {
+      "file": "bagClose.ogg",
+      "pack": "K",
+      "member": "Audio/handleSmallLeather2.ogg",
+      "bytes": 10028,
+      "sha256": "a66f6db5918ad016c28a9f2768f127a7f39b5fa04481e5a3b4e78ebe2a1c282d"
+    },
+    {
+      "file": "clockTock.ogg",
+      "pack": "K",
+      "member": "Audio/metalClick.ogg",
+      "bytes": 13615,
+      "sha256": "9851a69d0c613e13bceef08060ecc4148f098ef487927cbebe270d642398a3b3"
+    },
+    {
+      "file": "grass1.ogg",
+      "pack": "I",
+      "member": "Audio/footstep_grass_001.ogg",
+      "bytes": 8313,
+      "sha256": "fb28781bd22b2eefdc14077f1adf5c94d7fe9c3a130194633b55f3e0d39d9f04"
+    },
+    {
+      "file": "grass2.ogg",
+      "pack": "I",
+      "member": "Audio/footstep_grass_002.ogg",
+      "bytes": 8278,
+      "sha256": "73a520139f5be716a403bfe9c80e0e94d1e61d8e9de04a354b336392164b53dc"
+    },
+    {
+      "file": "grass3.ogg",
+      "pack": "I",
+      "member": "Audio/footstep_grass_003.ogg",
+      "bytes": 8129,
+      "sha256": "0546e1d8ab2def714425701a18bd34c5ee2794b12e858e5b595aabcf38a34137"
+    },
+    {
+      "file": "grass4.ogg",
+      "pack": "I",
+      "member": "Audio/footstep_grass_004.ogg",
+      "bytes": 7800,
+      "sha256": "086fd4ab3546a507ea5f5c759a9a10e535c95ade13705c238bc0eeffd7d4e8ba"
+    },
+    {
+      "file": "stoneStep1.ogg",
+      "pack": "I",
+      "member": "Audio/footstep_concrete_001.ogg",
+      "bytes": 6308,
+      "sha256": "507a75eb19b897087855a3be3cf11a12d7fa37d143ad535eeebe0b8031c7325d"
+    },
+    {
+      "file": "stoneStep2.ogg",
+      "pack": "I",
+      "member": "Audio/footstep_concrete_002.ogg",
+      "bytes": 6255,
+      "sha256": "b21fa546d74941196b25da8a20b7010abd8c05c4fcf93545d1f344e66a664e13"
+    },
+    {
+      "file": "stoneStep3.ogg",
+      "pack": "I",
+      "member": "Audio/footstep_concrete_003.ogg",
+      "bytes": 5805,
+      "sha256": "8b513c2f0316324060b9174b8f28df6c2147418c506e6a53b77f18e149a5547b"
+    },
+    {
+      "file": "stoneStep4.ogg",
+      "pack": "I",
+      "member": "Audio/footstep_concrete_004.ogg",
+      "bytes": 5912,
+      "sha256": "24dd8db2413e5b81ad181e1205c12a1c7801da5f85715d471b92a4b2f632e45e"
+    },
+    {
+      "file": "woodStep1.ogg",
+      "pack": "I",
+      "member": "Audio/footstep_wood_001.ogg",
+      "bytes": 5929,
+      "sha256": "e4f68e1c9fd55b4dc8ca89ed2bbab6f200171bc54bdc18aa96b80d8e7336f462"
+    },
+    {
+      "file": "woodStep2.ogg",
+      "pack": "I",
+      "member": "Audio/footstep_wood_002.ogg",
+      "bytes": 5895,
+      "sha256": "9ff095b05cee5eec40b081defe3f0eef7232bb16d4865ce03b9f6dbab875cfdd"
+    },
+    {
+      "file": "woodStep3.ogg",
+      "pack": "I",
+      "member": "Audio/footstep_wood_003.ogg",
+      "bytes": 6207,
+      "sha256": "2a68a083daa9eda08fed0ea5da5280dfbe0de226196c576be02f95259dd139d9"
+    },
+    {
+      "file": "woodStep4.ogg",
+      "pack": "I",
+      "member": "Audio/footstep_wood_004.ogg",
+      "bytes": 5799,
+      "sha256": "b33e0854e2b3f6b6492e25c25ef8f90447a332f7c6bb25dd02edced9581d3441"
+    },
+    {
+      "file": "punchMed.ogg",
+      "pack": "I",
+      "member": "Audio/impactPunch_medium_000.ogg",
+      "bytes": 8800,
+      "sha256": "486988aa2d6440ffc4c62a0e8ccf3c23673ba84424bd4723378d451b7255eb5c"
+    },
+    {
+      "file": "softHeavy.ogg",
+      "pack": "I",
+      "member": "Audio/impactSoft_heavy_000.ogg",
+      "bytes": 6570,
+      "sha256": "49e7ca88743fca974bb8676ea138b751cfd8f9033b5e7af8736c2a215d6edbc1"
+    },
+    {
+      "file": "glassHit.ogg",
+      "pack": "I",
+      "member": "Audio/impactGlass_medium_000.ogg",
+      "bytes": 8400,
+      "sha256": "9252d50bfb85edb17d6073c4a7806e10cdb9de56d3dbfc93a4b9727146d2df6d"
+    },
+    {
+      "file": "metalMed.ogg",
+      "pack": "I",
+      "member": "Audio/impactMetal_medium_000.ogg",
+      "bytes": 7117,
+      "sha256": "a96f879fec0864a8938e0c745b6996a6c5679c16a234ce31a01cc995e8401003"
+    },
+    {
+      "file": "swing2.wav",
+      "pack": "A",
+      "member": "RPG Sound Pack/battle/swing2.wav",
+      "bytes": 39384,
+      "sha256": "2e4064e294d136e06c40cc562df969493907e6873f39895ca86b4a6b2e034c6e"
+    },
+    {
+      "file": "swing3.wav",
+      "pack": "A",
+      "member": "RPG Sound Pack/battle/swing3.wav",
+      "bytes": 37316,
+      "sha256": "d725421956c9958de6d7a17c4fca299abe583a1800c59eaec358ec2e82d79bae"
+    },
+    {
+      "file": "giant2.wav",
+      "pack": "A",
+      "member": "RPG Sound Pack/NPC/giant/giant2.wav",
+      "bytes": 267794,
+      "sha256": "3e5b30a8fa8f6eb8f94bb50a43fb410669f78da13f4108f60f8a851ddde2f2a8"
+    },
+    {
+      "file": "bite.wav",
+      "pack": "A",
+      "member": "RPG Sound Pack/NPC/beetle/bite-small.wav",
+      "bytes": 73804,
+      "sha256": "bc0e9d150aaf71aefa99111cfff90ca1deea5e72fb31c7371df75288d74ab2b5"
+    },
+    {
+      "file": "roar3.ogg",
+      "pack": "R",
+      "member": "creature_roar_03.ogg",
+      "bytes": 23375,
+      "sha256": "3571f6372012fdebb2a38ef89e18a6137b3f17d519f1259aafeb166dbdd94195"
+    },
+    {
+      "file": "stone3.ogg",
+      "pack": "R",
+      "member": "stones_03.ogg",
+      "bytes": 41046,
+      "sha256": "b86d143d7ef4974c2b97fda9e5d1861482646eec754e15935eeb3680ea0d71da"
+    },
+    {
+      "file": "boom.ogg",
+      "pack": "S",
+      "member": "Audio/lowFrequency_explosion_001.ogg",
+      "bytes": 9408,
+      "sha256": "cdda50600a4928f2f1b8371224d53c171ac799c1cf2c30b11999508985250b3b"
+    },
+    {
+      "file": "crunch.ogg",
+      "pack": "S",
+      "member": "Audio/explosionCrunch_000.ogg",
+      "bytes": 28274,
+      "sha256": "4b597d658d0ae101f0a030fbeea5fc3a4292ab85f017470a8254a8e7959cbd69"
+    },
+    {
+      "file": "hum.ogg",
+      "pack": "S",
+      "member": "Audio/forceField_000.ogg",
+      "bytes": 25672,
+      "sha256": "c2916f2a062c8ddd1aca2826d134fe90847037db31342726ffb0f9097afe339c"
+    },
+    {
+      "file": "rumble.ogg",
+      "pack": "S",
+      "member": "Audio/spaceEngineLow_001.ogg",
+      "bytes": 99120,
+      "sha256": "307dfd8fbfe7e6f2d59dec4de445cf02bd4fff86005803096b8c95e333836a70"
+    },
+    {
+      "file": "beamRoar.ogg",
+      "pack": "S",
+      "member": "Audio/spaceEngineLarge_000.ogg",
+      "bytes": 189900,
+      "sha256": "885aeda16116b715be5e8fd03d0d77959761015e1ca5823fd3b53d4fd965107f"
+    },
+    {
+      "file": "flameJet.ogg",
+      "pack": "S",
+      "member": "Audio/thrusterFire_003.ogg",
+      "bytes": 196273,
+      "sha256": "04f558ca5abf30788e49ed4370289dfd7e38c7f054d2ea35c2a013210374f1e5"
+    },
+    {
+      "file": "grind.ogg",
+      "pack": "S",
+      "member": "Audio/spaceEngineSmall_000.ogg",
+      "bytes": 116880,
+      "sha256": "2bec8ff75d81f0c37a6b78bd63beea6c70375e49ee30b0bbe7f38d654d576831"
+    },
+    {
+      "file": "splashBig.ogg",
+      "pack": "W",
+      "member": "splash_04.ogg",
+      "bytes": 46571,
+      "sha256": "58dddea3843b89e9504e6f174ea49cd061b1002bb6ae8a94f358409fabb8340a"
+    },
+    {
+      "file": "splashBurst.ogg",
+      "pack": "W",
+      "member": "splash_07.ogg",
+      "bytes": 62804,
+      "sha256": "307e6ea8d4ed122d1f54377437194daf4c2d6103d3a04dd9128c3d7a342d46b8"
+    },
+    {
+      "file": "splashBite.ogg",
+      "pack": "W",
+      "member": "splash_10.ogg",
+      "bytes": 18959,
+      "sha256": "69ec352dc6c0ea4691435e692063f903c98e5292579ba71297d4fbdb51c33649"
+    },
+    {
+      "file": "waterRush.ogg",
+      "pack": "W",
+      "member": "loop_water_02.ogg",
+      "bytes": 269372,
+      "sha256": "2a39d9c6d3069e94f15b092f15bcfac7de54ca1bdc7c0b9a02b151bda6f3a29d"
+    },
+    {
+      "file": "rain.ogg",
+      "pack": "W",
+      "member": "loop_rain.ogg",
+      "bytes": 290435,
+      "sha256": "4e836ff06b7d88b97c17ec08f43c3678201bee1ec414bcb456252f784a7be4a4"
+    },
+    {
+      "file": "wings.ogg",
+      "pack": "G",
+      "member": "wings_flap_large.ogg",
+      "bytes": 26649,
+      "sha256": "060d1e2b9403893c4aaff7148ea604c4bcfc6bf3e7bab44913a56429ff261a9c"
+    },
+    {
+      "file": "whoosh.wav",
+      "pack": "M",
+      "member": "air_move.wav",
+      "bytes": 126928,
+      "sha256": "b4e7bdf9f0c3d79dd4d48a0d56a5861847256b31e97bb74b948e95d5cb2fa26e"
+    },
+    {
+      "file": "crackle.ogg",
+      "pack": "F",
+      "member": "fire-1.ogg",
+      "bytes": 22784,
+      "sha256": "f922929805bc6afdf0a35727fa3998033db544c1b6f62ed3aeab94341ed6ddeb"
+    },
+    {
+      "file": "mist.ogg",
+      "pack": "N",
+      "member": "wind woosh loop.ogg",
+      "bytes": 251584,
+      "sha256": "0cfdbd3f21ed449689a9024264edf267d0037a6495813a7010827672ec191dac"
+    },
+    {
+      "file": "siegHurt1.wav",
+      "pack": "H",
+      "member": "yelling sounds/3grunt4.wav",
+      "bytes": 89356,
+      "sha256": "4ba97adf030acefa10195f88c3fb329ebbea2c9638bd412896e1b4fc0ca35404"
+    },
+    {
+      "file": "siegHurt2.wav",
+      "pack": "H",
+      "member": "yelling sounds/3grunt5.wav",
+      "bytes": 89356,
+      "sha256": "32705e7835d0cdce3eb6e9d3a512ef128ee6c50564bd53bb0723b4474be85181"
+    },
+    {
+      "file": "siegHurt3.wav",
+      "pack": "H",
+      "member": "yelling sounds/1yell9.wav",
+      "bytes": 177556,
+      "sha256": "da11a59a017ad4ed3f371ca0829c1f5f3d6a59106eee1ae914d39e04ffe08d6e"
+    },
+    {
+      "file": "cocoHurt1.mp3",
+      "pack": "E",
+      "member": "hurt_01_0.mp3",
+      "bytes": 7148,
+      "sha256": "45f19e4f637ff0e8936186977aa7cb131f67a95ca68660686476a47da224322e",
+      "download_url": "https://opengameart.org/sites/default/files/hurt_01_0.mp3"
+    },
+    {
+      "file": "cocoHurt2.mp3",
+      "pack": "E",
+      "member": "hurt_03.mp3",
+      "bytes": 3963,
+      "sha256": "9950c1dbbf3f2c75952510f1f2a2ab6f36586ba7e62f4f1e74ad64e82db2aa52",
+      "download_url": "https://opengameart.org/sites/default/files/hurt_03.mp3"
+    },
+    {
+      "file": "cocoHurt3.mp3",
+      "pack": "E",
+      "member": "hurt_05.mp3",
+      "bytes": 8556,
+      "sha256": "a70d46a0a20c1e231fdfd4e8154248be9a5e0ff38e84fa08eaf7f25dea749e93",
+      "download_url": "https://opengameart.org/sites/default/files/hurt_05.mp3"
+    }
+  ]
+}

@@ -1,0 +1,2534 @@
+{
+  "Title/checkpoint selection, create/join/back": {
+    "id": "80a781de3740",
+    "tracks": [
+      {
+        "assetId": "click",
+        "gain": 0.16,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Role / appearance selection": {
+    "id": "80c42858f0a0",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.16,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Ready / cancel-ready / start": {
+    "id": "64640b904d9a",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.22,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Inventory open": {
+    "id": "becca910ded6",
+    "tracks": [
+      {
+        "assetId": "open",
+        "gain": 0.18,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Inventory close / Escape": {
+    "id": "60d4e123f4e3",
+    "tracks": [
+      {
+        "assetId": "close",
+        "gain": 0.16,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Select inventory item": {
+    "id": "5629f0ce0877",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.13,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Inventory Use/Open/Speak button": {
+    "id": "b3fcd7bc0a70",
+    "tracks": [
+      {
+        "assetId": "click",
+        "gain": 0.1,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Rejected item / out-of-range / blocked / unavailable action": {
+    "id": "3d43e7b05c8b",
+    "tracks": [
+      {
+        "assetId": "error",
+        "gain": 0.16,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Successful generic chest / quest pickup": {
+    "id": "10a391b609d4",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.22,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Ordinary NPC conversation open / close": {
+    "id": "8099f01068d9",
+    "tracks": [
+      {
+        "assetId": "open",
+        "gain": 0.12,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Dialogue next page / finish typing": {
+    "id": "7a128af66e67",
+    "tracks": [
+      {
+        "assetId": "tick",
+        "gain": 0.07,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Motivation option highlight": {
+    "id": "dae4938167f5",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.12,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Motivation accepted": {
+    "id": "00bb4710a61a",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.2,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Copy room code": {
+    "id": "a1e45a657b09",
+    "tracks": [
+      {
+        "assetId": "click",
+        "gain": 0.12,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Restart after completed game": {
+    "id": "61b0a99739bc",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.18,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Footsteps on grass / garden / maze": {
+    "id": "80dff2b0b7bf",
+    "tracks": [
+      {
+        "assetId": "grass",
+        "gain": 0.16,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Footsteps on paved ruins / shrine / village": {
+    "id": "7bc1300faace",
+    "tracks": [
+      {
+        "assetId": "stoneStep",
+        "gain": 0.16,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Footsteps indoors / wood": {
+    "id": "8f18da751730",
+    "tracks": [
+      {
+        "assetId": "woodStep",
+        "gain": 0.14,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Door / stairs / map travel": {
+    "id": "6748c76910a8",
+    "tracks": [
+      {
+        "assetId": "doorOpen",
+        "gain": 0.22,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg normal sword swing": {
+    "id": "9affc7c5bd37",
+    "tracks": [
+      {
+        "assetId": "swing",
+        "gain": 0.42,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg sword lands": {
+    "id": "798d2f9fa6eb",
+    "tracks": [
+      {
+        "assetId": "punch",
+        "gain": 0.4,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg Guard raised / lowered": {
+    "id": "c2321c4baf7e",
+    "tracks": [
+      {
+        "assetId": "cloth",
+        "gain": 0.18,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg Guard absorbs hit": {
+    "id": "bb4f0712be64",
+    "tracks": [
+      {
+        "assetId": "metalLight",
+        "gain": 0.36,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg Super Speed starts": {
+    "id": "4dea465de744",
+    "tracks": [
+      {
+        "assetId": "blade",
+        "gain": 0.3,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg Super Speed expires / ready": {
+    "id": "ac85f4f9bdec",
+    "tracks": [
+      {
+        "assetId": "tick",
+        "gain": 0.1,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg short K movement burst": {
+    "id": "939a36bfd2f2",
+    "tracks": [
+      {
+        "assetId": "blade2",
+        "gain": 0.22,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco Fireball cast, level 1": {
+    "id": "cf668c89a284",
+    "tracks": [
+      {
+        "assetId": "fire",
+        "gain": 0.4,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco Fireball impact": {
+    "id": "aaa03e397226",
+    "tracks": [
+      {
+        "assetId": "fire2",
+        "gain": 0.38,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco Ward raised / lowered": {
+    "id": "083dbd0ceeba",
+    "tracks": [
+      {
+        "assetId": "spell",
+        "gain": 0.23,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco Ward struck": {
+    "id": "20e0100edfbc",
+    "tracks": [
+      {
+        "assetId": "gem",
+        "gain": 0.32,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco Flight takeoff": {
+    "id": "1c20478501a9",
+    "tracks": [
+      {
+        "assetId": "blade2",
+        "gain": 0.25,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco Flight movement": {
+    "id": "58cec8609ca0",
+    "tracks": [
+      {
+        "assetId": "cloth2",
+        "gain": 0.1,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco Flight landing / expiry recovery": {
+    "id": "a22c4c22781d",
+    "tracks": [
+      {
+        "assetId": "soft",
+        "gain": 0.22,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Flight recharge ready": {
+    "id": "bb5e8fc6e6c7",
+    "tracks": [
+      {
+        "assetId": "tick",
+        "gain": 0.1,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco Slow Time begins": {
+    "id": "eb54fc2c85cd",
+    "tracks": [
+      {
+        "assetId": "spell2",
+        "gain": 0.3,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco Slow Time active clock": {
+    "id": "4678ef686bf6",
+    "tracks": [
+      {
+        "assetId": "tick",
+        "gain": 0.07,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco Slow Time ends / recharge ready": {
+    "id": "9702786143a1",
+    "tracks": [
+      {
+        "assetId": "back",
+        "gain": 0.12,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco Black Hole launch": {
+    "id": "be07f28c7109",
+    "tracks": [
+      {
+        "assetId": "magic",
+        "gain": 0.32,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Black Hole opens / pulls": {
+    "id": "0aabcc54eb4f",
+    "tracks": [
+      {
+        "assetId": "spell2",
+        "gain": 0.18,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Black Hole affects an enemy": {
+    "id": "c0f7d47497a0",
+    "tracks": [
+      {
+        "assetId": "soft",
+        "gain": 0.25,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Black Hole expires / recharge ready": {
+    "id": "7fb835ed5c9c",
+    "tracks": [
+      {
+        "assetId": "back",
+        "gain": 0.12,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Player takes unguarded damage / safe respawn": {
+    "id": "79093696edf7",
+    "tracks": [
+      {
+        "assetId": "soft",
+        "gain": 0.32,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg physically pushes chair/rock/crate or teammate": {
+    "id": "a178e66e2342",
+    "tracks": [
+      {
+        "assetId": "stone",
+        "gain": 0.15,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Mossling attack windup": {
+    "id": "825312db7b7d",
+    "tracks": [
+      {
+        "assetId": "slime",
+        "gain": 0.27,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Mossling melee contact": {
+    "id": "5c36f7955ffc",
+    "tracks": [
+      {
+        "assetId": "soft",
+        "gain": 0.34,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Cinder Wisp windup": {
+    "id": "649b8ce9515e",
+    "tracks": [
+      {
+        "assetId": "fire3",
+        "gain": 0.22,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Cinder Wisp projectile release": {
+    "id": "94df84b82298",
+    "tracks": [
+      {
+        "assetId": "fire4",
+        "gain": 0.32,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Cinder Wisp projectile impact": {
+    "id": "6a12fff5f83f",
+    "tracks": [
+      {
+        "assetId": "fire5",
+        "gain": 0.3,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Ironbound Sentinel melee windup / punch": {
+    "id": "5f15c97fce91",
+    "tracks": [
+      {
+        "assetId": "punch",
+        "gain": 0.46,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Ironbound Sentinel beam charge": {
+    "id": "fea322d6bef0",
+    "tracks": [
+      {
+        "assetId": "spell",
+        "gain": 0.3,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Ironbound Sentinel palm beam active": {
+    "id": "17beb0338c20",
+    "tracks": [
+      {
+        "assetId": "fire6",
+        "gain": 0.34,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Ironbound Sentinel contact blast": {
+    "id": "6bfa8f0dbcf3",
+    "tracks": [
+      {
+        "assetId": "metalHit",
+        "gain": 0.48,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Enemy hurt": {
+    "id": "c7bc38c987aa",
+    "tracks": [
+      {
+        "assetId": "hurt",
+        "gain": 0.24,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sentinel hurt / defeat": {
+    "id": "5a47bc7a377e",
+    "tracks": [
+      {
+        "assetId": "mining",
+        "gain": 0.36,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Mossling / Wisp defeated": {
+    "id": "14f1e0f2d3c8",
+    "tracks": [
+      {
+        "assetId": "die",
+        "gain": 0.3,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Monster Clearing wave completed": {
+    "id": "885c62a43a55",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.25,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Prologue arrival and visit to Alden": {
+    "id": "d9d96ccd8d1b",
+    "tracks": [
+      {
+        "assetId": "doorOpen",
+        "gain": 0.2,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Alden catches Sieg sleeve": {
+    "id": "07007936f03d",
+    "tracks": [
+      {
+        "assetId": "cloth",
+        "gain": 0.1,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Road fork / Coco detour": {
+    "id": "411f60d1bfc6",
+    "tracks": [
+      {
+        "assetId": "scroll",
+        "gain": 0.13,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Lost cart discovered": {
+    "id": "f9a47285978d",
+    "tracks": [
+      {
+        "assetId": "question",
+        "gain": 0.16,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Inspect split crates / barrel": {
+    "id": "31816cad7ac2",
+    "tracks": [
+      {
+        "assetId": "woodHit",
+        "gain": 0.14,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Ambush clearing grows silent": {
+    "id": "8acba809b17b",
+    "tracks": [],
+    "silent": true
+  },
+  "Golem and Wisp rise; later reinforcements": {
+    "id": "2f1eddf465bf",
+    "tracks": [
+      {
+        "assetId": "stone2",
+        "gain": 0.38,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Ambush combat begins": {
+    "id": "59ce51d1f265",
+    "tracks": [],
+    "silent": true
+  },
+  "Alden enters / magic circle gathers": {
+    "id": "652948d920de",
+    "tracks": [
+      {
+        "assetId": "magic",
+        "gain": 0.35,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Alden rescue flash / monsters fall together": {
+    "id": "216032c1e0c3",
+    "tracks": [
+      {
+        "assetId": "magic",
+        "gain": 0.48,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Rescue light fades / smoking remains": {
+    "id": "d39d249a33ab",
+    "tracks": [
+      {
+        "assetId": "gem",
+        "gain": 0.2,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Home that evening / argument": {
+    "id": "8f1fff0d3534",
+    "tracks": [
+      {
+        "assetId": "scroll",
+        "gain": 0.1,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Private farewell / Sieg promise": {
+    "id": "43dc401a18fb",
+    "tracks": [
+      {
+        "assetId": "cloth",
+        "gain": 0.08,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Next morning lesson / cauldron": {
+    "id": "1eac1405ee95",
+    "tracks": [
+      {
+        "assetId": "bubble",
+        "gain": 0.08,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco starts errand": {
+    "id": "ff95b2f49252",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.17,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Brynn hands over moonleaf": {
+    "id": "5c347f8e58c0",
+    "tracks": [
+      {
+        "assetId": "cloth",
+        "gain": 0.14,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Store hands over two vials and candlewick": {
+    "id": "0ee63ef4697f",
+    "tracks": [
+      {
+        "assetId": "bottle",
+        "gain": 0.18,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Bakery hands over bread and honey pastry": {
+    "id": "14454e769bbc",
+    "tracks": [
+      {
+        "assetId": "cloth",
+        "gain": 0.16,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Shopping list complete / return objective": {
+    "id": "d495157112a2",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.22,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Homecoming on garden path": {
+    "id": "0f8512648adb",
+    "tracks": [
+      {
+        "assetId": "scroll",
+        "gain": 0.09,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Silent shop discovered": {
+    "id": "6668b7f809f2",
+    "tracks": [],
+    "silent": true
+  },
+  "Coco discovers wounded Alden / drops bag": {
+    "id": "54bf452c7d0d",
+    "tracks": [
+      {
+        "assetId": "leatherDrop",
+        "gain": 0.32,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco tries healing": {
+    "id": "fb0de5feaa3c",
+    "tracks": [
+      {
+        "assetId": "spell",
+        "gain": 0.18,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Healing fails": {
+    "id": "91b186138572",
+    "tracks": [
+      {
+        "assetId": "back",
+        "gain": 0.09,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Alden last words / hand falls still": {
+    "id": "4de5fce74224",
+    "tracks": [],
+    "silent": true
+  },
+  "Sieg leaves home / Mother speaks": {
+    "id": "964182564420",
+    "tracks": [
+      {
+        "assetId": "doorOpen",
+        "gain": 0.16,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Stranger encounter at west entrance": {
+    "id": "1df35466bb76",
+    "tracks": [
+      {
+        "assetId": "question",
+        "gain": 0.12,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg glances back / stranger vanished": {
+    "id": "1692e11b8d63",
+    "tracks": [],
+    "silent": true
+  },
+  "No fire at shop door": {
+    "id": "8cffa97f8f00",
+    "tracks": [],
+    "silent": true
+  },
+  "Reunion / Sieg remembers evening": {
+    "id": "85f13d829d70",
+    "tracks": [
+      {
+        "assetId": "cloth",
+        "gain": 0.08,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Following day / wooden sword in backpack": {
+    "id": "22b38bcb49a1",
+    "tracks": [
+      {
+        "assetId": "woodHit",
+        "gain": 0.1,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg gathers three smooth stones": {
+    "id": "360e6b9580a5",
+    "tracks": [
+      {
+        "assetId": "itemStone",
+        "gain": 0.13,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco gathers three bunches of flowers": {
+    "id": "eacfe083eada",
+    "tracks": [
+      {
+        "assetId": "cloth",
+        "gain": 0.1,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg lays grave stones": {
+    "id": "2372f3d3a3bc",
+    "tracks": [
+      {
+        "assetId": "stone",
+        "gain": 0.12,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Each hero ready for funeral": {
+    "id": "90028fa64969",
+    "tracks": [],
+    "silent": true
+  },
+  "Burial / grave appears": {
+    "id": "8b665c3ff51c",
+    "tracks": [],
+    "silent": true
+  },
+  "Coco places flowers": {
+    "id": "bfc2de8ebf20",
+    "tracks": [
+      {
+        "assetId": "cloth",
+        "gain": 0.07,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg lays practice sword": {
+    "id": "a7aa80304ed6",
+    "tracks": [
+      {
+        "assetId": "woodHit",
+        "gain": 0.09,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Funeral closing silence": {
+    "id": "c514b4f1acb3",
+    "tracks": [],
+    "silent": true
+  },
+  "Ask Bertram / Brynn / traveling merchant": {
+    "id": "9e0e967f172c",
+    "tracks": [
+      {
+        "assetId": "question",
+        "gain": 0.12,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Investigation complete / search desk": {
+    "id": "cb15f7afdbfd",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.15,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg forces stuck drawer": {
+    "id": "eba2d4541131",
+    "tracks": [
+      {
+        "assetId": "creak",
+        "gain": 0.23,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco undoes Alden seal": {
+    "id": "68089cce38ff",
+    "tracks": [
+      {
+        "assetId": "spell2",
+        "gain": 0.22,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Compartment opens / three finds enter backpack": {
+    "id": "f87171039a64",
+    "tracks": [
+      {
+        "assetId": "latch",
+        "gain": 0.2,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco opens journal / reads Alden words": {
+    "id": "03abff2e603e",
+    "tracks": [
+      {
+        "assetId": "bookOpen",
+        "gain": 0.18,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Cloth and seven-star drawing inspected": {
+    "id": "b51a399a06eb",
+    "tracks": [
+      {
+        "assetId": "cloth",
+        "gain": 0.1,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Decision by grave / shrine quest unlock": {
+    "id": "694e14d45836",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.22,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Weeping Angel first meeting": {
+    "id": "e07a81efbdc7",
+    "tracks": [
+      {
+        "assetId": "question",
+        "gain": 0.16,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Burn thicket blocking chair": {
+    "id": "aa34faf2dee9",
+    "tracks": [
+      {
+        "assetId": "fire3",
+        "gain": 0.35,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Push glade rocks / chair": {
+    "id": "b1c1d3271e0c",
+    "tracks": [
+      {
+        "assetId": "stone",
+        "gain": 0.18,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Angel refuses offered rock": {
+    "id": "38c67e4028de",
+    "tracks": [
+      {
+        "assetId": "question",
+        "gain": 0.14,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Chair delivered / Angel sits": {
+    "id": "69a4e5a97afb",
+    "tracks": [
+      {
+        "assetId": "creak",
+        "gain": 0.2,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Angel blessing / next route opens": {
+    "id": "e6abf88702d4",
+    "tracks": [
+      {
+        "assetId": "gem",
+        "gain": 0.25,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Trials inscription / reread": {
+    "id": "ddc67a159450",
+    "tracks": [
+      {
+        "assetId": "scroll",
+        "gain": 0.15,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg pushes persistent boulder": {
+    "id": "b3a62cffec08",
+    "tracks": [
+      {
+        "assetId": "stone",
+        "gain": 0.22,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Boulder weights plate A / B": {
+    "id": "ea37626bdf37",
+    "tracks": [
+      {
+        "assetId": "itemStone",
+        "gain": 0.28,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Boulder leaves plate B before stabilization": {
+    "id": "57375a49e8f9",
+    "tracks": [
+      {
+        "assetId": "latch",
+        "gain": 0.21,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco hits first moving target front": {
+    "id": "ed39428eaefc",
+    "tracks": [
+      {
+        "assetId": "metalLight",
+        "gain": 0.32,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Gate 1 opens": {
+    "id": "8c3a982e5992",
+    "tracks": [
+      {
+        "assetId": "chain",
+        "gain": 0.32,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco activates golden switch": {
+    "id": "af3e4aefddc5",
+    "tracks": [
+      {
+        "assetId": "switch",
+        "gain": 0.27,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Three moving spike sleds": {
+    "id": "d68fb1a12c72",
+    "tracks": [
+      {
+        "assetId": "metalLight",
+        "gain": 0.14,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Boulder hits spikes / resets with Sieg": {
+    "id": "f22125e5501e",
+    "tracks": [
+      {
+        "assetId": "metalHit",
+        "gain": 0.4,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg alone hits spikes / resets": {
+    "id": "9d315c923313",
+    "tracks": [
+      {
+        "assetId": "soft",
+        "gain": 0.3,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Bridge supports / restores": {
+    "id": "e2c889ea2d7d",
+    "tracks": [
+      {
+        "assetId": "creak",
+        "gain": 0.24,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Fragile bridge collapses / safe-bank recovery": {
+    "id": "2b8f9c685bf6",
+    "tracks": [
+      {
+        "assetId": "plank",
+        "gain": 0.38,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Final long-range frontal shot succeeds": {
+    "id": "abfab6be5fe0",
+    "tracks": [
+      {
+        "assetId": "metalLight",
+        "gain": 0.38,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Final gates / second bridge stabilized": {
+    "id": "cc23152b3153",
+    "tracks": [
+      {
+        "assetId": "chain",
+        "gain": 0.3,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Each final bank switch occupied / released": {
+    "id": "be3ee5f324b2",
+    "tracks": [
+      {
+        "assetId": "switch",
+        "gain": 0.2,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Both final switches held / divider opens": {
+    "id": "dab186148d9c",
+    "tracks": [
+      {
+        "assetId": "stone2",
+        "gain": 0.38,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Trial Cooperation / Ingenuity / Courage passed": {
+    "id": "a6eba90459b5",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.24,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Trials departure / Speak to Goddess objective": {
+    "id": "7339f7b19529",
+    "tracks": [
+      {
+        "assetId": "gem",
+        "gain": 0.22,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "First shrine audience / recover wig objective": {
+    "id": "9191a0b48ad7",
+    "tracks": [
+      {
+        "assetId": "gem",
+        "gain": 0.25,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Shrine Speak / cryptic clue": {
+    "id": "d6dd162e759e",
+    "tracks": [
+      {
+        "assetId": "open",
+        "gain": 0.13,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Wrong shears / mirror / key offering": {
+    "id": "0e2c26c06f7a",
+    "tracks": [
+      {
+        "assetId": "question",
+        "gain": 0.18,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Enter maze / maze banter": {
+    "id": "9abb381cd27b",
+    "tracks": [
+      {
+        "assetId": "scroll",
+        "gain": 0.16,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Burn amber maze bush": {
+    "id": "f17e9a22d81c",
+    "tracks": [
+      {
+        "assetId": "fire3",
+        "gain": 0.34,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Five maze guards": {
+    "id": "7afd53aa4e39",
+    "tracks": [],
+    "silent": true
+  },
+  "Black Hole pulls harmless cow": {
+    "id": "3c59ed0f92d7",
+    "tracks": [
+      {
+        "assetId": "grass",
+        "gain": 0.14,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Cow parked / lane cleared": {
+    "id": "ab0575ce7b76",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.2,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Forest wolf key carrier roaming / fleeing": {
+    "id": "822bf56a3b2d",
+    "tracks": [
+      {
+        "assetId": "grass",
+        "gain": 0.13,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg tags key carrier / obtains key": {
+    "id": "9198cfb6198c",
+    "tracks": [
+      {
+        "assetId": "latch",
+        "gain": 0.26,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Key consumed / chest gate opened": {
+    "id": "5dd05f47f0bb",
+    "tracks": [
+      {
+        "assetId": "lock",
+        "gain": 0.3,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Enchanted Shears chest opened": {
+    "id": "e08e8e6abdc0",
+    "tracks": [
+      {
+        "assetId": "creak",
+        "gain": 0.24,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Enchanted Shears acquired": {
+    "id": "89a7b1e0f0fd",
+    "tracks": [
+      {
+        "assetId": "metalLight",
+        "gain": 0.22,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Return from maze / other hub branch travel": {
+    "id": "569df29c0565",
+    "tracks": [
+      {
+        "assetId": "scroll",
+        "gain": 0.12,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Enter Mirror Pond / Coco water culvert flight": {
+    "id": "bb19f4b3368d",
+    "tracks": [
+      {
+        "assetId": "scroll",
+        "gain": 0.12,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "East corridor spikes warn / rise / retract": {
+    "id": "8287875c2575",
+    "tracks": [
+      {
+        "assetId": "metalLight",
+        "gain": 0.16,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg spike contact resets to courtyard": {
+    "id": "82607e631ff2",
+    "tracks": [
+      {
+        "assetId": "soft",
+        "gain": 0.31,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sieg rotates mirror M1–M4": {
+    "id": "fb79658d10b5",
+    "tracks": [
+      {
+        "assetId": "metalLight",
+        "gain": 0.14,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco fireball reflected from mirror": {
+    "id": "3ed75a65aa76",
+    "tracks": [
+      {
+        "assetId": "gem",
+        "gain": 0.3,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Wrong pad/direction / unreflected torch shot / wall hit": {
+    "id": "47bae439bb25",
+    "tracks": [
+      {
+        "assetId": "fire2",
+        "gain": 0.25,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Torch 1–4 ignites from valid reflected contact": {
+    "id": "6074301d4635",
+    "tracks": [
+      {
+        "assetId": "fire3",
+        "gain": 0.3,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Lit braziers sustain": {
+    "id": "002175b6cae4",
+    "tracks": [
+      {
+        "assetId": "fire5",
+        "gain": 0.08,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Fourth torch / central platform and bridge rise": {
+    "id": "7babafc9f1d4",
+    "tracks": [
+      {
+        "assetId": "stone2",
+        "gain": 0.4,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Vanity Mirror chest appears and opens": {
+    "id": "6f2bbdabb3c1",
+    "tracks": [
+      {
+        "assetId": "creak",
+        "gain": 0.23,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Vanity Mirror acquired / mirror banter": {
+    "id": "63f0717f5f8d",
+    "tracks": [
+      {
+        "assetId": "gem",
+        "gain": 0.25,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Mirror shutters restored / walkway passable": {
+    "id": "63d26035fac6",
+    "tracks": [
+      {
+        "assetId": "metalLight",
+        "gain": 0.14,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Sleeping Griffin at nest / griffin banter": {
+    "id": "7e41ea959cd6",
+    "tracks": [
+      {
+        "assetId": "breath",
+        "gain": 0.08,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Griffin wakes": {
+    "id": "7a3a5bd8717c",
+    "tracks": [
+      {
+        "assetId": "roar",
+        "gain": 0.36,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Waking stand-up finishes / first flight": {
+    "id": "3a9c4a000f60",
+    "tracks": [
+      {
+        "assetId": "cloth2",
+        "gain": 0.28,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Griffin patrol flight / nest defense pursuit": {
+    "id": "288d8462707f",
+    "tracks": [
+      {
+        "assetId": "cloth2",
+        "gain": 0.2,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Griffin nest-defense contact": {
+    "id": "ddce8996fc38",
+    "tracks": [
+      {
+        "assetId": "soft",
+        "gain": 0.39,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Griffin mouth beam charge": {
+    "id": "cf687e30835e",
+    "tracks": [
+      {
+        "assetId": "fire7",
+        "gain": 0.4,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Griffin mouth beam active": {
+    "id": "ab027c35026f",
+    "tracks": [
+      {
+        "assetId": "fire4",
+        "gain": 0.45,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Griffin beam first/contact change": {
+    "id": "31563dfe712c",
+    "tracks": [
+      {
+        "assetId": "fire2",
+        "gain": 0.37,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Griffin beam contact tail after beam ends": {
+    "id": "0d1fa7a5f092",
+    "tracks": [
+      {
+        "assetId": "fire5",
+        "gain": 0.13,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Griffin beam damages hero": {
+    "id": "39977b72679a",
+    "tracks": [
+      {
+        "assetId": "soft",
+        "gain": 0.3,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Black Hole pulls Griffin ashore": {
+    "id": "157059b4956f",
+    "tracks": [
+      {
+        "assetId": "cloth",
+        "gain": 0.18,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Griffin lands / grounded window": {
+    "id": "63243f654a1b",
+    "tracks": [
+      {
+        "assetId": "soft",
+        "gain": 0.38,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Griffin headbutt warning": {
+    "id": "39707d33b270",
+    "tracks": [
+      {
+        "assetId": "roar2",
+        "gain": 0.37,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Griffin headbutt rush": {
+    "id": "81c862b2db5d",
+    "tracks": [
+      {
+        "assetId": "blade2",
+        "gain": 0.4,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Headbutt hits player": {
+    "id": "3afb1f038547",
+    "tracks": [
+      {
+        "assetId": "punch",
+        "gain": 0.48,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Headbutt collapses one pillar": {
+    "id": "6ce43182305f",
+    "tracks": [
+      {
+        "assetId": "stone2",
+        "gain": 0.52,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Griffin stunned / recovers": {
+    "id": "430d019d2931",
+    "tracks": [
+      {
+        "assetId": "breath",
+        "gain": 0.16,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Griffin ordinary takeoff after grounded timer": {
+    "id": "e819082a902f",
+    "tracks": [
+      {
+        "assetId": "cloth2",
+        "gain": 0.3,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Griffin hurt / defeated": {
+    "id": "a56a23f97e43",
+    "tracks": [
+      {
+        "assetId": "hurt",
+        "gain": 0.38,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco delivers mirror / shears at nest": {
+    "id": "f60883b0f2b0",
+    "tracks": [
+      {
+        "assetId": "metalLight",
+        "gain": 0.2,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Griffin returns to grooming nest": {
+    "id": "7eb78962bb62",
+    "tracks": [
+      {
+        "assetId": "cloth2",
+        "gain": 0.17,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Grooming stands / admires south and north": {
+    "id": "45e1acdcb0e3",
+    "tracks": [
+      {
+        "assetId": "cloth",
+        "gain": 0.12,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Griffin haircut / tools taken": {
+    "id": "ee489775ff9b",
+    "tracks": [
+      {
+        "assetId": "slice",
+        "gain": 0.23,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Griffin departs / wig drops": {
+    "id": "cff394db80da",
+    "tracks": [
+      {
+        "assetId": "leatherDrop",
+        "gain": 0.2,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Coco collects wig after peaceful route or defeat": {
+    "id": "93e6a5fc648c",
+    "tracks": [
+      {
+        "assetId": "gem",
+        "gain": 0.32,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Wig acquired banter": {
+    "id": "2358bd133630",
+    "tracks": [
+      {
+        "assetId": "scroll",
+        "gain": 0.12,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Return to shrine with wig": {
+    "id": "3fc2c626f1c4",
+    "tracks": [
+      {
+        "assetId": "scroll",
+        "gain": 0.12,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Goddess accepts owned Griffin Wig": {
+    "id": "231163787ace",
+    "tracks": [
+      {
+        "assetId": "gem",
+        "gain": 0.34,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Revelation opening / beauty joke": {
+    "id": "817921bfe123",
+    "tracks": [],
+    "silent": true
+  },
+  "Goddess recognizes Coco and Sieg / remembers Alden": {
+    "id": "16c6aa5854a3",
+    "tracks": [
+      {
+        "assetId": "question",
+        "gain": 0.12,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Ember described as one of seven relics / opens a door": {
+    "id": "dbfdf86522ae",
+    "tracks": [
+      {
+        "assetId": "spell2",
+        "gain": 0.15,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Alden brought baby Coco / sought promise": {
+    "id": "f1880a176fd3",
+    "tracks": [],
+    "silent": true
+  },
+  "Revelation silence / fractured memories / oath unanswered": {
+    "id": "3e8b19cf76d8",
+    "tracks": [],
+    "silent": true
+  },
+  "Each hero chooses why to continue": {
+    "id": "b4ba315fe772",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.12,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Chosen motivation spoken / resolve exchange": {
+    "id": "feefa55aa876",
+    "tracks": [],
+    "silent": true
+  },
+  "Watcher camera reveal": {
+    "id": "83bd507d616b",
+    "tracks": [
+      {
+        "assetId": "cloth",
+        "gain": 0.1,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "\"So... the oath survives.\" / watcher vanishes": {
+    "id": "6db1e8bd6dc0",
+    "tracks": [],
+    "silent": true
+  },
+  "Chapter 0 complete / fade and title": {
+    "id": "a429a7b041d7",
+    "tracks": [
+      {
+        "assetId": "bell",
+        "gain": 0.2,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Postchapter route opens": {
+    "id": "6c4e3d17027c",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.16,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Optional skill unlock accepted": {
+    "id": "512bb472a702",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.23,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Heavy Break charge": {
+    "id": "8ee041b997f9",
+    "tracks": [
+      {
+        "assetId": "blade2",
+        "gain": 0.25,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Heavy Break release / early normal release": {
+    "id": "41cda6b6647b",
+    "tracks": [
+      {
+        "assetId": "blade",
+        "gain": 0.45,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Fireball upgrades II–IV": {
+    "id": "f956e71f1f6b",
+    "tracks": [
+      {
+        "assetId": "fire",
+        "gain": 0.4,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Optional Coco Blink short K burst": {
+    "id": "55d86cff7777",
+    "tracks": [
+      {
+        "assetId": "blade2",
+        "gain": 0.22,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Later Forest Ruins bramble/rune gate": {
+    "id": "784deff741fe",
+    "tracks": [
+      {
+        "assetId": "wood",
+        "gain": 0.28,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Later Forest Ruins crate/plate and crystal bridge": {
+    "id": "e2dfaa0139e1",
+    "tracks": [
+      {
+        "assetId": "gem",
+        "gain": 0.25,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Later Airship crank/core": {
+    "id": "d3675e577fbf",
+    "tracks": [
+      {
+        "assetId": "chain",
+        "gain": 0.2,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Later Airship / arena jumping": {
+    "id": "02b44efc42fb",
+    "tracks": [
+      {
+        "assetId": "soft",
+        "gain": 0.2,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Later Stormbound Warden shield / anchor / hits": {
+    "id": "b96e51c22a3f",
+    "tracks": [
+      {
+        "assetId": "spell",
+        "gain": 0.3,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Later Warden proximity damage pulse": {
+    "id": "283deba9dcf6",
+    "tracks": [
+      {
+        "assetId": "soft",
+        "gain": 0.28,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  },
+  "Later Warden victory / game complete": {
+    "id": "2bade7754b28",
+    "tracks": [
+      {
+        "assetId": "ok",
+        "gain": 0.35,
+        "delay": 0,
+        "rate": 1,
+        "loop": false
+      }
+    ],
+    "silent": false
+  }
+}

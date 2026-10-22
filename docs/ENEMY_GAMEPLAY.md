@@ -4,9 +4,11 @@ Run `npm run enemy:encounter` (builds and starts the encounter server), then ope
 
 | Type | HP | Speed px/s | Detect | Attack range | Windup | Cooldown after resolution | Damage |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| Mossling | 60 | 65 | 250 | 45 | 0.4s | 1s | 10 |
+| Mossling | 60 | 65 | 250 | 95 (spike reach 112) | 0.4s | 1s | 10 |
 | Cinder Wisp | 45 | 55 | 360 | 250 | 0.6s | 1.8s | 12 |
 | Ironbound Sentinel | 180 | 32 | 260 | 60 | 1.2s | 2.5s | 28 |
+
+**Mossling spike.** The Mossling's arm turns into a wooden spike and shoots straight out (`mosslingSpike` in `packages/shared/src/enemies.ts`). It starts its windup from up to 95 units away, aimed at its target and locked from then on. When the windup ends, the server strikes every living, connected hero within 112 units along that line and within 20 units of it, unless a wall is in the way. A hero who steps off the line during the windup is missed; heroes lined up behind each other are both struck. On screen (`animation/mosslingAttack.ts`, `animation/mosslingSpikeArt.ts`), the Mossling crouches while its arm hardens into thorny bark and a faint line on the ground marks the aim. The spike reaches full length exactly on the server's hit tick, holds for 0.12 s, then pulls back over 0.25 s. `scripts/qa-mossling-attack.ts` checks all four directions in two browsers.
 
 Definitions in `packages/shared/src/enemies.ts` own stats, behaviors, body sizes and sprite IDs. Instances hold type, maximum/current health, velocity, facing, target, state, attack sequence/start tick/locked facing, next attack tick and death tick. The server-only `enemySimulation.ts` advances IDLE → CHASE → ATTACK (windup) → CHASE/cooldown; lethal damage enters DEAD and the server removes the entity after one second. An attack locks its target/facing during windup; melee resolution checks living/connected target, range and walls again. Dead enemies cannot attack. Ties use stable ID order, and current targets are retained while within 30px of the nearest detectable living connected player.
 

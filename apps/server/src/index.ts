@@ -3,8 +3,8 @@ const game = createApp({
   encounter: process.env.ENEMY_ENCOUNTER === "1",
   startingScene:
     process.env.SHRINE_PLAYTEST === "1" ? "GODDESS_SHRINE" : "MAIN_HOUSE",
-  // The Chapter 0 prologue is opt-in until all of its scenes are built.
-  prologue: process.env.PROLOGUE === "1",
+  // The Chapter 0 prologue is on by default; PROLOGUE=0 turns it off.
+  prologue: process.env.PROLOGUE !== "0",
 });
 game.http.listen(Number(process.env.PORT) || 3000, "0.0.0.0", () =>
   console.log(

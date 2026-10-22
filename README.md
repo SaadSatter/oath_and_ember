@@ -30,9 +30,8 @@ Production serves the game and Socket.IO together at http://localhost:3000. `POR
 - E: interact with nearby items, NPCs, objects and travel markers.
 - 1–9: the displayed hero abilities; Sieg uses 1 for Push and 2 for Super Speed; Coco uses 1 for Slow Time, 2 for Flight and 3 for Black Hole.
 - I: shared inventory.
-- Space, W, or Up: jump in side view.
 - F3: networking diagnostics.
-- Touch devices have directional, strike, defense, use, and jump buttons.
+- Touch devices have directional, strike, defense and use buttons.
 
 ## Playthrough
 

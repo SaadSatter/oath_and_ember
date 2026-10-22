@@ -1,0 +1,6 @@
+{
+  "errors": [
+    "script: TypeError: Cannot read properties of undefined (reading 'boulder')\n    at <anonymous> (/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/scripts/qa-bridge-target.ts:45:19)"
+  ],
+  "log": []
+}

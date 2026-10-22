@@ -19,9 +19,10 @@ export class InventoryPanel {
     private net: NetworkClient,
     private clearControls: () => void,
     private tell: (s: string, target?: InventoryTarget) => void,
+    private sound: (name: string) => void = () => {},
   ) {
     this.button.id = "inventory-toggle";
-    this.button.textContent = "Inventory (I)";
+    this.button.innerHTML = 'Inventory<span class="key-hint"> (I)</span>';
     this.button.setAttribute("aria-haspopup", "dialog");
     this.button.onclick = () => this.toggle();
     this.dialog.className = "inventory-panel";
@@ -36,6 +37,7 @@ export class InventoryPanel {
       );
       if (!button) return;
       if (button.dataset.item) {
+        this.sound("Select inventory item");
         this.selected = button.dataset.item as ItemId;
         this.key = "";
         this.render();
@@ -92,12 +94,15 @@ export class InventoryPanel {
     if (this.button.hidden) return;
     this.lastFocus = document.activeElement as HTMLElement;
     this.open = true;
+    this.sound("Inventory open");
     this.clearControls();
     this.key = "";
     this.render();
     this.dialog.showModal();
   }
-  private close() {
+  /** Also closed by the story when a scene begins (see main.ts). */
+  close() {
+    if (this.open) this.sound("Inventory close / Escape");
     this.open = false;
     this.clearControls();
     this.dialog.close();
@@ -106,6 +111,7 @@ export class InventoryPanel {
   private async use(target: InventoryTarget | undefined) {
     if (!target || this.pending || !this.net.socket.connected) return;
     this.pending = true;
+    this.sound("Inventory Use/Open/Speak button");
     this.key = "";
     this.render();
     try {
@@ -126,6 +132,11 @@ export class InventoryPanel {
       })) as { message: string };
       this.tell(result.message, target);
     } catch (e) {
+      this.sound(
+        target.kind === "offering" && target.id !== "griffin-nest"
+          ? "Wrong shears / mirror / key offering"
+          : "Rejected item / out-of-range / blocked / unavailable action",
+      );
       this.tell((e as Error).message, target);
     } finally {
       this.pending = false;

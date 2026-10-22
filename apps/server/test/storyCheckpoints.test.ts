@@ -19,6 +19,7 @@ import {
   graveVisible,
 } from "../../../packages/shared/src/prologue.js";
 import type { World } from "../../../packages/shared/src/gameTypes.js";
+import { storyVersion } from "../../../packages/shared/src/storyVersion.js";
 import type { Session, Result } from "../../../packages/shared/src/protocol.js";
 
 const stage = {
@@ -172,6 +173,12 @@ for (const checkpoint of storyCheckpointIds)
       expect(states.map((world) => world.storyStart)).toEqual([
         checkpoint,
         checkpoint,
+      ]);
+      // Both browsers learn which story script the server runs, whichever
+      // chapter the room started from, so a stale page can say so.
+      expect(states.map((world) => world.storyVersion)).toEqual([
+        storyVersion,
+        storyVersion,
       ]);
       await request(sockets[0], "role:select", { role: "OATH" });
       await request(sockets[1], "role:select", { role: "EMBER" });

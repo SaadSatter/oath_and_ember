@@ -33,6 +33,8 @@ export const FINALE = {
   wig: "chapter0.wig-banter",
   revelation: "chapter0.revelation",
   resolve: "chapter0.resolve",
+  /** The heroes have left the shrine (the final cinematic follows). */
+  departed: "chapter0.departed",
   /** Chapter 0 is complete. */
   complete: "chapter0.complete",
 } as const;
@@ -89,19 +91,48 @@ const beforeGoddess: Partial<
   OATH: { x: 600, y: 604, facing: NORTH },
   EMBER: { x: 680, y: 604, facing: NORTH },
 };
-/** The goddess's statue (camera focus). */
-export const goddessFocus = { x: 640, y: 430 };
+/** The goddess's face, in her statue (camera focus: framed with room above). */
+export const goddessFocus = { x: 640, y: 330 };
 /** The weeping statue at the heart of the glade (camera focus). */
 export const angelFocus = {
   x: gladeStatueSolid.x + gladeStatueSolid.w / 2,
   y: gladeStatueSolid.y - 20,
 };
-/** Where the cloaked woman watches the heroes leave the shrine. */
+/**
+ * The Mistress of the Mist: she takes shape right in front of the goddess's
+ * altar (between it and the offering bowl), close enough that both stay in
+ * one shot, facing south toward the way the heroes left.
+ */
 export const watcherPose: AldenPose = {
   scene: "GODDESS_SHRINE",
-  x: 214,
-  y: 352,
-  facing: "east",
+  x: 640,
+  y: 488,
+  facing: "south",
+};
+/**
+ * The heroes walk out by the south road (then are gone from the scene). Not
+ * on the road back itself: a stray E there would carry them off the map.
+ */
+export const shrineDeparture: Partial<
+  Record<Role, { x: number; y: number; facing: number }>
+> = {
+  OATH: { x: 576, y: 936, facing: SOUTH },
+  EMBER: { x: 704, y: 936, facing: SOUTH },
+};
+/**
+ * The final cinematic in one shot: the goddess's shrine at the top, the woman
+ * before it, both clear of the dialogue box along the bottom of the screen.
+ */
+export const altarShot = {
+  x: 640,
+  y: 432,
+  span: { w: 480, h: 248 },
+};
+/** The last line: the camera drifts down a little, past the offering bowl. */
+export const pullBack = {
+  x: 640,
+  y: 456,
+  span: { w: 480, h: 300 },
 };
 
 /** Each hero's reasons to go on (Act VII). Ids are saved in story state. */
@@ -417,18 +448,44 @@ export const finaleCutscenes: Record<string, StoryCutscene> = {
       { speaker: "SIEG", text: "Adequate?" },
       { speaker: "GODDESS", text: "Very well. An exceptional service." },
       { speaker: "COCO", text: "Now, about my papa—" },
-      { speaker: "NARRATION", text: "The goddess looks closely at Coco." },
-      { speaker: "NARRATION", text: "Her expression changes." },
+      {
+        speaker: "NARRATION",
+        text: "The goddess looks at Coco, and her expression changes.",
+      },
       { speaker: "GODDESS", text: "...Coco?" },
       { speaker: "COCO", text: "How do you know my name?" },
       { speaker: "GODDESS", text: "No... that cannot be." },
       { speaker: "SIEG", text: "What's wrong?" },
-      { speaker: "NARRATION", text: "The goddess turns toward Sieg." },
-      { speaker: "GODDESS", text: "And you... Sieg." },
-      { speaker: "SIEG", text: "You know me too?" },
+      {
+        speaker: "NARRATION",
+        text: "The goddess turns toward Sieg and studies him carefully.",
+      },
+      // She senses something familiar in him; she does not know his name.
+      { speaker: "GODDESS", text: "And you..." },
+      { speaker: "SIEG", text: "Me?" },
       {
         speaker: "GODDESS",
-        text: "I remember that name. Or perhaps... someone who carried it.",
+        text: "There's something familiar about you.",
+      },
+      { speaker: "SIEG", text: "We've never met." },
+      { speaker: "GODDESS", text: "No... I don't believe we have." },
+      { speaker: "NARRATION", text: "She pauses, trying to remember." },
+      { speaker: "GODDESS", text: "A face... a memory... a name..." },
+      { speaker: "GODDESS", text: "...Sigurd." },
+      { speaker: "SIEG", text: "Sigurd? Who's that?" },
+      { speaker: "GODDESS", text: "I... cannot remember." },
+      { speaker: "COCO", text: "Is that supposed to mean something?" },
+      {
+        speaker: "GODDESS",
+        text: "Perhaps. Or perhaps these old memories are playing tricks on me.",
+      },
+      {
+        speaker: "NARRATION",
+        text: "The goddess turns away, visibly troubled.",
+      },
+      {
+        speaker: "GODDESS",
+        text: "Forgive me. There is much I have forgotten.",
       },
       { speaker: "COCO", text: "Enough riddles. Did you know Papa?" },
       { speaker: "GODDESS", text: "Alden..." },
@@ -545,7 +602,7 @@ export const finaleCutscenes: Record<string, StoryCutscene> = {
     focus: goddessFocus,
     flag: FINALE.resolve,
     next: "WIG",
-    chain: "watcher",
+    chain: "depart",
     lines: [
       {
         speaker: "NARRATION",
@@ -569,28 +626,89 @@ export const finaleCutscenes: Record<string, StoryCutscene> = {
       },
     ],
   },
-  // The final cinematic: the heroes leave; someone watches them go.
+  // Coco and Sieg leave the shrine by the south road they came in on.
+  depart: {
+    id: "depart",
+    scene: "GODDESS_SHRINE",
+    placement: shrineDeparture,
+    exact: true,
+    hold: true,
+    heroes: "leaving",
+    focus: goddessFocus,
+    flag: FINALE.departed,
+    next: "WIG",
+    chain: "watcher",
+    lines: [
+      {
+        speaker: "NARRATION",
+        text: "Coco and Sieg leave the shrine. Their footsteps fade into the distance.",
+      },
+    ],
+  },
+  // The final cinematic: the goddess and the Mistress of the Mist, alone.
   watcher: {
     id: "watcher",
     scene: "GODDESS_SHRINE",
-    placement: {
-      OATH: { x: 600, y: 908, facing: SOUTH },
-      EMBER: { x: 680, y: 908, facing: SOUTH },
-    },
-    exact: true,
+    placement: {},
     hold: true,
+    heroes: "gone",
     stranger: watcherPose,
     strangerLeaves: true,
-    focus: { x: watcherPose.x, y: watcherPose.y - 24 },
+    focus: altarShot,
     flag: FINALE.complete,
     next: "DONE",
     lines: [
       {
         speaker: "NARRATION",
-        text: "Some distance away, the mysterious cloaked woman watches the two heroes depart.",
+        text: "The goddess remains at her altar, looking toward the empty entrance.",
       },
-      { speaker: "NARRATION", text: "Her face remains hidden." },
-      { speaker: "STRANGER", text: "So... the oath survives." },
+      { speaker: "GODDESS", text: "Show yourself, Mistress of the Mist." },
+      {
+        speaker: "NARRATION",
+        cue: "mist-gather",
+        text: "Pale mist begins to gather before her altar.",
+      },
+      {
+        speaker: "NARRATION",
+        cue: "stranger-appear",
+        text: "Slowly, the mysterious woman materializes from the fog. Her face remains concealed beneath her hood.",
+      },
+      { speaker: "STRANGER", text: "..." },
+      {
+        speaker: "GODDESS",
+        text: "Did you find the answers you were looking for? Or were you simply waiting for the griffin to tear those children apart?",
+      },
+      { speaker: "NARRATION", text: "A brief silence." },
+      {
+        speaker: "STRANGER",
+        text: "So... the oath lives on.",
+      },
+      { speaker: "GODDESS", text: "For now..." },
+      {
+        speaker: "NARRATION",
+        text: "The goddess glances toward her offering bowl.",
+      },
+      {
+        speaker: "GODDESS",
+        text: "Tell me, Mistress of the Mist. Why do you think we deities demand an offering?",
+      },
+      {
+        speaker: "NARRATION",
+        text: "The woman remains silent.",
+      },
+      {
+        speaker: "GODDESS",
+        text: "To remind the likes of you, and those children, that nothing in this world comes without sacrifice.",
+      },
+      {
+        speaker: "NARRATION",
+        text: "The woman does not respond.",
+      },
+      {
+        speaker: "NARRATION",
+        focus: pullBack,
+        text: "The goddess at her altar. The cloaked woman, motionless in the mist.",
+      },
     ],
   },
 };

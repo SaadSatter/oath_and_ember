@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sound Check</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 16px;
+        font: 14px/1.4 system-ui, sans-serif;
+        background: #17131c;
+        color: #eee6d8;
+      }
+      h1 { font-size: 20px; margin: 0 0 4px; }
+      p { color: #b9ae9c; margin: 0 0 16px; }
+      h2 { font-size: 15px; margin: 20px 0 8px; color: #f0b35a; }
+      .grid { display: flex; flex-wrap: wrap; gap: 6px; }
+      button {
+        font: inherit;
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: 1px solid #4a3f57;
+        background: #241d2c;
+        color: inherit;
+        cursor: pointer;
+      }
+      button:hover { background: #33283f; }
+      button.loop { border-style: dashed; }
+      input { font: inherit; padding: 6px 10px; width: min(360px, 100%); margin-bottom: 8px; }
+    </style>
+  </head>
+  <body>
+    <h1>Sound check</h1>
+    <p>
+      Dev-only (not part of the game build). Click to hear each cue exactly as the
+      game plays it. Dashed buttons are looping sounds; they play once here.
+    </p>
+    <input id="filter" placeholder="Filter cues…" />
+    <div id="list"></div>
+    <script type="module" src="/src/dev/soundCheck.ts"></script>
+  </body>
+</html>

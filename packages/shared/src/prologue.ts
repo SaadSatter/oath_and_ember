@@ -1,4 +1,4 @@
-import type { Role, SceneId } from "./gameTypes.js";
+import type { Role, SceneId, StoryState } from "./gameTypes.js";
 import type { ItemId } from "./items.js";
 import type { NpcFacing } from "./npcs.js";
 import {
@@ -91,10 +91,13 @@ export interface AldenPose {
 export type StoryCue =
   | "alden-enter" // Alden walks to the scene's `aldenTarget`.
   | "alden-cast" // Alden raises his staff.
-  | "flash" // The spell lands: every monster falls on this tick.
+  | "ambush-emerge" // The first golem and wisp push out of the bushes.
+  | "dragon" // Alden's water dragon rises and eats every monster in turn.
   | "drop-bag" // Coco drops the shopping bag (it stays where it fell).
   | "alden-still" // Alden's hand falls still.
-  | "stranger-vanish"; // The stranger is gone.
+  | "stranger-vanish" // The stranger is gone.
+  | "mist-gather" // Mist gathers where the stranger is about to appear.
+  | "stranger-appear"; // The stranger takes shape (at the scene's `stranger`).
 
 export interface StoryLine {
   speaker: StorySpeaker;
@@ -111,6 +114,8 @@ export interface StoryLine {
   heal?: "attempt" | "fail";
   /** Shown under the line to the hero who moves it on, e.g. "E · Heal". */
   prompt?: string;
+  /** The camera moves to frame this point for the line (else the scene's). */
+  focus?: StoryFocus;
   /** A remembered line (Sieg recalling the prologue). */
   memory?: boolean;
   /** A permanent story flag recorded as the line appears (e.g. the burial). */
@@ -137,6 +142,14 @@ export interface StoryPlacement {
   facing: number;
 }
 
+/** A point the camera frames at native zoom; `span` is the area the shot is meant to hold. */
+export interface StoryFocus {
+  x: number;
+  y: number;
+  span?: { w: number; h: number };
+}
+/** How long the heroes take to fade from view as they leave a scene. */
+export const HEROES_FADE_SECONDS = 1.4;
 export interface StoryCutscene {
   id: string;
   scene: SceneId;
@@ -186,9 +199,14 @@ export interface StoryCutscene {
   /** Monsters (and the griffin) on the map wait while the scene plays. */
   hold?: boolean;
   /** The camera frames this point (with the hero, when both fit). */
-  focus?: { x: number; y: number };
+  focus?: StoryFocus;
   /** The cloaked stranger leaves when the scene ends. */
   strangerLeaves?: boolean;
+  /**
+   * The heroes are not in the shot: "leaving" fades them out as the first
+   * line shows, "gone" keeps them hidden the whole scene.
+   */
+  heroes?: "leaving" | "gone";
 }
 
 const EAST = 0,
@@ -345,8 +363,36 @@ export const AMBUSH_SECONDS = 45;
 /** Monsters rise one at a time, this far apart, up to this many at once. */
 export const AMBUSH_RISE_SECONDS = 3;
 export const AMBUSH_MAX = ambushEnemies.length;
-/** Rising with the ambush scene, before the fight begins. */
+/** Coming out of the bushes during the ambush scene, before the fight begins. */
 export const AMBUSH_OPENING = 2;
+/** A hero this close to the clearing's middle springs the ambush. */
+export const AMBUSH_REACH = 110;
+/**
+ * Where monsters push out of the undergrowth, hidden behind the bushes on
+ * the clearing's west and east edges. They walk in to their spot from here.
+ */
+export const ambushEntries = {
+  west: [
+    { x: 150, y: 392 },
+    { x: 170, y: 488 },
+  ],
+  east: [
+    { x: 850, y: 272 },
+    { x: 870, y: 362 },
+  ],
+} as const;
+/**
+ * A line that cannot be moved on yet: Alden is still walking in to cast, or
+ * his dragon is still eating. (The server refuses reads; clients wait.)
+ */
+export function storyLineHeld(
+  story: Pick<StoryState, "alden" | "dragon">,
+  line: Pick<StoryLine, "cue">,
+  tick: number,
+) {
+  if (line.cue === "alden-enter" && story.alden?.target) return true;
+  return !!story.dragon && tick < story.dragon.end;
+}
 /** A hero this close to the cart finds it. */
 export const CART_REACH = 96;
 
@@ -398,11 +444,16 @@ cutscenes.ambush = {
   lines: [
     {
       speaker: "NARRATION",
-      text: "The trees close in around a quiet clearing. Something heavy shifts beneath the moss.",
+      text: "The tracks end in a quiet clearing. Even the birds have gone silent.",
     },
     {
       speaker: "NARRATION",
-      text: "A stone golem tears free of the earth. A cinder wisp flickers to life between the trunks. More stir beneath the moss.",
+      cue: "ambush-emerge",
+      text: "The bushes to the west split apart, and a stone golem shoulders its way out. To the east, a cinder wisp flickers through the thicket.",
+    },
+    {
+      speaker: "NARRATION",
+      text: "Branches snap on both sides of the clearing. More are coming.",
     },
     { speaker: "SIEG", text: "Coco. Please tell me you have a plan." },
     { speaker: "COCO", text: "Obviously." },
@@ -442,12 +493,13 @@ cutscenes.rescue = {
     },
     {
       speaker: "NARRATION",
-      cue: "flash",
-      text: "Light swallows the clearing.",
+      cue: "dragon",
+      glow: true,
+      text: "Water surges out of the circle and rears up into a dragon, so vast it coils around the whole clearing. One by one, it swallows the monsters whole.",
     },
     {
       speaker: "NARRATION",
-      text: "When it fades, Alden stands between the children and the smoking remains of eight monsters.",
+      text: "The dragon bursts into a glittering rain. When it clears, Alden stands between the children, and not one monster is left.",
     },
     { speaker: "COCO", text: "You could've left one for us." },
     { speaker: "ALDEN", text: "Coco." },
@@ -744,8 +796,9 @@ export const storyObjectives: Partial<
     EMBER: "Prologue · Follow the trail and find the merchants' lost shipment.",
   },
   AMBUSH: {
-    OATH: "Prologue · Something is moving in the clearing...",
-    EMBER: "Prologue · Something is moving in the clearing...",
+    OATH: "Prologue · The tracks lead into the clearing. Walk into the middle and look around.",
+    EMBER:
+      "Prologue · The tracks lead into the clearing. Walk into the middle and look around.",
   },
   HOME: {
     OATH: "Prologue · Back at Alden's shop.",

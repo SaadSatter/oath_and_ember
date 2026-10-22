@@ -11,6 +11,7 @@ import {
 import {
   enemyDefinitions,
   golemMelee,
+  mosslingSpikeHits,
 } from "../../../packages/shared/src/enemies.js";
 import type {
   Enemy,
@@ -246,7 +247,18 @@ export function tickEnemies(w: World, damage: (p: Player, n: number) => void) {
           p.connected &&
           p.hp > 0
         ) {
-          if (d.attack === "melee") {
+          if (e.type === "mossling") {
+            // The spike runs straight out: every hero on its line is struck.
+            for (const q of Object.values(w.players))
+              if (
+                (q.sceneId ?? w.sceneId) === w.sceneId &&
+                q.connected &&
+                q.hp > 0 &&
+                mosslingSpikeHits(e, q) &&
+                lineClear(e, q, walls)
+              )
+                damage(q, d.damage);
+          } else if (d.attack === "melee") {
             if (distance(e, p) <= d.attackRange && lineClear(e, p, walls))
               damage(p, d.damage);
           } else {
