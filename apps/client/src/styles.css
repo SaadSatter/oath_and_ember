@@ -440,6 +440,25 @@ body[data-touch="true"][data-playing="true"] #notice {
   height: 53px;
   image-rendering: pixelated;
 }
+/* The Mossling Woods tutorial: the ability its lesson is about. */
+#special-abilities button.tutorial-focus {
+  animation: tutorial-focus 1.1s ease-in-out infinite;
+}
+@keyframes tutorial-focus {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px #f3c76a, 0 0 6px 2px #f3c76a88;
+  }
+  50% {
+    box-shadow: 0 0 0 3px #ffe7a8, 0 0 16px 6px #f3c76acc;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #special-abilities button.tutorial-focus {
+    animation: none;
+    box-shadow: 0 0 0 3px #f3c76a;
+  }
+}
 #special-abilities button:disabled {
   opacity: 0.5;
   cursor: default;

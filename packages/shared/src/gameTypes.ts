@@ -9,6 +9,7 @@ export type SceneId =
   | "HOUSE_INTERIOR"
   | "HOUSE_UPPER"
   | "PROLOGUE_TRAIL"
+  | "PROLOGUE_WOODS"
   | "PROLOGUE_CLEARING"
   | "MAIN_HOUSE"
   | "EMBERBROOK_VILLAGE"
@@ -200,6 +201,8 @@ export interface StoryState {
       pending?: "stay" | { beside: string; dx: number; dy: number };
     }
   >;
+  /** The Mossling Woods tutorial (prologueWoods.ts). */
+  woods?: import("./prologueWoods.js").WoodsState;
   /** The ambush: monsters raised so far, and when the next one rises. */
   ambush?: { raised: number; nextTick: number };
   /** Alden's water dragon, from the moment it rises until it bursts. */

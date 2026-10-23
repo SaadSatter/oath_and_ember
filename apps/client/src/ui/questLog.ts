@@ -25,6 +25,7 @@ export const questLine: Quest[] = [
     steps: [
       step("Visit Alden's magic shop", "ARRIVAL", "LEAVING"),
       step("Find the merchants' lost shipment", "FOREST_BOUND", "TRAIL"),
+      step("Train in the Mossling Woods", "WOODS"),
       step("Survive the ambush in the clearing", "AMBUSH", "FIGHT"),
       step("Make it home", "HOME"),
     ],

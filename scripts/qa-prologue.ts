@@ -148,6 +148,21 @@ try {
   await sleep(500);
   await hold(1, "e", 120);
   await sleep(1500);
+  // The Mossling Woods tutorial has its own QA (qa-mossling-woods.ts): its
+  // lessons are marked done with a server fixture, then Coco walks on.
+  {
+    const s = w.story!;
+    delete s.cutscene;
+    s.flags.push("prologue.woods", "prologue.woods-done");
+    s.woods = { step: 5, did: {}, raised: 0 };
+    w.enemies = {};
+    w.serverTick += 120;
+    await sleep(500);
+    place(coco, maps.PROLOGUE_WOODS.points.exit);
+    await sleep(500);
+    await hold(1, "e", 120);
+    await sleep(1500);
+  }
   log.push(`clearing: ${w.sceneId} ${w.story?.cutscene?.id}`);
   await read(() => w.story?.stage === "FIGHT", {
     "ambush:1": "09-ambush",

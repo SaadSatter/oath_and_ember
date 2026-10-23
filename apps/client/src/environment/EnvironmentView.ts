@@ -37,6 +37,11 @@ import {
   isComposedScene,
 } from "../../../../packages/shared/src/composedScenes.js";
 import { RuinedShopView } from "./RuinedShopView.js";
+import {
+  WOODS,
+  woodsOmittedObjects,
+  woodsWaterTiles,
+} from "../../../../packages/shared/src/prologueWoods.js";
 const interiorMapKey = (id: string) => `village-interior:${id}`;
 // Around Alden's grave the yard is cleared (a rock, a mushroom, a fern and
 // some flowers), so the grave and the old tree stand on their own. Tiles of
@@ -299,6 +304,41 @@ export class EnvironmentView {
             groundY: o.groundY,
           });
         }
+      });
+    }
+    if (id === WOODS) {
+      // The Mossling Woods: the Transition Trail's own tiles and objects
+      // (less the two trees where the pond lies), then the pond in the
+      // approved grass/water Wang tiles.
+      const map = postTownMaps.TRANSITION_TRAIL,
+        key = "TRANSITION_TRAIL";
+      for (const tile of map.tiles)
+        this.objects.push(
+          this.scene.add
+            .image(
+              tile.x,
+              tile.y,
+              `${key}:terrain:${tile.texture}`,
+              map.textures[tile.texture].sheet ? tile.frame : undefined,
+            )
+            .setOrigin(0)
+            .setDepth(-100),
+        );
+      for (const tile of woodsWaterTiles())
+        this.objects.push(
+          this.scene.add
+            .image(tile.x, tile.y, "pond:water", shoreFrame(tile.mask))
+            .setOrigin(0)
+            .setDepth(-95),
+        );
+      map.objects.forEach((o, i) => {
+        if (woodsOmittedObjects.includes(i)) return;
+        this.objects.push(
+          this.scene.add
+            .image(o.x, o.y, `${key}:object:${i}`)
+            .setOrigin(0)
+            .setDepth(o.groundY - 13),
+        );
       });
     }
     if (isComposedScene(id)) {

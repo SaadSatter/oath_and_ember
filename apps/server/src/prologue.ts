@@ -56,6 +56,12 @@ import {
 import { BAG_FLAG } from "../../../packages/shared/src/storyProps.js";
 import { roadsOpen } from "../../../packages/shared/src/chapter0Finale.js";
 import { everyoneChose, tickFinale } from "./chapter0Finale.js";
+import { tickWoods, woodsInteract } from "./prologueWoods.js";
+import {
+  WOODS,
+  WOODS_NAME,
+  woodsDone,
+} from "../../../packages/shared/src/prologueWoods.js";
 import type { ItemId } from "../../../packages/shared/src/items.js";
 import { damageEnemy } from "./enemySimulation.js";
 import { castDragon } from "../../../packages/shared/src/waterDragon.js";
@@ -141,6 +147,7 @@ function travelTo(w: World, host: StoryHost, scene: SceneId) {
   const floor = (composedScenes as Record<string, { name: string }>)[scene];
   if (floor) w.checkpoint = floor.name;
   else if (scene === "MAIN_HOUSE") w.checkpoint = "Main house";
+  else if (scene === WOODS) w.checkpoint = WOODS_NAME;
 }
 
 /**
@@ -857,6 +864,8 @@ export function tickStory(w: World, host: StoryHost) {
       startCutscene(w, "rescue", host);
     }
   }
+  // The Mossling Woods: one guided lesson after another.
+  if (!story.cutscene) tickWoods(w, (id) => startCutscene(w, id, host));
   // Chapter 0, Part 1.
   const coco = players.find((p) => p.role === "EMBER"),
     sieg = players.find((p) => p.role === "OATH");
@@ -949,6 +958,8 @@ export function tickStory(w: World, host: StoryHost) {
 export function storyInteract(w: World, p: Player) {
   const story = w.story;
   if (!story) return false;
+  // The crate on the woods' islet (Coco, during the flight lesson).
+  if (woodsInteract(w, p)) return true;
   const spot = spotsFor(story, p.role).find(
     (s) =>
       s.scene === p.sceneId && Math.hypot(s.x - p.x, s.y - p.y) <= SPOT_REACH,
@@ -1059,8 +1070,16 @@ export function storyTravel(
     return true;
   }
   if (scene === "MAIN_HOUSE" && point === "exit") return true;
+  // The cart's tracks lead into the Mossling Woods (the tutorial)...
   if (scene === "PROLOGUE_TRAIL" && point === "exit") {
     if (!story.flags.includes("prologue.cart")) return true;
+    travelTo(w, host, WOODS);
+    story.stage = "WOODS";
+    return true;
+  }
+  // ...and out of them, once every lesson is done, into the clearing.
+  if (scene === WOODS && point === "exit") {
+    if (story.stage !== "WOODS" || !woodsDone(story)) return true;
     travelTo(w, host, "PROLOGUE_CLEARING");
     story.stage = "AMBUSH";
     return true;

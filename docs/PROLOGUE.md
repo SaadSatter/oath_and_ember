@@ -10,7 +10,7 @@ PROLOGUE=0 npm run dev    # old free-roam start, without the story
 
 `npm run playtest` and `npm run enemy:encounter` set `PROLOGUE=0` and skip the story.
 
-Create a room in two tabs, choose Sieg and Coco, and ready both. The whole prologue plays in about 8–12 minutes, then Chapter 0, Part 1 continues with Coco's errand (`docs/CHAPTER0_PART1.md`).
+Create a room in two tabs, choose Sieg and Coco, and ready both. The whole prologue, Mossling Woods tutorial included, plays in about 12–16 minutes, then Chapter 0, Part 1 continues with Coco's errand (`docs/CHAPTER0_PART1.md`).
 
 ## Scenes
 
@@ -20,10 +20,12 @@ Create a room in two tabs, choose Sieg and Coco, and ready both. The whole prolo
 | 2 | `fork` | Road below the garden fence | Either hero reaches the road | Sieg's inner narration is his alone |
 | — | (travel) | Shop road → `PROLOGUE_TRAIL` | E at `← FOREST` (west) | Emberbrook (east) stays closed until the end |
 | 3a | `cart` | Forest trail | Either hero comes within 96 units of the cart | Crates and barrel: E to inspect, with a different line for each hero |
-| — | (travel) | Trail → `PROLOGUE_CLEARING` | E at `FOLLOW THE TRACKS` | Only after the cart has been found |
-| 3b | `ambush` | Clearing | Either hero walks within 110 units of the clearing's middle. Until then the clearing is empty and quiet | On the second line (`ambush-emerge`) a golem (Ironbound Sentinel) pushes out of the west bushes and a Cinder Wisp out of the east bushes. They walk in to their spots, held, until the lines end. Their sprites, AI, stats and attacks are unchanged |
+| — | (travel) | Trail → `PROLOGUE_WOODS` | E at `FOLLOW THE TRACKS` | Only after the cart has been found |
+| 3b | `woods` + lessons | Mossling Woods (tutorial) | Arriving | Five guided lessons against mosslings, each opened by a short scene (see [The Mossling Woods](#the-mossling-woods-tutorial)) |
+| — | (travel) | Woods → `PROLOGUE_CLEARING` | E at `FOLLOW THE TRACKS` (east end, past the pond) | Only after `woods-done` |
+| 3c | `ambush` | Clearing | Either hero walks within 110 units of the clearing's middle. Until then the clearing is empty and quiet | On the second line (`ambush-emerge`) a golem (Ironbound Sentinel) pushes out of the west bushes and a Cinder Wisp out of the east bushes. They walk in to their spots, held, until the lines end. Their sprites, AI, stats and attacks are unchanged |
 | — | fight | Clearing | `ambush` ends | Monsters come one at a time, every 3 s, out of the bushes on the west or east edge, whichever side their spot is on. Each one walks to the nearest free spot a safe distance from the heroes and joins the fight when it arrives. Each one beaten is replaced, up to 8 at once (4 golems, 4 wisps). Heroes cannot fall below 15 HP |
-| 3c | `rescue` | Clearing | Either hero at 25 HP or less, or 45 s pass. First the fight freezes and the ambush fills to eight from the bushes; all eight walk in and ring the heroes, leaving the north open. Then Alden enters | Enemies freeze and their shots vanish. Alden walks in from the north path while the clearing glows; his line holds until he arrives. He casts, and on the `dragon` line his water dragon rises out of the circle, laps the whole clearing and eats the monsters one by one. The line holds until the dragon bursts into rain |
+| 3d | `rescue` | Clearing | Either hero at 25 HP or less, or 45 s pass. First the fight freezes and the ambush fills to eight from the bushes; all eight walk in and ring the heroes, leaving the north open. Then Alden enters | Enemies freeze and their shots vanish. Alden walks in from the north path while the clearing glows; his line holds until he arrives. He casts, and on the `dragon` line his water dragon rises out of the circle, laps the whole clearing and eats the monsters one by one. The line holds until the dragon bursts into rain |
 | 4–5 | `home` | Shop upstairs, that evening | Chained | Both heroes healed. Scolding, "You always do.", the marriage joke, Sieg's goodnight |
 | 5 | `farewell` | The garden gate | Chained | Private to Sieg; Coco is downstairs and sees a narration line |
 | 6 | `morning` | Shop ground floor | Chained | Private to Coco; Sieg is in his room at home (above Hearthside Cottage), polishing an old wooden practice sword. The first two rules of magic are not revealed. Alden's list matches Part 1's errand |
@@ -58,6 +60,25 @@ Coco calls Alden "Papa" throughout.
   - Its clock is the one monsters are drawn at, never ahead of the latest server snapshot, so a slow server cannot make it bite early.
   - Outdoors, the camera frames the local hero together with Alden during his scenes.
   - In the clearing, the `ambush` and `rescue` scenes pull the camera back to show the whole clearing, at a whole-pixel zoom when the screen allows.
+
+## The Mossling Woods tutorial
+
+Between the cart and the ambush, the tracks lead through the Mossling Woods (`PROLOGUE_WOODS`, stage `WOODS`). Each stretch of the path teaches one skill.
+
+| # | Lesson | Mosslings | Sieg's part | Coco's part |
+| --- | --- | --- | --- | --- |
+| 1 | Attack | 2, west path | J (sword) | J (fireball) |
+| 2 | Defend | 2, north-west bend | Hold K as a spike strikes | Hold K (ward) as a spike strikes |
+| 3 | Slow Time + Super Speed | 3, north path | Shift / 2 (Super Speed) | T / 1 (Slow Time) |
+| 4 | Flight | none | Wait on the bank | F / 2: fly to the pond's islet, E at the merchants' crate, fly back beside Sieg |
+| 5 | Black Hole | 4, below the pond | Finish the bunch with J | G / 3: a black hole that catches at least one mossling |
+
+- **How a lesson runs:** its scene (`woods-<lesson>`) plays first and holds the world. Then both heroes are healed and the lesson's mosslings appear. A lesson ends when both heroes have done their part and its mosslings are beaten; the next scene follows straight away. `woods-done` closes the tutorial and opens the way on.
+- **Server-owned:** `apps/server/src/prologueWoods.ts` credits only what each hero actually does on the server: their own attack, a hit taken on guard (or guarding while a mossling winds up within 160 units), the room's Slow Time owned by Coco, Sieg's Super Speed, the crate flag plus Coco back on dry ground within 110 units of Sieg, and a black hole of Coco's whose `damaged` list holds one of the lesson's mosslings.
+- **Never stuck:** mosslings beaten before a Defend or Black Hole lesson is learned are replaced. Heroes cannot fall below 30 HP in the woods. A Flight that runs out over water lands Coco on the last dry ground (the islet, if she was there), and she can fly back once it recharges.
+- **Progress:** `World.story.woods` (`step`, `since`, `did`, `raised`) and the flags `prologue.woods`, `prologue.woods-<lesson>`, `prologue.woods-crate` and `prologue.woods-done`. All in memory, like the rest of the story.
+- **HUD:** each hero's objective line says what to press next (`woodsObjective`), and the ability button the lesson is about glows until that hero has used it. The quest journal lists "Train in the Mossling Woods".
+- **Map:** the Transition Trail's tiles, objects and reviewed collision (`postTownSolids.json`), less two trees where the pond lies. The pond and its islet are drawn with the approved grass/water Wang tiles (`bridge-ruins/water-tiles.png`); its collision is sampled from the same corner field, tagged `water` so Flight, fireballs and black holes pass over it. The merchants' crates on the islet (`story/woods_crates.png`) are a pixel-exact crop of the same house-atlas crates the trail uses (`main-house/exterior.png` 119,543 27×39), drawn at 2×.
 
 ## Maps
 
@@ -121,6 +142,8 @@ Both builders copy source pixels; they never repaint them.
 ## Tests and QA
 
 - `apps/client/test/rescueStory.test.ts`: held lines on the client, and the dragon's route (through every monster, in order, all the way around the clearing).
+- `apps/server/test/prologueWoods.test.ts`: the trail leads into the woods and the exit stays shut until the lessons are done; every lesson credits only real actions (attacks, guarded hits, Slow Time, Super Speed, the islet crate and the return, a black hole that lands); beaten mosslings are replaced; the HP floor; walking cannot reach the islet but flying can; the way on to the clearing. `apps/server/test/woodsPlay.ts` plays the tutorial for other tests.
+- `node --import tsx scripts/qa-mossling-woods.ts qa/<fresh>`: two real browsers play the whole tutorial with the keyboard (J, K, T, Shift, F, G, E). Latest run: `qa/mossling-woods-v2`. `qa-prologue.ts` and `qa-forest-ambush.ts` skip the woods with a fixture.
 - `apps/server/test/prologue.test.ts`:
   - placements on clear ground;
   - free roam before triggers;

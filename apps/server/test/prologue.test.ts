@@ -20,6 +20,7 @@ import {
   prologueStart,
 } from "../../../packages/shared/src/prologue.js";
 import { ticksFor } from "../../../packages/shared/src/constants.js";
+import { clearWoods } from "./woodsPlay.js";
 
 function pair(prologue = true) {
   const r = new GameRoom("STORY1", false, "MAIN_HOUSE", prologue),
@@ -39,6 +40,8 @@ function input(r: GameRoom, id: string, frame: Partial<InputFrame> = {}) {
   const s = r.sessions.get(id)!;
   s.input = { ...neutral(s.input.seq + 1), ...frame };
   s.received = Date.now();
+  // As receiveInput stamps it (inputs sent through it leave a tick behind).
+  s.receivedTick = r.state.serverTick;
   r.tick();
   settle(r);
 }
@@ -373,6 +376,10 @@ function toFight() {
   readAll(r, [sieg, coco]);
   r.state.serverTick += 120;
   press(r, coco, maps.PROLOGUE_TRAIL.points.exit);
+  // The Mossling Woods tutorial, then on into the clearing.
+  clearWoods(r, sieg, coco);
+  r.state.serverTick += 120;
+  press(r, coco, maps.PROLOGUE_WOODS.points.exit);
   input(r, coco.id);
   // The clearing is quiet until a hero walks into its middle.
   Object.assign(sieg, maps.PROLOGUE_CLEARING.points.centre);
@@ -401,6 +408,11 @@ it("follows Coco west into the forest, where the cart opens the way on", () => {
   expect(r.state.story!.flags).toContain("prologue.cart");
   r.state.serverTick += 120;
   press(r, coco, maps.PROLOGUE_TRAIL.points.exit);
+  // The tracks lead through the Mossling Woods first.
+  expect(r.state.sceneId).toBe("PROLOGUE_WOODS");
+  clearWoods(r, sieg, coco);
+  r.state.serverTick += 120;
+  press(r, coco, maps.PROLOGUE_WOODS.points.exit);
   expect(r.state.sceneId).toBe("PROLOGUE_CLEARING");
   // Nothing stirs while the heroes look around the edge of the clearing...
   for (let i = 0; i < 120; i++) input(r, coco.id);
@@ -609,6 +621,15 @@ it("ends with Sieg's farewell, Coco's morning, and Coco off on her errand alone"
     "prologue.visit",
     "prologue.detour",
     "prologue.cart",
+    // The Mossling Woods tutorial, lesson by lesson.
+    "prologue.woods",
+    "prologue.woods-attack",
+    "prologue.woods-defend",
+    "prologue.woods-time",
+    "prologue.woods-flight",
+    "prologue.woods-crate",
+    "prologue.woods-black_hole",
+    "prologue.woods-done",
     "prologue.ambush",
     "prologue.rescue",
     "prologue.home",
