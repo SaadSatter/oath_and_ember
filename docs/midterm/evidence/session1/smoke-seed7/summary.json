@@ -1,0 +1,98 @@
+{
+  "state": {
+    "episode": "milestone-7-ce729d25",
+    "seed": 7,
+    "goal": "Milestone 1: finish the goddess's opening scene and leave the shrine within 90 s.",
+    "tick": 0,
+    "startHash": "ce729d254fa400cc62351e2750bdf5b0370f715eefc5d30371911a5e123fee74",
+    "limits": {
+      "maxTicks": 5400,
+      "maxDecisionsPerPlayer": 400,
+      "maxModelCallsPerPlayer": 40,
+      "maxTokensPerPlayer": 1000000
+    }
+  },
+  "chosen": {
+    "sieg": {
+      "type": "move",
+      "direction": "n",
+      "ticks": 30
+    },
+    "coco": {
+      "type": "move",
+      "direction": "n",
+      "ticks": 30
+    }
+  },
+  "results": {
+    "sieg": {
+      "accepted": true,
+      "ticks": 30,
+      "feedback": [],
+      "done": false
+    },
+    "coco": {
+      "accepted": true,
+      "ticks": 30,
+      "feedback": [],
+      "done": false
+    }
+  },
+  "ticksAdvanced": 30,
+  "positions": {
+    "sieg": [
+      [
+        18.5,
+        27.5
+      ],
+      [
+        18.5,
+        26.3
+      ]
+    ],
+    "coco": [
+      [
+        21.5,
+        27.5
+      ],
+      [
+        21.5,
+        26.3
+      ]
+    ]
+  },
+  "outcome": {
+    "status": "ongoing",
+    "episode": "milestone-7-ce729d25",
+    "ticks": 30,
+    "seconds": 0.5,
+    "decisions": {
+      "sieg": 1,
+      "coco": 1
+    },
+    "invalidActions": {
+      "sieg": 0,
+      "coco": 0
+    },
+    "modelCalls": {
+      "sieg": 0,
+      "coco": 0
+    },
+    "tokens": {
+      "sieg": {
+        "input": 0,
+        "output": 0
+      },
+      "coco": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    "limits": {
+      "maxTicks": 5400,
+      "maxDecisionsPerPlayer": 400,
+      "maxModelCallsPerPlayer": 40,
+      "maxTokensPerPlayer": 1000000
+    }
+  }
+}
