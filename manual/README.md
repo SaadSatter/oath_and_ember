@@ -13,3 +13,7 @@ All seven PNG files were captured from the local game in two independent headles
 ## Maintenance references
 
 Verify controls against `apps/client/src/main.ts`, panel behavior against `apps/client/src/ui/`, and action rules against `apps/server/src/GameRoom.ts` and `packages/shared/src/`. Older gameplay prose may describe superseded skill menus. Heavy Break is documented conditionally because it is not a normal starting skill.
+
+## Game design rationale
+
+[Game design rationale](GAME_DESIGN_RATIONALE.md) documents the original concept, attributed inspirations, verified rules, design alternatives, evidence map, proposed midterm episode, and open questions. Proposed personal motivations are marked for designer approval. The same content is also saved at `docs/GAME_DESIGN_RATIONALE.md`.
