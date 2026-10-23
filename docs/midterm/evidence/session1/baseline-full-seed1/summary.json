@@ -1,0 +1,71 @@
+{
+  "policy": {
+    "sieg": "exploration-baseline",
+    "coco": "exploration-baseline"
+  },
+  "preset": "full",
+  "seed": 1,
+  "labels": "names-only",
+  "outcome": {
+    "status": "terminated",
+    "reason": "decision_limit",
+    "episode": "full-1-2b2ab2d9",
+    "ticks": 10744,
+    "seconds": 179.1,
+    "decisions": {
+      "sieg": 399,
+      "coco": 401
+    },
+    "invalidActions": {
+      "sieg": 0,
+      "coco": 0
+    },
+    "modelCalls": {
+      "sieg": 0,
+      "coco": 0
+    },
+    "tokens": {
+      "sieg": {
+        "input": 0,
+        "output": 0
+      },
+      "coco": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    "limits": {
+      "maxTicks": 28800,
+      "maxDecisionsPerPlayer": 400,
+      "maxModelCallsPerPlayer": 400,
+      "maxTokensPerPlayer": 4000000
+    }
+  },
+  "evaluator": {
+    "milestones": [
+      "goddess-meet-finished",
+      "griffin-banter",
+      "holding:moonleaf",
+      "holding:crystal_vial",
+      "holding:candlewick",
+      "holding:fresh_bread",
+      "holding:honey_pastry",
+      "holding:alden_journal",
+      "holding:strange_cloth",
+      "holding:star_drawing"
+    ],
+    "area": "GRIFFIN_ENCLOSURE",
+    "stateHash": "7585ee94da3b4eaff148a7bbbf63787ed1c11c61742ecdc9fd272f0b23947608"
+  },
+  "wallSeconds": 1.6,
+  "steps": 800,
+  "invalidActions": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "policyErrors": 0,
+  "modelCalls": 0,
+  "meanLatencyMs": 0,
+  "spendUsd": 0,
+  "traceLines": 3207
+}
