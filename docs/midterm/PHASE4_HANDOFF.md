@@ -3,6 +3,24 @@
 Worktree: `oath_and_ember-eval`, branch `midterm/evaluation`, base commit `b51c1c0`.
 
 
+## Review H1–H3 fixes and the live launcher (2026-10-27, Claude Code)
+
+The owner approved the launcher architecture and gave the independent review's H1–H3 findings. Local commits only: no paid call, no ledger initialization, no S4/F evaluation, no push, merge or PR. **The earlier one-call smoke approval is not renewed**; the owner will approve a new smoke call separately.
+
+| Finding / feature | Commit | What changed |
+| --- | --- | --- |
+| H1: per-worktree ledgers | `bc377ee`, `5f9074f` | One ledger in the git common directory (`repo.ts`, `SpendLedger.openCanonical` / `initCanonical`). It is never created implicitly. Legacy ledgers are inventoried and must be adopted explicitly. Git checks use the code's own worktree. `scripts/midterm/ledger.ts` for inventory and one-time init |
+| H3: mutable baseline knowledge in the S4 checkpoint | `d701242` | `route/routeConstants.ts`: a deep-frozen copy of the route's constants. S2/S4 start hashes are pinned for seeds 0, 1, 100, 101 (reset only) |
+| H2: held-out access | `ab7ae51` | Owner approval tied to a full commit hash and a clean tree, recorded by `final-approve.ts` in a hash-chained register. Episodes are claimed once per approval. `runEpisode` refuses held-out and final-seed episodes without a claimed grant, whatever the entrypoint |
+| Live launcher | `aea9570` | `npm run eval:live` (`scripts/midterm/live.ts`, `liveViewer.ts`, `mockGateway.ts`, environment room/tick/pace hooks). See `LIVE_RUN.md` |
+
+Read-only ledger inventory on 2026-10-27: no canonical ledger and no legacy ledger in any of the four worktrees. Nothing was created.
+
+Validation after the final code commit: `npm run typecheck` pass. `npm test -- --exclude packages/agent/test/suite.test.ts --exclude packages/agent/test/route/fullQuest.test.ts`: **706 tests / 92 files passed** (the same two held-out route files excluded as before). `npm run build` pass, with the Vite chunk-size warning only. `git diff --check` pass. Manual offline launcher runs: baseline-quest S1 seed 0, headless and watched, both succeed at 4.8 s with end hash `7e22d17e…`. Baseline-quest S2 seed 0, watched in a headless browser screenshot and headless, both succeed at 146.4 s with end hash `3119923352c08724…`.
+
+Next steps for the owner: an independent review of these commits; initializing the shared ledger (`node --import tsx scripts/midterm/ledger.ts init`); then a separately approved smoke call.
+
+
 
 ## Authorized one-call smoke preflight: blocked before dispatch (2026-10-27)
 

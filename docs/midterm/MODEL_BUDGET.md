@@ -62,7 +62,7 @@ A **cumulative spend ledger** across runs is now implemented in `packages/agent/
 ## Before any paid call
 
 1. **Owner approval** of the model, the effort setting, the total cap and the stage caps.
-2. **A cumulative spend ledger** (`evaluation-runs/spend-ledger.json`, kept out of git) and the refusal rule above, with tests.
+2. **A cumulative spend ledger** (`<git common dir>/oath-eval/spend-ledger.json`, shared by every worktree and kept out of git; review H1, 2026-10-27) and the refusal rule above, with tests.
 3. **The credential:** `ANTHROPIC_API_KEY` is set by the owner in the shell, and never written to the repository or to traces.
 4. **Prices re-checked and dated** on the run day.
 
@@ -81,6 +81,6 @@ Rechecked on 2026-10-27 against [Anthropic's model overview](https://platform.cl
 
 Reservations now use UTF-8 byte length plus a 4,096-token framing margin, all input at the cache-write rate and maximum output at the applicable tier. The meter rejects non-finite limits/reservations; missing or malformed usage is explicitly unknown and conservatively charged. Ledger charges round upward to microdollars. Cross-process locks, crash-left reservations, concurrent hero calls and global exhaustion across restarts are covered offline.
 
-The canonical paid CLI ledger is `evaluation-runs/spend-ledger.json`; alternate ledger CLI paths are disabled. The legacy `run-episode.ts` helper refuses model policies and points to `evaluate.ts`. Preserve the ledger across all stages and restarts. After a killed process, verify the PID recorded in its lock is dead before removing only that stale lock; retained reservations still count. `--resume` checks configuration/trace integrity, skips completed episodes without new calls, and restarts interrupted episodes in new attempt directories without erasing prior charges. Unknown reservations are never automatically reclaimed.
+The canonical paid CLI ledger is `<git common dir>/oath-eval/spend-ledger.json` (review H1, 2026-10-27: it was previously resolved from the shell's working directory, so each worktree could get its own $25). `evaluate.ts` and `live.ts` both open it with `SpendLedger.openCanonical`, which refuses when it is missing (it is created once by the owner with `scripts/midterm/ledger.ts init`, after an inventory) or while a legacy per-worktree ledger exists; alternate ledger CLI paths are disabled. The legacy `run-episode.ts` helper refuses model policies and points to `evaluate.ts`. Preserve the ledger across all stages and restarts. After a killed process, verify the PID recorded in its lock is dead before removing only that stale lock; retained reservations still count. `--resume` checks configuration/trace integrity, skips completed episodes without new calls, and restarts interrupted episodes in new attempt directories without erasing prior charges. Unknown reservations are never automatically reclaimed.
 
 The $25 bound depends on this ledger being retained and on the provider honoring the verified rates/output limit. Mock tests cannot establish account access, actual billing, cache effectiveness or live response quality. The next action requires the owner's paid-smoke approval.

@@ -84,6 +84,8 @@ These are in `packages/agent` and `scripts/midterm`, which `CLAUDE.md` lets the 
 - A recorder (ported from `packages/evaluation/src/video.ts`) opens two Playwright contexts with native `recordVideo` at 1x, one per hero's view, using view tokens. Pacing: while game time advances, one tick per 1/60 s of wall time. While a hero decides, time is frozen, and an overlay drawn by the host in each page shows "Sieg is choosing…", then the chosen action and its result, taken from the trace. The overlay is injected by Playwright and is not part of the game client.
 - Each recording's manifest stores the trace file, its final state hash, the model ids and the wall-clock span. A replayed recording is labelled "replay" and must reproduce every per-tick state hash in the trace.
 
+**Implementation note (2026-10-27, live launcher).** The room factory is implemented as `EnvironmentOptions.room`, `tick` and `pace` in `packages/agent/src/environment.ts`. The environment still creates its room itself, with the evaluation runtime. The hook registers that same room in the viewer app's `RoomManager`, and `tick` calls `app.step(code)`. The viewer host is `packages/agent/src/liveViewer.ts`, used by `scripts/midterm/live.ts` (`docs/midterm/LIVE_RUN.md`). The Playwright recorder and its overlay are not built; the live page draws its own status line outside the game client. No file under `apps/` or `packages/shared/` changed. `packages/agent/test/liveView.test.ts` shows identical semantic traces and hashes with and without the viewer.
+
 ## Out of scope
 
 - No change to `GameRoom.tick`'s rules, including its paused-room early return. That was noted in review 18 and will only be investigated if the scripted route shows a problem.
