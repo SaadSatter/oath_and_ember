@@ -4,12 +4,17 @@
 //   - open reservations count as spent until settled (so a crash leaves money held);
 //   - a settled episode whose spend is unknown is charged its whole reservation;
 //   - an unreadable, inconsistent or locked ledger refuses all reservations.
+// Review H1: paid entrypoints open the one canonical ledger in the git common
+// directory (repo.ts), shared by every worktree. It is never created
+// implicitly: a missing canonical ledger refuses to spend until it is
+// initialized after an inventory of every existing ledger.
 // Within an episode, ModelBudget (budget.ts) enforces the same cap per call,
 // including reservations for calls in flight.
 
 import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, renameSync, unlinkSync, writeFileSync, writeSync } from "node:fs";
 
 import { dirname } from "node:path";
+import { canonicalLedgerPath, ledgerInventory, repoInfo, type LedgerInventoryItem, type RepoInfo } from "./repo.js";
 
 export interface LedgerConfig {
   totalCapUsd: number;
@@ -63,7 +68,7 @@ export class SpendLedger {
    * never spend from it at once; a stale lock must be removed by hand after
    * checking that no run is active.
    */
-  static open(path: string, config: LedgerConfig = APPROVED_LEDGER): SpendLedger {
+  static open(path: string, config: LedgerConfig = APPROVED_LEDGER, opts: { create?: boolean } = {}): SpendLedger {
     if (!Number.isFinite(config.totalCapUsd) || config.totalCapUsd <= 0 || config.totalCapUsd > APPROVED_LEDGER.totalCapUsd ||
       !config.stages || !Object.entries(config.stages).length || Object.entries(config.stages).some(([stage, cap]) =>
         !Object.hasOwn(APPROVED_LEDGER.stages, stage) || !Number.isFinite(cap) || cap <= 0 || cap > APPROVED_LEDGER.stages[stage]))
@@ -88,6 +93,8 @@ export class SpendLedger {
         SpendLedger.validate(data);
         if (JSON.stringify(data.config) !== JSON.stringify(config))
           throw new LedgerError("Ledger configuration differs from the approved allocation; refusing to spend.");
+      } else if (opts.create === false) {
+        throw new LedgerError(`No ledger at ${path}; refusing to spend. Initialize it once with \`node --import tsx scripts/midterm/ledger.ts init\` after reviewing the inventory.`);
       } else {
         data = { version: 1, config, entries: [] };
       }
@@ -190,7 +197,7 @@ export class SpendLedger {
     if (this.lockFd === undefined) throw new LedgerError("Ledger is closed.");
   }
 
-  /** Write atomically (temp file, fsync, rename) so a crash never leaves half a ledger. */
+  /** Write atomically (temp file, fsync, rename, directory fsync) so a crash never leaves half a ledger. */
   private save() {
     const tmp = `${this.path}.tmp`;
     const fd = openSync(tmp, "w");
@@ -201,6 +208,74 @@ export class SpendLedger {
       closeSync(fd);
     }
     renameSync(tmp, this.path);
+    try {
+      const dir = openSync(dirname(this.path), "r");
+      try { fsyncSync(dir); } finally { closeSync(dir); }
+    } catch {
+      // Some platforms cannot fsync a directory; the rename is still atomic.
+    }
+  }
+
+  /** @internal Migration only: copy entries from a legacy ledger, keeping their charges and open holds. */
+  private adopt(from: string, entries: LedgerEntry[]) {
+    for (const e of entries)
+      this.data.entries.push({ ...e, id: `migrated-${this.data.entries.length + 1}-${e.id}`, note: [e.note, `migrated from ${from}`].filter(Boolean).join("; ") });
+    this.save();
+  }
+
+  /**
+   * The canonical ledger shared by every worktree (review H1). Refuses when it
+   * does not exist, and while any legacy per-worktree ledger still exists, so
+   * spend recorded elsewhere can never be ignored.
+   */
+  static openCanonical(info: RepoInfo = repoInfo(), config: LedgerConfig = APPROVED_LEDGER): SpendLedger {
+    const legacy = ledgerInventory(info).filter((i) => i.kind === "legacy" && i.exists);
+    if (legacy.length)
+      throw new LedgerError(`Legacy ledgers exist (${legacy.map((l) => l.path).join(", ")}); migrate them with \`node --import tsx scripts/midterm/ledger.ts init --adopt <path>\` before spending.`);
+    return SpendLedger.open(canonicalLedgerPath(info), config, { create: false });
+  }
+
+  /**
+   * Create the canonical ledger once. Refuses if it already exists, if any
+   * ledger is locked, or if a legacy ledger exists that is not named in
+   * `adopt`. Adopted ledgers are validated, their entries copied (spend and
+   * open holds included) and the files renamed so they cannot be reused.
+   */
+  static initCanonical(info: RepoInfo, opts: { adopt?: string[]; config?: LedgerConfig } = {}): { ledger: SpendLedger; inventory: LedgerInventoryItem[]; adopted: string[] } {
+    const config = opts.config ?? APPROVED_LEDGER;
+    const inventory = ledgerInventory(info);
+    const canonical = inventory.find((i) => i.kind === "canonical")!;
+    if (canonical.exists || canonical.locked) throw new LedgerError(`The canonical ledger already exists (${canonical.path}); it is never re-initialized.`);
+    const locked = inventory.filter((i) => i.locked);
+    if (locked.length) throw new LedgerError(`Ledger locks exist (${locked.map((l) => `${l.path}.lock`).join(", ")}); a run may be active.`);
+    const adopt = new Set(opts.adopt ?? []);
+    const legacy = inventory.filter((i) => i.kind === "legacy" && i.exists);
+    const unnamed = legacy.filter((l) => !adopt.has(l.path));
+    if (unnamed.length) throw new LedgerError(`Legacy ledgers must be adopted explicitly: ${unnamed.map((l) => l.path).join(", ")}.`);
+    for (const p of adopt) if (!legacy.some((l) => l.path === p)) throw new LedgerError(`${p} is not a legacy ledger of this repository.`);
+    // Validate every legacy file before creating anything.
+    const legacyEntries = [...adopt].map((p) => {
+      let data: LedgerFile;
+      try {
+        data = JSON.parse(readFileSync(p, "utf8")) as LedgerFile;
+      } catch {
+        throw new LedgerError(`Legacy ledger ${p} is unreadable; refusing to initialize.`);
+      }
+      SpendLedger.validate(data);
+      if (JSON.stringify(data.config) !== JSON.stringify(config)) throw new LedgerError(`Legacy ledger ${p} has a different allocation; refusing to initialize.`);
+      return { path: p, entries: data.entries };
+    });
+    const ledger = SpendLedger.open(canonical.path, config, { create: true });
+    try {
+      for (const l of legacyEntries) ledger.adopt(l.path, l.entries);
+      if (ledger.remaining() < 0) throw new LedgerError("Adopted spend exceeds the total cap.");
+    } catch (e) {
+      ledger.close();
+      throw e;
+    }
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+    for (const l of legacyEntries) renameSync(l.path, `${l.path}.migrated-${stamp}`);
+    return { ledger, inventory, adopted: legacyEntries.map((l) => l.path) };
   }
 }
 

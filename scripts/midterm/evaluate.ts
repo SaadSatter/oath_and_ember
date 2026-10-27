@@ -7,10 +7,9 @@
 // Model players (PAID; only after the owner has authorized the stage):
 //   --player model-history|model-obs-only --stage pilot|final|contingency --effort medium|low --paid
 //   --smoke --paid    one call, from the smoke stage
-// Every paid episode is reserved in the persistent ledger
-// (evaluation-runs/spend-ledger.json, not in git) before it starts.
+// Every paid episode is reserved in the one shared spend ledger, in the git
+// common directory (packages/agent/src/repo.ts), before it starts.
 
-import { execSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { aggregate, runSuite, smokeCall, validatePlan, type ModelSetup, type PlayerKind } from "../../packages/agent/src/harness.js";
@@ -19,6 +18,7 @@ import { SpendLedger } from "../../packages/agent/src/ledger.js";
 import { AnthropicGateway, anthropicPrices, EFFORTS, type Effort } from "../../packages/agent/src/policies/llm.js";
 
 import { TraceWriter } from "../../packages/agent/src/trace.js";
+import { repoInfo } from "../../packages/agent/src/repo.js";
 
 const arg = (name: string, fallback?: string) => {
   const i = process.argv.indexOf(name);
@@ -26,16 +26,17 @@ const arg = (name: string, fallback?: string) => {
 };
 const flag = (name: string) => process.argv.includes(name);
 
-const gitHash = execSync("git rev-parse --short HEAD").toString().trim();
-const dirty = execSync("git status --porcelain --untracked-files=normal").toString().trim() !== "";
+// Git checks run on this script's own worktree, never on the shell's cwd (H1).
+const repo = repoInfo();
+const gitHash = repo.head.slice(0, 7);
+const dirty = repo.dirty;
 const version = dirty ? `${gitHash}+dirty` : gitHash;
 const final = flag("--final");
 const controller = new AbortController();
 process.once("SIGINT", () => { process.exitCode = 130; controller.abort(); });
 process.once("SIGTERM", () => { process.exitCode = 143; controller.abort(); });
-if (flag("--ledger")) throw Error("Paid evaluation uses the shared evaluation-runs/spend-ledger.json; ledger overrides are disabled.");
-const ledgerPath = resolve("evaluation-runs/spend-ledger.json");
-const manual = () => readFileSync("manual/Oath_and_Ember_Player_Manual.md", "utf8");
+if (flag("--ledger")) throw Error("Paid evaluation uses the one shared ledger in the git common directory; ledger overrides are disabled.");
+const manual = () => readFileSync(join(repo.root, "manual/Oath_and_Ember_Player_Manual.md"), "utf8");
 
 function paidGateway() {
   if (!flag("--paid")) throw Error("Model runs are paid. Pass --paid only after the owner has authorized this stage.");
@@ -51,9 +52,9 @@ function paidGateway() {
 
 if (flag("--smoke")) {
   const { gateway } = paidGateway();
-  const ledger = SpendLedger.open(ledgerPath);
+  const ledger = SpendLedger.openCanonical(repo);
   try {
-    const out = resolve(arg("--out", `evaluation-runs/smoke-${Date.now()}`)!);
+    const out = resolve(repo.root, arg("--out", `evaluation-runs/smoke-${Date.now()}`)!);
     mkdirSync(out, { recursive: true });
     const trace = new TraceWriter(join(out, "trace.jsonl"));
     const r = await smokeCall(gateway, manual(), ledger, version, 0.01, trace, controller.signal);
@@ -69,7 +70,7 @@ const player = arg("--player", "baseline-quest") as PlayerKind;
 const situations = arg("--situations", "S1,S2,S3")!.split(",") as SituationId[];
 const seedArg = arg("--seeds", final ? "final" : "tuning")!;
 const seeds = seedArg === "tuning" ? [...SEEDS.tuning] : seedArg === "final" ? [...SEEDS.final] : seedArg.split(",").map(Number);
-const out = resolve(arg("--out", `evaluation-runs/${player}-${final ? "final" : "tuning"}-${Date.now()}`)!);
+const out = resolve(repo.root, arg("--out", `evaluation-runs/${player}-${final ? "final" : "tuning"}-${Date.now()}`)!);
 
 let model: ModelSetup | undefined;
 let ledger: SpendLedger | undefined;
@@ -79,7 +80,7 @@ if (player === "model-history" || player === "model-obs-only") {
   // Check the plan before touching the ledger or the network.
   validatePlan({ player, situations, seeds, final, model: { stage } as ModelSetup });
   const { gateway, source } = paidGateway();
-  ledger = SpendLedger.open(ledgerPath);
+  ledger = SpendLedger.openCanonical(repo);
   model = { gateway, manual: manual(), ledger, stage, priceSource: source, maxBatch: Number(arg("--max-batch", "4")) };
 }
 
