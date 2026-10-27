@@ -3,6 +3,34 @@
 Worktree: `oath_and_ember-eval`, branch `midterm/evaluation`, base commit `b51c1c0`.
 
 
+## Re-review fixes (2026-10-27, Claude Code)
+
+The owner asked for the independent re-review's confirmed findings to be fixed before any paid evaluation. Local commits only: no paid call, no ledger initialization, no S4/F episode, no push, merge or PR. No other worktree was modified.
+
+| Finding | Commit | Fix |
+| --- | --- | --- |
+| H2-a forgeable, reusable grants; player kind ignored | `37f4c66` | Grants, tickets and route access need a module-private token. `claim()` returns a single-use `EpisodeTicket` (claimed → bound → used → finished, state held privately). `runEpisode` binds it only to policies of the approved exact class (`policies/kind.ts`) |
+| H2-b gate only in `runEpisode` | `37f4c66` | `AgentEnvironment.reset()` runs `admitReset()` before anything exists. Held-out or final-seed resets need a bound ticket (used up) or explicit `routeDevelopmentAccess(purpose)`, which `runEpisode` refuses and which allows reset only at final seeds |
+| M5 held-out test policy | `37f4c66`, docs | Route, suite and checkpoint tests take named route access. `npm test` may build held-out start states (reset only at final seeds). `suite.test.ts` and `route/fullQuest.test.ts` stay excluded. See `LIVE_RUN.md` |
+| M1 ledger deletion restored $25 | `c6761a7` | Permanent init marker with the ledger id; missing or replaced ledgers refused; init runs once; adoption checked in memory |
+| M4 no recovery for interrupted reservations | `c6761a7` | Traced `ledger_reservation` and `model_call_start`; `reconcile()` plus `ledger.ts open / unlock / reconcile` with typed confirmation; calls started without a record are charged their whole hold |
+| H1-a unmetered runner in `oath_and_ember-agent` | `c6761a7` (warning only) | Read-only detection in the inventory and paid entrypoints. **Fix awaits the owner's choice** (below) |
+| M2 any priced model or effort | `f5cf5cf` | `APPROVED_MODELS` enforced by `AnthropicGateway`; smoke only `claude-haiku-5-5` at `medium` |
+| M3 stale lock during launcher startup | `f5cf5cf` | Handlers first; ledger checked then closed before the prompt and build, reopened before the run; exit handler always releases the lock |
+| L1–L4 | `f5cf5cf` | `safeText` for terminal lines; explicit key, fixed endpoint, stdout/stderr redaction; `launch`, `wallLimitSeconds`, `episodeCapUsd`, `finalClaim` in summaries; per-hero mock streams |
+| Test robustness | `8837f88` | Stale-lock test polls for the child's lock |
+
+Edited existing tests (needed by the gate and trace changes): `finalAccess.test.ts` (rewritten), `checkpointFreeze.test.ts`, `ledgerCanonical.test.ts` (refusal wording), `harness.test.ts` (smoke trace lines), `suite.test.ts` and `route/fullQuest.test.ts` (route access; `suite.test.ts`'s stepping S4 case moved from seed 101 to 1). The last two were **not run** (held-out policy). New tests: `ledgerRecovery.test.ts`, `paidSafety.test.ts`.
+
+Validation after the final code commit: `npm run typecheck` pass. `npm test -- --exclude packages/agent/test/suite.test.ts --exclude packages/agent/test/route/fullQuest.test.ts`: **730 tests / 94 files passed**. This includes `checkpointFreeze.test.ts`, which resets S4 at seeds 0, 1, 100 and 101 under route access; the pinned hashes still match. `npm run build` pass (Vite chunk-size warning only). `git diff --check` pass. The real `.git/oath-eval/` still does not exist.
+
+**H1-a options (owner decision; nothing done):**
+1. Commit a guard on `midterm/agent-interface` in that worktree so its `run-episode.ts` refuses paid policies, as this branch's does (recommended if that worktree is still in use).
+2. Remove the worktree with `git worktree remove` after checking it is clean and its branch is preserved. This worktree's `node_modules` is a symlink into it, so this needs a local `npm ci` first.
+3. Procedure only: rely on the warning and never run paid commands there.
+
+Remaining risks: in-process code can still deliberately bind a real ticket and drive other policies (needs a recorded approval; leaves a claim). Deleting both the ledger and its marker allows re-initialization. Register truncation is not detected by the chain. The clean-tree check ignores gitignored files (`node_modules`). Provider behaviour and billing are untested until the smoke call.
+
 ## Review H1–H3 fixes and the live launcher (2026-10-27, Claude Code)
 
 The owner approved the launcher architecture and gave the independent review's H1–H3 findings. Local commits only: no paid call, no ledger initialization, no S4/F evaluation, no push, merge or PR. **The earlier one-call smoke approval is not renewed**; the owner will approve a new smoke call separately.
