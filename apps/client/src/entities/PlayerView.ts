@@ -231,6 +231,8 @@ export class PlayerView {
         this.sprite.on("animationupdate", () => this.applyAppearance());
       }
       this.sprite
+        // Public visual identity, shared by the renderer and trusted observer.
+        .setData("publicVisualIdentity", role === "OATH" ? "Sieg" : "Coco")
         .setVisible(true)
         .setPosition(position.x + visual.offset.x, position.y + visual.offset.y)
         .setOrigin(

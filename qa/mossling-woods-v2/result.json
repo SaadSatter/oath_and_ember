@@ -1,0 +1,22 @@
+{
+  "log": [
+    "arrived: PROLOGUE_WOODS stage WOODS",
+    "attack: 2 mosslings",
+    "attack: did {}, struck down by fixture: 0",
+    "defend: step now 2, hp 70/100",
+    "time: slowTime true sprint 9.633333333333315 did {\"EMBER\":true,\"OATH\":true}",
+    "time: left 0",
+    "flight: coco 889,470 flying 16.8 crate true",
+    "flight: step now 4 coco 778,470",
+    "black hole: did {\"OATH\":true,\"EMBER\":true} mosslings 4",
+    "black hole: left 0",
+    "done: Prologue · The tracks lead on. Press E at the trail's east end, past the pond.",
+    "objective text: Prologue · The tracks lead on. Press E at the trail's east end, past the pond.",
+    "left: PROLOGUE_CLEARING stage AMBUSH"
+  ],
+  "errors": [
+    "client 0: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "client 0: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "client 1: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+}

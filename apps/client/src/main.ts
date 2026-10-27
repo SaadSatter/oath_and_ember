@@ -1,3 +1,4 @@
+import { installVisibleObservation } from "./evaluation/visibleObservation.js";
 import { GameAudio } from "./audio/GameAudio.js";
 import {
   isSettlementScene,
@@ -852,6 +853,7 @@ for (const b of document.querySelectorAll<HTMLButtonElement>("[data-key]")) {
 const casts = new CastPrediction();
 let primaryWasHeld = false;
 function submitInput(reliable = false) {
+  if (new URLSearchParams(location.search).has("evaluationPresentation")) return;
   const w = net.world;
   if (
     !w ||
@@ -1030,6 +1032,7 @@ class Adventure extends Phaser.Scene {
   private shrineView!: ShrineView;
   private griffinView!: GriffinView;
   create() {
+    installVisibleObservation(this);
     this.mazeView = new HedgeMazeView(this);
     this.pondView = new MirrorPondView(this);
     this.shrineView = new ShrineView(this);

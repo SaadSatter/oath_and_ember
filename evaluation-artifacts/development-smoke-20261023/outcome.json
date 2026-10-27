@@ -1,0 +1,25 @@
+{
+  "terminal": true,
+  "reason": "time_limit",
+  "ticks": 600,
+  "submissions": {
+    "SIEG": 26,
+    "COCO": 26
+  },
+  "wallMs": 21969.547333,
+  "accounts": {
+    "SIEG": {
+      "calls": 0,
+      "input": 0,
+      "output": 0,
+      "cost": 0
+    },
+    "COCO": {
+      "calls": 0,
+      "input": 0,
+      "output": 0,
+      "cost": 0
+    }
+  },
+  "classification": "weak-observation-only-baseline"
+}

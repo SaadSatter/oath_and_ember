@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "mode": "baseline",
+  "classification": "weak-observation-only-baseline",
+  "seed": 1101,
+  "scenario": "A",
+  "maxTicks": 600,
+  "revision": "21f6638792a1b91804412c6786b3d81c30f5dc31",
+  "dirtyHash": "d6dc3a12a9c28d7581be5fa25bc2a31420caf4e4393c944ed8c4b691302183d5",
+  "manualHash": "a76a71882866236417762821c9eff22648a5f4b1411a04f43179b6f96916fed4",
+  "scenarioManifestHash": "ca538cecd8e952022d6ac78eff9a3deca6a64ca2213601e5046b3ec991c47e9e",
+  "model": null,
+  "capturedAt": "2026-10-23T15:38:08.571Z",
+  "screenshots": false,
+  "normalSpeed": true,
+  "sourceRun": null,
+  "limits": {
+    "wallMs": 5400000,
+    "maxCallsPerRole": 600,
+    "maxInputPerRole": 4000000,
+    "maxOutputPerRole": 500000
+  }
+}

@@ -16,7 +16,7 @@ I distinguish five kinds of evidence throughout:
 | `observed` | A recorded automated run, gameplay capture, or test execution. The method and fixture limitations must accompany the observation. |
 | `assumed` | A proposed explanation, intended benefit, or evaluation decision not yet confirmed by human evidence or by me as the designer. |
 
-The paragraphs headed **Proposed rationale for my approval** are draft explanations in my voice, not a claim that a development log records those personal motivations. The IDs D1–D11 let me approve or revise them individually. I treat the source DOCX as an early reference brief, following [AGENTS.md](../AGENTS.md#L1), rather than as operating instructions or a current rules specification. Its original platformer and skill-progression plans differ from parts of the current game.
+I approved the design rationale for D1–D11 on 22 October 2026. The paragraphs headed **Approved design rationale** now record my confirmed design intent (`design`). This approval does not establish human-playtest outcomes or resolve the separate rules discrepancies, evaluation proposal, or open questions below. I treat the source DOCX as an early reference brief, following [AGENTS.md](../AGENTS.md#L1), rather than as operating instructions or a current rules specification. Its original platformer and skill-progression plans differ from parts of the current game.
 
 ## 1 Original concept and contribution
 
@@ -48,19 +48,19 @@ I adapt that philosophy to overhead fantasy exploration with two persistent hero
 
 **Confirmed design:** Sieg and Coco have different starting actions, with exclusive hero roles enforced by the server. [The approved capability plan](quests/bald-goddess/phase-1-world-plan.md#1-verified-current-capabilities) records the role separation; [starting skills](../packages/shared/src/abilities.ts#L2) and [role selection](../apps/server/src/GameRoom.ts#L276) implement it.
 
-**Proposed rationale for my approval — `assumed`:** I want each player to notice opportunities the other cannot act on alone. Distinct abilities give them useful information to communicate: where to stand, when to slow a hazard, and when to fire. An alternative is two identical heroes, which would make either player interchangeable at most obstacles. Complementary roles better support the cooperative identity I am aiming for, but may also leave one player waiting. Agency balance needs human testing.
+**Approved design rationale — `design`:** I want each player to notice opportunities the other cannot act on alone. Distinct abilities give them useful information to communicate: where to stand, when to slow a hazard, and when to fire. An alternative is two identical heroes, which would make either player interchangeable at most obstacles. Complementary roles better support the cooperative identity I am aiming for, but may also leave one player waiting. Agency balance needs human testing.
 
 ### D2 Shared quest inventory
 
 **Confirmed design:** One backpack belongs to the party, while item selection remains local to each player. This is an explicit requirement in the [inventory design](quests/bald-goddess/phase-2-inventory-design.md#ownership-and-controls), implemented by [InventoryService](../apps/server/src/inventory.ts#L59).
 
-**Proposed rationale for my approval — `assumed`:** I want the achievement to be “we found the tool,” rather than “the wrong person picked it up.” Separate inventories and a trading system would create logistical decisions, but could obstruct a puzzle for reasons unrelated to understanding it. A shared backpack keeps the focus on finding and applying items. It does not remove role or reach restrictions: Coco still has to approach the Griffin's nest.
+**Approved design rationale — `design`:** I want the achievement to be “we found the tool,” rather than “the wrong person picked it up.” Separate inventories and a trading system would create logistical decisions, but could obstruct a puzzle for reasons unrelated to understanding it. A shared backpack keeps the focus on finding and applying items. It does not remove role or reach restrictions: Coco still has to approach the Griffin's nest.
 
 ### D3 Story as motivation
 
 **Confirmed design:** Coco, Sieg, Alden, his death, the Ember and the investigation lead into the shrine quest. [Part 1](CHAPTER0_PART1.md) and [the finale](CHAPTER0_FINALE.md) record this narrative, while [the quest journal](../apps/client/src/ui/questLog.ts#L22) connects it to current tasks. Each hero makes an individual motivation choice near the ending; the server records both choices in [chooseMotivation](../apps/server/src/chapter0Finale.ts#L131).
 
-**Proposed rationale for my approval — `assumed`:** I want exploration to answer a personal question rather than only increase a score. The early relationship with Alden gives the later search a human reason, and separate choices let each player express a reason to continue. A score-driven arena or an anonymous quest board would be simpler, but would not connect the characters' relationship to their cooperation as directly. The code proves the choices are stored; it does not yet demonstrate that they produce different later campaigns.
+**Approved design rationale — `design`:** I want exploration to answer a personal question rather than only increase a score. The early relationship with Alden gives the later search a human reason, and separate choices let each player express a reason to continue. A score-driven arena or an anonymous quest board would be simpler, but would not connect the characters' relationship to their cooperation as directly. The code proves the choices are stored; it does not yet demonstrate that they produce different later campaigns.
 
 ### D4 The Bridge That Hates Cooperation
 
@@ -68,7 +68,7 @@ I adapt that philosophy to overhead fantasy exploration with two persistent hero
 
 The decision is not simply which switch to press. Players decide who can reach a control, when to leave the boulder supplying weight, how to coordinate Slow Time with physical pushing, and where Coco must cast a valid frontal shot. Two grounded occupants can collapse a bridge before the final target is solved. The final distinct-role switch positions then reward coordinated reunion. This makes the title a mechanical joke about spacing, rather than a rule against teamwork.
 
-**Proposed rationale for my approval — `assumed`:** I want separation to become a resource the players manage together. A single switch that opens a permanent crossing would be easier to understand, but would remove the changing relationship between position, weight and support. A full reset on every mistake would add repetition; the actual local recovery rules preserve earlier unlocks so the current attempt remains the focus. Whether the added complexity is legible is still an open playtest question.
+**Approved design rationale — `design`:** I want separation to become a resource the players manage together. A single switch that opens a permanent crossing would be easier to understand, but would remove the changing relationship between position, weight and support. A full reset on every mistake would add repetition; the actual local recovery rules preserve earlier unlocks so the current attempt remains the focus. Whether the added complexity is legible is still an open playtest question.
 
 ### D5 The Goddess Shrine hub and three branches
 
@@ -76,7 +76,7 @@ The decision is not simply which switch to press. Players decide who can reach a
 
 Players decide which tool branch to attempt first, how to interpret the goddess's clue, and whether to prepare for the nonlethal Griffin interaction or take the combat alternative. The combat route means the current rules do **not** universally require both tool branches before the goddess can be satisfied. Branch travel moves the party; independent cameras do not mean three branches simulate simultaneously.
 
-**Proposed rationale for my approval — `assumed`:** I want a small hub to make the adventure feel discoverable without becoming an unrestricted open world. A linear maze–pond–Griffin sequence would make dependencies clearer, but reduce route choice. The current hub offers bounded freedom with a common objective. It also needs clearer evidence that players understand the tool dependency without an external guide.
+**Approved design rationale — `design`:** I want a small hub to make the adventure feel discoverable without becoming an unrestricted open world. A linear maze–pond–Griffin sequence would make dependencies clearer, but reduce route choice. The current hub offers bounded freedom with a common objective. It also needs clearer evidence that players understand the tool dependency without an external guide.
 
 ### D6 Hedge Maze
 
@@ -84,7 +84,7 @@ Players decide which tool branch to attempt first, how to interpret the goddess'
 
 Players must distinguish an obstacle they can burn, one they can move, and an actor they must approach and interact with. Slow Time plus Super Speed helps Sieg catch a wolf that otherwise accelerates away. Coco's flight does not bypass the solid hedges. The current key transaction requires Sieg, proximity and clear sight, but does not require both timed abilities to be active; this differs from older notes.
 
-**Proposed rationale for my approval — `assumed`:** I want players to reuse a small set of abilities in different contexts, rather than learn a new command for every obstacle. A static key in a dead end would test route finding, but not coordinated pursuit. Conversely, a rigid “both buffs active” transaction would enforce one prescribed solution. The current proximity rule permits an opportunistic catch, which may be desirable flexibility or may weaken intended cooperation; I need to decide that explicitly.
+**Approved design rationale — `design`:** I want players to reuse a small set of abilities in different contexts, rather than learn a new command for every obstacle. A static key in a dead end would test route finding, but not coordinated pursuit. Conversely, a rigid “both buffs active” transaction would enforce one prescribed solution. The current proximity rule permits an opportunistic catch, which may be desirable flexibility or may weaken intended cooperation; I need to decide that explicitly.
 
 ### D7 Mirror Pond
 
@@ -92,31 +92,31 @@ Players must distinguish an obstacle they can burn, one they can move, and an ac
 
 Players decide how to cross the spike approach, which mirror angle produces a useful reflection, when the shooter is ready, and how to leave the mirror so the walkway remains usable. Reflection uses actual direction and angle rather than automatically correcting a shot toward a torch. Direct fire cannot substitute for a valid reflected spell. A reflected shot may light any torch it actually reaches, not only a preassigned paired torch.
 
-**Proposed rationale for my approval — `assumed`:** I want a successful shot to be a joint prediction the players can see working. Preset mirror angles or automatic aiming would reduce frustration, but would also reduce discussion and experimentation. Continuous rotation makes the collaboration more expressive, at the cost of precision demands that need testing under real latency and on touch devices.
+**Approved design rationale — `design`:** I want a successful shot to be a joint prediction the players can see working. Preset mirror angles or automatic aiming would reduce frustration, but would also reduce discussion and experimentation. Continuous rotation makes the collaboration more expressive, at the cost of precision demands that need testing under real latency and on touch devices.
 
 ### D8 Griffin Enclosure
 
 **Confirmed design and implementation:** The Griffin supports combat and a tool-based alternative. Coco can pull the airborne guardian ashore; Sieg can bait a locked-direction headbutt toward a pillar, creating a stun. A warned mouth beam can be avoided or blocked by geometry. For the peaceful route, Coco delivers the owned mirror and shears at the nest, the Griffin performs a timed grooming sequence and departs, and Coco collects the dropped wig. The server awards the shared reward once. See [the encounter design and its updates](quests/bald-goddess/griffin-implementation.md), [nest transactions](../apps/server/src/griffin.ts#L24), and [grooming](../apps/server/src/griffin.ts#L119).
 
-**Proposed rationale for my approval — `assumed`:** I want preparation and observation to be credible alternatives to dealing damage. A mandatory boss kill would make the tool branches less meaningful. An automatic reward on entering the nest would remove the payoff of recognizing the guardian's vanity. The combat alternative preserves choice, but can bypass the tool branches and may place more control in Coco's hands; equal contribution remains a question to test.
+**Approved design rationale — `design`:** I want preparation and observation to be credible alternatives to dealing damage. A mandatory boss kill would make the tool branches less meaningful. An automatic reward on entering the nest would remove the payoff of recognizing the guardian's vanity. The combat alternative preserves choice, but can bypass the tool branches and may place more control in Coco's hands; equal contribution remains a question to test.
 
 ### D9 One authoritative shared world
 
 **Confirmed design:** [AGENTS.md](../AGENTS.md#L3) requires server-owned gameplay truth and client intent. [The networking design](NETWORKING.md) and [strict input schema](../apps/server/src/app.ts#L18) enforce that boundary. Shared kinematics provide both authoritative movement and client prediction.
 
-**Proposed rationale for my approval — `assumed`:** I want both players to agree that a stone stayed on its plate, a mirror had a particular angle, or an item was consumed once. Client-owned outcomes would be easier to prototype, but conflicting local results could make a cooperative puzzle feel arbitrary. A fixed authoritative simulation with prediction offers responsive controls while keeping outcomes consistent. It adds reconciliation complexity, and measured networking improvements should not be confused with evidence of universally smooth play.
+**Approved design rationale — `design`:** I want both players to agree that a stone stayed on its plate, a mirror had a particular angle, or an item was consumed once. Client-owned outcomes would be easier to prototype, but conflicting local results could make a cooperative puzzle feel arbitrary. A fixed authoritative simulation with prediction offers responsive controls while keeping outcomes consistent. It adds reconciliation complexity, and measured networking improvements should not be confused with evidence of universally smooth play.
 
 ### D10 Independent exploration and local retries
 
 **Confirmed design:** The source DOCX specifies independent cameras; the manual documents them. Individual interiors coexist with party-wide branch transitions. Local bridge and pond recoveries retain solved latches. Ordinary zero HP restores health and relocates a hero rather than ending the party's game.
 
-**Proposed rationale for my approval — `assumed`:** I want players to investigate freely, then regroup when their abilities are needed. A shared camera could emphasize togetherness but would tether exploration. Permadeath or a full-map reset could increase tension, but would repeatedly discard shared puzzle understanding. The chosen recovery behavior favors experimentation; whether it makes combat feel too inconsequential needs human evaluation.
+**Approved design rationale — `design`:** I want players to investigate freely, then regroup when their abilities are needed. A shared camera could emphasize togetherness but would tether exploration. Permadeath or a full-map reset could increase tension, but would repeatedly discard shared puzzle understanding. The chosen recovery behavior favors experimentation; whether it makes combat feel too inconsequential needs human evaluation.
 
 ### D11 Bounded technical scope
 
 **Confirmed design:** The project keeps one in-memory service and adds persistence or scaling only when requested. The engine is a dependency rather than an original contribution. Protocol changes need integration tests. See [project invariants](../AGENTS.md#L1) and [package configuration](../package.json).
 
-**Proposed rationale for my approval — `assumed`:** I want a playable, inspectable cooperative episode before adding infrastructure. A database, multiple server instances or a newly written engine would consume time without directly demonstrating this midterm's cooperative design. The tradeoff is temporary sessions and a limited evaluation environment, which I should state openly.
+**Approved design rationale — `design`:** I want a playable, inspectable cooperative episode before adding infrastructure. A database, multiple server instances or a newly written engine would consume time without directly demonstrating this midterm's cooperative design. The tradeoff is temporary sessions and a limited evaluation environment, which I should state openly.
 
 ## 4 Formal rules and manual verification
 
@@ -206,7 +206,7 @@ Each row uses one required evidence label. Separate rows distinguish a rule spec
 | One in-memory service | `design` | [AGENTS.md, line 8](../AGENTS.md#L8) | Keep the project bounded; acknowledge nonpersistent progress. |
 | Bridge episode reset and starting geometry already exist | `code` | [walkthrough setup, line 13](../scripts/bridge-walkthrough.ts#L13); [reset, line 397](../apps/server/src/GameRoom.ts#L397); [map, line 199](../packages/shared/src/maps.ts#L199) | Support an independent episode without claiming a new evaluation interface. |
 | Proposed midterm limits and observation policy | `assumed` | This document §8 | Make evaluation choices explicit and seek approval before treating them as implemented rules. |
-| D1–D11 experiential explanations | `assumed` | This document §3 | Keep plausible rationale distinct from confirmed personal design history. |
+| D1–D11 experiential explanations | `design` | This document §3; designer approval recorded on 22 October 2026 | Record confirmed design intent while keeping empirical outcomes unverified. |
 
 ## 6 Intended player experience and evidence limits
 
@@ -220,7 +220,7 @@ I want **distinct identities** to remain legible through a small recurring abili
 
 I see **replayability** in exchanging hero roles, improving coordination, trying a different branch order, and comparing combat with the Griffin's peaceful route. There is no verified procedural campaign, persistent metagame, retention study, or implemented consequence tree for the motivation choices. Replay value is an intended opportunity, not a measured result.
 
-These goals are the D1–D11 proposed rationale in experiential terms. The relevant alternative is not necessarily a worse game: identical characters, a linear route or stricter puzzle gates might better serve a different audience. My argument is about suitability for this project's stated cooperative goal.
+These goals express the approved D1–D11 design rationale in experiential terms. Their effects on players still require evidence. The relevant alternative is not necessarily a worse game: identical characters, a linear route or stricter puzzle gates might better serve a different audience. My argument is about suitability for this project's stated cooperative goal.
 
 ## 7 Playtesting and iteration
 
@@ -279,7 +279,7 @@ This is ready to adapt into a midterm README once I approve the proposed episode
 
 ## 10 Missing evidence and decisions for my approval
 
-1. **Approve or revise D1–D11.** Their explanations are plausible interpretations of implemented choices, not confirmed recollections of why I made them.
+1. **D1–D11 approved on 22 October 2026.** I confirm these explanations as my design rationale. Claims about player experience remain hypotheses pending human testing; this approval does not approve the separate episode limits or resolve implementation discrepancies.
 2. **Confirm the episode.** Approve the fresh-bridge starting contract, success latch, observation restrictions, 600 s proposal and any action budget. Supply the actual course rubric if requirements extend beyond the excerpt in the task brief.
 3. **Resolve the listed rules discrepancies.** Decide whether to update the manual/specifications or later change gameplay. This task does neither silently. Priorities are onward shrine travel, wolf catch requirements, final-switch input/timing, final-shot origins, mirror angular speed and Griffin tool retention.
 4. **Run documented human sessions.** Recruit at least a clearly reported set of pairs; record experience level, role assignment, hints given, completion/failure counts, time, waiting periods and comments. Ask whether each role felt consequential. The participant plan and success criteria still need approval.

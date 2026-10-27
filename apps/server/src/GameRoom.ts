@@ -150,6 +150,8 @@ import {
 } from "../../../packages/shared/src/abilities.js";
 type Aim = { x: number; y: number };
 import { storyVersion } from "../../../packages/shared/src/storyVersion.js";
+export interface RoomRuntime { now(): number; id(): string }
+const productionRuntime: RoomRuntime = { now: () => Date.now(), id: () => randomUUID() };
 export class GameRoom {
   state: World;
   readonly inventory = new InventoryService();
@@ -218,6 +220,7 @@ export class GameRoom {
     /** Open with the Chapter 0 prologue (only from the main house). */
     readonly prologue = false,
     readonly storyStart?: import("../../../packages/shared/src/storyCheckpoints.js").StoryCheckpointId,
+    readonly runtime: RoomRuntime = productionRuntime,
   ) {
     this.state = {
       roomCode: code,
@@ -240,8 +243,8 @@ export class GameRoom {
   add(socketId: string) {
     if (this.sessions.size >= 2)
       throw Error("Room is full. Exactly two heroes can join.");
-    const id = randomUUID(),
-      token = randomUUID();
+    const id = this.runtime.id(),
+      token = this.runtime.id();
     this.sessions.set(id, {
       token,
       socketId,
@@ -333,7 +336,7 @@ export class GameRoom {
   }
   resume(id: string, token: string, socketId: string) {
     const s = this.sessions.get(id);
-    if (!s || s.token !== token || s.expires < Date.now())
+    if (!s || s.token !== token || s.expires < this.runtime.now())
       throw Error("Reconnect failed. Create or join a new room.");
     // A client that reconnects before the server has noticed its old socket
     // drop takes the session over (the app closes the old socket); refusing
@@ -375,7 +378,7 @@ export class GameRoom {
     const s = this.sessions.get(id);
     if (s) {
       s.socketId = null;
-      s.expires = Date.now() + 30000;
+      s.expires = this.runtime.now() + 30000;
       s.input = neutral();
       s.movementQueue?.clear();
       s.movementInput = neutral(this.state.players[id].lastProcessedInputSeq);
@@ -860,7 +863,7 @@ export class GameRoom {
     if (input.slowTimeHeld && !s.input.slowTimeHeld)
       this.slowTimeRequests.add(id);
     s.input = { ...input };
-    s.received = Date.now();
+    s.received = this.runtime.now();
     s.receivedTick = Math.max(
       this.state.serverTick,
       input.targetTick ?? this.state.serverTick,
@@ -898,7 +901,7 @@ export class GameRoom {
         p.unlockedSkills.includes("slow_time") &&
         !p.cooldowns.slow_time &&
         session &&
-        Date.now() - session.received < 250 &&
+        this.runtime.now() - session.received < 250 &&
         !w.slowTime
       ) {
         w.slowTime = {
@@ -938,7 +941,7 @@ export class GameRoom {
       const lockMove = locked && !(mark && w.serverTick < mark.start);
       const fresh =
         s.receivedTick === undefined
-          ? Date.now() - s.received < 250
+          ? this.runtime.now() - s.received < 250
           : w.serverTick <= s.receivedTick + Math.ceil(0.25 / DT);
       const edge = fresh && !locked ? s.primaryEdges?.shift() : undefined;
       const i =
@@ -1111,7 +1114,7 @@ export class GameRoom {
             });
           else this.resolveSword(p, sceneId, 40, strikeFacing);
         } else {
-          const id = randomUUID();
+          const id = this.runtime.id();
           w.projectiles[id] = {
             castTick: w.serverTick,
             castOrigin: { x: p.x, y: p.y },
@@ -1136,7 +1139,7 @@ export class GameRoom {
         p.unlockedSkills.includes("black_hole") &&
         !p.cooldowns.black_hole
       ) {
-        const id = randomUUID();
+        const id = this.runtime.id();
         const holeFacing = aimFrom(s.blackHoleAim);
         w.blackHoles ??= {};
         w.blackHoles[id] = {

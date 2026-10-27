@@ -48,6 +48,7 @@ function harness() {
   };
   const sprite = {
     on: chain(),
+    setData: chain(),
     setTexture: chain(),
     setFrame: chain(),
     texture: { key: "" },
@@ -82,7 +83,8 @@ function harness() {
       sprite: vi.fn(() => sprite),
       image: vi.fn(() => ({
         ...sprite,
-        setTexture: chain(),
+        setData: chain(),
+    setTexture: chain(),
         setVisible: chain(),
         setScale: chain(),
         setPosition: chain(),

@@ -1,0 +1,3 @@
+# Development smoke recording
+
+Continuous native Playwright WebM recordings of a local observation-only baseline run. No screenshots, selected frames, speed-up or model calls. Scenario A, development seed 1101, 600 ticks / 10 simulated seconds, ended by `time_limit`. Startup and decision pauses are retained. Separate recordings have independent start epochs; do not align them by file time zero or claim synchronized views. This run is not a quest-completion demonstration. Hash-chained events and manifests are retained beside the recordings. The optional combined MP4 assembly failed because the installed Playwright-only FFmpeg lacks the required filters/encoder; both original WebM files finalized successfully.

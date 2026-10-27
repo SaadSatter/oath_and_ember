@@ -1,0 +1,16 @@
+# Preimplementation information boundary review
+
+22 October 2026. Independent read-only Codex subagent `information_boundary_review`, requested as part of the shrine evaluation architecture work. Scope: current implementation and existing scripts; no adapter or model player exists yet. No files were edited by the reviewer. This record is an implementation review artifact, not the user's personal agent-team log, and not proof of the required future two-session reusable-skill review.
+
+## Findings
+
+1. **Global snapshots are privileged.** `apps/server/src/app.ts` sends `room.state` through state synchronization and periodic snapshots. This includes puzzles, enemies, inventory targets and both heroes. Keep snapshots inside trusted engine/rendering processes; build an explicit output allowlist rather than forward `World` to a policy.
+2. **Current HUD includes solution-like hints.** The goal construction in `apps/client/src/main.ts` around the HEDGE_MAZE, MIRROR_POND and GRIFFIN_ENCLOSURE branches exposes ordered actions and tool/combat tactics. The architecture must choose explicitly between preserving normal in-game hints and a stricter evaluation presentation. Withholding hints only from one policy/baseline would be unfair.
+3. **The player manual and rationale have different information status.** `manual/Oath_and_Ember_Player_Manual.md` is public mechanics guidance. `manual/GAME_DESIGN_RATIONALE.md` contains puzzle dependencies, implementation references and source-level details; it must not be included in playable-agent contexts.
+4. **Existing playthroughs are privileged solvers.** `scripts/pond-playthrough.ts` reads station geometry, exact mechanism state and target angles. `scripts/maze-playthrough.ts` uses full collision geometry, actor IDs and runner positions. `scripts/griffin-playthrough.ts` grants prior rewards and reads attack timers for automatic dodges. Executing legal intents does not make the planning information player-equivalent. Preserve these as labelled engineering QA, not as the fair baseline.
+5. **Authoritative entry points are reusable.** `GameRoom.receiveInput`, `useItem`, `talkToNpc`, `readStoryLine` and `chooseStoryLine` support normal engine actions. Existing UI handlers can resolve an ordinary nearby target. `items.ts`, `questLog.ts` and viewport code can inform UI reuse but are not themselves security boundaries; `collisionRects` exposes complete map geometry.
+6. **Central stepping requires one owner.** `app.ts` owns a wall-time accumulator and session expiry; `GameRoom.tick` advances `serverTick` before a paused-room early return. Freshness uses `Date.now`, and input submission changes edge queues. Collect decisions at a consistent observation boundary, validate them, apply deterministic input ordering and advance only through the central scheduler. Control evaluation time explicitly; do not let each agent or timer advance independently.
+
+## Required follow-up
+
+Audit the future implementation, both policy initial contexts, observation provenance, baseline dependencies, clock handling and traces before claiming no leakage or fair comparison. Preserve critical findings and their resolution status. The review above identifies risks; it does not certify future acceptance tests.

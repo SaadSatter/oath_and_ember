@@ -47,6 +47,8 @@ export function createApp(
     encounter?: boolean;
     startingScene?: SceneId;
     prologue?: boolean;
+    manualDriver?: boolean;
+    runtime?: import("./GameRoom.js").RoomRuntime;
   } = {},
 ) {
   const app = express(),
@@ -55,6 +57,7 @@ export function createApp(
       options.encounter,
       options.startingScene,
       options.prologue,
+      options.runtime,
     );
   const io = new Server<ClientEvents, ServerEvents>(http);
   app.get("/healthz", (_req, res) =>
@@ -308,45 +311,49 @@ export function createApp(
   let previous = performance.now(),
     accumulator = 0;
   // At most five catch-up steps prevent a stalled process from spiraling forever.
-  const timer = setInterval(() => {
-    const now = performance.now();
-    accumulator += Math.min((now - previous) / 1000, 5 * DT);
-    previous = now;
-    while (accumulator >= DT) {
-      accumulator -= DT;
-      for (const [code, r] of manager.rooms) {
-        for (const [id, s] of r.sessions)
-          if (s.expires < Date.now()) {
-            r.sessions.delete(id);
-            delete r.state.players[id];
-            r.state.phase = "LOBBY";
-            io.to(code).emit("state:sync", r.state);
+  const timer = options.manualDriver
+    ? undefined
+    : setInterval(() => {
+        const now = performance.now();
+        accumulator += Math.min((now - previous) / 1000, 5 * DT);
+        previous = now;
+        while (accumulator >= DT) {
+          accumulator -= DT;
+          for (const [code, r] of manager.rooms) {
+            for (const [id, s] of r.sessions)
+              if (s.expires < Date.now()) {
+                r.sessions.delete(id);
+                delete r.state.players[id];
+                r.state.phase = "LOBBY";
+                io.to(code).emit("state:sync", r.state);
+              }
+            if (!r.sessions.size) {
+              manager.rooms.delete(code);
+              continue;
+            }
+            const scene = r.state.sceneId,
+              phase = r.state.phase;
+            r.tick();
+            if (scene !== r.state.sceneId) {
+              io.to(code).emit("scene:transition", {
+                sceneId: r.state.sceneId,
+              });
+              io.to(code).emit("state:sync", r.state);
+            }
+            if (phase !== "COMPLETE" && r.state.phase === "COMPLETE")
+              io.to(code).emit("game:complete", { victory: true });
+            if (r.state.serverTick % SNAPSHOT_INTERVAL_TICKS === 0)
+              io.to(code).volatile.emit("game:snapshot", r.state);
           }
-        if (!r.sessions.size) {
-          manager.rooms.delete(code);
-          continue;
         }
-        const scene = r.state.sceneId,
-          phase = r.state.phase;
-        r.tick();
-        if (scene !== r.state.sceneId) {
-          io.to(code).emit("scene:transition", { sceneId: r.state.sceneId });
-          io.to(code).emit("state:sync", r.state);
-        }
-        if (phase !== "COMPLETE" && r.state.phase === "COMPLETE")
-          io.to(code).emit("game:complete", { victory: true });
-        if (r.state.serverTick % SNAPSHOT_INTERVAL_TICKS === 0)
-          io.to(code).volatile.emit("game:snapshot", r.state);
-      }
-    }
-  }, 8);
+      }, 8);
   return {
     app,
     http,
     io,
     manager,
     close: async () => {
-      clearInterval(timer);
+      if (timer) clearInterval(timer);
       await new Promise<void>((res) => io.close(() => res()));
     },
   };
