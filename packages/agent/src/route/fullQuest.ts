@@ -15,9 +15,10 @@
 import { Director } from "./director.js";
 import { directionTo, planStep, type Point } from "../policies/navigate.js";
 import type { Direction, Observation, PlayerId } from "../types.js";
-// The route's constants live in the disclosed quest-knowledge module, shared
-// with the quest-aware baseline.
-import { MIRROR, MIRROR_REST as REST, MIRROR_TARGET as TARGET, PAD, POND_PLAN, SHOT, SHRINE, TO_MIRROR as TO_ARRIVAL, WALK_SPEED as SPEED } from "../policies/questKnowledge.js";
+// The route's own frozen constants (review H3). They started as a copy of the
+// quest-aware baseline's knowledge but are independent of it, so editing the
+// baseline can never move the frozen S2-S4 start states.
+import { MIRROR, MIRROR_REST as REST, MIRROR_TARGET as TARGET, PAD, POND_PLAN, SHOT, SHRINE, TO_MIRROR as TO_ARRIVAL, WALK_SPEED as SPEED } from "./routeConstants.js";
 
 // ── Shared helpers ─────────────────────────────────────────────────────────
 const has = (o: Observation, item: string) => o.inventory.items.some((i) => i.id === item);
@@ -153,7 +154,7 @@ export async function hedgeMaze(d: Director) {
 }
 
 // ── Mirror Pond: vanity mirror ─────────────────────────────────────────────
-// POND_PLAN (policies/questKnowledge.ts): per mirror, Sieg's walks and push lengths from
+// POND_PLAN (route/routeConstants.ts): per mirror, Sieg's walks and push lengths from
 // scripts/midterm/route-dev/pond-plan.ts (exact 4 px paths with the hero's
 // ±13 px box, the mirror at the angle it has at that point; one push tick turns
 // a mirror 1.5°). Phases: solve, rest, leave.

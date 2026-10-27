@@ -6,8 +6,10 @@
 // That work passed through every scenario, including the held-out S4 and F,
 // so the quest-aware baseline's knowledge of S4 and F is NOT held out.
 //
-// Used by the scripted route (route/fullQuest.ts) and the quest-aware baseline
-// (policies/questBaseline.ts). Nothing here reads game state; the baseline
+// Used by the quest-aware baseline (policies/questBaseline.ts). The scripted
+// route, whose prefixes build the frozen S2-S4 start states, keeps its own
+// frozen copy in route/routeConstants.ts (review H3), so editing this file
+// cannot move a scenario's start. Nothing here reads game state; the baseline
 // still acts only on each hero's own observation and messages.
 // Coordinates are tiles (32 px), y grows downward.
 
