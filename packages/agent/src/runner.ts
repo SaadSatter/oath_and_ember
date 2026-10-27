@@ -7,7 +7,8 @@ import type { Policy } from "./policies/policy.js";
 import type { TraceWriter } from "./trace.js";
 import { BudgetExhausted, ModelCallError, type ModelBudget } from "./budget.js";
 import { batchStop, capBatch } from "./batch.js";
-import { assertEpisodeAccess, type FinalGrant } from "./finalAccess.js";
+import { bindTicket, FinalAccessError, type EpisodeTicket } from "./finalAccess.js";
+import { policyKind } from "./policies/kind.js";
 import {
   playerIds,
   type GameOutcome,
@@ -30,10 +31,11 @@ export interface RunOptions {
    */
   budget?: ModelBudget;
   /**
-   * Required for held-out scenarios (S4, F) and final seeds: a grant from an
-   * owner approval that has claimed this episode (finalAccess.ts, review H2).
+   * Required for held-out scenarios (S4, F) and final seeds: the single-use
+   * ticket from FinalGrant.claim() for this episode (finalAccess.ts, H2). It
+   * must name the player kind of `policies`; the environment's reset uses it up.
    */
-  finalGrant?: FinalGrant;
+  finalTicket?: EpisodeTicket;
 }
 
 export async function runEpisode(
@@ -43,8 +45,14 @@ export async function runEpisode(
   options: RunOptions,
 ): Promise<GameOutcome> {
   if (!Number.isFinite(options.wallClockMs) || !(options.wallClockMs > 0)) throw Error("wallClockMs must be positive.");
-  // Held-out gate (H2): before reset, so nothing of the episode is played.
-  assertEpisodeAccess(env.scenario(), options.seed, options.finalGrant);
+  // Held-out gate (H2). Route development access never runs players. A final
+  // ticket is bound to these policies' kind here; AgentEnvironment.reset()
+  // then admits (and uses up) it, or refuses before anything is played.
+  if (env.routeDevelopment()) throw new FinalAccessError("A route development environment cannot run players or produce evaluation results.");
+  if (options.finalTicket !== undefined) {
+    bindTicket(options.finalTicket, policyKind(policies));
+    env.authorize(options.finalTicket);
+  }
   for (const id of playerIds) {
     const model = policies[id].model;
     if (!model) continue;

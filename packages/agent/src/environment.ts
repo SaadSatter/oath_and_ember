@@ -8,6 +8,7 @@
 // (Sieg, then Coco), which keeps the run reproducible.
 
 import { evaluationRuntime } from "./runtime.js";
+import { admitReset, FinalAccessError, isTicket, type Admission, type EpisodeTicket, type RouteDevelopmentAccess } from "./finalAccess.js";
 import type { ModelBudget } from "./budget.js";
 import { GameRoom } from "../../../apps/server/src/GameRoom.js";
 import { neutral, type Role, type SceneId } from "../../shared/src/gameTypes.js";
@@ -80,6 +81,12 @@ export interface EnvironmentOptions {
   room?: (room: GameRoom) => void;
   tick?: (room: GameRoom) => void;
   pace?: () => Promise<void>;
+  /**
+   * Route development only (finalAccess.ts, re-review H2-b): lets the
+   * scripted route and checkpoint tests reset held-out scenarios (and play
+   * them at non-final seeds). runEpisode() refuses an environment that has it.
+   */
+  routeDevelopment?: RouteDevelopmentAccess;
 }
 
 /** The interface every policy (baseline or model) uses. */
@@ -139,6 +146,9 @@ export class AgentEnvironment implements GameInterface {
   private lastBag = "";
   private lastJournal = "";
   private pacing = false;
+  /** A final ticket handed over by runEpisode() for the next reset only. */
+  private pendingTicket?: EpisodeTicket;
+  private admission: Admission = { kind: "open" };
 
   constructor(private readonly options: EnvironmentOptions = {}) {
     this.preset = options.preset ?? "milestone";
@@ -155,6 +165,15 @@ export class AgentEnvironment implements GameInterface {
   // ── 1. reset ────────────────────────────────────────────────────────────
   async reset(seed: number): Promise<EpisodeState> {
     if (!Number.isSafeInteger(seed)) throw Error("Seed must be an integer.");
+    // Held-out gate (H2-b), before anything of the episode exists: held-out
+    // scenarios and final seeds need a bound final ticket (used up here) or
+    // route development access. Every entrypoint reaches this line.
+    const ticket = this.pendingTicket;
+    this.pendingTicket = undefined;
+    this.admission = admitReset(this.scenario(), seed, {
+      ...(ticket ? { ticket } : {}),
+      ...(this.options.routeDevelopment !== undefined ? { routeDevelopment: this.options.routeDevelopment } : {}),
+    });
     for (const slot of Object.values(this.slots ?? {})) this.release(slot, "The episode was reset.");
     this.seed = seed;
     this.reason = undefined;
@@ -219,7 +238,7 @@ export class AgentEnvironment implements GameInterface {
       startHash,
       limits: { ...this.limits },
     };
-    this.trace("reset", { ...state, ...(prefixInfo ? { prefix: prefixInfo } : {}) });
+    this.trace("reset", { ...state, ...(prefixInfo ? { prefix: prefixInfo } : {}), ...(this.admission.kind !== "open" ? { access: this.admission } : {}) });
     return state;
   }
 
@@ -245,6 +264,8 @@ export class AgentEnvironment implements GameInterface {
       this.trace("invalid_action", { action, error }, player);
       return Promise.resolve(result);
     };
+    if (this.admission.kind === "route-development" && this.admission.resetOnly && !this.inPrefix)
+      throw new FinalAccessError("Route development access at a final seed allows reset only; no step is taken.");
     if (this.reason) return refuse("The episode is over.", false);
     if (s.submitted || s.running) return refuse("You already have an action in progress.");
     s.decisions++;
@@ -296,6 +317,23 @@ export class AgentEnvironment implements GameInterface {
    */
   attachBudget(budget: ModelBudget | undefined) {
     this.budget = budget;
+  }
+  /**
+   * Hand a bound final ticket to the next reset (trusted; runEpisode() only).
+   * The environment forgets it after that one reset; a ticket that admits the
+   * reset is used up and can never admit another.
+   */
+  authorize(ticket: EpisodeTicket) {
+    if (!isTicket(ticket)) throw new FinalAccessError("Not an issued episode ticket.");
+    this.pendingTicket = ticket;
+  }
+  /** Route development access this environment was built with, if any (trusted). */
+  routeDevelopment() {
+    return this.options.routeDevelopment ?? null;
+  }
+  /** How the last reset was admitted (trusted, for summaries). */
+  access(): Admission {
+    return this.admission;
   }
   /** Which suite preset and scenario prefix this environment plays (trusted; used by the held-out gate). */
   scenario() {

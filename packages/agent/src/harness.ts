@@ -28,9 +28,9 @@ import type { SpendLedger } from "./ledger.js";
 import type { GameOutcome, PlayerId } from "./types.js";
 import { episodes } from "./evaluator.js";
 import { FinalAccessError, isGrant, type FinalGrant } from "./finalAccess.js";
+import { PLAYER_KINDS, type PlayerKind } from "./playerKinds.js";
 
-export type PlayerKind = "baseline-quest" | "baseline-explore" | "model-history" | "model-obs-only";
-export const PLAYER_KINDS: readonly PlayerKind[] = ["baseline-quest", "baseline-explore", "model-history", "model-obs-only"];
+export { PLAYER_KINDS, type PlayerKind };
 const isModel = (p: PlayerKind) => p === "model-history" || p === "model-obs-only";
 
 /** Per-episode spend caps, both heroes together (MODEL_BUDGET.md). */
@@ -255,7 +255,8 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
     : undefined;
   const policies = policiesFor(o.player, budget, model);
   // Final runs: claim the episode in the append-only register first (H2).
-  const claim = o.final ? o.finalGrant!.claim(o.player, id, seed, attempt) : null;
+  // The single-use ticket is bound to these policies by runEpisode.
+  const ticket = o.final ? o.finalGrant!.claim(o.player, id, seed, attempt) : null;
   // Reserve before anything can spend; the reservation is on disk first.
   const ledgerEntry = model ? model.ledger.reserve(model.stage, `${o.player}/${id}/seed${seed}/${o.gitHash}`, cap) : null;
   const started = Date.now();
@@ -266,18 +267,18 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
       signal: o.signal,
       wallClockMs: (o.wallSeconds ?? (model ? 3600 : 600)) * 1000,
       ...(budget ? { budget } : {}),
-      ...(o.finalGrant ? { finalGrant: o.finalGrant } : {}),
+      ...(ticket ? { finalTicket: ticket } : {}),
     });
   } catch (e) {
     if (model && ledgerEntry) model.ledger.settle(ledgerEntry, null, `episode failed: ${(e as Error).message.slice(0, 200)}`);
-    if (claim) o.finalGrant!.finish(claim, { status: "error", reason: (e as Error).message.slice(0, 200), endHash: null, chargedUsd: model ? cap : null });
+    if (ticket) o.finalGrant!.finish(ticket, { status: "error", reason: (e as Error).message.slice(0, 200), endHash: null, chargedUsd: model ? cap : null });
     throw e;
   }
   if (model && ledgerEntry) {
     const unknown = budget!.records.filter((r) => r.costUsd === null).length;
     model.ledger.settle(ledgerEntry, budget!.chargedUsd, unknown ? `${unknown} call(s) of unknown cost charged at their reservation` : undefined);
   }
-  if (claim) o.finalGrant!.finish(claim, { status: outcome.status, reason: outcome.reason ?? null, endHash: env.evaluatorReport().stateHash, chargedUsd: budget ? budget.chargedUsd : null });
+  if (ticket) o.finalGrant!.finish(ticket, { status: outcome.status, reason: outcome.reason ?? null, endHash: env.evaluatorReport().stateHash, chargedUsd: budget ? budget.chargedUsd : null });
   verifyTrace(trace.lines);
   const reset = trace.lines.find((l) => l.type === "reset")!.data as { startHash: string; tick: number; prefix?: { name: string } };
   const steps = trace.lines.filter((l) => l.type === "step");

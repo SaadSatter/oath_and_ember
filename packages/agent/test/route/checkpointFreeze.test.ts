@@ -1,6 +1,11 @@
 // Review H3: the frozen S2-S4 start states never depend on the quest-aware
 // baseline's mutable knowledge. Start-state hashes are pinned; these tests
 // only reset scenarios (no player acts and no outcome is inspected).
+//
+// Held-out policy (re-review M5): building the S4 start state is route
+// development, not evaluation. It runs under explicit, labelled
+// RouteDevelopmentAccess, which allows reset only at the final seeds (any
+// step throws) and which runEpisode() refuses, so no player can act here.
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { dirname, join, normalize } from "node:path";
@@ -8,6 +13,9 @@ import { fileURLToPath } from "node:url";
 import { environmentFor, type SituationId } from "../../src/suite.js";
 import * as baselineKnowledge from "../../src/policies/questKnowledge.js";
 import * as routeConstants from "../../src/route/routeConstants.js";
+import { routeDevelopmentAccess } from "../../src/finalAccess.js";
+
+const ROUTE_DEV = routeDevelopmentAccess("checkpointFreeze.test.ts: pinned start-state hashes (reset only)");
 
 const SRC = join(dirname(fileURLToPath(import.meta.url)), "../../src");
 
@@ -25,7 +33,7 @@ const PINNED: Record<string, [number, string]> = {
 
 const start = async (key: string) => {
   const [id, seed] = key.split("/");
-  const r = await environmentFor(id as SituationId).reset(Number(seed));
+  const r = await environmentFor(id as SituationId, { routeDevelopment: ROUTE_DEV }).reset(Number(seed));
   return [r.tick, r.startHash] as [number, string];
 };
 
@@ -34,7 +42,8 @@ function closure(file: string, seen = new Set<string>()) {
   if (seen.has(file)) return seen;
   seen.add(file);
   const text = readFileSync(join(SRC, file), "utf8");
-  for (const m of text.matchAll(/from\s+"(\.[^"]+)"/g)) {
+  // Static `from` imports, side-effect imports and dynamic imports, either quote.
+  for (const m of text.matchAll(/(?:from\s+|import\s*\(?\s*)["'](\.[^"']+)["']/g)) {
     const target = normalize(join(dirname(file), m[1])).replace(/\.js$/, ".ts");
     if (!target.startsWith("..")) closure(target, seen);
   }

@@ -5,6 +5,10 @@ import { readFileSync } from "node:fs";
 import { environmentFor, SEEDS, SITUATIONS } from "../src/suite.js";
 import { AgentEnvironment } from "../src/environment.js";
 import type { TraceEvent } from "../src/environment.js";
+import { routeDevelopmentAccess } from "../src/finalAccess.js";
+
+/** Held-out start states are built here as route development, never by a player (finalAccess.ts). */
+const ROUTE_DEV = routeDevelopmentAccess("suite.test.ts: scenario start states");
 
 const quest = (items: { id: string }[]) => items.map((i) => i.id).filter((i) => /mirror|shears|wig/.test(i)).sort();
 
@@ -17,7 +21,8 @@ describe("suite scenarios", () => {
   it("start where declared, with zero counters, identically on every reset", async () => {
     const starts: Record<string, string> = {};
     for (const s of SITUATIONS) {
-      const env = environmentFor(s.id);
+      // Reset only at a final seed, under labelled route development access.
+      const env = environmentFor(s.id, { routeDevelopment: ROUTE_DEV });
       const a = await env.reset(100);
       const b = await env.reset(100);
       expect(b.startHash, s.id).toBe(a.startHash);
@@ -37,8 +42,9 @@ describe("suite scenarios", () => {
   it("measures game time from the scenario's start, and keeps the prefix out of the trace", async () => {
     const lines: TraceEvent[] = [];
     const s4 = SITUATIONS.find((s) => s.id === "S4")!;
-    const env = new AgentEnvironment({ preset: "S4", prefix: s4.prefix, limits: { maxTicks: 60 }, trace: (e) => lines.push(e) });
-    const reset = await env.reset(101);
+    // Steps are taken, so a tuning seed: route development access allows only reset at a final seed.
+    const env = new AgentEnvironment({ preset: "S4", prefix: s4.prefix, limits: { maxTicks: 60 }, trace: (e) => lines.push(e), routeDevelopment: ROUTE_DEV });
+    const reset = await env.reset(1);
     expect(reset.tick).toBeGreaterThan(9000);
     const [a, b] = await Promise.all([env.step("sieg", { type: "wait", ticks: 60 }), env.step("coco", { type: "wait", ticks: 60 })]);
     expect(a.done && b.done).toBe(true);

@@ -9,6 +9,7 @@ import { Director } from "../../packages/agent/src/route/director.js";
 import { fullQuest } from "../../packages/agent/src/route/fullQuest.js";
 import { TraceWriter, verifyTrace } from "../../packages/agent/src/trace.js";
 import { systemPrompt } from "../../packages/agent/src/policies/llm.js";
+import { routeDevelopmentAccess } from "../../packages/agent/src/finalAccess.js";
 
 const arg = (n: string, f?: string) => {
   const i = process.argv.indexOf(n);
@@ -18,7 +19,9 @@ const seed = Number(arg("--seed", "1"));
 const out = resolve(arg("--out", `evaluation-runs/route-${seed}`)!);
 mkdirSync(out, { recursive: true });
 const trace = new TraceWriter();
-const d = new Director({ trace: (e) => trace.write(e) });
+// Route development, not a player (finalAccess.ts): F is held out, so the
+// route needs explicit, labelled access. At a final seed it may only reset.
+const d = new Director({ trace: (e) => trace.write(e), routeDevelopment: routeDevelopmentAccess("scripts/midterm/run-route.ts: scripted route evidence") });
 d.measurePrompts = true;
 const started = Date.now();
 let error: string | undefined;

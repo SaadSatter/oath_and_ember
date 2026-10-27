@@ -4,17 +4,31 @@
 //   - The owner records an approval with scripts/midterm/final-approve.ts. It
 //     names one full commit hash, one player kind, the stage, and the exact
 //     scenarios and seeds.
-//   - authorizeFinalRun() issues a grant only when HEAD equals that commit and
-//     the worktree is clean (checked from this code's own worktree, repo.ts).
+//   - authorizeFinalRun() is the only way to obtain a grant (re-review H2-a:
+//     the constructor needs a module-private token). It issues one only when
+//     HEAD equals that commit and the worktree is clean (checked from this
+//     code's own worktree, repo.ts).
 //   - Each final episode is claimed in an append-only, hash-chained register
-//     before anything runs (once per approval), and finished afterwards.
-//   - runEpisode() refuses held-out or final-seed episodes without a claimed
-//     grant, so alternate entrypoints cannot play them either.
+//     before anything runs (once per approval). The claim returns a
+//     single-use EpisodeTicket for that scenario, seed and player kind.
+//   - runEpisode() binds the ticket to the policies it was given, refusing any
+//     other player kind; AgentEnvironment.reset() admits a held-out or
+//     final-seed episode only with a bound, unused ticket, and uses it up
+//     (re-review H2-b). Alternate runners and hand-written loops reach the
+//     same reset, so they cannot play held-out episodes either.
+//   - Route development (the scripted route, checkpoint tests) uses a
+//     separate, explicitly named RouteDevelopmentAccess. runEpisode() refuses
+//     it, so it can never run a player or produce an evaluation result; at a
+//     final seed it allows reset only (the start state), never a step.
 //
 // The register lives in the git common directory next to the spend ledger.
-// Limits: a process with shell access could still write the register through
-// this module; the hash chain makes edits evident, not impossible. Truncating
-// the newest lines is not detected by the chain alone.
+// Limits: code running in the same process can still call these functions
+// deliberately (for example bind a real ticket and then drive other policies
+// by hand); every such path needs a recorded owner approval and leaves a claim
+// in the register. A process with shell access could still write the register
+// through this module; the hash chain makes edits evident, not impossible.
+// Truncating the newest lines is not detected by the chain alone; summaries
+// record their claim hash so a missing claim can be noticed.
 
 import { createHash } from "node:crypto";
 import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, unlinkSync, writeSync } from "node:fs";
@@ -22,7 +36,9 @@ import { dirname, join } from "node:path";
 import { evalStateDir, repoInfo, type RepoInfo } from "./repo.js";
 import { SEEDS, SITUATIONS, type SituationId } from "./suite.js";
 
-export type FinalPlayerKind = "baseline-quest" | "baseline-explore" | "model-history" | "model-obs-only";
+import { PLAYER_KINDS, type PlayerKind } from "./playerKinds.js";
+
+export type FinalPlayerKind = PlayerKind;
 export type FinalStage = "final" | "contingency";
 
 export interface FinalApproval {
@@ -106,11 +122,11 @@ function append(path: string, data: Event): RegisterLine {
   }
 }
 
-const HELD_OUT = new Set(SITUATIONS.filter((s) => s.heldOut).map((s) => s.id));
+const heldOutIds = () => new Set(SITUATIONS.filter((s) => s.heldOut).map((s) => s.id));
 
 function checkApproval(a: FinalApproval) {
   if (!/^[0-9a-f]{40}$/.test(a.revision)) throw new FinalAccessError("An approval names one full 40-character commit hash.");
-  if (!["baseline-quest", "baseline-explore", "model-history", "model-obs-only"].includes(a.player)) throw new FinalAccessError(`Unknown player ${a.player}.`);
+  if (!PLAYER_KINDS.includes(a.player)) throw new FinalAccessError(`Unknown player ${a.player}.`);
   if (!["final", "contingency"].includes(a.stage)) throw new FinalAccessError("An approval's stage is final or contingency.");
   if (!a.situations.length || a.situations.some((s) => !SITUATIONS.some((x) => x.id === s))) throw new FinalAccessError("An approval names known scenarios.");
   if (!a.seeds.length || a.seeds.some((s) => !SEEDS.final.includes(s))) throw new FinalAccessError(`Final runs use seeds ${SEEDS.final.join(", ")} only.`);
@@ -123,22 +139,69 @@ export function recordApproval(info: RepoInfo, approval: FinalApproval) {
   return append(registerPath(info), { event: "approve", ...approval });
 }
 
+// Module-private: only this file can construct grants, tickets and route
+// development access. The WeakSets reject look-alike objects.
+const ISSUE = Symbol("finalAccess.issue");
 const grants = new WeakSet<FinalGrant>();
+/** Ticket state lives here, out of reach of callers: a used ticket can never be revived. */
+const ticketState = new WeakMap<EpisodeTicket, TicketState>();
+const routeAccess = new WeakSet<RouteDevelopmentAccess>();
+
+type TicketState = "claimed" | "bound" | "used" | "finished";
+
+function transition(t: EpisodeTicket, from: TicketState[], to: TicketState, what: string) {
+  const state = ticketState.get(t);
+  if (!state || !from.includes(state)) throw new FinalAccessError(`The ticket for ${t.situation} seed ${t.seed} is ${state ?? "unknown"}; it cannot be ${what}.`);
+  ticketState.set(t, to);
+}
+
+const freezeApproval = (a: FinalApproval): Readonly<FinalApproval> =>
+  Object.freeze({ ...a, situations: Object.freeze([...a.situations]) as SituationId[], seeds: Object.freeze([...a.seeds]) as number[] });
+
+
+/**
+ * One claimed final episode: a scenario, a seed and the approved player kind.
+ * Single use: bound by runEpisode() to policies of that kind, used up by
+ * AgentEnvironment.reset(), closed by FinalGrant.finish().
+ */
+export class EpisodeTicket {
+  readonly claim: string;
+  readonly player: FinalPlayerKind;
+  readonly situation: SituationId;
+  readonly seed: number;
+  readonly grant: FinalGrant;
+  constructor(token: symbol, grant: FinalGrant, claim: string, situation: SituationId, seed: number) {
+    if (token !== ISSUE) throw new FinalAccessError("Episode tickets are issued only by FinalGrant.claim().");
+    this.grant = grant;
+    this.claim = claim;
+    this.player = grant.approval.player;
+    this.situation = situation;
+    this.seed = seed;
+    ticketState.set(this, "claimed");
+    Object.freeze(this);
+  }
+  get state(): TicketState {
+    return ticketState.get(this)!;
+  }
+}
+
+export function isTicket(t: unknown): t is EpisodeTicket {
+  return typeof t === "object" && t !== null && ticketState.has(t as EpisodeTicket);
+}
 
 /** Proof that a final run was authorized for this revision. Only authorizeFinalRun() makes one. */
 export class FinalGrant {
-  private readonly claimed = new Map<string, string>();
-  private constructor(
-    readonly info: RepoInfo,
-    readonly approvalHash: string,
-    readonly approval: FinalApproval,
-  ) {}
-
-  /** @internal */
-  static issue(info: RepoInfo, hash: string, approval: FinalApproval) {
-    const g = new FinalGrant(info, hash, approval);
-    grants.add(g);
-    return g;
+  readonly #claimed = new Set<string>();
+  readonly info: RepoInfo;
+  readonly approvalHash: string;
+  readonly approval: Readonly<FinalApproval>;
+  constructor(token: symbol, info: RepoInfo, approvalHash: string, approval: FinalApproval) {
+    if (token !== ISSUE) throw new FinalAccessError("Final grants are issued only by authorizeFinalRun() from a recorded owner approval.");
+    this.info = Object.freeze({ ...info });
+    this.approvalHash = approvalHash;
+    this.approval = freezeApproval(approval);
+    grants.add(this);
+    Object.freeze(this);
   }
 
   covers(player: string, situation: SituationId, seed: number, stage?: string) {
@@ -149,25 +212,27 @@ export class FinalGrant {
   /**
    * Claim one episode in the register before it starts. Re-checks HEAD and a
    * clean tree. Each (scenario, seed) may be claimed once per approval; a
-   * contingency re-run needs a new approval.
+   * contingency re-run needs a new approval. Returns the single-use ticket.
    */
-  claim(player: string, situation: SituationId, seed: number, attempt: number): string {
+  claim(player: string, situation: SituationId, seed: number, attempt: number): EpisodeTicket {
+    if (!isGrant(this)) throw new FinalAccessError("Not an issued grant.");
     if (!this.covers(player, situation, seed)) throw new FinalAccessError(`The approval does not cover ${player} ${situation} seed ${seed}.`);
+    const key = `${situation}/${seed}`;
+    if (this.#claimed.has(key)) throw new FinalAccessError(`${situation} seed ${seed} was already claimed under this approval.`);
     assertRevision(this.info, this.approval.revision);
     const path = registerPath(this.info);
     const prior = readRegister(path).find((l) => l.data.event === "claim" && l.data.approval === this.approvalHash && l.data.situation === situation && l.data.seed === seed);
     if (prior) throw new FinalAccessError(`${situation} seed ${seed} was already claimed under this approval (register line ${prior.seq + 1}).`);
     const line = append(path, { event: "claim", approval: this.approvalHash, revision: this.approval.revision, player: this.approval.player, situation, seed, attempt });
-    this.claimed.set(`${situation}/${seed}`, line.hash);
-    return line.hash;
+    this.#claimed.add(key);
+    return new EpisodeTicket(ISSUE, this, line.hash, situation, seed);
   }
 
-  finish(claim: string, result: { status: string; reason: string | null; endHash: string | null; chargedUsd: number | null }) {
-    return append(registerPath(this.info), { event: "finish", claim, ...result });
-  }
-
-  hasClaim(situation: SituationId, seed: number) {
-    return this.claimed.has(`${situation}/${seed}`);
+  /** Close a claimed episode in the register; the ticket can never be used again. */
+  finish(ticket: EpisodeTicket, result: { status: string; reason: string | null; endHash: string | null; chargedUsd: number | null }) {
+    if (!isTicket(ticket) || ticket.grant !== this) throw new FinalAccessError("Not a ticket of this grant.");
+    transition(ticket, ["claimed", "bound", "used"], "finished", "finished");
+    return append(registerPath(this.info), { event: "finish", claim: ticket.claim, ...result });
   }
 }
 
@@ -195,29 +260,87 @@ export function authorizeFinalRun(plan: { player: string; stage: string; situati
       plan.situations.every((s) => d.situations.includes(s)) && plan.seeds.every((s) => d.seeds.includes(s));
   });
   if (!match) throw new FinalAccessError(`No owner approval in ${registerPath(now)} covers ${plan.player} ${plan.situations.join(",")} seeds ${plan.seeds.join(",")} (${plan.stage}) at ${now.head.slice(0, 12)}.`);
-  return FinalGrant.issue(now, match.hash, match.data as FinalApproval & { event: "approve" });
+  const { event: _e, ...approval } = match.data as FinalApproval & { event: "approve" };
+  return new FinalGrant(ISSUE, now, match.hash, approval);
 }
 
-/** Does playing this environment need a final grant? */
+/**
+ * The runner's binding (H2-a): the ticket must be unused and name exactly the
+ * player kind of the policies about to play. Called by runEpisode() only.
+ */
+export function bindTicket(ticket: unknown, kind: FinalPlayerKind | null) {
+  if (!isTicket(ticket)) throw new FinalAccessError("Not an issued episode ticket.");
+  if (kind !== ticket.player) throw new FinalAccessError(`The ticket is for ${ticket.player}, but these policies are ${kind ?? "not an approved player kind"}.`);
+  transition(ticket, ["claimed"], "bound", "bound to a run");
+}
+
+/**
+ * Explicit, labelled access for route development: the scripted route and
+ * checkpoint tests may build held-out start states and (at tuning seeds) play
+ * the scripted route. Never accepted by runEpisode(), so it cannot run a
+ * player or authorize a final evaluation. Every reset it admits is labelled
+ * in the trace.
+ */
+export class RouteDevelopmentAccess {
+  readonly purpose: string;
+  constructor(token: symbol, purpose: string) {
+    if (token !== ISSUE) throw new FinalAccessError("Use routeDevelopmentAccess(purpose).");
+    this.purpose = purpose;
+    routeAccess.add(this);
+    Object.freeze(this);
+  }
+}
+
+export function routeDevelopmentAccess(purpose: string) {
+  if (typeof purpose !== "string" || purpose.trim().length < 8) throw new FinalAccessError("Route development access names its purpose.");
+  return new RouteDevelopmentAccess(ISSUE, purpose.trim());
+}
+
+export function isRouteDevelopmentAccess(a: unknown): a is RouteDevelopmentAccess {
+  return typeof a === "object" && a !== null && routeAccess.has(a as RouteDevelopmentAccess);
+}
+
+/** Does playing this scenario and seed need a final ticket? */
 export function needsFinalGrant(scenario: { situation: SituationId | null; prefix: string | null }, seed: number) {
   if (SEEDS.final.includes(seed)) return true;
-  if (scenario.situation && HELD_OUT.has(scenario.situation)) return true;
+  if (scenario.situation && heldOutIds().has(scenario.situation)) return true;
   const heldOutPrefixes = SITUATIONS.filter((s) => s.heldOut && s.prefix).map((s) => s.prefix!.name);
   return scenario.prefix !== null && heldOutPrefixes.includes(scenario.prefix);
 }
 
 const PRESET_TO_SITUATION: Record<string, SituationId> = { S1: "S1", S2: "S2", S3: "S3", S4: "S4", full: "F" };
 
+export type Admission =
+  | { kind: "open" }
+  | { kind: "final"; claim: string; player: FinalPlayerKind }
+  | { kind: "route-development"; purpose: string; resetOnly: boolean };
+
 /**
- * The runner's gate: a held-out or final-seed episode needs a grant that has
- * claimed exactly this suite scenario and seed. Throws before anything runs.
+ * The environment's gate (H2-b), run at the top of every reset before
+ * anything is created. A held-out or final-seed episode needs a bound,
+ * unused ticket for exactly this suite scenario and seed (used up here), or
+ * route development access (reset only at a final seed).
  */
-export function assertEpisodeAccess(scenario: { preset: string; prefix: string | null }, seed: number, grant: unknown) {
+export function admitReset(
+  scenario: { preset: string; prefix: string | null },
+  seed: number,
+  access: { ticket?: unknown; routeDevelopment?: unknown },
+): Admission {
   const situation = PRESET_TO_SITUATION[scenario.preset] ?? null;
-  if (!needsFinalGrant({ situation, prefix: scenario.prefix }, seed)) return;
   const what = `${situation ?? scenario.preset}${scenario.prefix ? ` (prefix: ${scenario.prefix})` : ""} seed ${seed}`;
-  if (!isGrant(grant)) throw new FinalAccessError(`${what} is held out or uses a final seed: it runs only in an owner-approved final run (scripts/midterm/evaluate.ts --final).`);
+  if (access.routeDevelopment !== undefined && !isRouteDevelopmentAccess(access.routeDevelopment)) throw new FinalAccessError("Invalid route development access.");
+  if (access.ticket !== undefined && access.routeDevelopment !== undefined) throw new FinalAccessError("A final ticket and route development access cannot be combined.");
+  if (!needsFinalGrant({ situation, prefix: scenario.prefix }, seed)) {
+    if (access.ticket !== undefined) throw new FinalAccessError(`${what} is not held out; final tickets are only for held-out or final-seed episodes.`);
+    return access.routeDevelopment ? { kind: "route-development", purpose: (access.routeDevelopment as RouteDevelopmentAccess).purpose, resetOnly: false } : { kind: "open" };
+  }
+  if (isRouteDevelopmentAccess(access.routeDevelopment))
+    return { kind: "route-development", purpose: access.routeDevelopment.purpose, resetOnly: SEEDS.final.includes(seed) };
+  const ticket = access.ticket;
+  if (!isTicket(ticket)) throw new FinalAccessError(`${what} is held out or uses a final seed: it runs only in an owner-approved final run (scripts/midterm/evaluate.ts --final).`);
   const expected = situation ? SITUATIONS.find((s) => s.id === situation)?.prefix?.name ?? null : undefined;
   if (!situation || scenario.prefix !== expected) throw new FinalAccessError(`${what} is not a suite scenario; refusing.`);
-  if (!grant.hasClaim(situation, seed)) throw new FinalAccessError(`${what} was not claimed in the final register; refusing.`);
+  if (ticket.situation !== situation || ticket.seed !== seed) throw new FinalAccessError(`The ticket is for ${ticket.situation} seed ${ticket.seed}, not ${what}.`);
+  transition(ticket, ["bound"], "used", "used for a reset (bind it in runEpisode first; a ticket admits one reset)");
+  return { kind: "final", claim: ticket.claim, player: ticket.player };
 }

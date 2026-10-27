@@ -5,10 +5,12 @@ import { readFileSync } from "node:fs";
 import { Director } from "../../src/route/director.js";
 import { fullQuest } from "../../src/route/fullQuest.js";
 import { TraceWriter, verifyTrace } from "../../src/trace.js";
+import { routeDevelopmentAccess } from "../../src/finalAccess.js";
 
 async function run(seed: number) {
   const trace = new TraceWriter();
-  const d = new Director({ trace: (e) => trace.write(e) });
+  // Route development (held-out F): explicit, labelled access; never a player.
+  const d = new Director({ trace: (e) => trace.write(e), routeDevelopment: routeDevelopmentAccess("fullQuest.test.ts: scripted route feasibility") });
   const outcome = await fullQuest(d, seed);
   return { d, outcome, trace, end: d.env.evaluatorReport().stateHash };
 }
