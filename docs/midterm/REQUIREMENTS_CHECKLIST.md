@@ -17,7 +17,7 @@ Evidence pointers are in `docs/midterm/EVIDENCE_INDEX.md`. Updated 2026-10-27, a
 | 1a | `docs/midterm/RULE_SOURCE_MAP.md`: every episode rule labelled code/manual/observed/assumed/design with locators; links to D1–D11 | `game-rules-audit` on shrine, pond, maze and griffin | partial: D1–D11 exist; no rule map for the episode |
 | 1b | README scope statement: episode bounds, exclusions (village, prologue, airship, campaign), adaptations | Reviewer; playtest | partial: bounds decided (S17, S22); README todo; course PR on hold for the professor |
 | 1c | README "Sources and terms" quoting each license or term | Reviewer; `scan_secrets.py`; asset provenance files | partial: provenance files exist; terms not consolidated |
-| 2a | Scripted route `goddess` → `chapter0.complete` through interface actions only; a human playthrough | Route test in CI; trace committed | **at risk**: never shown end to end without fixtures |
+| 2a | Scripted route `goddess` → `chapter0.complete` through interface actions only; a human playthrough | Route test in CI; trace committed | partial: **route done (2026-10-27)**. `packages/agent/test/route/fullQuest.test.ts` reaches success at tick 12,412 with 0 invalid actions, is deterministic, and verifiably uses only the interface. Evidence in `docs/midterm/evidence/route/seed1/`, log in `docs/midterm/ROUTE_LOG.md`. Human playthrough by the owner todo; not yet in CI |
 | 2b | LLM players (Sieg and Coco) with no tools; fallbacks labelled | Fake-model tests; live traces | partial: adapter done and tested offline; no live run |
 | 2c | Per-role observations and leak-free legal actions, matching what a human player sees | Leak tests; `game-rules-audit adapter` | partial: signs and labels as drawn, HUD goal lines hidden (documented restriction), partner/enemy health as an eighths bar, departed griffin no longer listed; tests in `packages/agent/test/{environment,perception}.test.ts`. Independent review todo |
 | 3a | README commands from `midterms/saadsatter/` on a fresh clone | Fresh-clone rehearsal recorded in `EVALUATION.md` | todo |
@@ -55,6 +55,6 @@ Evidence pointers are in `docs/midterm/EVIDENCE_INDEX.md`. Updated 2026-10-27, a
 | --- | --- | --- |
 | Rule invariants | Existing server rule tests (selected subset), equivalence tests for the server changes | todo |
 | Legal and illegal actions | `packages/agent/test/environment.test.ts` validation tests | exists, not in CI |
-| Terminal outcome | The scripted route reaching `chapter0.complete`; the milestone baseline | todo |
-| Observed regression | A real defect found during this work, with its test. Candidates: failed calls not counted (`budget.test.ts`), the departed griffin still listed (`perception.test.ts`) | candidates exist |
+| Terminal outcome | The scripted route reaching `chapter0.complete` (`fullQuest.test.ts`); the milestone baseline | exists, not in CI |
+| Observed regression | A real defect found during this work, with its test. Candidates: failed calls not counted (`budget.test.ts`); the departed griffin still listed (`perception.test.ts`); a hero asked to choose was told "Your partner's line." (found by the route, `fullQuest.test.ts`) | candidates exist |
 | Episode limits | Runner limit tests (tick, decision, model-call, token, spend, timeout, wall clock) | exists, not in CI |

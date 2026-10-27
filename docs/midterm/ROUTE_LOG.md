@@ -15,10 +15,16 @@ The shared helpers `packages/agent/src/policies/navigate.ts` (search over the he
 | 2026-10-27 | Opening scene and party travel | Works: scene read by tick 221, travel at the shrine's exits | 1 |
 | 2026-10-27 | Hedge Maze → Enchanted Shears | Works: all 5 guards killed in combat, bush burned, cow pulled, wolf tagged, gate opened, chest claimed, exit by tick 4,725 | 1 |
 | 2026-10-27 | Mirror Pond → Vanity Mirror | Works: spikes crossed on the first attempt, 4 mirrors turned to their exact target angles, 4 shots fired, sanctuary chest claimed, back at the shrine by tick 9,916 (165 s of game time) | 1 |
-| | Griffin Enclosure → wig | In progress | |
-| | Offering, revelation, choices, ending → `chapter0.complete` | Not started | |
+| 2026-10-27 | Griffin Enclosure → wig | Works (peaceful solution): Coco flies to the nest, takes one beam hit (20 damage), drops both tools with one E, and the griffin grooms, trims and flies away; the second E picks up the wig. Sieg takes the party home | 1 |
+| 2026-10-27 | Offering, revelation, choices, ending → `chapter0.complete` | **Works: `status: success` at tick 12,412 (206.9 s of the 480 s game-time limit)** | 1 |
+| 2026-10-27 | Robustness across seeds | Seeds 1–8 all succeed, with identical ticks (12,351 before the M2 restore fix). The id-based tie-breaks never come into play on this route, so **seeds do not change a scripted run** | 1–8 |
 
-Opening plus both item areas: 0 invalid actions, about 920 decisions per hero, about 4 s of wall-clock time.
+**Verified route (seed 1, `scripts/midterm/run-route.ts`; evidence in `docs/midterm/evidence/route/seed1/`):**
+
+- **Outcome:** success at tick 12,412 with 0 invalid actions. Every hash-chained trace line verifies (5,874 lines, 414 KB gzipped).
+- **Determinism:** the same seed reproduces the same raw end state (`32e86111…`), as tested in `fullQuest.test.ts`.
+- **Decisions:** Sieg 1,727, Coco 1,203. Most are waits (1,257 and 1,009) that keep one hero in step while the other acts. Excluding waits: Sieg 293 moves, 136 dialogue presses, 20 abilities, 14 attacks and 6 E presses; Coco 134 moves, 27 attacks, 24 E presses, 7 abilities, 1 item use and 1 choice.
+- **Stage ticks:** opening done at 221; Hedge Maze 426 → 4,725; Mirror Pond 5,137 → 9,979; Griffin 10,232 → 11,399; ending 11,744 → 12,412.
 
 ## Failures and fixes, in order
 
@@ -38,7 +44,38 @@ Opening plus both item areas: 0 invalid actions, about 920 decisions per hero, a
 14. **First torch did not light.** Slow Time from the spike crossing was still active, and it slows fireballs to 20%. Fix: wait until time is no longer slowed before firing.
 15. **"Brazier 4 not lit" was a false negative.** A debug trace showed the reflected shot reaching the torch, but brazier 4 at (17, 35) is off both heroes' screens. Fix: the route checks success by the sanctuary chest becoming reachable.
 
-## Known imperfections, still to fix
+16. **Griffin banter scene not read.** It starts after a lead-in, after the arrival check. Coco's moves were refused during the scene ("in a story scene"). Fix: after travel, wait up to 90 ticks for a scene and read it.
+17. **Coco walked into the enclosure without flying.** Flight was still recharging from the pond (about 25 s), so the activation was refused. She stopped at the water's edge, and a beam hit her for 26. Fix: wait until Flight is ready before using it.
+18. **`go()` with a one-step limit throws** when it does not arrive. Fix: the nest approach uses `planStep` directly.
+19. **Arrival behind the goddess statue.** Returning from the north puts both heroes at (20–21, 11); the straight line to the offering is blocked. Fix: Coco walks round the east side and Sieg round the west (`legs.ts`).
+20. **Interface bug (fixed in `perception.ts`).** On the motivation-choice line a hero who had to choose was also told "Your partner's line.": the line has no reader, so the "partner's line" note was added. That misleads any agent. Fix: no waiting note while a hero has choices to make. A regression check is in `fullQuest.test.ts`.
+21. **M2 not fully restored** (stopped 28.5° short). Its planned second restore spot is about 11 px from the mirror's axis, and the 0.1-tile position rounding put Sieg inside the 6 px dead zone. Making the planner require a 5 px margin left no valid second spots, so that change was reverted. Fix in the route instead: if a correction push changes nothing, Sieg steps 0.4 tile away from the axis along the mirror's normal, worked out from the drawn angle, and pushes again. All four mirrors now return exactly to rest.
 
-- Mirror M2's restore stops 28.5° short of rest: its second restore spot does not turn it. Sieg can still pass. The route should finish restoring it, as a careful player would.
-- Mirror M4's shot waits about 19 s for Coco's flight to recharge.
+## Measurements for the cost estimate (owner request, 2026-10-27)
+
+These describe the scripted route. They are not a measurement of a model player, which would choose its own actions and wait lengths.
+
+| Quantity | Value | Source |
+| --- | --- | --- |
+| Game time to finish | 12,412 ticks (206.9 s) | route, seed 1 |
+| Non-wait actions | Sieg 470, Coco 194 | route |
+| Prompt per call: observation and legal actions | mean 4,219 characters (p50 4,319, p95 4,830, max 5,413), about 1,100–1,300 tokens | 1,562 route observations |
+| System prompt (instructions and player manual) | 12,637 characters, about 3,200–3,600 tokens, identical every call and cached (`cache_control`) | `systemPrompt()` |
+| Other per-call input (notes, last 8 actions, last result) | about 500–800 characters | `LLMPlayer` |
+
+**Model decisions per hero for the full episode (F).**
+- The route needs about 470 non-wait actions for Sieg, with knowledge a model does not have.
+- A model also has to explore, retry and wait. A plausible range is 500–1,500 calls per hero.
+- **The provisional 400-call limit is likely to end F before success even for good play.** S1–S4 are much shorter.
+- This is an estimate, not a measurement.
+
+**Token estimate per model call:** about 1,400 uncached input tokens, about 3,400 cached input tokens (read at 0.1× after the first call), and an output of about 100–300 tokens.
+
+**Cost per episode = calls × (1,400 × P_in + 3,400 × 0.1 × P_in + 200 × P_out) / 10⁶.** P_in and P_out are USD per million tokens and must be verified and dated on the day of a paid run. The prices in `llm.ts` are unverified (recorded 2026-10-06). As an illustration only, for 2 heroes × 1,000 calls:
+- at $1 / $5 per M (input / output): about $5.4 per F episode;
+- at $3 / $15: about $16.
+
+**Ways to cut calls without leaking information (investigated, not implemented):**
+- **Action batching.** Let a player return a short plan, for example up to 4 actions, executed in order and cut short on any interruption (new dialogue, damage, area change), exactly as single actions are now. It changes the action schema, so it needs owner approval. It could cut calls 2–4× for movement-heavy stretches.
+- **Prompt caching.** Already on for the system prompt and manual. Caching the stable part of each observation is not possible, because observations change every call.
+- **Longer waits.** A model can already choose `wait` up to 60 ticks; the route's 1-tick fillers are director mechanics, not something a model has to do.

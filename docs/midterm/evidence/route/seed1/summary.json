@@ -1,0 +1,201 @@
+{
+  "route": "packages/agent/test/route/fullQuest.ts",
+  "seed": 1,
+  "outcome": {
+    "status": "success",
+    "reason": "success",
+    "episode": "full-1-1d3e6793",
+    "ticks": 12412,
+    "seconds": 206.9,
+    "decisions": {
+      "sieg": 1727,
+      "coco": 1203
+    },
+    "invalidActions": {
+      "sieg": 0,
+      "coco": 0
+    },
+    "modelCalls": {
+      "sieg": 0,
+      "coco": 0
+    },
+    "failedModelCalls": {
+      "sieg": 0,
+      "coco": 0
+    },
+    "unknownUsageCalls": {
+      "sieg": 0,
+      "coco": 0
+    },
+    "tokens": {
+      "sieg": {
+        "input": 0,
+        "output": 0
+      },
+      "coco": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    "spendUsd": {
+      "known": 0,
+      "charged": 0
+    },
+    "limits": {
+      "maxTicks": 28800,
+      "maxDecisionsPerPlayer": 100000,
+      "maxModelCallsPerPlayer": 400,
+      "maxTokensPerPlayer": 4000000
+    }
+  },
+  "stages": [
+    {
+      "tick": 0,
+      "note": "reset seed 1, start hash 1d3e679308ca3e5d"
+    },
+    {
+      "tick": 221,
+      "note": "opening scene read"
+    },
+    {
+      "tick": 426,
+      "note": "entered Hedge Maze"
+    },
+    {
+      "tick": 2200,
+      "note": "cow pulled into the bay"
+    },
+    {
+      "tick": 3497,
+      "note": "Sieg took the key from the wolf"
+    },
+    {
+      "tick": 4038,
+      "note": "Coco took the Enchanted Shears"
+    },
+    {
+      "tick": 4725,
+      "note": "back at the shrine"
+    },
+    {
+      "tick": 5137,
+      "note": "entered Mirror Pond"
+    },
+    {
+      "tick": 5688,
+      "note": "spike crossing attempt 1: crossed"
+    },
+    {
+      "tick": 5936,
+      "note": "M1 solve: 157.5° (off 0°)"
+    },
+    {
+      "tick": 6350,
+      "note": "fired from pad A1"
+    },
+    {
+      "tick": 6467,
+      "note": "M1 rest: 90° (off 0°)"
+    },
+    {
+      "tick": 6649,
+      "note": "M2 solve: 67.5° (off 0°)"
+    },
+    {
+      "tick": 6831,
+      "note": "fired from pad A2"
+    },
+    {
+      "tick": 7060,
+      "note": "M2 rest: 0° (off 0°)"
+    },
+    {
+      "tick": 7396,
+      "note": "M3 solve: 22.5° (off 0°)"
+    },
+    {
+      "tick": 7684,
+      "note": "fired from pad A3"
+    },
+    {
+      "tick": 7844,
+      "note": "M3 rest: 90° (off 0°)"
+    },
+    {
+      "tick": 8163,
+      "note": "M4 solve: 292.5° (off 0°)"
+    },
+    {
+      "tick": 9280,
+      "note": "fired from pad A4"
+    },
+    {
+      "tick": 9367,
+      "note": "M4 rest: 0° (off 0°)"
+    },
+    {
+      "tick": 9669,
+      "note": "Coco took the Vanity Mirror"
+    },
+    {
+      "tick": 9979,
+      "note": "back at the shrine"
+    },
+    {
+      "tick": 10232,
+      "note": "entered Griffin Enclosure"
+    },
+    {
+      "tick": 10695,
+      "note": "at the nest: Both tools are at the nest. The Griffin will admire its hair, then give itself a trim."
+    },
+    {
+      "tick": 11284,
+      "note": "Coco picked up the Griffin Wig"
+    },
+    {
+      "tick": 11399,
+      "note": "back at the shrine"
+    },
+    {
+      "tick": 11744,
+      "note": "offered the wig: “At last! Divine volume. The Bald Goddess thanks you—and requests a new title.”"
+    },
+    {
+      "tick": 12412,
+      "note": "outcome: \"success\""
+    }
+  ],
+  "endStateHash": "32e8611191b9c283cec1a099f9031cb886e11a4e7ea06f412c4fceae164afcd1",
+  "actionsByType": {
+    "sieg": {
+      "wait": 1257,
+      "advance_dialogue": 136,
+      "move": 293,
+      "interact": 6,
+      "attack": 14,
+      "ability": 20,
+      "choose_dialogue": 1
+    },
+    "coco": {
+      "wait": 1009,
+      "move": 134,
+      "attack": 27,
+      "ability": 7,
+      "interact": 24,
+      "use_item": 1,
+      "choose_dialogue": 1
+    }
+  },
+  "promptSize": {
+    "note": "JSON characters of {observation, legal_actions} at each route observation; tokens are roughly characters / 3.5 to 4",
+    "samples": 1562,
+    "mean": 4219,
+    "p50": 4319,
+    "p95": 4830,
+    "max": 5413,
+    "systemPromptChars": 12637
+  },
+  "wallSeconds": 4.2,
+  "traceLines": 5874
+}

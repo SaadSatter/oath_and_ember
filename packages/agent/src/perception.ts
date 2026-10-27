@@ -520,7 +520,8 @@ export function perceive(
             ? { waiting: "Waiting for your partner to choose…" }
             : story.held
               ? { waiting: "The scene is still playing…" }
-              : !story.reader
+              : // A choosing line is this hero's own decision, not the partner's line.
+                !story.reader && !story.choices
                 ? { waiting: "Your partner's line." }
                 : {}),
         ...(story.choices

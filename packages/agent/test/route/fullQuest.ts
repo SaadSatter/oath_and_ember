@@ -13,7 +13,7 @@
 // Progress and failures: docs/midterm/ROUTE_LOG.md.
 
 import { Director } from "./director.js";
-import { directionTo, type Point } from "../../src/policies/navigate.js";
+import { directionTo, planStep, type Point } from "../../src/policies/navigate.js";
 import type { Direction, Observation, PlayerId } from "../../src/types.js";
 
 const SPEED = 190 / 32 / 60; // walking speed, tiles per tick
@@ -69,7 +69,8 @@ export async function travelFromShrine(d: Director, exit: "west" | "east" | "nor
   const p = SHRINE[exit];
   await d.go({ sieg: { to: { x: p.x + (exit === "west" ? 0.5 : exit === "east" ? -0.4 : 0), y: p.y + (exit === "north" ? 0.5 : 0) }, opts: { tolerance: 0.6 } } });
   await press(d, "sieg");
-  await d.dialogue();
+  // Arrival scenes (banter) start after a short lead-in.
+  if (await d.untilDialogue(90)) await d.dialogue();
   const o = await d.obs("sieg");
   if (o.area.name !== area) throw Error(`expected ${area}, at ${o.area.name}`);
   d.note(`entered ${area}`);
@@ -127,7 +128,6 @@ export async function hedgeMaze(d: Director) {
       const wolf = s.visible.find((v) => v.name.startsWith("FOREST WOLF"));
       if (wolf) last = { x: wolf.x, y: wolf.y };
       else if (Math.hypot(last.x - s.self.x, last.y - s.self.y) < 0.6) last = corridor[(sweep += 2) % 3];
-      const { planStep } = await import("../../src/policies/navigate.js");
       const st = planStep(s, last, { tolerance: 0.4, maxTicks: 4 });
       if (st.kind === "move") await d.both({ type: "move", direction: st.direction, ticks: st.ticks }, { type: "wait", ticks: st.ticks });
       else await d.wait(2);
@@ -199,11 +199,23 @@ async function turnMirror(d: Director, i: number, phase: "solve" | "rest", targe
     const change = ((((await mirrorDeg(d, i)) - before) % 360) + 540) % 360 - 180;
     if (Math.abs(change) > 0.5) dir = Math.sign(change);
   }
-  // Closed-loop correction from the drawn angle.
-  for (let k = 0; k < 3 && dir && (await mirrorOff(d, i, target)) > 0.05; k++) {
+  // Closed-loop correction from the drawn angle. A push turns a mirror only
+  // when Sieg is off its axis (pondPushTurn's dead zone); if a push changes
+  // nothing, he steps 0.4 tile further from the axis along the mirror's normal,
+  // which the drawn angle gives, and pushes again.
+  for (let k = 0; k < 6 && dir && (await mirrorOff(d, i, target)) > 0.05; k++) {
     const a = mod180(await mirrorDeg(d, i)),
       t = mod180(target);
+    const before = await mirrorDeg(d, i);
     await pushHere(d, i, Math.max(1, Math.round((dir > 0 ? mod180(t - a) : mod180(a - t)) / 1.5)));
+    if ((await mirrorDeg(d, i)) !== before) continue;
+    const rad = ((await mirrorDeg(d, i)) * Math.PI) / 180,
+      me = await d.self("sieg");
+    const nx = -Math.sin(rad),
+      ny = Math.cos(rad);
+    const side = (me.x - MIRROR[i].x) * nx + (me.y - MIRROR[i].y) * ny;
+    const sgn = side >= 0 ? 1 : -1;
+    await walkExact(d, "sieg", [[me.x + sgn * 0.4 * nx, me.y + sgn * 0.4 * ny]], 0.1);
   }
   d.note(`M${i + 1} ${phase}: ${await mirrorDeg(d, i)}° (off ${await mirrorOff(d, i, target)}°)`);
 }
@@ -268,4 +280,74 @@ export async function mirrorPond(d: Director) {
   }
   await goVia(d, "coco", [{ x: 35, y: 27 }, { x: 35, y: 31 }, { x: 44, y: 31.6 }, { x: 46.3, y: 33.5 }], true);
   await leaveBy(d, "coco");
+}
+
+// ── Griffin Enclosure: wig ─────────────────────────────────────────────────
+// Peaceful solution (docs/quests/bald-goddess/griffin-implementation.md): Coco
+// flies to the nest; one E there drops every tool she carries; the griffin
+// grooms, trims, and flies away; E at the nest again picks up the wig. The
+// nest is at (20, 3.5) tiles (griffinNest). The griffin may beam Coco on the
+// way (about 20-26 damage), which she survives.
+export async function griffin(d: Director) {
+  await untilReady(d, "coco", "Flight");
+  await use(d, "coco", "flight");
+  for (let k = 0; k < 80; k++) {
+    const c = await d.obs("coco");
+    if (c.dialogue) {
+      await d.dialogue();
+      continue;
+    }
+    if (c.inventory.nearbyTarget && /nest/i.test(c.inventory.nearbyTarget.name)) break;
+    const st = planStep(c, { x: 20, y: 4.4 }, { flying: true, tolerance: 0.5, maxTicks: 10 });
+    if (st.kind !== "move") break;
+    await d.both({ type: "wait", ticks: st.ticks }, { type: "move", direction: st.direction, ticks: st.ticks });
+  }
+  const near = (await d.obs("coco")).inventory.nearbyTarget;
+  if (!near || !/nest/i.test(near.name)) throw Error("Coco did not reach the nest");
+  const drop = await press(d, "coco");
+  d.note(`at the nest: ${drop.coco.feedback[0] ?? ""}`);
+  // Wait for the grooming to finish, then pick up the wig.
+  for (let k = 0; k < 60 && !has(await d.obs("coco"), "griffin_wig"); k++) {
+    await d.wait(30);
+    const r = await press(d, "coco");
+    if (r.coco.feedback.some((f) => /Picked up the Griffin Wig/.test(f))) break;
+  }
+  if (!has(await d.obs("coco"), "griffin_wig")) throw Error("no wig");
+  d.note("Coco picked up the Griffin Wig");
+  // Coco flies back to the south shore; Sieg, at the exit, takes the party home.
+  await d.go({ coco: { to: { x: 20.5, y: 14 }, opts: { flying: true, tolerance: 0.6 } } });
+  await d.go({ sieg: { to: { x: 20, y: 33.4 }, opts: { tolerance: 0.6 } } });
+  await leaveBy(d, "sieg");
+}
+
+// ── Finale: offering, revelation, choices, ending ──────────────────────────
+export async function finale(d: Director) {
+  // From the north arrival (behind the statue) around it to the offering at
+  // (20, 17): Coco by the east side, Sieg by the west (route-dev/legs.ts).
+  await goVia(d, "coco", [{ x: 23.5, y: 10.5 }, { x: 23.5, y: 14.5 }, { x: 20.5, y: 14.5 }, { x: 20.5, y: 17.5 }]);
+  await goVia(d, "sieg", [{ x: 16.5, y: 10.5 }, { x: 16.5, y: 14.5 }, { x: 18.5, y: 14.5 }, { x: 18.5, y: 18.5 }]);
+  const near = (await d.obs("coco")).inventory.nearbyTarget;
+  if (!near) throw Error("offering not in reach");
+  const r = await d.both({ type: "wait", ticks: 1 }, { type: "use_item", item: "griffin_wig" });
+  d.note(`offered the wig: ${r.coco.feedback[0] ?? ""}`);
+  // Revelation, each hero's choice, departure and the final cinematic.
+  for (let k = 0; k < 20; k++) {
+    if (await d.untilDialogue(240)) await d.dialogue();
+    if ((await d.outcome()).status !== "ongoing") break;
+  }
+  d.note(`outcome: ${JSON.stringify((await d.outcome()).reason)}`);
+}
+
+/** The whole route. Returns the episode outcome. */
+export async function fullQuest(d: Director, seed: number) {
+  await d.reset(seed);
+  await opening(d);
+  await travelFromShrine(d, "east", "Hedge Maze");
+  await hedgeMaze(d);
+  await travelFromShrine(d, "west", "Mirror Pond");
+  await mirrorPond(d);
+  await travelFromShrine(d, "north", "Griffin Enclosure");
+  await griffin(d);
+  await finale(d);
+  return d.outcome();
 }

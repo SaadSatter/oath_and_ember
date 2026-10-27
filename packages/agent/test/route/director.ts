@@ -18,6 +18,8 @@ export interface LogLine {
 export class Director {
   readonly env: AgentEnvironment;
   readonly log: LogLine[] = [];
+  /** Every dialogue box the route observed (for checks on what heroes are shown). */
+  readonly dialogues: { id: PlayerId; tick: number; dialogue: Observation["dialogue"] }[] = [];
   /** Which response each hero gives at a story choice (1-based). */
   choices: Record<PlayerId, number> = { sieg: 1, coco: 1 };
   private tick = 0;
@@ -43,8 +45,15 @@ export class Director {
     return r;
   }
 
-  obs(id: PlayerId): Promise<Observation> {
-    return this.env.observe(id);
+  /** Size of what a model would be shown at each observation: observation + legal actions (JSON characters). */
+  readonly promptChars: number[] = [];
+  measurePrompts = false;
+
+  async obs(id: PlayerId): Promise<Observation> {
+    const o = await this.env.observe(id);
+    if (o.dialogue) this.dialogues.push({ id, tick: o.tick, dialogue: o.dialogue });
+    if (this.measurePrompts) this.promptChars.push(JSON.stringify({ observation: o, legal_actions: await this.env.legal_actions(id) }).length);
+    return o;
   }
 
   async outcome() {
