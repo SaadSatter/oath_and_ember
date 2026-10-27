@@ -7,6 +7,7 @@ import {
   chapter0Cutscenes,
 } from "./chapter0.js";
 import { finaleCutscenes } from "./chapter0Finale.js";
+import { woodsCutscenes } from "./prologueWoods.js";
 
 // Chapter 0 prologue, "A Promise Kept", as data. The server walks this script
 // (apps/server/src/prologue.ts) and owns every stage change. Clients only show
@@ -18,6 +19,7 @@ export const storyStages = [
   "LEAVING", // Out of the shop, toward the road.
   "FOREST_BOUND", // Coco heads for the forest; Sieg follows.
   "TRAIL", // The forest trail and the abandoned cart.
+  "WOODS", // The Mossling Woods: a guided tutorial (prologueWoods.ts).
   "AMBUSH", // The clearing: the monsters rise.
   "FIGHT", // A survival fight nobody is meant to win.
   "HOME", // Rescued, healed, scolded; Sieg's farewell; the next morning.
@@ -58,7 +60,8 @@ export type StorySpeaker =
   | "JOURNAL"
   | "ANGEL"
   | "GODDESS"
-  | "INSCRIPTION";
+  | "INSCRIPTION"
+  | "GUIDE";
 export const storySpeakerNames: Record<StorySpeaker, string> = {
   ALDEN: "Alden",
   COCO: "Coco",
@@ -76,6 +79,7 @@ export const storySpeakerNames: Record<StorySpeaker, string> = {
   ANGEL: "Weeping Angel",
   GODDESS: "Goddess",
   INSCRIPTION: "Inscription",
+  GUIDE: "Tutorial",
 };
 
 /** Lying wounded and lying still are Alden's last poses (chapter0.ts). */
@@ -737,6 +741,8 @@ cutscenes.morning = {
     },
   ],
 };
+// The Mossling Woods tutorial, between the cart and the ambush.
+Object.assign(cutscenes, woodsCutscenes);
 // Chapter 0, Part 1 continues the same script.
 Object.assign(cutscenes, chapter0Cutscenes);
 // ...and its finale.

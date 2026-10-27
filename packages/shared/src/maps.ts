@@ -36,6 +36,12 @@ import {
 } from "./environmentSolids.js";
 import type { SceneId, Rect } from "./gameTypes.js";
 import { stallSolids } from "./storyProps.js";
+import {
+  WOODS_SIZE,
+  woodsExit,
+  woodsSpawn,
+  woodsWalls,
+} from "./prologueWoods.js";
 import postTownSolids from "./postTownSolids.json" with { type: "json" };
 import {
   villageInteriors,
@@ -259,6 +265,15 @@ export const maps: Record<SceneId, MapDefinition> = {
   // Chapter 0 prologue forest (scripts/build-prologue-forest.py).
   PROLOGUE_TRAIL: composedMap("PROLOGUE_TRAIL"),
   PROLOGUE_CLEARING: composedMap("PROLOGUE_CLEARING"),
+  // The Mossling Woods tutorial: the Transition Trail's art, plus a pond.
+  PROLOGUE_WOODS: {
+    id: "PROLOGUE_WOODS",
+    mode: "TOP_DOWN",
+    ...WOODS_SIZE,
+    spawn: { ...woodsSpawn },
+    walls: woodsWalls,
+    points: { exit: { ...woodsExit } },
+  },
   FOREST_RUINS: {
     id: "FOREST_RUINS",
     mode: "TOP_DOWN",

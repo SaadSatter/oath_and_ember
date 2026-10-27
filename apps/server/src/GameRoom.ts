@@ -97,6 +97,8 @@ import {
   spawnEnemy,
 } from "../../../packages/shared/src/enemies.js";
 import { damageEnemy, tickEnemies, segmentHits } from "./enemySimulation.js";
+import { woodsProtects } from "./prologueWoods.js";
+import { WOODS_HP_FLOOR } from "../../../packages/shared/src/prologueWoods.js";
 import {
   defaultAppearance,
   validAppearance,
@@ -1484,9 +1486,11 @@ export class GameRoom {
                 segmentHits(ox, oy, q.x, q.y, r, q.radius ?? 4),
               )
             : projectileWalls
+                // Magic flies over the griffin's moat and the woods' pond.
                 .filter(
                   (r) =>
-                    (q.sceneId ?? w.sceneId) !== "GRIFFIN_ENCLOSURE" ||
+                    ((q.sceneId ?? w.sceneId) !== "GRIFFIN_ENCLOSURE" &&
+                      (q.sceneId ?? w.sceneId) !== "PROLOGUE_WOODS") ||
                     !r.terrain,
                 )
                 .some((r) => segmentHits(ox, oy, q.x, q.y, r, q.radius ?? 4)));
@@ -1758,6 +1762,8 @@ export class GameRoom {
     p.hp -= defended ? n * 0.25 : n;
     // The prologue ambush is unwinnable but never fatal.
     if (ambushProtects(this.state, p)) p.hp = Math.max(AMBUSH_FLOOR, p.hp);
+    // The Mossling Woods are only practice.
+    if (woodsProtects(this.state, p)) p.hp = Math.max(WOODS_HP_FLOOR, p.hp);
     delete p.heavyCharge;
     if (p.hp <= 0) {
       p.hp = 100;

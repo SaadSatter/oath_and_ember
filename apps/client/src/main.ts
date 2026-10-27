@@ -87,8 +87,19 @@ const sealedExit = (sceneId: string, id: string, w: World) =>
     w.story!.stage !== "DONE") ||
   (sceneId === "PROLOGUE_TRAIL" &&
     (id === "cart" ||
-      (id === "exit" && !w.story?.flags.includes("prologue.cart"))));
+      (id === "exit" && !w.story?.flags.includes("prologue.cart")))) ||
+  // The Mossling Woods lead on once every lesson is done.
+  (sceneId === WOODS && id === "exit" && !!w.story && !woodsDone(w.story));
 import { NpcView, preloadNpcs } from "./entities/NpcView.js";
+import {
+  WOODS,
+  WOODS_CRATE_FLAG,
+  woodsAbility,
+  woodsCrate,
+  woodsDone,
+  woodsLesson,
+  woodsObjective,
+} from "../../../packages/shared/src/prologueWoods.js";
 import { AldenView, nearAlden, preloadAlden } from "./entities/AldenView.js";
 import { StrangerView, preloadStranger } from "./entities/StrangerView.js";
 import { StoryDialogue } from "./ui/storyDialogue.js";
@@ -447,6 +458,15 @@ function renderUI() {
     "button",
   )) {
     const ability = button.dataset.ability;
+    // The Mossling Woods glow the button their lesson is about.
+    const lesson = woodsLesson(w?.story);
+    button.classList.toggle(
+      "tutorial-focus",
+      !!lesson &&
+        !!me?.role &&
+        !w!.story!.woods?.did[me.role] &&
+        woodsAbility[lesson][me.role] === ability,
+    );
     button.hidden = ["time-stop", "flight", "black-hole"].includes(
       ability || "",
     )
@@ -1390,6 +1410,7 @@ class Adventure extends Phaser.Scene {
       !isComposedScene(sceneId) &&
       !isPostTownScene(sceneId) &&
       !isSettlementScene(sceneId) &&
+      sceneId !== WOODS &&
       sceneId !== "BRIDGE_RUINS" &&
       sceneId !== "HEDGE_MAZE" &&
       sceneId !== "MIRROR_POND" &&
@@ -1418,6 +1439,7 @@ class Adventure extends Phaser.Scene {
           isComposedScene(sceneId) ||
           isPostTownScene(sceneId) ||
           isSettlementScene(sceneId) ||
+          sceneId === WOODS ||
           sceneId === "BRIDGE_RUINS" ||
           sceneId === "HEDGE_MAZE" ||
           sceneId === "MIRROR_POND" ||
@@ -1582,7 +1604,11 @@ class Adventure extends Phaser.Scene {
             w.bridgePuzzle,
             w.players,
             w.serverTick,
-          ).filter((r) => sceneId !== "GRIFFIN_ENCLOSURE" || !r.terrain),
+          ).filter(
+            (r) =>
+              (sceneId !== "GRIFFIN_ENCLOSURE" && sceneId !== WOODS) ||
+              !r.terrain,
+          ),
       shotTargets(w, sceneId),
     );
     this.projectileView.update(
@@ -1663,7 +1689,8 @@ class Adventure extends Phaser.Scene {
                     ? "E · LEAVE"
                     : id === "crates" || id === "barrel"
                       ? "E · INSPECT"
-                      : sceneId === "PROLOGUE_TRAIL" && id === "exit"
+                      : (sceneId === "PROLOGUE_TRAIL" || sceneId === WOODS) &&
+                          id === "exit"
                         ? "E · FOLLOW THE TRACKS"
                         : id === "upstairs"
                           ? "E · UPSTAIRS"
@@ -1685,6 +1712,23 @@ class Adventure extends Phaser.Scene {
           .setOrigin(0.5),
       );
     }
+    // The merchants' crate on the woods' islet, for Coco in the flight lesson.
+    if (
+      sceneId === WOODS &&
+      me.role === "EMBER" &&
+      woodsLesson(w.story) === "flight" &&
+      !w.story!.flags.includes(WOODS_CRATE_FLAG)
+    )
+      this.labels.push(
+        this.add
+          .text(woodsCrate.x, woodsCrate.y - 84, "E · TAKE THE CRATE", {
+            fontSize: "12px",
+            color: "#ecdfc7",
+            backgroundColor: "#15232b",
+          })
+          .setOrigin(0.5)
+          .setDepth(1800),
+      );
     // The story's own E spots this hero can use now (gathering for the funeral).
     for (const spot of spotsFor(w.story, me.role))
       if (
@@ -1752,6 +1796,8 @@ class Adventure extends Phaser.Scene {
           : storyObjectives[w.story.stage]
         : undefined;
     if (storyGoal) goal = storyGoal[me.role!];
+    const woodsGoal = me.role && woodsObjective(w.story, me.role);
+    if (woodsGoal) goal = woodsGoal;
     const chapterGoal =
       me.role && w.story && chapter0Objective(w.story, me.role);
     if (chapterGoal) goal = chapterGoal;

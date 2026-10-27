@@ -2,6 +2,7 @@ import type { Rect, SceneId, StoryState } from "./gameTypes.js";
 import { BURIAL_FLAG, stageReached } from "./prologue.js";
 import { FUNERAL, flowerSpots, stoneSpots } from "./chapter0.js";
 import { oldTree } from "./environmentSolids.js";
+import { WOODS_CRATE_FLAG, woodsCrate } from "./prologueWoods.js";
 
 // Story set dressing: images under /assets/environment/story placed in a
 // scene, shown only at the points of the story where they belong. The server
@@ -102,6 +103,18 @@ export const storyProps: StoryProp[] = [
     scale: 1,
     groundY: 441,
     shown: bagDropped,
+  },
+  // The Mossling Woods: the merchants' crates on the pond's islet, until
+  // Coco flies out and takes them (the same crates as on the trail, at 2×).
+  {
+    id: "woods-crates",
+    scene: "PROLOGUE_WOODS",
+    image: "woods_crates.png",
+    x: woodsCrate.x - 27,
+    y: woodsCrate.y - 70,
+    scale: 2,
+    groundY: woodsCrate.y + 8,
+    shown: (story) => !story?.flags.includes(WOODS_CRATE_FLAG),
   },
 ];
 
