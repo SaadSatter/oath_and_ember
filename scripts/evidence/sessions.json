@@ -210,9 +210,9 @@
    "ids": [
     "618e460d"
    ],
-   "role": "Implementation agent (`CLAUDE.md`, which imports `AGENTS.md`); launched skill sessions 24, 25 and 26",
-   "title": "Gap analysis and evidence foundation (phase 1); server runtime injection, view-only browsers and model budgets (phase 2)",
-   "note": "This session was still running when this file was rendered. It is recorded up to its latest transcript event at that time; later events are not included."
+   "role": "Implementation agent (`CLAUDE.md`, which imports `AGENTS.md`); launched skill sessions 24, 25, 26 and 27",
+   "title": "Gap analysis and evidence foundation (phase 1); server runtime injection, view-only browsers and model budgets (phase 2); scripted route, batching and suite freeze (phase 3); Phase 4 code handed to Codex uncommitted",
+   "note": "Final render, made by this session itself at the owner's request before closing it. The session itself wrote this record, so it is not independent of the work it describes."
   },
   {
    "number": 24,

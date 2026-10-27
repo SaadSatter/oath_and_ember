@@ -1,16 +1,16 @@
-# 23 — Gap analysis and evidence foundation (phase 1); server runtime injection, view-only browsers and model budgets (phase 2)
+# 23 — Gap analysis and evidence foundation (phase 1); server runtime injection, view-only browsers and model budgets (phase 2); scripted route, batching and suite freeze (phase 3); Phase 4 code handed to Codex uncommitted
 
 | Field | Value |
 | --- | --- |
 | Agent | Claude Code (CLI); model id(s) recorded in the transcript: `claude-opus-5-5` |
-| Role | Implementation agent (`CLAUDE.md`, which imports `AGENTS.md`); launched skill sessions 24, 25 and 26 |
+| Role | Implementation agent (`CLAUDE.md`, which imports `AGENTS.md`); launched skill sessions 24, 25, 26 and 27 |
 | Session ID | `618e460d-d442-4e5f-a60f-7a9c556e8095` |
-| Window (UTC) | 2026-10-27 03:04 → 2026-10-27 04:58 |
+| Window (UTC) | 2026-10-27 03:04 → 2026-10-27 20:16 |
 | Session URL | None. Local session; no shareable URL was created. |
 | Repository | `https://github.com/SaadSatter/oath_and_ember`, branch(es) `main` |
 | Transcript | Local only, not committed: `~/.claude/projects/-Users-saadsatter-Classes-AI-Pract-Building-Games-oath-and-ember/618e460d-d442-4e5f-a60f-7a9c556e8095.jsonl` |
 
-> This session was still running when this file was rendered. It is recorded up to its latest transcript event at that time; later events are not included.
+> Final render, made by this session itself at the owner's request before closing it. The session itself wrote this record, so it is not independent of the work it describes.
 
 ## Owner instructions (redacted)
 
@@ -18,6 +18,12 @@
 2. 2026-10-27 03:46 — [pasted brief] Update your Oath and Ember midterm plan with the following decisions and requirements. ### 1. Reuse the Prince of Persia evidence methodology Review the Prince of Persia repository's `MIDTERM_GUIDELINES.md` (or equivalent guidelines file), `CLAUDE.md`, `AGENT-TEAM.md`, session evidence files, reusable skills, and review documentation. Apply the same evidence methodology to Oath and Ember. In particular … (5041 characters; full text in the local transcript)
 3. 2026-10-27 03:55 — [pasted brief] I approve the updated direction, with the following decisions and constraints. 1. **Server changes:** Approve deterministic clock/ID injection, the manualDriver option, and server-enforced view-only browser sessions. Preserve production behavior by default. Require the equivalence and integration tests you proposed. 2. **Agent architecture:** Use Claude PR #7's packages/agent as the primary interface. … (3487 characters; full text in the local transcript)
 4. 2026-10-27 04:26 — [pasted brief] I approve proceeding to Phase 2 with the following decisions. 1. **Recording browser:** Use Option B from SERVER_CHANGES.md: a separate, view-only browser attachment with a single-use token. It must not take ownership of Sieg's or Coco's session. Browser disconnects must not affect the AI-controlled players. Enforce read-only behavior server-side and add Socket.IO integration tests. 2. **Information bo … (2881 characters; full text in the local transcript)
+5. 2026-10-27 15:20 — Your claude.ai usage limit has reset. Continue the task you were working on when the limit was reached; do not repeat work that is already complete.
+6. 2026-10-27 15:25 — [pasted brief] Thanks. Phase 2 is approved. Proceed with the next steps using these decisions: 1. Use seeded deterministic hero IDs for evaluation. The same seed must reproduce the same IDs and tie-breaking behavior, while different seeds may vary the tie order. Preserve production behavior and verify that the seed is independent of agent actions. Record the seed and starting-state hash in traces. 2. Keep 400 model c … (2151 characters; full text in the local transcript)
+7. 2026-10-27 16:17 — [pasted brief] Phase 3 is approved. The successful full scripted route and its evidence are strong results. Proceed toward Phase 4 with these decisions: 1. **Action batching:** Approve up to four actions per model response, provided batching does not change the five-operation interface, bypass observations, or modify gameplay rules. Execute actions sequentially through the normal interface. Stop the batch on invalid … (3400 characters; full text in the local transcript)
+8. 2026-10-27 16:41 — [pasted brief] Phase 4 is approved with the following decisions: 1. **PixelLab token:** Stop asking me about the PixelLab token and do not treat its rotation as a blocker for continued development or pushing clean code and redacted evidence. Ensure no credentials are present in anything committed or pushed. Do not publish raw historical session logs containing secrets. 2. **Budget:** Approve claude-haiku-5-5 with a $ … (2535 characters; full text in the local transcript)
+9. 2026-10-27 16:57 — [Request interrupted by user for tool use]
+10. 2026-10-27 20:16 — [pasted brief] Before I close this session, please finalize its evidence. Use the existing `/session-evidence` skill and follow the established evidence conventions in `docs/agent-sessions/` and `docs/midterm/EVIDENCE_INDEX.md`. 1. Document this session's actual implementation work, decisions, tests, failures, corrections, and outcomes. 2. Preserve the session ID or link where available. 3. Distinguish verified resul … (989 characters; full text in the local transcript)
 
 <!-- narrative:start -->
 ## What was done
@@ -52,27 +58,88 @@ Sources: the same as above. Re-rendered at about 04:59 UTC while the session was
 - **`b2b7128`** (04:58 UTC, verified): "Record second game-rules-audit and fix its findings". It adds the server-changes report, and per its message fixes findings #2 (reconnect tokens always from `crypto.randomUUID()`, in `apps/server/src/GameRoom.ts`), #3 (view mode no longer predicts or sends input, in `apps/client/src/main.ts`), #5, #6 and #7, and records the owner's sprint-test approval (#4). It leaves #1 (counter versus seeded hero ids) open for the owner. Agent's report: `npm test` 608/608, build pass, secret scan 0. The test-summary lines extracted from this transcript include `Tests  589 passed (589)`, `605 passed (605)` and `608 passed (608)`, as printed.
 - Not verified here: the audit report's open questions 2 and 3 asked for owner approval of the `GameRoom.ts` and `main.ts` changes. The extracted transcript records no owner instruction after 04:26. Whether the 04:26 phase 2 approval covers these fixes is for the owner to confirm.
 - State at this re-render (verified): all phase 2 commits are on local `midterm/evaluation` only. `git branch -a --contains 7c9f025` lists no remote branch, so nothing is pushed, and there is no PR for the branch. At about 04:58 the session launched a second `/session-evidence` invocation (transcript line 1796). That invocation produced this re-render and files 24–26. It will be recorded in its own file.
+
+### Phases 3 and 4 (final render, 2026-10-27 20:16 UTC)
+
+Sources: the owner instructions 5–10 above; `git show` and `git branch --contains` run while writing this section ("verified"); commit messages and this session's own tool output ("agent's report"). This section was written by the recorded session itself at the owner's request, so it is not an independent record. Tests were **not** re-run for it.
+
+- **Phase 2 wrap-up and phase 3 decisions (15:20–15:32).** After the usage-limit reset the session committed `e216621` (files 24–26 from session 27's interrupted run). The owner's 15:25 brief approved seeded evaluation ids, 400 calls, a 3,600 s wall clock and merging main. In response:
+  - `37e5a73` adds `packages/agent/src/runtime.ts` (`evaluationRuntime`, ids from the seed) and a raw-state hash in the reset trace line.
+  - `0f72a17` merges main's `9a9a53d`. Its message reports typecheck pass and `npm test` 619/619. It says the only field that differs in the goddess-checkpoint world is `storyVersion`.
+  - `785019d` records session 27 (file 27). Those facts are in file 27 and are not repeated here.
+- **Phase 3: scripted route (15:54–16:17).** The session built a test-only route director and the full-quest route through the five-operation interface only: no fixtures, teleports or item injection. Its offline planning tools in `scripts/midterm/route-dev/` read engine geometry, and that use is disclosed.
+  - Verified commits: `7184983` (milestone: opening, Hedge Maze, Mirror Pond) and `64efed6` (end to end). `docs/midterm/ROUTE_LOG.md` lists the failures met and how each was fixed.
+  - Agent's report (`64efed6` message): seed 1 succeeds at tick 12,412 (206.9 s of game time) with 0 invalid actions, and seeds 1–8 succeed with identical ticks. While building the route, the session found and fixed an interface bug: on a choice line, the choosing hero was shown "Your partner's line."
+  - `d873588` records the owner's reported human playthrough as owner-reported only. It has no date, duration, recording or trace.
+- **Toward phase 4 (16:17–16:31).** The owner's 16:17 brief approved batching of up to 4 actions and asked for a frozen suite, verified prices and a baseline plan.
+  - `d2421aa` adds batching through the ordinary `step()`, with stop rules. Agent's report: `npm test` 637/637, build pass, secret scan 0.
+  - `0c45f82` freezes S1–S4 and F, **provisionally**. Their start states are reached by running prefixes of the route at reset. S4 and F are held out. Professor confirmation was pending and was never claimed.
+  - `ea26944` and `b51c1c0` add Anthropic prices, which the session checked against the official pricing page on 2026-10-27. They also add `MODEL_BUDGET.md` and `BASELINE_PLAN.md`. `b51c1c0` corrects a cost comparison that had used the wrong ratio.
+  - The session's last full check that it ran itself: typecheck pass, `npm test` 642/642, build pass.
+- **Phase 4 (16:41–16:57; uncommitted by this session).** The owner's 16:41 brief approved:
+  - `claude-haiku-5-5` with a $25 hard cap ($0.10 smoke, $8 pilot, $15 final, $1.90 contingency);
+  - a fail-closed persistent ledger;
+  - effort `medium` first, compared with `low` in the pilot;
+  - an observation-only player on S1–S3;
+  - the quest-aware baseline, with its knowledge disclosed.
+
+  It required no paid call before a tested ledger **and** explicit authorization. This session then wrote, without committing:
+  - `packages/agent/src/ledger.ts`;
+  - effort and `memory: "none"` (observation-only) in `policies/llm.ts`;
+  - cache-token fields in `budget.ts`;
+  - `policies/questKnowledge.ts`, the route's constants moved into one disclosed module, which `route/fullQuest.ts` now imports;
+  - `policies/questBaseline.ts`, one generator-based state machine per hero and area, with message-only coordination and one action per decision;
+  - `harness.ts` and `scripts/midterm/evaluate.ts`;
+  - tests `ledger`, `questBaseline`, `modelPlayers` and `harness`.
+- **Tests this session ran in phase 4 (agent's report, from its tool output).**
+  - ledger 7/7, quest baseline 8/8, model players 3/3 (the SDK call was stubbed, so no network).
+  - Route and suite tests 7/7 after the constants moved.
+  - Harness: first 2 failed and 5 passed. Both failures were wrong test expectations, not code faults:
+    - a held-out scenario is rejected before the seed check runs;
+    - seeds 0 and 1 have different start hashes, because the seed sets the room code and ids.
+
+    After the expectations were corrected: 7/7.
+  - Quest baseline development runs on S1–S3 with tuning seeds 0 and 1 all succeeded with 0 invalid actions: S1 290 ticks, S3 3,174, S2 8,786 (the baseline does the maze before the pond). Seeds 0 and 1 gave identical results.
+  - **Not done:** the session's final `npm run typecheck`/`npm test`/`npm run build` command, which also added `evaluation-runs/` to `.gitignore`, was rejected by the owner at 16:57. That combined command was never run.
+- **Held-out disclosure.** While designing the shrine logic, the session reset the S4 scenario once and read both heroes' start observations (area, position, journal, backpack). It ran no player or policy on S4 or F. The baseline's quest knowledge comes from route development, which covered S4 and F, and `questKnowledge.ts` and `BASELINE_PLAN.md` disclose this.
+- **Handoff to Codex (verified from git and file 28).** After the 16:57 interruption, Codex session `01a17e49` (file 28) continued in the same worktree. It committed this session's uncommitted phase 4 files as inherited work, in `0e4920b` and `f657a0a`, together with its own repairs and extensions: ledger fixes, resumable traces, paid-path guards and more tests. It also committed `c6be0f2` and `8ee5798`. Those four commits carry no Claude co-author trailer. This record does not establish which lines of the committed files are this session's text and which are Codex's changes; file 28 describes Codex's changes. File 28 records Codex's work and test results.
+- **Not done by this session:** no paid model call; no push, merge or PR (`gh pr list --head midterm/evaluation` returned nothing, and `git branch -a --contains 37e5a73` lists only the local branch); no independent review; no recording; no final runs on S4 or F. The phase 4 approval allowed pushing clean code. The session did not push.
 <!-- narrative:end -->
 
 ## Mechanically extracted record
 
-- Skills used: none
+- Skills used: `claude-api`, `session-evidence`
 - Subagents used: none
 - Pull requests referenced in tool output: https://github.com/SaadSatter/oath_and_ember/pull/1, https://github.com/SaadSatter/oath_and_ember/pull/2, https://github.com/SaadSatter/oath_and_ember/pull/3, https://github.com/SaadSatter/oath_and_ember/pull/4, https://github.com/SaadSatter/oath_and_ember/pull/5, https://github.com/SaadSatter/oath_and_ember/pull/6, https://github.com/SaadSatter/oath_and_ember/pull/7, https://github.com/columbia-university-ai-games/game-dev-f26/pull/123
-- Files edited through the agent's edit/patch tool: 23 (`scripts/evidence` 7, `packages/agent` 4, `apps/server` 3, `docs/midterm` 3, `.claude/skills` 2, `apps/client` 2, `/private` 1, `CLAUDE.md` 1)
+- Files edited through the agent's edit/patch tool: 45 (`packages/agent` 21, `docs/midterm` 7, `scripts/evidence` 7, `apps/server` 3, `.claude/skills` 2, `apps/client` 2, `/private` 1, `CLAUDE.md` 1, `scripts/midterm` 1)
 - Test-summary lines printed in tool output (last 6 distinct, as printed):
-  - `Tests  3 passed (3)`
-  - `Tests  1 failed | 2 passed (3)`
-  - `Test Files  81 passed (81)`
-  - `Tests  605 passed (605)`
-  - `Tests  28 passed (28)`
-  - `Tests  608 passed (608)`
+  - `Test Files  86 passed (86)`
+  - `Tests  641 passed (641)`
+  - `Tests  642 passed (642)`
+  - `Tests  7 passed (7)`
+  - `Tests  8 passed (8)`
+  - `Tests  2 failed | 5 passed (7)`
 - TypeScript errors (`error TS…`) appeared in tool output at least once during the session.
 
 Commits whose author time falls inside this window (any branch). A time match is not proof of authorship when sessions overlap; the co-author trailer is shown where present.
 
 | Commit | Author time (UTC) | Subject | Co-author trailer |
 | --- | --- | --- | --- |
+| `8ee5798` | 2026-10-27 17:29 | Record smoke preflight blocked by absent configured credential | — |
+| `c6be0f2` | 2026-10-27 17:18 | Record Phase 4 smoke readiness, audit and handoff evidence | — |
+| `f657a0a` | 2026-10-27 17:16 | Harden evaluation budgets, resumable traces and mock comparisons | — |
+| `0e4920b` | 2026-10-27 17:16 | Implement independent quest baseline with disclosed route knowledge | — |
+| `b51c1c0` | 2026-10-27 16:31 | Correct the model-cost comparison to per-call ratios | Claude Opus 5.5 <noreply@anthropic.com> |
+| `ea26944` | 2026-10-27 16:31 | Verify model prices; add baseline plan and budget proposal | Claude Opus 5.5 <noreply@anthropic.com> |
+| `0c45f82` | 2026-10-27 16:27 | Freeze the evaluation suite (provisional): S1-S4 and F | Claude Opus 5.5 <noreply@anthropic.com> |
+| `d2421aa` | 2026-10-27 16:21 | Add action batching: up to 4 actions per decision through step() | Claude Opus 5.5 <noreply@anthropic.com> |
+| `d873588` | 2026-10-27 16:17 | Record the owner's reported human playthrough of the full episode | Claude Opus 5.5 <noreply@anthropic.com> |
+| `64efed6` | 2026-10-27 16:04 | Prove the Bald Goddess quest end to end through the interface | Claude Opus 5.5 <noreply@anthropic.com> |
+| `7184983` | 2026-10-27 15:54 | Route milestone: opening, Hedge Maze and Mirror Pond through the interface | Claude Opus 5.5 <noreply@anthropic.com> |
+| `785019d` | 2026-10-27 15:32 | Record the interrupted second session-evidence invocation (file 27) | Claude Opus 5.5 <noreply@anthropic.com> |
+| `0f72a17` | 2026-10-27 15:30 | Merge main's Mossling Woods tutorial (9a9a53d) into midterm/evaluation | Claude Opus 5.5 <noreply@anthropic.com> |
+| `37e5a73` | 2026-10-27 15:28 | Seed evaluation hero ids and hash the raw state | Claude Opus 5.5 <noreply@anthropic.com> |
+| `e216621` | 2026-10-27 15:24 | Record skill sessions 24-26 and phase 2 in the session evidence | Claude Opus 5.5 <noreply@anthropic.com> |
 | `b2b7128` | 2026-10-27 04:58 | Record second game-rules-audit and fix its findings | Claude Opus 5.5 <noreply@anthropic.com> |
 | `117b6d2` | 2026-10-27 04:48 | Centralize model budgets, add per-call timeout, and match the drawn HUD | Claude Opus 5.5 <noreply@anthropic.com> |
 | `7c9f025` | 2026-10-27 04:36 | Add opt-in runtime injection, manual driver and view-only browsers | Claude Opus 5.5 <noreply@anthropic.com> |
