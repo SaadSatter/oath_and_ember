@@ -158,7 +158,8 @@ describe("stale locks (M3, M4)", () => {
     live.close();
     // A child that dies holding the lock.
     const child = spawn(process.execPath, ["-e", `require("fs").writeFileSync(${JSON.stringify(`${path}.lock`)}, String(process.pid)); setInterval(() => {}, 1000);`]);
-    await new Promise((d) => setTimeout(d, 300));
+    // Wait until the child has written its lock (slow under a loaded test run).
+    for (let i = 0; i < 200 && !(existsSync(`${path}.lock`) && readFileSync(`${path}.lock`, "utf8") === String(child.pid)); i++) await new Promise((d) => setTimeout(d, 50));
     expect(staleLock(path)).toEqual({ refused: `process ${child.pid} is still running` });
     expect(() => removeStaleLock(path, child.pid!)).toThrow(LedgerError);
     child.kill("SIGKILL");
