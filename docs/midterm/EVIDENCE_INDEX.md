@@ -30,3 +30,22 @@ Updated 2026-10-27, branch `midterm/evaluation`.
 - Existing assistant workflows and new sessions provide the reusable-skill and independent-review evidence.
 
 The owner reports this exception; no written approval is stored in this repository. The submission folder and replacing PR #57 are still open questions for the professor.
+
+## Phase 4 checkpoint (2026-10-27)
+
+This update supersedes the older planned/missing Phase 4 labels in the table above. See `PHASE4_HANDOFF.md` and session [S28](../agent-sessions/28-codex-evaluation-handoff.md).
+
+- **2b / 2c / 3b:** inherited observation-only mode, independent hero policies, metered harness and persistent ledger validated offline. No observation-schema or game changes. Two reproduced ledger issues repaired with regression tests.
+- **3c:** local typecheck/build pass; **669/669 tests** pass. Course CI remains separate and unfinished.
+- **3d:** same-session `game-rules-audit` checkpoint saved at `agent-evidence/skill-runs/2026-10-27-phase4-handoff.md`; `session-evidence` used to extract/render S28. Neither is an independent review or a fresh Claude skill session.
+- **4b / 5a:** quest baseline succeeds in all six S1–S3 trials on tuning seeds 0/1, zero invalid actions. Portable results: `evidence/phase4/quest-tuning-summary.json`. These are tuning trials, not final held-out results. Static baseline knowledge asymmetry remains disclosed.
+- Still missing: live paid trials, final held-out comparison, independent reviews, recording and course-submission work. No paid calls, pushes or merges in S28.
+
+## Phase 4 offline smoke-readiness follow-up (2026-10-27)
+
+- **3b:** ledger/meter tests now include cross-process locks, killed-process recovery, concurrent reservations, unknown and malformed usage, $25 global exhaustion across reopening, and interruption/resume without erased charges. The legacy paid runner and alternate ledger CLI paths are blocked. Implementation commit `f657a0a`.
+- **2b / 2c / 5a:** S1 mock trials verify complete per-scenario metrics against disk traces and deterministic semantic replay/end hashes. Observation-only payloads equal the existing per-hero observation/legal set; independent synthetic fixtures reject hidden flags, ids, partner choices and policy history. No live-model result is claimed.
+- **3c:** typecheck/build pass; non-held-out test run **676/676 tests in 88 files**; focused infrastructure tests **48/48**. `suite.test.ts` and `route/fullQuest.test.ts` intentionally excluded under the owner's stricter no-S4/F-execution instruction. Four interface tests were moved off the full preset. No held-out outcomes inspected/tuned in this follow-up.
+- **3d:** same-session checkpoint report `agent-evidence/skill-runs/2026-10-27-phase4-readiness.md`, not an independent review. Session S28 updated with the real checks and commits.
+- Secret scanner: **100 text files, 0 findings** after the readiness report; rescanned after final documentation. Configured next smoke: `claude-haiku-5-5`, effort `medium`, one call, $0.01 reservation/$0.10 smoke stage/$25 global cap. No paid API call, push or merge.
+- Local commits: `0e4920b` (quest baseline and disclosed knowledge), `f657a0a` (evaluation infrastructure). See `PHASE4_HANDOFF.md` for limits, commands, remaining risks and the subsequent evidence commit.

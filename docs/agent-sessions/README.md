@@ -36,6 +36,8 @@ New sessions are added with the `session-evidence` skill (`.claude/skills/sessio
 
 ## Files
 
+Latest record: [28 — Codex evaluation handoff](28-codex-evaluation-handoff.md), session `01a17e49-e8f5-7150-8932-837cfe871fe3` (implementation and same-session skill use; not independent review).
+
 | File | Sessions | Role |
 | --- | --- | --- |
 | [01 — Bald Goddess quest maps: Hedge Maze, Mirror Pond, Griffin Enclosure, shrine hub](01-codex-bald-goddess-quest-maps.md) | `01a13672` | Implementation agent (instructions: `AGENTS.md`, auto-loaded by Codex) |

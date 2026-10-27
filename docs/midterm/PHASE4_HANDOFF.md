@@ -1,0 +1,113 @@
+# Phase 4 handoff (2026-10-27)
+
+Worktree: `oath_and_ember-eval`, branch `midterm/evaluation`, base commit `b51c1c0`.
+
+
+## Latest status: offline infrastructure ready for an approved smoke test
+
+Follow-up requested 2026-10-27: complete infrastructure and make local commits; no paid calls, pushes, merges, or S4/F execution. This section supersedes the earlier handoff validation below. The earlier full-route tests/results predate the stricter follow-up holdout instruction.
+
+### Completed infrastructure
+
+- Ledger tests cover same-process concurrent reservations, real cross-process exclusion, a killed lock owner, stale-lock recovery after confirming the PID is dead, unknown/malformed usage, stage/global exhaustion, conservative rounding, reopening and interruption/resume. A normal two-hero S1 runner run at the last $0.20 allowance stays within **$25**; reopening refuses the next episode before dispatch.
+- Per-call reservations use UTF-8 bytes plus a 4,096-token framing margin, maximum output including thinking, and the relevant cache-write/long-context prices. Non-finite caps/reservations are rejected. Meter aborts resolve even when a mock ignores cancellation, and a settled call cannot be charged twice.
+- The harness checkpoints after every episode, stores configuration/manual hash, preserves raw traces, verifies their hash chain on resume, and records per-hero actions/decisions, invalid actions, calls/failures/timeouts/unknown usage, token/cache totals, spend, simulation ticks/seconds, wall time, messages, limits, terminal reasons, and start/end hashes. Aggregates retain per-scenario metrics and previous interrupted attempts. Wall measurements are not expected to reproduce byte-for-byte; semantic traces and raw game-state hashes do reproduce for the tested S1 mocks.
+- `--resume` skips validated completed episodes without dispatch. Interrupted/partial episodes restart in a new attempt directory and reservation; prior bytes, outcomes and charges remain. It does not resume an in-memory game or model context. Crash-left unknown reservations are never automatically reclaimed.
+- Observation-only tests assert exact equality with the existing per-hero `observe`/`legal_actions` outputs. An independent synthetic unit fixture checks that private choice data, hidden canaries, internal ids, notes, previous turns and batch history are not added to model input. No existing held-out scene was used as the fixture.
+- Paid CLI paths use the canonical `evaluation-runs/spend-ledger.json`; alternate ledger flags are refused. The legacy model runner refuses paid policies before constructing a gateway. The future one-call smoke writes its own hash-chained trace and summary.
+
+### Validation in this follow-up
+
+| Command | Actual result |
+| --- | --- |
+| `npm run typecheck` | Pass, exit 0 after final code edits |
+| `npm test -- --exclude packages/agent/test/suite.test.ts --exclude packages/agent/test/route/fullQuest.test.ts` | **676 tests / 88 files passed**, exit 0 |
+| `npx vitest run packages/agent/test/ledger.test.ts packages/agent/test/budget.test.ts packages/agent/test/modelPlayers.test.ts packages/agent/test/harness.test.ts` | **48 tests / 4 files passed**, exit 0, rerun after final smoke error-path edit |
+| `npm run build` | Pass, exit 0; Vite bundle-size warning only |
+| `git diff --check` | Pass |
+| Secret scan over session/midterm docs, agent code, midterm scripts, `AGENTS.md`, session plan | **100 text files / 0 findings** after the readiness report; repeated after final documentation |
+
+`suite.test.ts` and `route/fullQuest.test.ts` are intentionally excluded because they execute S4/F route/checkpoint material. Interface unit tests that previously used the full preset now use the non-held-out milestone preset. No S4/F evaluation preset was executed, no held-out outcomes were inspected and no held-out tuning was done in this follow-up. The frozen definitions are unchanged. Ordinary server unit fixtures remain unit fixtures, not scenario trials.
+
+### Exact next smoke configuration (not executed)
+
+- Model identifier: **`claude-haiku-5-5`**, explicit effort **`medium`**.
+- One attempted call maximum; **4,000 maximum output tokens**, thinking included; **30 s** timeout; SDK retries disabled.
+- **$0.01** call/smoke reservation; **$0.10** smoke-stage cap; **$25** global cap.
+- Other configured stage caps: pilot **$8**, final **$15**, contingency **$1.90**. Suite episode caps remain S1 $0.20, S2/S3 $1.25, S4 $1.00 and F $3.00; listing these limits does not authorize held-out execution.
+- Identifier, effort default and prices checked on 2026-10-27 against [official overview](https://platform.claude.com/docs/en/models/haiku-5-5/overview) and [pricing](https://platform.claude.com/docs/en/about-claude/pricing). No credential/account/provider request was made.
+
+After explicit smoke approval, from this worktree the canonical entrypoint is `node --import tsx scripts/midterm/evaluate.ts --smoke --paid --model claude-haiku-5-5 --effort medium`. Do not execute it before approval. It requires a clean committed tree and an owner-provided credential.
+
+Remaining risks: provider/account access, live usage/cache/refusal/truncation behavior and billing have not been tested; spending bounds assume the provider honors the dated rates and output cap. Preserve the shared ledger; a stale lock requires manual PID verification and crash-left reservations can conservatively block further work. Independent review and final held-out evaluation remain separate requirements.
+
+Automatic approval review rejected two proposed fixture edits for possible held-out access before they executed. The accepted test constructs independent synthetic data and passes; no unresolved approval block remains.
+
+### Local implementation commits
+
+- `0e4920b` — independent quest baseline, disclosed route knowledge, tuning tests and earlier tuning evidence.
+- `f657a0a` — persistent ledger, safe metering, resumable metrics/traces, mock observation-only tests and paid CLI guards.
+- Handoff instructions, skill reports and session evidence are recorded in the subsequent documentation commit (its hash is reported to the owner).
+
+Same-session audit: `agent-evidence/skill-runs/2026-10-27-phase4-readiness.md`; this is not an independent review. No paid model calls, push or merge occurred.
+
+## Audit before changes
+
+All requested references existed: `CLAUDE.md`, `AGENTS.md`, the assignment, recurring instructions, requirements and evidence indexes, route log, baseline plan, model budget proposal, server changes, and the actual frozen suite `EVALUATION_SUITE.md`. Relevant history was read in `docs/agent-sessions/23-claude-gap-analysis-evidence-foundation.md` and the session index. Both requested skills exist under `.claude/skills/`; the existing Codex reviewer is `.codex/agents/oath-rule-reviewer.toml`.
+
+| Component | Existing implementation reused |
+| --- | --- |
+| Five operations and shared simulation clock | `packages/agent/src/environment.ts` |
+| Observation schema and presentation | `packages/agent/src/types.ts`, `perception.ts` |
+| Legal actions and validation | `packages/agent/src/actions.ts` |
+| Independent hero loops and limits | `packages/agent/src/runner.ts`, `budget.ts` |
+| Action batching and interruption | `packages/agent/src/batch.ts` |
+| Scripted full route and checkpoint replay | `packages/agent/src/route/`, `suite.ts` |
+| Frozen scenarios, goals and seeds | `docs/midterm/EVALUATION_SUITE.md`, `suite.ts`, `evaluator.ts` |
+| Hash-chained evaluator traces | `packages/agent/src/trace.ts` |
+
+Substantial uncommitted Phase 4 work was already present when this session arrived: `questBaseline.ts`, `questKnowledge.ts`, the observation-only mode in `llm.ts`, `ledger.ts`, `harness.ts`, `scripts/midterm/evaluate.ts`, and their tests. This session does not claim authorship of those inherited implementations. Harness tests and `.gitignore` also changed externally during initial inspection; those edits were preserved.
+
+The minimal completion plan was to validate those modules, repair reproduced defects, and record evidence. No new evaluation framework, observation schema, game rules or scenario definitions were added.
+
+## Resulting behavior
+
+- Quest-aware policies are independent instances, use only their own observation and messages, and submit one action per decision through the existing runner. Static route-derived waypoints and mirror solutions are explicitly disclosed in `questKnowledge.ts` and `BASELINE_PLAN.md`. Their knowledge includes held-out material from route development; baseline/model held-out execution remains separate.
+- The weaker exploration baseline is retained unchanged.
+- `LLMPlayer` observation-only mode sends current observations and legal actions without model-written notes, recent action history or previous-turn results. Screen-provided messages, feedback and discovered outlines remain part of the same observation contract.
+- The harness reserves an episode's cap before model dispatch, settles reported/unknown spend conservatively, records traces and summaries, and rejects held-out tuning runs. The ledger uses an exclusive lock and atomic writes.
+- Two reproduced ledger issues were corrected here: parent directories are created for a new ledger; malformed stages/statuses, duplicate entry ids, non-finite amounts and undercharged unknown settlements fail closed. Tests cover both regressions.
+- `AGENTS.md` now points future Codex handoffs to the existing plans, actual observation code and skills. The original project invariants remain intact.
+
+## Running offline comparisons
+
+From this worktree:
+
+```sh
+node --import tsx scripts/midterm/evaluate.ts --player baseline-quest --situations S1,S2,S3 --seeds tuning
+node --import tsx scripts/midterm/evaluate.ts --player baseline-explore --situations S1,S2,S3 --seeds tuning
+```
+
+Local traces and the spend ledger belong in ignored `evaluation-runs/`. The `--paid` CLI switch is an execution guard, not owner approval. No paid calls are authorized by this report. Model availability and pricing must be rechecked before any approved paid stage; this session did not verify the inherited price table.
+
+## Remaining work and limits
+
+No live-model result, final held-out result, independent review or recording is claimed. S4 and F were not run with a quest baseline or model in this session. Existing scripted route and checkpoint reconstruction tests may traverse those areas as feasibility checks, as the frozen suite already documents. The suite file was left untouched, including its provisional status and pending player-registration decisions. The owner must authorize paid stages and final evaluation separately.
+
+Validation and local tuning results are recorded below after completion. Session evidence: `docs/agent-sessions/28-codex-evaluation-handoff.md`.
+
+## Verified validation and tuning evidence
+
+- `npm run typecheck`: pass after fixes.
+- `npm test`: **669/669** tests, 90 files, pass after fixes.
+- `npm run build`: pass after fixes (Vite bundle-size warning). The first sandbox attempt failed on a temporary-config write; the rerun with worktree write access passed.
+- Secret scan: 0 findings before final documentation; final scan reported separately in session evidence.
+- `game-rules-audit`: same-session checkpoint at `agent-evidence/skill-runs/2026-10-27-phase4-handoff.md`; not an independent review.
+
+| Quest baseline scenario | Tuning trials | Successes | Game seconds per trial | Invalid actions |
+| --- | --- | --- | --- | --- |
+| S1 | seeds 0, 1 | 2/2 | 4.8 | 0 |
+| S2 | seeds 0, 1 | 2/2 | 146.4 | 0 |
+| S3 | seeds 0, 1 | 2/2 | 52.9 | 0 |
+
+Portable summaries: `evidence/phase4/quest-tuning-summary.json`. Full local traces: `evaluation-runs/codex-handoff-quest-tuning/`; hash integrity verified by the harness. These are development/tuning trials of a scripted baseline on `b51c1c0+dirty`, not final comparison or live-model evidence. Hashes match across S2/S3 for each seed and differ across seeds, because ids and room code are seeded.

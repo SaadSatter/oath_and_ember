@@ -127,7 +127,7 @@
     "01a16225"
    ],
    "role": "Implementation agent (`AGENTS.md`); orchestrator of subagents 18, 19 and 21",
-   "title": "Player manual, design rationale D1–D11, midterm architecture, superseded Codex evaluation (PR #5)"
+   "title": "Player manual, design rationale D1\u2013D11, midterm architecture, superseded Codex evaluation (PR #5)"
   },
   {
    "number": 15,
@@ -249,6 +249,15 @@
    ],
    "role": "Skill invocation (`/session-evidence`; `.claude/skills/session-evidence/SKILL.md`) in a fresh non-interactive `claude -p` session launched by implementation session 618e460d (23). Not an independent review. Interrupted by the account usage limit",
    "title": "session-evidence, second invocation: files 24-26 and phase 2 of file 23 (interrupted)"
+  },
+  {
+   "number": 28,
+   "slug": "codex-evaluation-handoff",
+   "ids": [
+    "01a17e49"
+   ],
+   "role": "Implementation handoff under AGENTS.md and CLAUDE.md; session-evidence and game-rules-audit checkpoint use in this same session, not an independent review",
+   "title": "Continue the evaluation worktree and validate existing Phase 4 work"
   }
  ]
 }
