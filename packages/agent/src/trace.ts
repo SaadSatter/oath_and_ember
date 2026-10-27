@@ -24,7 +24,11 @@ export class TraceWriter {
   private prev = "0".repeat(64);
   private readonly started = Date.now();
   readonly lines: TraceLine[] = [];
-  constructor(private readonly path?: string) {
+  constructor(
+    private readonly path?: string,
+    /** Trusted observer of each line after it is written (live terminal status). */
+    private readonly onLine?: (line: TraceLine) => void,
+  ) {
     if (path) writeFileSync(path, "", { flag: "wx" });
   }
   write(event: { type: string; tick: number; player?: string; data: unknown }) {
@@ -33,6 +37,7 @@ export class TraceWriter {
     this.prev = line.hash;
     this.lines.push(line);
     if (this.path) appendFileSync(this.path, `${JSON.stringify(line)}\n`);
+    this.onLine?.(line);
   }
 }
 

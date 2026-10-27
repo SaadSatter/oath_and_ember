@@ -65,6 +65,21 @@ export interface EnvironmentOptions {
   limits?: Partial<EpisodeLimits>;
   labels?: LabelMode;
   trace?: (event: TraceEvent) => void;
+  /**
+   * Live viewing (scripts/midterm/live.ts; SERVER_CHANGES.md §4). Trusted
+   * hooks, never visible to players:
+   *   - `room` receives each new room right after reset creates it, so a
+   *     view-only server can serve that exact room;
+   *   - `tick` advances the room by exactly one tick instead of
+   *     `room.tick()` (the server's manual driver, which also broadcasts);
+   *   - `pace` is awaited between ticks while game time runs (not during a
+   *     scenario prefix), to play at watchable speed.
+   * None of them changes which ticks run or in what order relative to the
+   * heroes' decisions; test/liveView.test.ts checks the hashes match.
+   */
+  room?: (room: GameRoom) => void;
+  tick?: (room: GameRoom) => void;
+  pace?: () => Promise<void>;
 }
 
 /** The interface every policy (baseline or model) uses. */
@@ -123,6 +138,7 @@ export class AgentEnvironment implements GameInterface {
   private lastMilestones = new Set<string>();
   private lastBag = "";
   private lastJournal = "";
+  private pacing = false;
 
   constructor(private readonly options: EnvironmentOptions = {}) {
     this.preset = options.preset ?? "milestone";
@@ -155,6 +171,7 @@ export class AgentEnvironment implements GameInterface {
     this.room.ready(sieg, true);
     this.room.ready(coco, true);
     if (this.room.state.phase !== "PLAYING") throw Error("Room did not start.");
+    this.options.room?.(this.room);
     const slot = (id: PlayerId, key: string): Slot => ({
       id,
       role: roleOf(id),
@@ -366,44 +383,74 @@ export class AgentEnvironment implements GameInterface {
 
   /** Advances the shared simulation while every hero has an action running. */
   private run() {
-    const order = playerIds.map((id) => this.slots[id]);
-    while (!this.reason && order.every((s) => s.running)) {
-      for (const s of order) {
-        const r = s.running!;
-        const frame = r.frames[r.index] ?? {};
-        this.room.receiveInput(s.key, { ...neutral(++s.seq), ...frame });
-      }
-      this.room.tick();
-      const w = this.room.state;
-      if (w.serverTick % EXPLORE_EVERY === 0) for (const s of order) this.explore(s);
-      const shared = this.watchSharedChanges();
-      const finished: (() => void)[] = [];
-      for (const s of order) {
-        const r = s.running!;
-        r.feedback.push(...shared);
-        r.index++;
-        const me = w.players[s.key];
-        const scene = sceneOf(w, me);
-        const dialogue = storyView(w, s.role)?.key ?? null;
-        let interrupted: string | undefined;
-        if (scene !== r.scene) {
-          interrupted = `You arrived at ${areaName(scene)}.`;
-          r.scene = scene;
-        } else if (dialogue && dialogue !== r.dialogue) interrupted = "A dialogue line appeared.";
-        else if (me.hp < r.hp) interrupted = `You took ${Math.round(r.hp - me.hp)} damage.`;
-        if (me.hp > r.hp && r.hp <= 0) interrupted ??= "You recovered.";
-        r.dialogue = dialogue;
-        r.hp = me.hp;
-        if (interrupted) {
-          r.feedback.push(interrupted);
-          s.memory.note(interrupted);
-        }
-        if (interrupted || r.index >= r.frames.length) finished.push(this.finish(s, interrupted));
-      }
-      // Judge the tick before answering, so a final step reports done.
-      this.checkEnd();
-      for (const resolve of finished) resolve();
+    if (this.options.pace && !this.inPrefix) {
+      // Paced: the same ticks, with a wait between them. While the loop
+      // waits every hero is mid-action, so no submission can arrive.
+      if (!this.pacing) void this.runPaced();
+      return;
     }
+    while (this.canTick()) this.tickOnce();
+  }
+
+  private canTick() {
+    return !this.reason && playerIds.every((id) => this.slots[id].running);
+  }
+
+  private async runPaced() {
+    this.pacing = true;
+    const room = this.room;
+    try {
+      while (this.room === room && this.canTick()) {
+        this.tickOnce();
+        if (this.room === room && this.canTick()) await this.options.pace!();
+      }
+    } catch (e) {
+      this.trace("pacing_error", { message: (e as Error).message });
+      this.stop("error");
+    } finally {
+      this.pacing = false;
+    }
+  }
+
+  /** One tick for both heroes: inputs, simulation, interruptions, results. */
+  private tickOnce() {
+    const order = playerIds.map((id) => this.slots[id]);
+    for (const s of order) {
+      const r = s.running!;
+      const frame = r.frames[r.index] ?? {};
+      this.room.receiveInput(s.key, { ...neutral(++s.seq), ...frame });
+    }
+    if (this.options.tick) this.options.tick(this.room);
+    else this.room.tick();
+    const w = this.room.state;
+    if (w.serverTick % EXPLORE_EVERY === 0) for (const s of order) this.explore(s);
+    const shared = this.watchSharedChanges();
+    const finished: (() => void)[] = [];
+    for (const s of order) {
+      const r = s.running!;
+      r.feedback.push(...shared);
+      r.index++;
+      const me = w.players[s.key];
+      const scene = sceneOf(w, me);
+      const dialogue = storyView(w, s.role)?.key ?? null;
+      let interrupted: string | undefined;
+      if (scene !== r.scene) {
+        interrupted = `You arrived at ${areaName(scene)}.`;
+        r.scene = scene;
+      } else if (dialogue && dialogue !== r.dialogue) interrupted = "A dialogue line appeared.";
+      else if (me.hp < r.hp) interrupted = `You took ${Math.round(r.hp - me.hp)} damage.`;
+      if (me.hp > r.hp && r.hp <= 0) interrupted ??= "You recovered.";
+      r.dialogue = dialogue;
+      r.hp = me.hp;
+      if (interrupted) {
+        r.feedback.push(interrupted);
+        s.memory.note(interrupted);
+      }
+      if (interrupted || r.index >= r.frames.length) finished.push(this.finish(s, interrupted));
+    }
+    // Judge the tick before answering, so a final step reports done.
+    this.checkEnd();
+    for (const resolve of finished) resolve();
   }
 
   /** Ends a hero's action; the returned callback delivers its result. */

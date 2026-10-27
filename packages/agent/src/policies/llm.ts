@@ -67,7 +67,7 @@ export const EFFORTS: readonly Effort[] = ["low", "medium", "high"];
 export class AnthropicGateway implements Gateway {
   readonly label: string;
   /** SDK retries are off: a retry would be a model call the budget never saw. */
-  readonly client = new Anthropic({ maxRetries: 0 });
+  readonly client: Anthropic;
   constructor(
     private readonly model: string,
     private readonly prices: Prices,
@@ -77,8 +77,14 @@ export class AnthropicGateway implements Gateway {
      * Always sent explicitly so the trace records what was used.
      */
     readonly effort: Effort = "medium",
+    /**
+     * The credential, held only by the SDK client in memory. When omitted the
+     * SDK reads ANTHROPIC_API_KEY. Never part of the label, traces or summaries.
+     */
+    apiKey?: string,
   ) {
     this.label = `anthropic:${model}@${effort}`;
+    this.client = new Anthropic({ maxRetries: 0, ...(apiKey ? { apiKey } : {}) });
   }
   worstCaseUsd(system: string, user: string) {
     // Assume the whole prompt is a cache write and the full output budget is used.

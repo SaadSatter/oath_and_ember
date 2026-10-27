@@ -17,7 +17,8 @@ import { join } from "node:path";
 import { createHash } from "node:crypto";
 import { environmentFor, SEEDS, situation, type SituationId } from "./suite.js";
 import { runEpisode } from "./runner.js";
-import { TraceWriter, verifyTrace } from "./trace.js";
+import { TraceWriter, verifyTrace, type TraceLine } from "./trace.js";
+import type { EnvironmentOptions } from "./environment.js";
 import { ModelBudget, MeteredGateway, defaultBudgetLimits, type CallRecord, type Gateway } from "./budget.js";
 import { LLMPlayer } from "./policies/llm.js";
 import { ExplorationBaseline } from "./policies/baseline.js";
@@ -63,6 +64,15 @@ export interface SuiteRunOptions {
   model?: ModelSetup;
   /** Final runs only: the grant from authorizeFinalRun() (review H2). */
   finalGrant?: FinalGrant;
+  /**
+   * Model runs: a per-episode spend cap below the suite's EPISODE_CAP_USD
+   * (never above). The ledger reserves this amount and the budget enforces it.
+   */
+  episodeCapUsd?: number;
+  /** Live viewing hooks for the environment (scripts/midterm/live.ts). */
+  environment?: Pick<EnvironmentOptions, "room" | "tick" | "pace">;
+  /** Trusted observer of every trace line (terminal status). */
+  onTrace?: (line: TraceLine) => void;
   onEpisode?: (s: EpisodeSummary) => void;
 }
 
@@ -149,6 +159,14 @@ function atomicJson(path: string, data: unknown) {
 interface PreviousAttempt { directory: string; summary?: EpisodeSummary }
 
 /** A final run needs an owner approval for this exact plan (review H2). */
+/** The per-episode cap actually used: the suite's, or a lower one the operator chose. */
+export function episodeCap(o: Pick<SuiteRunOptions, "episodeCapUsd">, id: SituationId) {
+  if (o.episodeCapUsd === undefined) return EPISODE_CAP_USD[id];
+  if (!Number.isFinite(o.episodeCapUsd) || !(o.episodeCapUsd > 0)) throw Error("The episode spend cap must be a positive number.");
+  if (o.episodeCapUsd > EPISODE_CAP_USD[id]) throw Error(`${id}'s episode cap is $${EPISODE_CAP_USD[id]}; a run may lower it, never raise it (got $${o.episodeCapUsd}).`);
+  return o.episodeCapUsd;
+}
+
 function requireFinalGrant(o: SuiteRunOptions) {
   if (!o.final) {
     if (o.finalGrant) throw new FinalAccessError("A final grant is only used by a final run.");
@@ -165,6 +183,10 @@ function requireFinalGrant(o: SuiteRunOptions) {
 export async function runSuite(o: SuiteRunOptions): Promise<EpisodeSummary[]> {
   validatePlan(o);
   requireFinalGrant(o);
+  if (o.episodeCapUsd !== undefined) {
+    if (!o.model) throw Error("An episode spend cap applies to model runs only.");
+    for (const id of o.situations) episodeCap(o, id);
+  }
   if (o.wallSeconds !== undefined && (!Number.isFinite(o.wallSeconds) || o.wallSeconds <= 0)) throw Error("wallSeconds must be finite and positive.");
   mkdirSync(o.outDir, { recursive: true });
   const manifest = {
@@ -172,6 +194,7 @@ export async function runSuite(o: SuiteRunOptions): Promise<EpisodeSummary[]> {
     wallSeconds: o.wallSeconds ?? (o.model ? 3600 : 600),
     model: o.model ? { gateway: o.model.gateway.label, stage: o.model.stage, priceSource: o.model.priceSource,
       maxBatch: o.model.maxBatch ?? 4, manualHash: createHash("sha256").update(o.model.manual).digest("hex") } : null,
+    ...(o.episodeCapUsd !== undefined ? { episodeCapUsd: o.episodeCapUsd } : {}),
   };
   const manifestPath = join(o.outDir, "run.json");
   if (existsSync(manifestPath)) {
@@ -217,15 +240,16 @@ export async function runSuite(o: SuiteRunOptions): Promise<EpisodeSummary[]> {
 async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: string, attempt: number): Promise<EpisodeSummary> {
   mkdirSync(dir, { recursive: true });
   const tracePath = join(dir, "trace.jsonl");
-  const trace = new TraceWriter(tracePath);
-  const env = environmentFor(id, { trace: (e) => trace.write(e) });
+  const trace = new TraceWriter(tracePath, o.onTrace);
+  const env = environmentFor(id, { ...o.environment, trace: (e) => trace.write(e) });
+  const cap = episodeCap(o, id);
   const limits = episodes[situation(id).preset].limits;
   const model = isModel(o.player) ? o.model! : undefined;
   const budget = model
     ? new ModelBudget({
         maxModelCallsPerPlayer: limits.maxModelCallsPerPlayer,
         maxTokensPerPlayer: limits.maxTokensPerPlayer,
-        maxSpendUsd: EPISODE_CAP_USD[id],
+        maxSpendUsd: cap,
         callTimeoutMs: defaultBudgetLimits.callTimeoutMs,
       })
     : undefined;
@@ -233,7 +257,7 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
   // Final runs: claim the episode in the append-only register first (H2).
   const claim = o.final ? o.finalGrant!.claim(o.player, id, seed, attempt) : null;
   // Reserve before anything can spend; the reservation is on disk first.
-  const ledgerEntry = model ? model.ledger.reserve(model.stage, `${o.player}/${id}/seed${seed}/${o.gitHash}`, EPISODE_CAP_USD[id]) : null;
+  const ledgerEntry = model ? model.ledger.reserve(model.stage, `${o.player}/${id}/seed${seed}/${o.gitHash}`, cap) : null;
   const started = Date.now();
   let outcome: GameOutcome;
   try {
@@ -246,7 +270,7 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
     });
   } catch (e) {
     if (model && ledgerEntry) model.ledger.settle(ledgerEntry, null, `episode failed: ${(e as Error).message.slice(0, 200)}`);
-    if (claim) o.finalGrant!.finish(claim, { status: "error", reason: (e as Error).message.slice(0, 200), endHash: null, chargedUsd: model ? EPISODE_CAP_USD[id] : null });
+    if (claim) o.finalGrant!.finish(claim, { status: "error", reason: (e as Error).message.slice(0, 200), endHash: null, chargedUsd: model ? cap : null });
     throw e;
   }
   if (model && ledgerEntry) {

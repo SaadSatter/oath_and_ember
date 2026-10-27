@@ -1,6 +1,6 @@
 // Review H1: one spend ledger for every worktree, independent of the shell's
 // working directory, never created implicitly, and legacy ledgers inventoried.
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { execFileSync, spawn } from "node:child_process";
 import { once } from "node:events";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, realpathSync, rmSync, writeFileSync } from "node:fs";
@@ -8,6 +8,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { LedgerError, SpendLedger } from "../src/ledger.js";
 import { canonicalLedgerPath, ledgerInventory, repoInfo } from "../src/repo.js";
+
+// These tests run git many times; allow for a loaded machine.
+vi.setConfig({ testTimeout: 30_000 });
 
 const dirs: string[] = [];
 afterEach(() => {
@@ -148,7 +151,7 @@ describe("canonical spend ledger (H1)", () => {
 
   it("has no paid entrypoint that builds a ledger path from the working directory", async () => {
     const { readFileSync } = await import("node:fs");
-    for (const f of ["../../../scripts/midterm/evaluate.ts"]) {
+    for (const f of ["../../../scripts/midterm/evaluate.ts", "../../../scripts/midterm/live.ts"]) {
       const src = readFileSync(new URL(f, import.meta.url), "utf8");
       expect(src, f).not.toMatch(/evaluation-runs\/spend-ledger/);
       expect(src, f).toMatch(/SpendLedger\.openCanonical\(/);

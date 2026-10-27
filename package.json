@@ -19,7 +19,8 @@
     "playtest": "npm run build && SHRINE_PLAYTEST=1 PROLOGUE=0 PORT=3018 npm start",
     "prologue": "npm run build && PROLOGUE=1 PORT=3019 npm start",
     "enemy:encounter": "npm run build && ENEMY_ENCOUNTER=1 PROLOGUE=0 PORT=3017 npm start",
-    "enemy:qa": "node --import tsx scripts/enemy-multiplayer-qa.ts"
+    "enemy:qa": "node --import tsx scripts/enemy-multiplayer-qa.ts",
+    "eval:live": "node --import tsx scripts/midterm/live.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.2.0",
