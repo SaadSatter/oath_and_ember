@@ -42,6 +42,8 @@ Evidence pointers are in `docs/midterm/EVIDENCE_INDEX.md`. Updated 2026-10-27, a
 - **Recording.** Live capture of model-controlled play is preferred. A replay must be labelled and verified against its trace. A baseline is never presented as an LLM.
 - **Information boundary.** Griffin HP, attack phases, signs and labels exactly as a human player sees them. No internal-only state.
 - **Security.** The owner rotates the PixelLab token before evidence is published. All committed evidence and artefacts are scanned.
+- **Sprint-frame test (2026-10-27, phase 2 item 8).** "Fix it if the test expectation is outdated … Do not change approved gameplay behavior merely to make the test pass." The expectation was outdated: the owner had asked for a faster Super Speed run animation (Codex session 01a15749, 2026-10-22). Only the test changed (`7c9f025`).
+- **Time limits (2026-10-27).** 480 s means game time. The real-world wall-clock limit is separate and configurable. No default value is approved for model runs, so `--wall-seconds` is required for them.
 - **Submission.** Prepare Oath and Ember, but do not replace Prince of Persia in course PR #57 until the professor resolves the scope and submission questions.
 
 ## CI test groups required by 3c (planned)

@@ -241,8 +241,10 @@ export class GameRoom {
   add(socketId: string) {
     if (this.sessions.size >= 2)
       throw Error("Room is full. Exactly two heroes can join.");
+    // The reconnect token is a credential: always cryptographically random,
+    // never from the injected (possibly deterministic) id source.
     const id = this.runtime.id(),
-      token = this.runtime.id();
+      token = randomUUID();
     this.sessions.set(id, {
       token,
       socketId,

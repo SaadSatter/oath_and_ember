@@ -193,15 +193,23 @@ describe("same inputs, same world: production runtime vs deterministic runtime",
 
   it("the scripts exercise what they compare: Slow Time, Super Speed, Flight, projectiles, Black Hole", () => {
     const seen = { slowTime: false, sprint: false, flight: false, projectiles: false, blackHoles: false };
-    for (const seed of [11, 29]) {
+    for (const [start, seed] of [["encounter", 11], ["encounter", 29], ["goddess", 7], ["goddess", 43]] as const) {
       const frames = script(seed, 1500);
       let ref: GameRoom | undefined;
-      const { room, ids } = makeRoom("encounter", fakeRuntime(() => (ref!.state.serverTick * 1000) / 60));
+      const { room, ids } = makeRoom(start, fakeRuntime(() => (ref!.state.serverTick * 1000) / 60));
       ref = room;
       const seq = [0, 0];
-      for (const pair of frames) {
+      for (const [t, pair] of frames.entries()) {
         for (const h of [0, 1]) send(room, ids[h], ++seq[h], pair[h]);
         room.tick();
+        const cut = room.state.story?.cutscene;
+        if (cut && t % 15 === 0)
+          for (const id of ids)
+            try {
+              room.readStoryLine(id, cut.id, cut.line);
+            } catch {
+              /* not this hero's line */
+            }
         seen.slowTime ||= !!room.state.slowTime;
         seen.sprint ||= (room.state.players[ids[0]].sprintRemaining ?? 0) > 0;
         seen.flight ||= (room.state.players[ids[1]].flightRemaining ?? 0) > 0;
@@ -280,5 +288,66 @@ describe("deterministic runtime", () => {
     };
     expect(go()).toBe(ticksFor(10));
     expect(go(fakeRuntime(() => 0))).toBe(ticksFor(10));
+  });
+});
+
+describe("audit fixes (2026-10-27-server-changes)", () => {
+  it("#2: reconnect tokens stay cryptographically random under a deterministic runtime", () => {
+    const room = new GameRoom("TOKEN1", false, "MAIN_HOUSE", false, undefined, fakeRuntime(() => 0));
+    const a = room.add("a"),
+      b = room.add("b");
+    expect(a.playerId).toBe("00000000-0000-4000-8000-000000000001");
+    for (const t of [a.reconnectToken, b.reconnectToken])
+      expect(t).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+    expect(a.reconnectToken).not.toMatch(/^00000000-0000-4000-8000-/);
+    expect(a.reconnectToken).not.toBe(b.reconnectToken);
+  });
+
+  it("#5: equal worlds when inputs arrive with gaps (stale ticks), production clock vs injected clock", () => {
+    // Inputs only every 20 ticks (333 ms), so freshness rules see stale input.
+    // The production run's Date.now is mocked to the same game-time clock.
+    for (const [start, seed] of [["encounter", 11], ["goddess", 7]] as const) {
+      const frames = script(seed, 1200);
+      const drawn: string[] = [];
+      let prodRoom: GameRoom | undefined;
+      const now = vi.spyOn(Date, "now").mockImplementation(() => 5_000 + ((prodRoom?.state.serverTick ?? 0) * 1000) / 60);
+      const gapped = (room: GameRoom, ids: readonly string[]) => {
+        const seq = [0, 0],
+          samples: string[] = [];
+        frames.forEach((pair, t) => {
+          if (t % 20 === 0) for (const h of [0, 1]) send(room, ids[h], ++seq[h], pair[h]);
+          room.tick();
+          const cut = room.state.story?.cutscene;
+          if (cut && t % 15 === 0)
+            for (const id of ids)
+              try {
+                room.readStoryLine(id, cut.id, cut.line);
+              } catch {
+                /* not this hero's line */
+              }
+          if (t % 10 === 0) samples.push(JSON.stringify(room.state));
+        });
+        return samples;
+      };
+      const p = makeRoom(start, {
+        now: () => Date.now(),
+        id: () => {
+          const v = randomUUID();
+          drawn.push(v);
+          return v;
+        },
+      });
+      prodRoom = p.room;
+      const prod = gapped(p.room, p.ids);
+      now.mockRestore();
+      let k = 0,
+        detRef: GameRoom | undefined;
+      const d = makeRoom(start, { now: () => 5_000 + ((detRef?.state.serverTick ?? 0) * 1000) / 60, id: () => drawn[k++] });
+      detRef = d.room;
+      const det = gapped(d.room, d.ids);
+      expect(det.length).toBe(prod.length);
+      for (let i = 0; i < prod.length; i++)
+        if (det[i] !== prod[i]) expect.fail(`${start}: world differs at sample ${i}`);
+    }
   });
 });

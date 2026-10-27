@@ -832,6 +832,8 @@ for (const b of document.querySelectorAll<HTMLButtonElement>("[data-key]")) {
 const casts = new CastPrediction();
 let primaryWasHeld = false;
 function submitInput(reliable = false) {
+  // A view-only recording browser never predicts or sends input (SERVER_CHANGES.md §3).
+  if (net.viewOnly) return;
   const w = net.world;
   if (
     !w ||

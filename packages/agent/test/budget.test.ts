@@ -190,6 +190,19 @@ describe("limits enforced centrally by the runner", () => {
   });
 });
 
+describe("per-call timeout through a whole episode", () => {
+  it("a hung model times out, is traced as a timeout and counted, and repeated timeouts end the episode with error", async () => {
+    const budget = new ModelBudget({ ...defaultBudgetLimits, callTimeoutMs: 40 });
+    const { out, trace } = await play(budget, new ScriptedGateway(["hang"]), new ScriptedGateway([WAIT]), { maxConsecutiveFailures: 2 });
+    expect(out.reason).toBe("error");
+    expect(out.modelCalls.sieg).toBe(2);
+    expect(out.failedModelCalls.sieg).toBe(2);
+    const sieg = trace.lines.filter((l) => l.player === "sieg");
+    expect(sieg.filter((l) => l.type === "model_call").map((l) => (l.data as { status: string }).status)).toEqual(["timeout", "timeout"]);
+    expect(sieg.filter((l) => l.type === "policy_error").map((l) => (l.data as { kind: string }).kind)).toEqual(["timeout", "timeout"]);
+  });
+});
+
 describe("game time and wall-clock time are separate limits", () => {
   it("the 480 s episode limit is game time: tick_limit, measured in ticks", async () => {
     const env = new AgentEnvironment({ preset: "full", limits: { maxTicks: 120 } });

@@ -63,7 +63,7 @@ The browser must render a hero's view without being able to control anything. Th
 - **New event.** `view:attach { roomCode, playerId, viewToken }` joins the socket to the room's broadcast channel and returns the same session shape the client uses to choose whose camera and HUD to draw, without a reconnect token.
 - **Server-enforced.** The socket is marked as a viewer. `player:input` is ignored, and every request (`inventory:use`, `story:read`, `story:choose`, `npc:talk`, `role:select`, `appearance:select`, `lobby:ready`, `room:leave`, `game:restart`, `skill:unlock`, `room:create`, `room:join`, `session:resume`) is rejected with "View-only session".
 - **No effect on the hero.** A viewer's disconnect calls nothing on the room. The hero stays connected and the agent's input is untouched.
-- **Client.** `apps/client/src/net/NetworkClient.ts` gains a view mode, selected by `?view=<token>` in the URL. It sends `view:attach` instead of `session:resume`, never starts the input timer, and the UI disables panel actions. Rendering code is unchanged. Codex's DOM observation bridge (`apps/client/src/evaluation/visibleObservation.ts`) and the `PlayerView` identity tag are **not** brought over. Agents observe through `packages/agent/src/perception.ts`, not the browser.
+- **Client.** `apps/client/src/net/NetworkClient.ts` gains a view mode, selected by `?view=<token>&room=<code>&player=<id>` in the URL. It sends `view:attach` instead of `session:resume` and never stores a session. `sendInput` is a no-op, and every request other than `view:attach` and `clock:probe` is rejected locally with "View-only session." (panel buttons stay visible, but their requests fail). `main.ts`'s `submitInput` returns immediately in view mode, so no local prediction is advanced and the hero is drawn from authoritative snapshots (fix for audit 2026-10-27-server-changes #3). Rendering code is unchanged. Codex's DOM observation bridge (`apps/client/src/evaluation/visibleObservation.ts`) and the `PlayerView` identity tag are **not** brought over. Agents observe through `packages/agent/src/perception.ts`, not the browser.
 
 **Integration tests for B** (`apps/server/test/viewOnly.test.ts`, real Socket.IO, as `AGENTS.md` requires for protocol changes):
 - Without `viewers: true`, `view:attach` is rejected.
@@ -118,3 +118,10 @@ The final test instead records the UUIDs the production run draws and replays th
 **Other notes.**
 - Snapshots are `volatile` emits, as before. Socket.IO drops them while a socket is busy, so a host that steps faster than real time sends fewer snapshots than live play. Recording runs step at 60 Hz in real time, so this does not affect the video.
 - `view:attach` sends the initial `state:sync` only to the attaching viewer, not to the whole room. A player attach broadcasts to the room. Neither changes any state.
+
+**Fixes after the second audit (`docs/midterm/agent-evidence/skill-runs/2026-10-27-server-changes.md`).**
+- **#2.** The reconnect token is always `crypto.randomUUID()`, never the injected id source, so deterministic ids cannot make a hero's session guessable. Production is unchanged, since it was already `randomUUID()`.
+- **#3.** View mode no longer advances local prediction or the input path (`main.ts` `submitInput` guard). The doc line above now describes what the client does.
+- **#5.** The equivalence test also covers input gaps. Inputs are sent only every 20 ticks, with `Date.now` mocked to game time, so the production clock path is compared against the injected clock across stale-input ticks. The exercise check also runs the goddess seeds.
+- **#7.** Model runs must pass `--wall-seconds`; there is no default.
+- **#1 (open, needs the owner).** Headless runs still use random UUIDs for hero ids until the owner chooses counter or seeded ids.

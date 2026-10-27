@@ -42,7 +42,8 @@ if (!(preset in episodes)) throw Error(`Unknown --preset ${preset}.`);
 const labels = arg("--labels", "as-drawn") as LabelMode;
 if (!["as-drawn", "names-only"].includes(labels)) throw Error(`Unknown --labels ${labels}.`);
 /** Real-world limit, separate from the preset's game-time tick limit. */
-const wallSeconds = positive("--wall-seconds", policy === "baseline" ? 60 : 1800);
+// Model runs must state their real-world limit explicitly: no default has been approved.
+const wallSeconds = positive("--wall-seconds", policy === "baseline" ? 60 : undefined);
 const out = resolve(arg("--out", `evaluation-runs/${policy}-${preset}-${seed}-${Date.now()}`)!);
 
 const model = policy === "baseline" ? undefined : policy;
