@@ -15,8 +15,9 @@
 import { Director } from "./director.js";
 import { directionTo, planStep, type Point } from "../policies/navigate.js";
 import type { Direction, Observation, PlayerId } from "../types.js";
-
-const SPEED = 190 / 32 / 60; // walking speed, tiles per tick
+// The route's constants live in the disclosed quest-knowledge module, shared
+// with the quest-aware baseline.
+import { MIRROR, MIRROR_REST as REST, MIRROR_TARGET as TARGET, PAD, POND_PLAN, SHOT, SHRINE, TO_MIRROR as TO_ARRIVAL, WALK_SPEED as SPEED } from "../policies/questKnowledge.js";
 
 // ── Shared helpers ─────────────────────────────────────────────────────────
 const has = (o: Observation, item: string) => o.inventory.items.some((i) => i.id === item);
@@ -63,8 +64,6 @@ export async function opening(d: Director) {
   d.note("opening scene read");
 }
 
-/** Shrine exits (tiles), from maps.GODDESS_SHRINE.points. */
-const SHRINE = { west: { x: 3, y: 18 }, east: { x: 37, y: 18 }, north: { x: 20, y: 2.5 }, offering: { x: 20, y: 17 } };
 export async function travelFromShrine(d: Director, exit: "west" | "east" | "north", area: string) {
   const p = SHRINE[exit];
   await d.go({ sieg: { to: { x: p.x + (exit === "west" ? 0.5 : exit === "east" ? -0.4 : 0), y: p.y + (exit === "north" ? 0.5 : 0) }, opts: { tolerance: 0.6 } } });
@@ -154,22 +153,10 @@ export async function hedgeMaze(d: Director) {
 }
 
 // ── Mirror Pond: vanity mirror ─────────────────────────────────────────────
-// POND_PLAN: per mirror, Sieg's walks and push lengths from
+// POND_PLAN (policies/questKnowledge.ts): per mirror, Sieg's walks and push lengths from
 // scripts/midterm/route-dev/pond-plan.ts (exact 4 px paths with the hero's
 // ±13 px box, the mirror at the angle it has at that point; one push tick turns
 // a mirror 1.5°). Phases: solve, rest, leave.
-const POND_PLAN: { phase: string; walk?: number[][]; push?: number; to?: number }[][] = [[{"phase":"solve","walk":[[38.125,15.5],[37.25,14.625],[37.25,9.25],[37,9]],"push":45,"to":157.5},{"phase":"rest","walk":[[37,11],[36.5,11.5]],"push":29,"to":294},{"phase":"rest","walk":[[36.5,11.125],[38.125,9.5],[39.5,9.5]],"push":16,"to":270},{"phase":"leave","walk":[[38.875,9.5],[38.75,9.375],[38.375,9.375],[36.5,7.5]]}],[{"phase":"solve","walk":[[29.5,5.5],[29,5]],"push":45,"to":67.5},{"phase":"rest","walk":[[27,5],[26.5,4.5]],"push":29,"to":24},{"phase":"rest","walk":[[23.5,4.5]],"push":16,"to":360},{"phase":"leave","walk":[[23.5,5.125],[23.375,5.25],[23.375,5.625],[22.5,6.5]]}],[{"phase":"solve","walk":[[5.5,14],[6.5,15]],"push":45,"to":22.5},{"phase":"rest","walk":[[6.5,16.5],[7.5,17.5]],"push":29,"to":66},{"phase":"rest","walk":[[7.5,17.125],[5.875,15.5],[4.5,15.5]],"push":16,"to":90},{"phase":"leave","walk":[[4.5,21.5],[5.5,22.5]]}],[{"phase":"solve","walk":[[19,29]],"push":45,"to":292.5},{"phase":"rest","walk":[[21,29],[21.5,28.5]],"push":29,"to":156},{"phase":"rest","walk":[[22.5,28.5]],"push":16,"to":180},{"phase":"leave","walk":[[26.5,28.5],[27.5,29.5]]}]];
-const MIRROR = [{ x: 38, y: 12 }, { x: 26, y: 6 }, { x: 6, y: 18 }, { x: 22, y: 30 }];
-const TARGET = [157.5, 67.5, 22.5, 112.5],
-  REST = [90, 0, 90, 0];
-const PAD = [{ x: 28, y: 12 }, { x: 26, y: 12 }, { x: 16, y: 18 }, { x: 22, y: 25 }];
-const SHOT: Direction[] = ["e", "n", "w", "s"];
-const TO_ARRIVAL: Point[][] = [
-  [{ x: 38.5, y: 25.5 }, { x: 38.5, y: 15.5 }],
-  [{ x: 29.5, y: 7.5 }],
-  [{ x: 5.5, y: 6.5 }, { x: 5.5, y: 13.5 }],
-  [{ x: 5.5, y: 28.5 }, { x: 18.5, y: 28.5 }],
-];
 const mod180 = (a: number) => ((a % 180) + 180) % 180;
 async function mirrorDeg(d: Director, i: number) {
   for (const id of ["sieg", "coco"] as PlayerId[]) {

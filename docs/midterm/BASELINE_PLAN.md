@@ -1,4 +1,6 @@
-# Baseline plan (for approval; not implemented)
+# Baseline plan and implementation
+
+**Implementation checkpoint (2026-10-27):** the inherited Phase 4 implementation is present in `packages/agent/src/policies/{questBaseline,questKnowledge}.ts`. S1–S3 tuning trials on seeds 0/1 pass, with zero invalid actions. See `PHASE4_HANDOFF.md` for actual checks, provenance and limitations. The plan below is the original pre-implementation record; its statements about code not yet existing are historical. S4/F baseline/model trials remain unrun.
 
 Owner decision 2026-10-27: build a credible quest-aware scripted baseline for two players. Each hero uses only its own observation and permitted messages. Its hand-coded quest knowledge is disclosed, and the exploration baseline is kept as a weaker comparison. This plan comes after the suite freeze (`EVALUATION_SUITE.md`, commit `0c45f82`), and no scenario-specific baseline code exists yet.
 

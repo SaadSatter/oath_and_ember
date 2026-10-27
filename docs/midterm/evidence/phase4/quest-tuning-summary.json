@@ -1,0 +1,675 @@
+{
+  "episodes": [
+    {
+      "situation": "S1",
+      "seed": 0,
+      "player": "baseline-quest",
+      "policies": {
+        "sieg": "baseline-quest(Sieg)",
+        "coco": "baseline-quest(Coco)"
+      },
+      "gateway": null,
+      "modelIds": [],
+      "gitHash": "b51c1c0+dirty",
+      "startHash": "d9b2359a956db64d0a489c4367bc313523da7e617e3d8cc68e02b5ffbbac95a2",
+      "startTick": 0,
+      "prefix": null,
+      "status": "success",
+      "reason": "success",
+      "success": true,
+      "gameTicks": 290,
+      "gameSeconds": 4.8,
+      "wallSeconds": 0.4,
+      "decisions": {
+        "sieg": 39,
+        "coco": 19
+      },
+      "invalidActions": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "messages": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "batchStops": 0,
+      "modelCalls": {
+        "attempted": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "unknownUsage": 0
+      },
+      "latencyMs": {
+        "mean": null,
+        "max": null
+      },
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0
+      },
+      "spendUsd": {
+        "known": 0,
+        "charged": 0
+      },
+      "priceSource": null,
+      "ledgerEntry": null,
+      "baselineLog": {
+        "sieg": [
+          {
+            "tick": 0,
+            "note": "entered Goddess Shrine"
+          },
+          {
+            "tick": 106,
+            "note": "shrine: leaving by the east exit"
+          }
+        ],
+        "coco": [
+          {
+            "tick": 0,
+            "note": "entered Goddess Shrine"
+          }
+        ]
+      }
+    },
+    {
+      "situation": "S1",
+      "seed": 1,
+      "player": "baseline-quest",
+      "policies": {
+        "sieg": "baseline-quest(Sieg)",
+        "coco": "baseline-quest(Coco)"
+      },
+      "gateway": null,
+      "modelIds": [],
+      "gitHash": "b51c1c0+dirty",
+      "startHash": "1d3e679308ca3e5d3ab9411a3732d3bbff6185d0489dcc70954cfbb1f6a27612",
+      "startTick": 0,
+      "prefix": null,
+      "status": "success",
+      "reason": "success",
+      "success": true,
+      "gameTicks": 290,
+      "gameSeconds": 4.8,
+      "wallSeconds": 0.5,
+      "decisions": {
+        "sieg": 39,
+        "coco": 19
+      },
+      "invalidActions": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "messages": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "batchStops": 0,
+      "modelCalls": {
+        "attempted": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "unknownUsage": 0
+      },
+      "latencyMs": {
+        "mean": null,
+        "max": null
+      },
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0
+      },
+      "spendUsd": {
+        "known": 0,
+        "charged": 0
+      },
+      "priceSource": null,
+      "ledgerEntry": null,
+      "baselineLog": {
+        "sieg": [
+          {
+            "tick": 0,
+            "note": "entered Goddess Shrine"
+          },
+          {
+            "tick": 106,
+            "note": "shrine: leaving by the east exit"
+          }
+        ],
+        "coco": [
+          {
+            "tick": 0,
+            "note": "entered Goddess Shrine"
+          }
+        ]
+      }
+    },
+    {
+      "situation": "S2",
+      "seed": 0,
+      "player": "baseline-quest",
+      "policies": {
+        "sieg": "baseline-quest(Sieg)",
+        "coco": "baseline-quest(Coco)"
+      },
+      "gateway": null,
+      "modelIds": [],
+      "gitHash": "b51c1c0+dirty",
+      "startHash": "5397eba5c68d4770bf41e742e5ae9474a256a30f9ddd4149a6bf35592bc2c9ab",
+      "startTick": 221,
+      "prefix": "opening scene",
+      "status": "success",
+      "reason": "success",
+      "success": true,
+      "gameTicks": 8786,
+      "gameSeconds": 146.4,
+      "wallSeconds": 21.7,
+      "decisions": {
+        "sieg": 555,
+        "coco": 506
+      },
+      "invalidActions": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "messages": {
+        "sieg": 11,
+        "coco": 8
+      },
+      "batchStops": 0,
+      "modelCalls": {
+        "attempted": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "unknownUsage": 0
+      },
+      "latencyMs": {
+        "mean": null,
+        "max": null
+      },
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0
+      },
+      "spendUsd": {
+        "known": 0,
+        "charged": 0
+      },
+      "priceSource": null,
+      "ledgerEntry": null,
+      "baselineLog": {
+        "sieg": [
+          {
+            "tick": 221,
+            "note": "entered Goddess Shrine"
+          },
+          {
+            "tick": 221,
+            "note": "shrine: leaving by the east exit"
+          },
+          {
+            "tick": 405,
+            "note": "entered Hedge Maze"
+          },
+          {
+            "tick": 2762,
+            "note": "wolf chase 1: caught"
+          },
+          {
+            "tick": 4141,
+            "note": "entered Goddess Shrine"
+          },
+          {
+            "tick": 4141,
+            "note": "shrine: leaving by the west exit"
+          },
+          {
+            "tick": 4463,
+            "note": "entered Mirror Pond"
+          },
+          {
+            "tick": 5006,
+            "note": "spike crossing 1: crossed"
+          },
+          {
+            "tick": 5254,
+            "note": "M1 solve: 157.5\u00b0 (off 0\u00b0)"
+          },
+          {
+            "tick": 5791,
+            "note": "M1 rest: 90\u00b0 (off 0\u00b0)"
+          },
+          {
+            "tick": 5973,
+            "note": "M2 solve: 67.5\u00b0 (off 0\u00b0)"
+          },
+          {
+            "tick": 6422,
+            "note": "M2 rest: 0\u00b0 (off 0\u00b0)"
+          },
+          {
+            "tick": 6758,
+            "note": "M3 solve: 22.5\u00b0 (off 0\u00b0)"
+          },
+          {
+            "tick": 7238,
+            "note": "M3 rest: 90\u00b0 (off 0\u00b0)"
+          },
+          {
+            "tick": 7557,
+            "note": "M4 solve: 292.5\u00b0 (off 0\u00b0)"
+          },
+          {
+            "tick": 8764,
+            "note": "M4 rest: 0\u00b0 (off 0\u00b0)"
+          }
+        ],
+        "coco": [
+          {
+            "tick": 221,
+            "note": "entered Goddess Shrine"
+          },
+          {
+            "tick": 405,
+            "note": "entered Hedge Maze"
+          },
+          {
+            "tick": 3455,
+            "note": "took the Enchanted Shears"
+          },
+          {
+            "tick": 4141,
+            "note": "entered Goddess Shrine"
+          },
+          {
+            "tick": 4463,
+            "note": "entered Mirror Pond"
+          }
+        ]
+      }
+    },
+    {
+      "situation": "S2",
+      "seed": 1,
+      "player": "baseline-quest",
+      "policies": {
+        "sieg": "baseline-quest(Sieg)",
+        "coco": "baseline-quest(Coco)"
+      },
+      "gateway": null,
+      "modelIds": [],
+      "gitHash": "b51c1c0+dirty",
+      "startHash": "d109db6679d708103648fedd33562a17dc05f6e37b83b19af70374411c3dbb57",
+      "startTick": 221,
+      "prefix": "opening scene",
+      "status": "success",
+      "reason": "success",
+      "success": true,
+      "gameTicks": 8786,
+      "gameSeconds": 146.4,
+      "wallSeconds": 9.4,
+      "decisions": {
+        "sieg": 555,
+        "coco": 506
+      },
+      "invalidActions": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "messages": {
+        "sieg": 11,
+        "coco": 8
+      },
+      "batchStops": 0,
+      "modelCalls": {
+        "attempted": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "unknownUsage": 0
+      },
+      "latencyMs": {
+        "mean": null,
+        "max": null
+      },
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0
+      },
+      "spendUsd": {
+        "known": 0,
+        "charged": 0
+      },
+      "priceSource": null,
+      "ledgerEntry": null,
+      "baselineLog": {
+        "sieg": [
+          {
+            "tick": 221,
+            "note": "entered Goddess Shrine"
+          },
+          {
+            "tick": 221,
+            "note": "shrine: leaving by the east exit"
+          },
+          {
+            "tick": 405,
+            "note": "entered Hedge Maze"
+          },
+          {
+            "tick": 2762,
+            "note": "wolf chase 1: caught"
+          },
+          {
+            "tick": 4141,
+            "note": "entered Goddess Shrine"
+          },
+          {
+            "tick": 4141,
+            "note": "shrine: leaving by the west exit"
+          },
+          {
+            "tick": 4463,
+            "note": "entered Mirror Pond"
+          },
+          {
+            "tick": 5006,
+            "note": "spike crossing 1: crossed"
+          },
+          {
+            "tick": 5254,
+            "note": "M1 solve: 157.5\u00b0 (off 0\u00b0)"
+          },
+          {
+            "tick": 5791,
+            "note": "M1 rest: 90\u00b0 (off 0\u00b0)"
+          },
+          {
+            "tick": 5973,
+            "note": "M2 solve: 67.5\u00b0 (off 0\u00b0)"
+          },
+          {
+            "tick": 6422,
+            "note": "M2 rest: 0\u00b0 (off 0\u00b0)"
+          },
+          {
+            "tick": 6758,
+            "note": "M3 solve: 22.5\u00b0 (off 0\u00b0)"
+          },
+          {
+            "tick": 7238,
+            "note": "M3 rest: 90\u00b0 (off 0\u00b0)"
+          },
+          {
+            "tick": 7557,
+            "note": "M4 solve: 292.5\u00b0 (off 0\u00b0)"
+          },
+          {
+            "tick": 8764,
+            "note": "M4 rest: 0\u00b0 (off 0\u00b0)"
+          }
+        ],
+        "coco": [
+          {
+            "tick": 221,
+            "note": "entered Goddess Shrine"
+          },
+          {
+            "tick": 405,
+            "note": "entered Hedge Maze"
+          },
+          {
+            "tick": 3455,
+            "note": "took the Enchanted Shears"
+          },
+          {
+            "tick": 4141,
+            "note": "entered Goddess Shrine"
+          },
+          {
+            "tick": 4463,
+            "note": "entered Mirror Pond"
+          }
+        ]
+      }
+    },
+    {
+      "situation": "S3",
+      "seed": 0,
+      "player": "baseline-quest",
+      "policies": {
+        "sieg": "baseline-quest(Sieg)",
+        "coco": "baseline-quest(Coco)"
+      },
+      "gateway": null,
+      "modelIds": [],
+      "gitHash": "b51c1c0+dirty",
+      "startHash": "5397eba5c68d4770bf41e742e5ae9474a256a30f9ddd4149a6bf35592bc2c9ab",
+      "startTick": 221,
+      "prefix": "opening scene",
+      "status": "success",
+      "reason": "success",
+      "success": true,
+      "gameTicks": 3174,
+      "gameSeconds": 52.9,
+      "wallSeconds": 4.5,
+      "decisions": {
+        "sieg": 182,
+        "coco": 170
+      },
+      "invalidActions": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "messages": {
+        "sieg": 3,
+        "coco": 3
+      },
+      "batchStops": 0,
+      "modelCalls": {
+        "attempted": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "unknownUsage": 0
+      },
+      "latencyMs": {
+        "mean": null,
+        "max": null
+      },
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0
+      },
+      "spendUsd": {
+        "known": 0,
+        "charged": 0
+      },
+      "priceSource": null,
+      "ledgerEntry": null,
+      "baselineLog": {
+        "sieg": [
+          {
+            "tick": 221,
+            "note": "entered Goddess Shrine"
+          },
+          {
+            "tick": 221,
+            "note": "shrine: leaving by the east exit"
+          },
+          {
+            "tick": 405,
+            "note": "entered Hedge Maze"
+          },
+          {
+            "tick": 2762,
+            "note": "wolf chase 1: caught"
+          }
+        ],
+        "coco": [
+          {
+            "tick": 221,
+            "note": "entered Goddess Shrine"
+          },
+          {
+            "tick": 405,
+            "note": "entered Hedge Maze"
+          }
+        ]
+      }
+    },
+    {
+      "situation": "S3",
+      "seed": 1,
+      "player": "baseline-quest",
+      "policies": {
+        "sieg": "baseline-quest(Sieg)",
+        "coco": "baseline-quest(Coco)"
+      },
+      "gateway": null,
+      "modelIds": [],
+      "gitHash": "b51c1c0+dirty",
+      "startHash": "d109db6679d708103648fedd33562a17dc05f6e37b83b19af70374411c3dbb57",
+      "startTick": 221,
+      "prefix": "opening scene",
+      "status": "success",
+      "reason": "success",
+      "success": true,
+      "gameTicks": 3174,
+      "gameSeconds": 52.9,
+      "wallSeconds": 3.7,
+      "decisions": {
+        "sieg": 182,
+        "coco": 170
+      },
+      "invalidActions": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "messages": {
+        "sieg": 3,
+        "coco": 3
+      },
+      "batchStops": 0,
+      "modelCalls": {
+        "attempted": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "unknownUsage": 0
+      },
+      "latencyMs": {
+        "mean": null,
+        "max": null
+      },
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0
+      },
+      "spendUsd": {
+        "known": 0,
+        "charged": 0
+      },
+      "priceSource": null,
+      "ledgerEntry": null,
+      "baselineLog": {
+        "sieg": [
+          {
+            "tick": 221,
+            "note": "entered Goddess Shrine"
+          },
+          {
+            "tick": 221,
+            "note": "shrine: leaving by the east exit"
+          },
+          {
+            "tick": 405,
+            "note": "entered Hedge Maze"
+          },
+          {
+            "tick": 2762,
+            "note": "wolf chase 1: caught"
+          }
+        ],
+        "coco": [
+          {
+            "tick": 221,
+            "note": "entered Goddess Shrine"
+          },
+          {
+            "tick": 405,
+            "note": "entered Hedge Maze"
+          }
+        ]
+      }
+    }
+  ],
+  "aggregate": [
+    {
+      "situation": "S1",
+      "trials": 2,
+      "successes": 2,
+      "reasons": [
+        "success",
+        "success"
+      ],
+      "meanGameSeconds": 4.8,
+      "meanDecisions": 58,
+      "invalidActions": 0,
+      "messages": 0,
+      "modelCalls": 0,
+      "chargedUsd": 0,
+      "startHashes": [
+        "d9b2359a956db64d",
+        "1d3e679308ca3e5d"
+      ]
+    },
+    {
+      "situation": "S2",
+      "trials": 2,
+      "successes": 2,
+      "reasons": [
+        "success",
+        "success"
+      ],
+      "meanGameSeconds": 146.4,
+      "meanDecisions": 1061,
+      "invalidActions": 0,
+      "messages": 38,
+      "modelCalls": 0,
+      "chargedUsd": 0,
+      "startHashes": [
+        "5397eba5c68d4770",
+        "d109db6679d70810"
+      ]
+    },
+    {
+      "situation": "S3",
+      "trials": 2,
+      "successes": 2,
+      "reasons": [
+        "success",
+        "success"
+      ],
+      "meanGameSeconds": 52.9,
+      "meanDecisions": 352,
+      "invalidActions": 0,
+      "messages": 12,
+      "modelCalls": 0,
+      "chargedUsd": 0,
+      "startHashes": [
+        "5397eba5c68d4770",
+        "d109db6679d70810"
+      ]
+    }
+  ]
+}
