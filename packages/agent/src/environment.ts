@@ -280,6 +280,10 @@ export class AgentEnvironment implements GameInterface {
   attachBudget(budget: ModelBudget | undefined) {
     this.budget = budget;
   }
+  /** Which suite preset and scenario prefix this environment plays (trusted; used by the held-out gate). */
+  scenario() {
+    return { preset: this.preset as string, prefix: this.prefix?.name ?? null };
+  }
   /** Current simulation tick, for trusted trace records. */
   currentTick() {
     return this.room?.state.serverTick ?? 0;

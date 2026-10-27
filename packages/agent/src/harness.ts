@@ -26,6 +26,7 @@ import type { Policy } from "./policies/policy.js";
 import type { SpendLedger } from "./ledger.js";
 import type { GameOutcome, PlayerId } from "./types.js";
 import { episodes } from "./evaluator.js";
+import { FinalAccessError, isGrant, type FinalGrant } from "./finalAccess.js";
 
 export type PlayerKind = "baseline-quest" | "baseline-explore" | "model-history" | "model-obs-only";
 export const PLAYER_KINDS: readonly PlayerKind[] = ["baseline-quest", "baseline-explore", "model-history", "model-obs-only"];
@@ -60,6 +61,8 @@ export interface SuiteRunOptions {
   resume?: boolean;
   signal?: AbortSignal;
   model?: ModelSetup;
+  /** Final runs only: the grant from authorizeFinalRun() (review H2). */
+  finalGrant?: FinalGrant;
   onEpisode?: (s: EpisodeSummary) => void;
 }
 
@@ -145,8 +148,23 @@ function atomicJson(path: string, data: unknown) {
 /** Prior interrupted attempts remain visible; their spend is never erased. */
 interface PreviousAttempt { directory: string; summary?: EpisodeSummary }
 
+/** A final run needs an owner approval for this exact plan (review H2). */
+function requireFinalGrant(o: SuiteRunOptions) {
+  if (!o.final) {
+    if (o.finalGrant) throw new FinalAccessError("A final grant is only used by a final run.");
+    return;
+  }
+  const g = o.finalGrant;
+  if (!isGrant(g)) throw new FinalAccessError("A final run needs an owner approval for this revision (scripts/midterm/final-approve.ts).");
+  const stage = o.model?.stage ?? g.approval.stage;
+  for (const id of o.situations)
+    for (const seed of o.seeds)
+      if (!g.covers(o.player, id, seed, stage)) throw new FinalAccessError(`The approval does not cover ${o.player} ${id} seed ${seed} (${stage}).`);
+}
+
 export async function runSuite(o: SuiteRunOptions): Promise<EpisodeSummary[]> {
   validatePlan(o);
+  requireFinalGrant(o);
   if (o.wallSeconds !== undefined && (!Number.isFinite(o.wallSeconds) || o.wallSeconds <= 0)) throw Error("wallSeconds must be finite and positive.");
   mkdirSync(o.outDir, { recursive: true });
   const manifest = {
@@ -212,6 +230,8 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
       })
     : undefined;
   const policies = policiesFor(o.player, budget, model);
+  // Final runs: claim the episode in the append-only register first (H2).
+  const claim = o.final ? o.finalGrant!.claim(o.player, id, seed, attempt) : null;
   // Reserve before anything can spend; the reservation is on disk first.
   const ledgerEntry = model ? model.ledger.reserve(model.stage, `${o.player}/${id}/seed${seed}/${o.gitHash}`, EPISODE_CAP_USD[id]) : null;
   const started = Date.now();
@@ -222,15 +242,18 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
       signal: o.signal,
       wallClockMs: (o.wallSeconds ?? (model ? 3600 : 600)) * 1000,
       ...(budget ? { budget } : {}),
+      ...(o.finalGrant ? { finalGrant: o.finalGrant } : {}),
     });
   } catch (e) {
     if (model && ledgerEntry) model.ledger.settle(ledgerEntry, null, `episode failed: ${(e as Error).message.slice(0, 200)}`);
+    if (claim) o.finalGrant!.finish(claim, { status: "error", reason: (e as Error).message.slice(0, 200), endHash: null, chargedUsd: model ? EPISODE_CAP_USD[id] : null });
     throw e;
   }
   if (model && ledgerEntry) {
     const unknown = budget!.records.filter((r) => r.costUsd === null).length;
     model.ledger.settle(ledgerEntry, budget!.chargedUsd, unknown ? `${unknown} call(s) of unknown cost charged at their reservation` : undefined);
   }
+  if (claim) o.finalGrant!.finish(claim, { status: outcome.status, reason: outcome.reason ?? null, endHash: env.evaluatorReport().stateHash, chargedUsd: budget ? budget.chargedUsd : null });
   verifyTrace(trace.lines);
   const reset = trace.lines.find((l) => l.type === "reset")!.data as { startHash: string; tick: number; prefix?: { name: string } };
   const steps = trace.lines.filter((l) => l.type === "step");

@@ -7,6 +7,7 @@ import type { Policy } from "./policies/policy.js";
 import type { TraceWriter } from "./trace.js";
 import { BudgetExhausted, ModelCallError, type ModelBudget } from "./budget.js";
 import { batchStop, capBatch } from "./batch.js";
+import { assertEpisodeAccess, type FinalGrant } from "./finalAccess.js";
 import {
   playerIds,
   type GameOutcome,
@@ -28,6 +29,11 @@ export interface RunOptions {
    * model-driven policy must be metered by this same budget.
    */
   budget?: ModelBudget;
+  /**
+   * Required for held-out scenarios (S4, F) and final seeds: a grant from an
+   * owner approval that has claimed this episode (finalAccess.ts, review H2).
+   */
+  finalGrant?: FinalGrant;
 }
 
 export async function runEpisode(
@@ -37,6 +43,8 @@ export async function runEpisode(
   options: RunOptions,
 ): Promise<GameOutcome> {
   if (!Number.isFinite(options.wallClockMs) || !(options.wallClockMs > 0)) throw Error("wallClockMs must be positive.");
+  // Held-out gate (H2): before reset, so nothing of the episode is played.
+  assertEpisodeAccess(env.scenario(), options.seed, options.finalGrant);
   for (const id of playerIds) {
     const model = policies[id].model;
     if (!model) continue;

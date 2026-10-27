@@ -3,6 +3,8 @@
 // Scripted baselines (free):
 //   node --import tsx scripts/midterm/evaluate.ts --player baseline-quest --situations S1,S2,S3 --seeds tuning
 //   node --import tsx scripts/midterm/evaluate.ts --player baseline-quest --final --situations S1,S2,S3,S4,F --seeds final
+//   (a final run needs the owner's approval for the current clean commit:
+//    scripts/midterm/final-approve.ts; review H2)
 //
 // Model players (PAID; only after the owner has authorized the stage):
 //   --player model-history|model-obs-only --stage pilot|final|contingency --effort medium|low --paid
@@ -19,6 +21,7 @@ import { AnthropicGateway, anthropicPrices, EFFORTS, type Effort } from "../../p
 
 import { TraceWriter } from "../../packages/agent/src/trace.js";
 import { repoInfo } from "../../packages/agent/src/repo.js";
+import { authorizeFinalRun, type FinalGrant } from "../../packages/agent/src/finalAccess.js";
 
 const arg = (name: string, fallback?: string) => {
   const i = process.argv.indexOf(name);
@@ -72,6 +75,13 @@ const seedArg = arg("--seeds", final ? "final" : "tuning")!;
 const seeds = seedArg === "tuning" ? [...SEEDS.tuning] : seedArg === "final" ? [...SEEDS.final] : seedArg.split(",").map(Number);
 const out = resolve(repo.root, arg("--out", `evaluation-runs/${player}-${final ? "final" : "tuning"}-${Date.now()}`)!);
 
+// Final runs (S4, F, final seeds) need the owner's recorded approval for this
+// exact, clean commit (review H2), checked before the ledger or the network.
+let finalGrant: FinalGrant | undefined;
+if (final) {
+  validatePlan({ player, situations, seeds, final, ...(player.startsWith("model") ? { model: { stage: arg("--stage") } as ModelSetup } : {}) });
+  finalGrant = authorizeFinalRun({ player, stage: arg("--stage", "final")!, situations, seeds }, repo);
+}
 let model: ModelSetup | undefined;
 let ledger: SpendLedger | undefined;
 if (player === "model-history" || player === "model-obs-only") {
@@ -95,6 +105,7 @@ try {
     resume: flag("--resume"),
     signal: controller.signal,
     ...(model ? { model } : {}),
+    ...(finalGrant ? { finalGrant } : {}),
     onEpisode: (s) =>
       console.log(`${s.situation} seed ${s.seed}: ${s.status}${s.reason && s.reason !== "success" ? ` (${s.reason})` : ""}, ${s.gameSeconds}s game time, decisions ${s.decisions.sieg}/${s.decisions.coco}, invalid ${s.invalidActions.sieg + s.invalidActions.coco}, ${s.wallSeconds}s real${s.gateway ? `, $${s.spendUsd.charged.toFixed(4)} charged` : ""}`),
   });
