@@ -7,6 +7,7 @@
 // deciding, their submissions are applied together in a fixed order
 // (Sieg, then Coco), which keeps the run reproducible.
 
+import { evaluationRuntime } from "./runtime.js";
 import type { ModelBudget } from "./budget.js";
 import { GameRoom } from "../../../apps/server/src/GameRoom.js";
 import { neutral, type Role, type SceneId } from "../../shared/src/gameTypes.js";
@@ -129,7 +130,11 @@ export class AgentEnvironment implements GameInterface {
     this.seed = seed;
     this.reason = undefined;
     // The title screen's "The Bald Goddess" checkpoint, as RoomManager makes it.
-    this.room = new GameRoom(`EVAL${seed}`.slice(0, 12), false, "MAIN_HOUSE", true, "goddess");
+    // Seeded ids and a game-time clock (runtime.ts): the same seed gives the
+    // same hero ids and id-based tie-breaks; production rooms are unaffected.
+    let room: GameRoom | undefined;
+    const runtime = evaluationRuntime(seed, () => room?.state.serverTick ?? 0);
+    this.room = room = new GameRoom(`EVAL${seed}`.slice(0, 12), false, "MAIN_HOUSE", true, "goddess", runtime);
     const sieg = this.room.add("agent-sieg").playerId;
     const coco = this.room.add("agent-coco").playerId;
     this.room.select(sieg, "OATH");
@@ -429,9 +434,6 @@ export class AgentEnvironment implements GameInterface {
   }
 
   private hash() {
-    return stateHash(this.room.state, {
-      [this.slots?.sieg.key ?? ""]: "SIEG",
-      [this.slots?.coco.key ?? ""]: "COCO",
-    });
+    return stateHash(this.room.state);
   }
 }

@@ -43,7 +43,10 @@ Evidence pointers are in `docs/midterm/EVIDENCE_INDEX.md`. Updated 2026-10-27, a
 - **Information boundary.** Griffin HP, attack phases, signs and labels exactly as a human player sees them. No internal-only state.
 - **Security.** The owner rotates the PixelLab token before evidence is published. All committed evidence and artefacts are scanned.
 - **Sprint-frame test (2026-10-27, phase 2 item 8).** "Fix it if the test expectation is outdated … Do not change approved gameplay behavior merely to make the test pass." The expectation was outdated: the owner had asked for a faster Super Speed run animation (Codex session 01a15749, 2026-10-22). Only the test changed (`7c9f025`).
-- **Time limits (2026-10-27).** 480 s means game time. The real-world wall-clock limit is separate and configurable. No default value is approved for model runs, so `--wall-seconds` is required for them.
+- **Time limits (2026-10-27).** 480 s means game time (`tick_limit`). The real-world ceiling for model runs is 3,600 s (`wall_clock_limit`), separate and configurable.
+- **Model-call limit (2026-10-27).** 400 calls per hero is provisional. Reassess it, and the cost, after the scripted route is complete. No paid calls yet.
+- **Hero ids (2026-10-27).** Seeded and deterministic (`packages/agent/src/runtime.ts`). The same seed gives the same hero ids and id-based tie-breaks; different seeds may vary the tie order. Hero ids depend only on the seed (they are drawn at reset, before any action). The seed and the raw start-state hash are in each trace's `reset` line. Production rooms keep random UUIDs.
+- **Griffin label (2026-10-27).** Agents receive the griffin's exact HP and phase text (`GRIFFIN <hp>/320 · <PHASE>`) because the game draws that label on screen (`GriffinView.ts`). This is a deliberate, documented choice. The HUD goal lines stay hidden from both the baseline and the model.
 - **Submission.** Prepare Oath and Ember, but do not replace Prince of Persia in course PR #57 until the professor resolves the scope and submission questions.
 
 ## CI test groups required by 3c (planned)

@@ -65,17 +65,12 @@ export function milestones(w: World): string[] {
   return out;
 }
 
-const uuid = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/g;
 /**
- * Hash of the authoritative state. The engine names players, projectiles and
- * black holes with random UUIDs; they are replaced by their order of first
- * appearance so identical play gives identical hashes.
+ * Hash of the raw authoritative state, ids included. Evaluation rooms use
+ * seeded ids (runtime.ts), so identical play gives identical raw state. (Until
+ * 2026-10-27 ids were random and were renamed before hashing; that hid
+ * id-based tie-breaks, so hashes from before then are not comparable.)
  */
-export function stateHash(w: World, roles: Record<string, string>): string {
-  const names = new Map<string, string>(Object.entries(roles));
-  const text = JSON.stringify(w).replace(uuid, (id) => {
-    if (!names.has(id)) names.set(id, `id${names.size}`);
-    return names.get(id)!;
-  });
-  return createHash("sha256").update(text).digest("hex");
+export function stateHash(w: World): string {
+  return createHash("sha256").update(JSON.stringify(w)).digest("hex");
 }
