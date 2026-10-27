@@ -57,7 +57,7 @@ From the scripted route's measurements (`ROUTE_LOG.md`):
 
 A **cumulative spend ledger** across runs is still to be built (see "Before any paid call"). The evaluation script would refuse to start a run whose episode cap would push recorded spend past the stage cap or the $25 total.
 
-**For comparison** (estimated with the same token profile): the same staged plan would cost about $140 on Haiku 4.5, and about $280 on Sonnet 5.5.
+**For comparison** (same token profile, per-call cost at the high case): Haiku 4.5 costs about $0.0117 per call (about 10× Haiku 5.5), and Sonnet 5.5 about $0.0231 (about 20×). The same plan would therefore need roughly $250 or $500 at its caps.
 
 ## Before any paid call
 
