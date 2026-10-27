@@ -5,8 +5,8 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { gzipSync } from "node:zlib";
 import { join, resolve } from "node:path";
-import { Director } from "../../packages/agent/test/route/director.js";
-import { fullQuest } from "../../packages/agent/test/route/fullQuest.js";
+import { Director } from "../../packages/agent/src/route/director.js";
+import { fullQuest } from "../../packages/agent/src/route/fullQuest.js";
 import { TraceWriter, verifyTrace } from "../../packages/agent/src/trace.js";
 import { systemPrompt } from "../../packages/agent/src/policies/llm.js";
 
@@ -39,7 +39,7 @@ const sorted = [...d.promptChars].sort((a, b) => a - b);
 const pct = (p: number) => sorted[Math.min(sorted.length - 1, Math.floor((p / 100) * sorted.length))];
 const manual = readFileSync("manual/Oath_and_Ember_Player_Manual.md", "utf8");
 const summary = {
-  route: "packages/agent/test/route/fullQuest.ts",
+  route: "packages/agent/src/route/fullQuest.ts",
   seed,
   outcome,
   ...(error ? { error } : {}),

@@ -7,7 +7,7 @@ import { FINALE } from "../../shared/src/chapter0Finale.js";
 import { shrineComplete } from "../../shared/src/shrine.js";
 import type { EpisodeLimits } from "./types.js";
 
-export type EpisodePreset = "full" | "milestone";
+export type EpisodePreset = "full" | "milestone" | "S1" | "S2" | "S3" | "S4";
 
 export interface EpisodeDefinition {
   preset: EpisodePreset;
@@ -18,6 +18,12 @@ export interface EpisodeDefinition {
 }
 
 const has = (w: World, flag: string) => !!w.story?.flags.includes(flag);
+
+// Evaluation-suite scenarios (docs/midterm/EVALUATION_SUITE.md). Their start
+// states are reached by real play (packages/agent/src/suite.ts); F is "full".
+// Game-time limits are roughly 3-4x the scripted route's time for that part.
+const QUEST_AREAS = new Set(["MIRROR_POND", "HEDGE_MAZE", "GRIFFIN_ENCLOSURE"]);
+const holding = (w: World, item: string) => ((w.inventory?.counts as Record<string, number> | undefined)?.[item] ?? 0) > 0;
 
 /** Owner-approved episode definitions and limits (2026-10-23). */
 export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
@@ -48,6 +54,31 @@ export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
       w.sceneId !== "GODDESS_SHRINE" &&
       Object.values(w.players).every((p) => (p.sceneId ?? w.sceneId) !== "GODDESS_SHRINE"),
   },
+  S1: {
+    preset: "S1",
+    goal: "S1: finish the goddess's opening scene and enter any of the three quest areas.",
+    limits: { maxTicks: 90 * 60, maxDecisionsPerPlayer: 240, maxModelCallsPerPlayer: 60, maxTokensPerPlayer: 1_000_000 },
+    success: (w: World) => has(w, FINALE.goddessMeet) && QUEST_AREAS.has(w.sceneId),
+  },
+  S2: {
+    preset: "S2",
+    goal: "S2: from the shrine after the opening scene, obtain the Vanity Mirror (Mirror Pond).",
+    limits: { maxTicks: 300 * 60, maxDecisionsPerPlayer: 1_600, maxModelCallsPerPlayer: 400, maxTokensPerPlayer: 4_000_000 },
+    success: (w: World) => holding(w, "vanity_mirror"),
+  },
+  S3: {
+    preset: "S3",
+    goal: "S3: from the shrine after the opening scene, obtain the Enchanted Shears (Hedge Maze).",
+    limits: { maxTicks: 300 * 60, maxDecisionsPerPlayer: 1_600, maxModelCallsPerPlayer: 400, maxTokensPerPlayer: 4_000_000 },
+    success: (w: World) => holding(w, "enchanted_shears"),
+  },
+  S4: {
+    preset: "S4",
+    goal: "S4: from the shrine holding the mirror and shears, reach chapter0.complete (griffin, offering, finale).",
+    limits: { maxTicks: 180 * 60, maxDecisionsPerPlayer: 1_200, maxModelCallsPerPlayer: 300, maxTokensPerPlayer: 3_000_000 },
+    success: (w: World) => has(w, FINALE.complete),
+  },
+
 };
 
 /** Private progress markers recorded in traces (never shown to players). */

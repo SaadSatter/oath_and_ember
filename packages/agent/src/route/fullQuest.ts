@@ -13,8 +13,8 @@
 // Progress and failures: docs/midterm/ROUTE_LOG.md.
 
 import { Director } from "./director.js";
-import { directionTo, planStep, type Point } from "../../src/policies/navigate.js";
-import type { Direction, Observation, PlayerId } from "../../src/types.js";
+import { directionTo, planStep, type Point } from "../policies/navigate.js";
+import type { Direction, Observation, PlayerId } from "../types.js";
 
 const SPEED = 190 / 32 / 60; // walking speed, tiles per tick
 

@@ -5,10 +5,10 @@
 // references (docs/midterm/ROUTE_LOG.md). It is not a player and is never
 // shown to one.
 
-import { AgentEnvironment } from "../../src/environment.js";
-import { planStep, type NavOptions, type Point } from "../../src/policies/navigate.js";
-import { planFight, type FightOptions } from "../../src/policies/combat.js";
-import type { GameAction, Observation, PlayerId, StepResult } from "../../src/types.js";
+import { AgentEnvironment } from "../environment.js";
+import { planStep, type NavOptions, type Point } from "../policies/navigate.js";
+import { planFight, type FightOptions } from "../policies/combat.js";
+import type { GameAction, Observation, PlayerId, StepResult } from "../types.js";
 
 export interface LogLine {
   tick: number;
@@ -24,14 +24,16 @@ export class Director {
   choices: Record<PlayerId, number> = { sieg: 1, coco: 1 };
   private tick = 0;
 
-  constructor(opts: ConstructorParameters<typeof AgentEnvironment>[0] = {}) {
-    this.env = new AgentEnvironment({
+  constructor(opts: ConstructorParameters<typeof AgentEnvironment>[0] & { env?: AgentEnvironment } = {}) {
+    // Wrap an environment that is already reset (a suite prefix), or make one.
+    this.env = opts.env ?? new AgentEnvironment({
       preset: "full",
       labels: "as-drawn",
       // The route proves feasibility; its own decision count is measured, not capped.
       limits: { maxDecisionsPerPlayer: 100_000 },
       ...opts,
     });
+    if (opts.env) this.tick = 0;
   }
 
   note(note: string) {

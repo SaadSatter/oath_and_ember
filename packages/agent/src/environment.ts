@@ -54,6 +54,14 @@ export type TraceEvent = { type: string; tick: number; player?: PlayerId; data: 
 
 export interface EnvironmentOptions {
   preset?: EpisodePreset;
+  /**
+   * Runs right after reset, through this environment's own five operations,
+   * to reach a scenario's starting state by real play (packages/agent/src/suite.ts).
+   * Limits and success checks are paused and trace events suppressed while it
+   * runs; afterwards decisions, invalid actions and each hero's memory are
+   * cleared and the episode's game time starts from that tick.
+   */
+  prefix?: { name: string; run: (env: AgentEnvironment) => Promise<void> };
   limits?: Partial<EpisodeLimits>;
   labels?: LabelMode;
   trace?: (event: TraceEvent) => void;
@@ -104,6 +112,9 @@ export class AgentEnvironment implements GameInterface {
   private slots!: Record<PlayerId, Slot>;
   private reason?: TerminationReason;
   private budget?: ModelBudget;
+  private inPrefix = false;
+  private startTick = 0;
+  private readonly prefix?: EnvironmentOptions["prefix"];
   private episodeId = "";
   private seed = 0;
   private readonly preset: EpisodePreset;
@@ -117,9 +128,11 @@ export class AgentEnvironment implements GameInterface {
     this.preset = options.preset ?? "milestone";
     this.limits = { ...episodes[this.preset].limits, ...options.limits };
     this.labels = options.labels ?? "as-drawn";
+    this.prefix = options.prefix;
   }
 
   private trace(type: string, data: unknown, player?: PlayerId) {
+    if (this.inPrefix) return;
     this.options.trace?.({ type, tick: this.room?.state.serverTick ?? 0, ...(player ? { player } : {}), data });
   }
 
@@ -153,6 +166,28 @@ export class AgentEnvironment implements GameInterface {
       requests: 0,
     });
     this.slots = { sieg: slot("sieg", sieg), coco: slot("coco", coco) };
+    this.startTick = 0;
+    let prefixInfo: { name: string; ticks: number } | undefined;
+    if (this.prefix) {
+      // Change watchers must be initialised before the prefix plays.
+      this.lastMilestones = new Set(milestones(this.room.state));
+      this.lastBag = JSON.stringify(this.room.state.inventory?.counts ?? {});
+      this.lastJournal = JSON.stringify(questLog(this.room.state));
+      // Reach the scenario's start by real play, through this interface.
+      this.inPrefix = true;
+      try {
+        await this.prefix.run(this);
+      } finally {
+        this.inPrefix = false;
+      }
+      if (this.reason) throw Error(`Scenario prefix "${this.prefix.name}" ended the episode: ${this.reason}.`);
+      for (const s of Object.values(this.slots)) {
+        if (s.running || s.submitted) throw Error(`Scenario prefix "${this.prefix.name}" left an action in progress.`);
+        Object.assign(s, { memory: new PlayerMemory(), decisions: 0, invalid: 0 });
+      }
+      this.startTick = this.room.state.serverTick;
+      prefixInfo = { name: this.prefix.name, ticks: this.startTick };
+    }
     const startHash = this.hash();
     this.episodeId = `${this.preset}-${seed}-${startHash.slice(0, 8)}`;
     this.lastMilestones = new Set(milestones(this.room.state));
@@ -167,7 +202,7 @@ export class AgentEnvironment implements GameInterface {
       startHash,
       limits: { ...this.limits },
     };
-    this.trace("reset", state);
+    this.trace("reset", { ...state, ...(prefixInfo ? { prefix: prefixInfo } : {}) });
     return state;
   }
 
@@ -197,7 +232,7 @@ export class AgentEnvironment implements GameInterface {
     if (s.submitted || s.running) return refuse("You already have an action in progress.");
     s.decisions++;
     this.trace("action", { action, decision: s.decisions }, player);
-    if (s.decisions > this.limits.maxDecisionsPerPlayer) {
+    if (!this.inPrefix && s.decisions > this.limits.maxDecisionsPerPlayer) {
       this.stop("decision_limit");
       return refuse("Decision limit reached.", false);
     }
@@ -214,7 +249,8 @@ export class AgentEnvironment implements GameInterface {
   // ── 5. outcome ──────────────────────────────────────────────────────────
   async outcome(): Promise<GameOutcome> {
     const per = <T>(f: (s: Slot) => T) => ({ sieg: f(this.slots.sieg), coco: f(this.slots.coco) });
-    const tick = this.room.state.serverTick;
+    // Episode time: from the scenario's start (after any prefix).
+    const tick = this.room.state.serverTick - this.startTick;
     return {
       status: !this.reason ? "ongoing" : this.reason === "success" ? "success" : "terminated",
       ...(this.reason ? { reason: this.reason } : {}),
@@ -395,8 +431,10 @@ export class AgentEnvironment implements GameInterface {
     const now = milestones(w);
     for (const m of now) if (!this.lastMilestones.has(m)) this.trace("milestone", { milestone: m });
     this.lastMilestones = new Set(now);
+    // A scenario prefix only reaches the start state: no success or limits yet.
+    if (this.inPrefix) return;
     if (episodes[this.preset].success(w)) this.stop("success");
-    else if (w.serverTick >= this.limits.maxTicks) this.stop("tick_limit");
+    else if (w.serverTick - this.startTick >= this.limits.maxTicks) this.stop("tick_limit");
   }
 
   /** Backpack and journal changes: both heroes see the same HUD/panels. */

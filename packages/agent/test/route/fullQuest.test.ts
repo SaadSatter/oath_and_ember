@@ -2,8 +2,8 @@
 // chapter0.complete through the five-operation interface (docs/midterm/ROUTE_LOG.md).
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { Director } from "./director.js";
-import { fullQuest } from "./fullQuest.js";
+import { Director } from "../../src/route/director.js";
+import { fullQuest } from "../../src/route/fullQuest.js";
 import { TraceWriter, verifyTrace } from "../../src/trace.js";
 
 async function run(seed: number) {
@@ -43,7 +43,7 @@ describe("scripted full-quest route", () => {
 
   it("uses only the interface: the route never touches engine state", () => {
     for (const file of ["director.ts", "fullQuest.ts"]) {
-      const src = readFileSync(new URL(file, import.meta.url), "utf8")
+      const src = readFileSync(new URL(`../../src/route/${file}`, import.meta.url), "utf8")
         // Comments may name the things the route must not use.
         .replace(/\/\/.*$/gm, "")
         .replace(/\/\*[\s\S]*?\*\//g, "");
