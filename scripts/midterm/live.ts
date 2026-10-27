@@ -23,12 +23,12 @@ import { join, relative, resolve } from "node:path";
 import { aggregate, EPISODE_CAP_USD, episodeCap, PLAYER_KINDS, runSuite, validatePlan, type EpisodeSummary, type ModelSetup, type PlayerKind } from "../../packages/agent/src/harness.js";
 import { APPROVED_LEDGER, SpendLedger } from "../../packages/agent/src/ledger.js";
 import { startViewer, type Viewer } from "../../packages/agent/src/liveViewer.js";
-import { AnthropicGateway, anthropicPrices, EFFORTS, type Effort } from "../../packages/agent/src/policies/llm.js";
+import { AnthropicGateway, anthropicPrices, assertApprovedModel, EFFORTS, type Effort } from "../../packages/agent/src/policies/llm.js";
 import { MockGateway } from "../../packages/agent/src/policies/mockGateway.js";
-import { canonicalLedgerPath, repoInfo } from "../../packages/agent/src/repo.js";
+import { canonicalLedgerPath, repoInfo, unmeteredWorktrees } from "../../packages/agent/src/repo.js";
 import { SEEDS, situation, type SituationId } from "../../packages/agent/src/suite.js";
 import type { TraceLine } from "../../packages/agent/src/trace.js";
-import { ask, credentialArgs } from "./tty.js";
+import { ask, credentialArgs, redactStreams, safeText } from "./tty.js";
 
 const argv = process.argv.slice(2);
 const KNOWN = new Map<string, "value" | "flag">([
@@ -101,6 +101,37 @@ const maxBatch = num("--max-batch", 4);
 const wallSeconds = opts.has("--wall-seconds") ? num("--wall-seconds", 0) : undefined;
 if (wallSeconds === 0) fail("--wall-seconds must be positive.");
 
+// ── Interruption (installed before any setup; re-review M3) ─────────────────
+// During setup a signal exits at once. While the episode runs, the first
+// signal ends it and saves its records; a second exits now. The exit handler
+// releases the ledger lock in every case; an open reservation stays open
+// (fails closed) and is settled later by `ledger.ts reconcile`.
+const controller = new AbortController();
+const linger = new AbortController();
+let phase: "setup" | "running" | "finished" = "setup";
+let interrupts = 0;
+let ledger: SpendLedger | undefined;
+process.on("exit", () => ledger?.close());
+const onSignal = (code: number) => () => {
+  if (phase === "finished") {
+    linger.abort();
+    return;
+  }
+  if (phase === "setup") {
+    console.error("\nStopped before the episode started; nothing was reserved.");
+    process.exit(code);
+  }
+  if (++interrupts > 1) {
+    console.error("\nForced exit. Traces written so far are kept; any open ledger reservation stays held until it is reconciled (`ledger.ts reconcile`).");
+    process.exit(code);
+  }
+  console.error("\nStopping: the episode ends now and its records are being saved. Press Ctrl-C again to force exit.");
+  process.exitCode = code;
+  controller.abort();
+};
+process.on("SIGINT", onSignal(130));
+process.on("SIGTERM", onSignal(143));
+
 const repo = repoInfo();
 const version = repo.dirty ? `${repo.head.slice(0, 7)}+dirty` : repo.head.slice(0, 7);
 const stamp = new Date().toISOString().replace(/[:.]/g, "-");
@@ -109,19 +140,41 @@ if (existsSync(out)) fail(`output ${out} already exists.`);
 
 // ── Model setup (checks first, credential last) ──────────────────────────────
 let model: ModelSetup | undefined;
-let ledger: SpendLedger | undefined;
+let paidGateway: { gateway: AnthropicGateway; source: string } | undefined;
 let episodeCapUsd: number | undefined;
 let secret: string | undefined;
+let secretSeenInOutput = () => false;
+
+/** Open the shared ledger and check the pilot stage can cover the cap (fails the run otherwise). */
+function openPaidLedger(): SpendLedger {
+  let l: SpendLedger;
+  try {
+    l = SpendLedger.openCanonical(repo);
+  } catch (e) {
+    fail((e as Error).message);
+  }
+  const left = Math.min(l.remaining("pilot"), l.remaining());
+  if (episodeCapUsd! > left + 1e-9) {
+    l.close();
+    fail(`the pilot stage has $${left.toFixed(4)} left; this run would reserve $${episodeCapUsd}.`);
+  }
+  return l;
+}
 const manual = readFileSync(join(repo.root, "manual/Oath_and_Ember_Player_Manual.md"), "utf8");
 if (isModel) {
   validatePlan({ player, situations: [scenario], seeds: [seed], model: { stage: "pilot" } as ModelSetup });
   if (paid) {
-    if (repo.dirty) fail("paid runs need a clean, committed tree so the game version is exact.");
     const id = get("--model", "claude-haiku-5-5")!;
     const prices = anthropicPrices[id];
     if (!prices) fail(`no verified price on record for ${id}.`);
     const effort = get("--effort", "medium") as Effort;
     if (!EFFORTS.includes(effort)) fail(`--effort must be one of ${EFFORTS.join(", ")}.`);
+    // Only the owner-approved model and efforts (re-review M2).
+    try {
+      assertApprovedModel(id, effort);
+    } catch (e) {
+      fail((e as Error).message);
+    }
     const raw = get("--max-spend-usd") ?? fail(`--max-spend-usd is required for paid runs (at most $${EPISODE_CAP_USD[scenario]} for ${scenario}).`);
     episodeCapUsd = Number(raw);
     try {
@@ -129,18 +182,13 @@ if (isModel) {
     } catch (e) {
       fail((e as Error).message);
     }
-    // The one shared ledger (review H1). Refuses if missing, locked, or if
-    // a legacy ledger exists. Opened before asking for the credential.
-    try {
-      ledger = SpendLedger.openCanonical(repo);
-    } catch (e) {
-      fail((e as Error).message);
-    }
-    const left = Math.min(ledger.remaining("pilot"), ledger.remaining());
-    if (episodeCapUsd > left + 1e-9) {
-      ledger.close();
-      fail(`the pilot stage has $${left.toFixed(4)} left; this run would reserve $${episodeCapUsd}.`);
-    }
+    if (repo.dirty) fail("paid runs need a clean, committed tree so the game version is exact.");
+    for (const u of unmeteredWorktrees(repo)) console.error(`WARNING: ${u.file} can make paid calls outside the shared ledger. Never run paid commands there.`);
+    // The one shared ledger (review H1): refuses if missing, locked, replaced,
+    // or if a legacy ledger exists. Checked before asking for the credential,
+    // then closed so no lock is held during the prompt or the client build
+    // (re-review M3); it is reopened and re-checked just before the run.
+    openPaidLedger().close();
     // Credential: the environment variable, else a hidden prompt. It stays
     // in memory, is removed from this process's environment so no child
     // process inherits it, and is never written or printed.
@@ -149,15 +197,12 @@ if (isModel) {
       try {
         secret = (await ask("Anthropic API key (hidden, not stored): ", true)).trim() || undefined;
       } catch (e) {
-        ledger.close();
         fail((e as Error).message === "Cancelled." ? "cancelled." : "no ANTHROPIC_API_KEY and no interactive terminal for the hidden prompt.");
       }
     }
-    if (!secret) {
-      ledger.close();
-      fail("no credential given.");
-    }
-    model = { gateway: new AnthropicGateway(id, prices, effort, secret), manual, ledger, stage: "pilot", priceSource: prices.source, maxBatch };
+    if (!secret) fail("no credential given.");
+    secretSeenInOutput = redactStreams(secret);
+    paidGateway = { gateway: new AnthropicGateway(id, prices, effort, secret), source: prices.source };
   } else {
     // Mock: a scratch ledger inside this run's own folder, never the canonical one.
     mkdirSync(out, { recursive: true });
@@ -188,42 +233,16 @@ if (viewerOn) {
   if (stale) {
     console.log("Building the game client for the viewer…");
     const r = spawnSync("npx", ["vite", "build", "--config", "apps/client/vite.config.ts", "--logLevel", "warn"], { cwd: repo.root, stdio: "inherit", env: cleanEnv() });
-    if (r.status !== 0) {
-      ledger?.close();
-      fail("client build failed; the run did not start.");
-    }
+    if (r.status !== 0) fail("client build failed; the run did not start.");
   }
 }
-
-// ── Interruption ─────────────────────────────────────────────────────────────
-const controller = new AbortController();
-const linger = new AbortController();
-let runFinished = false;
-let interrupts = 0;
-const onSignal = (code: number) => () => {
-  if (runFinished) {
-    linger.abort();
-    return;
-  }
-  if (++interrupts > 1) {
-    // Records already on disk are kept; an open reservation stays held (fails closed).
-    console.error("\nForced exit. Traces written so far are kept; any open ledger reservation stays held until reviewed.");
-    process.exit(code);
-  }
-  console.error("\nStopping: the episode ends now and its records are being saved. Press Ctrl-C again to force exit.");
-  process.exitCode = code;
-  controller.abort();
-};
-process.on("SIGINT", onSignal(130));
-process.on("SIGTERM", onSignal(143));
 
 // ── Viewer ───────────────────────────────────────────────────────────────────
 let viewer: Viewer | undefined;
 if (viewerOn) {
   try {
-    viewer = await startViewer({ root: repo.root, port: num("--port", 3030), speed, title: `Oath and Ember · ${scenario} seed ${seed} · ${player}${isModel ? ` (${model!.gateway.label})` : ""}` });
+    viewer = await startViewer({ root: repo.root, port: num("--port", 3030), speed, title: `Oath and Ember · ${scenario} seed ${seed} · ${player}${isModel ? ` (${(paidGateway?.gateway ?? model!.gateway).label})` : ""}` });
   } catch (e) {
-    ledger?.close();
     fail(`could not start the viewer: ${(e as Error).message}. Try --port <n>.`);
   }
   console.log(`Viewer (read-only): ${viewer.url}`);
@@ -233,10 +252,19 @@ if (viewerOn) {
   }
 }
 
+// ── Paid ledger: reopened and re-checked just before the run (M3) ──────────
+if (paidGateway) {
+  ledger = openPaidLedger();
+  model = { gateway: paidGateway.gateway, manual, ledger, stage: "pilot", priceSource: paidGateway.source, maxBatch };
+}
+
 // ── Terminal status (trusted trace lines; players never see this) ───────────
+// Every line may hold model-supplied text (actions, refusals, messages,
+// errors); it is printed only through safeText (re-review L1).
+const say = (line: string) => console.log(safeText(line));
 let startTick = 0;
 const hero = (p?: string) => (p === "sieg" ? "Sieg" : p === "coco" ? "Coco" : "");
-const short = (v: unknown) => JSON.stringify(v).replace(/"([a-z_]+)":/g, "$1:").slice(0, 90);
+const short = (v: unknown) => safeText(JSON.stringify(v) ?? String(v)).replace(/"([a-z_]+)":/g, "$1:").slice(0, 90);
 function onTrace(l: TraceLine) {
   const t = Math.max(0, (l.tick - startTick) / 60).toFixed(1).padStart(6);
   const s = viewer?.status;
@@ -244,7 +272,7 @@ function onTrace(l: TraceLine) {
   switch (l.type) {
     case "reset":
       startTick = d.tick;
-      console.log(`Start: ${scenario} seed ${seed} at tick ${d.tick}${d.prefix ? ` (after ${d.prefix.name})` : ""}, start hash ${String(d.startHash).slice(0, 16)}`);
+      say(`Start: ${scenario} seed ${seed} at tick ${d.tick}${d.prefix ? ` (after ${d.prefix.name})` : ""}, start hash ${String(d.startHash).slice(0, 16)}`);
       break;
     case "observation":
       if (s && l.player && !d.inBatch) s.heroes[l.player as "sieg" | "coco"].state = "deciding…";
@@ -256,26 +284,26 @@ function onTrace(l: TraceLine) {
       const r = d.result as { accepted: boolean; error?: string; ticks: number; interrupted?: string };
       const t = Math.max(0, (l.tick + r.ticks - startTick) / 60).toFixed(1).padStart(6);
       const line = `${short(d.action)} → ${r.accepted ? `ok${r.ticks ? ` ${r.ticks}t` : ""}${r.interrupted ? ` (${r.interrupted})` : ""}` : `refused: ${r.error}`}`;
-      console.log(`[${t}s] ${hero(l.player).padEnd(4)} ${line}`);
-      if (s && l.player) s.heroes[l.player as "sieg" | "coco"].last = line;
+      say(`[${t}s] ${hero(l.player).padEnd(4)} ${line}`);
+      if (s && l.player) s.heroes[l.player as "sieg" | "coco"].last = safeText(line);
       break;
     }
     case "model_call":
       if (s) { s.calls++; s.spendUsd += d.chargedUsd ?? 0; }
-      console.log(`[${t}s] ${hero(l.player).padEnd(4)} model call #${d.attempt} ${d.status} ${d.latencyMs} ms${d.tokens ? `, ${d.tokens.input}+${d.tokens.output} tokens` : ", usage unknown"}, $${(d.chargedUsd ?? 0).toFixed(5)}`);
+      say(`[${t}s] ${hero(l.player).padEnd(4)} model call #${d.attempt} ${d.status} ${d.latencyMs} ms${d.tokens ? `, ${d.tokens.input}+${d.tokens.output} tokens` : ", usage unknown"}, $${(d.chargedUsd ?? 0).toFixed(5)}`);
       break;
     case "message":
-      console.log(`[${t}s] ${hero(l.player).padEnd(4)} message to ${hero(d.to)}: ${JSON.stringify(d.text)}`);
+      say(`[${t}s] ${hero(l.player).padEnd(4)} message to ${hero(d.to)}: ${JSON.stringify(d.text)}`);
       break;
     case "milestone":
-      console.log(`[${t}s] milestone: ${d.milestone}`);
+      say(`[${t}s] milestone: ${d.milestone}`);
       s?.notes.push(String(d.milestone));
       break;
     case "policy_error":
-      console.log(`[${t}s] ${hero(l.player).padEnd(4)} policy error (${d.kind}): ${String(d.message).slice(0, 120)}`);
+      say(`[${t}s] ${hero(l.player).padEnd(4)} policy error (${d.kind}): ${String(d.message).slice(0, 120)}`);
       break;
     case "terminal":
-      console.log(`[${t}s] episode ended: ${d.reason}`);
+      say(`[${t}s] episode ended: ${d.reason}`);
       if (s) s.outcome = d.reason;
       break;
   }
@@ -287,6 +315,8 @@ const situ = situation(scenario);
 console.log(`Running ${scenario} (${situ.title}), seed ${seed}, player ${player}${isModel ? `, gateway ${model!.gateway.label}` : ""}${paid ? `, cap $${episodeCapUsd}` : ""}. Output: ${relative(repo.root, out)}`);
 let summaries: EpisodeSummary[] = [];
 let error: Error | undefined;
+const paced = viewerOn && speed > 0;
+phase = "running";
 try {
   summaries = await runSuite({
     player,
@@ -300,16 +330,18 @@ try {
     ...(model ? { model } : {}),
     ...(episodeCapUsd !== undefined ? { episodeCapUsd } : {}),
     ...(viewer ? { environment: viewer.hooks } : {}),
+    // Recorded in run.json and every summary, so watched runs are never pooled blindly.
+    launch: { launcher: "scripts/midterm/live.ts", speed: paced ? speed : null, viewer: viewerOn },
   });
 } catch (e) {
   error = e as Error;
 } finally {
-  runFinished = true;
+  phase = "finished";
   const remaining = ledger && paid ? { pilot: ledger.remaining("pilot"), total: ledger.remaining() } : null;
   ledger?.close();
   writeFileSync(join(out, "live.json"), JSON.stringify({
     launcher: "scripts/midterm/live.ts", scenario, seed, player, gateway: model?.gateway.label ?? null, paid,
-    episodeCapUsd: episodeCapUsd ?? null, speed: viewerOn ? speed : null, viewer: viewerOn, viewsIssued: viewer?.viewsIssued ?? 0,
+    episodeCapUsd: episodeCapUsd ?? null, speed: paced ? speed : null, viewer: viewerOn, viewsIssued: viewer?.viewsIssued ?? 0,
     gitHash: version, interrupted: controller.signal.aborted, error: error?.message ?? null,
     ledger: paid ? { path: canonicalLedgerPath(repo), remainingAfter: remaining } : model ? { path: join(out, "mock-ledger.json"), scratch: true } : null,
   }, null, 2));
@@ -329,12 +361,16 @@ try {
       console.error(`CREDENTIAL FOUND IN OUTPUT: ${leaks.join(", ")}. Delete these files and rotate the key.`);
       process.exitCode = 3;
     }
+    if (secretSeenInOutput()) {
+      console.error("The credential appeared in terminal output (it was replaced with [REDACTED]). Rotate the key.");
+      process.exitCode = 3;
+    }
   }
   if (paid && remaining) console.log(`Ledger: $${remaining.pilot.toFixed(4)} left in pilot, $${remaining.total.toFixed(4)} left in total.`);
 }
 
 if (error) {
-  console.error(`The run failed: ${error.message}`);
+  console.error(safeText(`The run failed: ${error.message}`));
   console.error(`Records kept in ${out}`);
   await viewer?.close();
   process.exit(process.exitCode && process.exitCode !== 0 ? process.exitCode : 1);

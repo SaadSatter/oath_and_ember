@@ -71,10 +71,23 @@ export interface SuiteRunOptions {
   episodeCapUsd?: number;
   /** Live viewing hooks for the environment (scripts/midterm/live.ts). */
   environment?: Pick<EnvironmentOptions, "room" | "tick" | "pace">;
+  /**
+   * How the run was launched, recorded in the manifest and every summary so
+   * watched and headless results can be told apart: the entrypoint, the
+   * real-time pacing speed (null when unpaced) and whether a viewer was on.
+   */
+  launch?: LaunchInfo;
   /** Trusted observer of every trace line (terminal status). */
   onTrace?: (line: TraceLine) => void;
   onEpisode?: (s: EpisodeSummary) => void;
 }
+
+export interface LaunchInfo {
+  launcher: string;
+  speed: number | null;
+  viewer: boolean;
+}
+const DEFAULT_LAUNCH: LaunchInfo = { launcher: "runSuite", speed: null, viewer: false };
 
 export interface EpisodeSummary {
   situation: SituationId;
@@ -108,6 +121,13 @@ export interface EpisodeSummary {
   spendUsd: { known: number; charged: number };
   priceSource: string | null;
   ledgerEntry: string | null;
+  /** The per-episode spend cap actually reserved and enforced (model runs), or null. */
+  episodeCapUsd: number | null;
+  /** The real-time limit that applied (s). */
+  wallLimitSeconds: number;
+  launch: LaunchInfo;
+  /** Final runs: the register claim this episode ran under. */
+  finalClaim: string | null;
   /** Stage notes of a scripted baseline (its own log; never shown to the partner). */
   baselineLog?: Record<PlayerId, { tick: number; note: string }[]>;
   trace: string;
@@ -195,6 +215,7 @@ export async function runSuite(o: SuiteRunOptions): Promise<EpisodeSummary[]> {
     model: o.model ? { gateway: o.model.gateway.label, stage: o.model.stage, priceSource: o.model.priceSource,
       maxBatch: o.model.maxBatch ?? 4, manualHash: createHash("sha256").update(o.model.manual).digest("hex") } : null,
     ...(o.episodeCapUsd !== undefined ? { episodeCapUsd: o.episodeCapUsd } : {}),
+    launch: o.launch ?? DEFAULT_LAUNCH,
   };
   const manifestPath = join(o.outDir, "run.json");
   if (existsSync(manifestPath)) {
@@ -262,13 +283,14 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
   const run = `${o.player}/${id}/seed${seed}/${o.gitHash}`;
   const ledgerEntry = model ? model.ledger.reserve(model.stage, run, cap) : null;
   if (model && ledgerEntry) trace.write({ type: "ledger_reservation", tick: 0, data: { entry: ledgerEntry, stage: model.stage, run, reservedUsd: cap, ledger: model.ledger.path } });
+  const wallLimitSeconds = o.wallSeconds ?? (model ? 3600 : 600);
   const started = Date.now();
   let outcome: GameOutcome;
   try {
     outcome = await runEpisode(env, policies, trace, {
       seed,
       signal: o.signal,
-      wallClockMs: (o.wallSeconds ?? (model ? 3600 : 600)) * 1000,
+      wallClockMs: wallLimitSeconds * 1000,
       ...(budget ? { budget } : {}),
       ...(ticket ? { finalTicket: ticket } : {}),
     });
@@ -338,6 +360,10 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
     spendUsd: outcome.spendUsd,
     priceSource: model?.priceSource ?? null,
     ledgerEntry,
+    episodeCapUsd: model ? cap : null,
+    wallLimitSeconds,
+    launch: o.launch ?? DEFAULT_LAUNCH,
+    finalClaim: ticket?.claim ?? null,
     ...(o.player === "baseline-quest" ? { baselineLog: per((p) => (policies[p] as QuestBaseline).log) } : {}),
     trace: tracePath,
   };

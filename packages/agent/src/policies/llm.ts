@@ -64,6 +64,27 @@ const estimateTokens = (text: string) => Buffer.byteLength(text, "utf8") + 4096;
 export type Effort = "low" | "medium" | "high";
 export const EFFORTS: readonly Effort[] = ["low", "medium", "high"];
 
+/**
+ * The only model and efforts the owner approved for paid runs (2026-10-27):
+ * claude-haiku-5-5 at "medium", with "low" as the S1-S3 pilot comparison.
+ * Other price-table entries exist for cost comparisons only (MODEL_BUDGET.md).
+ * Enforced by AnthropicGateway itself, so no entrypoint can bypass it
+ * (re-review M2). Changing this needs the owner's approval.
+ */
+export const APPROVED_MODELS: Readonly<Record<string, readonly Effort[]>> = Object.freeze({
+  "claude-haiku-5-5": Object.freeze(["medium", "low"] as Effort[]),
+});
+/** The approved smoke configuration: one call at the default effort. */
+export const SMOKE_CONFIG = Object.freeze({ model: "claude-haiku-5-5", effort: "medium" as Effort });
+
+export function assertApprovedModel(model: string, effort: string) {
+  const efforts = Object.hasOwn(APPROVED_MODELS, model) ? APPROVED_MODELS[model] : undefined;
+  if (!efforts) throw Error(`Model ${model} is not approved for paid runs (approved: ${Object.keys(APPROVED_MODELS).join(", ")}).`);
+  if (!efforts.includes(effort as Effort)) throw Error(`Effort "${effort}" is not approved for ${model} (approved: ${efforts.join(", ")}).`);
+}
+/** The provider endpoint, fixed so ANTHROPIC_BASE_URL in the environment cannot redirect the key. */
+const ANTHROPIC_BASE_URL = "https://api.anthropic.com";
+
 export class AnthropicGateway implements Gateway {
   readonly label: string;
   /** SDK retries are off: a retry would be a model call the budget never saw. */
@@ -83,8 +104,10 @@ export class AnthropicGateway implements Gateway {
      */
     apiKey?: string,
   ) {
+    assertApprovedModel(model, effort);
     this.label = `anthropic:${model}@${effort}`;
-    this.client = new Anthropic({ maxRetries: 0, ...(apiKey ? { apiKey } : {}) });
+    // An explicit key also stops the SDK from reading ANTHROPIC_AUTH_TOKEN.
+    this.client = new Anthropic({ maxRetries: 0, baseURL: ANTHROPIC_BASE_URL, ...(apiKey ? { apiKey } : {}) });
   }
   worstCaseUsd(system: string, user: string) {
     // Assume the whole prompt is a cache write and the full output budget is used.

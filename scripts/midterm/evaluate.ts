@@ -17,10 +17,10 @@ import { join, resolve } from "node:path";
 import { aggregate, runSuite, smokeCall, validatePlan, type ModelSetup, type PlayerKind } from "../../packages/agent/src/harness.js";
 import { SEEDS, type SituationId } from "../../packages/agent/src/suite.js";
 import { SpendLedger } from "../../packages/agent/src/ledger.js";
-import { AnthropicGateway, anthropicPrices, EFFORTS, type Effort } from "../../packages/agent/src/policies/llm.js";
+import { AnthropicGateway, anthropicPrices, assertApprovedModel, EFFORTS, SMOKE_CONFIG, type Effort } from "../../packages/agent/src/policies/llm.js";
 
 import { TraceWriter } from "../../packages/agent/src/trace.js";
-import { repoInfo } from "../../packages/agent/src/repo.js";
+import { repoInfo, unmeteredWorktrees } from "../../packages/agent/src/repo.js";
 import { authorizeFinalRun, type FinalGrant } from "../../packages/agent/src/finalAccess.js";
 
 const arg = (name: string, fallback?: string) => {
@@ -36,26 +36,44 @@ const dirty = repo.dirty;
 const version = dirty ? `${gitHash}+dirty` : gitHash;
 const final = flag("--final");
 const controller = new AbortController();
-process.once("SIGINT", () => { process.exitCode = 130; controller.abort(); });
-process.once("SIGTERM", () => { process.exitCode = 143; controller.abort(); });
+// First signal: stop the episode and save its records. Second: exit now. The
+// exit handler releases the ledger lock either way (re-review M3); an open
+// reservation stays open and is settled later by `ledger.ts reconcile`.
+let ledgerToClose: SpendLedger | undefined;
+process.on("exit", () => ledgerToClose?.close());
+let signals = 0;
+const onSignal = (code: number) => () => {
+  process.exitCode = code;
+  if (++signals > 1) process.exit(code);
+  controller.abort();
+};
+process.on("SIGINT", onSignal(130));
+process.on("SIGTERM", onSignal(143));
 if (flag("--ledger")) throw Error("Paid evaluation uses the one shared ledger in the git common directory; ledger overrides are disabled.");
 const manual = () => readFileSync(join(repo.root, "manual/Oath_and_Ember_Player_Manual.md"), "utf8");
 
-function paidGateway() {
+function paidGateway(smoke = false) {
   if (!flag("--paid")) throw Error("Model runs are paid. Pass --paid only after the owner has authorized this stage.");
-  if (!process.env.ANTHROPIC_API_KEY) throw Error("ANTHROPIC_API_KEY is not set.");
-  if (dirty) throw Error("Paid runs need a clean, committed tree so the game version is exact.");
   const id = arg("--model", "claude-haiku-5-5")!;
-  const prices = anthropicPrices[id];
-  if (!prices) throw Error(`No verified price on record for ${id}.`);
   const effort = arg("--effort", "medium") as Effort;
   if (!EFFORTS.includes(effort)) throw Error(`--effort must be one of ${EFFORTS.join(", ")}.`);
-  return { gateway: new AnthropicGateway(id, prices, effort), source: prices.source };
+  // Only the owner-approved model and efforts (re-review M2); the smoke call
+  // only in its approved configuration.
+  assertApprovedModel(id, effort);
+  if (smoke && (id !== SMOKE_CONFIG.model || effort !== SMOKE_CONFIG.effort)) throw Error(`The smoke call is approved for ${SMOKE_CONFIG.model} at ${SMOKE_CONFIG.effort} only.`);
+  const prices = anthropicPrices[id];
+  if (!prices) throw Error(`No verified price on record for ${id}.`);
+  if (dirty) throw Error("Paid runs need a clean, committed tree so the game version is exact.");
+  const key = process.env.ANTHROPIC_API_KEY?.trim();
+  if (!key) throw Error("ANTHROPIC_API_KEY is not set.");
+  for (const u of unmeteredWorktrees(repo)) console.error(`WARNING: ${u.file} can make paid calls outside the shared ledger. Never run paid commands there.`);
+  return { gateway: new AnthropicGateway(id, prices, effort, key), source: prices.source };
 }
 
 if (flag("--smoke")) {
-  const { gateway } = paidGateway();
+  const { gateway } = paidGateway(true);
   const ledger = SpendLedger.openCanonical(repo);
+  ledgerToClose = ledger;
   try {
     const out = resolve(repo.root, arg("--out", `evaluation-runs/smoke-${Date.now()}`)!);
     mkdirSync(out, { recursive: true });
@@ -91,6 +109,7 @@ if (player === "model-history" || player === "model-obs-only") {
   validatePlan({ player, situations, seeds, final, model: { stage } as ModelSetup });
   const { gateway, source } = paidGateway();
   ledger = SpendLedger.openCanonical(repo);
+  ledgerToClose = ledger;
   model = { gateway, manual: manual(), ledger, stage, priceSource: source, maxBatch: Number(arg("--max-batch", "4")) };
 }
 
@@ -103,6 +122,7 @@ try {
     outDir: out,
     gitHash: version,
     resume: flag("--resume"),
+    launch: { launcher: "scripts/midterm/evaluate.ts", speed: null, viewer: false },
     signal: controller.signal,
     ...(model ? { model } : {}),
     ...(finalGrant ? { finalGrant } : {}),

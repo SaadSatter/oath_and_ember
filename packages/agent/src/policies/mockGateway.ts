@@ -5,7 +5,10 @@
 // observation and legal actions) and answers with seeded random legal
 // actions. It has no game knowledge and no route; its results are launcher
 // checks, never evaluation results. Usage and cost are reported as zero.
+// Each hero (told apart by its system prompt) draws from its own seeded
+// stream, so one hero's call order never changes the other's choices.
 
+import { createHash } from "node:crypto";
 import type { Completion, Gateway } from "../budget.js";
 import { ModelCallError } from "../budget.js";
 import type { ActionSpec, GameAction } from "../types.js";
@@ -24,18 +27,28 @@ function rng(seed: number) {
 
 export class MockGateway implements Gateway {
   readonly label: string;
-  private readonly random: () => number;
+  private readonly streams = new Map<string, () => number>();
+  private random: () => number = () => 0;
   calls = 0;
 
   constructor(
-    seed: number,
+    private readonly seed: number,
     /** Simulated thinking time per call, so a watched run looks like a model run. */
     private readonly delayMs = 0,
     /** Actions per reply (the model player's batch limit still applies). */
     private readonly batch = 2,
   ) {
     this.label = `mock:random-legal@${seed}`;
-    this.random = rng(seed);
+  }
+
+  /** The seeded stream for one system prompt (one hero). */
+  private stream(system: string) {
+    let r = this.streams.get(system);
+    if (!r) {
+      r = rng(this.seed ^ createHash("sha256").update(system).digest().readUInt32BE(0));
+      this.streams.set(system, r);
+    }
+    return r;
   }
 
   worstCaseUsd() {
@@ -57,7 +70,7 @@ export class MockGateway implements Gateway {
     return a as unknown as GameAction;
   }
 
-  async complete(_system: string, user: string, signal: AbortSignal): Promise<Completion> {
+  async complete(system: string, user: string, signal: AbortSignal): Promise<Completion> {
     this.calls++;
     if (this.delayMs > 0)
       await new Promise<void>((resolve, reject) => {
@@ -65,6 +78,7 @@ export class MockGateway implements Gateway {
         signal.addEventListener("abort", () => { clearTimeout(t); reject(new ModelCallError("aborted", "mock call aborted")); }, { once: true });
       });
     if (signal.aborted) throw new ModelCallError("aborted", "mock call aborted");
+    this.random = this.stream(system);
     let legal: ActionSpec[] = [];
     try {
       legal = (JSON.parse(user) as { legal_actions?: ActionSpec[] }).legal_actions ?? [];
