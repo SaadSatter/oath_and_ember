@@ -18,6 +18,7 @@ One file per development session, or group of related sessions, that built or re
 - **Codex permission checks** (`codex-auto-review`, the "guardian" subagent) decide whether a tool call may run. They are listed below for completeness and are **not** counted as reviews.
 - **Configuration smoke tests** (20) are not skill invocations.
 - **Implementer-spawned reviewers** (18, 21) are not independent reviews.
+- **Skill sessions launched by the implementer** (24, 25, 26) are skill invocations in fresh contexts. The implementing session wrote their prompts, so they are not independent reviews.
 
 ## Reproduce
 
@@ -59,7 +60,10 @@ New sessions are added with the `session-evidence` skill (`.claude/skills/sessio
 | [20 — PR #6 configuration checks: role, skill and reviewer discovery, reviewer read-only enforcement](20-claude-agent-team-config-checks.md) | `894c52f7`, `d9dbc9ba`, `d8f2c33e`, `e6c5752b` | Configuration smoke tests for PR #6 (non-interactive `claude -p`). Not skill invocations and not reviews |
 | [21 — Information-boundary review, session A (Codex skill invocation)](21-codex-boundary-review-session-a.md) | `01a16965` | Reviewer subagent applying the Codex skill `oath-rule-information-boundary`, spawned by session 14. A skill invocation; weak as an independent review |
 | [22 — Two-player five-operation agent interface (PR #7)](22-claude-agent-interface.md) | `3d2319ad` | Implementation agent (`CLAUDE.md`, which imports `AGENTS.md`) |
-| [23 — Gap analysis, evidence foundation and integration preparation (phase 1)](23-claude-gap-analysis-evidence-foundation.md) | `618e460d` | Implementation agent (`CLAUDE.md`, which imports `AGENTS.md`). Recorded while still running |
+| [23 — Gap analysis and evidence foundation (phase 1); server runtime injection, view-only browsers and model budgets (phase 2)](23-claude-gap-analysis-evidence-foundation.md) | `618e460d` | Implementation agent (`CLAUDE.md`, which imports `AGENTS.md`); launched skill sessions 24, 25 and 26. Recorded while still running |
+| [24 — game-rules-audit, first invocation: adapter](24-claude-skill-game-rules-audit-adapter.md) | `3a0642f5` | Skill invocation (`game-rules-audit`) in a fresh `claude -p` session launched by 23; resumed once to save. Report: [`2026-10-27-adapter.md`](../midterm/agent-evidence/skill-runs/2026-10-27-adapter.md). Not an independent review |
+| [25 — session-evidence, first invocation: record of session 23](25-claude-skill-session-evidence-first.md) | `f7e2bf18` | Skill invocation (`session-evidence`) in a fresh `claude -p` session launched by 23. Output: file 23 (phase 1 narrative). Not an independent review |
+| [26 — game-rules-audit, second invocation: server changes and re-check of the adapter findings](26-claude-skill-game-rules-audit-server-changes.md) | `fb09128d` | Skill invocation (`game-rules-audit`) in a fresh `claude -p` session launched by 23. Report: [`2026-10-27-server-changes.md`](../midterm/agent-evidence/skill-runs/2026-10-27-server-changes.md). Not an independent review |
 | [00 — Codex briefs without a surviving transcript](00-pre-log-codex-briefs.md) | attachments only | Owner's instructions; no session record |
 
 Sessions after 2026-10-26 (this evidence work onward) are added here as they are recorded.
@@ -112,5 +116,11 @@ Sessions after 2026-10-26 (this evidence work onward) are added here as they are
 | 42 | codex | `01a16965-49a5-7650-8c11-fd353b7539de` | 2026-10-23 15:33 | gpt-6.1-sol | Codex subagent `/root/boundary_review_session_a` | [21](21-codex-boundary-review-session-a.md) |
 | 43 | codex | `01a16968-b8a8-7b22-b7c6-f7a8f5234e1e` | 2026-10-23 15:37 | codex-auto-review | Codex permission check (`codex-auto-review`); approves or denies tool calls. **Not a review.** | — |
 | 44 | claude | `3d2319ad-79d1-4d3d-a243-e5cd03a8b685` | 2026-10-23 18:47 | claude-opus-5-5 | Claude Code session | [22](22-claude-agent-interface.md) |
+| 45 | claude | `618e460d-d442-4e5f-a60f-7a9c556e8095` | 2026-10-27 03:04 | claude-opus-5-5 | Claude Code session | [23](23-claude-gap-analysis-evidence-foundation.md) |
+| 46 | claude | `3a0642f5-f755-47cd-8fef-7c886d9d6133` | 2026-10-27 04:14 | claude-opus-5-5 | Claude Code session | [24](24-claude-skill-game-rules-audit-adapter.md) |
+| 47 | claude | `f7e2bf18-e439-4d94-9cb9-3179f521e9f8` | 2026-10-27 04:14 | claude-opus-5-5 | Claude Code session | [25](25-claude-skill-session-evidence-first.md) |
+| 48 | claude | `fb09128d-3065-4ecc-a277-aae735265c63` | 2026-10-27 04:48 | claude-opus-5-5 | Claude Code session | [26](26-claude-skill-game-rules-audit-server-changes.md) |
 
-Totals: Claude Code session 15, Codex permission check 15, Codex subagent 5, Codex work session 9
+Totals: Claude Code session 19, Codex permission check 15, Codex subagent 5, Codex work session 9
+
+The session that wrote rows 45–48 (`83ac1132-fb79-427f-8be5-499c4f385687`, the second `/session-evidence` invocation, started 2026-10-27 04:58) was excluded from this extraction because it was still running. It is not yet recorded.

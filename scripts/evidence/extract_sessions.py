@@ -147,6 +147,10 @@ def claude_file(path: str) -> dict:
             if isinstance(content, list) and any(isinstance(c, dict) and c.get("type") == "tool_result" for c in content):
                 scan_output(rec, out)
                 continue
+            # A slash-command skill (/name) is loaded as a meta message naming its directory.
+            for s in re.findall(r"^Base directory for this skill: \S*/skills/([A-Za-z0-9_.:\-]+)", out, re.M):
+                if s not in rec["skills"]:
+                    rec["skills"].append(s)
             if d.get("isMeta") or d.get("isCompactSummary"):
                 continue
             t = out.strip()

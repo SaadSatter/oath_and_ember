@@ -2,7 +2,7 @@
 name: session-evidence
 description: Write or refresh the redacted evidence record for one or more Claude Code or Codex sessions in docs/agent-sessions/, using the committed extraction scripts, and update the session index and evidence index. Records session ids, roles, the owner's instructions, what was done, test results, commits, PRs and artifacts. Never invents session links, invocations or results. Use after an implementation, skill or review session, or to document historical sessions.
 argument-hint: "<session id prefix(es) | latest> [role] [title]"
-allowed-tools: Read, Grep, Glob, Edit, Write, Bash(python3 -I scripts/evidence/extract_sessions.py:*), Bash(python3 -I scripts/evidence/render_sessions.py:*), Bash(python3 -I scripts/evidence/scan_secrets.py:*), Bash(git log:*), Bash(git show:*), Bash(git branch:*), Bash(git rev-parse:*), Bash(gh pr view:*), Bash(gh pr list:*), Bash(shasum:*), Bash(ls:*)
+allowed-tools: Read, Grep, Glob, Edit(docs/agent-sessions/**), Write(docs/agent-sessions/**), Edit(docs/midterm/EVIDENCE_INDEX.md), Edit(docs/midterm/REQUIREMENTS_CHECKLIST.md), Edit(scripts/evidence/sessions.json), Bash(python3 -I scripts/evidence/extract_sessions.py:*), Bash(python3 -I scripts/evidence/render_sessions.py:*), Bash(python3 -I scripts/evidence/scan_secrets.py:*), Bash(git log:*), Bash(git show:*), Bash(git branch:*), Bash(git rev-parse:*), Bash(gh pr view:*), Bash(gh pr list:*), Bash(shasum:*), Bash(ls:*)
 ---
 
 # Session evidence
