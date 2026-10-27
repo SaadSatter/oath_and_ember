@@ -1,0 +1,32 @@
+# Evidence index: rubric checks 1a–5c
+
+Maps each rubric check in `docs/midterm/MIDTERM_GUIDELINES.md` to the evidence that exists **now**. Numbers such as `S14` refer to `docs/agent-sessions/14-*.md`. Status and next steps are in `docs/midterm/REQUIREMENTS_CHECKLIST.md`. Only existing evidence is listed; anything planned is marked *planned*.
+
+Updated 2026-10-27, branch `midterm/evaluation`.
+
+| Check | Requirement (short) | Evidence that exists | Sessions | Missing |
+| --- | --- | --- | --- | --- |
+| 1a | Rule/source map with labels and locators | `docs/GAME_DESIGN_RATIONALE.md` (design/code/manual/observed/assumed labels, D1–D11 with locators). The owner's D1–D11 approval edits are on `codex/evaluation-archive` (`4d144f4`), not yet on this branch | S14 (rationale written; owner: "I approve of D1-D11") | A rule map covering every Bald Goddess episode rule (shrine, pond, maze, griffin, finale) |
+| 1b | Scope and exclusions | Episode `goddess` → `chapter0.complete`: `CLAUDE.md`, `docs/midterm/AGENT_INTERFACE.md`, PR #6 and #7 descriptions | S17 (owner: "Let it end once the Chapter 0 complete comes up"), S22 | README scope statement; Week 3 thread update; course PR #57 still holds Prince of Persia (owner decision: wait for the professor) |
+| 1c | Sources credited, reuse terms | `docs/*_PROVENANCE.json`, `Images/Sprites/monster_sprites/README.md`, `docs/SPRITE_ASSETS.md`, audio provenance in `docs/audio/` | S03, S04 (PixelLab), S05 (LPC and Kenney chosen by the owner), S12 (sound sources) | One sources-and-terms section quoting each license (PixelLab terms, LPC, Kenney, audio, Phaser) |
+| 2a | Complete loop to a bounded ending | Quest built: S01 (maps, from the owner's 2026-10-14 brief `9ce38024`), S05, S06, S09 (finale, PR #4), S11, S16 (goddess checkpoint). Tests: `apps/server/test/chapter0Finale.test.ts`, `hedgeMazeWalkthrough.test.ts`, `mirrorPondWalkthrough.test.ts`, `griffin.test.ts` | S01, S09, S16 | A scripted route from `goddess` to `chapter0.complete` through interface actions only, with no fixtures (*planned*, phase 3) |
+| 2b | Model player submits actions through the interface | LLM adapter `packages/agent/src/policies/llm.ts`, tested offline with a fake model (33 tests; re-run 2026-10-26, pass) | S22 | Any live model episode and trace |
+| 2c | Per-role information; legal list leaks nothing | `packages/agent/src/perception.ts`, leak tests in `packages/agent/test/environment.test.ts`. Earlier reviews: S18 (pre-implementation), S21 (session A, on the superseded Codex code) | S18, S21, S22 | Owner rule (2026-10-27): griffin HP and phases, signs and labels exactly as a human player sees them. Interface audit with `game-rules-audit` (*planned*) |
+| 3a | Runs from a fresh clone | — | — | Course folder, README commands, fresh-clone rehearsal |
+| 3b | Runner enforces limits with terminal reasons | `packages/agent/src/runner.ts`, `environment.ts` (tick, decision, model-call, token, spend, wall-clock limits; terminal reasons) | S22 | Failed calls do not count toward the budget; no per-call timeout (gap analysis 2026-10-26) |
+| 3c | CI: invariants, legal/illegal, terminal outcome, regression, limits | Deterministic tests exist across `apps/*/test` and `packages/agent/test` | — | Course workflow `midterm-saadsatter.yml`; the full suite currently has 1 failing test (directional sprint frame, first seen in S14/S15 on 2026-10-22) |
+| 3d | Implementation agent, reusable skill, independent review | **Implementation:** `CLAUDE.md` (S17), `AGENTS.md`; sessions S01–S17, S22. **Skills:** `.claude/skills/game-rules-audit/SKILL.md` (revised 2026-10-27), `.claude/skills/session-evidence/SKILL.md` (new). Historical: Codex `.agents/skills/oath-rule-information-boundary` invoked once (S21). **Reviewers:** `.claude/agents/rules-reviewer.md` (read-only, S20 config checks); `.codex/agents/oath-rule-reviewer.toml` | S17, S20, S21, S22 | Two invocations of each skill in fresh sessions; independent reviews in fresh Claude and Codex sessions, with findings and resolutions (*planned*) |
+| 4a | Choices explained, with the alternative they beat | D1–D11 alternatives in `docs/GAME_DESIGN_RATIONALE.md`; interface choices and owner decisions in `docs/midterm/AGENT_INTERFACE.md` | S14, S22 | Alternatives for the action vocabulary, baseline, memory and suite |
+| 4b | Credible baseline; suite separates players | Exploration baseline (`packages/agent/src/policies/baseline.ts`) completes the milestone only. `docs/midterm/evidence/session1/` | S22 | Quest-aware two-player scripted baseline (*planned*) |
+| 5a | Fair, reproducible comparison | Hash-chained traces and start hashes (`packages/agent/src/trace.ts`, `evaluator.ts`) | S22 | Frozen suite (S1–S4, F), held-out cases, results table, dated prices |
+| 5b | Owner-voiced log and limitations; peer notes | Template `docs/midterm/agent-evidence/AGENT-TEAM.template.md` | S17 | The owner writes `AGENT-TEAM.md` and the limitations. Peer notes due 2026-11-06 |
+| 5c | Recording of agent play, limits stated | Only QA videos made with fixtures (`docs/quests/bald-goddess/recording-*`, S01) and a 10 s Codex smoke video on the archive branch. Neither shows the agent playing the quest | S01, S14, S19 | A live recording of model-controlled play (*planned*) |
+
+## Professor-approved exception (as stated by the owner)
+
+- Historical Codex and Claude sessions count as implementation-agent evidence: `docs/agent-sessions/`.
+- Two AI agents control Sieg and Coco independently: `packages/agent`.
+- A recorded video of the AI agents playtesting the Bald Goddess checkpoint is submitted.
+- Existing assistant workflows and new sessions provide the reusable-skill and independent-review evidence.
+
+The owner reports this exception; no written approval is stored in this repository. The submission folder and replacing PR #57 are still open questions for the professor.

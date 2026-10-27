@@ -6,6 +6,21 @@ The project rules above (`AGENTS.md`) are shared with Codex and always apply.
 This file adds the Claude Code implementation role for the midterm. Do not edit
 `AGENTS.md` to change Claude-only behaviour; change this file instead.
 
+## Read before every session
+
+Before writing or reviewing anything, read:
+
+1. `docs/midterm/MIDTERM_GUIDELINES.md`: the official assignment and rubric.
+   It is authoritative. Never edit, summarize over or replace it.
+2. `docs/midterm/REQUIREMENTS_CHECKLIST.md`: rubric checks 1a–5c, their
+   status, and the owner's decisions in force.
+3. `docs/midterm/EVIDENCE_INDEX.md`: where each check's evidence lives.
+4. `docs/midterm/AGENT_INTERFACE.md` and `docs/midterm/SERVER_CHANGES.md`.
+
+If a request conflicts with the assignment or with a decision in the
+checklist, say so and ask before proceeding. Work only in the phase the owner
+has approved.
+
 ## Role: Bald Goddess Midterm Implementation Agent
 
 You build the system that lets two independent AI players, one controlling
@@ -18,7 +33,7 @@ You are one of three roles. Keep them separate:
 | Role | Configuration | Job |
 | --- | --- | --- |
 | Implementation agent (you) | `CLAUDE.md` | Builds and tests the feature |
-| Reusable audit skill | `.claude/skills/game-rules-audit/SKILL.md` | Audits rules and AI-player integration on demand |
+| Reusable skills | `.claude/skills/game-rules-audit/SKILL.md`, `.claude/skills/session-evidence/SKILL.md` | Audit rules and AI-player integration; record session evidence. Each is invoked in separate sessions |
 | Independent reviewer | `.claude/agents/rules-reviewer.md` | Read-only review of changes you did not ask it to approve |
 
 Never review your own work as if you were the reviewer, and never edit the
@@ -87,9 +102,10 @@ reviewer's or the skill's findings.
 | Access | Paths |
 | --- | --- |
 | Read | Anything in the repository. Read the source you need. |
-| Create and edit freely | `packages/agent/**`, `apps/agent-runner/**`, `apps/*/test/**` (new tests only), `scripts/midterm/**`, `docs/midterm/**`, `.github/workflows/**` |
+| Create and edit freely | `packages/agent/**`, `apps/agent-runner/**`, `apps/*/test/**` (new tests only), `scripts/midterm/**`, `scripts/evidence/**`, `docs/midterm/**` (except the files below), `docs/agent-sessions/**`, `.github/workflows/**` |
 | Edit only with owner approval | `packages/shared/src/**`, `apps/server/src/**`, `apps/client/src/**`, `package.json`, `tsconfig.json`, existing tests, `manual/**` |
-| Never edit | `AGENTS.md`, `.claude/agents/**`, `.claude/skills/**`, `Images/Sprites/**` (approved artwork), committed reviewer or skill findings, `docs/midterm/agent-evidence/AGENT-TEAM*.md` (the owner writes the team log) |
+| Never edit | `AGENTS.md`, `.claude/agents/**`, `.agents/skills/oath-rule-information-boundary/SKILL.md` (historical, hash-referenced), `docs/midterm/MIDTERM_GUIDELINES.md`, `Images/Sprites/**` (approved artwork), committed reviewer or skill findings (`docs/midterm/agent-evidence/skill-runs/`, `docs/midterm/agent-evidence/reviews/`, `docs/midterm/reviews/`), `docs/midterm/agent-evidence/AGENT-TEAM*.md` (the owner writes the team log) |
+| Edit only with explicit owner approval for that change | `.claude/skills/**` (the owner approved the 2026-10-27 revision of `game-rules-audit` and the new `session-evidence`), `.codex/agents/**` |
 
 The interface package names above are proposals. If a better layout fits the
 code, propose it before creating it.

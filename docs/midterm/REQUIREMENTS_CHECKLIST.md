@@ -1,0 +1,55 @@
+# Requirements checklist
+
+Maps every rubric check in `docs/midterm/MIDTERM_GUIDELINES.md` to its deliverable, its verification and its status. The statuses are:
+
+- **done**: the evidence exists and is linked;
+- **partial**;
+- **todo**;
+- **at risk**: still todo and likely to slip;
+- **owner**: the owner's own work.
+
+Evidence pointers are in `docs/midterm/EVIDENCE_INDEX.md`. Updated 2026-10-27, after phase 1 (evidence foundation).
+
+## Rubric checks
+
+| Check | Deliverable | Verification | Status |
+| --- | --- | --- | --- |
+| 1a | `docs/midterm/RULE_SOURCE_MAP.md`: every episode rule labelled code/manual/observed/assumed/design with locators; links to D1–D11 | `game-rules-audit` on shrine, pond, maze and griffin | partial: D1–D11 exist; no rule map for the episode |
+| 1b | README scope statement: episode bounds, exclusions (village, prologue, airship, campaign), adaptations | Reviewer; playtest | partial: bounds decided (S17, S22); README todo; course PR on hold for the professor |
+| 1c | README "Sources and terms" quoting each license or term | Reviewer; `scan_secrets.py`; asset provenance files | partial: provenance files exist; terms not consolidated |
+| 2a | Scripted route `goddess` → `chapter0.complete` through interface actions only; a human playthrough | Route test in CI; trace committed | **at risk**: never shown end to end without fixtures |
+| 2b | LLM players (Sieg and Coco) with no tools; fallbacks labelled | Fake-model tests; live traces | partial: adapter done and tested offline; no live run |
+| 2c | Per-role observations and leak-free legal actions, matching what a human player sees | Leak tests; `game-rules-audit adapter` | partial: tests exist; human-visibility review of griffin and sign labels todo |
+| 3a | README commands from `midterms/saadsatter/` on a fresh clone | Fresh-clone rehearsal recorded in `EVALUATION.md` | todo |
+| 3b | Step, call, token, spend, per-call timeout and wall-clock limits; failed calls counted; explicit terminal reasons | Runner tests | partial: per-call timeout and failed-call accounting missing |
+| 3c | Course workflow covering invariants, legal/illegal actions, terminal outcome, an observed regression, and limits | Green run on the course PR | todo; the full suite has 1 known failing test |
+| 3d | `CLAUDE.md`; skills `game-rules-audit` and `session-evidence`, each invoked in two fresh sessions; independent Claude and Codex reviews | Skill reports in `docs/midterm/agent-evidence/skill-runs/`; reviews as PR comments and in `agent-evidence/reviews/`; session records in `docs/agent-sessions/` | partial: configuration and historical evidence done (`docs/agent-sessions/`, 22 files plus 00); new invocations and reviews todo |
+| 4a | Choices with the alternative each beat (vocabulary, baseline, memory, suite, recording) | Reviewer | partial |
+| 4b | Quest-aware two-player scripted baseline, plus the exploration baseline as secondary | Baseline results on the frozen suite | todo |
+| 5a | `docs/midterm/EVALUATION_SUITE.md` frozen before tuning; `EVALUATION.md` table with every field, failures included | `git log` of the suite file; `game-rules-audit suite` | todo |
+| 5b | `AGENT-TEAM.md`, limitations, peer notes | — | owner |
+| 5c | 3–5 min recording of live model play with on-screen actions and stated limits | `game-rules-audit recording` | todo |
+
+## Owner decisions in force (2026-10-27)
+
+- **Server changes.** Approved: deterministic clock and id injection, the `manualDriver` option, and server-enforced view-only browser sessions. Production behaviour is the default. Equivalence and integration tests are required (`docs/midterm/SERVER_CHANGES.md`).
+- **Interface.** PR #7's `packages/agent` is primary. Codex's Playwright recording and browser presentation are reused. The competing Codex evaluation is archived on `codex/evaluation-archive` (`4d144f4`).
+- **Skills.** `game-rules-audit` and `session-evidence` are approved; both must be invoked with recorded evidence. Independent reviews run in fresh Claude and Codex sessions.
+- **Seeds.** No artificial randomness. Independent model trials measure behavioural variation, and the S1–S4/F situations test different challenges. Baseline and model runs must have identical start hashes.
+- **Suite.** S1–S4 and F, provisional until the professor confirms. Sub-quest starts come only from replaying real actions. The full scripted route must be proven before the suite is frozen.
+- **Baselines.** A quest-aware two-player scripted baseline using only permitted observations and messages; the exploration baseline is kept as secondary.
+- **Model runs.** No paid runs yet. After the route works, measure decision counts, estimate cost, recommend a model and a hard budget, and ask for approval. Investigate action batching and prompt caching within the information boundary.
+- **Recording.** Live capture of model-controlled play is preferred. A replay must be labelled and verified against its trace. A baseline is never presented as an LLM.
+- **Information boundary.** Griffin HP, attack phases, signs and labels exactly as a human player sees them. No internal-only state.
+- **Security.** The owner rotates the PixelLab token before evidence is published. All committed evidence and artefacts are scanned.
+- **Submission.** Prepare Oath and Ember, but do not replace Prince of Persia in course PR #57 until the professor resolves the scope and submission questions.
+
+## CI test groups required by 3c (planned)
+
+| Group | Planned tests | Status |
+| --- | --- | --- |
+| Rule invariants | Existing server rule tests (selected subset), equivalence tests for the server changes | todo |
+| Legal and illegal actions | `packages/agent/test/environment.test.ts` validation tests | exists, not in CI |
+| Terminal outcome | The scripted route reaching `chapter0.complete`; the milestone baseline | todo |
+| Observed regression | A real defect found during this work, with its test (candidates: the failed-call accounting gap; any bug the scripted route uncovers) | todo |
+| Episode limits | Runner limit tests (tick, decision, model-call, token, spend, timeout) | partial |
