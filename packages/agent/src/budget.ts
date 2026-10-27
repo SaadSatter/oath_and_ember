@@ -100,6 +100,12 @@ export class ModelBudget {
   private aborted = false;
   private readonly controllers = new Set<AbortController>();
   onRecord: (r: CallRecord) => void = () => {};
+  /**
+   * Called when a call is admitted, before it is dispatched, with the amount
+   * held for it. Traced so an interrupted episode can be reconciled: a call
+   * that started but has no record is charged its whole hold (ledger.ts).
+   */
+  onStart: (s: { player: PlayerId; attempt: number; reservedUsd: number }) => void = () => {};
 
   constructor(readonly limits: BudgetLimits) {
     if (!Number.isSafeInteger(limits.maxModelCallsPerPlayer) || !(limits.maxModelCallsPerPlayer > 0)) throw Error("maxModelCallsPerPlayer must be positive.");
@@ -139,6 +145,7 @@ export class ModelBudget {
     this.inFlightUsd += worstCaseUsd;
     const controller = new AbortController();
     this.controllers.add(controller);
+    this.onStart({ player, attempt: this.calls[player], reservedUsd: worstCaseUsd });
     return { attempt: this.calls[player], reservedUsd: worstCaseUsd, controller };
   }
 

@@ -257,8 +257,11 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
   // Final runs: claim the episode in the append-only register first (H2).
   // The single-use ticket is bound to these policies by runEpisode.
   const ticket = o.final ? o.finalGrant!.claim(o.player, id, seed, attempt) : null;
-  // Reserve before anything can spend; the reservation is on disk first.
-  const ledgerEntry = model ? model.ledger.reserve(model.stage, `${o.player}/${id}/seed${seed}/${o.gitHash}`, cap) : null;
+  // Reserve before anything can spend; the reservation is on disk first, and
+  // the trace names it so an interrupted episode can be reconciled from it.
+  const run = `${o.player}/${id}/seed${seed}/${o.gitHash}`;
+  const ledgerEntry = model ? model.ledger.reserve(model.stage, run, cap) : null;
+  if (model && ledgerEntry) trace.write({ type: "ledger_reservation", tick: 0, data: { entry: ledgerEntry, stage: model.stage, run, reservedUsd: cap, ledger: model.ledger.path } });
   const started = Date.now();
   let outcome: GameOutcome;
   try {
@@ -389,7 +392,9 @@ function writeResults(dir: string, summaries: EpisodeSummary[], previous: Previo
  * be checked.
  */
 export async function smokeCall(gateway: Gateway, manual: string, ledger: SpendLedger, gitHash: string, reserveUsd = 0.01, trace?: TraceWriter, signal?: AbortSignal) {
-  const entry = ledger.reserve("smoke", `smoke/S1/${gitHash}`, reserveUsd);
+  const run = `smoke/S1/${gitHash}`;
+  const entry = ledger.reserve("smoke", run, reserveUsd);
+  trace?.write({ type: "ledger_reservation", tick: 0, data: { entry, stage: "smoke", run, reservedUsd: reserveUsd, ledger: ledger.path } });
   const budget = new ModelBudget({ maxModelCallsPerPlayer: 1, maxTokensPerPlayer: 100_000, maxSpendUsd: reserveUsd, callTimeoutMs: defaultBudgetLimits.callTimeoutMs });
   let settled = false;
   const abort = () => budget.abortAll();
@@ -398,6 +403,7 @@ export async function smokeCall(gateway: Gateway, manual: string, ledger: SpendL
   try {
     const env = environmentFor("S1", { trace: (event) => trace?.write(event) });
     await env.reset(SEEDS.tuning[0]);
+    budget.onStart = (s) => trace?.write({ type: "model_call_start", tick: env.currentTick(), player: "sieg", data: s });
     budget.onRecord = (record) => trace?.write({ type: "model_call", tick: env.currentTick(), player: "sieg", data: record });
     const player = new LLMPlayer("Sieg", manual, new MeteredGateway(gateway, budget, "sieg"));
     let decision;

@@ -4,7 +4,7 @@
 // evaluation register live there, so all worktrees share one budget.
 
 import { execFileSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -46,6 +46,11 @@ export function canonicalLedgerPath(info: Pick<RepoInfo, "commonDir"> = repoInfo
   return join(evalStateDir(info), "spend-ledger.json");
 }
 
+/** Written once when the canonical ledger is initialized; never removed (re-review M1). */
+export function ledgerMarkerPath(info: Pick<RepoInfo, "commonDir"> = repoInfo()) {
+  return join(evalStateDir(info), "spend-ledger.init.json");
+}
+
 /** Every worktree of this repository (absolute paths), from `git worktree list`. */
 export function worktrees(info: Pick<RepoInfo, "root"> = repoInfo()): string[] {
   return git(info.root, "worktree", "list", "--porcelain")
@@ -71,4 +76,22 @@ export function ledgerInventory(info: RepoInfo = repoInfo()): LedgerInventoryIte
     item(canonicalLedgerPath(info), "canonical"),
     ...worktrees(info).map((w) => item(join(w, "evaluation-runs", "spend-ledger.json"), "legacy")),
   ];
+}
+
+/**
+ * Other worktrees whose checked-out code can make paid model calls without
+ * the canonical ledger (re-review H1-a): a `scripts/midterm/run-episode.ts`
+ * that builds a paid gateway and lacks the guard that refuses paid policies.
+ * Read-only: it only reads files on disk and never changes the worktree.
+ */
+export function unmeteredWorktrees(info: Pick<RepoInfo, "root"> = repoInfo()): { worktree: string; file: string }[] {
+  const out: { worktree: string; file: string }[] = [];
+  for (const w of worktrees(info)) {
+    if (resolve(w) === resolve(info.root)) continue;
+    const file = join(w, "scripts", "midterm", "run-episode.ts");
+    if (!existsSync(file)) continue;
+    const src = readFileSync(file, "utf8");
+    if (/new (AnthropicGateway|OpenAIGateway)\(/.test(src) && !/requireLedgerEntrypoint\(/.test(src)) out.push({ worktree: w, file });
+  }
+  return out;
 }

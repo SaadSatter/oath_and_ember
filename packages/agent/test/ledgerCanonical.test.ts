@@ -71,11 +71,11 @@ describe("canonical spend ledger (H1)", () => {
   it("shares spend and the lock across worktrees; init happens once", () => {
     const { a, b } = twoWorktrees();
     const { ledger } = SpendLedger.initCanonical(repoInfo(a));
-    expect(() => SpendLedger.initCanonical(repoInfo(b))).toThrow(/already exists|locks exist/);
+    expect(() => SpendLedger.initCanonical(repoInfo(b))).toThrow(/already exists|locks exist|never re-initialized/);
     ledger.reserve("pilot", "from-a", 3);
     expect(() => SpendLedger.openCanonical(repoInfo(b))).toThrow(/locked/);
     ledger.close();
-    expect(() => SpendLedger.initCanonical(repoInfo(b))).toThrow(/already exists/);
+    expect(() => SpendLedger.initCanonical(repoInfo(b))).toThrow(/never re-initialized/);
     const fromB = SpendLedger.openCanonical(repoInfo(b));
     expect(fromB.remaining("pilot")).toBe(5);
     expect(fromB.remaining()).toBe(22);

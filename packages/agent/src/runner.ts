@@ -63,9 +63,11 @@ export async function runEpisode(
   const budget = options.budget;
   env.attachBudget(budget);
   const reset = await env.reset(options.seed);
-  if (budget)
+  if (budget) {
+    budget.onStart = (s) => trace.write({ type: "model_call_start", tick: env.currentTick(), player: s.player, data: s });
     budget.onRecord = (r) =>
       trace.write({ type: "model_call", tick: env.currentTick(), player: r.player, data: r });
+  }
   trace.write({
     type: "run",
     tick: reset.tick,

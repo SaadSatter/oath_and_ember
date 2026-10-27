@@ -119,7 +119,8 @@ describe("model episodes and the spend ledger", () => {
     const trace = new TraceWriter(join(d, "smoke-trace.jsonl"));
     const r = await smokeCall(gateway, "manual", ledger, "test", 0.01, trace);
     verifyTrace(linesFor(join(d, "smoke-trace.jsonl")));
-    expect(trace.lines.map((l) => l.type)).toEqual(["reset", "observation", "model_call", "model_reply", "smoke_outcome"]);
+    // The reservation and the call start are traced so an interrupted smoke can be reconciled.
+    expect(trace.lines.map((l) => l.type)).toEqual(["ledger_reservation", "reset", "observation", "model_call_start", "model_call", "model_reply", "smoke_outcome"]);
     expect(gateway.calls).toBe(1);
     expect(r.record).toMatchObject({ status: "ok", costUsd: 0.0007, model: "fake-model", cache: { read: 3000, write: 0 } });
     expect(ledger.entries()).toEqual([expect.objectContaining({ stage: "smoke", status: "settled", chargedUsd: 0.0007 })]);
