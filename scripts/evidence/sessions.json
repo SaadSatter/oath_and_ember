@@ -22,6 +22,7 @@
     {"number": 19, "slug": "codex-evaluation-subagents", "ids": ["01a166d4"], "role": "Implementation subagents spawned by session 14", "title": "Superseded Codex evaluation implementation: engine, browser observer and video, players and traces"},
     {"number": 20, "slug": "claude-agent-team-config-checks", "ids": ["894c52f7", "d9dbc9ba", "d8f2c33e", "e6c5752b"], "role": "Configuration smoke tests for PR #6 (non-interactive `claude -p`). Not skill invocations and not reviews", "title": "PR #6 configuration checks: role, skill and reviewer discovery, reviewer read-only enforcement"},
     {"number": 21, "slug": "codex-boundary-review-session-a", "ids": ["01a16965"], "role": "Reviewer subagent applying the Codex skill `oath-rule-information-boundary`, spawned by session 14. A skill invocation; weak as an independent review", "title": "Information-boundary review, session A (Codex skill invocation)"},
-    {"number": 22, "slug": "claude-agent-interface", "ids": ["3d2319ad"], "role": "Implementation agent (`CLAUDE.md`, which imports `AGENTS.md`)", "title": "Two-player five-operation agent interface (PR #7)"}
+    {"number": 22, "slug": "claude-agent-interface", "ids": ["3d2319ad"], "role": "Implementation agent (`CLAUDE.md`, which imports `AGENTS.md`)", "title": "Two-player five-operation agent interface (PR #7)"},
+    {"number": 23, "slug": "claude-gap-analysis-evidence-foundation", "ids": ["618e460d"], "role": "Implementation agent (`CLAUDE.md`, which imports `AGENTS.md`)", "title": "Gap analysis, evidence foundation and integration preparation (phase 1)", "note": "This session was still running when this file was rendered. It is recorded up to its latest transcript event at that time; later events are not included."}
   ]
 }

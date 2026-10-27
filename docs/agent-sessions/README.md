@@ -59,6 +59,7 @@ New sessions are added with the `session-evidence` skill (`.claude/skills/sessio
 | [20 — PR #6 configuration checks: role, skill and reviewer discovery, reviewer read-only enforcement](20-claude-agent-team-config-checks.md) | `894c52f7`, `d9dbc9ba`, `d8f2c33e`, `e6c5752b` | Configuration smoke tests for PR #6 (non-interactive `claude -p`). Not skill invocations and not reviews |
 | [21 — Information-boundary review, session A (Codex skill invocation)](21-codex-boundary-review-session-a.md) | `01a16965` | Reviewer subagent applying the Codex skill `oath-rule-information-boundary`, spawned by session 14. A skill invocation; weak as an independent review |
 | [22 — Two-player five-operation agent interface (PR #7)](22-claude-agent-interface.md) | `3d2319ad` | Implementation agent (`CLAUDE.md`, which imports `AGENTS.md`) |
+| [23 — Gap analysis, evidence foundation and integration preparation (phase 1)](23-claude-gap-analysis-evidence-foundation.md) | `618e460d` | Implementation agent (`CLAUDE.md`, which imports `AGENTS.md`). Recorded while still running |
 | [00 — Codex briefs without a surviving transcript](00-pre-log-codex-briefs.md) | attachments only | Owner's instructions; no session record |
 
 Sessions after 2026-10-26 (this evidence work onward) are added here as they are recorded.
