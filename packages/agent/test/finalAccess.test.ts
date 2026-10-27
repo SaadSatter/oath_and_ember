@@ -2,7 +2,7 @@
 // owner approval tied to a clean commit, claimed in an append-only register.
 // No held-out episode is played here: refused runs stop before reset, and the
 // one permitted run is a pre-aborted S1 episode (reset, then stopped at once).
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -15,6 +15,9 @@ import { repoInfo } from "../src/repo.js";
 import { runEpisode } from "../src/runner.js";
 import { environmentFor, SITUATIONS } from "../src/suite.js";
 import { TraceWriter } from "../src/trace.js";
+
+// These tests run git many times; allow for a loaded machine.
+vi.setConfig({ testTimeout: 30_000 });
 
 const dirs: string[] = [];
 afterEach(() => {

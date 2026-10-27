@@ -74,6 +74,9 @@ export class SpendLedger {
         !Object.hasOwn(APPROVED_LEDGER.stages, stage) || !Number.isFinite(cap) || cap <= 0 || cap > APPROVED_LEDGER.stages[stage]))
       throw new LedgerError("Ledger configuration exceeds the approved allocation.");
     config = structuredClone(config);
+    // A ledger that must already exist is checked before anything is created.
+    if (opts.create === false && !existsSync(path))
+      throw new LedgerError(`No ledger at ${path}; refusing to spend. Initialize it once with \`node --import tsx scripts/midterm/ledger.ts init\` after reviewing the inventory.`);
     mkdirSync(dirname(path), { recursive: true });
     let lockFd: number;
     try {
