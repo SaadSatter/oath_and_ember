@@ -49,3 +49,7 @@ This update supersedes the older planned/missing Phase 4 labels in the table abo
 - **3d:** same-session checkpoint report `agent-evidence/skill-runs/2026-10-27-phase4-readiness.md`, not an independent review. Session S28 updated with the real checks and commits.
 - Secret scanner: **100 text files, 0 findings** after the readiness report; rescanned after final documentation. Configured next smoke: `claude-haiku-5-5`, effort `medium`, one call, $0.01 reservation/$0.10 smoke stage/$25 global cap. No paid API call, push or merge.
 - Local commits: `0e4920b` (quest baseline and disclosed knowledge), `f657a0a` (evaluation infrastructure). See `PHASE4_HANDOFF.md` for limits, commands, remaining risks and the subsequent evidence commit.
+
+## Authorized smoke preflight (2026-10-27): no dispatch
+
+The owner approved one paid smoke call, but the configured credential was absent at clean version `c6be0f2`. Provider documentation lists the model; authenticated acceptance was not checked. Canonical ledger/lock absent and untouched. **0 paid calls, $0 spend, no reservation/settlement, no model trace/summary.** Evidence: `evidence/phase4/smoke-preflight-2026-10-27.json`; details in `PHASE4_HANDOFF.md`. This is a blocked preflight, not live-model evidence. No pilots or S4/F runs.

@@ -3,6 +3,17 @@
 Worktree: `oath_and_ember-eval`, branch `midterm/evaluation`, base commit `b51c1c0`.
 
 
+
+## Authorized one-call smoke preflight: blocked before dispatch (2026-10-27)
+
+The owner approved exactly one `claude-haiku-5-5` smoke call at medium effort, 4,000 maximum output tokens including thinking, 30 s timeout, $0.01 call reservation, $0.10 smoke-stage cap and $25 global cap. No retries, model switches, budget increases, pilots or S4/F evaluations were authorized.
+
+Preflight at clean commit `c6be0f2` found that the configured `ANTHROPIC_API_KEY` environment variable is absent. Only its presence was checked; no credential value was printed/logged or searched for elsewhere. [Provider documentation](https://platform.claude.com/docs/en/models/haiku-5-5/overview) lists the exact identifier, but authenticated model acceptance and account access **could not be verified**. The canonical `evaluation-runs/spend-ledger.json` and its lock do not exist; no ledger was created or modified because dispatch prerequisites failed.
+
+**Zero paid calls dispatched.** Authentication and model request success are untested; no agent response, token/cache/thinking usage, refusal or truncation exists to assess. Spend is **$0**. No reservation or settlement occurred, and no model trace or smoke summary was written. The evidence file `evidence/phase4/smoke-preflight-2026-10-27.json` is explicitly a preflight record, not a model-run trace or result. Existing evidence is preserved.
+
+Next prerequisite: the owner configures the credential in the canonical runner's environment without pasting it into chat. Then perform an authenticated read-only model lookup, validate/create the canonical ledger through `SpendLedger`, and dispatch only the one approved smoke call. This preflight did not consume that call authorization. Stop here; do not run additional experiments.
+
 ## Latest status: offline infrastructure ready for an approved smoke test
 
 Follow-up requested 2026-10-27: complete infrastructure and make local commits; no paid calls, pushes, merges, or S4/F execution. This section supersedes the earlier handoff validation below. The earlier full-route tests/results predate the stricter follow-up holdout instruction.
