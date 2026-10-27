@@ -64,11 +64,12 @@ New sessions are added with the `session-evidence` skill (`.claude/skills/sessio
 | [24 — game-rules-audit, first invocation: adapter](24-claude-skill-game-rules-audit-adapter.md) | `3a0642f5` | Skill invocation (`game-rules-audit`) in a fresh `claude -p` session launched by 23; resumed once to save. Report: [`2026-10-27-adapter.md`](../midterm/agent-evidence/skill-runs/2026-10-27-adapter.md). Not an independent review |
 | [25 — session-evidence, first invocation: record of session 23](25-claude-skill-session-evidence-first.md) | `f7e2bf18` | Skill invocation (`session-evidence`) in a fresh `claude -p` session launched by 23. Output: file 23 (phase 1 narrative). Not an independent review |
 | [26 — game-rules-audit, second invocation: server changes and re-check of the adapter findings](26-claude-skill-game-rules-audit-server-changes.md) | `fb09128d` | Skill invocation (`game-rules-audit`) in a fresh `claude -p` session launched by 23. Report: [`2026-10-27-server-changes.md`](../midterm/agent-evidence/skill-runs/2026-10-27-server-changes.md). Not an independent review |
+| [27 — session-evidence, second invocation: files 24-26 and phase 2 of file 23 (interrupted)](27-claude-skill-session-evidence-second.md) | `83ac1132` | Skill invocation (`session-evidence`) in a fresh `claude -p` session launched by 23; interrupted by the usage limit, recorded by 23 |
 | [00 — Codex briefs without a surviving transcript](00-pre-log-codex-briefs.md) | attachments only | Owner's instructions; no session record |
 
 Sessions after 2026-10-26 (this evidence work onward) are added here as they are recorded.
 
-## Inventory of all local transcripts (as of 2026-10-27)
+## Inventory of all local transcripts (as of 2026-10-27, including the running session 618e460d)
 
 | # | Tool | Session id | Started (UTC) | Model | Classification | Evidence file |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -120,7 +121,6 @@ Sessions after 2026-10-26 (this evidence work onward) are added here as they are
 | 46 | claude | `3a0642f5-f755-47cd-8fef-7c886d9d6133` | 2026-10-27 04:14 | claude-opus-5-5 | Claude Code session | [24](24-claude-skill-game-rules-audit-adapter.md) |
 | 47 | claude | `f7e2bf18-e439-4d94-9cb9-3179f521e9f8` | 2026-10-27 04:14 | claude-opus-5-5 | Claude Code session | [25](25-claude-skill-session-evidence-first.md) |
 | 48 | claude | `fb09128d-3065-4ecc-a277-aae735265c63` | 2026-10-27 04:48 | claude-opus-5-5 | Claude Code session | [26](26-claude-skill-game-rules-audit-server-changes.md) |
+| 49 | claude | `83ac1132-fb79-427f-8be5-499c4f385687` | 2026-10-27 04:58 | claude-opus-5-5 | Claude Code session | [27](27-claude-skill-session-evidence-second.md) |
 
-Totals: Claude Code session 19, Codex permission check 15, Codex subagent 5, Codex work session 9
-
-The session that wrote rows 45–48 (`83ac1132-fb79-427f-8be5-499c4f385687`, the second `/session-evidence` invocation, started 2026-10-27 04:58) was excluded from this extraction because it was still running. It is not yet recorded.
+Totals: Claude Code session 20, Codex permission check 15, Codex subagent 5, Codex work session 9
