@@ -2,6 +2,29 @@
 
 Status: **first milestone implemented.** A two-player five-operation interface over the real game server, a scripted baseline that completes a bounded episode, and an LLM adapter for Claude and OpenAI. **No model-driven run has happened yet**, because no API credentials were available in the implementation session. **Full quest completion has not been shown** by any policy.
 
+## Phase 2 changes (2026-10-27)
+
+Owner decisions of 2026-10-27, implemented on `midterm/evaluation`. Where an older statement below disagrees, this section wins.
+
+- **Signs and in-world labels as drawn.** The default label mode is now `as-drawn`, which reproduces every sign and in-world label the client draws on that hero's screen. `names-only` is kept only for comparison.
+- **HUD goal lines stay hidden.** They spell out puzzle solutions, so they are an explicit evaluation restriction for every agent, baseline and model alike. With that restriction, agents see **less** than a human player. No claim of perfect human-observation parity is made.
+- **Health as the bar shows it.** Partner and enemy health is reported as the 36 px bar the client draws, in eighths (`health bar about 5/8`), never as numbers. Whether a monster is passive is not drawn, so it is not reported. An attack in progress is reported because its animation is a visible telegraph.
+- **The griffin's label.** `GriffinView` prints the label `GRIFFIN <hp>/320 · <PHASE>` above the griffin. Agents receive that text because a human sees it. Once the griffin has flown away (`groomingStage` DONE) it is no longer listed, matching the client.
+- **Central model budget** (`packages/agent/src/budget.ts`). The runner owns one `ModelBudget` per episode, and a player reaches a model only through a `MeteredGateway` bound to that budget and its own hero.
+  - Every attempted call counts toward the per-hero call cap: success, error, timeout, refusal or abort. The cap is exact.
+  - SDK retries are off (`maxRetries: 0`).
+  - Per-call timeout: 30 s by default, configurable (`--call-timeout-seconds`).
+  - Per-hero token cap.
+  - One spend cap for the whole episode, covering both heroes. The worst-case cost is reserved before each call. A call with no reported cost is charged its full reservation.
+  - Usage the provider does not report is recorded as unknown (`tokens: null`), not as zero.
+  - A model whose price is unknown is refused, because the spend cap could not be enforced.
+- **Time limits.**
+  - The 480 s episode limit is **game time** (`maxTicks` = 28,800 ticks, reason `tick_limit`).
+  - A separate real-world limit (`--wall-seconds`, reason `wall_clock_limit`) also aborts calls in flight.
+- **Outcome fields added:** `failedModelCalls`, `unknownUsageCalls`, `spendUsd { known, charged }` and `modelLimits`. Every call attempt is a `model_call` trace record with status, latency, tokens, cost, reservation and model id. The reply text is a separate `model_reply` record.
+- **`use_item`** takes only `item` (the earlier type's `target` field did not exist in the validator).
+- **Prices** in `llm.ts` are the PR #7 values, marked unverified. They must be checked against the official pricing page and dated before any paid run.
+
 Owner decisions this work follows (2026-10-23):
 
 - Agents do not see the scene-specific HUD goal lines, which spell out solutions.
@@ -86,7 +109,7 @@ Nothing in the list indicates which action helps.
 
 **Never included:** puzzle flags, timers, hidden enemy or griffin state, other areas' contents, story flags, future dialogue, ids, or the HUD goal sentence.
 
-**Labels.** In-world labels drawn by the client are reproduced as text. In the default `names-only` mode, instruction labels are cut to their names; for example, "FIREBALL · dry hedge" becomes "dry amber hedge". `--labels full` reproduces them exactly as drawn.
+**Labels.** In-world labels drawn by the client are reproduced as text, exactly as drawn (`as-drawn`, the default since 2026-10-27). `--labels names-only` cuts instruction labels to their names; for example, "FIREBALL · dry hedge" becomes "dry amber hedge".
 
 **StepResult:** `accepted`, `error`, `ticks` elapsed, `interrupted` reason, `feedback`, `done`.
 
@@ -135,7 +158,7 @@ Each run writes the following to its output folder:
 - `trace.jsonl`: every observation and legal set, chosen action, validation result, step result with ticks and wall-clock wait, model call with tokens/latency/cost/raw reply, message, private milestone and terminal event, each hash-chained to the previous line
 - `summary.json`
 
-The `--model` default for `--policy anthropic` is `claude-opus-5-5`. With a $1 cap, an Opus run will stop early on spend. The pilot command names Haiku, as in the approved provider option.
+The `--model` default for `--policy anthropic` is `claude-haiku-5-5` (changed from Opus on 2026-10-27). `--max-spend-usd` is required for any model run and is the total for the whole episode. **No paid run is approved yet.**
 
 ## Implemented vs. not yet
 
@@ -145,7 +168,7 @@ The `--model` default for `--policy anthropic` is `claude-opus-5-5`. With a $1 c
 | Separate per-hero observations, no hidden state | Done, tested by leak checks in all four quest areas |
 | Legal actions and validation (schema, legality, ownership, stale dialogue) | Done, tested |
 | Shared-clock two-player scheduler | Done, tested |
-| Termination: success, tick, decision, model-call, token, spend, wall clock, error, manual | Done; all but spend/error/wall clock have direct tests (wall clock is tested through `stop`) |
+| Termination: success, tick, decision, model-call, token, spend, wall clock, error, manual | Done; model-call, token, spend, error, timeout and wall-clock limits have direct runner tests (`packages/agent/test/budget.test.ts`, 2026-10-27) |
 | Hash-chained traces | Done, verified on every run |
 | Scripted baseline completes bounded milestone | **Done:** seed 1, 323 ticks (5.4 s game time), 0 invalid actions |
 | Baseline on the full quest | Runs; **fails as expected**. It reaches the Griffin Enclosure, collects nothing and stops at the decision limit after 10,744 ticks |
@@ -187,7 +210,7 @@ Full files: `docs/midterm/evidence/session1/`.
 
 ## Known limitations and items for owner review
 
-1. **Some in-world object names still hint.** Even in names-only mode, the griffin's floating label shows its phase and HP, as the client draws it. The nest's panel name is reduced to "Griffin nest", but the goddess's dialogue tells players where to search. Please confirm that names-only is the presentation you want.
+1. *(Resolved 2026-10-27: labels as drawn; HUD goal lines hidden; see "Phase 2 changes".)* The griffin's floating label shows its exact HP and phase name because the client draws it that way.
 2. **The scene sign texts are reproduced**, for example "WEST · MIRROR POND · E · Travel". These are signposts, not solutions, but they name the three areas.
 3. **Instant actions take no game time.** Dialogue, messages and backpack use resolve at once. A 23-line scene can be read at a single tick. Panel actions also wait for the partner when both heroes are deciding at the same moment.
 4. **The screen grid is a 32-pixel tile approximation** of the 640×360 camera. Thin walls and diagonal art are coarsened, and depth, animation and particle effects are summarised as text.

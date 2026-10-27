@@ -2,98 +2,92 @@
 // action log; nothing is shared with the partner except in-game messages.
 // The prompt holds the public player manual, the action format and the
 // task sentence, and nothing from source code, QA scripts or specs.
+//
+// Accounting is not done here. A player reaches a model only through a
+// MeteredGateway (../budget.ts) that the runner's ModelBudget owns: it counts
+// every attempt, enforces call/token/spend limits and the per-call timeout.
 
 import Anthropic from "@anthropic-ai/sdk";
 import type { ActionSpec, GameAction, Observation, StepResult } from "../types.js";
 import type { Decision, Policy } from "./policy.js";
-
-export interface Completion {
-  text: string;
-  input: number;
-  output: number;
-  costUsd: number;
-}
-export interface Gateway {
-  readonly label: string;
-  complete(system: string, user: string): Promise<Completion>;
-}
-
-/** Aggregate spend cap shared by both heroes' gateways (trusted accounting only). */
-export class SpendCap {
-  spent = 0;
-  constructor(readonly maxUsd: number) {
-    if (!(maxUsd > 0)) throw Error("A positive spend cap is required.");
-  }
-  reserve(worstCaseUsd: number) {
-    if (this.spent + worstCaseUsd > this.maxUsd)
-      throw Error(`spend_limit: $${this.spent.toFixed(4)} spent of $${this.maxUsd}`);
-  }
-}
+import { ModelCallError, type Completion, type Gateway, type MeteredGateway } from "../budget.js";
 
 export interface Prices {
   inputPerM: number;
   outputPerM: number;
   source: string;
 }
-/** Anthropic list prices (claude-api skill table, cached 2026-10-06), USD per 1M tokens. */
+/**
+ * Anthropic list prices, USD per 1M tokens, as recorded in PR #7 from the
+ * claude-api skill table cached 2026-10-06. NOT re-verified: they must be
+ * checked against the official pricing page and dated on the day of any paid
+ * run (docs/midterm/REQUIREMENTS_CHECKLIST.md).
+ */
 export const anthropicPrices: Record<string, Prices> = {
-  "claude-opus-5-5": { inputPerM: 4, outputPerM: 20, source: "claude-api skill model table, 2026-10-06" },
-  "claude-sonnet-5-5": { inputPerM: 2, outputPerM: 10, source: "claude-api skill model table, 2026-10-06" },
-  "claude-haiku-5-5": { inputPerM: 0.1, outputPerM: 0.5, source: "claude-api skill model table, 2026-10-06" },
+  "claude-opus-5-5": { inputPerM: 4, outputPerM: 20, source: "claude-api skill model table, 2026-10-06 (unverified)" },
+  "claude-sonnet-5-5": { inputPerM: 2, outputPerM: 10, source: "claude-api skill model table, 2026-10-06 (unverified)" },
+  "claude-haiku-5-5": { inputPerM: 0.1, outputPerM: 0.5, source: "claude-api skill model table, 2026-10-06 (unverified)" },
 };
 
-const MAX_OUTPUT = 4000;
+export const MAX_OUTPUT = 4000;
+/** Conservative token estimate for reserving spend before a call (about 3 characters per token). */
+const estimateTokens = (text: string) => Math.ceil(text.length / 3);
 
 export class AnthropicGateway implements Gateway {
   readonly label: string;
-  private client = new Anthropic();
+  /** SDK retries are off: a retry would be a model call the budget never saw. */
+  readonly client = new Anthropic({ maxRetries: 0 });
   constructor(
     private readonly model: string,
     private readonly prices: Prices,
-    private readonly cap: SpendCap,
   ) {
     this.label = `anthropic:${model}`;
   }
-  async complete(system: string, user: string): Promise<Completion> {
-    const estimateIn = Math.ceil((system.length + user.length) / 3);
-    this.cap.reserve((estimateIn * this.prices.inputPerM * 1.25 + MAX_OUTPUT * this.prices.outputPerM) / 1e6);
-    const response = await this.client.messages.create({
-      model: this.model,
-      max_tokens: MAX_OUTPUT,
-      // The manual-bearing system prompt is identical every call: cache it.
-      system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
-      messages: [{ role: "user", content: user }],
-    });
-    if (response.stop_reason === "refusal") throw Error("model_refusal");
+  worstCaseUsd(system: string, user: string) {
+    // Cache writes cost 1.25x input; assume the whole prompt is written.
+    return (estimateTokens(system + user) * 1.25 * this.prices.inputPerM + MAX_OUTPUT * this.prices.outputPerM) / 1e6;
+  }
+  async complete(system: string, user: string, signal: AbortSignal): Promise<Completion> {
+    const response = await this.client.messages.create(
+      {
+        model: this.model,
+        max_tokens: MAX_OUTPUT,
+        // The manual-bearing system prompt is identical every call: cache it.
+        system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
+        messages: [{ role: "user", content: user }],
+      },
+      { signal, maxRetries: 0 },
+    );
     const u = response.usage;
     const written = u.cache_creation_input_tokens ?? 0,
       read = u.cache_read_input_tokens ?? 0;
-    const input = u.input_tokens + written + read;
+    const tokens = { input: u.input_tokens + written + read, output: u.output_tokens };
     const costUsd =
       ((u.input_tokens + written * 1.25 + read * 0.1) * this.prices.inputPerM + u.output_tokens * this.prices.outputPerM) / 1e6;
-    this.cap.spent += costUsd;
+    if (response.stop_reason === "refusal") throw new ModelCallError("refusal", "model_refusal", { tokens, costUsd });
     const text = response.content.map((b) => (b.type === "text" ? b.text : "")).join("");
-    return { text, input, output: u.output_tokens, costUsd };
+    return { text, tokens, costUsd, model: response.model };
   }
 }
 
-/** OpenAI chat completions over HTTP. Prices must be supplied explicitly. */
+/** OpenAI chat completions over HTTP. Prices must be supplied explicitly; fetch never retries. */
 export class OpenAIGateway implements Gateway {
   readonly label: string;
   constructor(
     private readonly model: string,
     private readonly prices: Prices,
-    private readonly cap: SpendCap,
     private readonly apiKey = process.env.OPENAI_API_KEY,
   ) {
     if (!apiKey) throw Error("OPENAI_API_KEY is not set.");
     this.label = `openai:${model}`;
   }
-  async complete(system: string, user: string): Promise<Completion> {
-    const estimateIn = Math.ceil((system.length + user.length) / 3);
-    this.cap.reserve((estimateIn * this.prices.inputPerM + MAX_OUTPUT * this.prices.outputPerM) / 1e6);
+  worstCaseUsd(system: string, user: string) {
+    return (estimateTokens(system + user) * this.prices.inputPerM + MAX_OUTPUT * this.prices.outputPerM) / 1e6;
+  }
+  async complete(system: string, user: string, signal: AbortSignal): Promise<Completion> {
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
+      signal,
       headers: { "content-type": "application/json", authorization: `Bearer ${this.apiKey}` },
       body: JSON.stringify({
         model: this.model,
@@ -105,20 +99,15 @@ export class OpenAIGateway implements Gateway {
         ],
       }),
     });
-    if (!res.ok) throw Error(`openai_http_${res.status}`);
+    if (!res.ok) throw new ModelCallError("error", `openai_http_${res.status}`);
     const body = (await res.json()) as {
+      model?: string;
       choices: { message: { content: string | null } }[];
-      usage: { prompt_tokens: number; completion_tokens: number };
+      usage?: { prompt_tokens: number; completion_tokens: number };
     };
-    const costUsd =
-      (body.usage.prompt_tokens * this.prices.inputPerM + body.usage.completion_tokens * this.prices.outputPerM) / 1e6;
-    this.cap.spent += costUsd;
-    return {
-      text: body.choices[0]?.message.content ?? "",
-      input: body.usage.prompt_tokens,
-      output: body.usage.completion_tokens,
-      costUsd,
-    };
+    const tokens = body.usage ? { input: body.usage.prompt_tokens, output: body.usage.completion_tokens } : null;
+    const costUsd = tokens ? (tokens.input * this.prices.inputPerM + tokens.output * this.prices.outputPerM) / 1e6 : null;
+    return { text: body.choices[0]?.message.content ?? "", tokens, costUsd, ...(body.model ? { model: body.model } : {}) };
   }
 }
 
@@ -151,9 +140,10 @@ export class LLMPlayer implements Policy {
   constructor(
     hero: "Sieg" | "Coco",
     manual: string,
-    private readonly gateway: Gateway,
+    /** Bound by the runner's budget to this hero; the player cannot reach a model any other way. */
+    readonly model: MeteredGateway,
   ) {
-    this.name = `llm(${gateway.label})`;
+    this.name = `llm(${model.label})`;
     this.system = systemPrompt(hero, manual);
   }
 
@@ -165,10 +155,9 @@ export class LLMPlayer implements Policy {
       observation: input.observation,
       legal_actions: input.legal,
     });
-    const started = performance.now();
-    const reply = await this.gateway.complete(this.system, user);
-    const latencyMs = Math.round(performance.now() - started);
-    const usage = { input: reply.input, output: reply.output, latencyMs, costUsd: reply.costUsd };
+    // Throws ModelCallError or BudgetExhausted; the runner handles both.
+    const reply = await this.model.complete(this.system, user);
+    const usage = reply.record;
     const parsed = parseReply(reply.text);
     if (parsed.notes !== undefined) this.notes = parsed.notes.slice(0, 400);
     // An unparseable reply becomes a deliberately invalid action, so the

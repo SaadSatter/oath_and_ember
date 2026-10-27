@@ -7,6 +7,7 @@
 // deciding, their submissions are applied together in a fixed order
 // (Sieg, then Coco), which keeps the run reproducible.
 
+import type { ModelBudget } from "./budget.js";
 import { GameRoom } from "../../../apps/server/src/GameRoom.js";
 import { neutral, type Role, type SceneId } from "../../shared/src/gameTypes.js";
 import { storyView } from "../../../apps/client/src/ui/storyDialogue.js";
@@ -92,8 +93,6 @@ interface Slot {
   running?: Running;
   decisions: number;
   invalid: number;
-  modelCalls: number;
-  tokens: { input: number; output: number };
   requests: number;
 }
 
@@ -103,6 +102,7 @@ export class AgentEnvironment implements GameInterface {
   private room!: GameRoom;
   private slots!: Record<PlayerId, Slot>;
   private reason?: TerminationReason;
+  private budget?: ModelBudget;
   private episodeId = "";
   private seed = 0;
   private readonly preset: EpisodePreset;
@@ -115,7 +115,7 @@ export class AgentEnvironment implements GameInterface {
   constructor(private readonly options: EnvironmentOptions = {}) {
     this.preset = options.preset ?? "milestone";
     this.limits = { ...episodes[this.preset].limits, ...options.limits };
-    this.labels = options.labels ?? "names-only";
+    this.labels = options.labels ?? "as-drawn";
   }
 
   private trace(type: string, data: unknown, player?: PlayerId) {
@@ -145,8 +145,6 @@ export class AgentEnvironment implements GameInterface {
       seq: 0,
       decisions: 0,
       invalid: 0,
-      modelCalls: 0,
-      tokens: { input: 0, output: 0 },
       requests: 0,
     });
     this.slots = { sieg: slot("sieg", sieg), coco: slot("coco", coco) };
@@ -220,26 +218,30 @@ export class AgentEnvironment implements GameInterface {
       seconds: Math.round((tick / 60) * 10) / 10,
       decisions: per((s) => s.decisions),
       invalidActions: per((s) => s.invalid),
-      modelCalls: per((s) => s.modelCalls),
-      tokens: per((s) => ({ ...s.tokens })),
+      modelCalls: per((s) => this.budget?.calls[s.id] ?? 0),
+      failedModelCalls: per((s) => this.budget?.failed[s.id] ?? 0),
+      unknownUsageCalls: per((s) => this.budget?.unknownUsage[s.id] ?? 0),
+      tokens: per((s) => ({ ...(this.budget?.tokens[s.id] ?? { input: 0, output: 0 }) })),
+      spendUsd: {
+        known: Math.round((this.budget?.knownSpendUsd ?? 0) * 1e6) / 1e6,
+        charged: Math.round((this.budget?.chargedUsd ?? 0) * 1e6) / 1e6,
+      },
       limits: { ...this.limits },
+      ...(this.budget ? { modelLimits: { ...this.budget.limits } } : {}),
     };
   }
 
   // ── Trusted runner hooks (not part of the player-facing interface) ──────
-  /** Counts a model call against the budget; ends the episode past a limit. */
-  recordModelCall(player: PlayerId, usage: { input: number; output: number }) {
-    const s = this.slot(player);
-    s.modelCalls++;
-    s.tokens.input += usage.input;
-    s.tokens.output += usage.output;
-    if (s.modelCalls > this.limits.maxModelCallsPerPlayer) this.stop("model_call_limit");
-    else if (s.tokens.input + s.tokens.output > this.limits.maxTokensPerPlayer) this.stop("token_limit");
+  /**
+   * The runner's model budget, reported in outcome(). Model-call, token and
+   * spend limits are enforced by the runner through this budget, not here.
+   */
+  attachBudget(budget: ModelBudget | undefined) {
+    this.budget = budget;
   }
-  /** True when this player may make another model call within budget. */
-  modelBudgetLeft(player: PlayerId) {
-    const s = this.slot(player);
-    return s.modelCalls < this.limits.maxModelCallsPerPlayer && !this.reason;
+  /** Current simulation tick, for trusted trace records. */
+  currentTick() {
+    return this.room?.state.serverTick ?? 0;
   }
   /** Ends the episode now (wall clock, manual stop or error). */
   stop(reason: TerminationReason) {

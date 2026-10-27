@@ -48,11 +48,14 @@ export const VIEW_H = 360;
 export const TARGET_REACH = 64;
 
 /**
- * "full" keeps every in-world label exactly as the client draws it.
- * "names-only" (owner-approved default) keeps names and signposts but drops
- * instruction text, matching the decision to hide solution HUD lines.
+ * "as-drawn" (default; owner decision 2026-10-27) keeps every sign and
+ * in-world label exactly as the client draws it. The HUD goal lines are a
+ * separate, always-hidden evaluation restriction (they spell out solutions)
+ * and are never produced here, for the baseline and the model alike.
+ * "names-only" is the earlier, stricter presentation, kept for comparison:
+ * it cuts instruction text from labels down to names.
  */
-export type LabelMode = "names-only" | "full";
+export type LabelMode = "names-only" | "as-drawn";
 
 export const roleOf = (p: PlayerId): Role => (p === "sieg" ? "OATH" : "EMBER");
 export const heroName = (r: Role | PlayerId) =>
@@ -152,10 +155,23 @@ export function nearbyTarget(w: World, p: Player): InventoryTarget | undefined {
 }
 
 const label = (mode: LabelMode, full: string, names: string) =>
-  mode === "full" ? full : names;
+  mode === "as-drawn" ? full : names;
 /** Names-only form of an inventory target name: the part before " · ". */
 export const targetName = (mode: LabelMode, name: string) =>
-  mode === "full" ? name : name.split(" · ")[0];
+  mode === "as-drawn" ? name : name.split(" · ")[0];
+
+/**
+ * Partner and enemy health as the client draws it: a 36 px bar with a
+ * continuous fill and no numbers (PlayerView.ts, EnemyView.ts). Reported in
+ * eighths (4.5 px steps), which a player can tell apart on the bar; exact HP
+ * is never reported. A living character always shows at least 1/8.
+ */
+export function healthBar(hp: number, maxHp: number) {
+  const f = Math.max(0, Math.min(1, hp / maxHp));
+  if (f >= 1) return "health bar full";
+  const eighths = Math.min(7, Math.max(f > 0 ? 1 : 0, Math.round(f * 8)));
+  return `health bar about ${eighths}/8`;
+}
 
 interface Prop {
   kind: VisibleThing["kind"];
@@ -310,14 +326,17 @@ function sceneProps(w: World, scene: SceneId, mode: LabelMode): Prop[] {
   if (scene === "GRIFFIN_ENCLOSURE") {
     const g = griffinState(w.puzzles);
     if (g) {
-      props.push({
-        kind: "creature",
-        name: "griffin",
-        x: g.x,
-        y: g.y,
-        details: griffinLabel(g, mode),
-        mark: "C",
-      });
+      // GriffinView hides the griffin, its shadow and its label once it has
+      // flown away (groomingStage DONE).
+      if (g.groomingStage !== "DONE")
+        props.push({
+          kind: "creature",
+          name: "griffin",
+          x: g.x,
+          y: g.y,
+          details: griffinLabel(g, mode),
+          mark: "C",
+        });
       griffinPillars.forEach((r, i) =>
         props.push({
           kind: "object",
@@ -329,7 +348,8 @@ function sceneProps(w: World, scene: SceneId, mode: LabelMode): Prop[] {
         }),
       );
       if (g.wigDropped && !g.wigClaimed)
-        props.push({ kind: "object", name: "wig", ...griffinNest, mark: "o" });
+        // The status label stays visible at the nest while the wig lies there.
+        props.push({ kind: "object", name: "wig", ...griffinNest, details: griffinLabel(g, mode), mark: "o" });
     }
     props.push({ kind: "exit", name: "E · RETURN", ...maps.GRIFFIN_ENCLOSURE.points.back, mark: ">" });
   }
@@ -385,7 +405,7 @@ export function perceive(
   // Partner: drawn with a health bar whenever on the same map and on screen.
   for (const q of Object.values(w.players))
     if (q.id !== me.id && q.role && sceneOf(w, q) === scene) {
-      const status = [`HP ${Math.round(q.hp)}/${q.maxHp}`];
+      const status = [healthBar(q.hp, q.maxHp)];
       if ((q.flightRemaining ?? 0) > 0) status.push("flying");
       if ((q.sprintRemaining ?? 0) > 0) status.push("super speed");
       if (q.actionState && q.actionState !== "idle") status.push(q.actionState);
@@ -400,7 +420,9 @@ export function perceive(
         name: enemyNames[e.type] ?? e.type,
         x: e.x,
         y: e.y,
-        details: `HP ${Math.round(e.hp)}/${e.maxHp}${e.state === "ATTACK" ? ", attacking" : ""}${e.passive ? ", passive" : ""}`,
+        // "attacking": the attack animation is a visible telegraph. Whether a
+        // monster is passive is not drawn, so it is not reported.
+        details: `${healthBar(e.hp, e.maxHp)}${e.state === "ATTACK" ? ", attacking" : ""}`,
         mark: "E",
       });
     }

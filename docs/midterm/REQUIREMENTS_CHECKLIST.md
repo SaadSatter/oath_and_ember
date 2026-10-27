@@ -8,7 +8,7 @@ Maps every rubric check in `docs/midterm/MIDTERM_GUIDELINES.md` to its deliverab
 - **at risk**: still todo and likely to slip;
 - **owner**: the owner's own work.
 
-Evidence pointers are in `docs/midterm/EVIDENCE_INDEX.md`. Updated 2026-10-27, after phase 1 (evidence foundation).
+Evidence pointers are in `docs/midterm/EVIDENCE_INDEX.md`. Updated 2026-10-27, after phase 2 (server changes, runner budget, information boundary).
 
 ## Rubric checks
 
@@ -19,10 +19,10 @@ Evidence pointers are in `docs/midterm/EVIDENCE_INDEX.md`. Updated 2026-10-27, a
 | 1c | README "Sources and terms" quoting each license or term | Reviewer; `scan_secrets.py`; asset provenance files | partial: provenance files exist; terms not consolidated |
 | 2a | Scripted route `goddess` → `chapter0.complete` through interface actions only; a human playthrough | Route test in CI; trace committed | **at risk**: never shown end to end without fixtures |
 | 2b | LLM players (Sieg and Coco) with no tools; fallbacks labelled | Fake-model tests; live traces | partial: adapter done and tested offline; no live run |
-| 2c | Per-role observations and leak-free legal actions, matching what a human player sees | Leak tests; `game-rules-audit adapter` | partial: tests exist; human-visibility review of griffin and sign labels todo |
+| 2c | Per-role observations and leak-free legal actions, matching what a human player sees | Leak tests; `game-rules-audit adapter` | partial: signs and labels as drawn, HUD goal lines hidden (documented restriction), partner/enemy health as an eighths bar, departed griffin no longer listed; tests in `packages/agent/test/{environment,perception}.test.ts`. Independent review todo |
 | 3a | README commands from `midterms/saadsatter/` on a fresh clone | Fresh-clone rehearsal recorded in `EVALUATION.md` | todo |
-| 3b | Step, call, token, spend, per-call timeout and wall-clock limits; failed calls counted; explicit terminal reasons | Runner tests | partial: per-call timeout and failed-call accounting missing |
-| 3c | Course workflow covering invariants, legal/illegal actions, terminal outcome, an observed regression, and limits | Green run on the course PR | todo; the full suite has 1 known failing test |
+| 3b | Step, call, token, spend, per-call timeout and wall-clock limits; failed calls counted; explicit terminal reasons | Runner tests | partial: central `ModelBudget` (every attempted call counted, exact per-hero cap, 30 s configurable timeout, SDK retries off, token cap, one episode spend cap, unknown usage marked), game-time `tick_limit` separate from `wall_clock_limit`; 13 tests in `packages/agent/test/budget.test.ts`. No live run yet |
+| 3c | Course workflow covering invariants, legal/illegal actions, terminal outcome, an observed regression, and limits | Green run on the course PR | todo: no course workflow yet. The full suite is green (589/589, 2026-10-27); the sprint-frame expectation was outdated and fixed, with no gameplay change |
 | 3d | `CLAUDE.md`; skills `game-rules-audit` and `session-evidence`, each invoked in two fresh sessions; independent Claude and Codex reviews | Skill reports in `docs/midterm/agent-evidence/skill-runs/`; reviews as PR comments and in `agent-evidence/reviews/`; session records in `docs/agent-sessions/` | partial: configuration and historical evidence done (`docs/agent-sessions/`, 22 files plus 00); new invocations and reviews todo |
 | 4a | Choices with the alternative each beat (vocabulary, baseline, memory, suite, recording) | Reviewer | partial |
 | 4b | Quest-aware two-player scripted baseline, plus the exploration baseline as secondary | Baseline results on the frozen suite | todo |
@@ -51,5 +51,5 @@ Evidence pointers are in `docs/midterm/EVIDENCE_INDEX.md`. Updated 2026-10-27, a
 | Rule invariants | Existing server rule tests (selected subset), equivalence tests for the server changes | todo |
 | Legal and illegal actions | `packages/agent/test/environment.test.ts` validation tests | exists, not in CI |
 | Terminal outcome | The scripted route reaching `chapter0.complete`; the milestone baseline | todo |
-| Observed regression | A real defect found during this work, with its test (candidates: the failed-call accounting gap; any bug the scripted route uncovers) | todo |
-| Episode limits | Runner limit tests (tick, decision, model-call, token, spend, timeout) | partial |
+| Observed regression | A real defect found during this work, with its test. Candidates: failed calls not counted (`budget.test.ts`), the departed griffin still listed (`perception.test.ts`) | candidates exist |
+| Episode limits | Runner limit tests (tick, decision, model-call, token, spend, timeout, wall clock) | exists, not in CI |

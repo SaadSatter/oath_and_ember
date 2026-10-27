@@ -213,8 +213,8 @@ describe("same inputs, same world: production runtime vs deterministic runtime",
   });
 
   it("documents that id order breaks ties, so counter ids fix an order production leaves to chance", () => {
-    // Server tie-breaks use a.id.localeCompare(b.id) (golemBeam.ts, enemySimulation.ts,
-    // inventory.ts). Production ids are random UUIDs, so which hero wins a tie varies by
+    // Server tie-breaks between heroes use a.id.localeCompare(b.id) (golemBeam.ts,
+    // enemySimulation.ts). Production ids are random UUIDs, so which hero wins a tie varies by
     // room. Evaluation ids must therefore be chosen deliberately (see SERVER_CHANGES.md).
     const order = (runtime: RoomRuntime) => {
       const { room, ids } = makeRoom("encounter", runtime);

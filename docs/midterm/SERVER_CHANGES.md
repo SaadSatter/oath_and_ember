@@ -1,6 +1,6 @@
 # Authoritative server changes for evaluation and recording
 
-Status: **design for approval, not implemented.** The owner approved the three changes in principle on 2026-10-27, with production behaviour as the default and the tests below required. Section 3 contains one new design choice (how recording browsers attach), which needs the owner's confirmation before any server or client code changes.
+Status: **implemented 2026-10-27** (commit `7c9f025` on `midterm/evaluation`), after the owner approved all three changes and chose option B for §3. Production behaviour is the default. Results and deviations from this design are in "Implementation record" at the end.
 
 No game rule, tuning value, map, story line or asset changes. Every change is opt-in. A server started the normal way (`npm start`, `npm run dev`, Render) behaves exactly as before.
 
@@ -88,3 +88,33 @@ These are in `packages/agent` and `scripts/midterm`, which `CLAUDE.md` lets the 
 
 - No change to `GameRoom.tick`'s rules, including its paused-room early return. That was noted in review 18 and will only be investigated if the scripted route shows a problem.
 - No persistence or extra services (`AGENTS.md`).
+
+## Implementation record (2026-10-27)
+
+| Change | Files | Tests | Result |
+| --- | --- | --- | --- |
+| §1 clock and id injection | `apps/server/src/GameRoom.ts`, `RoomManager.ts` (Codex diff re-applied unchanged), `app.ts` (expiry via the room's runtime) | `apps/server/test/roomRuntime.test.ts`, 12 tests | Pass |
+| §2 `manualDriver` and `stepRoom` | `apps/server/src/app.ts` | `apps/server/test/manualDriver.test.ts`, 4 tests | Pass |
+| §3 option B, view-only attachment | `apps/server/src/app.ts`, `packages/shared/src/protocol.ts` (`view:attach`, `ViewSession`), `apps/client/src/net/NetworkClient.ts` (`?view=` mode) | `apps/server/test/viewOnly.test.ts`, 6 tests over real Socket.IO; `apps/client/test/viewMode.test.ts`, 3 tests | Pass |
+
+Full suite after these changes: typecheck pass, `npm test` 589/589, build pass.
+
+**What the equivalence test does, and a correction to the plan above.**
+
+The production runtime and the deterministic runtime run the same seeded scripts:
+- four scripts of 1,500 ticks each, two in an encounter room and two from `goddess`;
+- both heroes act, covering movement, attacks, guard, push, Super Speed, Slow Time, Flight, Black Hole and E;
+- every input is checked as accepted;
+- the raw world is compared every 10 ticks.
+
+The plan said "ids normalised by order of appearance". That proved too weak and slightly wrong. The server orders heroes by id with `a.id.localeCompare(b.id)` in `golemBeam.ts:85` and `enemySimulation.ts:167`. (`inventory.ts:52–56` also breaks ties by id, but between interaction targets, whose ids are fixed names, so random ids do not affect it.) Renaming ids therefore changes the result: the first draft of the test reported a difference in a golem beam's damage list.
+
+The final test instead records the UUIDs the production run draws and replays them in the deterministic run. Ids are then identical and only the clock differs, and the raw worlds match exactly. A separate test confirms the scripts really trigger Slow Time, Super Speed, Flight, projectiles and Black Hole. An earlier draft omitted `movementEpoch`, so every scheduled input was rejected and the comparison was vacuous; the test now fails if any input is rejected.
+
+**Consequence for evaluation ids (open question for the owner).** In production, the random UUIDs mean which hero wins an id tie-break is effectively a coin flip per room. With counter ids, Sieg (added first) always wins it. That decides which hero an enemy targets when both are exactly equally far, and the order in which a golem beam checks the heroes. Before the suite is frozen, the owner should choose between two options:
+- keep counter ids (deterministic, a fixed order, disclosed as a deviation from production's random order);
+- use ids drawn from a seeded generator (deterministic per seed; the tie-break order then differs between seeds, as it does between production rooms).
+
+**Other notes.**
+- Snapshots are `volatile` emits, as before. Socket.IO drops them while a socket is busy, so a host that steps faster than real time sends fewer snapshots than live play. Recording runs step at 60 Hz in real time, so this does not affect the video.
+- `view:attach` sends the initial `state:sync` only to the attaching viewer, not to the whole room. A player attach broadcasts to the room. Neither changes any state.

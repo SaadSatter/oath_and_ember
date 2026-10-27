@@ -5,7 +5,8 @@ import { AgentEnvironment } from "../src/environment.js";
 import { runEpisode } from "../src/runner.js";
 import { TraceWriter, verifyTrace } from "../src/trace.js";
 import { ExplorationBaseline } from "../src/policies/baseline.js";
-import { LLMPlayer, parseReply, SpendCap, systemPrompt, type Gateway } from "../src/policies/llm.js";
+import { LLMPlayer, parseReply, systemPrompt } from "../src/policies/llm.js";
+import { MeteredGateway, ModelBudget, defaultBudgetLimits, type Gateway } from "../src/budget.js";
 import type { GameAction, PlayerId } from "../src/types.js";
 
 const roomOf = (env: AgentEnvironment) => (env as unknown as { room: GameRoom }).room;
@@ -191,15 +192,24 @@ describe("player isolation and hidden information", () => {
     expect((await env.observe("coco")).feedback).not.toContain("Message sent.");
   });
 
-  it("never exposes internal state, ids or hidden quest flags", async () => {
-    const env = new AgentEnvironment();
+  // The four quest areas' screens, collected under a labelled test fixture.
+  async function questScreens(labels: "as-drawn" | "names-only") {
+    const env = new AgentEnvironment({ labels });
     await env.reset(4);
     const room = roomOf(env);
-    // Test fixture: put the party in each quest area to inspect its screens.
+    const out: { where: string; text: string }[] = [];
     for (const scene of ["GODDESS_SHRINE", "MIRROR_POND", "HEDGE_MAZE", "GRIFFIN_ENCLOSURE"] as const) {
       if (room.state.sceneId !== scene) room.transition(scene);
-      for (const id of ["sieg", "coco"] as PlayerId[]) {
-        const text = JSON.stringify(await env.observe(id)) + JSON.stringify(await env.legal_actions(id));
+      for (const id of ["sieg", "coco"] as PlayerId[])
+        out.push({ where: `${scene}/${id}`, text: JSON.stringify(await env.observe(id)) + JSON.stringify(await env.legal_actions(id)) });
+    }
+    return { out, room };
+  }
+
+  for (const labels of ["as-drawn", "names-only"] as const)
+    it(`never exposes internal state, ids, hidden flags, HUD goal lines or exact HP (${labels})`, async () => {
+      const { out, room } = await questScreens(labels);
+      for (const { where, text } of out) {
         for (const forbidden of [
           "chapter0.", // story flag names
           "puzzles",
@@ -209,19 +219,26 @@ describe("player isolation and hidden information", () => {
           "timer",
           "cooldown\":",
           room.state.players[Object.keys(room.state.players)[0]].id,
-          // HUD goal lines the owner chose to hide (main.ts)
+          // HUD goal lines: hidden from every agent as an evaluation restriction (main.ts)
           "Fly to the northern nest",
           "Super Speed (2) and Coco",
           "Search West: Mirror Pond",
-          // instruction labels dropped in names-only mode
-          "FIREBALL · dry hedge",
-          "BLACK HOLE → grazing bay",
-          "drop mirror + shears",
-          "Hold 1 near one end",
+          "passive",
         ])
-          expect(text, `${scene}/${id} leaks "${forbidden}"`).not.toContain(forbidden);
+          expect(text, `${where} leaks "${forbidden}"`).not.toContain(forbidden);
+        // Partner and enemy health is drawn as a bar, never as numbers.
+        expect(text, `${where} shows exact HP`).not.toMatch(/"HP \d|HP \d+\/\d+/);
       }
-    }
+    });
+
+  it("shows in-world instruction labels as the client draws them, and cuts them only in names-only mode", async () => {
+    // Labels appear only when on that hero's screen: from the maze spawn the dry
+    // hedge's label is in view, the grazing bay's (22 tiles in) is not.
+    const asDrawn = (await questScreens("as-drawn")).out.map((o) => o.text).join("\n");
+    const namesOnly = (await questScreens("names-only")).out.map((o) => o.text).join("\n");
+    expect(asDrawn).toContain("FIREBALL · dry hedge");
+    for (const l of ["FIREBALL · dry hedge", "BLACK HOLE → grazing bay", "drop mirror + shears", "Hold 1 near one end"])
+      expect(namesOnly).not.toContain(l);
   });
 
   it("shows other areas' objects only when the hero is there", async () => {
@@ -263,14 +280,8 @@ describe("termination", () => {
     expect((await env.outcome()).reason).toBe("decision_limit");
   });
 
-  it("ends at the model-call limit and records token usage", async () => {
-    const env = new AgentEnvironment({ limits: { maxModelCallsPerPlayer: 1 } });
-    await env.reset(1);
-    env.recordModelCall("coco", { input: 100, output: 20 });
-    expect((await env.outcome()).status).toBe("ongoing");
-    env.recordModelCall("coco", { input: 100, output: 20 });
-    expect(await env.outcome()).toMatchObject({ reason: "model_call_limit", tokens: { coco: { input: 200, output: 40 } } });
-  });
+  // Model-call, token and spend limits are enforced by the runner's budget:
+  // see packages/agent/test/budget.test.ts.
 
   it("a stop releases a hero waiting on the barrier", async () => {
     const env = new AgentEnvironment();
@@ -299,25 +310,35 @@ describe("LLM policy adapter (offline fake model)", () => {
     readonly label = "fake";
     seen: string[] = [];
     constructor(private replies: string[]) {}
+    worstCaseUsd() {
+      return 0.001;
+    }
     async complete(_system: string, user: string) {
       this.seen.push(user);
-      return { text: this.replies.shift() ?? "{}", input: 50, output: 10, costUsd: 0 };
+      return { text: this.replies.shift() ?? "{}", tokens: { input: 50, output: 10 }, costUsd: 0.0001 };
     }
   }
   it("submits the model's action, records usage, and records unparseable replies as invalid", async () => {
     const trace = new TraceWriter();
-    const env = new AgentEnvironment({ limits: { maxModelCallsPerPlayer: 3 }, trace: (e) => trace.write(e) });
+    const env = new AgentEnvironment({ trace: (e) => trace.write(e) });
+    const budget = new ModelBudget({ ...defaultBudgetLimits, maxModelCallsPerPlayer: 3 });
     const sieg = new FakeGateway([
       '{"notes":"start","action":{"type":"move","direction":"n","ticks":20}}',
       "I think I will go north",
       '{"action":{"type":"wait","ticks":20}}',
     ]);
     const coco = new FakeGateway(['{"action":{"type":"wait","ticks":20}}', '{"action":{"type":"wait","ticks":20}}', '{"action":{"type":"wait","ticks":20}}']);
-    const out = await runEpisode(env, { sieg: new LLMPlayer("Sieg", "manual", sieg), coco: new LLMPlayer("Coco", "manual", coco) }, trace, { seed: 1, wallClockMs: 10_000 });
+    const out = await runEpisode(
+      env,
+      { sieg: new LLMPlayer("Sieg", "manual", new MeteredGateway(sieg, budget, "sieg")), coco: new LLMPlayer("Coco", "manual", new MeteredGateway(coco, budget, "coco")) },
+      trace,
+      { seed: 1, wallClockMs: 10_000, budget },
+    );
     expect(out.reason).toBe("model_call_limit");
-    expect(out.modelCalls.sieg).toBeGreaterThanOrEqual(3);
+    // The cap is exact: a hero never makes more calls than allowed.
+    expect(out.modelCalls.sieg).toBe(3);
     expect(out.invalidActions.sieg).toBe(1);
-    expect(out.tokens.sieg.input).toBeGreaterThanOrEqual(150);
+    expect(out.tokens.sieg.input).toBe(150);
     // Each model only ever saw its own hero's observation.
     expect(sieg.seen.every((u) => u.includes('"player":"sieg"') && !u.includes('"player":"coco"'))).toBe(true);
     expect(coco.seen.every((u) => u.includes('"player":"coco"'))).toBe(true);
@@ -329,9 +350,4 @@ describe("LLM policy adapter (offline fake model)", () => {
     expect(parseReply("no json")).toEqual({});
   });
 
-  it("enforces the aggregate spend cap before calling", () => {
-    const cap = new SpendCap(0.01);
-    cap.spent = 0.009;
-    expect(() => cap.reserve(0.002)).toThrow(/spend_limit/);
-  });
 });

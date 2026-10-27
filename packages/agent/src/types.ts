@@ -36,7 +36,7 @@ export type GameAction =
   | { type: "defend"; ticks: number }
   | { type: "ability"; ability: AbilityName; direction?: Direction; ticks?: number }
   | { type: "interact" }
-  | { type: "use_item"; target: string; item?: string }
+  | { type: "use_item"; item?: string }
   | { type: "advance_dialogue" }
   | { type: "choose_dialogue"; option: number }
   | { type: "message"; text: string };
@@ -152,12 +152,21 @@ export interface GameOutcome {
   seconds: number;
   decisions: Record<PlayerId, number>;
   invalidActions: Record<PlayerId, number>;
+  /** Attempted model calls, failed and timed-out ones included. */
   modelCalls: Record<PlayerId, number>;
+  failedModelCalls: Record<PlayerId, number>;
+  /** Calls whose token usage the provider did not report (not counted as zero). */
+  unknownUsageCalls: Record<PlayerId, number>;
+  /** Reported tokens only. */
   tokens: Record<PlayerId, { input: number; output: number }>;
+  /** known: sum of reported costs. charged: what counted against the cap (unknown costs at their reservation). */
+  spendUsd: { known: number; charged: number };
   limits: EpisodeLimits;
+  modelLimits?: import("./budget.js").BudgetLimits;
 }
 
 export interface EpisodeLimits {
+  /** Simulated game time, in ticks (60 per second). "480 s" means 480 s of game time (owner, 2026-10-27). */
   maxTicks: number;
   maxDecisionsPerPlayer: number;
   maxModelCallsPerPlayer: number;
