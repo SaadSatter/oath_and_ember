@@ -35,6 +35,12 @@ const positive = (name: string, fallback?: number) => {
 };
 const policy = arg("--policy", "baseline")!;
 if (!["baseline", "anthropic", "openai"].includes(policy)) throw Error(`Unknown --policy ${policy}.`);
+// Legacy helper remains available for free exploration runs. Paid runs must
+// use the one stage-aware entrypoint so they cannot bypass the shared ledger.
+function requireLedgerEntrypoint(kind: string) {
+  if (kind !== "baseline") throw Error("Paid model runs must use scripts/midterm/evaluate.ts with the persistent spend ledger and owner approval.");
+}
+requireLedgerEntrypoint(policy);
 const seed = Number(arg("--seed", "1"));
 if (!Number.isSafeInteger(seed)) throw Error("--seed must be an integer.");
 const preset = arg("--preset", "milestone") as EpisodePreset;

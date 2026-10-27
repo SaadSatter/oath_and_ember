@@ -13,7 +13,7 @@ const heroIds = (env: AgentEnvironment) => {
 };
 async function play(seed: number, script: [GameAction, GameAction][]) {
   const lines: { type: string; data: unknown }[] = [];
-  const env = new AgentEnvironment({ preset: "full", trace: (e) => lines.push(e as { type: string; data: unknown }) });
+  const env = new AgentEnvironment({ preset: "milestone", trace: (e) => lines.push(e as { type: string; data: unknown }) });
   const reset = await env.reset(seed);
   for (const [a, b] of script) await Promise.all([env.step("sieg", a), env.step("coco", b)]);
   return { env, reset, lines, ids: heroIds(env), raw: JSON.stringify(roomOf(env).state) };

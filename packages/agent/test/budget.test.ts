@@ -204,12 +204,12 @@ describe("per-call timeout through a whole episode", () => {
 });
 
 describe("game time and wall-clock time are separate limits", () => {
-  it("the 480 s episode limit is game time: tick_limit, measured in ticks", async () => {
-    const env = new AgentEnvironment({ preset: "full", limits: { maxTicks: 120 } });
+  it("the game-time limit reports tick_limit, measured in ticks", async () => {
+    const env = new AgentEnvironment({ preset: "milestone", limits: { maxTicks: 120 } });
     const out = await runEpisode(env, { sieg: new ExplorationBaseline(), coco: new ExplorationBaseline() }, new TraceWriter(), { seed: 1, wallClockMs: 30_000 });
     expect(out.reason).toBe("tick_limit");
     expect(out.ticks).toBe(120);
-    expect(new AgentEnvironment({ preset: "full" })["limits"].maxTicks).toBe(480 * 60);
+    expect(new AgentEnvironment({ preset: "milestone" })["limits"].maxTicks).toBe(90 * 60);
   });
 
   it("the wall-clock limit ends the episode with its own reason and aborts calls in flight", async () => {
@@ -236,5 +236,56 @@ describe("verified prices (2026-10-27)", () => {
     // Sonnet 5.5 cache reads are 0.05x input.
     expect(anthropicCost(anthropicPrices["claude-sonnet-5-5"], { input: 0, cacheWrite: 0, cacheRead: 1_000_000, output: 0 })).toBeCloseTo(0.1, 12);
     for (const p of Object.values(anthropicPrices)) expect(p.source).toContain("verified 2026-10-27");
+  });
+});
+
+
+describe("reservation safety", () => {
+  it("holds both heroes' concurrent costs before dispatch, including unknown results", async () => {
+    const budget = new ModelBudget({ ...defaultBudgetLimits, maxSpendUsd: 0.01 });
+    const release: ((c: Completion) => void)[] = [];
+    const gateway: Gateway = { label: "concurrent", worstCaseUsd: () => 0.005, complete: async () => new Promise((resolve) => release.push(resolve)) };
+    const a = new MeteredGateway(gateway, budget, "sieg").complete("s", "u");
+    const b = new MeteredGateway(gateway, budget, "coco").complete("s", "u");
+    await expect(new MeteredGateway(gateway, budget, "sieg").complete("s", "u")).rejects.toBeInstanceOf(BudgetExhausted);
+    expect(release).toHaveLength(2);
+    for (const done of release) done({ text: WAIT, tokens: null, costUsd: null });
+    await Promise.all([a, b]);
+    expect(budget.chargedUsd).toBeCloseTo(0.01);
+    expect(budget.unknownUsage).toEqual({ sieg: 1, coco: 1 });
+    expect(budget.exhausted("sieg")).toBe("spend_limit");
+  });
+
+  it("refuses non-finite limits and call reservations before provider dispatch", async () => {
+    for (const limits of [{ maxSpendUsd: Infinity }, { maxTokensPerPlayer: NaN }, { maxModelCallsPerPlayer: Infinity }, { callTimeoutMs: Infinity }])
+      expect(() => new ModelBudget({ ...defaultBudgetLimits, ...limits })).toThrow();
+    for (const reservation of [NaN, Infinity, -1]) {
+      const gateway = new ScriptedGateway([WAIT], reservation);
+      await expect(new MeteredGateway(gateway, new ModelBudget(defaultBudgetLimits), "sieg").complete("s", "u")).rejects.toBeInstanceOf(BudgetExhausted);
+      expect(gateway.calls).toBe(0);
+    }
+  });
+
+  it("does not let malformed provider accounting poison the cap", async () => {
+    const budget = new ModelBudget(defaultBudgetLimits);
+    const gateway = new ScriptedGateway([{ text: WAIT, tokens: { input: -1, output: NaN }, costUsd: NaN }], 0.01);
+    await new MeteredGateway(gateway, budget, "sieg").complete("s", "u");
+    expect(budget.records[0]).toMatchObject({ tokens: null, costUsd: null, chargedUsd: 0.01 });
+    expect(budget.unknownUsage.sieg).toBe(1);
+  });
+
+  it("uses a byte bound and framing margin for text prompt reservations", () => {
+    const prior = process.env.ANTHROPIC_API_KEY;
+    process.env.ANTHROPIC_API_KEY = "test-key-not-used";
+    try {
+      const gateway = new AnthropicGateway("claude-haiku-5-5", anthropicPrices["claude-haiku-5-5"]);
+      const prompt = "🦉".repeat(30_000);
+      const bytes = Buffer.byteLength(prompt, "utf8");
+      // The conservative bound crosses 100K and reserves the high tier, 4K output included.
+      expect(gateway.worstCaseUsd(prompt, "")).toBeCloseTo(((bytes + 4096) * 0.625 + 4000 * 2.5) / 1e6, 12);
+    } finally {
+      if (prior === undefined) delete process.env.ANTHROPIC_API_KEY;
+      else process.env.ANTHROPIC_API_KEY = prior;
+    }
   });
 });

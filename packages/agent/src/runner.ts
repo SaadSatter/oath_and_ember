@@ -17,6 +17,8 @@ import {
 
 export interface RunOptions {
   seed: number;
+  /** Trusted cancellation only; never passed to a player. */
+  signal?: AbortSignal;
   /** Real-world time limit for the whole episode, separate from the game-time tick limit. */
   wallClockMs: number;
   /** Consecutive policy failures (API errors, timeouts, bad JSON) before giving up. */
@@ -34,7 +36,7 @@ export async function runEpisode(
   trace: TraceWriter,
   options: RunOptions,
 ): Promise<GameOutcome> {
-  if (!(options.wallClockMs > 0)) throw Error("wallClockMs must be positive.");
+  if (!Number.isFinite(options.wallClockMs) || !(options.wallClockMs > 0)) throw Error("wallClockMs must be positive.");
   for (const id of playerIds) {
     const model = policies[id].model;
     if (!model) continue;
@@ -57,6 +59,9 @@ export async function runEpisode(
       ...(budget ? { modelLimits: budget.limits } : {}),
     },
   });
+  const abort = () => { env.stop("manual_stop"); budget?.abortAll(); };
+  options.signal?.addEventListener("abort", abort, { once: true });
+  if (options.signal?.aborted) abort();
   const timer = setTimeout(() => {
     env.stop("wall_clock_limit");
     budget?.abortAll();
@@ -126,9 +131,16 @@ export async function runEpisode(
       if (last?.done) break;
     }
   };
+  const loops = playerIds.map(loop);
   try {
-    await Promise.all(playerIds.map(loop));
+    await Promise.all(loops);
+  } catch (e) {
+    env.stop("error");
+    budget?.abortAll();
+    await Promise.allSettled(loops);
+    throw e;
   } finally {
+    options.signal?.removeEventListener("abort", abort);
     clearTimeout(timer);
     budget?.abortAll();
   }

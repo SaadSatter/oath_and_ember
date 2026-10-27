@@ -55,8 +55,14 @@ export function anthropicCost(prices: Prices, u: { input: number; cacheWrite: nu
 }
 
 export const MAX_OUTPUT = 4000;
-/** Conservative token estimate for reserving spend before a call (about 3 characters per token). */
-const estimateTokens = (text: string) => Math.ceil(text.length / 3);
+/** Byte upper bound plus framing margin, rather than average chars/token.
+ * Only text system/user messages are supported by these adapters. Reserve the
+ * maximum output (thinking included) and all input at the cache-write rate.
+ */
+const estimateTokens = (text: string) => Buffer.byteLength(text, "utf8") + 4096;
+
+export type Effort = "low" | "medium" | "high";
+export const EFFORTS: readonly Effort[] = ["low", "medium", "high"];
 
 export class AnthropicGateway implements Gateway {
   readonly label: string;
@@ -65,8 +71,14 @@ export class AnthropicGateway implements Gateway {
   constructor(
     private readonly model: string,
     private readonly prices: Prices,
+    /**
+     * output_config.effort. Owner decision 2026-10-27: start at "medium"
+     * (Haiku 5.5's default) and compare with "low" in the S1-S3 pilot.
+     * Always sent explicitly so the trace records what was used.
+     */
+    readonly effort: Effort = "medium",
   ) {
-    this.label = `anthropic:${model}`;
+    this.label = `anthropic:${model}@${effort}`;
   }
   worstCaseUsd(system: string, user: string) {
     // Assume the whole prompt is a cache write and the full output budget is used.
@@ -80,6 +92,7 @@ export class AnthropicGateway implements Gateway {
         // The manual-bearing system prompt is identical every call: cache it.
         system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
         messages: [{ role: "user", content: user }],
+        output_config: { effort: this.effort },
       },
       { signal, maxRetries: 0 },
     );
@@ -90,7 +103,7 @@ export class AnthropicGateway implements Gateway {
     const costUsd = anthropicCost(this.prices, { input: u.input_tokens, cacheWrite: written, cacheRead: read, output: u.output_tokens });
     if (response.stop_reason === "refusal") throw new ModelCallError("refusal", "model_refusal", { tokens, costUsd });
     const text = response.content.map((b) => (b.type === "text" ? b.text : "")).join("");
-    return { text, tokens, costUsd, model: response.model };
+    return { text, tokens, costUsd, model: response.model, cache: { read, write: written } };
   }
 }
 
@@ -137,16 +150,26 @@ export class OpenAIGateway implements Gateway {
 
 export const TASK = "Complete the Goddess's quest together.";
 
-export function systemPrompt(hero: "Sieg" | "Coco", manual: string, maxBatch = MAX_BATCH) {
+/**
+ * "history": the player keeps its own notes (400 characters), its last 8
+ * actions and the results of its previous turn.
+ * "none" (observation-only): each call holds only the current observation and
+ * legal actions. The observation's own recent feedback and messages remain,
+ * because they are on the hero's screen.
+ */
+export type Memory = "history" | "none";
+
+export function systemPrompt(hero: "Sieg" | "Coco", manual: string, maxBatch = MAX_BATCH, memory: Memory = "history") {
   const partner = hero === "Sieg" ? "Coco" : "Sieg";
+  const notesField = memory === "history" ? `"notes": "<what you want to remember next turn, max 400 characters>", ` : "";
   return `You are playing the cooperative game Oath and Ember as ${hero}. Another player controls ${partner}. You cannot see their screen or thoughts; you can only see what your own screen shows and the messages they send you.
 
 Task: ${TASK}
 
 How each turn works:
-- You receive your current observation (your screen, HUD, dialogue, quest journal, backpack, recent feedback and messages), the list of actions you can take right now with their parameters, the results of your previous turn, your recent actions, and the notes you wrote for yourself last turn.
+- You receive your current observation (your screen, HUD, dialogue, quest journal, backpack, recent feedback and messages) and the list of actions you can take right now with their parameters${memory === "history" ? ", plus the results of your previous turn, your recent actions, and the notes you wrote for yourself last turn" : ". You keep no memory between turns: each turn you see only what is on your screen now"}.
 - Reply with ONE JSON object and nothing else:
-  ${maxBatch > 1 ? `{"notes": "<what you want to remember next turn, max 400 characters>", "actions": [ ...1 to ${maxBatch} actions, done in order... ]}` : `{"notes": "<what you want to remember next turn, max 400 characters>", "action": { ...one action... }}`}
+  ${maxBatch > 1 ? `{${notesField}"actions": [ ...1 to ${maxBatch} actions, done in order... ]}` : `{${notesField}"action": { ...one action... }}`}
 - Each action must be one of the listed legal actions, e.g. {"type":"move","direction":"n","ticks":30} or {"type":"advance_dialogue"} or {"type":"message","text":"..."}.${maxBatch > 1 ? `
 - Your actions are done one after another. The rest are skipped as soon as anything happens: an invalid action, damage, a new place, dialogue, any feedback, a change to your backpack or journal, a message from your partner, or the end of the episode. Then you are asked again with what you now see.` : ""}
 - Time only passes while actions run (60 ticks = 1 second). Keep moves short enough to react.
@@ -163,6 +186,7 @@ export class LLMPlayer implements Policy {
   private log: string[] = [];
   private readonly system: string;
   private readonly maxBatch: number;
+  readonly memory: Memory;
   constructor(
     hero: "Sieg" | "Coco",
     manual: string,
@@ -170,14 +194,17 @@ export class LLMPlayer implements Policy {
     readonly model: MeteredGateway,
     /** Actions accepted per reply: MAX_BATCH (default) or 1 for the unbatched player. */
     maxBatch: number = MAX_BATCH,
+    memory: Memory = "history",
   ) {
-    this.maxBatch = Math.max(1, Math.min(MAX_BATCH, maxBatch));
-    this.name = `llm(${model.label})${this.maxBatch > 1 ? `·batch${this.maxBatch}` : ""}`;
-    this.system = systemPrompt(hero, manual, this.maxBatch);
+    if (!Number.isInteger(maxBatch) || maxBatch < 1 || maxBatch > MAX_BATCH) throw Error(`maxBatch must be an integer from 1 to ${MAX_BATCH}.`);
+    this.maxBatch = maxBatch;
+    this.memory = memory;
+    this.name = `llm(${model.label})${this.maxBatch > 1 ? `·batch${this.maxBatch}` : ""}${memory === "none" ? "·obs-only" : ""}`;
+    this.system = systemPrompt(hero, manual, this.maxBatch, memory);
   }
 
   async decide(input: Parameters<Policy["decide"]>[0]): Promise<Decision> {
-    const user = JSON.stringify({
+    const user = JSON.stringify(this.memory === "none" ? { observation: input.observation, legal_actions: input.legal } : {
       your_notes: this.notes,
       recent_actions: this.log,
       last_turn: input.batch
@@ -192,7 +219,7 @@ export class LLMPlayer implements Policy {
     const reply = await this.model.complete(this.system, user);
     const usage = reply.record;
     const parsed = parseReply(reply.text);
-    if (parsed.notes !== undefined) this.notes = parsed.notes.slice(0, 400);
+    if (parsed.notes !== undefined && this.memory === "history") this.notes = parsed.notes.slice(0, 400);
     // An unparseable reply becomes a deliberately invalid action, so the
     // interface records it as a failure instead of silently substituting.
     const actions = (parsed.actions ?? (parsed.action ? [parsed.action] : [])).slice(0, this.maxBatch);

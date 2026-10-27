@@ -14,7 +14,7 @@ const roomOf = (env: AgentEnvironment) => (env as unknown as { room: GameRoom })
 const settle = () => new Promise((r) => setTimeout(r, 0));
 
 async function playScript(seed: number) {
-  const env = new AgentEnvironment({ preset: "full" });
+  const env = new AgentEnvironment({ preset: "milestone" });
   await env.reset(seed);
   const script: [GameAction, GameAction][] = [
     [{ type: "move", direction: "n", ticks: 40 }, { type: "move", direction: "ne", ticks: 40 }],

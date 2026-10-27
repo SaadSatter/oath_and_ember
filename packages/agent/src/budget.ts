@@ -35,6 +35,8 @@ export interface Completion {
   costUsd: number | null;
   /** Model id the provider says it used, when reported. */
   model?: string;
+  /** Prompt-cache tokens, when the provider reports them (included in tokens.input). */
+  cache?: { read: number; write: number };
 }
 
 /** A provider adapter. It never retries on its own (retries would be uncounted calls). */
@@ -77,6 +79,7 @@ export interface CallRecord {
   /** What the spend cap was actually charged: the reported cost, or the reservation if unknown. */
   chargedUsd: number;
   model?: string;
+  cache?: { read: number; write: number };
 }
 
 export class ModelBudget {
@@ -94,14 +97,15 @@ export class ModelBudget {
   /** What counts against the cap: reported costs plus reservations for calls of unknown cost, plus calls in flight. */
   chargedUsd = 0;
   private inFlightUsd = 0;
+  private aborted = false;
   private readonly controllers = new Set<AbortController>();
   onRecord: (r: CallRecord) => void = () => {};
 
   constructor(readonly limits: BudgetLimits) {
-    if (!(limits.maxModelCallsPerPlayer > 0)) throw Error("maxModelCallsPerPlayer must be positive.");
-    if (!(limits.maxTokensPerPlayer > 0)) throw Error("maxTokensPerPlayer must be positive.");
-    if (!(limits.maxSpendUsd > 0)) throw Error("A positive spend cap is required.");
-    if (!(limits.callTimeoutMs > 0)) throw Error("callTimeoutMs must be positive.");
+    if (!Number.isSafeInteger(limits.maxModelCallsPerPlayer) || !(limits.maxModelCallsPerPlayer > 0)) throw Error("maxModelCallsPerPlayer must be positive.");
+    if (!Number.isSafeInteger(limits.maxTokensPerPlayer) || !(limits.maxTokensPerPlayer > 0)) throw Error("maxTokensPerPlayer must be positive.");
+    if (!Number.isFinite(limits.maxSpendUsd) || !(limits.maxSpendUsd > 0)) throw Error("A positive spend cap is required.");
+    if (!Number.isFinite(limits.callTimeoutMs) || !(limits.callTimeoutMs > 0)) throw Error("callTimeoutMs must be positive.");
   }
 
   /** Why this hero may not make another call, if anything. */
@@ -115,14 +119,16 @@ export class ModelBudget {
 
   /** Abort every call in flight (wall-clock limit or manual stop). */
   abortAll() {
+    this.aborted = true;
     for (const c of this.controllers) c.abort();
   }
 
   /** @internal used by MeteredGateway */
   begin(player: PlayerId, worstCaseUsd: number | null) {
+    if (this.aborted) throw new ModelCallError("aborted", "Episode budget has been closed.");
     const reason = this.exhausted(player);
     if (reason) throw new BudgetExhausted(reason, `${reason} reached for ${player}`);
-    if (worstCaseUsd === null)
+    if (worstCaseUsd === null || !Number.isFinite(worstCaseUsd) || worstCaseUsd < 0)
       throw new BudgetExhausted("spend_limit", "No price is known for this model, so the spend cap cannot be enforced.");
     if (this.chargedUsd + this.inFlightUsd + worstCaseUsd > this.limits.maxSpendUsd)
       throw new BudgetExhausted(
@@ -138,7 +144,12 @@ export class ModelBudget {
 
   /** @internal used by MeteredGateway */
   settle(rec: Omit<CallRecord, "chargedUsd">, controller: AbortController) {
-    this.controllers.delete(controller);
+    if (!this.controllers.delete(controller)) throw Error("Model call was already settled.");
+    // Bad/missing provider usage must not make cap arithmetic NaN or negative.
+    rec = { ...rec,
+      costUsd: rec.costUsd !== null && Number.isFinite(rec.costUsd) && rec.costUsd >= 0 ? rec.costUsd : null,
+      tokens: rec.tokens && Number.isSafeInteger(rec.tokens.input) && rec.tokens.input >= 0 && Number.isSafeInteger(rec.tokens.output) && rec.tokens.output >= 0 ? rec.tokens : null,
+    };
     this.inFlightUsd -= rec.reservedUsd ?? 0;
     const charged = rec.costUsd ?? rec.reservedUsd ?? 0;
     this.chargedUsd += charged;
@@ -171,6 +182,9 @@ export class MeteredGateway {
     const started = performance.now();
     let timedOut = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
+    const aborted = new Promise<never>((_, reject) => {
+      controller.signal.addEventListener("abort", () => reject(new ModelCallError(timedOut ? "timeout" : "aborted", timedOut ? "model call timed out" : "model call aborted")), { once: true });
+    });
     const timeout = new Promise<never>((_, reject) => {
       timer = setTimeout(() => {
         timedOut = true;
@@ -178,15 +192,18 @@ export class MeteredGateway {
         reject(new ModelCallError("timeout", `model call exceeded ${this.budget.limits.callTimeoutMs} ms`));
       }, this.budget.limits.callTimeoutMs);
     });
+    let accounted = false;
     const base = { player: this.player, attempt, gateway: this.inner.label, reservedUsd };
     try {
-      const c = await Promise.race([this.inner.complete(system, user, controller.signal), timeout]);
+      const c = await Promise.race([this.inner.complete(system, user, controller.signal), timeout, aborted]);
+      accounted = true;
       const record = this.budget.settle(
-        { ...base, status: "ok", latencyMs: Math.round(performance.now() - started), tokens: c.tokens, costUsd: c.costUsd, ...(c.model ? { model: c.model } : {}) },
+        { ...base, status: "ok", latencyMs: Math.round(performance.now() - started), tokens: c.tokens, costUsd: c.costUsd, ...(c.model ? { model: c.model } : {}), ...(c.cache ? { cache: c.cache } : {}) },
         controller,
       );
       return { ...c, record };
     } catch (e) {
+      if (accounted) throw e;
       const err =
         e instanceof ModelCallError
           ? e

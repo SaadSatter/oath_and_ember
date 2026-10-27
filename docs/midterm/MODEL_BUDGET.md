@@ -55,7 +55,7 @@ From the scripted route's measurements (`ROUTE_LOG.md`):
 
 **Caps per episode** (`--max-spend-usd`, enforced centrally by the `ModelBudget`): S1 $0.20, S2 $1.25, S3 $1.25, S4 $1.00, F $3.00.
 
-A **cumulative spend ledger** across runs is still to be built (see "Before any paid call"). The evaluation script would refuse to start a run whose episode cap would push recorded spend past the stage cap or the $25 total.
+A **cumulative spend ledger** across runs is now implemented in `packages/agent/src/ledger.ts`, integrated by `harness.ts` and `scripts/midterm/evaluate.ts`. It reserves the full episode cap before dispatch, counts crash-left reservations, locks concurrent users, and refuses malformed ledgers. Nine ledger tests pass (2026-10-27); see `PHASE4_HANDOFF.md`. The configured $25 allocation remains subject to approval before paid execution; implementing this mechanism is not permission to spend.
 
 **For comparison** (same token profile, per-call cost at the high case): Haiku 4.5 costs about $0.0117 per call (about 10× Haiku 5.5), and Sonnet 5.5 about $0.0231 (about 20×). The same plan would therefore need roughly $250 or $500 at its caps.
 
@@ -72,3 +72,15 @@ A **cumulative spend ledger** across runs is still to be built (see "Before any 
 2. **Effort:** `medium` (the default) or `low`. `low` thinks less, so it is cheaper and faster but possibly weaker. I recommend choosing during the pilot, on S1–S3 only, and recording it in the suite's change log before any final run.
 3. **Total cap and stage caps** as above ($25).
 4. **Whether to add `model-obs-only`** (S1–S3) to the suite. The rubric expects history to be compared with observation-only play for partial-observation games.
+
+## Offline smoke readiness (2026-10-27)
+
+Configured next smoke: `claude-haiku-5-5`, explicit `output_config.effort: medium`, `max_tokens: 4000` (thinking included), one attempted call maximum, 30 s call timeout. The smoke reserves **$0.01** from the **$0.10** smoke stage. The global cap is **$25**; the other stage caps remain pilot $8, final $15, contingency $1.90. This is configured infrastructure, not authorization to spend.
+
+Rechecked on 2026-10-27 against [Anthropic's model overview](https://platform.claude.com/docs/en/models/haiku-5-5/overview) and [pricing](https://platform.claude.com/docs/en/about-claude/pricing): identifier, medium default effort, and the inherited Haiku 5.5 prices/cache tiers match. Short prompts: $0.10 input / $0.50 output per million tokens, $0.125 five-minute cache write and $0.01 cache read. Prompts over 100K tokens use $0.50 / $2.50, $0.625 write and $0.05 read. No provider request or credential check was performed.
+
+Reservations now use UTF-8 byte length plus a 4,096-token framing margin, all input at the cache-write rate and maximum output at the applicable tier. The meter rejects non-finite limits/reservations; missing or malformed usage is explicitly unknown and conservatively charged. Ledger charges round upward to microdollars. Cross-process locks, crash-left reservations, concurrent hero calls and global exhaustion across restarts are covered offline.
+
+The canonical paid CLI ledger is `evaluation-runs/spend-ledger.json`; alternate ledger CLI paths are disabled. The legacy `run-episode.ts` helper refuses model policies and points to `evaluate.ts`. Preserve the ledger across all stages and restarts. After a killed process, verify the PID recorded in its lock is dead before removing only that stale lock; retained reservations still count. `--resume` checks configuration/trace integrity, skips completed episodes without new calls, and restarts interrupted episodes in new attempt directories without erasing prior charges. Unknown reservations are never automatically reclaimed.
+
+The $25 bound depends on this ledger being retained and on the provider honoring the verified rates/output limit. Mock tests cannot establish account access, actual billing, cache effectiveness or live response quality. The next action requires the owner's paid-smoke approval.

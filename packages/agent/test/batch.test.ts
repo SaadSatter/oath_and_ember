@@ -62,7 +62,7 @@ const script = (hero: PlayerId): GameAction[] => [
 
 async function play(size: number) {
   const trace = new TraceWriter();
-  const env = new AgentEnvironment({ preset: "full", limits: { maxTicks: 1500 }, trace: (e) => trace.write(e) });
+  const env = new AgentEnvironment({ preset: "milestone", limits: { maxTicks: 1500 }, trace: (e) => trace.write(e) });
   const policies = { sieg: new Scripted(script("sieg"), size), coco: new Scripted(script("coco"), size) };
   const outcome = await runEpisode(env, policies, trace, { seed: 3, wallClockMs: 60_000 });
   verifyTrace(trace.lines);

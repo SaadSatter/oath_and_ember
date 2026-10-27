@@ -11,3 +11,6 @@ Images/art_history/qa/**/*.webm
 qa/**/raw-videos/
 qa/**/*.png
 qa/**/*.webm
+
+# Local evaluation runs and the persistent spend ledger (never committed)
+evaluation-runs/
