@@ -6,9 +6,11 @@ import { AgentEnvironment } from "./environment.js";
 import type { Policy } from "./policies/policy.js";
 import type { TraceWriter } from "./trace.js";
 import { BudgetExhausted, ModelCallError, type ModelBudget } from "./budget.js";
+import { batchStop, capBatch } from "./batch.js";
 import {
   playerIds,
   type GameOutcome,
+  type GameAction,
   type PlayerId,
   type StepResult,
 } from "./types.js";
@@ -61,6 +63,7 @@ export async function runEpisode(
   }, options.wallClockMs);
   const loop = async (id: PlayerId) => {
     let last: StepResult | undefined;
+    let batch: { steps: { action: GameAction; result: StepResult }[]; stopped?: string } | undefined;
     let failures = 0;
     while ((await env.outcome()).status === "ongoing") {
       const observation = await env.observe(id);
@@ -76,7 +79,7 @@ export async function runEpisode(
       }
       let decision;
       try {
-        decision = await policies[id].decide({ observation, legal, ...(last ? { last } : {}) });
+        decision = await policies[id].decide({ observation, legal, ...(last ? { last } : {}), ...(batch ? { batch } : {}) });
       } catch (e) {
         if (e instanceof BudgetExhausted) {
           trace.write({ type: "policy_error", tick: observation.tick, player: id, data: { kind: "budget", reason: e.reason, message: e.message } });
@@ -95,13 +98,32 @@ export async function runEpisode(
       if (decision.raw !== undefined)
         trace.write({ type: "model_reply", tick: observation.tick, player: id, data: { attempt: decision.usage?.attempt, raw: decision.raw } });
       if ((await env.outcome()).status !== "ongoing") break;
-      const started = performance.now();
-      last = await env.step(id, decision.action);
-      // As in PR #7: an accepted step resets the count; invalid actions are
-      // counted by the environment and do not end the episode by themselves.
-      failures = last.accepted ? 0 : failures;
-      trace.write({ type: "step", tick: observation.tick, player: id, data: { action: decision.action, result: last, waitMs: Math.round(performance.now() - started) } });
-      if (last.done) break;
+      // Run the decision's actions in order; a single action is a batch of one.
+      const queue = capBatch([decision.action, ...(decision.then ?? [])]);
+      batch = { steps: [] };
+      let before = observation;
+      for (let k = 0; k < queue.length; k++) {
+        const action = queue[k];
+        const started = performance.now();
+        last = await env.step(id, action);
+        // As in PR #7: an accepted step resets the count; invalid actions are
+        // counted by the environment and do not end the episode by themselves.
+        failures = last.accepted ? 0 : failures;
+        trace.write({ type: "step", tick: before.tick, player: id, data: { action, result: last, waitMs: Math.round(performance.now() - started), ...(queue.length > 1 ? { batch: { index: k, size: queue.length } } : {}) } });
+        batch.steps.push({ action, result: last });
+        if (last.done) break;
+        if (k === queue.length - 1) break;
+        const after = await env.observe(id);
+        const stop = batchStop(before, last, after);
+        if (stop) {
+          batch.stopped = stop;
+          trace.write({ type: "batch_stop", tick: after.tick, player: id, data: { reason: stop, ran: k + 1, of: queue.length } });
+          break;
+        }
+        trace.write({ type: "observation", tick: after.tick, player: id, data: { observation: after, legal: await env.legal_actions(id), inBatch: true } });
+        before = after;
+      }
+      if (last?.done) break;
     }
   };
   try {

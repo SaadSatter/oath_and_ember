@@ -11,6 +11,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { ActionSpec, GameAction, Observation, StepResult } from "../types.js";
 import type { Decision, Policy } from "./policy.js";
 import { ModelCallError, type Completion, type Gateway, type MeteredGateway } from "../budget.js";
+import { MAX_BATCH } from "../batch.js";
 
 export interface Prices {
   inputPerM: number;
@@ -113,17 +114,18 @@ export class OpenAIGateway implements Gateway {
 
 export const TASK = "Complete the Goddess's quest together.";
 
-export function systemPrompt(hero: "Sieg" | "Coco", manual: string) {
+export function systemPrompt(hero: "Sieg" | "Coco", manual: string, maxBatch = MAX_BATCH) {
   const partner = hero === "Sieg" ? "Coco" : "Sieg";
   return `You are playing the cooperative game Oath and Ember as ${hero}. Another player controls ${partner}. You cannot see their screen or thoughts; you can only see what your own screen shows and the messages they send you.
 
 Task: ${TASK}
 
 How each turn works:
-- You receive your current observation (your screen, HUD, dialogue, quest journal, backpack, recent feedback and messages), the list of actions you can take right now with their parameters, the result of your previous action, your recent actions, and the notes you wrote for yourself last turn.
+- You receive your current observation (your screen, HUD, dialogue, quest journal, backpack, recent feedback and messages), the list of actions you can take right now with their parameters, the results of your previous turn, your recent actions, and the notes you wrote for yourself last turn.
 - Reply with ONE JSON object and nothing else:
-  {"notes": "<what you want to remember next turn, max 400 characters>", "action": { ...one action... }}
-- The action must be one of the listed legal actions, e.g. {"type":"move","direction":"n","ticks":30} or {"type":"advance_dialogue"} or {"type":"message","text":"..."}.
+  ${maxBatch > 1 ? `{"notes": "<what you want to remember next turn, max 400 characters>", "actions": [ ...1 to ${maxBatch} actions, done in order... ]}` : `{"notes": "<what you want to remember next turn, max 400 characters>", "action": { ...one action... }}`}
+- Each action must be one of the listed legal actions, e.g. {"type":"move","direction":"n","ticks":30} or {"type":"advance_dialogue"} or {"type":"message","text":"..."}.${maxBatch > 1 ? `
+- Your actions are done one after another. The rest are skipped as soon as anything happens: an invalid action, damage, a new place, dialogue, any feedback, a change to your backpack or journal, a message from your partner, or the end of the episode. Then you are asked again with what you now see.` : ""}
 - Time only passes while actions run (60 ticks = 1 second). Keep moves short enough to react.
 - Coordinates are in tiles; y grows downward (north is up). The "screen" rows show your view: "@" you, "P" partner, "#" blocked, "~" water or gap, "." open ground, "E" enemy, "C" creature, "o" object, ">" exit, "*" projectile.
 
@@ -137,21 +139,29 @@ export class LLMPlayer implements Policy {
   private notes = "";
   private log: string[] = [];
   private readonly system: string;
+  private readonly maxBatch: number;
   constructor(
     hero: "Sieg" | "Coco",
     manual: string,
     /** Bound by the runner's budget to this hero; the player cannot reach a model any other way. */
     readonly model: MeteredGateway,
+    /** Actions accepted per reply: MAX_BATCH (default) or 1 for the unbatched player. */
+    maxBatch: number = MAX_BATCH,
   ) {
-    this.name = `llm(${model.label})`;
-    this.system = systemPrompt(hero, manual);
+    this.maxBatch = Math.max(1, Math.min(MAX_BATCH, maxBatch));
+    this.name = `llm(${model.label})${this.maxBatch > 1 ? `·batch${this.maxBatch}` : ""}`;
+    this.system = systemPrompt(hero, manual, this.maxBatch);
   }
 
-  async decide(input: { observation: Observation; legal: ActionSpec[]; last?: StepResult }): Promise<Decision> {
+  async decide(input: Parameters<Policy["decide"]>[0]): Promise<Decision> {
     const user = JSON.stringify({
       your_notes: this.notes,
       recent_actions: this.log,
-      last_result: input.last ?? null,
+      last_turn: input.batch
+        ? { results: input.batch.steps.map((s) => ({ action: s.action, result: s.result })), ...(input.batch.stopped ? { stopped_early_because: input.batch.stopped } : {}) }
+        : input.last
+          ? { results: [{ result: input.last }] }
+          : null,
       observation: input.observation,
       legal_actions: input.legal,
     });
@@ -162,22 +172,27 @@ export class LLMPlayer implements Policy {
     if (parsed.notes !== undefined) this.notes = parsed.notes.slice(0, 400);
     // An unparseable reply becomes a deliberately invalid action, so the
     // interface records it as a failure instead of silently substituting.
-    const action = parsed.action ?? ({ type: "unparseable_reply" } as unknown as GameAction);
-    this.log.push(JSON.stringify(action).slice(0, 160));
-    if (this.log.length > 8) this.log.shift();
-    return { action, usage, raw: reply.text };
+    const actions = (parsed.actions ?? (parsed.action ? [parsed.action] : [])).slice(0, this.maxBatch);
+    const action = actions[0] ?? ({ type: "unparseable_reply" } as unknown as GameAction);
+    for (const a of actions.length ? actions : [action]) {
+      this.log.push(JSON.stringify(a).slice(0, 160));
+      if (this.log.length > 8) this.log.shift();
+    }
+    return { action, ...(actions.length > 1 ? { then: actions.slice(1) } : {}), usage, raw: reply.text };
   }
 }
 
-export function parseReply(text: string): { notes?: string; action?: GameAction } {
+export function parseReply(text: string): { notes?: string; action?: GameAction; actions?: GameAction[] } {
   const start = text.indexOf("{"),
     end = text.lastIndexOf("}");
   if (start < 0 || end <= start) return {};
   try {
-    const value = JSON.parse(text.slice(start, end + 1)) as { notes?: unknown; action?: unknown };
+    const value = JSON.parse(text.slice(start, end + 1)) as { notes?: unknown; action?: unknown; actions?: unknown };
+    const list = Array.isArray(value.actions) ? value.actions.filter((a) => a && typeof a === "object") : undefined;
     return {
       ...(typeof value.notes === "string" ? { notes: value.notes } : {}),
       ...(value.action && typeof value.action === "object" ? { action: value.action as GameAction } : {}),
+      ...(list && list.length ? { actions: list as GameAction[] } : {}),
     };
   } catch {
     return {};

@@ -26,6 +26,27 @@ Owner decisions of 2026-10-27, implemented on `midterm/evaluation`. Where an old
 - **`use_item`** takes only `item` (the earlier type's `target` field did not exist in the validator).
 - **Prices** in `llm.ts` are the PR #7 values, marked unverified. They must be checked against the official pricing page and dated before any paid run.
 
+## Action batching (owner decision 2026-10-27)
+
+A player may answer one decision with up to **4 actions** (`MAX_BATCH`, `packages/agent/src/batch.ts`):
+
+- The five operations are unchanged. The runner submits the actions one at a time through the ordinary `step()`, so each is validated against the legal actions at that moment, exactly as a single action would be.
+- Between two actions of a batch the runner calls `observe()` and traces that observation (`inBatch: true`). It does not call the model.
+- **The batch stops** after a step when any of the following happens (`batchStop`):
+  1. the step was invalid;
+  2. the episode ended;
+  3. the environment reports an interruption (a new area, a new dialogue line, damage);
+  4. the step produced any feedback;
+  5. dialogue is on the hero's screen;
+  6. the hero's area, HP, backpack or journal changed;
+  7. a new message arrived from the partner.
+
+  A `batch_stop` trace line records the reason, how many actions ran, and how many were offered.
+- The next decision receives every step of the batch with its result, and the reason it stopped early (`last_turn` in the model's input).
+- **Accounting.** One model call per batch. Every step counts as a decision. The full preset allows 1,000 model calls and 4,000 decisions per hero (provisional, 2026-10-27).
+- **Equivalence** (`packages/agent/test/batch.test.ts`). The same action sequence, run unbatched or in batches of 4 (with the actions a stopped batch did not run offered again), ends in the same raw world with the same steps and results. Only the number of decisions differs. The test's run includes stopped batches and full batches of 4.
+- `LLMPlayer(..., maxBatch)` defaults to 4. Pass 1 for the unbatched player; its prompt then asks for a single `"action"`.
+
 Owner decisions this work follows (2026-10-23):
 
 - Agents do not see the scene-specific HUD goal lines, which spell out solutions.

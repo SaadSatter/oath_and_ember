@@ -25,10 +25,12 @@ export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
     preset: "full",
     goal: "Bald Goddess quest: from the goddess checkpoint to chapter0.complete.",
     limits: {
-      maxTicks: 480 * 60,
-      maxDecisionsPerPlayer: 400,
-      maxModelCallsPerPlayer: 400,
-      maxTokensPerPlayer: 4_000_000,
+      maxTicks: 480 * 60, // 480 s of game time
+      // Owner decision 2026-10-27: 1,000 model calls per hero (provisional).
+      // With batches of up to 4 actions, a hero may take up to 4 steps per call.
+      maxDecisionsPerPlayer: 4_000,
+      maxModelCallsPerPlayer: 1_000,
+      maxTokensPerPlayer: 8_000_000,
     },
     success: (w) => has(w, FINALE.complete),
   },
