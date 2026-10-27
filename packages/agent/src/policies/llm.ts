@@ -16,19 +16,43 @@ import { MAX_BATCH } from "../batch.js";
 export interface Prices {
   inputPerM: number;
   outputPerM: number;
+  /** Cache write (5-minute) and cache read prices as multiples of the input price. */
+  cacheWrite?: number;
+  cacheRead?: number;
+  /** Prompts over this many input tokens (cache reads and writes included) pay `longContext` prices instead. */
+  longContextOver?: number;
+  longContext?: { inputPerM: number; outputPerM: number };
   source: string;
 }
+const PRICING_PAGE = "https://platform.claude.com/docs/en/about-claude/pricing (verified 2026-10-27)";
 /**
- * Anthropic list prices, USD per 1M tokens, as recorded in PR #7 from the
- * claude-api skill table cached 2026-10-06. NOT re-verified: they must be
- * checked against the official pricing page and dated on the day of any paid
- * run (docs/midterm/REQUIREMENTS_CHECKLIST.md).
+ * Anthropic first-party list prices, USD per 1M tokens, verified on 2026-10-27
+ * against the official pricing page. Re-verify and re-date them on the day of
+ * any paid run. Thinking tokens are billed as output tokens.
  */
 export const anthropicPrices: Record<string, Prices> = {
-  "claude-opus-5-5": { inputPerM: 4, outputPerM: 20, source: "claude-api skill model table, 2026-10-06 (unverified)" },
-  "claude-sonnet-5-5": { inputPerM: 2, outputPerM: 10, source: "claude-api skill model table, 2026-10-06 (unverified)" },
-  "claude-haiku-5-5": { inputPerM: 0.1, outputPerM: 0.5, source: "claude-api skill model table, 2026-10-06 (unverified)" },
+  "claude-haiku-5-5": {
+    inputPerM: 0.1,
+    outputPerM: 0.5,
+    cacheWrite: 1.25,
+    cacheRead: 0.1,
+    longContextOver: 100_000,
+    longContext: { inputPerM: 0.5, outputPerM: 2.5 },
+    source: PRICING_PAGE,
+  },
+  "claude-haiku-4-5": { inputPerM: 1, outputPerM: 5, cacheWrite: 1.25, cacheRead: 0.1, source: PRICING_PAGE },
+  "claude-sonnet-5-5": { inputPerM: 2, outputPerM: 10, cacheWrite: 1.25, cacheRead: 0.05, source: PRICING_PAGE },
+  "claude-opus-5-5": { inputPerM: 4, outputPerM: 20, cacheWrite: 1.25, cacheRead: 0.05, source: PRICING_PAGE },
 };
+
+/** Cost of one call from reported usage, with the cache and long-context rules above. */
+export function anthropicCost(prices: Prices, u: { input: number; cacheWrite: number; cacheRead: number; output: number }) {
+  const prompt = u.input + u.cacheWrite + u.cacheRead;
+  const p = prices.longContextOver !== undefined && prompt > prices.longContextOver && prices.longContext ? { ...prices, ...prices.longContext } : prices;
+  return (
+    ((u.input + u.cacheWrite * (prices.cacheWrite ?? 1.25) + u.cacheRead * (prices.cacheRead ?? 0.1)) * p.inputPerM + u.output * p.outputPerM) / 1e6
+  );
+}
 
 export const MAX_OUTPUT = 4000;
 /** Conservative token estimate for reserving spend before a call (about 3 characters per token). */
@@ -45,8 +69,8 @@ export class AnthropicGateway implements Gateway {
     this.label = `anthropic:${model}`;
   }
   worstCaseUsd(system: string, user: string) {
-    // Cache writes cost 1.25x input; assume the whole prompt is written.
-    return (estimateTokens(system + user) * 1.25 * this.prices.inputPerM + MAX_OUTPUT * this.prices.outputPerM) / 1e6;
+    // Assume the whole prompt is a cache write and the full output budget is used.
+    return anthropicCost(this.prices, { input: 0, cacheWrite: estimateTokens(system + user), cacheRead: 0, output: MAX_OUTPUT });
   }
   async complete(system: string, user: string, signal: AbortSignal): Promise<Completion> {
     const response = await this.client.messages.create(
@@ -63,8 +87,7 @@ export class AnthropicGateway implements Gateway {
     const written = u.cache_creation_input_tokens ?? 0,
       read = u.cache_read_input_tokens ?? 0;
     const tokens = { input: u.input_tokens + written + read, output: u.output_tokens };
-    const costUsd =
-      ((u.input_tokens + written * 1.25 + read * 0.1) * this.prices.inputPerM + u.output_tokens * this.prices.outputPerM) / 1e6;
+    const costUsd = anthropicCost(this.prices, { input: u.input_tokens, cacheWrite: written, cacheRead: read, output: u.output_tokens });
     if (response.stop_reason === "refusal") throw new ModelCallError("refusal", "model_refusal", { tokens, costUsd });
     const text = response.content.map((b) => (b.type === "text" ? b.text : "")).join("");
     return { text, tokens, costUsd, model: response.model };

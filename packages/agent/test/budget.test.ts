@@ -224,3 +224,17 @@ describe("game time and wall-clock time are separate limits", () => {
     expect(out.ticks).toBe(0);
   });
 });
+
+describe("verified prices (2026-10-27)", () => {
+  it("prices Haiku 5.5, including cache reads and the over-100K-token tier", async () => {
+    const { anthropicCost, anthropicPrices } = await import("../src/policies/llm.js");
+    const h = anthropicPrices["claude-haiku-5-5"];
+    // 1,400 uncached + 3,400 cache-read input, 1,000 output (thinking included).
+    expect(anthropicCost(h, { input: 1400, cacheWrite: 0, cacheRead: 3400, output: 1000 })).toBeCloseTo((1400 * 0.1 + 3400 * 0.01 + 1000 * 0.5) / 1e6, 12);
+    // Over 100,000 prompt tokens, every rate is the long-context one.
+    expect(anthropicCost(h, { input: 100_001, cacheWrite: 0, cacheRead: 0, output: 10 })).toBeCloseTo((100_001 * 0.5 + 10 * 2.5) / 1e6, 12);
+    // Sonnet 5.5 cache reads are 0.05x input.
+    expect(anthropicCost(anthropicPrices["claude-sonnet-5-5"], { input: 0, cacheWrite: 0, cacheRead: 1_000_000, output: 0 })).toBeCloseTo(0.1, 12);
+    for (const p of Object.values(anthropicPrices)) expect(p.source).toContain("verified 2026-10-27");
+  });
+});
