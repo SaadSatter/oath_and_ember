@@ -95,10 +95,12 @@ export function splitActionTypes(schema: Record<string, unknown>): Record<string
     const type = props && object(props.type) ? props.type : undefined;
     return v.type === "object" && Array.isArray(type?.enum) && JSON.stringify(type.enum) === JSON.stringify(actionTypes);
   };
+  let replaced = 0;
   function walk(v: unknown): unknown {
     if (Array.isArray(v)) return v.map(walk);
     if (!object(v)) return v;
     if (isActionObject(v)) {
+      replaced++;
       const props = v.properties as Record<string, unknown>;
       return {
         anyOf: actionTypes.map((t) => {
@@ -117,7 +119,12 @@ export function splitActionTypes(schema: Record<string, unknown>): Record<string
     }
     return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, walk(x)]));
   }
-  return walk(schema) as Record<string, unknown>;
+  const out = walk(schema) as Record<string, unknown>;
+  // Fail loudly: a silent no-op would bring back the shared action object
+  // and the "ticks" refusals it caused.
+  if (replaced !== 1)
+    throw Error(`splitActionTypes expected exactly one action object (type enum equal to actionTypes), found ${replaced}; the reply schema's structure changed.`);
+  return out;
 }
 /** Only the documented nullable optional fields are removed; no action is repaired. */
 function normalize(text: string) {

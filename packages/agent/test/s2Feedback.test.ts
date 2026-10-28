@@ -15,7 +15,7 @@ import type { GameAction, PlayerId, StepResult } from "../src/types.js";
 const roomOf = (env: AgentEnvironment) => (env as unknown as { room: GameRoom }).room;
 const hero = (env: AgentEnvironment, id: PlayerId) =>
   Object.values(roomOf(env).state.players).find((p) => p.role === (id === "sieg" ? "OATH" : "EMBER"))!;
-const NEW_LINE = /did not swing|No fireball was cast|burned away|cow moved/;
+const NEW_LINE = /did not swing|No fireball was cast|hedge .* disappeared|cow moved/;
 
 /**
  * Plays both heroes' scripts as the runner would, through env.step only. The
@@ -119,20 +119,20 @@ describe("world changes seen on screen", () => {
   // The dry hedge spans tiles x 18–20, y 32–36; perception lists it at (19, 34).
   const fireAtHedge = { type: "attack", direction: "e" } as const;
 
-  it("reports the hedge burning, once, to the hero who watched it, and not to a partner elsewhere in the maze", async () => {
+  it("reports the hedge disappearing, once, to the hero who watched it, and not to a partner elsewhere in the maze", async () => {
     const env = await inMaze({ coco: { x: 15.5, y: 34 }, sieg: { x: 35, y: 8 } });
     expect(onScreen(roomOf(env).state, hero(env, "sieg"), { x: 19 * TILE, y: 34 * TILE })).toBe(false);
     const r = await play(env, { coco: [fireAtHedge, ...waits(4)], sieg: waits(4) });
     expect(hedgeMazeState(roomOf(env).state.puzzles)!.burned).toBe(true);
-    expect(lines(r.coco, /burned away/)).toEqual(["The dry hedge at (19, 34) burned away."]);
-    expect(lines(r.sieg, /burned away/)).toEqual([]);
+    expect(lines(r.coco, /hedge/)).toEqual(["The dry hedge at (19, 34) disappeared."]);
+    expect(lines(r.sieg, /hedge/)).toEqual([]);
     expect((await env.observe("sieg")).feedback.join(" ")).not.toMatch(/hedge/);
   });
 
   it("reports it to the partner too when the hedge is on the partner's screen", async () => {
     const env = await inMaze({ coco: { x: 15.5, y: 34 }, sieg: { x: 16, y: 30 } });
     const r = await play(env, { coco: [fireAtHedge, ...waits(4)], sieg: waits(4) });
-    expect(lines(r.sieg, /burned away/)).toEqual(["The dry hedge at (19, 34) burned away."]);
+    expect(lines(r.sieg, /hedge/)).toEqual(["The dry hedge at (19, 34) disappeared."]);
   });
 
   it("says nothing later to a hero who was not looking when it burned", async () => {
@@ -142,7 +142,7 @@ describe("world changes seen on screen", () => {
     // FIXTURE: Sieg now stands where the hedge was in plain view.
     Object.assign(hero(env, "sieg"), { x: 16 * TILE, y: 33 * TILE });
     const later = await play(env, { sieg: waits(3), coco: waits(3) });
-    expect(lines(later.sieg, /burned|hedge/)).toEqual([]);
+    expect(lines(later.sieg, /hedge/)).toEqual([]);
     expect((await env.observe("sieg")).feedback.join(" ")).not.toMatch(/burned|hedge/);
   });
 

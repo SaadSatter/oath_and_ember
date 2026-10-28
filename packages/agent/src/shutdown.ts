@@ -25,3 +25,32 @@ export function signalAction(phase: LaunchPhase, earlierSignals: number): Signal
   if (earlierSignals > 0) return "force-exit";
   return phase === "running" ? "stop-episode" : "finish-now";
 }
+
+/**
+ * Signals closer together than this count as one shutdown request.
+ *
+ * One Ctrl-C under `npm run eval:live` reaches the launcher twice: the
+ * terminal signals the whole foreground process group, and npm relays the
+ * signal to its child as well. Reproduced 2026-10-28 with a process-group
+ * SIGINT to a recorded mock run: without this window the relay counted as a
+ * second press, forced an exit and lost the video. With plain `node` the
+ * same SIGINT counted once.
+ */
+export const DUPLICATE_SIGNAL_MS = 1000;
+
+/** Counts shutdown requests, folding duplicate deliveries into one. */
+export class SignalCounter {
+  private count = 0;
+  private last = -Infinity;
+  constructor(
+    private readonly windowMs = DUPLICATE_SIGNAL_MS,
+    private readonly now: () => number = () => performance.now(),
+  ) {}
+  /** The action for a signal now, or "duplicate" if it repeats the last request. */
+  next(phase: LaunchPhase): SignalAction | "duplicate" {
+    const t = this.now();
+    if (this.count > 0 && t - this.last < this.windowMs) return "duplicate";
+    this.last = t;
+    return signalAction(phase, this.count++);
+  }
+}

@@ -27,7 +27,7 @@ import { APPROVED_LEDGER, SpendLedger } from "../../packages/agent/src/ledger.js
 import { startViewer, type Viewer } from "../../packages/agent/src/liveViewer.js";
 import { RECORDING_META, startRecorder, type Recorder, type RecordingResult } from "../../packages/agent/src/recorder.js";
 import { filesContaining } from "../../packages/agent/src/secretScan.js";
-import { signalAction } from "../../packages/agent/src/shutdown.js";
+import { SignalCounter } from "../../packages/agent/src/shutdown.js";
 import { providerConfig } from "../../packages/agent/src/policies/providers.js";
 import type { Gateway } from "../../packages/agent/src/budget.js";
 import { MockGateway } from "../../packages/agent/src/policies/mockGateway.js";
@@ -123,7 +123,7 @@ let phase: "setup" | "running" | "finished" = "setup";
 let recorder: Recorder | undefined;
 let summaries: EpisodeSummary[] = [];
 let error: Error | undefined;
-let interrupts = 0;
+const signals = new SignalCounter();
 let ledger: SpendLedger | undefined;
 let recordingMeta: ((r: RecordingResult, note?: string) => void) | undefined;
 let recordingFinal = false;
@@ -134,7 +134,10 @@ process.on("exit", () => {
     recordingMeta({ ...recorder.result, status: "failed", path: null, error: "The launcher exited before the video was saved (forced exit or a stop before the episode). Any partial file is incomplete." });
 });
 const onSignal = (code: number) => () => {
-  const action = signalAction(phase, interrupts++);
+  // A duplicate delivery of the same request (npm relays the terminal's
+  // signal to this process) is ignored; see SignalCounter.
+  const action = signals.next(phase);
+  if (action === "duplicate") return;
   if (action === "exit-now") {
     console.error("\nStopped before the episode started; nothing was reserved.");
     process.exit(code);

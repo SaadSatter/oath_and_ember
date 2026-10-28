@@ -8,7 +8,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { startRecorder, type RecordingDriver } from "../src/recorder.js";
 import { fileContains, filesContaining } from "../src/secretScan.js";
-import { signalAction } from "../src/shutdown.js";
+import { DUPLICATE_SIGNAL_MS, SignalCounter, signalAction } from "../src/shutdown.js";
+import { spawn } from "node:child_process";
+import { chromium } from "playwright";
 
 const dirs: string[] = [];
 const tmp = () => {
@@ -102,13 +104,100 @@ describe("signals", () => {
   it("the launcher routes SIGINT, SIGTERM and SIGHUP through it and bounds the viewer close", () => {
     const src = readFileSync(join(import.meta.dirname, "../../../scripts/midterm/live.ts"), "utf8");
     for (const s of ['process.on("SIGINT"', 'process.on("SIGTERM"', 'process.on("SIGHUP"']) expect(src).toContain(s);
-    expect(src).toContain("signalAction(phase, interrupts++)");
+    expect(src).toContain("signals.next(phase)");
     expect(src).not.toMatch(/await viewer\??\.close\(\)/);
     expect(src).toMatch(/closeTimeoutMs:/);
     // The old in-memory scan read whole files as strings.
     expect(src).not.toMatch(/readFileSync\(p, "utf8"\)\.includes\(secret/);
     expect(src).toContain("filesContaining(out, secret)");
   });
+});
+
+describe("duplicate signal deliveries", () => {
+  it("folds deliveries within the window into one request; a later press still counts", () => {
+    let t = 0;
+    const c = new SignalCounter(DUPLICATE_SIGNAL_MS, () => t);
+    expect(c.next("running")).toBe("stop-episode");
+    t = 5;
+    expect(c.next("running")).toBe("duplicate"); // npm relaying the same Ctrl-C
+    t = 900;
+    expect(c.next("finished")).toBe("duplicate");
+    t = 900 + DUPLICATE_SIGNAL_MS;
+    expect(c.next("finished")).toBe("force-exit"); // a deliberate second press
+    t += 10;
+    expect(c.next("finished")).toBe("duplicate");
+  });
+
+  it("a first signal after the episode cuts the waits short, then a later one exits", () => {
+    let t = 0;
+    const c = new SignalCounter(DUPLICATE_SIGNAL_MS, () => t);
+    expect(c.next("finished")).toBe("finish-now");
+    t = 2 * DUPLICATE_SIGNAL_MS;
+    expect(c.next("finished")).toBe("force-exit");
+    expect(new SignalCounter().next("setup")).toBe("exit-now");
+  });
+});
+
+/**
+ * Starts the launcher in its own process group (as a terminal runs a
+ * foreground job) on a free mock S2 episode, and signals the whole group, as
+ * the terminal does on Ctrl-C or hang-up.
+ */
+function launchAndSignal(o: { out: string; npm?: boolean; record?: boolean; signal: NodeJS.Signals; repeatMs?: number }) {
+  const args = ["--scenario", "S2", "--seed", "0", "--player", "model-history", "--gateway", "mock", "--mock-delay-ms", "40", "--out", o.out, ...(o.record ? ["--port", "0", "--no-open"] : ["--no-viewer"])];
+  const [cmd, argv] = o.npm ? ["npm", ["run", "--silent", "eval:live", "--", ...args]] : [process.execPath, ["--import", "tsx", "scripts/midterm/live.ts", ...args]];
+  const child = spawn(cmd, argv, { cwd: ROOT, detached: true, stdio: ["ignore", "pipe", "pipe"] });
+  let text = "";
+  let sent = false;
+  child.stderr!.on("data", (b: Buffer) => (text += b.toString()));
+  child.stdout!.on("data", (b: Buffer) => {
+    text += b.toString();
+    if (sent || (text.match(/model call #/g) ?? []).length < 3) return;
+    sent = true;
+    process.kill(-child.pid!, o.signal);
+    if (o.repeatMs !== undefined) setTimeout(() => { try { process.kill(-child.pid!, o.signal); } catch { /* already gone */ } }, o.repeatMs);
+  });
+  return new Promise<{ code: number | null; text: string }>((done) => child.on("close", (code) => done({ code, text })));
+}
+const ROOT = join(import.meta.dirname, "../../..");
+const json = (p: string) => JSON.parse(readFileSync(p, "utf8"));
+/** The episode's records were finalized: outcome line, summary, live.json, settled scratch ledger, no lock. */
+function expectFinalized(out: string, interrupted: boolean) {
+  const trace = readFileSync(join(out, "S2-seed0", "trace.jsonl"), "utf8").trim().split("\n");
+  expect(JSON.parse(trace.at(-1)!).type).toBe("outcome");
+  expect(json(join(out, "S2-seed0", "summary.json")).reason).toBe("manual_stop");
+  expect(json(join(out, "live.json")).interrupted).toBe(interrupted);
+  expect(json(join(out, "mock-ledger.json")).entries.every((e: { status: string }) => e.status === "settled")).toBe(true);
+  expect(existsSync(join(out, "mock-ledger.json.lock"))).toBe(false);
+}
+const hasChromium = existsSync(chromium.executablePath());
+
+describe("launcher signal handling (subprocess, mock gateway, free)", () => {
+  it("one group Ctrl-C delivered twice in quick succession stops once and saves the records", async () => {
+    const out = join(tmp(), "double");
+    const r = await launchAndSignal({ out, signal: "SIGINT", repeatMs: 20 });
+    expect(r.code, r.text).toBe(130);
+    expect((r.text.match(/Stopping:/g) ?? []).length).toBe(1);
+    expect(r.text).not.toMatch(/Forced exit/);
+    expectFinalized(out, true);
+  }, 120_000);
+
+  it("a hang-up stops the episode like Ctrl-C and keeps the records", async () => {
+    const out = join(tmp(), "hup");
+    const r = await launchAndSignal({ out, signal: "SIGHUP", repeatMs: 20 });
+    expect(r.code, r.text).toBe(129);
+    expect(r.text).not.toMatch(/Forced exit/);
+    expectFinalized(out, true);
+  }, 120_000);
+
+  it.skipIf(!hasChromium)("one Ctrl-C through `npm run eval:live` saves the video; npm's relay is not a second press", async () => {
+    const out = join(tmp(), "npm");
+    const r = await launchAndSignal({ out, npm: true, record: true, signal: "SIGINT" });
+    expect(r.code, r.text).toBe(130);
+    expect(r.text).not.toMatch(/Forced exit/);
+    expectFinalized(out, true);
+    expect(json(join(out, "recording.json"))).toMatchObject({ status: "saved", completion: "interrupted" });
+  }, 240_000);
 });
 
 describe("credential scan", () => {

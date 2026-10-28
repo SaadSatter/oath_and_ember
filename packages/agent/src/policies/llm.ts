@@ -298,7 +298,13 @@ export class LLMPlayer implements Policy {
     const reply = await this.model.complete(this.system, user, { schema: this.schema });
     const usage = reply.record;
     const truncated = reply.meta?.stopReason === "max_tokens";
-    const parsed = truncated ? readTruncated(reply.rawText ?? reply.text, reply.text, this.maxBatch) : parseReply(reply.text, this.maxBatch);
+    // Cut-off replies: OpenAI's are classified by readTruncated (whitespace
+    // runaways, S2 seed 0). Anthropic keeps its earlier rule: always refused.
+    const parsed = !truncated
+      ? parseReply(reply.text, this.maxBatch)
+      : reply.meta?.provider === "openai"
+        ? readTruncated(reply.rawText ?? reply.text, reply.text, this.maxBatch)
+        : ({ ok: false, reason: CUT_OFF } as const);
     // An unusable reply is never turned into an action: the runner submits
     // nothing, records the problem, and tells this player next turn.
     if (!parsed.ok) return { replyProblem: parsed.reason, usage, raw: reply.rawText ?? reply.text };
@@ -334,7 +340,8 @@ export const WHITESPACE_RUNAWAY = 200;
 const CUT_OFF = "The reply was cut off at the output limit (stop reason max_tokens).";
 
 /**
- * A reply that stopped at the output limit. It is never repaired. Two cases
+ * An OpenAI reply that stopped at the output limit (used only for OpenAI; an
+ * Anthropic cut-off reply is always refused). It is never repaired. Two cases
  * seen in the S2 seed 0 OpenAI run are told apart:
  *   - the JSON was complete and only blank characters followed it until the
  *     limit: JSON itself ignores trailing whitespace (JSON.parse accepts it),
@@ -353,10 +360,14 @@ export function readTruncated(raw: string, text: string, maxBatch: number = MAX_
   } catch {
     // Not a complete JSON document.
   }
-  if (complete && trailing > 0) {
+  if (complete) {
+    // The JSON closed, so nothing broke off: judge it as any reply, and if it
+    // is unusable say why, not that it was cut off mid-JSON.
     const parsed = parseReply(text, maxBatch);
-    if (parsed.ok && !parsed.recovered)
+    if (!parsed.ok) return parsed;
+    if (trailing > 0 && !parsed.recovered)
       return { ...parsed, recovered: `The reply was complete, but ${trailing} blank characters followed it up to the output limit; they were ignored.` };
+    return { ok: false, reason: CUT_OFF };
   }
   const longest = Math.max(0, ...(raw.match(/\s+/g) ?? []).map((run) => run.length));
   if (longest >= WHITESPACE_RUNAWAY)

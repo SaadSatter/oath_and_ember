@@ -50,7 +50,7 @@ export function tickEvents(before: WorldSnapshot, after: WorldSnapshot, w: World
   let cow = seenCow;
   if (sceneOf(w, p) === "HEDGE_MAZE") {
     if (before.hedgeBurned === false && after.hedgeBurned === true && onScreen(w, p, HEDGE_AT))
-      lines.push(`The dry hedge at ${tiles(HEDGE_AT)} burned away.`);
+      lines.push(`The dry hedge at ${tiles(HEDGE_AT)} disappeared.`);
     const a = before.cow,
       b = after.cow;
     if (a && b && (a.x !== b.x || a.y !== b.y) && (onScreen(w, p, a) || onScreen(w, p, b)))
