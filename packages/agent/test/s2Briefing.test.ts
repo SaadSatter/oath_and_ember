@@ -40,14 +40,16 @@ describe("S2 episode briefing", () => {
     for (const s of SITUATIONS) if (s.id !== "S2") expect(s.briefing, s.id).toBeUndefined();
   });
 
-  it("states exactly the owner-approved text (revision of 2026-10-28)", () => {
+  it("states exactly the second revision (after pilot-6, 2026-10-28: owner-approved content, wording pending the owner)", () => {
     expect(S2_BRIEFING).toBe(
       [
         "**Episode briefing for this evaluation (S2), the same for both players:**",
         "",
         "- This evaluation episode is Mirror Pond.",
-        "- Your objective is to obtain the **Vanity Mirror** and add it to the shared quest inventory.",
-        '- Bridge Ruins is a puzzle you have already completed. It is the area that the shrine\'s "START / RETURN · E · Puzzle Map 2" sign leads back to. It is outside the scope of this episode: do not return to Bridge Ruins.',
+        "- Your objective is to obtain the **Vanity Mirror** and add it to the shared quest inventory. Only the Vanity Mirror completes this episode.",
+        '- Bridge Ruins is a puzzle you have already completed. Only the shrine\'s "START / RETURN · E · Puzzle Map 2" sign leads back to it. It is outside the scope of this episode: do not use that sign.',
+        "- Every other area's RETURN exit leads back to the shrine. You may use those exits.",
+        "- Visiting another area, such as Hedge Maze, is not a failure. You may explore it and complete its objectives before you go on to Mirror Pond, but it does not complete this episode.",
         "- The goddess's offering is the overall quest goal, not your objective in this episode.",
         "- Solve this episode with your normal observations, actions, and messages to your partner.",
       ].join("\n"),

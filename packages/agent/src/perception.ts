@@ -94,6 +94,18 @@ export const vectorOf: Record<Direction, { x: number; y: number }> = {
   nw: { x: -1, y: -1 },
 };
 export const round1 = (n: number) => Math.round(n * 10) / 10;
+/**
+ * Truncated (not rounded) to two decimals, so the whole-number part always
+ * matches the screen cell the hero is drawn in: 25.996 is 25.99, never 26.00
+ * (pilot-6 audit finding 4). The whole part is Math.floor(n) by construction;
+ * the small offset only keeps binary fractions such as 0.29 * 100 = 28.999…
+ * from losing a hundredth, and is capped so it never reaches the next cell.
+ */
+export function truncate2(n: number) {
+  const whole = Math.floor(n);
+  const hundredths = Math.min(99, Math.floor((n - whole) * 100 + 1e-9));
+  return Number((whole + hundredths / 100).toFixed(2));
+}
 
 /** Dialogue lines kept per hero (oldest dropped first). */
 export const DIALOGUE_LOG = 12;
@@ -209,7 +221,8 @@ interface Prop {
   x: number;
   y: number;
   details?: string;
-  mark: string;
+  /** Screen-grid character; none for a floating label that hides no cell. */
+  mark?: string;
 }
 
 function griffinLabel(g: GriffinState, mode: LabelMode) {
@@ -316,12 +329,16 @@ function sceneProps(w: World, scene: SceneId, mode: LabelMode): Prop[] {
         mark: "o",
       });
     if (maze) {
+      // HedgeMazeView draws the cow sprite where the cow is, and its label as
+      // separate text fixed at (26, 27.7) that never moves or hides. The cow
+      // itself carries no text (pilot-6 audit finding 3). The label floats over
+      // open floor in the lane, so it gets no grid mark that would hide it.
+      props.push({ kind: "creature", name: "cow", x: maze.cow.x, y: maze.cow.y, mark: "C" });
       props.push({
-        kind: "creature",
-        name: label(mode, "Harmless cow · blocks the lane", "cow"),
-        x: maze.cow.x,
-        y: maze.cow.y,
-        mark: "C",
+        kind: "object",
+        name: label(mode, "Harmless cow · blocks the lane", "lane sign"),
+        x: 26 * TILE,
+        y: 27.7 * TILE,
       });
       if (!maze.runner.caught)
         props.push({
@@ -429,7 +446,7 @@ export function perceive(
       direction: d < TILE / 2 ? "here" : directionOf(Math.atan2(dy, dx)),
       ...(p.details ? { details: p.details } : {}),
     });
-    marks.push({ x: p.x, y: p.y, mark: p.mark });
+    if (p.mark) marks.push({ x: p.x, y: p.y, mark: p.mark });
   };
 
   // Partner: drawn with a health bar whenever on the same map and on screen.
@@ -583,8 +600,8 @@ export function perceive(
       heightTiles: Math.ceil(map.height / TILE),
     },
     self: {
-      x: round1(me.x / TILE),
-      y: round1(me.y / TILE),
+      x: truncate2(me.x / TILE),
+      y: truncate2(me.y / TILE),
       facing: directionOf(me.facing),
       hp: Math.round(me.hp),
       maxHp: me.maxHp,

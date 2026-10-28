@@ -9,7 +9,7 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 import { createHash } from "node:crypto";
-import { abilityNames, actionTypes, directions, type GameAction } from "../types.js";
+import { abilityNames, actionTypes, directions, type GameAction, type MovementReport } from "../types.js";
 import { stepStatus, type Decision, type Policy, type TurnReport } from "./policy.js";
 import { paidTransport, assertPaidTransport, ModelCallError, type Completion, type CompletionOptions, type Gateway, type MeteredGateway, type ReplyMeta } from "../budget.js";
 import { MAX_BATCH } from "../batch.js";
@@ -215,7 +215,9 @@ How each turn works:
 - Each action must be one of the listed legal actions, e.g. {"type":"move","direction":"n","ticks":30} or {"type":"advance_dialogue"} or {"type":"message","text":"..."}.${maxBatch > 1 ? `
 - Your actions are done one after another. The rest are skipped as soon as anything happens: an invalid action, damage, a new place, dialogue, any feedback, a change to your backpack or journal, a message from your partner, or the end of the episode. Then you are asked again with what you now see. Skipped actions did not happen.` : ""}
 - Time only passes while actions run (60 ticks = 1 second). Keep moves short enough to react.
-- Coordinates are in tiles; y grows downward (north is up). The "screen" rows show your view: "@" you, "P" partner, "#" blocked, "~" water or gap, "." open ground, "E" enemy, "C" creature, "o" object, ">" exit, "*" projectile.
+- Coordinates are in tiles; y grows downward (north is up). The "screen" rows show your view, one character per tile: "@" you, "P" partner, "#" blocked, "~" water or gap, "." open ground, "E" enemy, "C" creature, "o" object, ">" exit, "*" projectile. Some signs are listed in visible without a screen character.
+- Your x and y (self) are given to two decimals, cut off rather than rounded; "@" is drawn in the tile whose column and row are their whole-number parts. Each tile shows what lies at its centre, so an obstacle can cover part of a "." tile or leave part of a "#" tile open. Your body is a square about 0.8 tiles wide centred on your x and y, and you fit only where all of it is clear.
+- ${memory === "history" ? `A move's result includes movement: how far you actually went in that direction compared with how far that move would have taken you on open ground ("full", "partial" or "none"), with where you started and ended. ` : ""}When a move falls short, a feedback line says so; it does not say what stopped you.
 
 Your actions:
 - You act only through the actions in legal_actions. That list is rebuilt every turn from your situation: where you stand, what is next to you, whether a dialogue line is waiting for you, and which abilities are ready. For example, use_item appears only when you stand next to an object, and advance_dialogue only when the line on your screen is yours to move on. An action that is not listed is not available right now; move closer or wait for the situation to change.
@@ -228,6 +230,7 @@ Playing efficiently:
 - An ability marked "recharging (Ns)" cannot be used for N more seconds. Use that time for something else or wait in longer steps, rather than checking every few ticks.
 - If a result says nothing happened, do not repeat the same action unchanged; change something first (position, direction, timing).
 - Send a message when you have something new to say or ask. Do not repeat a message your partner has not answered yet: they may be busy, and every message costs a turn. Read your recent messages before you write.
+- Tell your partner when your plan changes or when you observe an important change in the world.
 - Reply with compact JSON and no padding or blank lines.
 
 Shared dialogue:
@@ -256,7 +259,7 @@ export class LLMPlayer implements Policy {
   readonly name: string;
   private notes = "";
   /** Executed actions only, oldest first. */
-  private completed: { action: GameAction; ticks: number; interrupted?: string }[] = [];
+  private completed: { action: GameAction; ticks: number; interrupted?: string; movement?: MovementReport }[] = [];
   /** Refused or stale actions, oldest first, kept apart from completed history. */
   private rejected: { action: GameAction; status: "rejected" | "stale"; error: string }[] = [];
   private readonly system: string;
@@ -287,7 +290,12 @@ export class LLMPlayer implements Policy {
   private remember(turn: TurnReport) {
     for (const s of turn.steps) {
       if (s.status === "executed") {
-        this.completed.push({ action: s.action, ticks: s.result.ticks, ...(s.result.interrupted ? { interrupted: s.result.interrupted } : {}) });
+        this.completed.push({
+          action: s.action,
+          ticks: s.result.ticks,
+          ...(s.result.interrupted ? { interrupted: s.result.interrupted } : {}),
+          ...(s.result.movement ? { movement: s.result.movement } : {}),
+        });
         if (this.completed.length > COMPLETED_LOG) this.completed.shift();
       } else {
         this.rejected.push({ action: s.action, status: s.status, error: (s.result.error ?? s.result.feedback[0] ?? "").slice(0, 200) });

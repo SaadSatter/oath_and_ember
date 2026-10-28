@@ -32,6 +32,8 @@ import {
   type LabelMode,
 } from "./perception.js";
 import { cowLine, tickEvents, worldSnapshot, type SeenMove, type WorldSnapshot } from "./worldEvents.js";
+import { movementLine, movementReport, openGroundStep } from "./movementReport.js";
+import { maps } from "../../shared/src/maps.js";
 import {
   episodes,
   milestones,
@@ -40,6 +42,7 @@ import {
 } from "./evaluator.js";
 import {
   playerIds,
+  type Direction,
   type ActionSpec,
   type EpisodeLimits,
   type EpisodeState,
@@ -117,6 +120,8 @@ interface Running {
   attack?: { recovering: boolean; performed: boolean };
   /** A cow move this hero watched during the action (worldEvents.ts). */
   cow?: SeenMove;
+  /** Move actions: where the hero started and the open-ground distance so far (movementReport.ts). */
+  move?: { direction: Direction; scene: SceneId; from: { x: number; y: number }; openGround: number };
 }
 
 interface Slot {
@@ -443,6 +448,7 @@ export class AgentEnvironment implements GameInterface {
           feedback: [],
           resolve: sub.resolve,
           ...(sub.action.type === "attack" ? { attack: { recovering: (me.cooldowns.attack ?? 0) > 0, performed: false } } : {}),
+          ...(sub.action.type === "move" ? { move: { direction: sub.action.direction, scene: sceneOf(this.room.state, me), from: { x: me.x, y: me.y }, openGround: 0 } } : {}),
         };
       }
     }
@@ -489,8 +495,14 @@ export class AgentEnvironment implements GameInterface {
     const worldBefore = this.lastWorld;
     for (const s of order) {
       const r = s.running!;
-      const frame = r.frames[r.index] ?? {};
-      this.room.receiveInput(s.key, { ...neutral(++s.seq), ...frame });
+      const frame = { ...neutral(++s.seq), ...(r.frames[r.index] ?? {}) };
+      // Open-ground distance of this tick's input, measured on a copy before the tick.
+      if (r.move) {
+        const w = this.room.state,
+          me = w.players[s.key];
+        r.move.openGround += openGroundStep(me, frame, maps[sceneOf(w, me)], !!w.slowTime);
+      }
+      this.room.receiveInput(s.key, frame);
     }
     if (this.options.tick) this.options.tick(this.room);
     else this.room.tick();
@@ -542,15 +554,26 @@ export class AgentEnvironment implements GameInterface {
     this.explore(s);
     const ticks = this.room.state.serverTick - r.startTick;
     const moved = cowLine(r.cow);
-    const extra = [...(moved ? [moved] : []), ...(r.attack && !r.attack.performed ? [noAttackLine(s.role, r.attack.recovering)] : [])];
+    const me = this.room.state.players[s.key];
+    // A move that ended in another area is reported by its arrival line instead.
+    const movement =
+      r.move && sceneOf(this.room.state, me) === r.move.scene
+        ? movementReport(r.move.direction, r.move.from, me, r.move.openGround)
+        : undefined;
+    const walked = movement && r.move ? movementLine(r.move.direction, movement, r.move.from, me) : undefined;
+    const extra = [
+      ...(walked ? [walked] : []),
+      ...(moved ? [moved] : []),
+      ...(r.attack && !r.attack.performed ? [noAttackLine(s.role, r.attack.recovering)] : []),
+    ];
     for (const line of extra) {
       r.feedback.push(line);
       s.memory.note(line);
     }
     const attack = r.attack ? (r.attack.performed ? ("performed" as const) : ("none" as const)) : undefined;
-    this.trace("result", { ok: true, ticks, interrupted, ...(attack ? { attack } : {}), feedback: r.feedback, hash: this.hash() }, s.id);
+    this.trace("result", { ok: true, ticks, interrupted, ...(attack ? { attack } : {}), ...(movement ? { movement } : {}), feedback: r.feedback, hash: this.hash() }, s.id);
     return () =>
-      r.resolve({ accepted: true, ticks, ...(interrupted ? { interrupted } : {}), ...(attack ? { attack } : {}), feedback: r.feedback, done: !!this.reason });
+      r.resolve({ accepted: true, ticks, ...(interrupted ? { interrupted } : {}), ...(attack ? { attack } : {}), ...(movement ? { movement } : {}), feedback: r.feedback, done: !!this.reason });
   }
 
   /** Resolves anything a hero is waiting on (episode over or reset). */

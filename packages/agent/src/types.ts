@@ -117,6 +117,7 @@ export interface Observation {
   seconds: number;
   area: { name: string; widthTiles: number; heightTiles: number };
   self: {
+    /** Tiles, truncated (not rounded) to two decimals, so the whole-number part is the "@" cell. */
     x: number;
     y: number;
     facing: Direction;
@@ -182,8 +183,31 @@ export interface StepResult {
    * `accepted` only means the input was taken; this says what it did.
    */
   attack?: "performed" | "none";
+  /**
+   * Move actions only, when the hero stayed in the same area: how far the
+   * move actually carried the hero compared with how far the same input
+   * would have carried them on open ground. `accepted` still only means the
+   * input was taken; this says how far it went. Never names an obstacle.
+   */
+  movement?: MovementReport;
   feedback: string[];
   done: boolean;
+}
+
+/**
+ * The outcome of one move (movementReport.ts). "full": at least 90% of the
+ * open-ground distance, in the requested direction. "partial": visibly moved
+ * but fell short (blocked partway, or slid sideways off a corner). "none": did
+ * not visibly move. Tiles; positions truncated to two decimals like `self`.
+ */
+export interface MovementReport {
+  outcome: "full" | "partial" | "none";
+  /** Progress along the requested direction. */
+  movedTiles: number;
+  /** Open-ground distance for the ticks that ran, at the hero's current speed. */
+  requestedTiles: number;
+  from: { x: number; y: number };
+  to: { x: number; y: number };
 }
 
 export type TerminationReason =

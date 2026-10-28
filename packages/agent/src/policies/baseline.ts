@@ -11,6 +11,7 @@ import type {
   StepResult,
 } from "../types.js";
 import type { Decision, Policy } from "./policy.js";
+import { asTuned } from "./navigate.js";
 
 const compass: Direction[] = ["e", "se", "s", "sw", "w", "nw", "n", "ne"];
 const toward = (dx: number, dy: number): Direction =>
@@ -28,7 +29,7 @@ export class ExplorationBaseline implements Policy {
   private turn = 0;
 
   async decide(input: { observation: Observation; legal: ActionSpec[]; last?: StepResult }): Promise<Decision> {
-    return { action: this.choose(input.observation, input.legal) };
+    return { action: this.choose(asTuned(input.observation), input.legal) };
   }
 
   private choose(o: Observation, legal: ActionSpec[]): GameAction {

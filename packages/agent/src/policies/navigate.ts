@@ -5,6 +5,20 @@
 
 import type { Direction, Observation } from "../types.js";
 
+/**
+ * The observation as the scripted route and quest baseline were tuned on it:
+ * `self` to one decimal. Since 2026-10-28 (pilot-6 fix 3) the interface gives
+ * `self` truncated to two decimals; the scripted players round it back here so
+ * their frozen behaviour, and the S2-S4 start states the route builds, stay
+ * identical. A policy-side choice: every player still gets the same
+ * observation. Rounds half up from the hundredths, the result round1 gave
+ * on the raw position.
+ */
+export function asTuned(o: Observation): Observation {
+  const one = (v: number) => Math.floor((Math.round(v * 100) + 5) / 10) / 10;
+  return { ...o, self: { ...o.self, x: one(o.self.x), y: one(o.self.y) } };
+}
+
 /** Walking speed in tiles per tick: SPEED 190 px/s over 32 px tiles at 60 Hz. */
 export const WALK_TILES_PER_TICK = 190 / 32 / 60;
 

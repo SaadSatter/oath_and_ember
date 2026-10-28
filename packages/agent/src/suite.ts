@@ -33,16 +33,26 @@ export interface Situation {
 /**
  * S2 briefing (owner approval 2026-10-28, after pilot-5, where the party took
  * the shrine's way back to Bridge Ruins; revised the same day by the owner to
- * state S2's success condition, the Vanity Mirror). It names the scenario,
- * its objective item and the area that is out of scope, and nothing else: no
- * direction, position, mechanism or step. Text is the owner's, verbatim. Audit: docs/midterm/agent-evidence/skill-runs/2026-10-28-suite-s2-briefing.md.
+ * state S2's success condition, the Vanity Mirror). Second revision
+ * 2026-10-28, after pilot-6, where both players treated the Hedge Maze's own
+ * RETURN exit as forbidden: the owner approved its content (only the shrine's
+ * "START / RETURN · E · Puzzle Map 2" sign leads to Bridge Ruins; other areas'
+ * RETURN exits lead back to the shrine and are allowed; visiting Hedge Maze is
+ * not a failure; the Vanity Mirror stays the objective). The wording below is
+ * the implementation agent's draft of that content, pending the owner's final
+ * wording. It names signs, areas and the objective item only: no direction,
+ * position, mechanism or step. Audits:
+ * docs/midterm/agent-evidence/skill-runs/2026-10-28-suite-s2-briefing.md and
+ * docs/midterm/agent-evidence/skill-runs/2026-10-28-adapter-pilot6-fixes.md.
  */
 export const S2_BRIEFING = [
   "**Episode briefing for this evaluation (S2), the same for both players:**",
   "",
   "- This evaluation episode is Mirror Pond.",
-  "- Your objective is to obtain the **Vanity Mirror** and add it to the shared quest inventory.",
-  '- Bridge Ruins is a puzzle you have already completed. It is the area that the shrine\'s "START / RETURN · E · Puzzle Map 2" sign leads back to. It is outside the scope of this episode: do not return to Bridge Ruins.',
+  "- Your objective is to obtain the **Vanity Mirror** and add it to the shared quest inventory. Only the Vanity Mirror completes this episode.",
+  '- Bridge Ruins is a puzzle you have already completed. Only the shrine\'s "START / RETURN · E · Puzzle Map 2" sign leads back to it. It is outside the scope of this episode: do not use that sign.',
+  "- Every other area's RETURN exit leads back to the shrine. You may use those exits.",
+  "- Visiting another area, such as Hedge Maze, is not a failure. You may explore it and complete its objectives before you go on to Mirror Pond, but it does not complete this episode.",
   "- The goddess's offering is the overall quest goal, not your objective in this episode.",
   "- Solve this episode with your normal observations, actions, and messages to your partner.",
 ].join("\n");
