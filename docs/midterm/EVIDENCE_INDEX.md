@@ -20,7 +20,7 @@ Updated 2026-10-27, branch `midterm/evaluation`.
 | 4b | Credible baseline; suite separates players | Exploration baseline (`packages/agent/src/policies/baseline.ts`) completes the milestone only. `docs/midterm/evidence/session1/` | S22 | Quest-aware two-player scripted baseline (*planned*) |
 | 5a | Fair, reproducible comparison | Hash-chained traces and start hashes; **frozen suite** `docs/midterm/EVALUATION_SUITE.md` (2026-10-27, provisional, professor confirmation pending) with start states reached by real play (`packages/agent/src/suite.ts`) | S22, S23 | Results table, dated prices, held-out runs |
 | 5b | Owner-voiced log and limitations; peer notes | Template `docs/midterm/agent-evidence/AGENT-TEAM.template.md` | S17 | The owner writes `AGENT-TEAM.md` and the limitations. Peer notes due 2026-11-06 |
-| 5c | Recording of agent play, limits stated | Only QA videos made with fixtures (`docs/quests/bald-goddess/recording-*`, S01) and a 10 s Codex smoke video on the archive branch. Neither shows the agent playing the quest | S01, S14, S19 | A live recording of model-controlled play (*planned*) |
+| 5c | Recording of agent play, limits stated | Only QA videos made with fixtures (`docs/quests/bald-goddess/recording-*`, S01) and a 10 s Codex smoke video on the archive branch. Neither shows the agent playing the quest. Since S32, `eval:live` records every watched run (`LIVE_RUN.md`, "Recording"); so far only a scripted S1 baseline has been recorded, not model play | S01, S14, S19 | A live recording of model-controlled play (*planned*) |
 
 ## Professor-approved exception (as stated by the owner)
 
@@ -82,3 +82,12 @@ Session [S31](../agent-sessions/31-claude-agent-interface-reliability-pass.md) (
 - **3b (accounting):** per-hero metrics version 2 (model calls, model decisions, parse failures, submitted, executed, stale, rejected and skipped actions); legacy fields kept, with the documented meaning change for parse failures.
 - **3c:** under Node v24.19.0, typecheck and build pass. 778/778 tests in 95 files pass with 4 workers, with `suite.test.ts`, `route/fullQuest.test.ts` and `checkpointFreeze.test.ts` excluded (no S4/F). Earlier full-parallel runs had timeout-only failures. 41 new tests are in `packages/agent/test/reliability.test.ts`. The scripted quest baseline replays S1 seed 0 to identical start and end hashes.
 - **Not yet:** no `game-rules-audit` or independent review of `5c3de48`. Structured output has not been tried against the real API. No paid call, S4/F, push or merge.
+
+## Automatic gameplay video recording (2026-10-28, S32)
+
+Session [S32](../agent-sessions/32-claude-eval-live-video-recording.md) (`bf4d982e`). Design and limits: `docs/midterm/LIVE_RUN.md`, "Recording".
+
+- **5c (recording infrastructure, not yet the deliverable):** every watched `eval:live` run records the read-only `/watch` viewer with headless Chromium (Playwright, GPU build) at 1920×1080 into `<run>/recording.webm`, with `<run>/recording.json`. The recorder sends no input; a trusted `ready` hook holds the first action, with game time frozen, until both hero views have drawn. `--no-record` turns it off. Recordings are gitignored. Verified on a free S1 baseline run: the video shows the start state, gameplay and the final "finished: success" screen. 5c still needs a recording of **model** play.
+- **5a / 3c (unchanged evaluation):** the recorded S1 seed 0 baseline has start hash `d9b2359a956db64d…`, end hash `7e22d17e885d2cd2…` and 290 ticks, as established. Its semantic trace equals a headless run's. Under Node v24.22.1, typecheck and build pass, and 781/781 tests in 95 files pass with `suite.test.ts`, `route/fullQuest.test.ts` and `checkpointFreeze.test.ts` excluded. 14 new tests are in `packages/agent/test/recorder.test.ts`.
+- **Protocol deviation:** two early plain `npm test` runs in S32 included the held-out route tests `suite.test.ts` and `route/fullQuest.test.ts`. No model or paid call was involved, and the outcomes were not inspected or used for implementation or tuning. Details are in the S32 record.
+- **Not yet:** no `game-rules-audit recording` run and no independent review of this change. No paid call, push or merge.

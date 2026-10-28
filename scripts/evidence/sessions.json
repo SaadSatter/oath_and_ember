@@ -286,6 +286,16 @@
    ],
    "role": "Implementation agent under CLAUDE.md and AGENTS.md: owner-approved agent-interface reliability pass after the first real-LLM S1 run; then session-evidence skill invocation (this record). Not reviewed independently yet",
    "title": "Agent-interface reliability pass after the first real-LLM S1 run"
+  },
+  {
+   "number": 32,
+   "slug": "claude-eval-live-video-recording",
+   "ids": [
+    "bf4d982e"
+   ],
+   "role": "Implementation agent under CLAUDE.md and AGENTS.md: owner-requested automatic gameplay video recording for eval:live, integrated after the reliability pass (5c3de48, 5240cb0); then session-evidence skill invocation (this record). Not reviewed independently yet",
+   "title": "Automatic gameplay video recording for eval:live",
+   "note": "Protocol deviation: two early plain `npm test` runs in this session included the held-out route tests suite.test.ts and route/fullQuest.test.ts. Their outcomes were not inspected or used for implementation or tuning; later runs excluded them and checkpointFreeze.test.ts."
   }
  ]
 }
