@@ -209,7 +209,9 @@ export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | 
   } else if (o.model) throw Error("Scripted baselines take no model setup.");
 }
 
-function policiesFor(player: PlayerKind, budget: ModelBudget | undefined, model: ModelSetup | undefined): Record<PlayerId, Policy> {
+/** The two heroes' policies for one episode of scenario `id`. Model players get the scenario's briefing, if any. */
+export function policiesFor(player: PlayerKind, budget: ModelBudget | undefined, model: ModelSetup | undefined, id?: SituationId): Record<PlayerId, Policy> {
+  const briefing = id ? situation(id).briefing : undefined;
   switch (player) {
     case "baseline-quest":
       return { sieg: new QuestBaseline("Sieg"), coco: new QuestBaseline("Coco") };
@@ -218,7 +220,7 @@ function policiesFor(player: PlayerKind, budget: ModelBudget | undefined, model:
     case "model-history":
     case "model-obs-only": {
       const memory = player === "model-history" ? "history" : "none";
-      const make = (hero: "Sieg" | "Coco", id: PlayerId) => new LLMPlayer(hero, model!.manual, new MeteredGateway(model!.gateway, budget!, id), model!.maxBatch, memory);
+      const make = (hero: "Sieg" | "Coco", pid: PlayerId) => new LLMPlayer(hero, model!.manual, new MeteredGateway(model!.gateway, budget!, pid), model!.maxBatch, memory, briefing);
       return { sieg: make("Sieg", "sieg"), coco: make("Coco", "coco") };
     }
   }
@@ -328,7 +330,7 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
         callTimeoutMs: defaultBudgetLimits.callTimeoutMs,
       })
     : undefined;
-  const policies = policiesFor(o.player, budget, model);
+  const policies = policiesFor(o.player, budget, model, id);
   // Final runs: claim the episode in the append-only register first (H2).
   // The single-use ticket is bound to these policies by runEpisode.
   const ticket = o.final ? o.finalGrant!.claim(o.player, id, seed, attempt) : null;

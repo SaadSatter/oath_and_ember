@@ -21,7 +21,28 @@ export interface Situation {
   /** How the start state is reached (empty: the goddess checkpoint itself). */
   start: string;
   prefix?: EnvironmentOptions["prefix"];
+  /**
+   * Episode briefing given to both model players for this scenario only, as a
+   * separate block after the general prompt (LLMPlayer). Owner-approved; see
+   * the change log in docs/midterm/EVALUATION_SUITE.md. Scripted baselines
+   * receive no prompt.
+   */
+  briefing?: string;
 }
+
+/**
+ * S2 briefing (owner approval 2026-10-28, after pilot-5, where the party took
+ * the shrine's way back to Bridge Ruins). It names the scenario and the area
+ * that is out of scope, and nothing else: no direction, position, item,
+ * mechanism or step. Audit: docs/midterm/agent-evidence/skill-runs/2026-10-28-suite-s2-briefing.md.
+ */
+export const S2_BRIEFING = [
+  "Episode briefing for this evaluation (S2), the same for both players:",
+  "- This evaluation episode is Mirror Pond.",
+  '- Bridge Ruins is a puzzle you have already completed. It is the area that the shrine\'s "START / RETURN · E · Puzzle Map 2" sign leads back to. It is outside the scope of this episode: do not return to Bridge Ruins.',
+  "- The goddess's offering is the overall quest goal, not your objective in this episode.",
+  "- Solve this episode with your normal observations, actions and messages to your partner.",
+].join("\n");
 
 const afterOpening: EnvironmentOptions["prefix"] = {
   name: "opening scene",
@@ -41,7 +62,7 @@ const withMirrorAndShears: EnvironmentOptions["prefix"] = {
 
 export const SITUATIONS: readonly Situation[] = Object.freeze([
   { id: "S1", preset: "S1", heldOut: false, title: "Opening and departure", start: "goddess checkpoint" },
-  { id: "S2", preset: "S2", heldOut: false, title: "Mirror Pond", start: "shrine, after the opening scene", prefix: afterOpening },
+  { id: "S2", preset: "S2", heldOut: false, title: "Mirror Pond", start: "shrine, after the opening scene", prefix: afterOpening, briefing: S2_BRIEFING },
   { id: "S3", preset: "S3", heldOut: false, title: "Hedge Maze", start: "shrine, after the opening scene", prefix: afterOpening },
   { id: "S4", preset: "S4", heldOut: true, title: "Griffin, offering and finale", start: "shrine, holding the Vanity Mirror and Enchanted Shears", prefix: withMirrorAndShears },
   { id: "F", preset: "full", heldOut: true, title: "Full episode", start: "goddess checkpoint" },

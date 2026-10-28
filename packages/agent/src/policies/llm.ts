@@ -8,6 +8,7 @@
 // every attempt, enforces call/token/spend limits and the per-call timeout.
 
 import Anthropic from "@anthropic-ai/sdk";
+import { createHash } from "node:crypto";
 import { abilityNames, actionTypes, directions, type GameAction } from "../types.js";
 import { stepStatus, type Decision, type Policy, type TurnReport } from "./policy.js";
 import { paidTransport, assertPaidTransport, ModelCallError, type Completion, type CompletionOptions, type Gateway, type MeteredGateway, type ReplyMeta } from "../budget.js";
@@ -239,6 +240,18 @@ The public player manual follows.
 ${manual}`;
 }
 
+/**
+ * A scenario's episode briefing as its own block, appended after the general
+ * prompt (systemPrompt stays the same for every scenario). The same text goes
+ * to both heroes, whichever provider serves them: it is part of the one
+ * system string LLMPlayer hands to its gateway.
+ */
+export function briefingBlock(briefing: string) {
+  return `\n\n=== Episode briefing ===\n${briefing.trim()}\n=== End of episode briefing ===`;
+}
+/** Short id of a briefing for policy names, so briefed runs are told apart in traces and results. */
+export const briefingId = (briefing: string) => createHash("sha256").update(briefing).digest("hex").slice(0, 8);
+
 export class LLMPlayer implements Policy {
   readonly name: string;
   private notes = "";
@@ -258,12 +271,15 @@ export class LLMPlayer implements Policy {
     /** Actions accepted per reply: MAX_BATCH (default) or 1 for the unbatched player. */
     maxBatch: number = MAX_BATCH,
     memory: Memory = "history",
+    /** The scenario's episode briefing (suite.ts), if it has one. */
+    readonly briefing?: string,
   ) {
     if (!Number.isInteger(maxBatch) || maxBatch < 1 || maxBatch > MAX_BATCH) throw Error(`maxBatch must be an integer from 1 to ${MAX_BATCH}.`);
     this.maxBatch = maxBatch;
     this.memory = memory;
-    this.name = `llm(${model.label})${this.maxBatch > 1 ? `·batch${this.maxBatch}` : ""}${memory === "none" ? "·obs-only" : ""}`;
-    this.system = systemPrompt(hero, manual, this.maxBatch, memory);
+    if (briefing !== undefined && !briefing.trim()) throw Error("An episode briefing must not be empty.");
+    this.name = `llm(${model.label})${this.maxBatch > 1 ? `·batch${this.maxBatch}` : ""}${memory === "none" ? "·obs-only" : ""}${briefing ? `·briefing-${briefingId(briefing)}` : ""}`;
+    this.system = systemPrompt(hero, manual, this.maxBatch, memory) + (briefing ? briefingBlock(briefing) : "");
     this.schema = replySchema(this.maxBatch, memory);
   }
 

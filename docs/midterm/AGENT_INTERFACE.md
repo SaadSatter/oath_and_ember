@@ -51,6 +51,14 @@ Diagnosed from the S2 seed 0 OpenAI run (`evaluation-runs/live/S2-seed0-model-hi
 
 Effects on records: baseline actions and game-state hashes are unchanged (S1–S3 seed 0, both baselines, compared before and after). Traces gain the `attack` field on attack results and the new feedback lines; because an observation's `feedback` holds the last 8 lines, older lines leave that window sooner. A batch still stops on any feedback, so the new lines also stop batches. Tests: `s2Feedback.test.ts`, `s2Adapter.test.ts`, `s2Shutdown.test.ts`.
 
+## S2 episode briefing (owner approval 2026-10-28, after pilot-5)
+
+A scenario may carry a fixed episode briefing (`Situation.briefing`, `packages/agent/src/suite.ts`). Only S2 has one (`S2_BRIEFING`). `LLMPlayer` appends it as a separate block (`briefingBlock`) after the unchanged general prompt (`systemPrompt`), so both heroes get the same text, and either provider receives the same system string. The policy name gains `·briefing-<first 8 hex of its SHA-256>`. The observation, legal actions, game rules and map transitions are unchanged; there is no invisible wall or teleport. Scripted baselines get no prompt. Tests: `packages/agent/test/s2Briefing.test.ts`. Change log and reasons: `EVALUATION_SUITE.md`.
+
+Two related, pre-existing facts are recorded but not changed:
+- **Bridge Ruins resets.** Every entry to Bridge Ruins re-creates its bridge puzzle at stage 1, and the way back to the shrine needs it completed again (`GameRoom.transition`; the exit check in `GameRoom.ts`).
+- **One area, three names.** The agent-side area name "Bridge Ruins" (`perception.ts`) differs from the drawn sign "Puzzle Map 2" and from the room checkpoint "The Bridge That Hates Cooperation".
+
 ## Action batching (owner decision 2026-10-27)
 
 A player may answer one decision with up to **4 actions** (`MAX_BATCH`, `packages/agent/src/batch.ts`):
