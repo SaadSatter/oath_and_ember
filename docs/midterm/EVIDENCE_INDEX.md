@@ -149,4 +149,9 @@ Session [S36](../agent-sessions/36-claude-pilot6-navigation-fixes.md) (`4bd24137
   - Verification, process deviation, timeout analysis and the audible-chime proposal: `agent-evidence/2026-10-28-pilot6-review-followup.md`.
   - Review finding 1 is confirmed: a false `partial` when Slow Time starts during a partner's move. Not yet fixed.
   - Process deviation: `asTuned` was implemented past the audit's stop point without first asking; it was disclosed at the time and is now provisionally accepted by the owner.
+- **Review fixes (2026-10-28), commit `f48ae0e`:**
+  - Audit before implementing: `agent-evidence/skill-runs/2026-10-28-adapter-pilot6-review-fixes.md`.
+  - Moves are measured only over ticks the server moved the hero by that input, at the Slow Time state actually used. Not-applied and game-moved ticks are reported separately. The confirmed Slow Time false collision is fixed.
+  - `truncate2` rounding guard removed after a property test showed scripted-rounding differences on positions reached by walking.
+  - **3c:** under Node v24.19.0, typecheck and build pass; `npm test` 921/921 in 107 files. New `pilot6ReviewFixes.test.ts`, `asTuned.test.ts`, and `scriptedFreeze.test.ts` (scripted actions and state hashes pinned to `7bd0c7e`).
 - **Not yet:** no review from a separate reviewer session, and no paid S2 run with the briefing. No S4/F, push or merge.
