@@ -93,7 +93,7 @@ export const vectorOf: Record<Direction, { x: number; y: number }> = {
   w: { x: -1, y: 0 },
   nw: { x: -1, y: -1 },
 };
-const round1 = (n: number) => Math.round(n * 10) / 10;
+export const round1 = (n: number) => Math.round(n * 10) / 10;
 
 /** Dialogue lines kept per hero (oldest dropped first). */
 export const DIALOGUE_LOG = 12;
@@ -157,6 +157,16 @@ export function viewRect(w: World, p: Player): Rect {
 }
 const inRect = (q: { x: number; y: number }, r: Rect, pad = 0) =>
   q.x >= r.x - pad && q.x <= r.x + r.w + pad && q.y >= r.y - pad && q.y <= r.y + r.h + pad;
+/** Margin (world units) by which a thing's centre may sit outside the camera and still be listed. */
+export const VIEW_PAD = 8;
+/**
+ * Whether a point is on this hero's screen right now: the same rule perceive()
+ * uses for `visible`. World-change feedback (worldEvents.ts) uses it too, so
+ * events can never report what the observation would not show.
+ */
+export function onScreen(w: World, p: Player, q: { x: number; y: number }): boolean {
+  return inRect(q, viewRect(w, p), VIEW_PAD);
+}
 
 /** The inventory panel's "Nearby:" target, exactly as the client picks it. */
 export function nearbyTarget(w: World, p: Player): InventoryTarget | undefined {
@@ -404,7 +414,7 @@ export function perceive(
   const marks: { x: number; y: number; mark: string }[] = [];
   const counters: Record<string, number> = {};
   const add = (p: Prop) => {
-    if (!inRect(p, view, 8)) return;
+    if (!inRect(p, view, VIEW_PAD)) return;
     const n = (counters[p.kind] = (counters[p.kind] ?? 0) + 1);
     const dx = p.x - me.x,
       dy = p.y - me.y,

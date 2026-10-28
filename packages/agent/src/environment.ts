@@ -31,6 +31,7 @@ import {
   viewRect,
   type LabelMode,
 } from "./perception.js";
+import { cowLine, tickEvents, worldSnapshot, type SeenMove, type WorldSnapshot } from "./worldEvents.js";
 import {
   episodes,
   milestones,
@@ -112,6 +113,10 @@ interface Running {
   dialogue: string | null;
   feedback: string[];
   resolve: (r: StepResult) => void;
+  /** Attack actions: J's cooldown when the action began, and whether a swing or cast happened. */
+  attack?: { recovering: boolean; performed: boolean };
+  /** A cow move this hero watched during the action (worldEvents.ts). */
+  cow?: SeenMove;
 }
 
 interface Slot {
@@ -134,6 +139,18 @@ interface Slot {
 
 const EXPLORE_EVERY = 10;
 
+/**
+ * Feedback for a J press that produced no swing or cast. A player sees that no
+ * swing or fireball appeared. The HUD draws no J timer, so the line says only
+ * that J was still recovering, never how long is left (audit finding 1).
+ */
+export function noAttackLine(role: Role, recovering: boolean) {
+  const what = role === "OATH" ? "Your sword did not swing" : "No fireball was cast";
+  return recovering
+    ? `${what}: J was still recovering from your last ${role === "OATH" ? "swing" : "cast"}, so the press did nothing.`
+    : `${what}.`;
+}
+
 export class AgentEnvironment implements GameInterface {
   private room!: GameRoom;
   private slots!: Record<PlayerId, Slot>;
@@ -150,6 +167,7 @@ export class AgentEnvironment implements GameInterface {
   private lastMilestones = new Set<string>();
   private lastBag = "";
   private lastJournal = "";
+  private lastWorld: WorldSnapshot = { hedgeBurned: null, cow: null };
   private pacing = false;
   /** A final ticket handed over by runEpisode() for the next reset only. */
   private pendingTicket?: EpisodeTicket;
@@ -214,6 +232,7 @@ export class AgentEnvironment implements GameInterface {
       this.lastMilestones = new Set(milestones(this.room.state));
       this.lastBag = JSON.stringify(this.room.state.inventory?.counts ?? {});
       this.lastJournal = JSON.stringify(questLog(this.room.state));
+      this.lastWorld = worldSnapshot(this.room.state);
       // Reach the scenario's start by real play, through this interface.
       this.inPrefix = true;
       try {
@@ -234,6 +253,7 @@ export class AgentEnvironment implements GameInterface {
     this.lastMilestones = new Set(milestones(this.room.state));
     this.lastBag = JSON.stringify(this.room.state.inventory?.counts ?? {});
     this.lastJournal = JSON.stringify(questLog(this.room.state));
+    this.lastWorld = worldSnapshot(this.room.state);
     for (const s of Object.values(this.slots)) this.explore(s);
     this.hearDialogue();
     const state: EpisodeState = {
@@ -404,6 +424,7 @@ export class AgentEnvironment implements GameInterface {
       }
       if (plan.kind === "instant") {
         const r = plan.run();
+        this.lastWorld = worldSnapshot(this.room.state);
         this.hearDialogue();
         for (const line of r.feedback) s.memory.note(line);
         const feedback = [...r.feedback, ...this.watchSharedChanges()];
@@ -421,6 +442,7 @@ export class AgentEnvironment implements GameInterface {
           dialogue: storyView(this.room.state, s.role)?.key ?? null,
           feedback: [],
           resolve: sub.resolve,
+          ...(sub.action.type === "attack" ? { attack: { recovering: (me.cooldowns.attack ?? 0) > 0, performed: false } } : {}),
         };
       }
     }
@@ -461,6 +483,10 @@ export class AgentEnvironment implements GameInterface {
   /** One tick for both heroes: inputs, simulation, interruptions, results. */
   private tickOnce() {
     const order = playerIds.map((id) => this.slots[id]);
+    // Every swing or cast the server performs starts a new combat record
+    // (GameRoom: p.combat = { seq: serverTick, … }); a changed record is a strike.
+    const strikeBefore = order.map((s) => this.room.state.players[s.key].combat);
+    const worldBefore = this.lastWorld;
     for (const s of order) {
       const r = s.running!;
       const frame = r.frames[r.index] ?? {};
@@ -472,12 +498,21 @@ export class AgentEnvironment implements GameInterface {
     const w = this.room.state;
     if (w.serverTick % EXPLORE_EVERY === 0) for (const s of order) this.explore(s);
     const shared = this.watchSharedChanges();
+    const worldAfter = (this.lastWorld = worldSnapshot(w));
     const finished: (() => void)[] = [];
-    for (const s of order) {
+    for (const [i, s] of order.entries()) {
       const r = s.running!;
       r.feedback.push(...shared);
       r.index++;
       const me = w.players[s.key];
+      // A J strike also starts J's cooldown (Black Hole writes a combat record but not that cooldown).
+      if (r.attack && me.combat && me.combat.seq !== strikeBefore[i]?.seq && (me.cooldowns.attack ?? 0) > 0) r.attack.performed = true;
+      const seen = tickEvents(worldBefore, worldAfter, w, me, r.cow);
+      r.cow = seen.cow;
+      for (const line of seen.lines) {
+        r.feedback.push(line);
+        s.memory.note(line);
+      }
       const scene = sceneOf(w, me);
       const dialogue = storyView(w, s.role)?.key ?? null;
       let interrupted: string | undefined;
@@ -506,9 +541,16 @@ export class AgentEnvironment implements GameInterface {
     s.running = undefined;
     this.explore(s);
     const ticks = this.room.state.serverTick - r.startTick;
-    this.trace("result", { ok: true, ticks, interrupted, feedback: r.feedback, hash: this.hash() }, s.id);
+    const moved = cowLine(r.cow);
+    const extra = [...(moved ? [moved] : []), ...(r.attack && !r.attack.performed ? [noAttackLine(s.role, r.attack.recovering)] : [])];
+    for (const line of extra) {
+      r.feedback.push(line);
+      s.memory.note(line);
+    }
+    const attack = r.attack ? (r.attack.performed ? ("performed" as const) : ("none" as const)) : undefined;
+    this.trace("result", { ok: true, ticks, interrupted, ...(attack ? { attack } : {}), feedback: r.feedback, hash: this.hash() }, s.id);
     return () =>
-      r.resolve({ accepted: true, ticks, ...(interrupted ? { interrupted } : {}), feedback: r.feedback, done: !!this.reason });
+      r.resolve({ accepted: true, ticks, ...(interrupted ? { interrupted } : {}), ...(attack ? { attack } : {}), feedback: r.feedback, done: !!this.reason });
   }
 
   /** Resolves anything a hero is waiting on (episode over or reset). */

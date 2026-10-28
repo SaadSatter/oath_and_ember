@@ -56,6 +56,26 @@ export const actionTypes: readonly ActionType[] = [
 ];
 export const abilityNames: readonly AbilityName[] = ["push", "super_speed", "slow_time", "flight", "black_hole"];
 
+/**
+ * The parameters each action type ever accepts, and which of them are
+ * optional: the fixed public vocabulary behind legal_actions (actions.ts
+ * builds the same parameters; a test keeps the two in step). Provider
+ * adapters use it to describe one schema per action type. It never says which
+ * action is legal or useful now; validate() still decides that.
+ */
+export const actionFields: Readonly<Record<ActionType, Readonly<Record<string, "required" | "optional">>>> = {
+  move: { direction: "required", ticks: "required" },
+  wait: { ticks: "required" },
+  attack: { direction: "optional" },
+  defend: { ticks: "required" },
+  ability: { ability: "required", direction: "optional", ticks: "optional" },
+  interact: {},
+  use_item: { item: "optional" },
+  advance_dialogue: {},
+  choose_dialogue: { option: "required" },
+  message: { text: "required" },
+};
+
 /** A currently available action and the parameters it accepts. */
 export interface ActionSpec {
   type: ActionType;
@@ -156,6 +176,12 @@ export interface StepResult {
    * it is not an illegal action.
    */
   stale?: boolean;
+  /**
+   * Attack actions only: whether the J press produced a swing or cast
+   * ("performed") or nothing ("none", for example while J was recovering).
+   * `accepted` only means the input was taken; this says what it did.
+   */
+  attack?: "performed" | "none";
   feedback: string[];
   done: boolean;
 }

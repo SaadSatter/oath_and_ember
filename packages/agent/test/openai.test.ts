@@ -9,6 +9,7 @@ import {
   openaiPrices,
   openaiSchema,
   OPENAI_PREMIUM,
+  splitActionTypes,
 } from "../src/policies/openai.js";
 import {
   AnthropicGateway,
@@ -150,13 +151,13 @@ it("serializes strict Responses requests, normalizes nullable fields, and record
     store: false,
     service_tier: "default",
     reasoning: { effort: "medium" },
-    max_output_tokens: 4000,
+    max_output_tokens: 2000,
     prompt_cache_options: { ttl: "30m" },
     text: {
       format: {
         type: "json_schema",
         strict: true,
-        schema: openaiSchema(schema),
+        schema: openaiSchema(splitActionTypes(schema)),
       },
     },
   });

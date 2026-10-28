@@ -26,6 +26,8 @@ import { aggregate, EPISODE_CAP_USD, episodeCap, PLAYER_KINDS, runSuite, validat
 import { APPROVED_LEDGER, SpendLedger } from "../../packages/agent/src/ledger.js";
 import { startViewer, type Viewer } from "../../packages/agent/src/liveViewer.js";
 import { RECORDING_META, startRecorder, type Recorder, type RecordingResult } from "../../packages/agent/src/recorder.js";
+import { filesContaining } from "../../packages/agent/src/secretScan.js";
+import { signalAction } from "../../packages/agent/src/shutdown.js";
 import { providerConfig } from "../../packages/agent/src/policies/providers.js";
 import type { Gateway } from "../../packages/agent/src/budget.js";
 import { MockGateway } from "../../packages/agent/src/policies/mockGateway.js";
@@ -132,17 +134,22 @@ process.on("exit", () => {
     recordingMeta({ ...recorder.result, status: "failed", path: null, error: "The launcher exited before the video was saved (forced exit or a stop before the episode). Any partial file is incomplete." });
 });
 const onSignal = (code: number) => () => {
-  if (phase === "finished") {
-    linger.abort();
-    return;
-  }
-  if (phase === "setup") {
+  const action = signalAction(phase, interrupts++);
+  if (action === "exit-now") {
     console.error("\nStopped before the episode started; nothing was reserved.");
     process.exit(code);
   }
-  if (++interrupts > 1) {
+  // A second signal always exits now, in any phase, including while the
+  // video is being finalized after the episode. The exit handler then marks
+  // the recording as not saved.
+  if (action === "force-exit") {
     console.error("\nForced exit. Traces written so far are kept; any open ledger reservation stays held until it is reconciled (`ledger.ts reconcile`).");
     process.exit(code);
+  }
+  if (action === "finish-now") {
+    console.error("\nClosing: the episode's records are saved; finishing the video. Press Ctrl-C again to exit now (the video is then marked as not saved).");
+    linger.abort();
+    return;
   }
   console.error("\nStopping: the episode ends now and its records are being saved. Press Ctrl-C again to force exit.");
   process.exitCode = code;
@@ -150,6 +157,19 @@ const onSignal = (code: number) => () => {
 };
 process.on("SIGINT", onSignal(130));
 process.on("SIGTERM", onSignal(143));
+// Closing the terminal: stop and save like Ctrl-C, instead of dying without
+// the exit handler (which left recording.json saying "recording").
+process.on("SIGHUP", onSignal(129));
+
+/** Waits at most `ms` for `p`; reports and moves on if it takes longer. */
+async function bounded(p: Promise<unknown>, ms: number, what: string) {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const late = new Promise<"late">((r) => (timer = setTimeout(() => r("late"), ms)));
+  const r = await Promise.race([p.then(() => "done" as const, () => "done" as const), late]);
+  clearTimeout(timer);
+  if (r === "late") console.error(`${what} did not finish within ${Math.round(ms / 1000)} s; continuing.`);
+}
+const VIEWER_CLOSE_MS = 10_000;
 
 const repo = repoInfo();
 const version = repo.dirty ? `${repo.head.slice(0, 7)}+dirty` : repo.head.slice(0, 7);
@@ -394,15 +414,8 @@ try {
   }, null, 2));
   // The credential must not appear in anything this run wrote.
   if (secret) {
-    const leaks: string[] = [];
-    const scan = (dir: string) => {
-      for (const e of readdirSync(dir, { withFileTypes: true })) {
-        const p = join(dir, e.name);
-        if (e.isDirectory()) scan(p);
-        else if (readFileSync(p, "utf8").includes(secret!)) leaks.push(p);
-      }
-    };
-    scan(out);
+    // Chunked byte search: safe for a large or still-growing video file.
+    const leaks = filesContaining(out, secret);
     secret = undefined;
     if (leaks.length) {
       console.error(`CREDENTIAL FOUND IN OUTPUT: ${leaks.join(", ")}. Delete these files and rotate the key.`);
@@ -422,7 +435,8 @@ try {
 // is no tail, and a Ctrl-C during these waits cuts them short.
 if (recorder) {
   const stoppedByUser = controller.signal.aborted;
-  const r = await recorder.stop({ finalTimeoutMs: stoppedByUser ? 3000 : 15_000, holdMs: stoppedByUser || error ? 0 : 3000, signal: linger.signal });
+  // Every wait inside stop() is bounded (recorder.ts); a second Ctrl-C exits at once.
+  const r = await recorder.stop({ finalTimeoutMs: stoppedByUser ? 3000 : 15_000, holdMs: stoppedByUser || error ? 0 : 3000, closeTimeoutMs: stoppedByUser ? 60_000 : 120_000, signal: linger.signal });
   recordingMeta!(r);
   recordingFinal = true;
   if (r.status === "saved") console.log(`Video:   ${r.path} (${r.size.width}×${r.size.height}, ${r.wallSeconds} s${r.readyConfirmed ? "" : ", start not confirmed"}${r.finalConfirmed ? "" : ", end not confirmed"})`);
@@ -434,7 +448,7 @@ if (recorder) {
 if (error) {
   console.error(safeText(`The run failed: ${error.message}`));
   console.error(`Records kept in ${out}`);
-  await viewer?.close();
+  if (viewer) await bounded(viewer.close(), VIEWER_CLOSE_MS, "Closing the viewer");
   process.exit(process.exitCode && process.exitCode !== 0 ? process.exitCode : 1);
 }
 const s = summaries[0];
@@ -456,6 +470,6 @@ if (viewer) {
       linger.signal.addEventListener("abort", () => { clearTimeout(t); r(); }, { once: true });
     });
   }
-  await viewer.close();
+  await bounded(viewer.close(), VIEWER_CLOSE_MS, "Closing the viewer");
 }
 process.exit(process.exitCode ?? 0);

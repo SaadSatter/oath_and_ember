@@ -10,6 +10,7 @@ import {
   type ReplyMeta,
 } from "../budget.js";
 import type { Prices, Effort } from "./llm.js";
+import { actionFields, actionTypes } from "../types.js";
 
 export const OPENAI_PRICING_SOURCE =
   "https://developers.openai.com/api/docs/models/gpt-6-luna (verified 2026-10-28); https://developers.openai.com/api/docs/pricing; https://developers.openai.com/api/docs/guides/prompt-caching";
@@ -32,7 +33,14 @@ export const OPENAI_CACHE_TTL = "30m";
 // Conservative project estimate includes the documented 10% regional/FedRAMP
 // premium even on the fixed global endpoint. Not a claim about an invoice.
 export const OPENAI_PREMIUM = 1.1;
-const MAX_OUTPUT = 4000;
+// Output cap, reasoning included. Lowered from 4000 (owner approval
+// 2026-10-28): in the S2 seed 0 run the largest complete reply used 1,247
+// output tokens (1,155 of them reasoning), while 24 replies ran away into
+// whitespace until the cap. 2000 keeps about 60% headroom over that maximum
+// and halves the cost and latency of a runaway. It also lowers each call's
+// worst-case reservation, which is derived from this cap.
+export const OPENAI_MAX_OUTPUT = 2000;
+const MAX_OUTPUT = OPENAI_MAX_OUTPUT;
 export function assertOpenAIModel(model: string, effort: string) {
   if (
     !Object.hasOwn(OPENAI_MODELS, model) ||
@@ -71,6 +79,45 @@ export function openaiSchema(
     return out;
   }
   return convert(schema) as Record<string, unknown>;
+}
+/**
+ * Strict mode makes every property of an object required (null when unused),
+ * so with one shared action object the model had to fill "ticks" on an attack
+ * and often put a number there, which validate() then refused (S2 seed 0
+ * OpenAI run: 79 of 81 invalid actions). Here the action object is split into
+ * one object per action type that lists only that type's fields
+ * (actionFields). Field schemas are copied from the public schema unchanged;
+ * the action set, legality and validation are untouched.
+ */
+export function splitActionTypes(schema: Record<string, unknown>): Record<string, unknown> {
+  const isActionObject = (v: Record<string, unknown>) => {
+    const props = object(v.properties) ? v.properties : undefined;
+    const type = props && object(props.type) ? props.type : undefined;
+    return v.type === "object" && Array.isArray(type?.enum) && JSON.stringify(type.enum) === JSON.stringify(actionTypes);
+  };
+  function walk(v: unknown): unknown {
+    if (Array.isArray(v)) return v.map(walk);
+    if (!object(v)) return v;
+    if (isActionObject(v)) {
+      const props = v.properties as Record<string, unknown>;
+      return {
+        anyOf: actionTypes.map((t) => {
+          const fields = actionFields[t];
+          return {
+            type: "object",
+            properties: {
+              type: { type: "string", enum: [t] },
+              ...Object.fromEntries(Object.keys(fields).map((k) => [k, props[k]])),
+            },
+            required: ["type", ...Object.keys(fields).filter((k) => fields[k] === "required")],
+            additionalProperties: false,
+          };
+        }),
+      };
+    }
+    return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, walk(x)]));
+  }
+  return walk(schema) as Record<string, unknown>;
 }
 /** Only the documented nullable optional fields are removed; no action is repaired. */
 function normalize(text: string) {
@@ -149,7 +196,7 @@ export class OpenAIGateway implements Gateway {
           type: "json_schema",
           name: "agent_actions",
           strict: true,
-          schema: openaiSchema(options.schema),
+          schema: openaiSchema(splitActionTypes(options.schema)),
         },
       },
     };

@@ -221,6 +221,14 @@ Your actions:
 - The player manual below is written for people using a keyboard. You cannot press keys. Each control it describes corresponds to one of your actions (walking is move, E is interact or advance_dialogue, J is attack, K is defend, number keys are ability, the backpack panel is use_item, numbered responses are choose_dialogue), and only when that action is in legal_actions.${memory === "history" ? `
 - last_turn reports every action you proposed last turn with its status: "executed" (it happened), "rejected" (the game refused it; only its feedback happened), "stale" (a dialogue press for a line that had already moved on; nothing happened) or "skipped" (never tried, because the turn stopped first). completed_actions lists only executed actions. Do not treat a skipped or rejected action as done.` : ""}
 
+Playing efficiently:
+- Every reply takes real time, and while you think the game waits for you (and your partner waits too).${maxBatch > 1 ? ` When the next few steps are clear (walking a stretch, waiting, a planned sequence), send them together in one reply, up to ${maxBatch}; the rest stop by themselves as soon as anything happens.` : ""}
+- Your J attack needs a moment between uses (the manual says how long). While abilities shows J as "recovering", pressing J does nothing: the result says the sword did not swing or no fireball was cast. Do not press J again at once; move, guard or wait briefly first${maxBatch > 1 ? `, or send an attack followed by a short wait in the same reply` : ""}.
+- An ability marked "recharging (Ns)" cannot be used for N more seconds. Use that time for something else or wait in longer steps, rather than checking every few ticks.
+- If a result says nothing happened, do not repeat the same action unchanged; change something first (position, direction, timing).
+- Send a message when you have something new to say or ask. Do not repeat a message your partner has not answered yet: they may be busy, and every message costs a turn. Read your recent messages before you write.
+- Reply with compact JSON and no padding or blank lines.
+
 Shared dialogue:
 - When you are both in a scene you read the same dialogue box, and one press from either of you moves a shared line on for both. If you both press at once, only the first press counts; the other comes back "stale" and changes nothing.
 - Agree with your partner by message who moves shared lines on (for example, whoever is speaking, or one of you for the whole scene) and let the other wait while reading. A line meant only for one of you can be moved on only by that hero.
@@ -290,7 +298,7 @@ export class LLMPlayer implements Policy {
     const reply = await this.model.complete(this.system, user, { schema: this.schema });
     const usage = reply.record;
     const truncated = reply.meta?.stopReason === "max_tokens";
-    const parsed = truncated ? ({ ok: false, reason: "The reply was cut off at the output limit (stop reason max_tokens)." } as const) : parseReply(reply.text, this.maxBatch);
+    const parsed = truncated ? readTruncated(reply.rawText ?? reply.text, reply.text, this.maxBatch) : parseReply(reply.text, this.maxBatch);
     // An unusable reply is never turned into an action: the runner submits
     // nothing, records the problem, and tells this player next turn.
     if (!parsed.ok) return { replyProblem: parsed.reason, usage, raw: reply.rawText ?? reply.text };
@@ -319,6 +327,44 @@ function describeTurn(input: Parameters<Policy["decide"]>[0]) {
     ],
     ...(t.stopped ? { stopped_early_because: t.stopped } : {}),
   };
+}
+
+/** Blank characters in a row that mark a whitespace runaway rather than ordinary formatting. */
+export const WHITESPACE_RUNAWAY = 200;
+const CUT_OFF = "The reply was cut off at the output limit (stop reason max_tokens).";
+
+/**
+ * A reply that stopped at the output limit. It is never repaired. Two cases
+ * seen in the S2 seed 0 OpenAI run are told apart:
+ *   - the JSON was complete and only blank characters followed it until the
+ *     limit: JSON itself ignores trailing whitespace (JSON.parse accepts it),
+ *     so the reply is read exactly as written and marked as recovered;
+ *   - the reply broke off inside the JSON after a long run of blank
+ *     characters (the "whitespace runaway"): refused, with a reason that says
+ *     so, which the player sees next turn.
+ * `raw` is the provider's text; `text` the adapter's normalized form of it.
+ */
+export function readTruncated(raw: string, text: string, maxBatch: number = MAX_BATCH): ParsedReply {
+  const trailing = raw.length - raw.trimEnd().length;
+  let complete = false;
+  try {
+    JSON.parse(raw);
+    complete = true;
+  } catch {
+    // Not a complete JSON document.
+  }
+  if (complete && trailing > 0) {
+    const parsed = parseReply(text, maxBatch);
+    if (parsed.ok && !parsed.recovered)
+      return { ...parsed, recovered: `The reply was complete, but ${trailing} blank characters followed it up to the output limit; they were ignored.` };
+  }
+  const longest = Math.max(0, ...(raw.match(/\s+/g) ?? []).map((run) => run.length));
+  if (longest >= WHITESPACE_RUNAWAY)
+    return {
+      ok: false,
+      reason: `${CUT_OFF} It broke off inside the JSON after ${longest} blank characters (spaces, tabs or line breaks) in a row. Reply with compact JSON and no padding.`,
+    };
+  return { ok: false, reason: CUT_OFF };
 }
 
 export type ParsedReply =

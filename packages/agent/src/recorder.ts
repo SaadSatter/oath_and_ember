@@ -54,6 +54,8 @@ export interface RecordingSession {
   warnings?: string[];
   /** Closes the page and browser and writes the video to `target`. */
   close(target: string): Promise<void>;
+  /** Best effort, never waits: shuts the browser down after a close that did not finish in time. */
+  abandon?(): void;
 }
 
 /** Opens a recorded page. Replaceable in tests; the default uses Playwright. */
@@ -73,7 +75,26 @@ export interface Recorder {
    * recording for `holdMs` so the final screen is in the video; `signal`
    * cuts both waits short. Idempotent; never rejects.
    */
-  stop(o?: { holdMs?: number; finalTimeoutMs?: number; signal?: AbortSignal }): Promise<RecordingResult>;
+  stop(o?: { holdMs?: number; finalTimeoutMs?: number; closeTimeoutMs?: number; signal?: AbortSignal }): Promise<RecordingResult>;
+}
+
+/** Default bound on finalizing the video (closing the page, writing and moving the file). */
+export const CLOSE_TIMEOUT_MS = 120_000;
+/** Extra time the recorder allows a driver's own end wait before giving up on it. */
+const FINAL_GRACE_MS = 5_000;
+
+/**
+ * Rejects after `ms` with a plain message; `clear` cancels it. The recorder
+ * bounds every browser wait itself, whatever the driver does, so a stuck
+ * browser cannot keep the launcher alive (S2 seed 0 OpenAI run, 2026-10-28).
+ */
+function deadline(ms: number, what: string) {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const expired = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(Error(`${what} did not finish within ${ms < 1000 ? `${ms} ms` : `${Math.round(ms / 1000)} s`}`)), ms);
+  });
+  expired.catch(() => {});
+  return { expired, clear: () => clearTimeout(timer) };
 }
 
 const message = (e: unknown) => (e instanceof Error ? e.message : String(e)).split("\n")[0]!.slice(0, 300);
@@ -163,6 +184,9 @@ export const playwrightDriver: RecordingDriver = async ({ url, videoDir, size, e
         await video.delete();
         await browser.close();
       },
+      abandon() {
+        void browser.close().catch(() => {});
+      },
     };
   } catch (e) {
     await browser.close().catch(() => {});
@@ -203,6 +227,7 @@ export async function startRecorder(o: {
   }
   let waited: Promise<void> | undefined;
   let stopped: Promise<RecordingResult> | undefined;
+  let closeTimedOut = false;
   return {
     result,
     ready(signal) {
@@ -224,27 +249,45 @@ export async function startRecorder(o: {
       stopped ??= (async () => {
         if (session && result.status === "recording") {
           if (session.waitFinished && (s.finalTimeoutMs ?? 0) > 0) {
+            const limit = deadline(s.finalTimeoutMs! + FINAL_GRACE_MS, "The viewer's end check");
             try {
-              await Promise.race([session.waitFinished(s.finalTimeoutMs!, s.signal), aborted(s.signal)]);
+              await Promise.race([session.waitFinished(s.finalTimeoutMs!, s.signal), aborted(s.signal), limit.expired]);
               result.finalConfirmed = true;
             } catch (e) {
               result.warnings.push(s.signal?.aborted ? "Stopped before the viewer showed the episode's end." : `The viewer did not show the episode's end before recording stopped: ${message(e)}`);
+            } finally {
+              limit.clear();
             }
           }
           await sleep(s.holdMs ?? 0, s.signal);
+          const closeMs = s.closeTimeoutMs ?? CLOSE_TIMEOUT_MS;
+          const limit = deadline(closeMs, "Finalizing the video");
           try {
-            await session.close(target);
+            await Promise.race([session.close(target), limit.expired]);
             const bytes = existsSync(target) ? statSync(target).size : 0;
             if (!bytes) throw Error(`no video data at ${target}`);
             Object.assign(result, { status: "saved", path: target, bytes });
           } catch (e) {
             result.status = "failed";
             result.error = `Could not save the video: ${message(e)}`;
+            if (/did not finish within/.test(result.error)) {
+              // The browser may still be writing: keep its unfinished file
+              // for inspection (never reported as a video) and shut it down.
+              closeTimedOut = true;
+              result.error += `. An unfinished partial file may remain in ${videoDir}; it is not a valid recording.`;
+              try {
+                session.abandon?.();
+              } catch {
+                // Best effort only.
+              }
+            }
+          } finally {
+            limit.clear();
           }
         }
         result.stoppedAt = new Date().toISOString();
         result.wallSeconds = Math.round((Date.now() - started) / 100) / 10;
-        rmSync(videoDir, { recursive: true, force: true });
+        if (!closeTimedOut) rmSync(videoDir, { recursive: true, force: true });
         return result;
       })();
       return stopped;

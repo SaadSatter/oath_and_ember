@@ -39,6 +39,18 @@ Diagnosis of the first paid S1 run (`evaluation-runs/live/S1-seed0-model-history
 
 Tests: `packages/agent/test/reliability.test.ts` (41 tests: simultaneous dialogue submissions, dialogue seen while waiting, private-line boundary, skipped/rejected history, unusable replies, envelope cases, structured-output request and metadata with a stubbed client, schema features, prompt text, summary compatibility). Some use a labelled synthetic cutscene set on the room, as `modelPlayers.test.ts` does. No evaluation result uses it.
 
+## S2 reliability pass (owner approval 2026-10-28, after the first real OpenAI S2 run)
+
+Diagnosed from the S2 seed 0 OpenAI run (`evaluation-runs/live/S2-seed0-model-history-openai-2026-10-28T05-45-18-865Z`, not committed). Audited before implementation: `docs/midterm/agent-evidence/skill-runs/2026-10-28-adapter-s2-feedback.md`. No game rule, mechanic, map or tuning changed; every change is in `packages/agent` and `scripts/midterm`.
+
+1. **Attack presses that do nothing.** `StepResult.attack` is set on every attack: `"performed"` when the server made a swing or cast during the action (a new `combat` record together with J's cooldown), `"none"` otherwise. `accepted` still only means the input was taken. A `"none"` attack adds one feedback line: "Your sword did not swing: J was still recovering from your last swing, so the press did nothing." (Coco: "No fireball was cast: …"), or just "Your sword did not swing." when J was not recovering (for example in the first ticks after the goddess reset, when the game ignores J). No remaining time is given: the HUD draws no J timer (audit finding 1). In the S2 run, 94% of Sieg's and 85% of Coco's accepted presses were made while J showed "recovering".
+2. **Visible world changes** (`packages/agent/src/worldEvents.ts`). Two watchers, checked every tick against that hero's own camera with the same rule `perceive` uses for `visible` (`onScreen`), only for a hero in the same area: "The dry hedge at (19, 34) burned away." at the moment it burns; and one line per action for a cow the hero watched move, for example "The cow moved w, from (26, 25) to (23.8, 25)." Lines describe only what is drawn; they never state a cause, puzzle progress or the hidden `parked` flag. A change that happened off-screen is never reported later. Audible cues that the client plays scene-wide (burn, cow-parked sound) are not reported (owner default: visible only).
+3. **OpenAI schema per action type** (`splitActionTypes` in `policies/openai.ts`, from `actionFields` in `types.ts`). Strict mode requires every property, so with one shared action object the model filled `ticks` on attacks (79 of the run's 81 invalid actions). Each action type now has its own closed object listing only its fields. The action set, `legal_actions` and `validate()` are unchanged (an attack with `ticks` is still refused); the Anthropic schema is unchanged.
+4. **Whitespace runaway.** OpenAI's output cap is 2,000 tokens (was 4,000; largest complete reply in the run: 1,247). A reply cut off at the cap is never repaired: if it is complete JSON followed only by blank characters it is read as written and counted as recovered (`readTruncated`); if it broke off inside the JSON after a long blank run, the player is told so next turn.
+5. **Prompt guidance** ("Playing efficiently" in `systemPrompt`): batch clear sequences, J recovery, recharge waits, not repeating an action that did nothing or an unanswered message, compact JSON. No scenario content and no new action types; wait durations unchanged.
+
+Effects on records: baseline actions and game-state hashes are unchanged (S1–S3 seed 0, both baselines, compared before and after). Traces gain the `attack` field on attack results and the new feedback lines; because an observation's `feedback` holds the last 8 lines, older lines leave that window sooner. A batch still stops on any feedback, so the new lines also stop batches. Tests: `s2Feedback.test.ts`, `s2Adapter.test.ts`, `s2Shutdown.test.ts`.
+
 ## Action batching (owner decision 2026-10-27)
 
 A player may answer one decision with up to **4 actions** (`MAX_BATCH`, `packages/agent/src/batch.ts`):
@@ -146,7 +158,7 @@ Nothing in the list indicates which action helps.
 
 **Labels.** In-world labels drawn by the client are reproduced as text, exactly as drawn (`as-drawn`, the default since 2026-10-27). `--labels names-only` cuts instruction labels to their names; for example, "FIREBALL · dry hedge" becomes "dry amber hedge".
 
-**StepResult:** `accepted`, `error`, `ticks` elapsed, `interrupted` reason, `feedback`, `done`.
+**StepResult:** `accepted`, `error`, `ticks` elapsed, `interrupted` reason, `attack` (attacks only: `performed` or `none`), `feedback`, `done`.
 
 **GameOutcome:**
 - `status`: ongoing / success / terminated

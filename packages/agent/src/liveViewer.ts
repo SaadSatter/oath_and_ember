@@ -144,6 +144,9 @@ export async function startViewer(o: { root: string; port: number; speed: number
     close: async () => {
       game.io.disconnectSockets(true);
       await game.close();
+      // A recording browser that is still open keeps polling the status
+      // endpoint; drop every connection so the server can actually close.
+      game.http.closeAllConnections();
       await new Promise<void>((resolve) => game.http.close(() => resolve()));
     },
   };
