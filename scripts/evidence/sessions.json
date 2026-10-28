@@ -315,6 +315,15 @@
    ],
    "role": "Implementation agent under CLAUDE.md and AGENTS.md: continued Codex's uncommitted OpenAI provider work (session 33), reviewed the dispatch guards, fixed two defects, verified offline and committed it; then session-evidence skill invocation (this record). Not an independent review of Codex's work and not reviewed independently yet",
    "title": "OpenAI provider integration: Codex implementation finished and verified"
+  },
+  {
+   "number": 35,
+   "slug": "claude-s2-reliability-fixes",
+   "ids": [
+    "1d2c5393"
+   ],
+   "role": "Implementation agent under CLAUDE.md and AGENTS.md: diagnosed the first real OpenAI S2 run from its existing records (no paid call), then implemented the owner-approved S2 reliability fixes; invoked game-rules-audit before implementing and session-evidence for this record. Not an independent review; the changes have not been reviewed independently yet",
+   "title": "S2 OpenAI run diagnosis and reliability fixes (feedback, schema, runaways, shutdown)"
   }
  ]
 }

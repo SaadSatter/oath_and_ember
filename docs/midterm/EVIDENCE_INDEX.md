@@ -100,3 +100,24 @@ Codex supplement [S33](../agent-sessions/33-codex-openai-provider-supplement.md)
 - **3b (accounting):** both providers need an open reservation in the canonical shared ledger and a one-use per-call grant before any HTTP request, enforced at the transport (including the Anthropic SDK's own `fetch`). OpenAI prices checked against the public docs on 2026-10-28; settlement uses a 1.1× uplift, and unknown usage, model or tier is charged the full reservation.
 - **3c:** under Node v24.22.1, typecheck and build pass; **818/818 tests in 96 files** with `suite.test.ts`, `route/fullQuest.test.ts` and `checkpointFreeze.test.ts` excluded. S1 seed 0 baseline replays to the established hashes and 290 ticks, and its recording works.
 - **Not yet:** no OpenAI or Anthropic request (account access, real `service_tier` and cache-usage fields unverified); no `game-rules-audit` run or independent review of `b20953e`. No paid call, ledger change, S4/F, push or merge.
+
+## S2 reliability fixes (2026-10-28, S35)
+
+Session [S35](../agent-sessions/35-claude-s2-reliability-fixes.md) (`1d2c5393`), implementation commit `3f22c66`. Diagnosed from the first real OpenAI S2 run (seed 0, `manual_stop`, records not committed). Design: `AGENT_INTERFACE.md`, "S2 reliability pass"; `LIVE_RUN.md`, "Bounded shutdown"; `MODEL_BUDGET.md`, OpenAI request.
+
+- **2b / 2c (interface and observations):**
+  - `StepResult.attack` tells a performed swing or cast from a J press that did nothing; the feedback says only that J was recovering, with no timer.
+  - World-change lines (hedge burned, cow moved) are checked per tick against the hero's own camera, with the same rule as `visible`. A test checks the event rule and `visible` agree at every point of a grid.
+  - The OpenAI strict schema is split per action type; the action set and `validate()` are unchanged.
+  - OpenAI output cap is 2,000; cut-off replies are classified and never repaired.
+  - Generic prompt guidance; no new action types.
+- **2d (episode limits and records):**
+  - The second signal exits in every phase.
+  - Recorder waits and the viewer close are bounded.
+  - The credential scan is chunked, so it is safe for large videos.
+  - Verified end to end with a recorded mock S2 run: a forced exit leaves `recording.json` `failed` with path null.
+- **3c:**
+  - Under Node v24.22.1: typecheck and build pass; **851/851 tests in 99 files**, with `suite.test.ts`, `route/fullQuest.test.ts` and `checkpointFreeze.test.ts` excluded.
+  - Both baselines on S1–S3 seed 0 have identical actions and game-state hashes before and after the change.
+- **3d:** a same-session `game-rules-audit` before implementing: `agent-evidence/skill-runs/2026-10-28-adapter-s2-feedback.md`. `session-evidence` produced S35. Neither is an independent review.
+- **Not yet:** no independent review of `3f22c66`, and no paid re-run of S2. No S4/F, push or merge.
