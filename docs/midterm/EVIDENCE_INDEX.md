@@ -124,4 +124,8 @@ Session [S35](../agent-sessions/35-claude-s2-reliability-fixes.md) (`1d2c5393`),
   - A `rules-reviewer` subagent reviewed `3f22c66` and `3573d2f`: `agent-evidence/reviews/2026-10-28-s2-reliability-rules-review.md`. It found no blocker. It was spawned by the implementing session, so it is not counted as independent.
   - Owner-approved pre-pilot cleanup in `5234e50`. One Ctrl-C under `npm run eval:live` was being counted twice; this was reproduced and fixed, and subprocess launcher tests were added. Doc, parse-reason, provider-isolation, schema-guard and wording corrections were also made.
   - Under Node v24.22.1: 862/862 offline tests in 99 files (held-out-related files excluded; run in two passes because the machine was heavily loaded); typecheck and build pass. The shared ledger is unchanged.
-- **Not yet:** no review from a separate reviewer session, and no paid re-run of S2. No S4/F, push or merge.
+- **Pilot-5 and the S2 briefing (2026-10-28):**
+  - In the owner's paid pilot-5 (ledger `pilot-5`, $0.018614), the party left for Bridge Ruins 2.3 game seconds in. Players had not been told which part of the quest S2 evaluates.
+  - Owner-approved S2-only episode briefing in `c296ff4`, audited first: `agent-evidence/skill-runs/2026-10-28-suite-s2-briefing.md`. Logged in the `EVALUATION_SUITE.md` change log; S2 results before and after it are reported separately.
+  - Under Node v24.22.1: 871/871 offline tests in 100 files (held-out-related files excluded); typecheck and build pass.
+- **Not yet:** no review from a separate reviewer session, and no paid S2 run with the briefing. No S4/F, push or merge.
