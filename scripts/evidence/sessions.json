@@ -258,6 +258,25 @@
    ],
    "role": "Implementation handoff under AGENTS.md and CLAUDE.md; session-evidence and game-rules-audit checkpoint use in this same session, not an independent review",
    "title": "Continue the evaluation worktree and validate existing Phase 4 work"
+  },
+  {
+   "number": 29,
+   "slug": "claude-phase4-review-and-fixes",
+   "ids": [
+    "ffcdac23"
+   ],
+   "role": "Mixed session under CLAUDE.md and AGENTS.md. Turn 1: read-only review of Phase 4 commits bc377ee..b612285, which a different session built, so independent of that builder (not the rules-reviewer subagent). Turns 2-3: implementation agent fixing that review's findings in oath_and_ember-eval and, with owner approval, oath_and_ember-agent. Those fixes have not been independently reviewed. Turn 4: session-evidence skill invocation (this record)",
+   "title": "Independent review of the Phase 4 launcher, re-review fixes, and the legacy-runner paid guard"
+  },
+  {
+   "number": 30,
+   "slug": "codex-paid-entrypoint-audit-supplement",
+   "ids": [
+    "01a17e49"
+   ],
+   "role": "Codex supplement to session 28 under AGENTS.md and CLAUDE.md: paid-entrypoint safety audit and evidence finalization; same session, not an independent review",
+   "title": "Paid-entrypoint safety audit supplement",
+   "note": "Same session id as file 28; this is a task-specific supplement, not an additional independent session."
   }
  ]
 }

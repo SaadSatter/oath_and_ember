@@ -3,6 +3,29 @@
 Worktree: `oath_and_ember-eval`, branch `midterm/evaluation`, base commit `b51c1c0`.
 
 
+## Evidence finalized and Node 24 verification (2026-10-27)
+
+The owner authorized completion of the remaining offline preparation and local evidence/documentation commits only. Pending session 29, session 30 and the recording/paid-entrypoint audit reports are preserved; no evidence was deleted to clean Git. The existing session-evidence extractor, redactor and renderer were used, and session 30 is explicitly registered as a supplement to the same session as 28, not a new independent review.
+
+**Runtime:** bundled Node `v24.19.0`, satisfying `>=24 <25`. For subsequent local commands, select it explicitly:
+
+```sh
+export PATH="/Users/saadsatter/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH"
+node --version
+```
+
+**Actual checks under Node 24:** `npx vitest run packages/agent/test/paidSafety.test.ts packages/agent/test/ledgerCanonical.test.ts packages/agent/test/ledgerRecovery.test.ts packages/agent/test/ledger.test.ts packages/agent/test/budget.test.ts packages/agent/test/modelPlayers.test.ts packages/agent/test/harness.test.ts` passed **74 tests / 7 files**. `npm run typecheck` and `npm run build` passed (Vite bundle-size warning only). S4/F, full-route and checkpoint-freeze tests were not run. All test ledger initialization was confined to scratch directories/repositories.
+
+**Secret scanning:** the broad scanner still reports the same five known matches. Exact-match verification establishes four findings in two explicit synthetic CANARY constants and one in a truncated fake-canary quotation in the historical recording audit. There are no unexpected matches. The original scanner/redactor and global rules remain unchanged. The proof file, `evidence/phase4/synthetic-canary-verification-2026-10-27.json`, records locations, reasons and SHA256 fingerprints without credential-shaped matched text. Historical audit reports remain byte-for-byte intact; their old findings are not rewritten.
+
+**Paid entrypoints:** `evaluate.ts` and paid `live.ts` both use `SpendLedger.openCanonical(repo)` at the Git common directory, not a per-worktree ledger. Canonical and agent-interface legacy paid runners refuse paid policies; main's untracked `scripts/evaluation/run-shrine.ts` retains the earlier model-mode guard and is outside this documentation-only commit. No main-worktree file is staged here. Allowlist remains `claude-haiku-5-5` medium/low; smoke is medium only.
+
+**Read-only real ledger inventory:** canonical ledger, permanent init marker and lock absent; legacy ledgers and locks absent in all four worktrees; `unmeteredWorktrees: []`. The actual `.git/oath-eval` directory remains absent. No ledger initialized, adopted, reconciled or modified.
+
+**Readiness:** evidence/runtime/safety preparation is complete after the local documentation commit and clean-tree verification. Dispatch still requires separately approved one-time ledger initialization and a configured credential (currently absent), followed by paid-smoke approval. Provider authentication and billing are untested. The future smoke configuration is unchanged: exact `claude-haiku-5-5`, medium effort, 4,000 output-token maximum including thinking, 30 s timeout, one attempt, $0.01 reservation, $0.10 smoke-stage and $25 global caps.
+
+No paid/provider API request, S4/F execution, gameplay/source change, push or merge occurred. The final documentation-only commit hash and Git status are reported to the owner after commit. Code validated: `6bee662`; all pending changes in the commit are evidence/documentation and its session plan.
+
 ## Re-review fixes (2026-10-27, Claude Code)
 
 The owner asked for the independent re-review's confirmed findings to be fixed before any paid evaluation. Local commits only: no paid call, no ledger initialization, no S4/F episode, no push, merge or PR. No other worktree was modified.

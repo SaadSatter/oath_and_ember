@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-27",
+  "verification": "Exact-match classification of every finding; no scanner or global allowlist changed. No matched credential-shaped text is included.",
+  "scanScope": [
+    "docs/agent-sessions",
+    "docs/midterm",
+    "packages/agent",
+    "scripts/midterm",
+    "AGENTS.md",
+    "scripts/evidence/sessions.json"
+  ],
+  "textFilesScanned": 123,
+  "findingCount": 5,
+  "unexpectedFindings": 0,
+  "findings": [
+    {
+      "path": "docs/midterm/agent-evidence/skill-runs/2026-10-27-recording.md",
+      "line": 18,
+      "kind": "anthropic-key",
+      "classification": "verified synthetic false positive",
+      "reason": "Historical audit quotes a truncated synthetic-canary prefix followed by ellipsis and explicitly identifies it as a fake test value.",
+      "matchedTextSha256": "e542de075a382bf5a94ce50aebcacf3446cd9e4f69e6735cce0a12921863ed37"
+    },
+    {
+      "path": "packages/agent/test/paidSafety.test.ts",
+      "line": 40,
+      "kind": "anthropic-key",
+      "classification": "verified synthetic false positive",
+      "reason": "Explicit synthetic CANARY constant with a fixed numeric fixture suffix; used to test redaction, not loaded from credentials.",
+      "matchedTextSha256": "1e96fba6524e195dfe60603f01020dce90abf00fbbf2def09943ae5af0ec88c1"
+    },
+    {
+      "path": "packages/agent/test/paidSafety.test.ts",
+      "line": 40,
+      "kind": "openai-key",
+      "classification": "verified synthetic false positive",
+      "reason": "Explicit synthetic CANARY constant with a fixed numeric fixture suffix; used to test redaction, not loaded from credentials.",
+      "matchedTextSha256": "1e96fba6524e195dfe60603f01020dce90abf00fbbf2def09943ae5af0ec88c1"
+    },
+    {
+      "path": "packages/agent/test/liveView.test.ts",
+      "line": 145,
+      "kind": "anthropic-key",
+      "classification": "verified synthetic false positive",
+      "reason": "Explicit synthetic CANARY constant with a fixed numeric fixture suffix; used to test redaction, not loaded from credentials.",
+      "matchedTextSha256": "9cefddce9e8dccc4139de19ae446ecc4d165c1956ada10e7e6efd41d009ab59d"
+    },
+    {
+      "path": "packages/agent/test/liveView.test.ts",
+      "line": 145,
+      "kind": "openai-key",
+      "classification": "verified synthetic false positive",
+      "reason": "Explicit synthetic CANARY constant with a fixed numeric fixture suffix; used to test redaction, not loaded from credentials.",
+      "matchedTextSha256": "9cefddce9e8dccc4139de19ae446ecc4d165c1956ada10e7e6efd41d009ab59d"
+    }
+  ]
+}

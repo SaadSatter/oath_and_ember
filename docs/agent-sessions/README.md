@@ -36,7 +36,7 @@ New sessions are added with the `session-evidence` skill (`.claude/skills/sessio
 
 ## Files
 
-Latest record: [28 — Codex evaluation handoff](28-codex-evaluation-handoff.md), session `01a17e49-e8f5-7150-8932-837cfe871fe3` (implementation and same-session skill use; not independent review).
+Latest record: [30 — Paid-entrypoint safety audit supplement](30-codex-paid-entrypoint-audit-supplement.md), supplement to session `01a17e49-e8f5-7150-8932-837cfe871fe3` (same session as 28; safety checks and evidence finalization, not an independent review).
 
 | File | Sessions | Role |
 | --- | --- | --- |
@@ -67,6 +67,9 @@ Latest record: [28 — Codex evaluation handoff](28-codex-evaluation-handoff.md)
 | [25 — session-evidence, first invocation: record of session 23](25-claude-skill-session-evidence-first.md) | `f7e2bf18` | Skill invocation (`session-evidence`) in a fresh `claude -p` session launched by 23. Output: file 23 (phase 1 narrative). Not an independent review |
 | [26 — game-rules-audit, second invocation: server changes and re-check of the adapter findings](26-claude-skill-game-rules-audit-server-changes.md) | `fb09128d` | Skill invocation (`game-rules-audit`) in a fresh `claude -p` session launched by 23. Report: [`2026-10-27-server-changes.md`](../midterm/agent-evidence/skill-runs/2026-10-27-server-changes.md). Not an independent review |
 | [27 — session-evidence, second invocation: files 24-26 and phase 2 of file 23 (interrupted)](27-claude-skill-session-evidence-second.md) | `83ac1132` | Skill invocation (`session-evidence`) in a fresh `claude -p` session launched by 23; interrupted by the usage limit, recorded by 23 |
+| [28 — Continue the evaluation worktree and validate existing Phase 4 work](28-codex-evaluation-handoff.md) | `01a17e49` | Implementation handoff under `AGENTS.md` and `CLAUDE.md`; same-session `session-evidence` and `game-rules-audit` use. Not an independent review |
+| [29 — Independent review of the Phase 4 launcher, re-review fixes, and the legacy-runner paid guard](29-claude-phase4-review-and-fixes.md) | `ffcdac23` | Read-only review of `bc377ee..b612285` (built by a different session; not the `rules-reviewer` subagent), then implementation of its fixes (`37f4c66`, `c6761a7`, `f5cf5cf`, `8837f88`, `6bee662` on `midterm/evaluation`; `b18cd0f` on `midterm/agent-interface`) and a `session-evidence` invocation. The fixes are not independently reviewed |
+| [30 — Paid-entrypoint safety audit supplement](30-codex-paid-entrypoint-audit-supplement.md) | `01a17e49` (same session as 28) | Archived paid-path guard, canonical safety audit, Node 24 validation and preservation/finalization of pending evidence. Same-session skill use; not independent review |
 | [00 — Codex briefs without a surviving transcript](00-pre-log-codex-briefs.md) | attachments only | Owner's instructions; no session record |
 
 Sessions after 2026-10-26 (this evidence work onward) are added here as they are recorded.
