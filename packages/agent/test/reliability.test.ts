@@ -1,3 +1,4 @@
+import { authorizedCall, authorizeBudget } from "./helpers/paid.js";
 // Agent-interface reliability pass (owner approval 2026-10-27, after the
 // first real-LLM S1 run at 4193424): action-history semantics, reply
 // handling, per-hero dialogue history, prompt clarity, separate metrics and
@@ -329,7 +330,7 @@ describe("structured output and reply metadata (stubbed provider, no network)", 
   it("sends the player's schema as output_config.format without changing model or effort", async () => {
     const { g, requests } = stub();
     const schema = replySchema();
-    const c = await g.complete("system", "user", new AbortController().signal, { schema });
+    const c = await authorizedCall(g, "system", "user", { schema });
     expect(requests[0]).toMatchObject({ model: "claude-haiku-5-5", output_config: { effort: "medium", format: { type: "json_schema", schema } } });
     expect(c.meta).toEqual({ stopReason: "end_turn", blocks: [{ type: "thinking", chars: 15 }, { type: "text", chars: 39 }], structured: true });
     expect(JSON.stringify(c.meta)).not.toContain("THINKING-CANARY");
@@ -337,16 +338,17 @@ describe("structured output and reply metadata (stubbed provider, no network)", 
   });
   it("can be turned off, and sends no format when the player gives no schema", async () => {
     const off = stub(false);
-    await off.g.complete("s", "u", new AbortController().signal, { schema: replySchema() });
+    await authorizedCall(off.g, "s", "u", { schema: replySchema() });
     expect((off.requests[0].output_config as Record<string, unknown>).format).toBeUndefined();
     const none = stub();
-    const c = await none.g.complete("s", "u", new AbortController().signal);
+    const c = await authorizedCall(none.g, "s", "u");
     expect((none.requests[0].output_config as Record<string, unknown>).format).toBeUndefined();
     expect(c.meta?.structured).toBe(false);
   });
   it("records the reply metadata in the call record, never credentials", async () => {
     const { g } = stub();
     const budget = new ModelBudget(defaultBudgetLimits);
+    authorizeBudget(budget);
     const r = await new MeteredGateway(g, budget, "sieg").complete("s", "u", { schema: replySchema() });
     expect(r.record.meta).toMatchObject({ stopReason: "end_turn", structured: true });
     expect(JSON.stringify(budget.records)).not.toMatch(/test-key|THINKING-CANARY/);

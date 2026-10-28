@@ -73,6 +73,7 @@ const charge = (x: number) => Math.ceil(Number(x.toFixed(12)) * 1e6) / 1e6;
 
 export class SpendLedger {
   private data: LedgerFile;
+  private canonicalInfo?: RepoInfo;
   private lockFd: number | undefined;
 
   private constructor(
@@ -183,6 +184,21 @@ export class SpendLedger {
     return this.data.ledgerId;
   }
 
+  /** Read-only dispatch check: the durable reservation and exclusive lock must still exist. */
+  assertReservation(id: string, cap: number, paid = false) {
+    if (paid && !this.canonicalInfo) throw new LedgerError("Paid dispatch requires the canonical shared ledger.");
+    if (this.canonicalInfo && readMarker(this.canonicalInfo)?.ledgerId !== this.data.ledgerId)
+      throw new LedgerError("Canonical ledger initialization marker changed; refusing dispatch.");
+    this.assertOpen();
+    const disk = JSON.parse(readFileSync(this.path, "utf8")) as LedgerFile;
+    SpendLedger.validate(disk);
+    if (JSON.stringify(disk) !== JSON.stringify(this.data) || readFileSync(`${this.path}.lock`, "utf8").trim() !== String(process.pid))
+      throw new LedgerError("The persistent ledger or its lock changed; refusing dispatch.");
+    const entry = disk.entries.find((e) => e.id === id);
+    if (!entry || entry.status !== "open" || !Number.isFinite(cap) || cap <= 0 || cap > entry.reservedUsd)
+      throw new LedgerError("No adequate open persistent episode reservation; refusing dispatch.");
+  }
+
   /** Hold `usd` for one episode, or throw if the stage or total would be exceeded. */
   reserve(stage: string, run: string, usd: number): string {
     this.assertOpen();
@@ -279,6 +295,7 @@ export class SpendLedger {
       ledger.close();
       throw new LedgerError(`The ledger at ${path} (id ${ledger.ledgerId ?? "none"}) is not the one initialized on ${marker!.createdAt} (id ${marker!.ledgerId}); refusing to spend.`);
     }
+    ledger.canonicalInfo = info;
     return ledger;
   }
 
@@ -334,6 +351,7 @@ export class SpendLedger {
     const ledger = SpendLedger.open(canonical.path, config, { create: true, initial: { ledgerId, entries } });
     const stamp = new Date().toISOString().replace(/[:.]/g, "-");
     for (const l of legacyEntries) renameSync(l.path, `${l.path}.migrated-${stamp}`);
+    ledger.canonicalInfo = info;
     return { ledger, inventory, adopted: legacyEntries.map((l) => l.path) };
   }
 }

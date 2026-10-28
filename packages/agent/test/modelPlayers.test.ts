@@ -1,3 +1,4 @@
+import { authorizedCall } from "./helpers/paid.js";
 // Model-player configurations approved on 2026-10-27: Haiku 5.5 effort
 // (medium first, compared with low in the pilot) and the observation-only
 // player. No network: the SDK call is replaced by a stub.
@@ -35,7 +36,7 @@ describe("Haiku 5.5 effort", () => {
     for (const [effort, expected] of [[undefined, "medium"], ["low", "low"]] as const) {
       const { g, requests } = stubbedGateway(effort);
       expect(g.label).toBe(`anthropic:claude-haiku-5-5@${expected}`);
-      const c = await g.complete("system", "user", new AbortController().signal);
+      const c = await authorizedCall(g, "system", "user");
       expect(requests[0]).toMatchObject({ model: "claude-haiku-5-5", output_config: { effort: expected } });
       // 1000 input at $0.10/M + 3000 cache reads at 0.1x + 200 output at $0.50/M.
       expect(c.costUsd).toBeCloseTo((1000 * 0.1 + 3000 * 0.01 + 200 * 0.5) / 1e6, 12);

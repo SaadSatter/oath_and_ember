@@ -38,7 +38,7 @@ export const EPISODE_CAP_USD: Record<SituationId, number> = { S1: 0.2, S2: 1.25,
 export const OBS_ONLY_SITUATIONS: readonly SituationId[] = ["S1", "S2", "S3"];
 
 export interface ModelSetup {
-  /** The provider adapter (an AnthropicGateway for paid runs; a fake in tests). */
+  /** A provider adapter for paid runs; a fake in tests. */
   gateway: Gateway;
   /** The public player manual, the only game text a model is given. */
   manual: string;
@@ -336,6 +336,7 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
   // the trace names it so an interrupted episode can be reconciled from it.
   const run = `${o.player}/${id}/seed${seed}/${o.gitHash}`;
   const ledgerEntry = model ? model.ledger.reserve(model.stage, run, cap) : null;
+  if (model && ledgerEntry) budget!.bindLedger(model.ledger, ledgerEntry);
   if (model && ledgerEntry) trace.write({ type: "ledger_reservation", tick: 0, data: { entry: ledgerEntry, stage: model.stage, run, reservedUsd: cap, ledger: model.ledger.path } });
   const wallLimitSeconds = o.wallSeconds ?? (model ? 3600 : 600);
   const started = Date.now();
@@ -493,6 +494,7 @@ export async function smokeCall(gateway: Gateway, manual: string, ledger: SpendL
   const entry = ledger.reserve("smoke", run, reserveUsd);
   trace?.write({ type: "ledger_reservation", tick: 0, data: { entry, stage: "smoke", run, reservedUsd: reserveUsd, ledger: ledger.path } });
   const budget = new ModelBudget({ maxModelCallsPerPlayer: 1, maxTokensPerPlayer: 100_000, maxSpendUsd: reserveUsd, callTimeoutMs: defaultBudgetLimits.callTimeoutMs });
+  budget.bindLedger(ledger, entry);
   let settled = false;
   const abort = () => budget.abortAll();
   signal?.addEventListener("abort", abort, { once: true });

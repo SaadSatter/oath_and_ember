@@ -26,7 +26,8 @@ import { aggregate, EPISODE_CAP_USD, episodeCap, PLAYER_KINDS, runSuite, validat
 import { APPROVED_LEDGER, SpendLedger } from "../../packages/agent/src/ledger.js";
 import { startViewer, type Viewer } from "../../packages/agent/src/liveViewer.js";
 import { RECORDING_META, startRecorder, type Recorder, type RecordingResult } from "../../packages/agent/src/recorder.js";
-import { AnthropicGateway, anthropicPrices, assertApprovedModel, EFFORTS, type Effort } from "../../packages/agent/src/policies/llm.js";
+import { providerConfig } from "../../packages/agent/src/policies/providers.js";
+import type { Gateway } from "../../packages/agent/src/budget.js";
 import { MockGateway } from "../../packages/agent/src/policies/mockGateway.js";
 import { canonicalLedgerPath, repoInfo, unmeteredWorktrees } from "../../packages/agent/src/repo.js";
 import { SEEDS, situation, type SituationId } from "../../packages/agent/src/suite.js";
@@ -48,8 +49,10 @@ function fail(message: string): never {
 
 // The credential is taken out of this process's environment immediately, for
 // every kind of run, so no child process (client build, browser) inherits it.
-const envKey = process.env.ANTHROPIC_API_KEY?.trim() || undefined;
+const envKeys = { ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY?.trim(), OPENAI_API_KEY: process.env.OPENAI_API_KEY?.trim() };
 delete process.env.ANTHROPIC_API_KEY;
+delete process.env.OPENAI_API_KEY;
+for (const key of Object.values(envKeys)) if (key) redactStreams(key);
 
 // ── Arguments ──────────────────────────────────────────────────────────────
 // A credential never belongs on the command line (it would reach shell
@@ -92,10 +95,10 @@ if (!PLAYER_KINDS.includes(player)) fail(`--player must be one of ${PLAYER_KINDS
 const isModel = player === "model-history" || player === "model-obs-only";
 const gatewayKind = get("--gateway", isModel ? "anthropic" : "none")!;
 if (!isModel && opts.has("--gateway")) fail("scripted baselines use no gateway.");
-if (isModel && !["anthropic", "mock"].includes(gatewayKind)) fail("--gateway must be anthropic or mock.");
-const paid = isModel && gatewayKind === "anthropic";
+if (isModel && !["anthropic", "openai", "mock"].includes(gatewayKind)) fail("--gateway must be anthropic, openai or mock.");
+const paid = isModel && gatewayKind !== "mock";
 if (paid && !opts.has("--paid")) fail("this is a paid run. Pass --paid only after the owner has authorized it, or use --gateway mock.");
-if (!paid && opts.has("--paid")) fail("--paid is only for --gateway anthropic.");
+if (!paid && opts.has("--paid")) fail("--paid is only for --gateway anthropic or openai.");
 if (!paid && (opts.has("--model") || opts.has("--effort") || opts.has("--max-spend-usd"))) fail("--model, --effort and --max-spend-usd apply to paid runs only.");
 const viewerOn = !opts.has("--no-viewer");
 // The video is recorded from the viewer, so --no-viewer also means no video.
@@ -156,7 +159,7 @@ if (existsSync(out)) fail(`output ${out} already exists.`);
 
 // ── Model setup (checks first, credential last) ──────────────────────────────
 let model: ModelSetup | undefined;
-let paidGateway: { gateway: AnthropicGateway; source: string } | undefined;
+let paidGateway: { gateway: Gateway; source: string } | undefined;
 let episodeCapUsd: number | undefined;
 let secret: string | undefined;
 let secretSeenInOutput = () => false;
@@ -180,17 +183,9 @@ const manual = readFileSync(join(repo.root, "manual/Oath_and_Ember_Player_Manual
 if (isModel) {
   validatePlan({ player, situations: [scenario], seeds: [seed], model: { stage: "pilot" } as ModelSetup });
   if (paid) {
-    const id = get("--model", "claude-haiku-5-5")!;
-    const prices = anthropicPrices[id];
-    if (!prices) fail(`no verified price on record for ${id}.`);
-    const effort = get("--effort", "medium") as Effort;
-    if (!EFFORTS.includes(effort)) fail(`--effort must be one of ${EFFORTS.join(", ")}.`);
-    // Only the owner-approved model and efforts (re-review M2).
-    try {
-      assertApprovedModel(id, effort);
-    } catch (e) {
-      fail((e as Error).message);
-    }
+    let config: ReturnType<typeof providerConfig>;
+    try { config = providerConfig(gatewayKind, get("--model"), get("--effort", "medium")!); }
+    catch (e) { fail((e as Error).message); }
     const raw = get("--max-spend-usd") ?? fail(`--max-spend-usd is required for paid runs (at most $${EPISODE_CAP_USD[scenario]} for ${scenario}).`);
     episodeCapUsd = Number(raw);
     try {
@@ -208,17 +203,17 @@ if (isModel) {
     // Credential: the environment variable, else a hidden prompt. It stays
     // in memory, is removed from this process's environment so no child
     // process inherits it, and is never written or printed.
-    secret = envKey;
+    secret = envKeys[config.keyName as keyof typeof envKeys];
     if (!secret) {
       try {
-        secret = (await ask("Anthropic API key (hidden, not stored): ", true)).trim() || undefined;
+        secret = (await ask(`${gatewayKind === "openai" ? "OpenAI" : "Anthropic"} API key (hidden, not stored): `, true)).trim() || undefined;
       } catch (e) {
-        fail((e as Error).message === "Cancelled." ? "cancelled." : "no ANTHROPIC_API_KEY and no interactive terminal for the hidden prompt.");
+        fail((e as Error).message === "Cancelled." ? "cancelled." : `no ${config.keyName} and no interactive terminal for the hidden prompt.`);
       }
     }
     if (!secret) fail("no credential given.");
     secretSeenInOutput = redactStreams(secret);
-    paidGateway = { gateway: new AnthropicGateway(id, prices, effort, secret), source: prices.source };
+    paidGateway = { gateway: config.create(secret), source: config.source };
   } else {
     // Mock: a scratch ledger inside this run's own folder, never the canonical one.
     mkdirSync(out, { recursive: true });
@@ -241,6 +236,7 @@ function newest(dir: string): number {
 function cleanEnv() {
   const env = { ...process.env };
   delete env.ANTHROPIC_API_KEY;
+  delete env.OPENAI_API_KEY;
   return env;
 }
 if (viewerOn) {

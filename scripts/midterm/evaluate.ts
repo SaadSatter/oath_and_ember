@@ -17,7 +17,8 @@ import { join, resolve } from "node:path";
 import { aggregate, runSuite, smokeCall, validatePlan, type ModelSetup, type PlayerKind } from "../../packages/agent/src/harness.js";
 import { SEEDS, type SituationId } from "../../packages/agent/src/suite.js";
 import { SpendLedger } from "../../packages/agent/src/ledger.js";
-import { AnthropicGateway, anthropicPrices, assertApprovedModel, EFFORTS, SMOKE_CONFIG, type Effort } from "../../packages/agent/src/policies/llm.js";
+import { providerConfig } from "../../packages/agent/src/policies/providers.js";
+import { redactStreams, credentialArgs } from "./tty.js";
 
 import { TraceWriter } from "../../packages/agent/src/trace.js";
 import { repoInfo, unmeteredWorktrees } from "../../packages/agent/src/repo.js";
@@ -29,6 +30,11 @@ const arg = (name: string, fallback?: string) => {
 };
 const flag = (name: string) => process.argv.includes(name);
 
+const envKeys = { ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY?.trim(), OPENAI_API_KEY: process.env.OPENAI_API_KEY?.trim() };
+delete process.env.ANTHROPIC_API_KEY;
+delete process.env.OPENAI_API_KEY;
+for (const key of Object.values(envKeys)) if (key) redactStreams(key);
+if (credentialArgs(process.argv.slice(2)).length) throw Error("Credentials are not accepted as arguments.");
 // Git checks run on this script's own worktree, never on the shell's cwd (H1).
 const repo = repoInfo();
 const gitHash = repo.head.slice(0, 7);
@@ -54,24 +60,16 @@ const manual = () => readFileSync(join(repo.root, "manual/Oath_and_Ember_Player_
 
 function paidGateway(smoke = false) {
   if (!flag("--paid")) throw Error("Model runs are paid. Pass --paid only after the owner has authorized this stage.");
-  const id = arg("--model", "claude-haiku-5-5")!;
-  const effort = arg("--effort", "medium") as Effort;
-  if (!EFFORTS.includes(effort)) throw Error(`--effort must be one of ${EFFORTS.join(", ")}.`);
-  // Only the owner-approved model and efforts (re-review M2); the smoke call
-  // only in its approved configuration.
-  assertApprovedModel(id, effort);
-  if (smoke && (id !== SMOKE_CONFIG.model || effort !== SMOKE_CONFIG.effort)) throw Error(`The smoke call is approved for ${SMOKE_CONFIG.model} at ${SMOKE_CONFIG.effort} only.`);
-  const prices = anthropicPrices[id];
-  if (!prices) throw Error(`No verified price on record for ${id}.`);
+  const config = providerConfig(arg("--gateway", "anthropic")!, arg("--model"), arg("--effort", "medium")!, smoke);
   if (dirty) throw Error("Paid runs need a clean, committed tree so the game version is exact.");
-  const key = process.env.ANTHROPIC_API_KEY?.trim();
-  if (!key) throw Error("ANTHROPIC_API_KEY is not set.");
+  const key = envKeys[config.keyName as keyof typeof envKeys];
+  if (!key) throw Error(`${config.keyName} is not set.`);
   for (const u of unmeteredWorktrees(repo)) console.error(`WARNING: ${u.file} can make paid calls outside the shared ledger. Never run paid commands there.`);
-  return { gateway: new AnthropicGateway(id, prices, effort, key), source: prices.source };
+  return { gateway: config.create(key), source: config.source };
 }
 
 if (flag("--smoke")) {
-  const { gateway } = paidGateway(true);
+  const { gateway, source } = paidGateway(true);
   const ledger = SpendLedger.openCanonical(repo);
   ledgerToClose = ledger;
   try {
@@ -79,7 +77,7 @@ if (flag("--smoke")) {
     mkdirSync(out, { recursive: true });
     const trace = new TraceWriter(join(out, "trace.jsonl"));
     const r = await smokeCall(gateway, manual(), ledger, version, 0.01, trace, controller.signal);
-    writeFileSync(join(out, "summary.json"), JSON.stringify({ ...r, gitHash: version, gateway: gateway.label, priceSource: anthropicPrices[arg("--model", "claude-haiku-5-5")!].source }, null, 2));
+    writeFileSync(join(out, "summary.json"), JSON.stringify({ ...r, gitHash: version, gateway: gateway.label, priceSource: source }, null, 2));
     console.log(JSON.stringify({ ...r, ledgerRemaining: { smoke: ledger.remaining("smoke"), total: ledger.remaining() } }, null, 2));
   } finally {
     ledger.close();

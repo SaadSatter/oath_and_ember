@@ -10,7 +10,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { abilityNames, actionTypes, directions, type GameAction } from "../types.js";
 import { stepStatus, type Decision, type Policy, type TurnReport } from "./policy.js";
-import { ModelCallError, type Completion, type CompletionOptions, type Gateway, type MeteredGateway, type ReplyMeta } from "../budget.js";
+import { paidTransport, assertPaidTransport, ModelCallError, type Completion, type CompletionOptions, type Gateway, type MeteredGateway, type ReplyMeta } from "../budget.js";
 import { MAX_BATCH } from "../batch.js";
 
 export interface Prices {
@@ -114,7 +114,9 @@ export class AnthropicGateway implements Gateway {
     assertApprovedModel(model, effort);
     this.label = `anthropic:${model}@${effort}`;
     // An explicit key also stops the SDK from reading ANTHROPIC_AUTH_TOKEN.
-    this.client = new Anthropic({ maxRetries: 0, baseURL: ANTHROPIC_BASE_URL, ...(apiKey ? { apiKey } : {}) });
+    this.client = new Anthropic({ maxRetries: 0, baseURL: ANTHROPIC_BASE_URL, ...(apiKey ? { apiKey } : {}),
+      fetch: (input, init) => { assertPaidTransport(); return fetch(input, { ...init, redirect: "error" }); },
+    });
   }
   worstCaseUsd(system: string, user: string, options?: CompletionOptions) {
     // Assume the whole prompt (schema included) is a cache write and the full output budget is used.
@@ -123,7 +125,7 @@ export class AnthropicGateway implements Gateway {
   }
   async complete(system: string, user: string, signal: AbortSignal, options?: CompletionOptions): Promise<Completion> {
     const format = this.structured && options?.schema ? { format: { type: "json_schema" as const, schema: options.schema } } : {};
-    const response = await this.client.messages.create(
+    const response = await paidTransport(signal, () => this.client.messages.create(
       {
         model: this.model,
         max_tokens: MAX_OUTPUT,
@@ -133,7 +135,7 @@ export class AnthropicGateway implements Gateway {
         output_config: { effort: this.effort, ...format },
       },
       { signal, maxRetries: 0 },
-    );
+    ));
     const u = response.usage;
     const written = u.cache_creation_input_tokens ?? 0,
       read = u.cache_read_input_tokens ?? 0;
@@ -151,46 +153,7 @@ export class AnthropicGateway implements Gateway {
   }
 }
 
-/** OpenAI chat completions over HTTP. Prices must be supplied explicitly; fetch never retries. */
-export class OpenAIGateway implements Gateway {
-  readonly label: string;
-  constructor(
-    private readonly model: string,
-    private readonly prices: Prices,
-    private readonly apiKey = process.env.OPENAI_API_KEY,
-  ) {
-    if (!apiKey) throw Error("OPENAI_API_KEY is not set.");
-    this.label = `openai:${model}`;
-  }
-  worstCaseUsd(system: string, user: string) {
-    return (estimateTokens(system + user) * this.prices.inputPerM + MAX_OUTPUT * this.prices.outputPerM) / 1e6;
-  }
-  async complete(system: string, user: string, signal: AbortSignal): Promise<Completion> {
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      signal,
-      headers: { "content-type": "application/json", authorization: `Bearer ${this.apiKey}` },
-      body: JSON.stringify({
-        model: this.model,
-        max_completion_tokens: MAX_OUTPUT,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: user },
-        ],
-      }),
-    });
-    if (!res.ok) throw new ModelCallError("error", `openai_http_${res.status}`);
-    const body = (await res.json()) as {
-      model?: string;
-      choices: { message: { content: string | null } }[];
-      usage?: { prompt_tokens: number; completion_tokens: number };
-    };
-    const tokens = body.usage ? { input: body.usage.prompt_tokens, output: body.usage.completion_tokens } : null;
-    const costUsd = tokens ? (tokens.input * this.prices.inputPerM + tokens.output * this.prices.outputPerM) / 1e6 : null;
-    return { text: body.choices[0]?.message.content ?? "", tokens, costUsd, ...(body.model ? { model: body.model } : {}) };
-  }
-}
+export { OpenAIGateway } from "./openai.js";
 
 export const TASK = "Complete the Goddess's quest together.";
 
@@ -330,7 +293,7 @@ export class LLMPlayer implements Policy {
     const parsed = truncated ? ({ ok: false, reason: "The reply was cut off at the output limit (stop reason max_tokens)." } as const) : parseReply(reply.text, this.maxBatch);
     // An unusable reply is never turned into an action: the runner submits
     // nothing, records the problem, and tells this player next turn.
-    if (!parsed.ok) return { replyProblem: parsed.reason, usage, raw: reply.text };
+    if (!parsed.ok) return { replyProblem: parsed.reason, usage, raw: reply.rawText ?? reply.text };
     if (parsed.notes !== undefined && this.memory === "history") this.notes = parsed.notes.slice(0, 400);
     const [action, ...then] = parsed.actions;
     return {
@@ -339,7 +302,7 @@ export class LLMPlayer implements Policy {
       ...(parsed.dropped.length ? { dropped: parsed.dropped } : {}),
       ...(parsed.recovered ? { recovered: parsed.recovered } : {}),
       usage,
-      raw: reply.text,
+      raw: reply.rawText ?? reply.text,
     };
   }
 }

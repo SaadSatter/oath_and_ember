@@ -47,7 +47,7 @@ export async function confirmTyped(prompt: string, phrase: string) {
 
 /** Command-line arguments that look like they carry a credential. */
 export function credentialArgs(argv: readonly string[]) {
-  return argv.filter((a) => /^--?(api[-_]?key|key|token|secret|anthropic[-_]api[-_]key)(=|$)/i.test(a) || /sk-ant-|sk-[A-Za-z0-9]{20,}/.test(a));
+  return argv.filter((a) => /^--?(api[-_]?key|key|token|secret|(?:anthropic|openai)[-_]api[-_]key)(=|$)/i.test(a) || /sk-ant-|sk-[A-Za-z0-9]{20,}/.test(a));
 }
 
 /**

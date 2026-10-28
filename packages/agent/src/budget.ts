@@ -5,7 +5,16 @@
 // recorded whatever happens (success, error, timeout, refusal). Usage the
 // provider did not report is recorded as unknown, never as zero.
 
+import { AsyncLocalStorage } from "node:async_hooks";
 import type { PlayerId } from "./types.js";
+
+/**
+ * The part of the persistent spend ledger (`ledger.ts`) a budget relies on.
+ * Declared here so this module keeps importing only `types.ts`.
+ */
+export interface ReservationLedger {
+  assertReservation(id: string, cap: number, paid?: boolean): void;
+}
 
 export type BudgetReason = "model_call_limit" | "token_limit" | "spend_limit";
 export type CallStatus = "ok" | "error" | "timeout" | "refusal" | "aborted";
@@ -29,6 +38,8 @@ export const defaultBudgetLimits: BudgetLimits = {
 
 export interface Completion {
   text: string;
+  /** Original provider text when an adapter normalizes its wire schema. */
+  rawText?: string;
   /** Reported by the provider; null when it did not report usage. */
   tokens: { input: number; output: number } | null;
   /** Computed from reported usage and dated prices; null when unknown. */
@@ -52,6 +63,13 @@ export interface ReplyMeta {
   blocks: { type: string; chars: number }[];
   /** Whether the request asked the provider to constrain the reply to the JSON schema. */
   structured: boolean;
+  provider?: "openai";
+  requestedModel?: string;
+  effort?: string;
+  reasoningTokens?: number;
+  serviceTier?: string;
+  cacheTtl?: string;
+  pricingPremium?: number;
 }
 
 /** Per-call request options a player may set. Nothing here reaches game state. */
@@ -76,7 +94,7 @@ export class ModelCallError extends Error {
   constructor(
     readonly status: Exclude<CallStatus, "ok">,
     message: string,
-    readonly partial?: Pick<Completion, "tokens" | "costUsd">,
+    readonly partial?: Pick<Completion, "tokens" | "costUsd" | "model" | "cache" | "meta">,
   ) {
     super(message);
   }
@@ -107,6 +125,39 @@ export interface CallRecord {
   meta?: ReplyMeta;
 }
 
+// Unforgeable within the runner API: only begin() admits a live signal, once.
+const boundEntries = new WeakMap<ReservationLedger, Set<string>>();
+const dispatches = new WeakMap<AbortSignal, { check: () => void; used: boolean; transported: boolean }>();
+const transportContext = new AsyncLocalStorage<AbortSignal>();
+// Ledger and lock refusals keep their reason but always surface as a model-call
+// error, so no adapter can relabel a refused dispatch as a transport failure.
+function checkGrant(grant: { check: () => void }) {
+  try {
+    grant.check();
+  } catch (e) {
+    throw new ModelCallError("error", `Paid dispatch refused: ${(e as Error).message}`);
+  }
+}
+export function assertPaidDispatch(signal: AbortSignal) {
+  const grant = dispatches.get(signal);
+  if (!grant || grant.used || signal.aborted) throw new ModelCallError("error", "Paid dispatch requires persistent episode and per-call authorization.");
+  checkGrant(grant);
+  grant.used = true;
+}
+
+/** SDK transport itself is guarded, including direct SDK calls outside complete(). */
+export function paidTransport<T>(signal: AbortSignal, operation: () => T): T {
+  assertPaidDispatch(signal);
+  return transportContext.run(signal, operation);
+}
+export function assertPaidTransport() {
+  const signal = transportContext.getStore();
+  const grant = signal && dispatches.get(signal);
+  if (!signal || !grant || !grant.used || grant.transported || signal.aborted) throw new ModelCallError("error", "Paid transport is not authorized.");
+  checkGrant(grant);
+  grant.transported = true;
+}
+
 export class ModelBudget {
   readonly calls: Record<PlayerId, number> = { sieg: 0, coco: 0 };
   readonly failed: Record<PlayerId, number> = { sieg: 0, coco: 0 };
@@ -121,6 +172,16 @@ export class ModelBudget {
   knownSpendUsd = 0;
   /** What counts against the cap: reported costs plus reservations for calls of unknown cost, plus calls in flight. */
   chargedUsd = 0;
+  private persistent?: { ledger: ReservationLedger; entry: string };
+  /** Bind exactly once, after the episode's whole cap has been durably reserved. */
+  bindLedger(ledger: ReservationLedger, entry: string) {
+    if (this.persistent || this.calls.sieg || this.calls.coco) throw Error("Episode budget cannot be rebound.");
+    ledger.assertReservation(entry, this.limits.maxSpendUsd);
+    const bound = boundEntries.get(ledger) ?? new Set<string>();
+    if (bound.has(entry)) throw Error("Persistent reservation already bound to a call budget.");
+    bound.add(entry); boundEntries.set(ledger, bound);
+    this.persistent = { ledger, entry };
+  }
   private inFlightUsd = 0;
   private aborted = false;
   private readonly controllers = new Set<AbortController>();
@@ -166,10 +227,16 @@ export class ModelBudget {
         "spend_limit",
         `A call could cost up to $${worstCaseUsd.toFixed(4)}; $${(this.chargedUsd + this.inFlightUsd).toFixed(4)} of $${this.limits.maxSpendUsd} is used or reserved.`,
       );
+    this.persistent?.ledger.assertReservation(this.persistent.entry, this.limits.maxSpendUsd);
     this.calls[player]++;
     this.inFlightUsd += worstCaseUsd;
     const controller = new AbortController();
     this.controllers.add(controller);
+    const persistent = this.persistent;
+    if (persistent) dispatches.set(controller.signal, { used: false, transported: false, check: () => {
+      if (this.aborted || !this.controllers.has(controller)) throw Error("Call authorization is no longer active.");
+      persistent.ledger.assertReservation(persistent.entry, this.limits.maxSpendUsd, true);
+    } });
     this.onStart({ player, attempt: this.calls[player], reservedUsd: worstCaseUsd });
     return { attempt: this.calls[player], reservedUsd: worstCaseUsd, controller };
   }
@@ -177,6 +244,7 @@ export class ModelBudget {
   /** @internal used by MeteredGateway */
   settle(rec: Omit<CallRecord, "chargedUsd">, controller: AbortController) {
     if (!this.controllers.delete(controller)) throw Error("Model call was already settled.");
+    dispatches.delete(controller.signal);
     // Bad/missing provider usage must not make cap arithmetic NaN or negative.
     rec = { ...rec,
       costUsd: rec.costUsd !== null && Number.isFinite(rec.costUsd) && rec.costUsd >= 0 ? rec.costUsd : null,
@@ -249,6 +317,9 @@ export class MeteredGateway {
           latencyMs: Math.round(performance.now() - started),
           tokens: err.partial?.tokens ?? null,
           costUsd: err.partial?.costUsd ?? null,
+          ...(err.partial?.model ? { model: err.partial.model } : {}),
+          ...(err.partial?.cache ? { cache: err.partial.cache } : {}),
+          ...(err.partial?.meta ? { meta: err.partial.meta } : {}),
         },
         controller,
       );
