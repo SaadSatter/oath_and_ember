@@ -37,3 +37,8 @@ No real API call, canonical ledger initialization/mutation, gameplay edit, histo
 ## Read-only implementation checkpoint
 
 `oath-rule-information-boundary` applied to commit `115c542`, session `01a17e49-e8f5-7150-8932-837cfe871fe3`; skill SHA256 `553399eafd554c3b9062efa8b9d1fd9080c99bfadb151cb817ea40b77437fb21`. No new blocking finding in this scoped diff. `route/localStarts.ts` uses only normal environment actions; `suite.ts` adds objective/start briefings without solution or hidden-state fields. Raw state appears only in trusted test assertions. Existing validation, independent policy histories, tick owner and video/ledger dispatch paths are unchanged; mock traces retain absolute reset ticks and relative outcome timing. The six historical action/state fingerprints pass. Limitations: live video/provider behavior unverified, other-session edits excluded, no independent review claimed. These checks do not approve paid execution.
+
+
+## Combined verification update (2026-10-28)
+
+The earlier concurrent-session limitation above describes implementation-time verification. Both observation commits are now present in the canonical branch; the combined permitted verification passes. See [INTEGRATION_VERIFICATION.md](INTEGRATION_VERIFICATION.md) for counts, test-only correction `c35f6c5`, exclusions and remaining live-evaluation limits.

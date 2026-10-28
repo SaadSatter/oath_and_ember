@@ -190,3 +190,8 @@ Session [S36](../agent-sessions/36-claude-pilot6-navigation-fixes.md) (`4bd24137
 - **3c:** Node v24.19.0, clean worktree at `115c542` with this change's files only. Typecheck and build pass. `npm test` 948/950; the 2 failures are pre-existing in `suite.test.ts` at `115c542`. `scriptedFreeze` 7/7.
 - **Evidence:** the guidelines' example URL is no longer listed as a PR; the `explore/S2` and `explore/S3` pins are one trajectory.
 
+
+
+## Combined local-start and observation integration (2026-10-28)
+
+[Integration verification](INTEGRATION_VERIFICATION.md): combined approved commits present, Node v24.19.0 typecheck/build pass; 916 broad permitted tests plus 2 static suite checks and 6 historical S1–S3 freeze checks pass. Twenty supplemental observation cases and four synthetic accounting runs pass. Test-only expectation correction: `c35f6c5`. [Audit](agent-evidence/skill-runs/2026-10-28-suite-combined-integration.md); [same-session S38 supplement](../agent-sessions/38-codex-local-starts-supplement.md). Held-out-capable cases excluded explicitly; no paid or held-out execution.

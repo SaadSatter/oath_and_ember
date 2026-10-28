@@ -204,3 +204,8 @@ Portable summaries: `evidence/phase4/quest-tuning-summary.json`. Full local trac
 ## 2026-10-28 additive S2-local/S3-local implementation
 
 Implementation `115c542`; detailed protocol and verification: [LOCAL_STARTS.md](LOCAL_STARTS.md). Only the two approved tuning variants were added. Existing historical scenario definitions and checkpoints are unchanged. Node v24.19.0 typecheck/build, 14 new offline checks and six permitted historical scripted hashes pass in isolation. See the linked record for broader regression and secret-scan results. Another owner-confirmed session remains active in the canonical worktree; its changes were excluded from this implementation commit. No paid or held-out execution, ledger mutation, gameplay change, push or merge. Stop for owner approval.
+
+
+## 2026-10-28 combined integration verification
+
+The canonical branch at `e1829af` includes all four provisionally approved local-start/observation commits and was clean at verification start. Only stale suite-test expectations were corrected (`c35f6c5`). Node v24.19.0 typecheck/build and 924 selected permitted Vitest checks pass; 20 supplemental local observation cases and four mocked accounting runs pass. Exact commands, held-out exclusions, evidence and limitations: [INTEGRATION_VERIFICATION.md](INTEGRATION_VERIFICATION.md). Prior concurrent-tree caveat is resolved for this combined verified source. No paid call, held-out evaluation, gameplay/audio/checkpoint change, push or merge. Await owner approval before the first paid local-start pilot.

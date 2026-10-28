@@ -5,7 +5,7 @@
 | Agent | Codex (desktop app); model id(s) recorded in the transcript: `gpt-6.1-sol` |
 | Role | Same-session Codex implementation supplement under AGENTS.md and CLAUDE.md: owner-approved S2-local/S3-local only; game-rules-audit preflight and session-evidence. Same session as S28/S30/S33, not independent review or an additional distinct session. |
 | Session ID | `01a17e49-e8f5-7150-8932-837cfe871fe3` |
-| Window (UTC) | 2026-10-27 16:55 → 2026-10-28 21:24 |
+| Window (UTC) | 2026-10-27 16:55 → 2026-10-28 21:45 |
 | Session URL | None. Local session; no shareable URL was created. |
 | Repository | `https://github.com/SaadSatter/oath_and_ember` |
 | Transcript | Local only, not committed: `~/.codex/sessions/2026/10/27/rollout-2026-10-27T12-55-35-01a17e49-e8f5-7150-8932-837cfe871fe3.jsonl` |
@@ -29,6 +29,7 @@
 13. 2026-10-28 20:59 — Investigate the feasibility of adding direct-area-start evaluation variants for the Bald Goddess quest. Do not implement anything yet. Proposed variants: - S2-local: both agents start at the Mirror Pond entrance. - S3-local: both agents start at the Hedge Maze entrance. - S4-local: both agents start at the Griffin area entrance. Keep existing S1–S4 and full-quest scenarios unchanged. Investigate: 1. How current scena … (1221 characters; full text in the local transcript)
 14. 2026-10-28 21:14 — I approve the additive local-start design, with a restricted first phase. Implement only S2-local and S3-local. Do not implement or execute S4-local yet. Requirements: 1. Add S2-local and S3-local as distinct evaluation scenarios. Preserve the existing S1–S4 and full-quest scenarios unchanged. 2. Initialize each scenario through the existing goddess checkpoint and normal scripted gameplay: - S2-local: complete the ex … (2490 characters; full text in the local transcript)
 15. 2026-10-28 21:20 — <send_user_message_question_reply> [{"questionItemId":"[\"request_user_input_async\",\"call_bee47ad7ec5a485984fa928a51762850\",0]","question":"New edits to movementReport.ts and types.ts appeared outside this session while I was testing. Is another session still editing the canonical evaluation worktree?","answer":"Other session is still active"}] </send_user_message_question_reply>
+16. 2026-10-28 21:41 — The owner provisionally approves: - 115c542 — S2-local and S3-local implementation - 17487d1 — local-start evidence - 3c893f3 — observation fixes - e1829af — observation-fix evidence Now perform final integration verification on the combined midterm/evaluation branch. Do not implement additional features. Tasks: 1. Confirm the current HEAD includes all approved implementation and evidence commits. Check for uncommitt … (1967 characters; full text in the local transcript)
 
 <!-- narrative:start -->
 ## What was done
@@ -43,6 +44,16 @@ Sources: the extracted local transcript, commands run in this task, and verified
 - No paid call, held-out reconstruction/test, canonical ledger mutation, gameplay/historical evidence change, push or merge. No further local variant was added. Stop for owner approval.
 - Invoked `session-evidence` using the repository extractor/redactor/renderer. This file is a supplement to S28/S30/S33 in the same session, not an additional session or independent review.
 
+### Combined integration verification (owner provisionally approved all four commits)
+
+Sources: current canonical Git state and the commands in this task. This is a continuation of the same session, not independent review.
+
+- Verified clean starting tree at `e1829af`, containing `115c542`, `17487d1`, `3c893f3` and `e1829af`.
+- Node v24.19.0: typecheck/build pass; full permitted suite 104 files / 916 tests; safe static suite checks 2 pass / 2 skip; six historical S1–S3 fingerprint tests pass / one whole-quest skip. No held-out start was reconstructed or played by this session.
+- Reproduced the stale registry assertion. Corrected only test expectations for additive IDs, areas, journal-stage coverage and distinct-hash count, in separate commit `c35f6c5`. The mixed held-out reset test was not executed; permitted local reset tests pass. Existing briefing text/assertion passes unchanged.
+- Disposable probes pass 20 local observation cases and four mock accounting runs; costs are synthetic, with scratch ledger/output only. Initial scratch assumptions and all exclusions are disclosed in the [integration report](../midterm/INTEGRATION_VERIFICATION.md).
+- Applied `game-rules-audit`, `oath-rule-information-boundary`, and `session-evidence`; no implementation failure identified. No paid call, gameplay/audio/checkpoint/result change, push or merge. Stop before the first paid pilot.
+
 <!-- narrative:end -->
 
 ## Mechanically extracted record
@@ -52,18 +63,23 @@ Sources: the extracted local transcript, commands run in this task, and verified
 - Pull requests referenced in tool output: https://github.com/SaadSatter/oath_and_ember/pull/1, https://github.com/SaadSatter/oath_and_ember/pull/2, https://github.com/SaadSatter/oath_and_ember/pull/3, https://github.com/SaadSatter/oath_and_ember/pull/4, https://github.com/SaadSatter/oath_and_ember/pull/5, https://github.com/SaadSatter/oath_and_ember/pull/6, https://github.com/SaadSatter/oath_and_ember/pull/7 (the example URL quoted in MIDTERM_GUIDELINES.md was also printed; it is not a PR of this project and is not listed)
 - Files edited through the agent's edit/patch tool: none recorded (edits made by shell commands are not counted)
 - Test-summary lines printed in tool output (last 6 distinct, as printed):
-  - `Tests  1 failed | 149 passed (150)`
-  - `Tests  6 passed | 1 skipped (7)`
-  - `Test Files  1 failed (1)`
-  - `Tests  3 failed | 11 passed (14)`
-  - `Tests  1 failed | 13 passed (14)`
-  - `Tests  14 passed (14)`
+  - `Tests  1 failed | 337 passed (338)`
+  - `Tests  24 passed (24)`
+  - `Tests  1 failed | 1 passed | 2 skipped (4)`
+  - `Test Files  104 passed (104)`
+  - `Tests  916 passed (916)`
+  - `Tests  2 passed | 2 skipped (4)`
 - TypeScript errors (`error TS…`) appeared in tool output at least once during the session.
 
 Commits whose author time falls inside this window (any branch). A time match is not proof of authorship when sessions overlap; the co-author trailer is shown where present.
 
 | Commit | Author time (UTC) | Subject | Co-author trailer |
 | --- | --- | --- | --- |
+| `c35f6c5` | 2026-10-28 21:45 | Update suite expectations for approved additive local scenarios | — |
+| `e1829af` | 2026-10-28 21:35 | Record the independent-review fixes and correct the example-PR evidence (S36) | Claude Opus 5.5 <noreply@anthropic.com> |
+| `3c893f3` | 2026-10-28 21:34 | Fix short-move false blocks, report lethal hits, align listed coordinates, and close the story-walk gap | Claude Opus 5.5 <noreply@anthropic.com> |
+| `17487d1` | 2026-10-28 21:27 | Document local-start protocol, audit and isolated offline verification | — |
+| `115c542` | 2026-10-28 21:24 | Add tuning-only S2-local and S3-local evaluation starts | — |
 | `fb844ae` | 2026-10-28 21:13 | Commit the independent review of the pilot-6 changes (S37), unchanged | Claude Opus 5.5 <noreply@anthropic.com> |
 | `6448dc1` | 2026-10-28 20:48 | Record the audit and implementation of the pilot-6 review fixes (S36) | Claude Opus 5.5 <noreply@anthropic.com> |
 | `f48ae0e` | 2026-10-28 20:48 | Measure moves by what the server did, fix the Slow Time false collision, and pin scripted behaviour | Claude Opus 5.5 <noreply@anthropic.com> |
