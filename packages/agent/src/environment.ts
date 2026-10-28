@@ -11,7 +11,7 @@ import { evaluationRuntime } from "./runtime.js";
 import { admitReset, FinalAccessError, isTicket, type Admission, type EpisodeTicket, type RouteDevelopmentAccess } from "./finalAccess.js";
 import type { ModelBudget } from "./budget.js";
 import { GameRoom } from "../../../apps/server/src/GameRoom.js";
-import { neutral, type Role, type SceneId } from "../../shared/src/gameTypes.js";
+import { neutral, type InputFrame, type Player, type Role, type SceneId } from "../../shared/src/gameTypes.js";
 import { storyView } from "../../../apps/client/src/ui/storyDialogue.js";
 import { items, type ItemId } from "../../shared/src/items.js";
 import { questLog } from "../../../apps/client/src/ui/questLog.js";
@@ -32,7 +32,7 @@ import {
   type LabelMode,
 } from "./perception.js";
 import { cowLine, tickEvents, worldSnapshot, type SeenMove, type WorldSnapshot } from "./worldEvents.js";
-import { movementLine, movementReport, openGroundStep } from "./movementReport.js";
+import { movementLines, movementReport, newTally, openGroundStep, tallyApplied, type MoveTally } from "./movementReport.js";
 import { maps } from "../../shared/src/maps.js";
 import {
   episodes,
@@ -120,8 +120,8 @@ interface Running {
   attack?: { recovering: boolean; performed: boolean };
   /** A cow move this hero watched during the action (worldEvents.ts). */
   cow?: SeenMove;
-  /** Move actions: where the hero started and the open-ground distance so far (movementReport.ts). */
-  move?: { direction: Direction; scene: SceneId; from: { x: number; y: number }; openGround: number };
+  /** Move actions: where and in which area the hero started, and what each tick did so far (movementReport.ts). */
+  move?: { direction: Direction; scene: SceneId; from: { x: number; y: number }; tally: MoveTally };
 }
 
 interface Slot {
@@ -448,7 +448,7 @@ export class AgentEnvironment implements GameInterface {
           feedback: [],
           resolve: sub.resolve,
           ...(sub.action.type === "attack" ? { attack: { recovering: (me.cooldowns.attack ?? 0) > 0, performed: false } } : {}),
-          ...(sub.action.type === "move" ? { move: { direction: sub.action.direction, scene: sceneOf(this.room.state, me), from: { x: me.x, y: me.y }, openGround: 0 } } : {}),
+          ...(sub.action.type === "move" ? { move: { direction: sub.action.direction, scene: sceneOf(this.room.state, me), from: { x: me.x, y: me.y }, tally: newTally() } } : {}),
         };
       }
     }
@@ -493,19 +493,25 @@ export class AgentEnvironment implements GameInterface {
     // (GameRoom: p.combat = { seq: serverTick, … }); a changed record is a strike.
     const strikeBefore = order.map((s) => this.room.state.players[s.key].combat);
     const worldBefore = this.lastWorld;
+    // Moving heroes: a copy before the tick, the frame sent, and whether the
+    // partner was already carrying them (movementReport.ts).
+    const moves = new Map<PlayerId, { copy: Player; frame: InputFrame; carried: boolean }>();
     for (const s of order) {
       const r = s.running!;
       const frame = { ...neutral(++s.seq), ...(r.frames[r.index] ?? {}) };
-      // Open-ground distance of this tick's input, measured on a copy before the tick.
       if (r.move) {
-        const w = this.room.state,
-          me = w.players[s.key];
-        r.move.openGround += openGroundStep(me, frame, maps[sceneOf(w, me)], !!w.slowTime);
+        const me = this.room.state.players[s.key];
+        moves.set(s.id, { copy: structuredClone(me), frame, carried: this.carried(me.id) });
       }
       this.room.receiveInput(s.key, frame);
     }
     if (this.options.tick) this.options.tick(this.room);
     else this.room.tick();
+    for (const s of order) {
+      const r = s.running!,
+        before = moves.get(s.id);
+      if (r.move && before) this.sortMoveTick(r.move, before, this.room.state.players[s.key]);
+    }
     this.hearDialogue();
     const w = this.room.state;
     if (w.serverTick % EXPLORE_EVERY === 0) for (const s of order) this.explore(s);
@@ -547,6 +553,35 @@ export class AgentEnvironment implements GameInterface {
     for (const resolve of finished) resolve();
   }
 
+  /**
+   * Whether the partner's Slow Time carry holds this hero (GameRoom.carried,
+   * read-only, trusted side; never shown to players). A carry moves the hero
+   * by the partner's step after the hero's own movement.
+   */
+  private carried(id: string): boolean {
+    const carries = (this.room as unknown as { carried?: Map<string, { targets: Set<string> }> }).carried;
+    return !!carries && [...carries.values()].some((c) => c.targets.has(id));
+  }
+
+  /**
+   * Sorts one tick of a move by what the server did (movementReport.ts):
+   * moved by the game (a movementEpoch change, or a carry held before or after
+   * the tick: a carry can end within the tick that moved the hero), not
+   * applied (the movement the server used is not this frame), or applied, in
+   * which case the hero's own step is compared with open ground at the Slow
+   * Time state movement used: the state after the tick, since Slow Time starts
+   * and ends before movement within a tick.
+   */
+  private sortMoveTick(move: NonNullable<Running["move"]>, before: { copy: Player; frame: InputFrame; carried: boolean }, me: Player) {
+    const w = this.room.state;
+    if (sceneOf(w, me) !== move.scene) return;
+    const used = me.movementInput;
+    const applied = !!used && used.seq === before.frame.seq && used.moveX === before.frame.moveX && used.moveY === before.frame.moveY;
+    if (me.movementEpoch !== before.copy.movementEpoch || before.carried || this.carried(me.id)) move.tally.movedByGame++;
+    else if (!applied) move.tally.notApplied++;
+    else tallyApplied(move.tally, move.direction, before.copy, me, openGroundStep(before.copy, before.frame, maps[move.scene], !!w.slowTime));
+  }
+
   /** Ends a hero's action; the returned callback delivers its result. */
   private finish(s: Slot, interrupted?: string) {
     const r = s.running!;
@@ -557,12 +592,10 @@ export class AgentEnvironment implements GameInterface {
     const me = this.room.state.players[s.key];
     // A move that ended in another area is reported by its arrival line instead.
     const movement =
-      r.move && sceneOf(this.room.state, me) === r.move.scene
-        ? movementReport(r.move.direction, r.move.from, me, r.move.openGround)
-        : undefined;
-    const walked = movement && r.move ? movementLine(r.move.direction, movement, r.move.from, me) : undefined;
+      r.move && sceneOf(this.room.state, me) === r.move.scene ? movementReport(r.move.from, me, r.move.tally) : undefined;
+    const walked = movement && r.move ? movementLines(r.move.direction, movement, r.move.from, me) : [];
     const extra = [
-      ...(walked ? [walked] : []),
+      ...walked,
       ...(moved ? [moved] : []),
       ...(r.attack && !r.attack.performed ? [noAttackLine(s.role, r.attack.recovering)] : []),
     ];

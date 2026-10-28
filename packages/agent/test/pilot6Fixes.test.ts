@@ -13,7 +13,7 @@ import { batchStop } from "../src/batch.js";
 import { defaultBudgetLimits, MeteredGateway, ModelBudget, type Completion, type Gateway } from "../src/budget.js";
 import { AgentEnvironment } from "../src/environment.js";
 import { policiesFor, type ModelSetup } from "../src/harness.js";
-import { movementLine, movementReport, openGroundStep } from "../src/movementReport.js";
+import { movementLines, movementReport, newTally, openGroundStep, tallyApplied } from "../src/movementReport.js";
 import { TILE, truncate2 } from "../src/perception.js";
 import { asTuned } from "../src/policies/navigate.js";
 import { LLMPlayer, systemPrompt } from "../src/policies/llm.js";
@@ -142,15 +142,26 @@ describe("movement outcome on move results", () => {
 
   it("classifies by progress in the requested direction, and stays silent when nothing could move", () => {
     const at = (x: number, y: number) => ({ x: x * TILE, y: y * TILE });
-    const open = 6 * TILE;
-    expect(movementReport("n", at(10, 10), at(10, 4), open).outcome).toBe("full");
-    expect(movementReport("n", at(10, 10), at(10, 9), open).outcome).toBe("partial");
+    // One applied tick from (10, 10) to `to`, against `open` world units of open ground.
+    const one = (d: "n" | "ne", to: { x: number; y: number }, open: number) => {
+      const t = newTally();
+      tallyApplied(t, d, at(10, 10), to, open);
+      return movementReport(at(10, 10), to, t);
+    };
+    expect(one("n", at(10, 4), 6 * TILE).outcome).toBe("full");
+    expect(one("n", at(10, 9), 6 * TILE).outcome).toBe("partial");
     // A sideways slide off a corner is movement, but no progress north.
-    expect(movementReport("n", at(10, 10), at(10.3, 10), open)).toMatchObject({ outcome: "partial", movedTiles: 0 });
-    expect(movementReport("n", at(10, 10), at(10, 10), open).outcome).toBe("none");
-    expect(movementReport("ne", at(10, 10), at(14, 6), 4 * Math.SQRT2 * TILE).outcome).toBe("full");
-    const still = movementReport("n", at(10, 10), at(10, 10), 0);
-    expect(movementLine("n", still, at(10, 10), at(10, 10))).toBeUndefined();
+    expect(one("n", at(10.3, 10), 6 * TILE)).toMatchObject({ outcome: "partial", movedTiles: 0 });
+    expect(one("n", at(10, 10), 6 * TILE).outcome).toBe("none");
+    expect(one("ne", at(14, 6), 4 * Math.SQRT2 * TILE).outcome).toBe("full");
+    const still = one("n", at(10, 10), 0);
+    expect(movementLines("n", still, at(10, 10), at(10, 10))).toEqual([]);
+    // No applied tick at all: the input was never taken. Not a collision.
+    const idle = newTally();
+    idle.notApplied = 5;
+    const r = movementReport(at(10, 10), at(10, 10), idle);
+    expect(r).toMatchObject({ outcome: "not_applied", requestedTiles: 0, ticks: { applied: 0, notApplied: 5, movedByGame: 0 } });
+    expect(movementLines("n", r, at(10, 10), at(10, 10))).toEqual(["For 5 of 5 ticks your hero did not take your movement input."]);
   });
 });
 
@@ -171,7 +182,14 @@ describe("movement in the model's history", () => {
     const env = await inMaze(ENTRANCE);
     const gateway = new Capture();
     const player = new LLMPlayer("Sieg", MANUAL, new MeteredGateway(gateway, new ModelBudget(defaultBudgetLimits), "sieg"));
-    const movement: MovementReport = { outcome: "partial", movedTiles: 1.59, requestedTiles: 2.97, from: { x: 5, y: 34 }, to: { x: 5, y: 35.59 } };
+    const movement: MovementReport = {
+      outcome: "partial",
+      movedTiles: 1.59,
+      requestedTiles: 2.97,
+      from: { x: 5, y: 34 },
+      to: { x: 5, y: 35.59 },
+      ticks: { applied: 30, notApplied: 0, movedByGame: 0 },
+    };
     const result: StepResult = { accepted: true, ticks: 30, movement, feedback: ["You moved s only 1.59 of 2.97 tiles."], done: false };
     const action: GameAction = { type: "move", direction: "s", ticks: 30 };
     await player.decide({
@@ -229,7 +247,9 @@ describe("the hero's position", () => {
   it("is truncated to two decimals, so its whole part is the cell '@' is drawn in", () => {
     expect(truncate2(25.996)).toBe(25.99);
     expect(truncate2(25.96)).toBe(25.96);
-    expect(truncate2(0.29)).toBe(0.29);
+    // Exact truncation of the stored double: 0.29 is stored as 0.28999… (review fixes, 2026-10-28).
+    expect(truncate2(0.29)).toBe(0.28);
+    expect(truncate2(0.75)).toBe(0.75);
     expect(truncate2(26)).toBe(26);
     expect(truncate2(26 - 1e-12)).toBe(25.99);
   });

@@ -195,19 +195,26 @@ export interface StepResult {
 }
 
 /**
- * The outcome of one move (movementReport.ts). "full": at least 90% of the
- * open-ground distance, in the requested direction. "partial": visibly moved
- * but fell short (blocked partway, or slid sideways off a corner). "none": did
- * not visibly move. Tiles; positions truncated to two decimals like `self`.
+ * The outcome of one move (movementReport.ts). Each tick of the move is sorted
+ * by what the server did: it moved the hero with this move's input
+ * ("applied"), used other input or none ("notApplied": a scene or lock, stale
+ * input, a paused tick), or placed the hero itself ("movedByGame": respawn,
+ * flight landing, being carried). Outcomes compare applied ticks with open
+ * ground: "full" at least 90% of the open-ground distance in the requested
+ * direction; "partial" visibly moved but fell short (blocked partway, or slid
+ * sideways off a corner); "none" did not visibly move; "not_applied" no tick
+ * used the input. Tiles; positions truncated to two decimals like `self`.
  */
 export interface MovementReport {
-  outcome: "full" | "partial" | "none";
-  /** Progress along the requested direction. */
+  outcome: "full" | "partial" | "none" | "not_applied";
+  /** Progress along the requested direction over applied ticks. */
   movedTiles: number;
-  /** Open-ground distance for the ticks that ran, at the hero's current speed. */
+  /** Open-ground distance over applied ticks, at the speed movement used on each tick. */
   requestedTiles: number;
+  /** Where the hero stood when the action began and ended, whatever moved them. */
   from: { x: number; y: number };
   to: { x: number; y: number };
+  ticks: { applied: number; notApplied: number; movedByGame: number };
 }
 
 export type TerminationReason =

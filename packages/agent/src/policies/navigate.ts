@@ -11,8 +11,14 @@ import type { Direction, Observation } from "../types.js";
  * `self` truncated to two decimals; the scripted players round it back here so
  * their frozen behaviour, and the S2-S4 start states the route builds, stay
  * identical. A policy-side choice: every player still gets the same
- * observation. Rounds half up from the hundredths, the result round1 gave
- * on the raw position.
+ * observation. Rounds half up from the hundredths. This equals the earlier
+ * round1 of the raw position for every position tested, including 60,540
+ * positions reached by walking, slowed, sprinting and diagonal steps
+ * (asTuned.test.ts). One theoretical window remains: a value stored as the
+ * double just below a decimal x.x5 boundary (within about 1e-14 tile, e.g.
+ * 1.45, stored as 1.4499…), where round1 rounded up but the truncated
+ * hundredths no longer can. The frozen route and baseline runs are pinned in
+ * scriptedFreeze.test.ts.
  */
 export function asTuned(o: Observation): Observation {
   const one = (v: number) => Math.floor((Math.round(v * 100) + 5) / 10) / 10;

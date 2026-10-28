@@ -97,13 +97,16 @@ export const round1 = (n: number) => Math.round(n * 10) / 10;
 /**
  * Truncated (not rounded) to two decimals, so the whole-number part always
  * matches the screen cell the hero is drawn in: 25.996 is 25.99, never 26.00
- * (pilot-6 audit finding 4). The whole part is Math.floor(n) by construction;
- * the small offset only keeps binary fractions such as 0.29 * 100 = 28.999…
- * from losing a hundredth, and is capped so it never reaches the next cell.
+ * (pilot-6 audit finding 4). The whole part is Math.floor(n) by construction.
+ * The stored value is truncated exactly, with no rounding guard: a guard
+ * (until the review fixes of 2026-10-28) moved positions that real walking
+ * reaches just below an x.x5 boundary up a hundredth, which changed what the
+ * scripted players read (asTuned.test.ts). A double just below a hundredth,
+ * such as 0.29 (stored as 0.28999…), therefore reads 0.28.
  */
 export function truncate2(n: number) {
   const whole = Math.floor(n);
-  const hundredths = Math.min(99, Math.floor((n - whole) * 100 + 1e-9));
+  const hundredths = Math.min(99, Math.floor((n - whole) * 100));
   return Number((whole + hundredths / 100).toFixed(2));
 }
 
