@@ -308,7 +308,7 @@ export function needsFinalGrant(scenario: { situation: SituationId | null; prefi
   return scenario.prefix !== null && heldOutPrefixes.includes(scenario.prefix);
 }
 
-const PRESET_TO_SITUATION: Record<string, SituationId> = { S1: "S1", S2: "S2", S3: "S3", S4: "S4", full: "F" };
+const PRESET_TO_SITUATION: Record<string, SituationId> = { "S2-local": "S2-local", "S3-local": "S3-local", S1: "S1", S2: "S2", S3: "S3", S4: "S4", full: "F" };
 
 export type Admission =
   | { kind: "open" }

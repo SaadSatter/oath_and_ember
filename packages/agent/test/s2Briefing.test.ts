@@ -35,9 +35,9 @@ async function systemsFor(id: SituationId, gateway: Recording, kind: "model-hist
 }
 
 describe("S2 episode briefing", () => {
-  it("is defined for S2 only", () => {
+  it("is defined for S2 only among the original scenarios", () => {
     expect(situation("S2").briefing).toBe(S2_BRIEFING);
-    for (const s of SITUATIONS) if (s.id !== "S2") expect(s.briefing, s.id).toBeUndefined();
+    for (const s of SITUATIONS) if (s.id !== "S2" && !s.id.endsWith("-local")) expect(s.briefing, s.id).toBeUndefined();
   });
 
   it("states exactly the second revision (after pilot-6, 2026-10-28: owner-approved content, wording pending the owner)", () => {

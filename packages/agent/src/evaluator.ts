@@ -7,7 +7,7 @@ import { FINALE } from "../../shared/src/chapter0Finale.js";
 import { shrineComplete } from "../../shared/src/shrine.js";
 import type { EpisodeLimits } from "./types.js";
 
-export type EpisodePreset = "full" | "milestone" | "S1" | "S2" | "S3" | "S4";
+export type EpisodePreset = "S2-local" | "S3-local" | "full" | "milestone" | "S1" | "S2" | "S3" | "S4";
 
 export interface EpisodeDefinition {
   preset: EpisodePreset;
@@ -26,7 +26,7 @@ const QUEST_AREAS = new Set(["MIRROR_POND", "HEDGE_MAZE", "GRIFFIN_ENCLOSURE"]);
 const holding = (w: World, item: string) => ((w.inventory?.counts as Record<string, number> | undefined)?.[item] ?? 0) > 0;
 
 /** Owner-approved episode definitions and limits (2026-10-23). */
-export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
+const coreEpisodes: Record<Exclude<EpisodePreset, "S2-local" | "S3-local">, EpisodeDefinition> = {
   full: {
     preset: "full",
     goal: "Bald Goddess quest: from the goddess checkpoint to chapter0.complete.",
@@ -79,6 +79,13 @@ export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
     success: (w: World) => has(w, FINALE.complete),
   },
 
+};
+
+/** Additive variants reuse exactly the parent's predicate and limits. */
+export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
+  ...coreEpisodes,
+  "S2-local": { ...coreEpisodes.S2, preset: "S2-local", goal: "S2-local: from the Mirror Pond entrance, obtain the Vanity Mirror." },
+  "S3-local": { ...coreEpisodes.S3, preset: "S3-local", goal: "S3-local: from the Hedge Maze entrance, obtain the Enchanted Shears." },
 };
 
 /** Private progress markers recorded in traces (never shown to players). */

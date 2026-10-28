@@ -34,8 +34,8 @@ export { PLAYER_KINDS, type PlayerKind };
 const isModel = (p: PlayerKind) => p === "model-history" || p === "model-obs-only";
 
 /** Per-episode spend caps, both heroes together (MODEL_BUDGET.md). */
-export const EPISODE_CAP_USD: Record<SituationId, number> = { S1: 0.2, S2: 1.25, S3: 1.25, S4: 1.0, F: 3.0 };
-export const OBS_ONLY_SITUATIONS: readonly SituationId[] = ["S1", "S2", "S3"];
+export const EPISODE_CAP_USD: Record<SituationId, number> = { "S2-local": 1.25, "S3-local": 1.25, S1: 0.2, S2: 1.25, S3: 1.25, S4: 1.0, F: 3.0 };
+export const OBS_ONLY_SITUATIONS: readonly SituationId[] = ["S1", "S2", "S3", "S2-local", "S3-local"];
 
 export interface ModelSetup {
   /** A provider adapter for paid runs; a fake in tests. */
@@ -200,7 +200,7 @@ export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | 
   if (heldOut.length && !o.final) throw Error(`${heldOut.join(", ")} ${heldOut.length > 1 ? "are" : "is"} held out: run only in a final run.`);
   if (o.player === "model-obs-only") {
     const outside = o.situations.filter((id) => !OBS_ONLY_SITUATIONS.includes(id));
-    if (outside.length) throw Error(`model-obs-only runs on S1-S3 only (got ${outside.join(", ")}).`);
+    if (outside.length) throw Error(`model-obs-only runs on S1-S3 only, including approved local variants (got ${outside.join(", ")}).`);
   }
   if (isModel(o.player)) {
     if (!o.model) throw Error(`${o.player} needs a model setup (gateway, manual, ledger, stage).`);

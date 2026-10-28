@@ -7,10 +7,11 @@
 
 import { AgentEnvironment, type EnvironmentOptions } from "./environment.js";
 import type { EpisodePreset } from "./evaluator.js";
+import { enterLocalArea } from "./route/localStarts.js";
 import { Director } from "./route/director.js";
 import { hedgeMaze, mirrorPond, opening, travelFromShrine } from "./route/fullQuest.js";
 
-export type SituationId = "S1" | "S2" | "S3" | "S4" | "F";
+export type SituationId = "S1" | "S2" | "S3" | "S4" | "F" | "S2-local" | "S3-local";
 
 export interface Situation {
   id: SituationId;
@@ -61,6 +62,14 @@ const afterOpening: EnvironmentOptions["prefix"] = {
   name: "opening scene",
   run: async (env) => opening(new Director({ env })),
 };
+// Local variants compose the existing opening prefix without modifying it.
+const localEntry = (area: "Mirror Pond" | "Hedge Maze"): EnvironmentOptions["prefix"] => ({
+  name: `opening scene, normal entry to ${area} (before arrival dialogue)`,
+  run: async (env) => { await afterOpening!.run(env); await enterLocalArea(env, area); },
+});
+const localBriefing = (id: "S2-local" | "S3-local", area: string, item: string) =>
+  `Episode briefing (${id}), the same for both players: you start at the ${area} entrance. Your objective is to obtain the ${item} in the shared inventory. Normal movement, travel, interaction and messages remain available; you may leave this area and return. Use your own observations and coordinate with your partner.`;
+
 const withMirrorAndShears: EnvironmentOptions["prefix"] = {
   name: "opening scene, Hedge Maze, Mirror Pond",
   run: async (env) => {
@@ -79,6 +88,8 @@ export const SITUATIONS: readonly Situation[] = Object.freeze([
   { id: "S3", preset: "S3", heldOut: false, title: "Hedge Maze", start: "shrine, after the opening scene", prefix: afterOpening },
   { id: "S4", preset: "S4", heldOut: true, title: "Griffin, offering and finale", start: "shrine, holding the Vanity Mirror and Enchanted Shears", prefix: withMirrorAndShears },
   { id: "F", preset: "full", heldOut: true, title: "Full episode", start: "goddess checkpoint" },
+  { id: "S2-local", preset: "S2-local", heldOut: false, title: "Mirror Pond — local start", start: "Mirror Pond entrance, after the opening and ordinary travel", prefix: localEntry("Mirror Pond"), briefing: localBriefing("S2-local", "Mirror Pond", "Vanity Mirror") },
+  { id: "S3-local", preset: "S3-local", heldOut: false, title: "Hedge Maze — local start", start: "Hedge Maze entrance, after the opening and ordinary travel", prefix: localEntry("Hedge Maze"), briefing: localBriefing("S3-local", "Hedge Maze", "Enchanted Shears") },
 ]);
 
 /**
