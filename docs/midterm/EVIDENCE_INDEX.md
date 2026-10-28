@@ -144,4 +144,9 @@ Session [S36](../agent-sessions/36-claude-pilot6-navigation-fixes.md) (`4bd24137
   - New `packages/agent/test/pilot6Fixes.test.ts`: 16/16.
   - The scripted route (seed 1: 12,412 ticks, same end hash) and both baselines on S1–S3 seed 0 have identical actions and game-state hashes before and after. This needed the scripted players to round `self` back to one decimal (`asTuned`), which awaits the owner's confirmation.
 - **3d:** a same-session `game-rules-audit` before implementing: `agent-evidence/skill-runs/2026-10-28-adapter-pilot6-fixes.md`. `session-evidence` produced S36. Neither is an independent review.
+- **Review and follow-up (2026-10-28):**
+  - A `rules-reviewer` subagent ran in a fresh context on `bdfcf7c` and `fc685e8`: `agent-evidence/reviews/2026-10-28-pilot6-fixes-rules-review.md` (12 findings, highest Medium). It was spawned by the implementing session, so it is **not counted as independent**.
+  - Verification, process deviation, timeout analysis and the audible-chime proposal: `agent-evidence/2026-10-28-pilot6-review-followup.md`.
+  - Review finding 1 is confirmed: a false `partial` when Slow Time starts during a partner's move. Not yet fixed.
+  - Process deviation: `asTuned` was implemented past the audit's stop point without first asking; it was disclosed at the time and is now provisionally accepted by the owner.
 - **Not yet:** no review from a separate reviewer session, and no paid S2 run with the briefing. No S4/F, push or merge.
