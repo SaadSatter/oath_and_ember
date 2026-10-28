@@ -10,7 +10,9 @@
 //
 // What it does: one runSuite() episode (same suite rules, budget, ledger,
 // traces and records as evaluate.ts), with the environment's room served to
-// a local read-only browser viewer and game time paced to real time.
+// a local read-only browser viewer and game time paced to real time. A
+// headless Chromium records the viewer to <out>/recording.webm (1920×1080)
+// with its metadata in <out>/recording.json; --no-record turns this off.
 //
 // What it never does: run S4 or F, run final seeds, take a credential on the
 // command line, write a credential anywhere, or use any ledger other than the
@@ -19,10 +21,11 @@
 
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { join, relative, resolve } from "node:path";
+import { basename, join, relative, resolve } from "node:path";
 import { aggregate, EPISODE_CAP_USD, episodeCap, PLAYER_KINDS, runSuite, validatePlan, type EpisodeSummary, type ModelSetup, type PlayerKind } from "../../packages/agent/src/harness.js";
 import { APPROVED_LEDGER, SpendLedger } from "../../packages/agent/src/ledger.js";
 import { startViewer, type Viewer } from "../../packages/agent/src/liveViewer.js";
+import { RECORDING_META, startRecorder, type Recorder, type RecordingResult } from "../../packages/agent/src/recorder.js";
 import { AnthropicGateway, anthropicPrices, assertApprovedModel, EFFORTS, type Effort } from "../../packages/agent/src/policies/llm.js";
 import { MockGateway } from "../../packages/agent/src/policies/mockGateway.js";
 import { canonicalLedgerPath, repoInfo, unmeteredWorktrees } from "../../packages/agent/src/repo.js";
@@ -35,7 +38,7 @@ const KNOWN = new Map<string, "value" | "flag">([
   ["--scenario", "value"], ["--seed", "value"], ["--player", "value"], ["--gateway", "value"], ["--model", "value"],
   ["--effort", "value"], ["--max-spend-usd", "value"], ["--paid", "flag"], ["--speed", "value"], ["--port", "value"],
   ["--out", "value"], ["--wall-seconds", "value"], ["--max-batch", "value"], ["--mock-delay-ms", "value"],
-  ["--linger-seconds", "value"], ["--no-viewer", "flag"], ["--no-open", "flag"], ["--help", "flag"],
+  ["--linger-seconds", "value"], ["--no-viewer", "flag"], ["--no-open", "flag"], ["--no-record", "flag"], ["--help", "flag"],
 ]);
 
 function fail(message: string): never {
@@ -95,7 +98,10 @@ if (paid && !opts.has("--paid")) fail("this is a paid run. Pass --paid only afte
 if (!paid && opts.has("--paid")) fail("--paid is only for --gateway anthropic.");
 if (!paid && (opts.has("--model") || opts.has("--effort") || opts.has("--max-spend-usd"))) fail("--model, --effort and --max-spend-usd apply to paid runs only.");
 const viewerOn = !opts.has("--no-viewer");
+// The video is recorded from the viewer, so --no-viewer also means no video.
+const recordOn = viewerOn && !opts.has("--no-record");
 const speed = num("--speed", 1);
+const paced = viewerOn && speed > 0;
 const lingerSeconds = num("--linger-seconds", viewerOn ? 15 : 0);
 const maxBatch = num("--max-batch", 4);
 const wallSeconds = opts.has("--wall-seconds") ? num("--wall-seconds", 0) : undefined;
@@ -109,9 +115,19 @@ if (wallSeconds === 0) fail("--wall-seconds must be positive.");
 const controller = new AbortController();
 const linger = new AbortController();
 let phase: "setup" | "running" | "finished" = "setup";
+let recorder: Recorder | undefined;
+let summaries: EpisodeSummary[] = [];
+let error: Error | undefined;
 let interrupts = 0;
 let ledger: SpendLedger | undefined;
-process.on("exit", () => ledger?.close());
+let recordingMeta: ((r: RecordingResult, note?: string) => void) | undefined;
+let recordingFinal = false;
+process.on("exit", () => {
+  ledger?.close();
+  // A forced exit cannot wait for the video to be finalized: say so.
+  if (recorder && recordingMeta && !recordingFinal)
+    recordingMeta({ ...recorder.result, status: "failed", path: null, error: "The launcher exited before the video was saved (forced exit or a stop before the episode). Any partial file is incomplete." });
+});
 const onSignal = (code: number) => () => {
   if (phase === "finished") {
     linger.abort();
@@ -252,6 +268,30 @@ if (viewerOn) {
   }
 }
 
+// ── Recording (passive: a headless browser on the read-only /watch page) ────
+// It starts before the episode; the environment's `ready` hook then waits,
+// with game time frozen, until both hero views have drawn the start. A
+// recording failure is reported and the evaluation continues without video.
+if (viewer && recordOn) {
+  mkdirSync(out, { recursive: true });
+  recorder = await startRecorder({ url: viewer.url, outDir: out, env: cleanEnv() });
+  recordingMeta = (r, note) => {
+    writeFileSync(join(out, RECORDING_META), JSON.stringify({
+      runId: basename(out), scenario, seed, player,
+      model: paid ? get("--model", "claude-haiku-5-5") : null, effort: paid ? get("--effort", "medium") : null,
+      gateway: model?.gateway.label ?? paidGateway?.gateway.label ?? null, paid, speed: paced ? speed : null, gitHash: version,
+      viewerUrl: viewer!.url, passive: true,
+      status: r.status, path: r.path, relativePath: r.path ? relative(repo.root, r.path) : null, bytes: r.bytes,
+      resolution: `${r.size.width}x${r.size.height}`, browser: r.browser, readyConfirmed: r.readyConfirmed, finalConfirmed: r.finalConfirmed,
+      startedAt: r.startedAt, readyAt: r.readyAt, stoppedAt: r.stoppedAt, wallSeconds: r.wallSeconds,
+      completion: completion(), episode: episodeInfo(), error: r.error, warnings: r.warnings, ...(note ? { note } : {}),
+    }, null, 2));
+  };
+  if (recorder.result.status === "failed") console.error(`RECORDING FAILED: ${recorder.result.error} The evaluation continues without a video.`);
+  else console.log(`Recording the viewer (${recorder.result.browser ?? "headless Chromium"}, ${recorder.result.size.width}×${recorder.result.size.height}).`);
+  recordingMeta(recorder.result, "in progress");
+} else if (viewerOn) console.log("Recording off (--no-record).");
+
 // ── Paid ledger: reopened and re-checked just before the run (M3) ──────────
 if (paidGateway) {
   ledger = openPaidLedger();
@@ -311,11 +351,22 @@ function onTrace(l: TraceLine) {
 }
 
 // ── Run ──────────────────────────────────────────────────────────────────────
+/** How the episode ended, for the recording's metadata. */
+function completion(): string {
+  if (phase !== "finished") return "running";
+  if (error) return "error";
+  if (controller.signal.aborted) return "interrupted";
+  const s = summaries[0];
+  if (!s) return "no_episode";
+  if (s.success) return "success";
+  return s.reason === "wall_clock_limit" || s.reason === "tick_limit" ? "timeout" : "failure";
+}
+function episodeInfo() {
+  const s = summaries[0];
+  return s ? { status: s.status, reason: s.reason, success: s.success, startHash: s.startHash, endHash: s.endHash, trace: s.trace } : null;
+}
 const situ = situation(scenario);
 console.log(`Running ${scenario} (${situ.title}), seed ${seed}, player ${player}${isModel ? `, gateway ${model!.gateway.label}` : ""}${paid ? `, cap $${episodeCapUsd}` : ""}. Output: ${relative(repo.root, out)}`);
-let summaries: EpisodeSummary[] = [];
-let error: Error | undefined;
-const paced = viewerOn && speed > 0;
 phase = "running";
 try {
   summaries = await runSuite({
@@ -329,7 +380,7 @@ try {
     ...(wallSeconds !== undefined ? { wallSeconds } : {}),
     ...(model ? { model } : {}),
     ...(episodeCapUsd !== undefined ? { episodeCapUsd } : {}),
-    ...(viewer ? { environment: viewer.hooks } : {}),
+    ...(viewer ? { environment: { ...viewer.hooks, ...(recorder ? { ready: () => recorder!.ready(controller.signal) } : {}) } } : {}),
     // Recorded in run.json and every summary, so watched runs are never pooled blindly.
     launch: { launcher: "scripts/midterm/live.ts", speed: paced ? speed : null, viewer: viewerOn },
   });
@@ -369,6 +420,21 @@ try {
   if (paid && remaining) console.log(`Ledger: $${remaining.pilot.toFixed(4)} left in pilot, $${remaining.total.toFixed(4)} left in total.`);
 }
 
+// ── Finish the recording before reporting (and before the viewer lingers) ───
+// The recorder waits until the viewer itself shows the episode's end, then
+// keeps a 3 s tail so the final screen is in the video. After Ctrl-C there
+// is no tail, and a Ctrl-C during these waits cuts them short.
+if (recorder) {
+  const stoppedByUser = controller.signal.aborted;
+  const r = await recorder.stop({ finalTimeoutMs: stoppedByUser ? 3000 : 15_000, holdMs: stoppedByUser || error ? 0 : 3000, signal: linger.signal });
+  recordingMeta!(r);
+  recordingFinal = true;
+  if (r.status === "saved") console.log(`Video:   ${r.path} (${r.size.width}×${r.size.height}, ${r.wallSeconds} s${r.readyConfirmed ? "" : ", start not confirmed"}${r.finalConfirmed ? "" : ", end not confirmed"})`);
+  else console.error(`RECORDING FAILED: ${r.error} No video was saved; the evaluation records are unaffected.`);
+  for (const w of r.warnings) console.error(`Recording warning: ${w}`);
+  console.log(`Recording metadata: ${join(out, RECORDING_META)}`);
+}
+
 if (error) {
   console.error(safeText(`The run failed: ${error.message}`));
   console.error(`Records kept in ${out}`);
@@ -387,7 +453,7 @@ if (s) {
   console.log(`No episode completed. Records kept in ${out}`);
 }
 if (viewer) {
-  if (lingerSeconds > 0 && !controller.signal.aborted) {
+  if (lingerSeconds > 0 && !controller.signal.aborted && !linger.signal.aborted) {
     console.log(`Viewer stays up for ${lingerSeconds} s (Ctrl-C to close now).`);
     await new Promise<void>((r) => {
       const t = setTimeout(r, lingerSeconds * 1000);

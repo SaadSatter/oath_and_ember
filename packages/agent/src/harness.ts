@@ -70,7 +70,7 @@ export interface SuiteRunOptions {
    */
   episodeCapUsd?: number;
   /** Live viewing hooks for the environment (scripts/midterm/live.ts). */
-  environment?: Pick<EnvironmentOptions, "room" | "tick" | "pace">;
+  environment?: Pick<EnvironmentOptions, "room" | "tick" | "pace" | "ready">;
   /**
    * How the run was launched, recorded in the manifest and every summary so
    * watched and headless results can be told apart: the entrypoint, the

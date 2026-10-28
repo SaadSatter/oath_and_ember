@@ -14,3 +14,9 @@ qa/**/*.webm
 
 # Local evaluation runs and the persistent spend ledger (never committed)
 evaluation-runs/
+
+# Gameplay videos from eval:live (written into the run folder, which may be
+# outside evaluation-runs/ with --out). Never committed.
+recording.webm
+recording.json
+.recording-tmp/

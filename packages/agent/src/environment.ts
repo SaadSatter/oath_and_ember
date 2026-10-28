@@ -74,13 +74,18 @@ export interface EnvironmentOptions {
    *   - `tick` advances the room by exactly one tick instead of
    *     `room.tick()` (the server's manual driver, which also broadcasts);
    *   - `pace` is awaited between ticks while game time runs (not during a
-   *     scenario prefix), to play at watchable speed.
+   *     scenario prefix), to play at watchable speed;
+   *   - `ready` is awaited at the end of reset, after the scenario prefix
+   *     and the reset trace line, before any hero can observe or act (a
+   *     recorder confirms the viewer has drawn the start). Game time is
+   *     frozen while it waits.
    * None of them changes which ticks run or in what order relative to the
    * heroes' decisions; test/liveView.test.ts checks the hashes match.
    */
   room?: (room: GameRoom) => void;
   tick?: (room: GameRoom) => void;
   pace?: () => Promise<void>;
+  ready?: () => Promise<void>;
   /**
    * Route development only (finalAccess.ts, re-review H2-b): lets the
    * scripted route and checkpoint tests reset held-out scenarios (and play
@@ -240,6 +245,7 @@ export class AgentEnvironment implements GameInterface {
       limits: { ...this.limits },
     };
     this.trace("reset", { ...state, ...(prefixInfo ? { prefix: prefixInfo } : {}), ...(this.admission.kind !== "open" ? { access: this.admission } : {}) });
+    await this.options.ready?.();
     return state;
   }
 
