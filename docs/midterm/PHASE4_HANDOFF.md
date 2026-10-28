@@ -3,6 +3,14 @@
 Worktree: `oath_and_ember-eval`, branch `midterm/evaluation`, base commit `b51c1c0`.
 
 
+## Agent-interface reliability pass (2026-10-27, Claude Code S31)
+
+Owner-approved fixes from the first real-LLM S1 run (code `4193424`), committed as `5c3de48`. See `AGENT_INTERFACE.md`, "Reliability pass", and session record S31. The five operations, observation boundaries, rules, scenarios and success conditions are unchanged. The original S1 trace, results and ledger are untouched.
+
+**Next step needs owner approval:** another real-LLM run. Recommended first: `game-rules-audit adapter` and an independent `rules-reviewer` pass on `5c3de48`. The first paid call will be the first time structured output (`output_config.format`) meets the real API. If the API rejects the schema, `AnthropicGateway(..., structured = false)` turns it off, and replies are still validated by `parseReply()`.
+
+**Uncommitted, not from S31:** recording work from a parallel session (`recorder.ts`, `recorder.test.ts`, `scripts/midterm/live.ts`, `LIVE_RUN.md`, `.gitignore`, and a `ready` hook in `environment.ts`/`harness.ts`) remains in the working tree, unstaged.
+
 ## Evidence finalized and Node 24 verification (2026-10-27)
 
 The owner authorized completion of the remaining offline preparation and local evidence/documentation commits only. Pending session 29, session 30 and the recording/paid-entrypoint audit reports are preserved; no evidence was deleted to clean Git. The existing session-evidence extractor, redactor and renderer were used, and session 30 is explicitly registered as a supplement to the same session as 28, not a new independent review.

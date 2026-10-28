@@ -127,7 +127,7 @@
     "01a16225"
    ],
    "role": "Implementation agent (`AGENTS.md`); orchestrator of subagents 18, 19 and 21",
-   "title": "Player manual, design rationale D1\u2013D11, midterm architecture, superseded Codex evaluation (PR #5)"
+   "title": "Player manual, design rationale D1–D11, midterm architecture, superseded Codex evaluation (PR #5)"
   },
   {
    "number": 15,
@@ -277,6 +277,15 @@
    "role": "Codex supplement to session 28 under AGENTS.md and CLAUDE.md: paid-entrypoint safety audit and evidence finalization; same session, not an independent review",
    "title": "Paid-entrypoint safety audit supplement",
    "note": "Same session id as file 28; this is a task-specific supplement, not an additional independent session."
+  },
+  {
+   "number": 31,
+   "slug": "claude-agent-interface-reliability-pass",
+   "ids": [
+    "47c36046"
+   ],
+   "role": "Implementation agent under CLAUDE.md and AGENTS.md: owner-approved agent-interface reliability pass after the first real-LLM S1 run; then session-evidence skill invocation (this record). Not reviewed independently yet",
+   "title": "Agent-interface reliability pass after the first real-LLM S1 run"
   }
  ]
 }

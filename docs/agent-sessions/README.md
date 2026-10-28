@@ -36,7 +36,7 @@ New sessions are added with the `session-evidence` skill (`.claude/skills/sessio
 
 ## Files
 
-Latest record: [30 — Paid-entrypoint safety audit supplement](30-codex-paid-entrypoint-audit-supplement.md), supplement to session `01a17e49-e8f5-7150-8932-837cfe871fe3` (same session as 28; safety checks and evidence finalization, not an independent review).
+Latest record: [31 — Agent-interface reliability pass after the first real-LLM S1 run](31-claude-agent-interface-reliability-pass.md), session `47c36046-7a76-45d1-9d05-03e68d299f40` (implementation under `CLAUDE.md`/`AGENTS.md`; not independently reviewed yet).
 
 | File | Sessions | Role |
 | --- | --- | --- |
@@ -70,6 +70,7 @@ Latest record: [30 — Paid-entrypoint safety audit supplement](30-codex-paid-en
 | [28 — Continue the evaluation worktree and validate existing Phase 4 work](28-codex-evaluation-handoff.md) | `01a17e49` | Implementation handoff under `AGENTS.md` and `CLAUDE.md`; same-session `session-evidence` and `game-rules-audit` use. Not an independent review |
 | [29 — Independent review of the Phase 4 launcher, re-review fixes, and the legacy-runner paid guard](29-claude-phase4-review-and-fixes.md) | `ffcdac23` | Read-only review of `bc377ee..b612285` (built by a different session; not the `rules-reviewer` subagent), then implementation of its fixes (`37f4c66`, `c6761a7`, `f5cf5cf`, `8837f88`, `6bee662` on `midterm/evaluation`; `b18cd0f` on `midterm/agent-interface`) and a `session-evidence` invocation. The fixes are not independently reviewed |
 | [30 — Paid-entrypoint safety audit supplement](30-codex-paid-entrypoint-audit-supplement.md) | `01a17e49` (same session as 28) | Archived paid-path guard, canonical safety audit, Node 24 validation and preservation/finalization of pending evidence. Same-session skill use; not independent review |
+| [31 — Agent-interface reliability pass after the first real-LLM S1 run](31-claude-agent-interface-reliability-pass.md) | `47c36046` | Implementation (`5c3de48`): action statuses, structured output and envelope validation, per-hero dialogue log, prompt clarifications, metrics v2. Same-session `session-evidence` invocation; not independent review |
 | [00 — Codex briefs without a surviving transcript](00-pre-log-codex-briefs.md) | attachments only | Owner's instructions; no session record |
 
 Sessions after 2026-10-26 (this evidence work onward) are added here as they are recorded.

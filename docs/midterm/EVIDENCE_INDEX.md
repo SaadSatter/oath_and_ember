@@ -72,3 +72,13 @@ Session [S29](../agent-sessions/29-claude-phase4-review-and-fixes.md) (`ffcdac23
 - Five broad secret-scan matches verified individually as synthetic false positives, no unexpected matches; scanner/global rules unchanged. Proof: `evidence/phase4/synthetic-canary-verification-2026-10-27.json`. Historical reports keep their original findings.
 - Read-only inventory: no canonical ledger/init marker/lock; no legacy ledger/lock in any of four worktrees; no unmetered legacy-runner warning. Active paid launchers use the Git-common shared ledger; archived paid CLI paths are disabled.
 - Preparation is complete after the evidence-only local commit and clean-tree check. Paid dispatch remains gated by separate ledger-initialization approval, configured credential and smoke approval. No API call, ledger initialization, gameplay change, push or merge.
+
+## Agent-interface reliability pass (2026-10-27, S31)
+
+Session [S31](../agent-sessions/31-claude-agent-interface-reliability-pass.md) (`47c36046`), implementation commit `5c3de48`, based on the first real-LLM S1 run at `4193424`. That run's trace, results and ledger are unchanged (SHA-256 checked before and after).
+
+- **2b (LLM players):** proposed actions now end as executed, rejected, stale or skipped, and only executed ones become history. Replies use structured JSON output (model and effort allowlist unchanged) and conservative envelope validation, and an unusable reply submits nothing. Reply stop reasons and block metadata are recorded. Prompt text explains state-dependent actions and that keyboard controls are not commands, and suggests agreeing on shared-line ownership by message. Design: `docs/midterm/AGENT_INTERFACE.md`, "Reliability pass".
+- **2c (observations):** new `dialogueLog`, holding only the lines that hero's own screen displayed, including lines shown while it waited. A private-line boundary test shows the partner sees only its own screen's text.
+- **3b (accounting):** per-hero metrics version 2 (model calls, model decisions, parse failures, submitted, executed, stale, rejected and skipped actions); legacy fields kept, with the documented meaning change for parse failures.
+- **3c:** under Node v24.19.0, typecheck and build pass. 778/778 tests in 95 files pass with 4 workers, with `suite.test.ts`, `route/fullQuest.test.ts` and `checkpointFreeze.test.ts` excluded (no S4/F). Earlier full-parallel runs had timeout-only failures. 41 new tests are in `packages/agent/test/reliability.test.ts`. The scripted quest baseline replays S1 seed 0 to identical start and end hashes.
+- **Not yet:** no `game-rules-audit` or independent review of `5c3de48`. Structured output has not been tried against the real API. No paid call, S4/F, push or merge.
