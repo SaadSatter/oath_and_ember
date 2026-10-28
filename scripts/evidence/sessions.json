@@ -324,6 +324,15 @@
    ],
    "role": "Implementation agent under CLAUDE.md and AGENTS.md: diagnosed the first real OpenAI S2 run from its existing records (no paid call), implemented the owner-approved S2 reliability fixes, ran a rules-reviewer subagent review at the owner's request, then the owner-approved pre-pilot cleanup, then investigated the owner's paid pilot-5 and added the owner-approved S2 episode briefing; invoked game-rules-audit twice (before the fixes and before the briefing) and session-evidence three times for this record. The rules-reviewer was spawned by this implementing session, so it is not counted as an independent review",
    "title": "S2 OpenAI runs: diagnosis, reliability fixes, review, pre-pilot cleanup and S2 briefing"
+  },
+  {
+   "number": 36,
+   "slug": "claude-pilot6-navigation-fixes",
+   "ids": [
+    "4bd24137"
+   ],
+   "role": "Implementation agent under CLAUDE.md and AGENTS.md: investigated the owner's paid pilot-6 run from its existing records (no paid call), invoked game-rules-audit (adapter) before implementing, implemented the owner-approved fixes 1-5 and verified them offline, then invoked session-evidence for this record. No independent review yet",
+   "title": "Pilot-6 navigation investigation, pre-implementation audit, and movement, cow, position, briefing and prompt fixes"
   }
  ]
 }

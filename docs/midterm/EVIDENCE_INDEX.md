@@ -128,4 +128,20 @@ Session [S35](../agent-sessions/35-claude-s2-reliability-fixes.md) (`1d2c5393`),
   - In the owner's paid pilot-5 (ledger `pilot-5`, $0.018614), the party left for Bridge Ruins 2.3 game seconds in. Players had not been told which part of the quest S2 evaluates.
   - Owner-approved S2-only episode briefing in `c296ff4`, audited first: `agent-evidence/skill-runs/2026-10-28-suite-s2-briefing.md`. Logged in the `EVALUATION_SUITE.md` change log; S2 results before and after it are reported separately.
   - Under Node v24.22.1: 871/871 offline tests in 100 files (held-out-related files excluded); typecheck and build pass.
+
+## Pilot-6 navigation fixes (2026-10-28, S36)
+
+Session [S36](../agent-sessions/36-claude-pilot6-navigation-fixes.md) (`4bd24137`), implementation commit `bdfcf7c`. Diagnosed from the owner's paid pilot-6 (S2 seed 0 OpenAI, ledger `pilot-6`, cap $0.20, charged $0.10357, `manual_stop`; records not committed). Design: `AGENT_INTERFACE.md`, "Pilot-6 fixes"; change log in `EVALUATION_SUITE.md`.
+
+- **2b / 2c (interface and observations):**
+  - `StepResult.movement` reports full, partial or no movement against the open-ground distance (shared `stepMovement` replayed on a copy). A short move adds one line that never names the obstacle.
+  - The cow is a neutral "cow"; its sign is fixed where `HedgeMazeView` draws it.
+  - `self` is truncated to two decimals so it matches the `@` cell; the prompt has a legend for cells and the body footprint.
+  - S2 briefing second revision (draft wording, pending the owner); a general communication line for every scenario and provider.
+  - The lane-cleared sound was investigated and left unchanged (owner default: visible only).
+- **3c:**
+  - Under Node v24.19.0: typecheck and build pass; `npm test` 898/899. The one failure is a timeout in `apps/server/test/mirrorPondWalkthrough.test.ts` that also occurred before the change; that file passes alone.
+  - New `packages/agent/test/pilot6Fixes.test.ts`: 16/16.
+  - The scripted route (seed 1: 12,412 ticks, same end hash) and both baselines on S1–S3 seed 0 have identical actions and game-state hashes before and after. This needed the scripted players to round `self` back to one decimal (`asTuned`), which awaits the owner's confirmation.
+- **3d:** a same-session `game-rules-audit` before implementing: `agent-evidence/skill-runs/2026-10-28-adapter-pilot6-fixes.md`. `session-evidence` produced S36. Neither is an independent review.
 - **Not yet:** no review from a separate reviewer session, and no paid S2 run with the briefing. No S4/F, push or merge.
