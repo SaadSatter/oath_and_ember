@@ -155,3 +155,16 @@ Session [S36](../agent-sessions/36-claude-pilot6-navigation-fixes.md) (`4bd24137
   - `truncate2` rounding guard removed after a property test showed scripted-rounding differences on positions reached by walking.
   - **3c:** under Node v24.19.0, typecheck and build pass; `npm test` 921/921 in 107 files. New `pilot6ReviewFixes.test.ts`, `asTuned.test.ts`, and `scriptedFreeze.test.ts` (scripted actions and state hashes pinned to `7bd0c7e`).
 - **Not yet:** no review from a separate reviewer session, and no paid S2 run with the briefing. No S4/F, push or merge.
+
+## Independent review of the pilot-6 changes (2026-10-28, S37)
+
+Session [S37](../agent-sessions/37-claude-independent-review-pilot6.md) (`130b0cd4`) is a separate session started by the owner. It did not write the code, was not spawned by the implementing session and was not asked to approve. Report: `agent-evidence/reviews/2026-10-28-pilot6-independent-review.md`.
+
+- **3d:** independent review of `bdfcf7c` and `f48ae0e`: 8 findings, the highest Medium.
+- **2b / 2c (findings):**
+  - False collision line on a 1-tick open-ground move under Slow Time (new).
+  - Silent lethal respawn (pre-existing; the reviewer recommends fixing it before the next paid S2/S3 run, owner decision).
+  - Listed coordinates of other things can disagree with their grid cell.
+  - Carry path untested in the repository, though reproduced offline.
+- **3c:** under Node v26.9.0, typecheck and build pass; `npm test` 921/921 in 107 files. `scriptedFreeze` passes 7/7 against an extract of `7bd0c7e`, which confirms the pinned scripted fingerprints are the pre-change behaviour.
+- **Not done:** no code change, model call, S4/F, commit, push or merge. Owner decisions on the findings are pending.

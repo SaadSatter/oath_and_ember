@@ -333,6 +333,15 @@
    ],
    "role": "Implementation agent under CLAUDE.md and AGENTS.md: investigated the owner's paid pilot-6 run from its existing records (no paid call), invoked game-rules-audit (adapter) before implementing, implemented the owner-approved fixes 1-5 and verified them offline, then invoked session-evidence for this record. No independent review yet",
    "title": "Pilot-6 navigation investigation, pre-implementation audit, and movement, cow, position, briefing and prompt fixes"
+  },
+  {
+   "number": 37,
+   "slug": "claude-independent-review-pilot6",
+   "ids": [
+    "130b0cd4"
+   ],
+   "role": "Independent reviewer: a separate Claude Code session started by the owner with a read-only review brief, following the checklist and report format of .claude/agents/rules-reviewer.md. It did not write the reviewed code (bdfcf7c, f48ae0e; built in session 4bd24137), was not spawned by the implementing session and was not asked to approve. It changed no implementation code. Counted as an independent review. Invoked session-evidence for this record",
+   "title": "Independent review of the pilot-6 movement feedback and review fixes (bdfcf7c, f48ae0e)"
   }
  ]
 }
