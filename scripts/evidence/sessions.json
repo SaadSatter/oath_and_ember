@@ -322,8 +322,8 @@
    "ids": [
     "1d2c5393"
    ],
-   "role": "Implementation agent under CLAUDE.md and AGENTS.md: diagnosed the first real OpenAI S2 run from its existing records (no paid call), then implemented the owner-approved S2 reliability fixes; invoked game-rules-audit before implementing and session-evidence for this record. Not an independent review; the changes have not been reviewed independently yet",
-   "title": "S2 OpenAI run diagnosis and reliability fixes (feedback, schema, runaways, shutdown)"
+   "role": "Implementation agent under CLAUDE.md and AGENTS.md: diagnosed the first real OpenAI S2 run from its existing records (no paid call), implemented the owner-approved S2 reliability fixes, ran a rules-reviewer subagent review at the owner's request, then the owner-approved pre-pilot cleanup; invoked game-rules-audit before implementing and session-evidence (twice) for this record. The rules-reviewer was spawned by this implementing session, so it is not counted as an independent review",
+   "title": "S2 OpenAI run diagnosis, reliability fixes, rules-reviewer review and pre-pilot cleanup"
   }
  ]
 }

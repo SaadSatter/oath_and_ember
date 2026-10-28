@@ -120,4 +120,8 @@ Session [S35](../agent-sessions/35-claude-s2-reliability-fixes.md) (`1d2c5393`),
   - Under Node v24.22.1: typecheck and build pass; **851/851 tests in 99 files**, with `suite.test.ts`, `route/fullQuest.test.ts` and `checkpointFreeze.test.ts` excluded.
   - Both baselines on S1–S3 seed 0 have identical actions and game-state hashes before and after the change.
 - **3d:** a same-session `game-rules-audit` before implementing: `agent-evidence/skill-runs/2026-10-28-adapter-s2-feedback.md`. `session-evidence` produced S35. Neither is an independent review.
-- **Not yet:** no independent review of `3f22c66`, and no paid re-run of S2. No S4/F, push or merge.
+- **Review and cleanup:**
+  - A `rules-reviewer` subagent reviewed `3f22c66` and `3573d2f`: `agent-evidence/reviews/2026-10-28-s2-reliability-rules-review.md`. It found no blocker. It was spawned by the implementing session, so it is not counted as independent.
+  - Owner-approved pre-pilot cleanup in `5234e50`. One Ctrl-C under `npm run eval:live` was being counted twice; this was reproduced and fixed, and subprocess launcher tests were added. Doc, parse-reason, provider-isolation, schema-guard and wording corrections were also made.
+  - Under Node v24.22.1: 862/862 offline tests in 99 files (held-out-related files excluded; run in two passes because the machine was heavily loaded); typecheck and build pass. The shared ledger is unchanged.
+- **Not yet:** no review from a separate reviewer session, and no paid re-run of S2. No S4/F, push or merge.
