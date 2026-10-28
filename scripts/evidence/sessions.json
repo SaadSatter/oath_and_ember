@@ -296,6 +296,25 @@
    "role": "Implementation agent under CLAUDE.md and AGENTS.md: owner-requested automatic gameplay video recording for eval:live, integrated after the reliability pass (5c3de48, 5240cb0); then session-evidence skill invocation (this record). Not reviewed independently yet",
    "title": "Automatic gameplay video recording for eval:live",
    "note": "Protocol deviation: two early plain `npm test` runs in this session included the held-out route tests suite.test.ts and route/fullQuest.test.ts. Their outcomes were not inspected or used for implementation or tuning; later runs excluded them and checkpointFreeze.test.ts."
+  },
+  {
+   "number": 33,
+   "slug": "codex-openai-provider-supplement",
+   "ids": [
+    "01a17e49"
+   ],
+   "role": "Codex supplement to sessions 28 and 30 under AGENTS.md and CLAUDE.md: owner-approved OpenAI provider integration in oath_and_ember-eval, left uncommitted when Codex reached its usage limit during final verification; same session, not an independent review",
+   "title": "OpenAI provider integration (Codex implementation, uncommitted at the usage limit)",
+   "note": "Same session id as files 28 and 30; this is a task-specific supplement covering the turns from 2026-10-28 04:28 UTC, not an additional independent session. Codex's code was committed by session 34."
+  },
+  {
+   "number": 34,
+   "slug": "claude-openai-provider-completion",
+   "ids": [
+    "9e618f25"
+   ],
+   "role": "Implementation agent under CLAUDE.md and AGENTS.md: continued Codex's uncommitted OpenAI provider work (session 33), reviewed the dispatch guards, fixed two defects, verified offline and committed it; then session-evidence skill invocation (this record). Not an independent review of Codex's work and not reviewed independently yet",
+   "title": "OpenAI provider integration: Codex implementation finished and verified"
   }
  ]
 }

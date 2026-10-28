@@ -91,3 +91,12 @@ Session [S32](../agent-sessions/32-claude-eval-live-video-recording.md) (`bf4d98
 - **5a / 3c (unchanged evaluation):** the recorded S1 seed 0 baseline has start hash `d9b2359a956db64d…`, end hash `7e22d17e885d2cd2…` and 290 ticks, as established. Its semantic trace equals a headless run's. Under Node v24.22.1, typecheck and build pass, and 781/781 tests in 95 files pass with `suite.test.ts`, `route/fullQuest.test.ts` and `checkpointFreeze.test.ts` excluded. 14 new tests are in `packages/agent/test/recorder.test.ts`.
 - **Protocol deviation:** two early plain `npm test` runs in S32 included the held-out route tests `suite.test.ts` and `route/fullQuest.test.ts`. No model or paid call was involved, and the outcomes were not inspected or used for implementation or tuning. Details are in the S32 record.
 - **Not yet:** no `game-rules-audit recording` run and no independent review of this change. No paid call, push or merge.
+
+## OpenAI provider integration (2026-10-28, S33–S34)
+
+Codex supplement [S33](../agent-sessions/33-codex-openai-provider-supplement.md) (`01a17e49`, uncommitted implementation) and Claude session [S34](../agent-sessions/34-claude-openai-provider-completion.md) (`9e618f25`), implementation commit `b20953e`. Configuration and limits: `MODEL_BUDGET.md`, "OpenAI provider".
+
+- **2b (model players):** owner-approved OpenAI alternative: `gpt-6-luna` at low/medium only, Responses API strict JSON-schema output, same `LLMPlayer`, observations and five operations. Anthropic behaviour unchanged.
+- **3b (accounting):** both providers need an open reservation in the canonical shared ledger and a one-use per-call grant before any HTTP request, enforced at the transport (including the Anthropic SDK's own `fetch`). OpenAI prices checked against the public docs on 2026-10-28; settlement uses a 1.1× uplift, and unknown usage, model or tier is charged the full reservation.
+- **3c:** under Node v24.22.1, typecheck and build pass; **818/818 tests in 96 files** with `suite.test.ts`, `route/fullQuest.test.ts` and `checkpointFreeze.test.ts` excluded. S1 seed 0 baseline replays to the established hashes and 290 ticks, and its recording works.
+- **Not yet:** no OpenAI or Anthropic request (account access, real `service_tier` and cache-usage fields unverified); no `game-rules-audit` run or independent review of `b20953e`. No paid call, ledger change, S4/F, push or merge.
