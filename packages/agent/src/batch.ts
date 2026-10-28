@@ -18,7 +18,7 @@ export const MAX_BATCH = 4;
  * backpack or journal; or a new message from the partner.
  */
 export function batchStop(before: Observation, result: StepResult, after: Observation): string | undefined {
-  if (!result.accepted) return "invalid action";
+  if (!result.accepted) return result.stale ? "dialogue line had already moved on" : "invalid action";
   if (result.done) return "episode over";
   if (result.interrupted) return `interrupted: ${result.interrupted}`;
   if (result.feedback.length) return "feedback";

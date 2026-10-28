@@ -318,7 +318,7 @@ describe("LLM policy adapter (offline fake model)", () => {
       return { text: this.replies.shift() ?? "{}", tokens: { input: 50, output: 10 }, costUsd: 0.0001 };
     }
   }
-  it("submits the model's action, records usage, and records unparseable replies as invalid", async () => {
+  it("submits the model's action, records usage, and submits nothing for an unparseable reply", async () => {
     const trace = new TraceWriter();
     const env = new AgentEnvironment({ trace: (e) => trace.write(e) });
     const budget = new ModelBudget({ ...defaultBudgetLimits, maxModelCallsPerPlayer: 3 });
@@ -337,7 +337,9 @@ describe("LLM policy adapter (offline fake model)", () => {
     expect(out.reason).toBe("model_call_limit");
     // The cap is exact: a hero never makes more calls than allowed.
     expect(out.modelCalls.sieg).toBe(3);
-    expect(out.invalidActions.sieg).toBe(1);
+    // An unparseable reply is a parse failure, not a submitted (invalid) action.
+    expect(out.invalidActions.sieg).toBe(0);
+    expect(trace.lines.filter((l) => l.type === "reply_rejected" && l.player === "sieg")).toHaveLength(1);
     expect(out.tokens.sieg.input).toBe(150);
     // Each model only ever saw its own hero's observation.
     expect(sieg.seen.every((u) => u.includes('"player":"sieg"') && !u.includes('"player":"coco"'))).toBe(true);
@@ -346,8 +348,8 @@ describe("LLM policy adapter (offline fake model)", () => {
   });
 
   it("parses replies defensively", () => {
-    expect(parseReply('ok {"notes":"n","action":{"type":"interact"}} done')).toEqual({ notes: "n", action: { type: "interact" } });
-    expect(parseReply("no json")).toEqual({});
+    expect(parseReply('ok {"notes":"n","action":{"type":"interact"}} done')).toMatchObject({ ok: true, notes: "n", actions: [{ type: "interact" }] });
+    expect(parseReply("no json").ok).toBe(false);
   });
 
 });

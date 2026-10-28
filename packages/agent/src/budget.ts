@@ -37,14 +37,38 @@ export interface Completion {
   model?: string;
   /** Prompt-cache tokens, when the provider reports them (included in tokens.input). */
   cache?: { read: number; write: number };
+  /** Safe diagnostic facts about the reply (never its thinking text, headers or credentials). */
+  meta?: ReplyMeta;
+}
+
+/**
+ * What the provider said about how a reply ended and what it contained, kept
+ * for diagnosis. Content is summarised by block type and length only.
+ */
+export interface ReplyMeta {
+  /** e.g. "end_turn", "max_tokens", "refusal"; null when not reported. */
+  stopReason: string | null;
+  /** One entry per content block, in order: its type and its text length. */
+  blocks: { type: string; chars: number }[];
+  /** Whether the request asked the provider to constrain the reply to the JSON schema. */
+  structured: boolean;
+}
+
+/** Per-call request options a player may set. Nothing here reaches game state. */
+export interface CompletionOptions {
+  /**
+   * JSON schema the reply must follow, for providers that support constrained
+   * output. It describes only the public action format (types.ts).
+   */
+  schema?: Record<string, unknown>;
 }
 
 /** A provider adapter. It never retries on its own (retries would be uncounted calls). */
 export interface Gateway {
   readonly label: string;
   /** Worst-case cost of one call with this prompt, or null if prices are unknown. */
-  worstCaseUsd(system: string, user: string): number | null;
-  complete(system: string, user: string, signal: AbortSignal): Promise<Completion>;
+  worstCaseUsd(system: string, user: string, options?: CompletionOptions): number | null;
+  complete(system: string, user: string, signal: AbortSignal, options?: CompletionOptions): Promise<Completion>;
 }
 
 /** A provider failure that still carries whatever usage the provider reported. */
@@ -80,6 +104,7 @@ export interface CallRecord {
   chargedUsd: number;
   model?: string;
   cache?: { read: number; write: number };
+  meta?: ReplyMeta;
 }
 
 export class ModelBudget {
@@ -184,8 +209,8 @@ export class MeteredGateway {
     return this.inner.label;
   }
 
-  async complete(system: string, user: string): Promise<Completion & { record: CallRecord }> {
-    const { attempt, reservedUsd, controller } = this.budget.begin(this.player, this.inner.worstCaseUsd(system, user));
+  async complete(system: string, user: string, options?: CompletionOptions): Promise<Completion & { record: CallRecord }> {
+    const { attempt, reservedUsd, controller } = this.budget.begin(this.player, this.inner.worstCaseUsd(system, user, options));
     const started = performance.now();
     let timedOut = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -202,10 +227,10 @@ export class MeteredGateway {
     let accounted = false;
     const base = { player: this.player, attempt, gateway: this.inner.label, reservedUsd };
     try {
-      const c = await Promise.race([this.inner.complete(system, user, controller.signal), timeout, aborted]);
+      const c = await Promise.race([this.inner.complete(system, user, controller.signal, options), timeout, aborted]);
       accounted = true;
       const record = this.budget.settle(
-        { ...base, status: "ok", latencyMs: Math.round(performance.now() - started), tokens: c.tokens, costUsd: c.costUsd, ...(c.model ? { model: c.model } : {}), ...(c.cache ? { cache: c.cache } : {}) },
+        { ...base, status: "ok", latencyMs: Math.round(performance.now() - started), tokens: c.tokens, costUsd: c.costUsd, ...(c.model ? { model: c.model } : {}), ...(c.cache ? { cache: c.cache } : {}), ...(c.meta ? { meta: c.meta } : {}) },
         controller,
       );
       return { ...c, record };

@@ -84,7 +84,7 @@ describe("observation-only player", () => {
     await p.decide(input);
     await p.decide({ ...input, last: { accepted: true, ticks: 5, feedback: [], done: false } });
     const second = JSON.parse(rec.prompts[1].user);
-    expect(Object.keys(second)).toEqual(["your_notes", "recent_actions", "last_turn", "observation", "legal_actions"]);
+    expect(Object.keys(second)).toEqual(["your_notes", "completed_actions", "recent_rejected_actions", "last_turn", "observation", "legal_actions"]);
     expect(second.your_notes).toBe("remember this");
     expect(systemPrompt("Coco", "m")).toContain('"notes"');
   });
@@ -114,7 +114,7 @@ describe("observation-only information boundary (synthetic unit fixture)", () =>
         const observation = await env.observe(id);
         const legal = await env.legal_actions(id);
         const privateLast = { accepted: true, ticks: 0, done: false, feedback: ["PRIVATE-PREVIOUS-TURN"] };
-        await player.decide({ observation, legal, last: privateLast, batch: { steps: [{ action: { type: "wait", ticks: 1 }, result: privateLast }] } });
+        await player.decide({ observation, legal, last: privateLast, batch: { steps: [{ action: { type: "wait", ticks: 1 }, result: privateLast, status: "executed" }], skipped: [] } });
         await player.decide({ observation, legal });
         for (const prompt of recorder.prompts) {
           expect(JSON.parse(prompt.user)).toEqual({ observation, legal_actions: legal });

@@ -8,9 +8,9 @@
 // every attempt, enforces call/token/spend limits and the per-call timeout.
 
 import Anthropic from "@anthropic-ai/sdk";
-import type { ActionSpec, GameAction, Observation, StepResult } from "../types.js";
-import type { Decision, Policy } from "./policy.js";
-import { ModelCallError, type Completion, type Gateway, type MeteredGateway } from "../budget.js";
+import { abilityNames, actionTypes, directions, type GameAction } from "../types.js";
+import { stepStatus, type Decision, type Policy, type TurnReport } from "./policy.js";
+import { ModelCallError, type Completion, type CompletionOptions, type Gateway, type MeteredGateway, type ReplyMeta } from "../budget.js";
 import { MAX_BATCH } from "../batch.js";
 
 export interface Prices {
@@ -103,17 +103,26 @@ export class AnthropicGateway implements Gateway {
      * SDK reads ANTHROPIC_API_KEY. Never part of the label, traces or summaries.
      */
     apiKey?: string,
+    /**
+     * Ask the API to constrain replies to the player's JSON schema
+     * (output_config.format) when the player supplies one. It changes the
+     * reply format only, never the model or the effort. The reply is still
+     * validated by parseReply() either way.
+     */
+    readonly structured = true,
   ) {
     assertApprovedModel(model, effort);
     this.label = `anthropic:${model}@${effort}`;
     // An explicit key also stops the SDK from reading ANTHROPIC_AUTH_TOKEN.
     this.client = new Anthropic({ maxRetries: 0, baseURL: ANTHROPIC_BASE_URL, ...(apiKey ? { apiKey } : {}) });
   }
-  worstCaseUsd(system: string, user: string) {
-    // Assume the whole prompt is a cache write and the full output budget is used.
-    return anthropicCost(this.prices, { input: 0, cacheWrite: estimateTokens(system + user), cacheRead: 0, output: MAX_OUTPUT });
+  worstCaseUsd(system: string, user: string, options?: CompletionOptions) {
+    // Assume the whole prompt (schema included) is a cache write and the full output budget is used.
+    const schema = this.structured && options?.schema ? JSON.stringify(options.schema) : "";
+    return anthropicCost(this.prices, { input: 0, cacheWrite: estimateTokens(system + user + schema), cacheRead: 0, output: MAX_OUTPUT });
   }
-  async complete(system: string, user: string, signal: AbortSignal): Promise<Completion> {
+  async complete(system: string, user: string, signal: AbortSignal, options?: CompletionOptions): Promise<Completion> {
+    const format = this.structured && options?.schema ? { format: { type: "json_schema" as const, schema: options.schema } } : {};
     const response = await this.client.messages.create(
       {
         model: this.model,
@@ -121,7 +130,7 @@ export class AnthropicGateway implements Gateway {
         // The manual-bearing system prompt is identical every call: cache it.
         system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
         messages: [{ role: "user", content: user }],
-        output_config: { effort: this.effort },
+        output_config: { effort: this.effort, ...format },
       },
       { signal, maxRetries: 0 },
     );
@@ -132,7 +141,13 @@ export class AnthropicGateway implements Gateway {
     const costUsd = anthropicCost(this.prices, { input: u.input_tokens, cacheWrite: written, cacheRead: read, output: u.output_tokens });
     if (response.stop_reason === "refusal") throw new ModelCallError("refusal", "model_refusal", { tokens, costUsd });
     const text = response.content.map((b) => (b.type === "text" ? b.text : "")).join("");
-    return { text, tokens, costUsd, model: response.model, cache: { read, write: written } };
+    // Diagnosis only: block types and lengths, never thinking text.
+    const meta: ReplyMeta = {
+      stopReason: response.stop_reason ?? null,
+      blocks: response.content.map((b) => ({ type: b.type, chars: b.type === "text" ? b.text.length : b.type === "thinking" ? b.thinking.length : 0 })),
+      structured: "format" in format,
+    };
+    return { text, tokens, costUsd, model: response.model, cache: { read, write: written }, meta };
   }
 }
 
@@ -181,12 +196,46 @@ export const TASK = "Complete the Goddess's quest together.";
 
 /**
  * "history": the player keeps its own notes (400 characters), its last 8
- * actions and the results of its previous turn.
+ * executed actions, its last 4 refused or stale ones, and the fate of every
+ * action of its previous turn.
  * "none" (observation-only): each call holds only the current observation and
- * legal actions. The observation's own recent feedback and messages remain,
- * because they are on the hero's screen.
+ * legal actions. The observation's own recent feedback, dialogue log and
+ * messages remain, because they are on the hero's screen.
  */
 export type Memory = "history" | "none";
+
+/** Executed actions kept as completed history (history memory). */
+export const COMPLETED_LOG = 8;
+/** Refused or stale actions kept as a separate, clearly labelled list. */
+export const REJECTED_LOG = 4;
+
+/**
+ * The JSON schema of a reply: the public action format of types.ts and
+ * nothing else (no game content, no answer). It uses only schema features the
+ * Anthropic structured-output API accepts (no numeric or length limits); the
+ * environment's validate() still checks every parameter against the actions
+ * legal at that moment.
+ */
+export function replySchema(maxBatch: number = MAX_BATCH, memory: Memory = "history"): Record<string, unknown> {
+  const action = {
+    type: "object",
+    properties: {
+      type: { type: "string", enum: [...actionTypes] },
+      direction: { type: "string", enum: [...directions] },
+      ticks: { type: "integer" },
+      ability: { type: "string", enum: [...abilityNames] },
+      item: { type: "string" },
+      option: { type: "integer" },
+      text: { type: "string" },
+    },
+    required: ["type"],
+    additionalProperties: false,
+  };
+  const notes = memory === "history" ? { notes: { type: "string" } } : {};
+  return maxBatch > 1
+    ? { type: "object", properties: { ...notes, actions: { type: "array", items: action } }, required: ["actions"], additionalProperties: false }
+    : { type: "object", properties: { ...notes, action }, required: ["action"], additionalProperties: false };
+}
 
 export function systemPrompt(hero: "Sieg" | "Coco", manual: string, maxBatch = MAX_BATCH, memory: Memory = "history") {
   const partner = hero === "Sieg" ? "Coco" : "Sieg";
@@ -196,13 +245,23 @@ export function systemPrompt(hero: "Sieg" | "Coco", manual: string, maxBatch = M
 Task: ${TASK}
 
 How each turn works:
-- You receive your current observation (your screen, HUD, dialogue, quest journal, backpack, recent feedback and messages) and the list of actions you can take right now with their parameters${memory === "history" ? ", plus the results of your previous turn, your recent actions, and the notes you wrote for yourself last turn" : ". You keep no memory between turns: each turn you see only what is on your screen now"}.
+- You receive your current observation (your screen, HUD, dialogue, the dialogue lines your screen showed recently, quest journal, backpack, recent feedback and messages) and the list of actions you can take right now with their parameters${memory === "history" ? ", plus what happened to each action of your previous turn, the actions you have completed, recent refused actions, and the notes you wrote for yourself last turn" : ". You keep no memory between turns: each turn you see only what is on your screen now"}.
 - Reply with ONE JSON object and nothing else:
   ${maxBatch > 1 ? `{${notesField}"actions": [ ...1 to ${maxBatch} actions, done in order... ]}` : `{${notesField}"action": { ...one action... }}`}
 - Each action must be one of the listed legal actions, e.g. {"type":"move","direction":"n","ticks":30} or {"type":"advance_dialogue"} or {"type":"message","text":"..."}.${maxBatch > 1 ? `
-- Your actions are done one after another. The rest are skipped as soon as anything happens: an invalid action, damage, a new place, dialogue, any feedback, a change to your backpack or journal, a message from your partner, or the end of the episode. Then you are asked again with what you now see.` : ""}
+- Your actions are done one after another. The rest are skipped as soon as anything happens: an invalid action, damage, a new place, dialogue, any feedback, a change to your backpack or journal, a message from your partner, or the end of the episode. Then you are asked again with what you now see. Skipped actions did not happen.` : ""}
 - Time only passes while actions run (60 ticks = 1 second). Keep moves short enough to react.
 - Coordinates are in tiles; y grows downward (north is up). The "screen" rows show your view: "@" you, "P" partner, "#" blocked, "~" water or gap, "." open ground, "E" enemy, "C" creature, "o" object, ">" exit, "*" projectile.
+
+Your actions:
+- You act only through the actions in legal_actions. That list is rebuilt every turn from your situation: where you stand, what is next to you, whether a dialogue line is waiting for you, and which abilities are ready. For example, use_item appears only when you stand next to an object, and advance_dialogue only when the line on your screen is yours to move on. An action that is not listed is not available right now; move closer or wait for the situation to change.
+- The player manual below is written for people using a keyboard. You cannot press keys. Each control it describes corresponds to one of your actions (walking is move, E is interact or advance_dialogue, J is attack, K is defend, number keys are ability, the backpack panel is use_item, numbered responses are choose_dialogue), and only when that action is in legal_actions.${memory === "history" ? `
+- last_turn reports every action you proposed last turn with its status: "executed" (it happened), "rejected" (the game refused it; only its feedback happened), "stale" (a dialogue press for a line that had already moved on; nothing happened) or "skipped" (never tried, because the turn stopped first). completed_actions lists only executed actions. Do not treat a skipped or rejected action as done.` : ""}
+
+Shared dialogue:
+- When you are both in a scene you read the same dialogue box, and one press from either of you moves a shared line on for both. If you both press at once, only the first press counts; the other comes back "stale" and changes nothing.
+- Agree with your partner by message who moves shared lines on (for example, whoever is speaking, or one of you for the whole scene) and let the other wait while reading. A line meant only for one of you can be moved on only by that hero.
+- dialogue_log in your observation keeps the lines your own screen showed, including lines that moved on while you were busy or waiting.
 
 The public player manual follows.
 
@@ -212,8 +271,12 @@ ${manual}`;
 export class LLMPlayer implements Policy {
   readonly name: string;
   private notes = "";
-  private log: string[] = [];
+  /** Executed actions only, oldest first. */
+  private completed: { action: GameAction; ticks: number; interrupted?: string }[] = [];
+  /** Refused or stale actions, oldest first, kept apart from completed history. */
+  private rejected: { action: GameAction; status: "rejected" | "stale"; error: string }[] = [];
   private readonly system: string;
+  private readonly schema: Record<string, unknown>;
   private readonly maxBatch: number;
   readonly memory: Memory;
   constructor(
@@ -230,50 +293,155 @@ export class LLMPlayer implements Policy {
     this.memory = memory;
     this.name = `llm(${model.label})${this.maxBatch > 1 ? `·batch${this.maxBatch}` : ""}${memory === "none" ? "·obs-only" : ""}`;
     this.system = systemPrompt(hero, manual, this.maxBatch, memory);
+    this.schema = replySchema(this.maxBatch, memory);
+  }
+
+  /** Files the previous turn's outcome: executed actions as completed, refused and stale ones apart. */
+  private remember(turn: TurnReport) {
+    for (const s of turn.steps) {
+      if (s.status === "executed") {
+        this.completed.push({ action: s.action, ticks: s.result.ticks, ...(s.result.interrupted ? { interrupted: s.result.interrupted } : {}) });
+        if (this.completed.length > COMPLETED_LOG) this.completed.shift();
+      } else {
+        this.rejected.push({ action: s.action, status: s.status, error: (s.result.error ?? s.result.feedback[0] ?? "").slice(0, 200) });
+        if (this.rejected.length > REJECTED_LOG) this.rejected.shift();
+      }
+    }
   }
 
   async decide(input: Parameters<Policy["decide"]>[0]): Promise<Decision> {
-    const user = JSON.stringify(this.memory === "none" ? { observation: input.observation, legal_actions: input.legal } : {
-      your_notes: this.notes,
-      recent_actions: this.log,
-      last_turn: input.batch
-        ? { results: input.batch.steps.map((s) => ({ action: s.action, result: s.result })), ...(input.batch.stopped ? { stopped_early_because: input.batch.stopped } : {}) }
-        : input.last
-          ? { results: [{ result: input.last }] }
-          : null,
-      observation: input.observation,
-      legal_actions: input.legal,
-    });
-    // Throws ModelCallError or BudgetExhausted; the runner handles both.
-    const reply = await this.model.complete(this.system, user);
-    const usage = reply.record;
-    const parsed = parseReply(reply.text);
-    if (parsed.notes !== undefined && this.memory === "history") this.notes = parsed.notes.slice(0, 400);
-    // An unparseable reply becomes a deliberately invalid action, so the
-    // interface records it as a failure instead of silently substituting.
-    const actions = (parsed.actions ?? (parsed.action ? [parsed.action] : [])).slice(0, this.maxBatch);
-    const action = actions[0] ?? ({ type: "unparseable_reply" } as unknown as GameAction);
-    for (const a of actions.length ? actions : [action]) {
-      this.log.push(JSON.stringify(a).slice(0, 160));
-      if (this.log.length > 8) this.log.shift();
+    let user: string;
+    if (this.memory === "none") user = JSON.stringify({ observation: input.observation, legal_actions: input.legal });
+    else {
+      if (input.batch) this.remember(input.batch);
+      user = JSON.stringify({
+        your_notes: this.notes,
+        completed_actions: this.completed,
+        recent_rejected_actions: this.rejected,
+        last_turn: describeTurn(input),
+        observation: input.observation,
+        legal_actions: input.legal,
+      });
     }
-    return { action, ...(actions.length > 1 ? { then: actions.slice(1) } : {}), usage, raw: reply.text };
+    // Throws ModelCallError or BudgetExhausted; the runner handles both.
+    const reply = await this.model.complete(this.system, user, { schema: this.schema });
+    const usage = reply.record;
+    const truncated = reply.meta?.stopReason === "max_tokens";
+    const parsed = truncated ? ({ ok: false, reason: "The reply was cut off at the output limit (stop reason max_tokens)." } as const) : parseReply(reply.text, this.maxBatch);
+    // An unusable reply is never turned into an action: the runner submits
+    // nothing, records the problem, and tells this player next turn.
+    if (!parsed.ok) return { replyProblem: parsed.reason, usage, raw: reply.text };
+    if (parsed.notes !== undefined && this.memory === "history") this.notes = parsed.notes.slice(0, 400);
+    const [action, ...then] = parsed.actions;
+    return {
+      action,
+      ...(then.length ? { then } : {}),
+      ...(parsed.dropped.length ? { dropped: parsed.dropped } : {}),
+      ...(parsed.recovered ? { recovered: parsed.recovered } : {}),
+      usage,
+      raw: reply.text,
+    };
   }
 }
 
-export function parseReply(text: string): { notes?: string; action?: GameAction; actions?: GameAction[] } {
-  const start = text.indexOf("{"),
-    end = text.lastIndexOf("}");
-  if (start < 0 || end <= start) return {};
-  try {
-    const value = JSON.parse(text.slice(start, end + 1)) as { notes?: unknown; action?: unknown; actions?: unknown };
-    const list = Array.isArray(value.actions) ? value.actions.filter((a) => a && typeof a === "object") : undefined;
-    return {
-      ...(typeof value.notes === "string" ? { notes: value.notes } : {}),
-      ...(value.action && typeof value.action === "object" ? { action: value.action as GameAction } : {}),
-      ...(list && list.length ? { actions: list as GameAction[] } : {}),
-    };
-  } catch {
-    return {};
+/** The previous turn as the model sees it: one status per proposed action. */
+function describeTurn(input: Parameters<Policy["decide"]>[0]) {
+  const t = input.batch;
+  if (!t) return input.last ? { results: [{ status: stepStatus(input.last), result: input.last }] } : null;
+  if (t.replyProblem) return { reply_problem: `${t.replyProblem} Nothing was done.` };
+  return {
+    results: [
+      ...t.steps.map((s) => ({ action: s.action, status: s.status, result: s.result })),
+      ...t.skipped.map((s) => ({ action: s.action, status: "skipped" as const, reason: s.reason })),
+    ],
+    ...(t.stopped ? { stopped_early_because: t.stopped } : {}),
+  };
+}
+
+export type ParsedReply =
+  | { ok: true; notes?: string; actions: GameAction[]; dropped: GameAction[]; recovered?: string }
+  | { ok: false; reason: string };
+
+const isPlain = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
+const looksLikeAction = (v: unknown) => isPlain(v) && typeof v.type === "string";
+
+/** Every top-level {...} span in `text` that parses as JSON (string-aware brace matching). */
+function jsonObjects(text: string): unknown[] {
+  const out: unknown[] = [];
+  let depth = 0,
+    start = -1,
+    inString = false,
+    escaped = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (depth > 0 && inString) {
+      if (escaped) escaped = false;
+      else if (c === "\\") escaped = true;
+      else if (c === '"') inString = false;
+      continue;
+    }
+    if (depth > 0 && c === '"') inString = true;
+    else if (c === "{") {
+      if (depth++ === 0) start = i;
+    } else if (c === "}" && depth > 0 && --depth === 0) {
+      try {
+        out.push(JSON.parse(text.slice(start, i + 1)));
+      } catch {
+        // Not JSON: treated as extra text.
+      }
+    }
   }
+  return out;
+}
+
+/**
+ * Reads a reply's action envelope: {"notes"?, "actions": [...]} or
+ * {"notes"?, "action": {...}}. Conservative by design. It accepts a single
+ * envelope surrounded by extra text (or repeated identically), and refuses
+ * anything ambiguous: no envelope, several different envelopes, action
+ * objects outside the envelope, unknown fields, an empty list, or an entry
+ * that is not an action object. It never invents or repairs an action.
+ * Parameter legality is not judged here; step() validates each action.
+ */
+export function parseReply(text: string, maxBatch: number = MAX_BATCH): ParsedReply {
+  if (!text.trim()) return { ok: false, reason: "The reply was empty." };
+  let objects: unknown[];
+  let extra = false;
+  try {
+    objects = [JSON.parse(text)];
+  } catch {
+    objects = jsonObjects(text);
+    extra = true;
+  }
+  const envelopes = objects.filter((o) => isPlain(o) && ("actions" in o || "action" in o)) as Record<string, unknown>[];
+  if (!envelopes.length) return { ok: false, reason: 'The reply had no JSON object with an "actions" list.' };
+  const distinct = [...new Set(envelopes.map((e) => JSON.stringify(e)))];
+  if (distinct.length > 1) return { ok: false, reason: "The reply had several different action lists; none was used." };
+  if (objects.some((o) => !envelopes.includes(o as Record<string, unknown>) && looksLikeAction(o)))
+    return { ok: false, reason: "The reply had action objects outside the action list; none was used." };
+  const env = envelopes[0];
+  const unknown = Object.keys(env).find((k) => !["notes", "actions", "action"].includes(k));
+  if (unknown) return { ok: false, reason: `The reply had an unexpected field "${unknown}".` };
+  if ("actions" in env && "action" in env) return { ok: false, reason: 'The reply had both "action" and "actions".' };
+  if (env.notes !== undefined && typeof env.notes !== "string") return { ok: false, reason: '"notes" must be text.' };
+  let list: unknown[];
+  if ("actions" in env) {
+    if (!Array.isArray(env.actions)) return { ok: false, reason: '"actions" must be a list.' };
+    list = env.actions;
+  } else list = [env.action];
+  if (!list.length) return { ok: false, reason: 'The "actions" list was empty.' };
+  const bad = list.findIndex((a) => !looksLikeAction(a));
+  if (bad >= 0) return { ok: false, reason: `Action ${bad + 1} is not an action object with a "type".` };
+  const actions = list as GameAction[];
+  const notes = typeof env.notes === "string" ? env.notes : undefined;
+  const recovered = extra
+    ? `Used the one action list found in the reply; ${objects.length - envelopes.length + (envelopes.length - 1)} other JSON object(s) and the surrounding text were ignored.`
+    : undefined;
+  return {
+    ok: true,
+    ...(notes !== undefined ? { notes } : {}),
+    actions: actions.slice(0, maxBatch),
+    dropped: actions.slice(maxBatch),
+    ...(recovered ? { recovered } : {}),
+  };
 }

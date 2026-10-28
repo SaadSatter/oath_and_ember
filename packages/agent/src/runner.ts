@@ -6,13 +6,13 @@ import { AgentEnvironment } from "./environment.js";
 import type { Policy } from "./policies/policy.js";
 import type { TraceWriter } from "./trace.js";
 import { BudgetExhausted, ModelCallError, type ModelBudget } from "./budget.js";
-import { batchStop, capBatch } from "./batch.js";
+import { batchStop, capBatch, MAX_BATCH } from "./batch.js";
 import { bindTicket, FinalAccessError, type EpisodeTicket } from "./finalAccess.js";
 import { policyKind } from "./policies/kind.js";
+import { stepStatus, type TurnReport } from "./policies/policy.js";
 import {
   playerIds,
   type GameOutcome,
-  type GameAction,
   type PlayerId,
   type StepResult,
 } from "./types.js";
@@ -86,7 +86,7 @@ export async function runEpisode(
   }, options.wallClockMs);
   const loop = async (id: PlayerId) => {
     let last: StepResult | undefined;
-    let batch: { steps: { action: GameAction; result: StepResult }[]; stopped?: string } | undefined;
+    let turn: TurnReport | undefined;
     let failures = 0;
     while ((await env.outcome()).status === "ongoing") {
       const observation = await env.observe(id);
@@ -102,7 +102,7 @@ export async function runEpisode(
       }
       let decision;
       try {
-        decision = await policies[id].decide({ observation, legal, ...(last ? { last } : {}), ...(batch ? { batch } : {}) });
+        decision = await policies[id].decide({ observation, legal, ...(last ? { last } : {}), ...(turn ? { batch: turn } : {}) });
       } catch (e) {
         if (e instanceof BudgetExhausted) {
           trace.write({ type: "policy_error", tick: observation.tick, player: id, data: { kind: "budget", reason: e.reason, message: e.message } });
@@ -118,12 +118,42 @@ export async function runEpisode(
         }
         continue;
       }
+      const proposed = decision.action ? [decision.action, ...(decision.then ?? [])] : [];
       if (decision.raw !== undefined)
-        trace.write({ type: "model_reply", tick: observation.tick, player: id, data: { attempt: decision.usage?.attempt, raw: decision.raw } });
+        trace.write({
+          type: "model_reply",
+          tick: observation.tick,
+          player: id,
+          data: {
+            attempt: decision.usage?.attempt,
+            raw: decision.raw,
+            envelope: proposed.length ? "ok" : "rejected",
+            proposed: proposed.length + (decision.dropped?.length ?? 0),
+            ...(decision.replyProblem ? { problem: decision.replyProblem } : {}),
+            ...(decision.recovered ? { recovered: decision.recovered } : {}),
+            ...(decision.usage?.meta ? { meta: decision.usage.meta } : {}),
+          },
+        });
       if ((await env.outcome()).status !== "ongoing") break;
+      if (!proposed.length) {
+        // An unusable reply is not turned into an action: nothing reaches the
+        // game, and the player is told next turn. Model players are bounded by
+        // their call budget; a scripted policy that returns nothing is a bug.
+        const problem = decision.replyProblem ?? "The policy returned no action.";
+        trace.write({ type: "reply_rejected", tick: observation.tick, player: id, data: { attempt: decision.usage?.attempt ?? null, problem } });
+        turn = { steps: [], skipped: [], replyProblem: problem };
+        last = undefined;
+        if (!policies[id].model && ++failures >= (options.maxConsecutiveFailures ?? 3)) {
+          env.stop("error");
+          break;
+        }
+        continue;
+      }
       // Run the decision's actions in order; a single action is a batch of one.
-      const queue = capBatch([decision.action, ...(decision.then ?? [])]);
-      batch = { steps: [] };
+      const queue = capBatch(proposed);
+      const overLimit = [...proposed.slice(queue.length), ...(decision.dropped ?? [])];
+      const report: TurnReport = { steps: [], skipped: [] };
+      turn = report;
       let before = observation;
       for (let k = 0; k < queue.length; k++) {
         const action = queue[k];
@@ -132,20 +162,29 @@ export async function runEpisode(
         // As in PR #7: an accepted step resets the count; invalid actions are
         // counted by the environment and do not end the episode by themselves.
         failures = last.accepted ? 0 : failures;
-        trace.write({ type: "step", tick: before.tick, player: id, data: { action, result: last, waitMs: Math.round(performance.now() - started), ...(queue.length > 1 ? { batch: { index: k, size: queue.length } } : {}) } });
-        batch.steps.push({ action, result: last });
+        const status = stepStatus(last);
+        trace.write({ type: "step", tick: before.tick, player: id, data: { action, result: last, status, waitMs: Math.round(performance.now() - started), ...(queue.length > 1 ? { batch: { index: k, size: queue.length } } : {}) } });
+        report.steps.push({ action, result: last, status });
         if (last.done) break;
         if (k === queue.length - 1) break;
         const after = await env.observe(id);
         const stop = batchStop(before, last, after);
         if (stop) {
-          batch.stopped = stop;
+          report.stopped = stop;
           trace.write({ type: "batch_stop", tick: after.tick, player: id, data: { reason: stop, ran: k + 1, of: queue.length } });
           break;
         }
         trace.write({ type: "observation", tick: after.tick, player: id, data: { observation: after, legal: await env.legal_actions(id), inBatch: true } });
         before = after;
       }
+      // Proposed but never submitted: recorded as skipped, never as done.
+      const notRun = queue.slice(report.steps.length);
+      const why = report.stopped ?? (last?.done ? "episode over" : "batch ended");
+      report.skipped = [
+        ...notRun.map((action) => ({ action, reason: why })),
+        ...overLimit.map((action) => ({ action, reason: `over the ${MAX_BATCH}-action limit per turn` })),
+      ];
+      if (report.skipped.length) trace.write({ type: "skipped_actions", tick: env.currentTick(), player: id, data: { skipped: report.skipped } });
       if (last?.done) break;
     }
   };

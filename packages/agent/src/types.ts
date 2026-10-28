@@ -42,6 +42,19 @@ export type GameAction =
   | { type: "message"; text: string };
 
 export type ActionType = GameAction["type"];
+export const actionTypes: readonly ActionType[] = [
+  "move",
+  "wait",
+  "attack",
+  "defend",
+  "ability",
+  "interact",
+  "use_item",
+  "advance_dialogue",
+  "choose_dialogue",
+  "message",
+];
+export const abilityNames: readonly AbilityName[] = ["push", "super_speed", "slow_time", "flight", "black_hole"];
 
 /** A currently available action and the parameters it accepts. */
 export interface ActionSpec {
@@ -115,6 +128,14 @@ export interface Observation {
   };
   /** Areas you have been to, and coarse explored outline of this one. */
   discovered: { areas: string[]; exploredRows: string[] };
+  /**
+   * Dialogue lines your own screen showed, oldest first, including lines that
+   * appeared and moved on while you were busy or waiting (the current line, if
+   * any, is the last entry). Only what your dialogue box displayed: a line
+   * meant for your partner appears as your screen showed it, and nothing that
+   * has not been displayed yet is ever listed.
+   */
+  dialogueLog: { speaker: string; text: string; tick: number }[];
   /** Results of your own recent actions and things that just happened to you. */
   feedback: string[];
   /** Messages your partner sent you (most recent last). */
@@ -129,6 +150,12 @@ export interface StepResult {
   ticks: number;
   /** Why the action ended before its duration, if it did. */
   interrupted?: string;
+  /**
+   * The press was for a dialogue line that had already moved on before it
+   * arrived (usually because the partner advanced it first). Nothing happened;
+   * it is not an illegal action.
+   */
+  stale?: boolean;
   feedback: string[];
   done: boolean;
 }

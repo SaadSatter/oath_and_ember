@@ -82,6 +82,57 @@ export interface SuiteRunOptions {
   onEpisode?: (s: EpisodeSummary) => void;
 }
 
+/**
+ * Separate per-hero counts (added 2026-10-27). The legacy fields stay:
+ * `decisions` counts step() submissions, `invalidActions` the environment's
+ * refusals, and `actions` submitted actions by type. Since 2026-10-27 an
+ * unusable model reply is no longer submitted as a placeholder action, so it
+ * appears only in `parseFailures`, not in those legacy fields.
+ */
+export interface EpisodeMetrics {
+  /** Attempted model calls, failed and timed-out ones included. */
+  modelCalls: number;
+  /** Model replies that yielded a valid action envelope. */
+  modelDecisions: number;
+  /** Model replies with no usable envelope (nothing was submitted). */
+  parseFailures: number;
+  /** Usable replies recovered from extra text around one envelope. */
+  recoveredReplies: number;
+  /** Actions proposed by usable replies (over-limit ones included). */
+  proposedActions: number;
+  /** Actions submitted to the game through step(). */
+  submittedActions: number;
+  /** Submitted actions the game accepted and ran. */
+  executedActions: number;
+  /** Dialogue presses for a line that had already moved on (nothing happened). */
+  staleSubmissions: number;
+  /** Submitted actions the game refused (not legal now, or refused by the game). */
+  gameplayRejections: number;
+  /** Proposed actions never submitted (batch stopped, episode over, over the limit). */
+  skippedActions: number;
+}
+export const METRICS_VERSION = 2;
+
+/** Counts EpisodeMetrics for one hero from the episode's trace and call records. */
+export function episodeMetrics(lines: TraceLine[], records: CallRecord[], player: PlayerId): EpisodeMetrics {
+  const mine = lines.filter((l) => l.player === player);
+  const of = (type: string) => mine.filter((l) => l.type === type);
+  const replies = of("model_reply").map((l) => l.data as { envelope?: string; proposed?: number; recovered?: string });
+  const steps = of("step").map((l) => (l.data as { result: { accepted: boolean; stale?: boolean } }).result);
+  return {
+    modelCalls: records.filter((r) => r.player === player).length,
+    modelDecisions: replies.filter((r) => r.envelope === "ok").length,
+    parseFailures: of("reply_rejected").length,
+    recoveredReplies: replies.filter((r) => r.envelope === "ok" && r.recovered).length,
+    proposedActions: replies.reduce((a, r) => a + (r.envelope === "ok" ? (r.proposed ?? 0) : 0), 0),
+    submittedActions: steps.length,
+    executedActions: steps.filter((r) => r.accepted).length,
+    staleSubmissions: steps.filter((r) => !r.accepted && r.stale).length,
+    gameplayRejections: steps.filter((r) => !r.accepted && !r.stale).length,
+    skippedActions: of("skipped_actions").reduce((a, l) => a + (l.data as { skipped: unknown[] }).skipped.length, 0),
+  };
+}
+
 export interface LaunchInfo {
   launcher: string;
   speed: number | null;
@@ -113,6 +164,9 @@ export interface EpisodeSummary {
   limits: GameOutcome["limits"];
   modelLimits: GameOutcome["modelLimits"] | null;
   invalidActions: Record<PlayerId, number>;
+  /** Separate model-call, decision and action counts per hero (see EpisodeMetrics). */
+  metrics: Record<PlayerId, EpisodeMetrics>;
+  metricsVersion: number;
   messages: Record<PlayerId, number>;
   batchStops: number;
   modelCalls: { attempted: number; failed: number; timedOut: number; unknownUsage: number };
@@ -342,6 +396,8 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
     limits: outcome.limits,
     modelLimits: outcome.modelLimits ?? null,
     invalidActions: outcome.invalidActions,
+    metrics: per((p) => episodeMetrics(trace.lines, records, p)),
+    metricsVersion: METRICS_VERSION,
     messages: per((p) => trace.lines.filter((l) => l.player === p && l.type === "message").length),
     batchStops: trace.lines.filter((l) => l.type === "batch_stop").length,
     modelCalls: {
@@ -396,7 +452,16 @@ export function aggregate(summaries: EpisodeSummary[]) {
     modelCalls: xs.reduce((a, x) => a + x.modelCalls.attempted, 0),
     chargedUsd: Math.round(xs.reduce((a, x) => a + x.spendUsd.charged, 0) * 1e6) / 1e6,
     startHashes: [...new Set(xs.map((x) => x.startHash.slice(0, 16)))],
+    // Episodes saved before metricsVersion 2 have no per-hero metrics; they are left out of these sums.
+    metrics: sumMetrics(xs.flatMap((x) => (x.metrics ? [x.metrics.sieg, x.metrics.coco] : []))),
+    metricsEpisodes: xs.filter((x) => x.metrics).length,
   }));
+}
+
+function sumMetrics(ms: EpisodeMetrics[]): EpisodeMetrics {
+  const total = { modelCalls: 0, modelDecisions: 0, parseFailures: 0, recoveredReplies: 0, proposedActions: 0, submittedActions: 0, executedActions: 0, staleSubmissions: 0, gameplayRejections: 0, skippedActions: 0 };
+  for (const m of ms) for (const k of Object.keys(total) as (keyof EpisodeMetrics)[]) total[k] += m[k];
+  return total;
 }
 
 function writeResults(dir: string, summaries: EpisodeSummary[], previous: PreviousAttempt[] = []) {
@@ -407,6 +472,12 @@ function writeResults(dir: string, summaries: EpisodeSummary[], previous: Previo
     "| Scenario | Successes | Mean game time (s) | Mean decisions (both heroes) | Invalid actions | Messages | Model calls | Charged (USD) |",
     "| --- | --- | --- | --- | --- | --- | --- | --- |",
     ...rows.map((r) => `| ${r.situation} | ${r.successes}/${r.trials} | ${r.meanGameSeconds} | ${r.meanDecisions} | ${r.invalidActions} | ${r.messages} | ${r.modelCalls} | ${r.chargedUsd} |`),
+    "",
+    "Both heroes, summed (metrics version 2):",
+    "",
+    "| Scenario | Model calls | Model decisions | Parse failures | Submitted | Executed | Stale | Rejected by game | Skipped |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    ...rows.map((r) => `| ${r.situation} | ${r.metrics.modelCalls} | ${r.metrics.modelDecisions} | ${r.metrics.parseFailures} | ${r.metrics.submittedActions} | ${r.metrics.executedActions} | ${r.metrics.staleSubmissions} | ${r.metrics.gameplayRejections} | ${r.metrics.skippedActions} |`),
   ].join("\n");
   writeFileSync(join(dir, "results.md"), md + "\n");
 }
@@ -437,7 +508,7 @@ export async function smokeCall(gateway: Gateway, manual: string, ledger: SpendL
       const observation = await env.observe("sieg"), legal = await env.legal_actions("sieg");
       trace?.write({ type: "observation", tick: observation.tick, player: "sieg", data: { observation, legal } });
       decision = await player.decide({ observation, legal });
-      trace?.write({ type: "model_reply", tick: observation.tick, player: "sieg", data: { raw: decision.raw, action: decision.action } });
+      trace?.write({ type: "model_reply", tick: observation.tick, player: "sieg", data: { raw: decision.raw, action: decision.action ?? null, ...(decision.replyProblem ? { problem: decision.replyProblem } : {}), ...(decision.usage?.meta ? { meta: decision.usage.meta } : {}) } });
     } catch (e) {
       decision = { error: (e as Error).message };
     }

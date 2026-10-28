@@ -133,8 +133,10 @@ describe("LLM player batching", () => {
   const five = JSON.stringify({ actions: Array.from({ length: 5 }, () => ({ type: "wait", ticks: 10 })) });
 
   it("reads an actions list, keeps at most 4, and still accepts a single action", () => {
-    expect(parseReply(five).actions).toHaveLength(5);
-    expect(parseReply('{"action":{"type":"interact"}}').action).toEqual({ type: "interact" });
+    const r = parseReply(five);
+    expect(r.ok && [r.actions.length, r.dropped.length]).toEqual([4, 1]);
+    const one = parseReply('{"action":{"type":"interact"}}');
+    expect(one.ok && one.actions).toEqual([{ type: "interact" }]);
   });
 
   it("one model call runs up to 4 actions; the unbatched player keeps only the first", async () => {

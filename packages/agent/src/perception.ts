@@ -95,6 +95,9 @@ export const vectorOf: Record<Direction, { x: number; y: number }> = {
 };
 const round1 = (n: number) => Math.round(n * 10) / 10;
 
+/** Dialogue lines kept per hero (oldest dropped first). */
+export const DIALOGUE_LOG = 12;
+
 /** Per-hero memory the screen itself provides: where they have been. */
 export class PlayerMemory {
   areas: string[] = [];
@@ -102,6 +105,23 @@ export class PlayerMemory {
   feedback: string[] = [];
   messages: { from: "Sieg" | "Coco"; text: string; tick: number }[] = [];
   messagesSent = 0;
+  /** Dialogue lines this hero's screen displayed (see Observation.dialogueLog). */
+  dialogue: { speaker: string; text: string; tick: number }[] = [];
+  private lineKey: string | null = null;
+  /**
+   * Records the line this hero's dialogue box shows now, if it is new. Called
+   * by the environment after every change to the world, so lines that come and
+   * go while the hero is mid-action or waiting are kept. A blank box ("…" with
+   * no speaker) is not a line and is not recorded.
+   */
+  hear(view: { key: string; speaker: string; text: string } | null, tick: number) {
+    const key = view?.key ?? null;
+    if (key === this.lineKey) return;
+    this.lineKey = key;
+    if (!view || (!view.speaker && (view.text === "…" || !view.text.trim()))) return;
+    this.dialogue.push({ speaker: view.speaker, text: view.text, tick });
+    if (this.dialogue.length > DIALOGUE_LOG) this.dialogue.shift();
+  }
   note(line: string) {
     this.feedback.push(line);
     if (this.feedback.length > 8) this.feedback.shift();
@@ -580,6 +600,7 @@ export function perceive(
       ...(near ? { nearbyTarget: { id: "nearby", name: targetName(options.labels, near.name) } } : {}),
     },
     discovered: { areas: [...memory.areas], exploredRows },
+    dialogueLog: memory.dialogue.map((d) => ({ ...d })),
     feedback: [...memory.feedback],
     messages: memory.messages.slice(-6),
   };

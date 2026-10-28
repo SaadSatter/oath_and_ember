@@ -230,6 +230,7 @@ export class AgentEnvironment implements GameInterface {
     this.lastBag = JSON.stringify(this.room.state.inventory?.counts ?? {});
     this.lastJournal = JSON.stringify(questLog(this.room.state));
     for (const s of Object.values(this.slots)) this.explore(s);
+    this.hearDialogue();
     const state: EpisodeState = {
       episode: this.episodeId,
       seed,
@@ -397,11 +398,12 @@ export class AgentEnvironment implements GameInterface {
       }
       if (plan.kind === "instant") {
         const r = plan.run();
+        this.hearDialogue();
         for (const line of r.feedback) s.memory.note(line);
         const feedback = [...r.feedback, ...this.watchSharedChanges()];
-        this.trace("result", { ok: r.ok, feedback, ticks: 0 }, s.id);
+        this.trace("result", { ok: r.ok, feedback, ticks: 0, ...(r.stale ? { stale: true } : {}) }, s.id);
         this.checkEnd();
-        sub.resolve({ accepted: r.ok, ...(r.ok ? {} : { error: r.feedback[0] }), ticks: 0, feedback, done: !!this.reason });
+        sub.resolve({ accepted: r.ok, ...(r.ok ? {} : { error: r.feedback[0] }), ...(r.stale ? { stale: true } : {}), ticks: 0, feedback, done: !!this.reason });
       } else {
         const me = this.room.state.players[s.key];
         s.running = {
@@ -460,6 +462,7 @@ export class AgentEnvironment implements GameInterface {
     }
     if (this.options.tick) this.options.tick(this.room);
     else this.room.tick();
+    this.hearDialogue();
     const w = this.room.state;
     if (w.serverTick % EXPLORE_EVERY === 0) for (const s of order) this.explore(s);
     const shared = this.watchSharedChanges();
@@ -553,6 +556,18 @@ export class AgentEnvironment implements GameInterface {
     const to = from.id === "sieg" ? this.slots.coco : this.slots.sieg;
     to.memory.messages.push({ from: heroName(from.id) as "Sieg" | "Coco", text, tick: this.room.state.serverTick });
     this.trace("message", { to: to.id, text }, from.id);
+  }
+
+  /**
+   * Gives each hero's memory the line its own dialogue box shows now. Called
+   * after every change to the world (each tick, each instant action, reset),
+   * so a line shown while a hero waits or acts is kept even if it moves on
+   * before that hero next observes. storyView is the client's own function:
+   * it applies the scene's cast, audience and watching rules.
+   */
+  private hearDialogue() {
+    const w = this.room.state;
+    for (const s of Object.values(this.slots)) s.memory.hear(storyView(w, s.role), w.serverTick);
   }
 
   private explore(s: Slot) {

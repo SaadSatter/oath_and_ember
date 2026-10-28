@@ -19,6 +19,12 @@ import {
 } from "./types.js";
 
 export const MAX_MESSAGES_PER_PLAYER = 64;
+/**
+ * Feedback for a dialogue press that arrived after its line had moved on.
+ * The game ignores such a press (as it ignores a late browser keypress); the
+ * text says so plainly so a player does not read it as a mistake of its own.
+ */
+export const STALE_LINE = "That line had already moved on before your press arrived (it was advanced first, usually by your partner). Nothing happened; read the line now on screen.";
 const PUSH_DEFAULT_TICKS = 30;
 
 type Frame = Partial<InputFrame>;
@@ -26,7 +32,7 @@ type Frame = Partial<InputFrame>;
 /** A validated action, ready to run. */
 export type Plan =
   | { kind: "timed"; frames: Frame[] }
-  | { kind: "instant"; run: () => { ok: boolean; feedback: string[] } };
+  | { kind: "instant"; run: () => { ok: boolean; feedback: string[]; stale?: boolean } };
 
 const abilityOwners: Record<AbilityName, "OATH" | "EMBER"> = {
   push: "OATH",
@@ -234,7 +240,7 @@ export function planFor(
           // The server ignores reads of a line that already moved on, exactly
           // as it does for a late keypress from the browser client.
           if (!view || !seen || view.cutscene !== seen.cutscene || view.line !== seen.line)
-            return { ok: false, feedback: ["That line had already moved on."] };
+            return { ok: false, stale: true, feedback: [STALE_LINE] };
           if (action.type === "advance_dialogue") {
             const { accepted } = room.readStoryLine(playerKey, seen.cutscene, seen.line);
             return { ok: accepted, feedback: accepted ? [] : ["The line could not be moved on yet."] };
