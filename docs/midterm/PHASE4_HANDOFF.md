@@ -199,3 +199,8 @@ Validation and local tuning results are recorded below after completion. Session
 | S3 | seeds 0, 1 | 2/2 | 52.9 | 0 |
 
 Portable summaries: `evidence/phase4/quest-tuning-summary.json`. Full local traces: `evaluation-runs/codex-handoff-quest-tuning/`; hash integrity verified by the harness. These are development/tuning trials of a scripted baseline on `b51c1c0+dirty`, not final comparison or live-model evidence. Hashes match across S2/S3 for each seed and differ across seeds, because ids and room code are seeded.
+
+
+## 2026-10-28 additive S2-local/S3-local implementation
+
+Implementation `115c542`; detailed protocol and verification: [LOCAL_STARTS.md](LOCAL_STARTS.md). Only the two approved tuning variants were added. Existing historical scenario definitions and checkpoints are unchanged. Node v24.19.0 typecheck/build, 14 new offline checks and six permitted historical scripted hashes pass in isolation. See the linked record for broader regression and secret-scan results. Another owner-confirmed session remains active in the canonical worktree; its changes were excluded from this implementation commit. No paid or held-out execution, ledger mutation, gameplay change, push or merge. Stop for owner approval.

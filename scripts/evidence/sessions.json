@@ -342,6 +342,16 @@
    ],
    "role": "Independent reviewer: a separate Claude Code session started by the owner with a read-only review brief, following the checklist and report format of .claude/agents/rules-reviewer.md. It did not write the reviewed code (bdfcf7c, f48ae0e; built in session 4bd24137), was not spawned by the implementing session and was not asked to approve. It changed no implementation code. Counted as an independent review. Invoked session-evidence for this record",
    "title": "Independent review of the pilot-6 movement feedback and review fixes (bdfcf7c, f48ae0e)"
+  },
+  {
+   "number": 38,
+   "slug": "codex-local-starts-supplement",
+   "ids": [
+    "01a17e49"
+   ],
+   "role": "Same-session Codex implementation supplement under AGENTS.md and CLAUDE.md: owner-approved S2-local/S3-local only; game-rules-audit preflight and session-evidence. Same session as S28/S30/S33, not independent review or an additional distinct session.",
+   "title": "Additive S2-local and S3-local tuning starts",
+   "note": "Another owner-confirmed session was active in the canonical worktree. Only owned files committed; validation uses an isolated fb844ae snapshot plus the eight files in 115c542. No paid calls or held-out episodes/tests."
   }
  ]
 }

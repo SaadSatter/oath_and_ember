@@ -168,3 +168,10 @@ Session [S37](../agent-sessions/37-claude-independent-review-pilot6.md) (`130b0c
   - Carry path untested in the repository, though reproduced offline.
 - **3c:** under Node v26.9.0, typecheck and build pass; `npm test` 921/921 in 107 files. `scriptedFreeze` passes 7/7 against an extract of `7bd0c7e`, which confirms the pinned scripted fingerprints are the pre-change behaviour.
 - **Not done:** no code change, model call, S4/F, commit, push or merge. Owner decisions on the findings are pending.
+
+
+## Additive local-start tuning variants (2026-10-28)
+
+- Implementation `115c542`: S2-local and S3-local only. Protocol, immutable-start hashes, test selection/results and concurrent-session limitation: [LOCAL_STARTS.md](LOCAL_STARTS.md).
+- Pre-implementation [game-rules-audit](agent-evidence/skill-runs/2026-10-28-suite-local-starts-preflight.md): no further approval requirement; same-session implementer audit.
+- [S38 evidence supplement](../agent-sessions/38-codex-local-starts-supplement.md): same session as S28/S30/S33, not another distinct session or independent review. No paid or held-out execution.

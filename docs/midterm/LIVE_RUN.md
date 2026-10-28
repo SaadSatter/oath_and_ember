@@ -124,3 +124,8 @@ This appends a hash-chained approval to `<git common dir>/oath-eval/final-regist
 - Recordings are VP8 WebM, which is Playwright's only format. Chrome, Firefox and VLC play it; QuickTime does not. At 1920×1080 the existing `/watch` layout leaves the lower part of the frame empty.
 - The status line and the client's HUD are for the human watcher. The HUD shows hints that players' observations omit (an owner decision); players never receive it.
 - The route still uses the shared navigation and combat helpers (`policies/navigate.ts`, `combat.ts`). The pinned start hashes in `test/route/checkpointFreeze.test.ts` would catch any drift they cause.
+
+
+## Approved tuning local starts (2026-10-28)
+
+`--scenario S2-local` and `--scenario S3-local` select distinct, owner-approved entrance starts. Both retain normal cross-area travel, recording and ledger guards. Their results must be reported separately from travel-inclusive S2/S3. See [LOCAL_STARTS.md](LOCAL_STARTS.md) for the preparation protocol and offline evidence. This addition authorizes no paid call.
