@@ -47,10 +47,18 @@ export function openGroundStep(player: Player, frame: Partial<InputFrame>, map: 
   return Math.hypot(copy.x - player.x - OPEN, copy.y - player.y - OPEN);
 }
 
-/** Below this the hero did not visibly move (a fiftieth of a tile, under one pixel). */
-export const STILL_TILES = 0.02;
-/** A move that covered at least this share of its open-ground distance counts as full. */
+/**
+ * Outcomes compare the hero's own walking with the open-ground distance, both
+ * in unrounded world units and as shares of it, never against a display
+ * rounding: one slowed tick is 0.63 px (0.0198 tiles) and is a full move on
+ * open ground (independent review finding 1).
+ */
+/** A move that covered at least this share of its open-ground distance, in the requested direction, is full. */
 export const FULL_SHARE = 0.9;
+/** A move that travelled less than this share of its open-ground distance, in any direction, made no visible progress. */
+export const NONE_SHARE = 0.05;
+/** Open ground below this (world units) means the input could not move the hero at all, even with nothing in the way. */
+const NO_OPEN_GROUND = 1e-6;
 
 /** What one move's ticks did, accumulated by the environment (world units). */
 export interface MoveTally {
@@ -96,11 +104,13 @@ export function movementReport(
 ): MovementReport {
   const outcome: MovementReport["outcome"] = !t.applied
     ? "not_applied"
-    : t.travelled / TILE < STILL_TILES
+    : t.openGround < NO_OPEN_GROUND
       ? "none"
-      : t.openGround > 0 && t.progress >= FULL_SHARE * t.openGround
+      : t.progress >= FULL_SHARE * t.openGround
         ? "full"
-        : "partial";
+        : t.travelled < NONE_SHARE * t.openGround
+          ? "none"
+          : "partial";
   return {
     outcome,
     movedTiles: round2(Math.max(0, t.progress) / TILE),
@@ -108,6 +118,7 @@ export function movementReport(
     from: { x: truncate2(from.x / TILE), y: truncate2(from.y / TILE) },
     to: { x: truncate2(to.x / TILE), y: truncate2(to.y / TILE) },
     ticks: { applied: t.applied, notApplied: t.notApplied, movedByGame: t.movedByGame },
+    blocked: t.applied > 0 && t.openGround >= NO_OPEN_GROUND && outcome !== "full",
   };
 }
 
@@ -121,10 +132,10 @@ export function movementReport(
 export function movementLines(direction: Direction, r: MovementReport, from: { x: number; y: number }, to: { x: number; y: number }): string[] {
   const lines: string[] = [];
   const total = r.ticks.applied + r.ticks.notApplied + r.ticks.movedByGame;
-  if ((r.outcome === "partial" || r.outcome === "none") && r.requestedTiles >= STILL_TILES)
+  if (r.blocked)
     lines.push(
       r.outcome === "none"
-        ? `You did not move ${direction} (0 of ${r.requestedTiles} tiles); you are still at ${at(to)}. Something blocked your way.`
+        ? `Your move ${direction} was blocked at once: you made ${r.movedTiles} of ${r.requestedTiles} tiles and are at ${at(to)}. Something blocked your way.`
         : `You moved ${direction} only ${r.movedTiles} of ${r.requestedTiles} tiles, from ${at(from)} to ${at(to)}. Something stopped you.`,
     );
   if (r.ticks.notApplied) lines.push(`For ${r.ticks.notApplied} of ${total} ticks your hero did not take your movement input.`);

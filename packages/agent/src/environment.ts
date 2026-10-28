@@ -156,6 +156,15 @@ export function noAttackLine(role: Role, recovering: boolean) {
     : `${what}.`;
 }
 
+/**
+ * Interruption when a hero's health ran out. A human sees the hero reappear at
+ * once at the area's starting point with a full health bar (the client never
+ * draws the defeated pose, because HP is restored in the same server call),
+ * and the manual states the rule: at zero HP the hero is restored to 100 HP
+ * at the current map's spawn. No source or amount is given.
+ */
+export const KNOCKED_OUT = "Your health ran out. You are back at this area's starting point with full health.";
+
 export class AgentEnvironment implements GameInterface {
   private room!: GameRoom;
   private slots!: Record<PlayerId, Slot>;
@@ -218,6 +227,7 @@ export class AgentEnvironment implements GameInterface {
     this.room.ready(sieg, true);
     this.room.ready(coco, true);
     if (this.room.state.phase !== "PLAYING") throw Error("Room did not start.");
+    this.watchRoom(this.room);
     this.options.room?.(this.room);
     const slot = (id: PlayerId, key: string): Slot => ({
       id,
@@ -493,6 +503,7 @@ export class AgentEnvironment implements GameInterface {
     // (GameRoom: p.combat = { seq: serverTick, … }); a changed record is a strike.
     const strikeBefore = order.map((s) => this.room.state.players[s.key].combat);
     const worldBefore = this.lastWorld;
+    this.knockedOut.clear();
     // Moving heroes: a copy before the tick, the frame sent, and whether the
     // partner was already carrying them (movementReport.ts).
     const moves = new Map<PlayerId, { copy: Player; frame: InputFrame; carried: boolean }>();
@@ -531,6 +542,13 @@ export class AgentEnvironment implements GameInterface {
         r.feedback.push(line);
         s.memory.note(line);
       }
+      // A lethal hit is reported, not turned into an interruption: the action
+      // goes on from the spawn point, as a held key does for a human player.
+      // (Interrupting it changed the frozen scripted runs; owner decision.)
+      if (this.knockedOut.has(me.id)) {
+        r.feedback.push(KNOCKED_OUT);
+        s.memory.note(KNOCKED_OUT);
+      }
       const scene = sceneOf(w, me);
       const dialogue = storyView(w, s.role)?.key ?? null;
       let interrupted: string | undefined;
@@ -551,6 +569,32 @@ export class AgentEnvironment implements GameInterface {
     // Judge the tick before answering, so a final step reports done.
     this.checkEnd();
     for (const resolve of finished) resolve();
+  }
+
+  /** Heroes whose health ran out during the current tick (watchRoom). */
+  private readonly knockedOut = new Set<string>();
+
+  /**
+   * Trusted-side observation of one room; changes no game behaviour.
+   *  - A lethal hit is handled entirely inside the public GameRoom.damage: HP
+   *    back to 100, the hero placed at the area's spawn and movementEpoch
+   *    advanced, in one call, so no snapshot ever shows 0 HP and the old
+   *    "HP went down" rule never fired (independent review finding 2). The
+   *    wrapper calls the original with the same arguments and only records a
+   *    hero whose epoch changed inside the call, which in damage() happens
+   *    only on that respawn. Every player-damage path calls this.damage.
+   *  - The Slow Time carry record must exist, or carry detection would stop
+   *    silently (review finding 4).
+   */
+  private watchRoom(room: GameRoom) {
+    const real = room.damage.bind(room);
+    room.damage = (p, n) => {
+      const epoch = p.movementEpoch;
+      real(p, n);
+      if (p.movementEpoch !== epoch) this.knockedOut.add(p.id);
+    };
+    if (!((room as unknown as { carried?: unknown }).carried instanceof Map))
+      throw Error("GameRoom's Slow Time carry record was not found; the movement report could not tell a carry from walking.");
   }
 
   /**
@@ -576,7 +620,16 @@ export class AgentEnvironment implements GameInterface {
     const w = this.room.state;
     if (sceneOf(w, me) !== move.scene) return;
     const used = me.movementInput;
-    const applied = !!used && used.seq === before.frame.seq && used.moveX === before.frame.moveX && used.moveY === before.frame.moveY;
+    // A story walk replaces the input but keeps the frame's seq, and its unit
+    // vector can equal an axis-aligned move (independent review finding 5,
+    // reproduced). The server walks the hero exactly when storyWalkInput is
+    // not null: a walk mark for this hero whose start has come
+    // (packages/shared/src/storyWalk.ts). tickStory runs only at the start of
+    // a tick, so the record after the tick is the one movement used.
+    const walk = w.story?.walks?.[me.id];
+    const storyWalked = !!walk && w.serverTick >= walk.start;
+    const applied =
+      !storyWalked && !!used && used.seq === before.frame.seq && used.moveX === before.frame.moveX && used.moveY === before.frame.moveY;
     if (me.movementEpoch !== before.copy.movementEpoch || before.carried || this.carried(me.id)) move.tally.movedByGame++;
     else if (!applied) move.tally.notApplied++;
     else tallyApplied(move.tally, move.direction, before.copy, me, openGroundStep(before.copy, before.frame, maps[move.scene], !!w.slowTime));

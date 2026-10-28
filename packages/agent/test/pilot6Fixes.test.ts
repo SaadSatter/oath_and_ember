@@ -24,7 +24,7 @@ const MANUAL = readFileSync("manual/Oath_and_Ember_Player_Manual.md", "utf8");
 const roomOf = (env: AgentEnvironment) => (env as unknown as { room: GameRoom }).room;
 const hero = (env: AgentEnvironment, id: PlayerId) =>
   Object.values(roomOf(env).state.players).find((p) => p.role === (id === "sieg" ? "OATH" : "EMBER"))!;
-const MOVE_LINE = /You did not move|You moved .* only/;
+const MOVE_LINE = /was blocked at once|You moved .* only/;
 
 /** Plays both heroes' scripts as the runner would (see s2Feedback.test.ts). */
 async function play(env: AgentEnvironment, script: Partial<Record<PlayerId, GameAction[]>>) {
@@ -111,7 +111,8 @@ describe("movement outcome on move results", () => {
     expect(r[1].accepted).toBe(true);
     expect(r[1].movement).toMatchObject({ outcome: "none", movedTiles: 0 });
     const none = r[1].feedback.find((l) => MOVE_LINE.test(l))!;
-    expect(none).toMatch(/^You did not move s \(0 of [\d.]+ tiles\); you are still at \(5, 35\.\d+\)\. Something blocked your way\.$/);
+    // Wording since the independent-review fixes (finding 1): it states what was made, never contradicting movedTiles.
+    expect(none).toMatch(/^Your move s was blocked at once: you made 0 of [\d.]+ tiles and are at \(5, 35\.\d+\)\. Something blocked your way\.$/);
     for (const line of [partial, none]) expect(line).not.toMatch(/hedge|wall|cow|tree|rock|edge|creature/i);
     // Such a line is feedback, so it stops a batch (batch.ts rule 4).
     const o = await env.observe("sieg");
@@ -189,6 +190,7 @@ describe("movement in the model's history", () => {
       from: { x: 5, y: 34 },
       to: { x: 5, y: 35.59 },
       ticks: { applied: 30, notApplied: 0, movedByGame: 0 },
+      blocked: true,
     };
     const result: StepResult = { accepted: true, ticks: 30, movement, feedback: ["You moved s only 1.59 of 2.97 tiles."], done: false };
     const action: GameAction = { type: "move", direction: "s", ticks: 30 };

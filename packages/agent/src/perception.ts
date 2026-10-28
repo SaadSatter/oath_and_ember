@@ -110,6 +110,9 @@ export function truncate2(n: number) {
   return Number((whole + hundredths / 100).toFixed(2));
 }
 
+/** Listed things whose position changes in play; their coordinates are truncated like `self`. */
+export const MOVING_KINDS: ReadonlySet<VisibleThing["kind"]> = new Set(["partner", "enemy", "creature", "projectile", "effect"]);
+
 /** Dialogue lines kept per hero (oldest dropped first). */
 export const DIALOGUE_LOG = 12;
 
@@ -439,12 +442,16 @@ export function perceive(
     const dx = p.x - me.x,
       dy = p.y - me.y,
       d = Math.hypot(dx, dy);
+    // Things that move are listed like `self`: truncated to two decimals, so
+    // the whole part is the cell their mark is drawn in (independent review
+    // finding 3). Fixed signs, objects and exits keep one decimal.
+    const coordinate = MOVING_KINDS.has(p.kind) ? truncate2 : round1;
     visible.push({
       ref: `${p.kind}-${n}`,
       kind: p.kind,
       name: p.name,
-      x: round1(p.x / TILE),
-      y: round1(p.y / TILE),
+      x: coordinate(p.x / TILE),
+      y: coordinate(p.y / TILE),
       distance: round1(d / TILE),
       direction: d < TILE / 2 ? "here" : directionOf(Math.atan2(dy, dx)),
       ...(p.details ? { details: p.details } : {}),

@@ -17,7 +17,7 @@ import type { GameAction, PlayerId, StepResult } from "../src/types.js";
 const roomOf = (env: AgentEnvironment) => (env as unknown as { room: GameRoom }).room;
 const hero = (env: AgentEnvironment, id: PlayerId) =>
   Object.values(roomOf(env).state.players).find((p) => p.role === (id === "sieg" ? "OATH" : "EMBER"))!;
-const COLLISION = /You did not move|You moved .* only/;
+const COLLISION = /was blocked at once|You moved .* only/;
 const NOT_TAKEN = /did not take your movement input/;
 const GAME_MOVED = /the game moved your hero/;
 const WALK = 190 / 32 / 60; // tiles per tick at walking speed

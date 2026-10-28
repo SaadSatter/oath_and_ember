@@ -36,6 +36,8 @@ const PINNED = {
   "quest/S1": { status: "success", ticks: 290, end: "7e22d17e885d2cd2", digest: "a6f172d50b64d36c" },
   "explore/S1": { status: "success", ticks: 323, end: "8b2f4551ddf45c6d", digest: "1789d50e2aa172dd" },
   "quest/S2": { status: "success", ticks: 8786, end: "3119923352c08724", digest: "95ba992c670b8575" },
+  // explore/S2 and explore/S3 are one trajectory (same post-opening start; the
+  // exploration baseline has no briefing): not two independent results.
   "explore/S2": { status: "terminated", ticks: 6000, end: "cc9ad696c917e214", digest: "53edd2605b70c7ac" },
   "quest/S3": { status: "success", ticks: 3174, end: "bf31311f6c56638b", digest: "a6518c4acff7a7e8" },
   "explore/S3": { status: "terminated", ticks: 6000, end: "cc9ad696c917e214", digest: "53edd2605b70c7ac" },

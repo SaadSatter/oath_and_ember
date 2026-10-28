@@ -215,6 +215,14 @@ export interface MovementReport {
   from: { x: number; y: number };
   to: { x: number; y: number };
   ticks: { applied: number; notApplied: number; movedByGame: number };
+  /**
+   * The applied ticks fell short of open ground: something stood in the way.
+   * Decided on unrounded distances, so a short move is never called blocked
+   * because of display rounding. movedTiles and requestedTiles are rounded to
+   * two decimals; from and to are truncated like `self`, so to − from can
+   * differ from movedTiles by up to 0.01.
+   */
+  blocked: boolean;
 }
 
 export type TerminationReason =

@@ -22,8 +22,16 @@ import type { Direction, Observation } from "../types.js";
  */
 export function asTuned(o: Observation): Observation {
   const one = (v: number) => Math.floor((Math.round(v * 100) + 5) / 10) / 10;
-  return { ...o, self: { ...o.self, x: one(o.self.x), y: one(o.self.y) } };
+  return {
+    ...o,
+    self: { ...o.self, x: one(o.self.x), y: one(o.self.y) },
+    // Since the independent-review fixes, moving things (partner, enemies,
+    // creatures, projectiles, effects) are listed the same way as `self`.
+    visible: o.visible?.map((v) => (MOVING.has(v.kind) ? { ...v, x: one(v.x), y: one(v.y) } : v)),
+  };
 }
+/** The kinds perception lists with two decimals (perception.ts MOVING_KINDS; kept here so this module reads only observations). */
+const MOVING: ReadonlySet<string> = new Set(["partner", "enemy", "creature", "projectile", "effect"]);
 
 /** Walking speed in tiles per tick: SPEED 190 px/s over 32 px tiles at 60 Hz. */
 export const WALK_TILES_PER_TICK = 190 / 32 / 60;
