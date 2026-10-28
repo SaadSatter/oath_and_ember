@@ -92,6 +92,7 @@ Sources: owner instructions above, commands run in this session, and Git state. 
   - Typecheck: exit 0. Build: exit 0.
   - Two-pass offline suite: **871/871 tests in 100 files**, with `suite.test.ts`, `route/fullQuest.test.ts` and `checkpointFreeze.test.ts` excluded; load average about 4–8.
   - The shared ledger was last written at pilot-5's settlement (5 entries) and was not written by this work.
+- **Briefing revised (owner's text, verbatim).** The owner's revision adds "Your objective is to obtain the **Vanity Mirror** and add it to the shared quest inventory.", which is the evaluator's S2 success condition. This answers the briefing audit's open question 1. No new audit was run for the revision. Change-log row added; briefing id `da2b791e`. Under Node v24.22.1: typecheck and build pass; 872/872 offline tests in 100 files (held-out-related files excluded). The shared ledger is still unchanged since pilot-5 (verified).
 <!-- narrative:end -->
 
 ## Mechanically extracted record
