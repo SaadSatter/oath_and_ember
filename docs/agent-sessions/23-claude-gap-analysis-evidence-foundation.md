@@ -110,7 +110,7 @@ Sources: the owner instructions 5–10 above; `git show` and `git branch --conta
 
 - Skills used: `claude-api`, `session-evidence`
 - Subagents used: none
-- Pull requests referenced in tool output: https://github.com/SaadSatter/oath_and_ember/pull/1, https://github.com/SaadSatter/oath_and_ember/pull/2, https://github.com/SaadSatter/oath_and_ember/pull/3, https://github.com/SaadSatter/oath_and_ember/pull/4, https://github.com/SaadSatter/oath_and_ember/pull/5, https://github.com/SaadSatter/oath_and_ember/pull/6, https://github.com/SaadSatter/oath_and_ember/pull/7, https://github.com/columbia-university-ai-games/game-dev-f26/pull/123
+- Pull requests referenced in tool output: https://github.com/SaadSatter/oath_and_ember/pull/1, https://github.com/SaadSatter/oath_and_ember/pull/2, https://github.com/SaadSatter/oath_and_ember/pull/3, https://github.com/SaadSatter/oath_and_ember/pull/4, https://github.com/SaadSatter/oath_and_ember/pull/5, https://github.com/SaadSatter/oath_and_ember/pull/6, https://github.com/SaadSatter/oath_and_ember/pull/7 (the example URL quoted in MIDTERM_GUIDELINES.md was also printed; it is not a PR of this project and is not listed)
 - Files edited through the agent's edit/patch tool: 45 (`packages/agent` 21, `docs/midterm` 7, `scripts/evidence` 7, `apps/server` 3, `.claude/skills` 2, `apps/client` 2, `/private` 1, `CLAUDE.md` 1, `scripts/midterm` 1)
 - Test-summary lines printed in tool output (last 6 distinct, as printed):
   - `Test Files  86 passed (86)`

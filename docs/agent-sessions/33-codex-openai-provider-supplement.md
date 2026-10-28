@@ -43,7 +43,7 @@ Sources: the owner instructions above from 2026-10-28 04:28 UTC, the local Codex
 
 - Skills used: `game-rules-audit`, `oath-rule-information-boundary`
 - Subagents used: none
-- Pull requests referenced in tool output: https://github.com/SaadSatter/oath_and_ember/pull/1, https://github.com/SaadSatter/oath_and_ember/pull/2, https://github.com/SaadSatter/oath_and_ember/pull/3, https://github.com/SaadSatter/oath_and_ember/pull/4, https://github.com/SaadSatter/oath_and_ember/pull/5, https://github.com/SaadSatter/oath_and_ember/pull/6, https://github.com/SaadSatter/oath_and_ember/pull/7, https://github.com/columbia-university-ai-games/game-dev-f26/pull/123
+- Pull requests referenced in tool output: https://github.com/SaadSatter/oath_and_ember/pull/1, https://github.com/SaadSatter/oath_and_ember/pull/2, https://github.com/SaadSatter/oath_and_ember/pull/3, https://github.com/SaadSatter/oath_and_ember/pull/4, https://github.com/SaadSatter/oath_and_ember/pull/5, https://github.com/SaadSatter/oath_and_ember/pull/6, https://github.com/SaadSatter/oath_and_ember/pull/7 (the example URL quoted in MIDTERM_GUIDELINES.md was also printed; it is not a PR of this project and is not listed)
 - Files edited through the agent's edit/patch tool: none recorded (edits made by shell commands are not counted)
 - Test-summary lines printed in tool output (last 6 distinct, as printed):
   - `Tests  74 passed (74)`

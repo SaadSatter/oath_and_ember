@@ -33,7 +33,7 @@ Sources: the instructions above, the extracted record below, the session's final
 
 - Skills used: `game-rules-audit`
 - Subagents used: none
-- Pull requests referenced in tool output: https://github.com/columbia-university-ai-games/game-dev-f26/pull/123
+- Pull requests referenced in tool output: none (the example URL quoted in MIDTERM_GUIDELINES.md was also printed; it is not a PR of this project and is not listed)
 - Files edited through the agent's edit/patch tool: 1 (`docs/midterm` 1)
 - Test-summary lines printed in tool output (last 4 distinct, as printed):
   - `Test Files  1 passed (1)`

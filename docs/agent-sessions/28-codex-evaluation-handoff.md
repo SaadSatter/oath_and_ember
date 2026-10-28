@@ -51,7 +51,7 @@ Sources: the owner's follow-up, commands run above, current git state and the up
 
 - Skills used: none
 - Subagents used: none
-- Pull requests referenced in tool output: https://github.com/SaadSatter/oath_and_ember/pull/1, https://github.com/SaadSatter/oath_and_ember/pull/2, https://github.com/SaadSatter/oath_and_ember/pull/3, https://github.com/SaadSatter/oath_and_ember/pull/4, https://github.com/SaadSatter/oath_and_ember/pull/5, https://github.com/SaadSatter/oath_and_ember/pull/6, https://github.com/SaadSatter/oath_and_ember/pull/7, https://github.com/columbia-university-ai-games/game-dev-f26/pull/123
+- Pull requests referenced in tool output: https://github.com/SaadSatter/oath_and_ember/pull/1, https://github.com/SaadSatter/oath_and_ember/pull/2, https://github.com/SaadSatter/oath_and_ember/pull/3, https://github.com/SaadSatter/oath_and_ember/pull/4, https://github.com/SaadSatter/oath_and_ember/pull/5, https://github.com/SaadSatter/oath_and_ember/pull/6, https://github.com/SaadSatter/oath_and_ember/pull/7 (the example URL quoted in MIDTERM_GUIDELINES.md was also printed; it is not a PR of this project and is not listed)
 - Files edited through the agent's edit/patch tool: none recorded (edits made by shell commands are not counted)
 - Test-summary lines printed in tool output (last 6 distinct, as printed):
   - `Tests  42 passed (42)`

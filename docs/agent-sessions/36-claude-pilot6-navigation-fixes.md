@@ -5,7 +5,7 @@
 | Agent | Claude Code (CLI); model id(s) recorded in the transcript: `claude-opus-5-5` |
 | Role | Implementation agent under CLAUDE.md and AGENTS.md: investigated the owner's paid pilot-6 run from its existing records (no paid call), invoked game-rules-audit (adapter) before implementing, implemented the owner-approved fixes 1-5 and verified them offline, then invoked session-evidence for this record. No independent review yet |
 | Session ID | `4bd24137-7c42-410e-b365-f6f9798a700f` |
-| Window (UTC) | 2026-10-28 18:17 → 2026-10-28 20:48 |
+| Window (UTC) | 2026-10-28 18:17 → 2026-10-28 21:35 |
 | Session URL | None. Local session; no shareable URL was created. |
 | Repository | `https://github.com/SaadSatter/oath_and_ember`, branch(es) `midterm/evaluation` |
 | Transcript | Local only, not committed: `~/.claude/projects/-Users-saadsatter-Classes-AI-Pract-Building-Games-oath-and-ember-eval/4bd24137-7c42-410e-b365-f6f9798a700f.jsonl` |
@@ -17,6 +17,8 @@
 3. 2026-10-28 19:42 — [pasted brief] The owner has reviewed commits bdfcf7c and fc685e8. Decisions: 1. Provisionally accept the asTuned scripted-policy compatibility adapter, pending independent review. 2. Approve the S2 briefing exactly as currently written. 3. Approve keeping the fixed cow sign in visible objects without an ASCII map glyph. Before any further paid evaluation, run a genuinely independent rules-reviewer subagent in a fres … (1905 characters; full text in the local transcript)
 4. 2026-10-28 19:57 — [pasted brief] Implement the approved follow-up fixes from the pilot-6 independent-review findings, using review commit 07c028f as the evidence baseline. Scope: findings 1–6 only. Do not implement audio observations or change game mechanics. **1. Fix the confirmed Slow Time movement-feedback bug (required).** The current open-ground replay uses the Slow Time state from before the server applies a same-tick cast, caus … (3159 characters; full text in the local transcript)
 5. 2026-10-28 20:38 — Finish it
+6. 2026-10-28 20:55 — [pasted brief] Perform a formal independent review of the Oath and Ember midterm evaluation adapter changes. Review commits: - bdfcf7c — initial navigation feedback changes - f48ae0e — movement execution and Slow Time corrections Evidence commits: - fc685e8 - 6448dc1 You are operating in a separate session from the implementation agent. Independently inspect the code, tests, and relevant game rules. Do not assume the … (1717 characters; full text in the local transcript)
+7. 2026-10-28 21:13 — [pasted brief] The owner approves fixes for independent-review findings 1–3 and additional regression/documentation work for findings 4–6. All three observation fixes must be complete before the next paid S2/S3 evaluation. First, verify that the independent-review evidence has been committed separately. Do not modify or overwrite the independent review. **1. Fix false blocked-movement feedback.** - Reproduce the 1-ti … (2993 characters; full text in the local transcript)
 
 <!-- narrative:start -->
 ## What was done
@@ -73,27 +75,60 @@ The bullets above are left as written when they were recorded. This addendum rec
 
   No paid call, held-out evaluation, checkpoint change, push or merge.
 - **Not covered by a test:** the Slow Time carry path. The code reads the server's carry record, but a carry was not reproduced. Review findings 7, 10 and 12 (Info) were out of scope and are unchanged, including the stale "pending the owner" wording in the `suite.ts` comment and the docs.
+
+### Addendum, 2026-10-28: fixes for the independent review (instructions 6–8)
+
+- **Independent review not yet committed.** The independent review (separate session `130b0cd4`, record 37) had been left uncommitted by its session. At the owner's request it was committed exactly as written, in its own commit `fb844ae`; the SHA-256 of the report and of record 37 were taken before committing.
+- **Audit first.** `game-rules-audit` (`adapter`): `docs/midterm/agent-evidence/skill-runs/2026-10-28-adapter-independent-review-fixes.md` (9 findings). Its gate: if `scriptedFreeze` changed, stop and ask; do not re-pin.
+- **Gate triggered, design changed, nothing re-pinned.** Interrupting an action on a lethal hit changed the scripted route (seed 1) and the exploration baseline on S2 and S3: 3 of 7 pins failed. An experiment isolated that cause; the frozen S2/S4 start states were unaffected (4/4). The defeat is therefore reported as a line on the running action without interrupting it; with that, 7/7 pins pass. Whether to interrupt is left to the owner.
+- **Implementation (commit `3c893f3`):**
+  - short-move outcomes decided relative to open ground on unrounded distances (`blocked` field);
+  - lethal hits reported by observing the public `GameRoom.damage` call;
+  - truncated coordinates for listed moving things;
+  - a loud failure if the carry record is missing;
+  - story-walk ticks counted as not taken (reproduced first: a same-direction walk was counted as walking);
+  - tests and docs.
+
+  The listed entities are unchanged: the pre-change code at `fb844ae` lists the same things.
+- **Validation** (Node v24.19.0, in a temporary clean worktree at `115c542` holding only this change's files, because a concurrent Codex session, `01a17e49`, was committing in the same worktree):
+  - typecheck exit 0; build exit 0;
+  - `npm test` 948/950;
+  - the 2 failures are in `suite.test.ts` and fail identically on a pristine `115c542` (that session's commit added two situations without updating the test); not caused by this change;
+  - an earlier full run's `mirrorPondWalkthrough` timeout passed alone.
+- **Evidence corrections:** the extractor and renderer no longer list the guidelines' example URL `game-dev-f26/pull/123` as a PR; the PR line of records 23, 24, 25, 27, 28, 30, 33 and 37 was corrected in place (that line only, after full re-renders were found to change more than that line and were discarded); the `explore/S2` and `explore/S3` pins are documented as one trajectory.
+- **Process errors in this session, corrected.**
+  - While discarding those re-renders, `git checkout -- docs/agent-sessions/` reverted the concurrent session's uncommitted README row for its record 38.
+  - A line-edit script also rewrote the PR line of its untracked record 38.
+
+  Both were restored at once. That session then committed its own versions (`17487d1`), and this session's working copies of those two files were discarded in favour of the committed ones.
+  - A `git stash` (unique tag) was used once in the scratch worktree; it was applied by SHA and dropped.
+- **Not done:** no gameplay, audio, checkpoint or scenario change; no paid call, held-out evaluation, push or merge. The interrupt-on-defeat variant is not implemented.
 <!-- narrative:end -->
 
 ## Mechanically extracted record
 
 - Skills used: `game-rules-audit`, `session-evidence`
 - Subagents used: `rules-reviewer`
-- Pull requests referenced in tool output: none
-- Files edited through the agent's edit/patch tool: 9 (`docs/midterm` 4, `packages/agent` 4, `/private` 1)
+- Pull requests referenced in tool output: https://github.com/SaadSatter/oath_and_ember/pull/1, https://github.com/SaadSatter/oath_and_ember/pull/2, https://github.com/SaadSatter/oath_and_ember/pull/3, https://github.com/SaadSatter/oath_and_ember/pull/4, https://github.com/SaadSatter/oath_and_ember/pull/5, https://github.com/SaadSatter/oath_and_ember/pull/6 (the example URL quoted in MIDTERM_GUIDELINES.md was also printed; it is not a PR of this project and is not listed)
+- Files edited through the agent's edit/patch tool: 11 (`docs/midterm` 5, `packages/agent` 5, `/private` 1)
 - Test-summary lines printed in tool output (last 6 distinct, as printed):
-  - `Tests  1 failed | 9 passed (10)`
-  - `Tests  10 passed (10)`
-  - `Tests  2 failed | 10 passed (12)`
-  - `Tests  38 passed (38)`
-  - `Test Files  107 passed (107)`
-  - `Tests  921 passed (921)`
+  - `Tests  5 failed | 945 passed (950)`
+  - `Tests  2 failed | 2 passed (4)`
+  - `Test Files  7 passed (7)`
+  - `Tests  58 passed (58)`
+  - `Test Files  1 failed | 108 passed (109)`
+  - `Tests  2 failed | 948 passed (950)`
 - TypeScript errors (`error TS…`) appeared in tool output at least once during the session.
 
 Commits whose author time falls inside this window (any branch). A time match is not proof of authorship when sessions overlap; the co-author trailer is shown where present.
 
 | Commit | Author time (UTC) | Subject | Co-author trailer |
 | --- | --- | --- | --- |
+| `3c893f3` | 2026-10-28 21:34 | Fix short-move false blocks, report lethal hits, align listed coordinates, and close the story-walk gap | Claude Opus 5.5 <noreply@anthropic.com> |
+| `17487d1` | 2026-10-28 21:27 | Document local-start protocol, audit and isolated offline verification | — |
+| `115c542` | 2026-10-28 21:24 | Add tuning-only S2-local and S3-local evaluation starts | — |
+| `fb844ae` | 2026-10-28 21:13 | Commit the independent review of the pilot-6 changes (S37), unchanged | Claude Opus 5.5 <noreply@anthropic.com> |
+| `6448dc1` | 2026-10-28 20:48 | Record the audit and implementation of the pilot-6 review fixes (S36) | Claude Opus 5.5 <noreply@anthropic.com> |
 | `f48ae0e` | 2026-10-28 20:48 | Measure moves by what the server did, fix the Slow Time false collision, and pin scripted behaviour | Claude Opus 5.5 <noreply@anthropic.com> |
 | `07c028f` | 2026-10-28 19:52 | Record the rules review of the pilot-6 fixes, its verification and a process deviation | Claude Opus 5.5 <noreply@anthropic.com> |
 | `fc685e8` | 2026-10-28 19:35 | Record the pilot-6 investigation, its pre-implementation audit and the fixes (S36) | Claude Opus 5.5 <noreply@anthropic.com> |

@@ -39,7 +39,7 @@ Sources: owner instructions above, commands run in this session, and Git state. 
 
 - Skills used: `session-evidence`
 - Subagents used: none
-- Pull requests referenced in tool output: https://github.com/columbia-university-ai-games/game-dev-f26/pull/123
+- Pull requests referenced in tool output: none (the example URL quoted in MIDTERM_GUIDELINES.md was also printed; it is not a PR of this project and is not listed)
 - Files edited through the agent's edit/patch tool: 2 (`/private` 1, `docs/midterm` 1)
 - Test-summary lines printed in tool output (last 3 distinct, as printed):
   - `Test Files  1 passed (1)`

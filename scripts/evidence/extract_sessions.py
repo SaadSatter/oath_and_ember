@@ -31,6 +31,9 @@ from redact import redact  # noqa: E402
 
 COMMIT = re.compile(r"^\[([\w./\-]+)(?: \(root-commit\))? ([0-9a-f]{7,12})\] (.+)$", re.M)
 PR_URL = re.compile(r"https://github\.com/[\w\-]+/[\w\-.]+/pull/\d+")
+# The example submission URL quoted in docs/midterm/MIDTERM_GUIDELINES.md. A
+# session that reads the guidelines prints it; it is not a PR of this project.
+EXAMPLE_PRS = frozenset({"https://github.com/columbia-university-ai-games/game-dev-f26/pull/123"})
 TESTS = re.compile(r"^\s*(?:Test Files|Tests)\s+.*\b(?:passed|failed)\b.*$", re.M)
 TSC_FAIL = re.compile(r"error TS\d{4}")
 INJECTED = (
@@ -81,6 +84,9 @@ def scan_output(rec: dict, out: str) -> None:
         if item not in rec["commits"]:
             rec["commits"].append(item)
     for u in PR_URL.findall(out):
+        if u in EXAMPLE_PRS:
+            rec["example_prs_seen"] = True
+            continue
         if u not in rec["prs"]:
             rec["prs"].append(u)
     for line in TESTS.findall(out):

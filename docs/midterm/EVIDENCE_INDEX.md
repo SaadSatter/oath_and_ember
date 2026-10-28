@@ -175,3 +175,18 @@ Session [S37](../agent-sessions/37-claude-independent-review-pilot6.md) (`130b0c
 - Implementation `115c542`: S2-local and S3-local only. Protocol, immutable-start hashes, test selection/results and concurrent-session limitation: [LOCAL_STARTS.md](LOCAL_STARTS.md).
 - Pre-implementation [game-rules-audit](agent-evidence/skill-runs/2026-10-28-suite-local-starts-preflight.md): no further approval requirement; same-session implementer audit.
 - [S38 evidence supplement](../agent-sessions/38-codex-local-starts-supplement.md): same session as S28/S30/S33, not another distinct session or independent review. No paid or held-out execution.
+
+## Independent-review fixes (2026-10-28, S36)
+
+Session [S36](../agent-sessions/36-claude-pilot6-navigation-fixes.md) (`4bd24137`), implementation commit `3c893f3`, for the findings of [S37](../agent-sessions/37-claude-independent-review-pilot6.md), whose review was committed unchanged in `fb844ae`. Design: `AGENT_INTERFACE.md`, "Independent-review fixes".
+
+- **Audit:** same-session `game-rules-audit` before implementing: `agent-evidence/skill-runs/2026-10-28-adapter-independent-review-fixes.md`. Not an independent review.
+- **2b / 2c:**
+  - short moves are no longer falsely blocked;
+  - lethal hits are reported as a neutral line (not an interruption: interrupting changed the frozen scripted runs; owner decision pending);
+  - listed moving things use the same truncation as `self`;
+  - story-walk ticks are not counted as walking;
+  - the carry record is checked at reset.
+- **3c:** Node v24.19.0, clean worktree at `115c542` with this change's files only. Typecheck and build pass. `npm test` 948/950; the 2 failures are pre-existing in `suite.test.ts` at `115c542`. `scriptedFreeze` 7/7.
+- **Evidence:** the guidelines' example URL is no longer listed as a PR; the `explore/S2` and `explore/S3` pins are one trajectory.
+

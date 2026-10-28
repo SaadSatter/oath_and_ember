@@ -32,7 +32,7 @@ Sources: the instruction above, the extracted record below, the session's final 
 
 - Skills used: `session-evidence`
 - Subagents used: none
-- Pull requests referenced in tool output: https://github.com/SaadSatter/oath_and_ember/pull/1, https://github.com/SaadSatter/oath_and_ember/pull/2, https://github.com/SaadSatter/oath_and_ember/pull/3, https://github.com/SaadSatter/oath_and_ember/pull/4, https://github.com/SaadSatter/oath_and_ember/pull/5, https://github.com/SaadSatter/oath_and_ember/pull/6, https://github.com/SaadSatter/oath_and_ember/pull/7, https://github.com/columbia-university-ai-games/game-dev-f26/pull/123
+- Pull requests referenced in tool output: https://github.com/SaadSatter/oath_and_ember/pull/1, https://github.com/SaadSatter/oath_and_ember/pull/2, https://github.com/SaadSatter/oath_and_ember/pull/3, https://github.com/SaadSatter/oath_and_ember/pull/4, https://github.com/SaadSatter/oath_and_ember/pull/5, https://github.com/SaadSatter/oath_and_ember/pull/6, https://github.com/SaadSatter/oath_and_ember/pull/7 (the example URL quoted in MIDTERM_GUIDELINES.md was also printed; it is not a PR of this project and is not listed)
 - Files edited through the agent's edit/patch tool: 4 (`docs/agent-sessions` 2, `docs/midterm` 1, `scripts/evidence` 1)
 - Test-summary lines printed in tool output: none found
 - Commits inside the session window: none

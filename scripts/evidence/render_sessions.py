@@ -139,7 +139,8 @@ def render(entry: dict, recs: list[dict], commits: list[dict]) -> str:
     md.append(f"- Skills used: {', '.join(f'`{s}`' for s in skills) or 'none'}")
     md.append(f"- Subagents used: {', '.join(f'`{s}`' for s in subs) or 'none'}")
     prs = sorted({p for r in recs for p in r["prs"]}, key=lambda u: int(u.rsplit('/', 1)[1]))
-    md.append(f"- Pull requests referenced in tool output: {', '.join(prs) or 'none'}")
+    example = " (the example URL quoted in MIDTERM_GUIDELINES.md was also printed; it is not a PR of this project and is not listed)" if any(r.get("example_prs_seen") for r in recs) else ""
+    md.append(f"- Pull requests referenced in tool output: {', '.join(prs) or 'none'}{example}")
     edited = sorted({f for r in recs for f in r["files_edited"]})
     if edited:
         top: dict[str, int] = {}
