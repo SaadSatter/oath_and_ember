@@ -32,16 +32,19 @@ export interface Situation {
 
 /**
  * S2 briefing (owner approval 2026-10-28, after pilot-5, where the party took
- * the shrine's way back to Bridge Ruins). It names the scenario and the area
- * that is out of scope, and nothing else: no direction, position, item,
- * mechanism or step. Audit: docs/midterm/agent-evidence/skill-runs/2026-10-28-suite-s2-briefing.md.
+ * the shrine's way back to Bridge Ruins; revised the same day by the owner to
+ * state S2's success condition, the Vanity Mirror). It names the scenario,
+ * its objective item and the area that is out of scope, and nothing else: no
+ * direction, position, mechanism or step. Text is the owner's, verbatim. Audit: docs/midterm/agent-evidence/skill-runs/2026-10-28-suite-s2-briefing.md.
  */
 export const S2_BRIEFING = [
-  "Episode briefing for this evaluation (S2), the same for both players:",
+  "**Episode briefing for this evaluation (S2), the same for both players:**",
+  "",
   "- This evaluation episode is Mirror Pond.",
+  "- Your objective is to obtain the **Vanity Mirror** and add it to the shared quest inventory.",
   '- Bridge Ruins is a puzzle you have already completed. It is the area that the shrine\'s "START / RETURN · E · Puzzle Map 2" sign leads back to. It is outside the scope of this episode: do not return to Bridge Ruins.',
   "- The goddess's offering is the overall quest goal, not your objective in this episode.",
-  "- Solve this episode with your normal observations, actions and messages to your partner.",
+  "- Solve this episode with your normal observations, actions, and messages to your partner.",
 ].join("\n");
 
 const afterOpening: EnvironmentOptions["prefix"] = {

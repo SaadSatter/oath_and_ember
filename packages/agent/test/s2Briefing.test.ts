@@ -40,22 +40,33 @@ describe("S2 episode briefing", () => {
     for (const s of SITUATIONS) if (s.id !== "S2") expect(s.briefing, s.id).toBeUndefined();
   });
 
-  it("states exactly the owner-approved points", () => {
+  it("states exactly the owner-approved text (revision of 2026-10-28)", () => {
     expect(S2_BRIEFING).toBe(
       [
-        "Episode briefing for this evaluation (S2), the same for both players:",
+        "**Episode briefing for this evaluation (S2), the same for both players:**",
+        "",
         "- This evaluation episode is Mirror Pond.",
+        "- Your objective is to obtain the **Vanity Mirror** and add it to the shared quest inventory.",
         '- Bridge Ruins is a puzzle you have already completed. It is the area that the shrine\'s "START / RETURN · E · Puzzle Map 2" sign leads back to. It is outside the scope of this episode: do not return to Bridge Ruins.',
         "- The goddess's offering is the overall quest goal, not your objective in this episode.",
-        "- Solve this episode with your normal observations, actions and messages to your partner.",
+        "- Solve this episode with your normal observations, actions, and messages to your partner.",
       ].join("\n"),
     );
+  });
+
+  it("names the evaluator's own S2 objective, and that item exists in the game", async () => {
+    const { episodes } = await import("../src/evaluator.js");
+    const { items } = await import("../../shared/src/items.js");
+    expect(episodes.S2.goal).toMatch(/Vanity Mirror/);
+    expect(items.vanity_mirror.name).toBe("Vanity Mirror");
+    expect(S2_BRIEFING).toContain("**Vanity Mirror**");
   });
 
   it("reveals no position, direction, item, mechanism or step", () => {
     expect(S2_BRIEFING).not.toMatch(/\(\s*\d+(\.\d+)?\s*,\s*\d+(\.\d+)?\s*\)/); // coordinates
     expect(S2_BRIEFING).not.toMatch(/\b(north|south|east|west|left|right|up|down)\b/i);
-    expect(S2_BRIEFING).not.toMatch(/vanity|mirror m\d|brazier|torch|flame|push|rotate|spike|sanctuary|culvert|flight|fireball|black hole|chest|key/i);
+    // The objective item is named (owner-approved); how to get it is not.
+    expect(S2_BRIEFING).not.toMatch(/mirror m\d|brazier|torch|flame|push|rotate|spike|sanctuary|culvert|flight|fireball|black hole|chest|key/i);
   });
 
   it("reaches both heroes in S2, identically, as a separate block after the unchanged general prompt", async () => {
