@@ -142,4 +142,4 @@ _To be written by the owner._ Facts on record for it:
 - The owner's full playthrough has no recording.
 - The recording is a trace-verified replay, not a live capture.
 - The quest baseline holds hand-coded quest knowledge the models do not have.
-- Two asset licences need confirmation before publication ([README.md](README.md#sources-and-terms)).
+- The generated sprites' terms need confirmation before publication ([README.md](README.md#sources-and-terms)).

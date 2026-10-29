@@ -1,6 +1,6 @@
 # Draft: course pull request (not opened)
 
-Prepared on 2026-10-29 for the owner's approval. The course PR is **not opened**, and the existing course PR #57 (Prince of Persia, draft) is unchanged. Opening or replacing a course PR needs the owner's decision and the professor's ruling on the scope question in the requirements checklist.
+Prepared on 2026-10-29 for the owner's approval. The course PR is **not opened**. The earlier Prince of Persia course PR #57 was closed, not merged, on 2026-10-29, so this is a new PR rather than a reopened one. Opening it needs the owner's decision and the professor's approval of the Oath and Ember scope (requirements checklist, "Submission").
 
 ## How to build it
 
@@ -29,9 +29,9 @@ The packager writes only `midterms/saadsatter/**` and `.github/workflows/midterm
 
 ## Open before this can be opened
 
-- [ ] The professor's ruling on scope and replacing PR #57 (requirements checklist, "Submission").
+- [ ] The professor's approval of the Oath and Ember scope.
 - [ ] Final trials and the EVALUATION.md comparison filled in.
 - [ ] AGENT-TEAM.md and the limitations paragraph rewritten in the owner's voice.
 - [ ] Peer notes received and given.
-- [ ] Asset terms confirmed for publication (CraftPix files; generated sprites).
+- [ ] The generated sprites' terms confirmed for publication.
 - [ ] The owner's choice of submitted commit.

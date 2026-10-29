@@ -8,7 +8,7 @@ GitHub login: `saadsatter`. Project: **Oath and Ember**, an original two-player 
 | Agent team log | [AGENT-TEAM.md](AGENT-TEAM.md) |
 | Rule and source map | [RULE_SOURCE_MAP.md](RULE_SOURCE_MAP.md) |
 | Peer playtest notes | [PEER_NOTES.md](PEER_NOTES.md) |
-| Recording | [pilot-11 replay video](https://github.com/SaadSatter/oath_and_ember/blob/midterm/evaluation/docs/midterm/evidence/pilot-11-model-guided/replay.webm): a trace-verified replay of a model win (see [its notes](docs/midterm/evidence/pilot-11-model-guided/README.md)) |
+| Recording | [pilot-11 replay video](https://github.com/SaadSatter/oath_and_ember/blob/midterm/evaluation/docs/midterm/evidence/pilot-11-model-guided/replay.webm): a trace-verified replay of a real model run (`model-guided`, which received a solution-informed Hedge Maze walkthrough; not an unaided result) that succeeded (see [its notes](docs/midterm/evidence/pilot-11-model-guided/README.md)) |
 | CI | `.github/workflows/midterm-saadsatter.yml` running [scripts/midterm/ci-checks.sh](scripts/midterm/ci-checks.sh) |
 | The game's own README | [GAME_README.md](GAME_README.md) |
 
@@ -126,11 +126,7 @@ Development tools are listed in `package.json`.
 | CraftPix packs (forest trees, map, paths, ruins, buildings, an example swordsman) | CraftPix file licence (https://craftpix.net/file-licenses/) | `apps/client/public/assets/environment/trees/License.txt`, `Images/Sprites/**/License.txt` |
 | Generated and hand-edited sprites (heroes, enemies, Griffin, items, maps) | Produced for this project; per-asset records | [SPRITE_ASSETS.md](docs/SPRITE_ASSETS.md), [ENVIRONMENT_ASSET_PROVENANCE.json](docs/ENVIRONMENT_ASSET_PROVENANCE.json), [COMBAT_ASSET_PROVENANCE.json](docs/COMBAT_ASSET_PROVENANCE.json), `Images/**/provenance*.json`, `Images/**/PROVENANCE.md` |
 
-**Open for the owner before publication:**
-- CraftPix's licence restricts redistributing its files as they are. The course repository is public, so it must be confirmed that publishing those files here is permitted.
-- The generated sprites' tool terms must likewise be confirmed to permit publication.
-
-Neither question is resolved here.
+**Open for the owner before publication:** the generated sprites' tool terms must be confirmed to permit publication. This is not resolved here.
 
 ## Repository and version
 
