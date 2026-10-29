@@ -21,7 +21,7 @@ import { runEpisode } from "./runner.js";
 import { TraceWriter, verifyTrace, type TraceLine } from "./trace.js";
 import type { EnvironmentOptions } from "./environment.js";
 import { ModelBudget, MeteredGateway, defaultBudgetLimits, type CallRecord, type Gateway } from "./budget.js";
-import { GuidedMazePlayer } from "./policies/guidedMaze.js";
+import { GUIDED_SITUATIONS, GUIDES, GuidedPlayer } from "./policies/guided.js";
 import { LLMPlayer } from "./policies/llm.js";
 import { ExplorationBaseline } from "./policies/baseline.js";
 import { QuestBaseline } from "./policies/questBaseline.js";
@@ -207,8 +207,9 @@ export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | 
   if (new Set(o.situations).size !== o.situations.length || new Set(o.seeds).size !== o.seeds.length) throw Error("Duplicate scenarios or seeds are not allowed.");
   if (!o.situations.length || !o.seeds.length) throw Error("Name at least one scenario and one seed.");
   for (const id of o.situations) situation(id);
-  if (o.player === "model-guided" && (o.final || o.situations.some((id) => id !== "S2-local")))
-    throw Error("model-guided is restricted to current S2-local Hedge Maze tuning runs.");
+  // Each guided scenario has its own owner-approved walkthrough (policies/guided.ts).
+  if (o.player === "model-guided" && (o.final || o.situations.some((id) => !GUIDED_SITUATIONS.includes(id))))
+    throw Error("model-guided is restricted to current S2-local Hedge Maze and S3-local Mirror Pond tuning runs.");
   // Opt-in persistent memory (docs/midterm/MODEL_MEMORY.md): tuning pilots on
   // S1-S3 only until the owner approves it for anything else.
   if (o.player === "model-memory" && (o.final || o.situations.some((id) => !OBS_ONLY_SITUATIONS.includes(id))))
@@ -245,8 +246,9 @@ export function policiesFor(player: PlayerKind, budget: ModelBudget | undefined,
     case "baseline-explore":
       return { sieg: new ExplorationBaseline(), coco: new ExplorationBaseline() };
     case "model-guided": {
-      if (id !== "S2-local") throw Error("model-guided requires current S2-local Hedge Maze.");
-      const make = (hero: "Sieg" | "Coco", pid: PlayerId) => new GuidedMazePlayer(hero, pid, model!.gateway, budget!, model!.manual, model!.maxBatch, briefing, tutorial);
+      const guide = id ? GUIDES[id] : undefined;
+      if (!guide) throw Error("model-guided requires current S2-local Hedge Maze or S3-local Mirror Pond.");
+      const make = (hero: "Sieg" | "Coco", pid: PlayerId) => new GuidedPlayer(hero, pid, model!.gateway, budget!, model!.manual, model!.maxBatch, briefing, tutorial, guide);
       return { sieg: make("Sieg", "sieg"), coco: make("Coco", "coco") };
     }
     case "model-history":

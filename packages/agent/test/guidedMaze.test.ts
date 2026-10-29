@@ -81,10 +81,11 @@ describe("instruction-guided Maze policy", () => {
   it("accepts only the current local Maze tuning scenario, without changing registry definitions", () => {
     expect(situation("S2-local")).toMatchObject({ revision: 2, heldOut: false, title: "Hedge Maze — local start" });
     for (const seed of [0, 1]) expect(() => validatePlan({ player: "model-guided", situations: ["S2-local"], seeds: [seed], model: setup(new Recording()) })).not.toThrow();
-    for (const id of ["S1", "S2", "S3", "S3-local", "S2-local-v1"] as const)
+    // S3-local is guided too since 2026-10-29, with its own pond walkthrough (guidedPond.test.ts).
+    for (const id of ["S1", "S2", "S3", "S2-local-v1"] as const)
       expect(() => validatePlan({ player: "model-guided", situations: [id], seeds: [0], model: setup(new Recording()) })).toThrow(/restricted/);
     expect(() => validatePlan({ player: "model-guided", situations: ["S2-local"], seeds: [100], final: true, model: setup(new Recording()) })).toThrow(/restricted/);
-    expect(() => policiesFor("model-guided", budget(), setup(new Recording()), "S3-local")).toThrow(/requires/);
+    expect(() => policiesFor("model-guided", budget(), setup(new Recording()), "S3")).toThrow(/requires/);
     expect(() => new GuidedMazePlayer("Sieg", "coco", new Recording(), budget(), MANUAL)).toThrow(/identity/);
     expect(SITUATIONS).toHaveLength(7);
   });

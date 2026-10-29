@@ -7,7 +7,7 @@ import type { PlayerKind } from "../playerKinds.js";
 import type { PlayerId } from "../types.js";
 import type { Policy } from "./policy.js";
 import { ExplorationBaseline } from "./baseline.js";
-import { GuidedMazePlayer } from "./guidedMaze.js";
+import { GuidedPlayer } from "./guided.js";
 import { LLMPlayer } from "./llm.js";
 import { QuestBaseline } from "./questBaseline.js";
 
@@ -15,7 +15,7 @@ function kindOf(p: Policy): PlayerKind | null {
   const proto = Object.getPrototypeOf(p);
   if (proto === QuestBaseline.prototype) return "baseline-quest";
   if (proto === ExplorationBaseline.prototype) return "baseline-explore";
-  if (proto === GuidedMazePlayer.prototype) return "model-guided";
+  if (proto === GuidedPlayer.prototype) return "model-guided";
   if (proto === LLMPlayer.prototype) return (p as LLMPlayer).memory === "history" ? "model-history" : (p as LLMPlayer).memory === "none" ? "model-obs-only" : (p as LLMPlayer).memory === "persistent" ? "model-memory" : null;
   return null;
 }
