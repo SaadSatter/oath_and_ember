@@ -30,6 +30,6 @@ The manifest records what was checked:
 - `matchesTrace: true` with no mismatches;
 - `endReason: "success"` at 2,316 episode ticks.
 
-The tool was run from a working tree at `88587ce` with uncommitted changes (`gitHash: "88587ce+dirty"`). Those changes are the Codex recorder-shutdown work (`scripts/midterm/replay-video.ts`), not committed when this file was written.
+The tool was run from a working tree at `88587ce` with uncommitted changes (`gitHash: "88587ce+dirty"`): the replay tool itself, `scripts/midterm/replay-video.ts`, which was committed afterwards in `444bc55`. `node --import tsx scripts/midterm/replay-video.ts docs/midterm/evidence/pilot-11-model-guided/trace.jsonl --check-only` re-checks the replay against this trace without a viewer or video.
 
 Rubric check 5c asks for a recording of live model play. This video shows real model play, replayed from its trace, and is labelled as a replay wherever it is linked. The repository's `.gitignore` excludes `recording.webm` files from run folders; this copy is committed deliberately at the owner's request (2026-10-29) as the submission's recording.

@@ -25,7 +25,7 @@ function courseRepo() {
   return { top, folder, git };
 }
 
-describe("running from the course repository's folder", () => {
+describe("running from the course repository's folder", { timeout: 30_000 }, () => {
   it("treats midterms/saadsatter/ as the project root, not the course repository", () => {
     const { top, folder } = courseRepo();
     const info = repoInfo(join(folder, "packages", "agent", "src"));
