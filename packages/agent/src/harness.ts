@@ -211,6 +211,12 @@ export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | 
   const bad = o.seeds.filter((s) => !allowed.includes(s));
   if (bad.length) throw Error(`${o.final ? "Final" : "Tuning"} runs use seeds ${allowed.join(", ")} only (got ${bad.join(", ")}).`);
   if (heldOut.length && !o.final) throw Error(`${heldOut.join(", ")} ${heldOut.length > 1 ? "are" : "is"} held out: run only in a final run.`);
+  // Owner decision 2026-10-28: the revision 1 definitions (-v1 ids) are for
+  // scripted historical reproduction only. A model run on them, paid or not,
+  // needs separate owner approval and a code change; there is no override.
+  const historical = o.situations.filter((id) => situation(id).revision === 1 && situation(id).supersededBy);
+  if (historical.length && isModel(o.player))
+    throw Error(`${historical.join(", ")} ${historical.length > 1 ? "are" : "is"} a historical revision 1 definition: scripted baselines only. Model runs on it need separate owner approval.`);
   if (o.player === "model-obs-only") {
     const outside = o.situations.filter((id) => !OBS_ONLY_SITUATIONS.includes(id));
     if (outside.length) throw Error(`model-obs-only runs on S1-S3 only, including approved local variants (got ${outside.join(", ")}).`);

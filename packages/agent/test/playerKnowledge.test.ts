@@ -8,7 +8,11 @@ import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { AgentEnvironment } from "../src/environment.js";
 import { defaultBudgetLimits, ModelBudget, type Completion, type Gateway } from "../src/budget.js";
-import { policiesFor, type ModelSetup } from "../src/harness.js";
+import { policiesFor, validatePlan, type ModelSetup } from "../src/harness.js";
+import { execFile } from "node:child_process";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { briefingBlock, briefingId, systemPrompt } from "../src/policies/llm.js";
 import {
   HISTORICAL_SITUATIONS,
@@ -156,7 +160,14 @@ describe("2. the tutorial briefing matches the implemented controls and abilitie
     expect(gameRoom).toMatch(/endsTick: w\.serverTick \+ ticksFor\(10\)[\s\S]{0,40}p\.cooldowns\.slow_time = 20;/);
     expect(t).toMatch(/for 10 seconds everyone affected moves at one fifth speed[^\n]*cooldown is 20 seconds from the cast/);
     expect(movement).toMatch(/p\.flightRemaining = 20;\s*p\.cooldowns\.flight = 27;/);
-    expect(t).toContain("fly for up to 20 seconds");
+    // Owner decision 2026-10-28: state Flight's fixed duration and that it cannot be cancelled.
+    expect(t).toContain("a flight lasts 20 seconds and cannot be cancelled: there is no way to land early");
+    expect(t).toContain("ends sooner only if Coco is defeated or travels to another area");
+    // The press only starts a flight; the only early ends are defeat and area changes (transition, relocate).
+    expect(movement).toContain("if (p.hp <= 0) p.flightRemaining = 0;");
+    expect(gameRoom.match(/flightRemaining: 0,/g)).toHaveLength(3); // room reset, transition, relocate
+    const legal = read("packages/agent/src/actions.ts");
+    expect(legal).toContain('p.unlockedSkills.includes("flight") && !cd("flight")');
     expect(t).toContain("Recharge takes 7 seconds after the flight ends");
     expect(blackHoleTuning).toMatchObject({ range: 6 * 32, pullRadius: 3 * 32, damage: 30, duration: 4, cooldown: 10 });
     expect(t).toMatch(/up to 6 tiles forward[^\n]*within 3 tiles for 4 seconds[^\n]*30 damage\. Recharge 10 seconds/);
@@ -304,5 +315,24 @@ describe("6. historical evaluations remain identifiable and reproducible", () =>
     expect(now.startHash).toBe(old.startHash);
     expect(old.episode).toMatch(/^S2-0-5397eba5$/);
     expect(now.episode).toMatch(/^S2-v2-0-5397eba5$/);
+  }, 60_000);
+
+  it("restricts the -v1 ids to scripted reproduction: model runs are refused, even through the live launcher with the free mock gateway", async () => {
+    for (const id of ["S2-v1", "S3-v1", "S2-local-v1", "S3-local-v1"] as SituationId[]) {
+      for (const player of ["model-history", "model-obs-only"] as const)
+        expect(() => validatePlan({ player, situations: [id], seeds: [0], model: { stage: "pilot" } as ModelSetup }), id).toThrow(/scripted baselines only/);
+      for (const player of ["baseline-quest", "baseline-explore"] as const) expect(() => validatePlan({ player, situations: [id], seeds: [0] })).not.toThrow();
+    }
+    const out = mkdtempSync(join(tmpdir(), "v1-refusal-"));
+    try {
+      const r = await new Promise<{ code: number | null; text: string }>((done) =>
+        execFile(process.execPath, ["--import", "tsx", "scripts/midterm/live.ts", "--scenario", "s2-v1", "--seed", "0", "--player", "model-history", "--gateway", "mock", "--no-viewer", "--out", join(out, "run")], { timeout: 60_000 }, (e, so, se) =>
+          done({ code: e ? ((e as { code?: number }).code ?? 1) : 0, text: so + se })),
+      );
+      expect(r.code).not.toBe(0);
+      expect(r.text).toMatch(/S2-v1 is a historical revision 1 definition: scripted baselines only/);
+    } finally {
+      rmSync(out, { recursive: true, force: true });
+    }
   }, 60_000);
 });

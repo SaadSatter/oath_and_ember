@@ -88,8 +88,9 @@ export const S2_BRIEFING = [
 /**
  * Revision 2 episode briefings. S3 (Mirror Pond) is the revision 1 S2 text
  * with only its scenario label changed. S2 (Hedge Maze) is the same text with
- * the area, the item and the "other area" example swapped. Draft wording by
- * the implementation agent, pending the owner's approval of the text.
+ * the area, the item and the "other area" example swapped; the owner approved
+ * it on 2026-10-28, provided it names the Enchanted Shears objective without
+ * revealing the solution (playerKnowledge.test.ts checks that).
  */
 export const S3_BRIEFING = S2_BRIEFING.replace("evaluation (S2)", "evaluation (S3)");
 export const S2_MAZE_BRIEFING = [

@@ -251,7 +251,13 @@ for (const v of variants)
       expect((await env.outcome()).status).toBe("ongoing");
     }, 30000);
 
-    it("isolates manifests, paths, measured time and provider-labelled mock contexts", async () => {
+    if (situation(v.id).revision === 1)
+      it("is for scripted historical reproduction only: model runs are refused (owner decision 2026-10-28)", () => {
+        for (const player of ["model-history", "model-obs-only"] as const)
+          expect(() => validatePlan({ player, situations: [v.id], seeds: [0], model: { stage: "pilot" } as ModelSetup })).toThrow(/historical revision 1 definition: scripted baselines only/);
+        expect(() => validatePlan({ player: "baseline-explore", situations: [v.id], seeds: [0] })).not.toThrow();
+      });
+    else it("isolates manifests, paths, measured time and provider-labelled mock contexts", async () => {
       const root = scratch();
       const ledger = SpendLedger.open(join(root, "mock-ledger.json"));
       const hashes: string[] = [];
