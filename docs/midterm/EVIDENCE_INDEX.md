@@ -195,3 +195,13 @@ Session [S36](../agent-sessions/36-claude-pilot6-navigation-fixes.md) (`4bd24137
 ## Combined local-start and observation integration (2026-10-28)
 
 [Integration verification](INTEGRATION_VERIFICATION.md): combined approved commits present, Node v24.19.0 typecheck/build pass; 916 broad permitted tests plus 2 static suite checks and 6 historical S1–S3 freeze checks pass. Twenty supplemental observation cases and four synthetic accounting runs pass. Test-only expectation correction: `c35f6c5`. [Audit](agent-evidence/skill-runs/2026-10-28-suite-combined-integration.md); [same-session S38 supplement](../agent-sessions/38-codex-local-starts-supplement.md). Held-out-capable cases excluded explicitly; no paid or held-out execution.
+
+## Pilot-7 observation and prompt fixes (2026-10-28)
+
+[PILOT7_FIXES.md](PILOT7_FIXES.md): owner-approved after the pilot-7 diagnosis (S2-local, seed 0, ledger `pilot-7`). Implementation `5ab4693`:
+- spike columns drawn and listed at full height;
+- Mirror Pond painted text listed as labels;
+- "You pressed E; nothing responded." for presses that change nothing;
+- general communication rules in the prompt.
+
+The shared `explore/S2`/`explore/S3` freeze entry was re-pinned with owner approval. Cause: a painted label hid the wall cell at (45,23). The first divergence is at decision 214. The old values are recorded and reproduced. No other pin changed. Results: 12/12 new tests, 202/202 focused tests, 6/6 S1–S3 freeze checks, typecheck and build pass. No paid, held-out or full-suite run.
