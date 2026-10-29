@@ -76,7 +76,7 @@ describe("instruction-guided Mirror Pond policy", () => {
         expect(plain.sent.at(-1)!.system).not.toContain(GUIDED_POND_VERSION);
       }
     }
-    expect(GUIDED_POND_ID).toMatch(/^[a-f0-9]{12}$/);
+    expect(GUIDED_POND_ID).toBe("266e5a23de26"); // any text change must update this pin and GUIDED_POND_BASELINE.md
     expect(guided.sieg.name).toContain(`walkthrough-${GUIDED_POND_ID}`);
     expect((guided.sieg as GuidedPlayer).model.label).toContain(`guided-${GUIDED_POND_ID}`);
     // The Maze walkthrough and its labels are byte-unchanged by the generalization.

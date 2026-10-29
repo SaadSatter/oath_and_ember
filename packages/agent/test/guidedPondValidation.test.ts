@@ -135,8 +135,12 @@ for (const seed of [0, 1]) {
     const culvert = results.find((r) => r.leg === "Coco culvert")!;
     expect(culvert.straight.ticks).toBe(POND_MEASURED.culvertFlightTicks);
     expect(culvert.straight.ticks * DT).toBeLessThan(20); // within the manual's 20 s Flight
-    // Documented limitation: (44,31.6) -> (35,31) flown straight-first (due west) clips the culvert wall.
+    // (44,31.6) -> (35,31) flown due west first clips the culvert wall; the guide says diagonal first.
     expect(culvert.octant).toEqual([true, false]);
+    const w = room.state as World, eWalls = wallsFor(w, "EMBER", true);
+    expect(sweep([[44, 31.6], g.culvertDiagonal, [35, 31]], eWalls)).toMatchObject({ ok: true });
+    expect(sweep([[44, 31.6], [35.6, 31.6], [35, 31]], eWalls)).toMatchObject({ ok: false });
+    expect(g.culvertDiagonal).toEqual([44 - 0.6, 31]); // the exact diagonal (|dy| = 0.6) of that segment
     for (const r of results.filter((r) => r !== culvert)) expect(r.octant, r.leg).toEqual([true, true]);
   }, 120_000);
 }

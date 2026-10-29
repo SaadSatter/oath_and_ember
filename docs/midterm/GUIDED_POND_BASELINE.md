@@ -8,6 +8,7 @@ Branch `midterm/evaluation`, Claude Code session `f07e5a80-43c2-4426-b0ce-73fc9f
 - Select it by **extending `--player model-guided`**: S2-local gets the Maze walkthrough, S3-local the pond walkthrough. No new player kind.
 - Finish validation: test the walkthrough's paths against the game's collision rules, replace approximate timing with measured values, and keep the intended solution and the game unchanged.
 - The two `guidedMaze.test.ts` assertions that refused S3-local now refuse S3 (approved).
+- After validation: state the diagonal-first move for Coco's blocked culvert segment (approved; `model-guided` is explicitly solution-informed).
 
 ## Scenario and seed coverage
 
@@ -20,10 +21,12 @@ Branch `midterm/evaluation`, Claude Code session `f07e5a80-43c2-4426-b0ce-73fc9f
 
 ## Walkthrough version and ID
 
-- Version `mirror-pond-walkthrough-v1`, ID **`c152ff4c8664`** (the first 12 hex digits of sha256 of both role texts). It appears in call labels (`·guided-c152ff4c8664`) and policy names (`·walkthrough-c152ff4c8664`), so results are never pooled with other kinds or guide versions.
-- A pre-validation draft had ID `b8d263d30c89` (named in the checkpoint audit). It was never committed or run, and its approximate timing text was replaced.
+- Version `mirror-pond-walkthrough-v1`, ID **`266e5a23de26`** (the first 12 hex digits of sha256 of both role texts, pinned in `guidedPond.test.ts`). It appears in call labels (`·guided-266e5a23de26`) and policy names (`·walkthrough-266e5a23de26`), so results are never pooled with other kinds or guide versions.
+- Earlier IDs, none ever run:
+  - `b8d263d30c89`: pre-validation draft, named in the checkpoint audit, never committed; its approximate timing text was replaced.
+  - `c152ff4c8664`: committed in `a29046e`, before the culvert clarification.
 - The Maze walkthrough is unchanged: ID `975e5580671c`, pinned by `guidedPond.test.ts`.
-- Role text: 9,753 bytes for Sieg, 10,080 for Coco, appended after the ordinary system prompt, tutorial block and S3-local briefing. Each hero gets only its own role block.
+- Role text: 10,146 bytes for Sieg, 10,525 for Coco, appended after the ordinary system prompt, tutorial block and S3-local briefing. Each hero gets only its own role block.
 
 ## Source of solution knowledge
 
@@ -45,7 +48,7 @@ Node v26.9.0, offline. Every scripted reset and play is on S3-local seeds 0 and 
 | The route reaches the Vanity Mirror from the S3-local start | `guidedPond.test.ts` | Success at both seeds, 0 invalid actions, all four braziers lit, sanctuary raised, every mirror back at its resting angle. This is an engineering proof, **not** an LLM result |
 | Guide data equals the route constants and the engine geometry | `guidedPond.test.ts` | Push spots, push ticks, angles, approaches, leave paths, pads, shot directions, facing moves, braziers, chest, spawns, spike columns |
 | Every guide leg is traversable | `guidedPondValidation.test.ts` | 11 legs: Coco's culvert, A1→A2 (walking), A2→A3, A3→A4, A4→chest (flying); Sieg's start→spike mouth, spikes→M1, M1→M2, M2→M3, M3→M4, M4→sanctuary. The hero's box moves at the real per-tick step through the shared `constrainMotion`, against `collisionRects` (with `flightWalls` when flying) for the pond state at the moment the route starts that leg. All straight lines are clear at both seeds |
-| Eight-direction splits | same | Each leg is also tested as diagonal-then-straight and straight-then-diagonal moves. All 11 legs are clear diagonal-first; all except the culvert are clear both ways (see limitations) |
+| Eight-direction splits | same | Each leg is also tested as diagonal-then-straight and straight-then-diagonal moves. All 11 legs are clear diagonal-first; all except the culvert are clear both ways. The culvert's (44,31.6)→(35,31) is blocked due-west-first and clear through the diagonal point (43.4,31), which the guide now states |
 | Pads are safe ground | same | Coco's Flight ran out while she stood on A3 (about 25 s elapsed there), and she was still on A3 when the route moved her on |
 | Prompts and isolation | `guidedPond.test.ts` | The guided system prompt is exactly the ordinary prompt plus the pond role block. `model-history`/`model-obs-only` S3-local prompts are byte-identical to before. User context and observations are unchanged. `decide` changes no game state |
 | Budget and ledger | `guidedPond.test.ts` | The full augmented prompt is priced before dispatch and fails closed when it does not fit. A runSuite run writes a hash-chained trace and settles its scratch ledger under `model-guided/S3-local/` |
@@ -83,7 +86,7 @@ npm run typecheck
 npm run build
 ```
 
-- Focused tests: **9 files, 76/76 passed**. After a type fix to one line of `guidedPond.test.ts`, that file was re-run: 8/8.
+- After the final guide change (culvert clarification, ID `266e5a23de26`): focused tests **9 files, 76/76 passed**.
 - Typecheck: pass. Build: pass, with the existing large-chunk warning.
 - Frozen checkpoint pins: unchanged, `checkpointFreeze.test.ts` passes.
 - The full `npm test` was not re-run after the validation work. Earlier in this session it was 1065/1066; the one failure, `s2Shutdown.test.ts`, comes from another session's uncommitted `recorder.ts` change, not from this work (see the checkpoint audit).
@@ -93,7 +96,7 @@ npm run build
 - **Not an LLM result.** Every success above is the scripted route. Whether a model can follow the walkthrough is unknown until an approved pilot.
 - **Measured once per seed, at the route's own phases.** The spike numbers come from one cue per seed. Because the run is deterministic, seeds 0 and 1 hit the same spike phase. A model that casts Slow Time at another moment waits a different time for the cue (422 ticks in the test) and may cross with less margin; the text tells it to retry if Slow Time ends first. The walking case shows a hit from that cue only; it does not prove walking can never cross.
 - **Shot times depend on position.** The 56–89 tick figures are from the route's pad positions. Shots from a slightly different spot may take a little longer or miss.
-- **Eight-direction moves.** Players move in eight directions, not along arbitrary lines. One culvert segment, (44,31.6) → (35,31), is blocked if flown due west first (Coco's box clips the culvert wall near x 42.4); diagonal-first, or the straight line itself, is clear. The guide does not spell out which split to use, because that would be a new hint; its general "if blocked, inspect your grid" rule applies.
+- **Eight-direction moves.** Players move in eight directions, not along arbitrary lines. One culvert segment, (44,31.6) → (35,31), is blocked if flown due west first (Coco's box clips the culvert wall near x 42.4). The guide tells Coco to go northwest to (43.4,31) first, which is tested clear. For other legs it says to try the diagonal part first if a straight line is blocked; every other leg is clear both ways.
 - **Corrections.** The correction advice (push more, step aside, reverse sides) is the route's closed-loop procedure. A model may need several tries.
 - **Same-session audit.** The checkpoint audit ([2026-10-29-pond-guided-walkthrough.md](agent-evidence/skill-runs/2026-10-29-pond-guided-walkthrough.md)) ran in the implementing session and is not an independent review. Its findings 2–4 are addressed here; finding 5 by this record. Finding 6 (the recorder test) belongs to the recording workstream.
 
