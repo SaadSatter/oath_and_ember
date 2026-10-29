@@ -24,7 +24,7 @@ The packager writes only `midterms/saadsatter/**` and `.github/workflows/midterm
 - **Evaluation report:** `midterms/saadsatter/EVALUATION.md`
 - **Agent team log:** `midterms/saadsatter/AGENT-TEAM.md`
 - **Peer notes:** `midterms/saadsatter/PEER_NOTES.md`
-- **Recording:** https://github.com/SaadSatter/oath_and_ember/blob/midterm/evaluation/docs/midterm/evidence/pilot-11-model-guided/replay.webm (a trace-verified replay of a model win, labelled as a replay)
+- **Recording:** https://github.com/SaadSatter/oath_and_ember/blob/midterm/evaluation/docs/midterm/evidence/pilot-11-model-guided/replay.webm (a trace-verified replay of a real model run that succeeded; the `model-guided` player received a solution-informed Hedge Maze walkthrough, so it is not an unaided result)
 - **CI:** `.github/workflows/midterm-saadsatter.yml`, deterministic checks only, no secrets.
 
 ## Open before this can be opened
