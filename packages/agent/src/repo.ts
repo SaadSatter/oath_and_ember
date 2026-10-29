@@ -25,14 +25,40 @@ const git = (cwd: string, ...args: string[]) =>
 /** The directory of this module: packages/agent/src. */
 export const MODULE_DIR = dirname(fileURLToPath(import.meta.url));
 
+/** The name in this project's package.json. */
+const PROJECT_NAME = "oath-and-ember";
+
+/**
+ * The project folder that contains `from`: the nearest directory, at or below
+ * the git top level, whose package.json is this project's. In this repository
+ * that is the top level itself; in the course repository it is
+ * midterms/saadsatter/, whose git top level is the course repository.
+ * Without such a package.json (a test's scratch repository) it is the top level.
+ */
+function projectRoot(from: string, top: string): string {
+  for (let dir = resolve(from); ; dir = dirname(dir)) {
+    const manifest = join(dir, "package.json");
+    if (existsSync(manifest)) {
+      try {
+        if (JSON.parse(readFileSync(manifest, "utf8")).name === PROJECT_NAME) return dir;
+      } catch {
+        // Not a readable manifest: keep looking.
+      }
+    }
+    if (dir === resolve(top) || dir === dirname(dir)) return top;
+  }
+}
+
 export function repoInfo(from: string = MODULE_DIR): RepoInfo {
-  const root = git(from, "rev-parse", "--show-toplevel");
+  const top = git(from, "rev-parse", "--show-toplevel");
+  const root = projectRoot(from, top);
   const commonDir = resolve(root, git(root, "rev-parse", "--path-format=absolute", "--git-common-dir"));
   return {
     root,
     commonDir,
     head: git(root, "rev-parse", "HEAD"),
-    dirty: git(root, "status", "--porcelain", "--untracked-files=normal") !== "",
+    // Only this project's files: in the course repository, other folders do not count.
+    dirty: git(root, "status", "--porcelain", "--untracked-files=normal", "--", ".") !== "",
   };
 }
 
