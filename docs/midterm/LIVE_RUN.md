@@ -131,3 +131,8 @@ This appends a hash-chained approval to `<git common dir>/oath-eval/final-regist
 Since suite revision 2 (2026-10-28), `--scenario S2` is Hedge Maze and `--scenario S3` Mirror Pond, and S2-local/S3-local likewise. The revision 1 definitions are still accepted as `S2-v1`, `S3-v1`, `S2-local-v1` and `S3-local-v1` to reproduce historical results ([SUITE_REVISION2.md](SUITE_REVISION2.md)).
 
 `--scenario S2-local` and `--scenario S3-local` select distinct, owner-approved entrance starts. Both retain normal cross-area travel, recording and ledger guards. Their results must be reported separately from travel-inclusive S2/S3. See [LOCAL_STARTS.md](LOCAL_STARTS.md) for the preparation protocol and offline evidence. This addition authorizes no paid call.
+
+
+## Opt-in guided Maze player (2026-10-29)
+
+`--player model-guided` selects a separately labelled solution-informed LLM baseline for current revision 2 `--scenario S2-local` only. It retains the shared ledger, ordinary action validation, traces and automatic recording. Existing players do not receive its walkthrough. Proposed paid command, cap and offline evidence: [GUIDED_MAZE_BASELINE.md](GUIDED_MAZE_BASELINE.md). No paid run is authorized by this documentation.

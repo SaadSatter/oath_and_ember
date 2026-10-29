@@ -223,3 +223,8 @@ The shared `explore/S2`/`explore/S3` freeze entry was re-pinned with owner appro
 
 - **2b / 2c:** read-only diagnosis of pilot-10 (S2-local, seed 0, manual stop): per-call context and memory limits, the cow-passage visibility timeline, the stale dry-hedge request, the unwalked northern corridor, and proposed observation and memory fixes with risks (none implemented). Record: [PILOT10_DIAGNOSIS.md](PILOT10_DIAGNOSIS.md).
 - **3d (session):** implementation session [S40](../agent-sessions/40-claude-pilot10-diagnosis.md) (`ce758032`), documentation only. It invoked `session-evidence`. Not an independent review.
+
+
+## Instruction-guided Maze baseline (2026-10-29)
+
+Implementation `3b7115b`: explicitly solution-informed model-guided, current revision 2 S2-local only. [Guide, validation and future pilot command](GUIDED_MAZE_BASELINE.md); [preflight audit](agent-evidence/skill-runs/2026-10-29-guided-maze-preflight.md); [checkpoint](agent-evidence/skill-runs/2026-10-29-guided-maze-checkpoint.md); [S41 same-session supplement](../agent-sessions/41-codex-guided-maze-supplement.md). 201 distinct targeted offline cases and Node 24.19.0 typecheck/build pass. Scripted Maze proof is not an LLM result. No paid or held-out execution; existing policies/prompts, scenarios, pins and gameplay unchanged.
