@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-27",
+  "gameVersion": "c6be0f2",
+  "status": "blocked-before-dispatch",
+  "authorization": "Exactly one paid smoke call; no retries, pilots or held-out evaluation",
+  "configuration": {
+    "model": "claude-haiku-5-5",
+    "effort": "medium",
+    "maxOutputTokensIncludingThinking": 4000,
+    "timeoutMs": 30000,
+    "callReservationUsd": 0.01,
+    "smokeStageCapUsd": 0.1,
+    "globalCapUsd": 25
+  },
+  "checks": {
+    "worktreeCleanBeforePreflight": true,
+    "providerDocumentationListsModel": true,
+    "configuredCredentialPresent": false,
+    "canonicalLedgerExists": false,
+    "canonicalLedgerLockExists": false
+  },
+  "providerDocumentation": "https://platform.claude.com/docs/en/models/haiku-5-5/overview",
+  "authenticatedModelLookup": "not attempted: configured credential absent",
+  "paidCallsDispatched": 0,
+  "authentication": "not tested",
+  "modelRequest": "not dispatched",
+  "validAgentResponse": null,
+  "usage": {
+    "input": null,
+    "output": null,
+    "thinking": null,
+    "cacheRead": null,
+    "cacheWrite": null
+  },
+  "spendUsd": 0,
+  "reservationCreated": false,
+  "settlementCreated": false,
+  "modelError": null,
+  "refusal": null,
+  "truncation": null,
+  "modelTraceWritten": false,
+  "modelSummaryWritten": false,
+  "reason": "ANTHROPIC_API_KEY is absent from the canonical runner environment. No credential value was read, printed or logged. No ledger was created or changed."
+}

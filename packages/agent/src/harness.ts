@@ -1,0 +1,573 @@
+// Evaluation harness: runs one player on frozen suite scenarios and seeds
+// (docs/midterm/EVALUATION_SUITE.md) and records what the suite says to record.
+//
+// Rules it enforces (owner decisions 2026-10-27):
+//   - S4 and F are held out: they run only in a final run, on the final seeds.
+//     Tuning runs use S1-S3 and the tuning seeds only.
+//   - model-obs-only runs on S1-S3 only.
+//   - Every model episode reserves its whole per-episode cap in the persistent
+//     spend ledger before it starts, and settles it afterwards with what the
+//     budget charged (calls of unknown cost at their reservation). A run that
+//     crashes leaves its reservation open, so it still counts.
+//   - Model episodes are metered by one ModelBudget whose spend cap equals the
+//     reservation.
+
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { createHash } from "node:crypto";
+import { environmentFor, SEEDS, situation, SUITE_REVISION, type SituationId } from "./suite.js";
+import { tutorialId } from "./playerKnowledge.js";
+import { runEpisode } from "./runner.js";
+import { TraceWriter, verifyTrace, type TraceLine } from "./trace.js";
+import type { EnvironmentOptions } from "./environment.js";
+import { ModelBudget, MeteredGateway, defaultBudgetLimits, type CallRecord, type Gateway } from "./budget.js";
+import { GUIDED_SITUATIONS, GUIDES, GuidedPlayer } from "./policies/guided.js";
+import { LLMPlayer } from "./policies/llm.js";
+import { ExplorationBaseline } from "./policies/baseline.js";
+import { QuestBaseline } from "./policies/questBaseline.js";
+import type { Policy } from "./policies/policy.js";
+import type { SpendLedger } from "./ledger.js";
+import type { GameOutcome, PlayerId } from "./types.js";
+import { episodes } from "./evaluator.js";
+import { FinalAccessError, isGrant, type FinalGrant } from "./finalAccess.js";
+import { PLAYER_KINDS, type PlayerKind } from "./playerKinds.js";
+
+export { PLAYER_KINDS, type PlayerKind };
+const isModel = (p: PlayerKind) => p === "model-history" || p === "model-obs-only" || p === "model-guided" || p === "model-memory";
+
+/** Per-episode spend caps, both heroes together (MODEL_BUDGET.md). */
+export const EPISODE_CAP_USD: Record<SituationId, number> = {
+  "S2-local": 1.25, "S3-local": 1.25, S1: 0.2, S2: 1.25, S3: 1.25, S4: 1.0, F: 3.0,
+  // Revision 1 definitions keep their original caps.
+  "S2-v1": 1.25, "S3-v1": 1.25, "S2-local-v1": 1.25, "S3-local-v1": 1.25,
+};
+export const OBS_ONLY_SITUATIONS: readonly SituationId[] = ["S1", "S2", "S3", "S2-local", "S3-local", "S2-v1", "S3-v1", "S2-local-v1", "S3-local-v1"];
+
+export interface ModelSetup {
+  /** A provider adapter for paid runs; a fake in tests. */
+  gateway: Gateway;
+  /** The public player manual, the only game text a model is given. */
+  manual: string;
+  ledger: SpendLedger;
+  /** Ledger stage: pilot for tuning runs, final for final runs, contingency for recorded re-runs. */
+  stage: string;
+  priceSource: string;
+  maxBatch?: number;
+}
+
+export interface SuiteRunOptions {
+  player: PlayerKind;
+  situations: SituationId[];
+  seeds: number[];
+  outDir: string;
+  /** A final run: may include S4 and F, uses the final seeds only. */
+  final?: boolean;
+  gitHash: string;
+  wallSeconds?: number;
+  /** Resume completed episodes; interrupted episodes restart with new traces and reservations. */
+  resume?: boolean;
+  signal?: AbortSignal;
+  model?: ModelSetup;
+  /** Final runs only: the grant from authorizeFinalRun() (review H2). */
+  finalGrant?: FinalGrant;
+  /**
+   * Model runs: a per-episode spend cap below the suite's EPISODE_CAP_USD
+   * (never above). The ledger reserves this amount and the budget enforces it.
+   */
+  episodeCapUsd?: number;
+  /** Live viewing hooks for the environment (scripts/midterm/live.ts). */
+  environment?: Pick<EnvironmentOptions, "room" | "tick" | "pace" | "ready">;
+  /**
+   * How the run was launched, recorded in the manifest and every summary so
+   * watched and headless results can be told apart: the entrypoint, the
+   * real-time pacing speed (null when unpaced) and whether a viewer was on.
+   */
+  launch?: LaunchInfo;
+  /** Trusted observer of every trace line (terminal status). */
+  onTrace?: (line: TraceLine) => void;
+  onEpisode?: (s: EpisodeSummary) => void;
+}
+
+/**
+ * Separate per-hero counts (added 2026-10-27). The legacy fields stay:
+ * `decisions` counts step() submissions, `invalidActions` the environment's
+ * refusals, and `actions` submitted actions by type. Since 2026-10-27 an
+ * unusable model reply is no longer submitted as a placeholder action, so it
+ * appears only in `parseFailures`, not in those legacy fields.
+ */
+export interface EpisodeMetrics {
+  /** Attempted model calls, failed and timed-out ones included. */
+  modelCalls: number;
+  /** Model replies that yielded a valid action envelope. */
+  modelDecisions: number;
+  /** Model replies with no usable envelope (nothing was submitted). */
+  parseFailures: number;
+  /** Usable replies recovered from extra text around one envelope. */
+  recoveredReplies: number;
+  /** Actions proposed by usable replies (over-limit ones included). */
+  proposedActions: number;
+  /** Actions submitted to the game through step(). */
+  submittedActions: number;
+  /** Submitted actions the game accepted and ran. */
+  executedActions: number;
+  /** Dialogue presses for a line that had already moved on (nothing happened). */
+  staleSubmissions: number;
+  /** Submitted actions the game refused (not legal now, or refused by the game). */
+  gameplayRejections: number;
+  /** Proposed actions never submitted (batch stopped, episode over, over the limit). */
+  skippedActions: number;
+}
+export const METRICS_VERSION = 2;
+
+/** Counts EpisodeMetrics for one hero from the episode's trace and call records. */
+export function episodeMetrics(lines: TraceLine[], records: CallRecord[], player: PlayerId): EpisodeMetrics {
+  const mine = lines.filter((l) => l.player === player);
+  const of = (type: string) => mine.filter((l) => l.type === type);
+  const replies = of("model_reply").map((l) => l.data as { envelope?: string; proposed?: number; recovered?: string });
+  const steps = of("step").map((l) => (l.data as { result: { accepted: boolean; stale?: boolean } }).result);
+  return {
+    modelCalls: records.filter((r) => r.player === player).length,
+    modelDecisions: replies.filter((r) => r.envelope === "ok").length,
+    parseFailures: of("reply_rejected").length,
+    recoveredReplies: replies.filter((r) => r.envelope === "ok" && r.recovered).length,
+    proposedActions: replies.reduce((a, r) => a + (r.envelope === "ok" ? (r.proposed ?? 0) : 0), 0),
+    submittedActions: steps.length,
+    executedActions: steps.filter((r) => r.accepted).length,
+    staleSubmissions: steps.filter((r) => !r.accepted && r.stale).length,
+    gameplayRejections: steps.filter((r) => !r.accepted && !r.stale).length,
+    skippedActions: of("skipped_actions").reduce((a, l) => a + (l.data as { skipped: unknown[] }).skipped.length, 0),
+  };
+}
+
+export interface LaunchInfo {
+  launcher: string;
+  speed: number | null;
+  viewer: boolean;
+}
+const DEFAULT_LAUNCH: LaunchInfo = { launcher: "runSuite", speed: null, viewer: false };
+
+export interface EpisodeSummary {
+  situation: SituationId;
+  /**
+   * Suite revision whose ids this record uses (suite.ts SUITE_REVISION).
+   * Records without it predate revision 2 and use revision 1 ids: "S2" there
+   * is Mirror Pond (now S2-v1). Read them with historicalSituationId().
+   */
+  suiteRevision: number;
+  /** The definition actually played: evaluator preset, title and evaluator goal. */
+  scenario: { preset: string; title: string; goal: string; revision: number; tutorialId: string | null; briefing: boolean };
+  seed: number;
+  player: PlayerKind;
+  policies: Record<PlayerId, string>;
+  gateway: string | null;
+  modelIds: string[];
+  gitHash: string;
+  startHash: string;
+  startTick: number;
+  prefix: string | null;
+  status: GameOutcome["status"];
+  reason: GameOutcome["reason"] | null;
+  success: boolean;
+  gameTicks: number;
+  gameSeconds: number;
+  wallSeconds: number;
+  decisions: Record<PlayerId, number>;
+  actions: Record<PlayerId, Record<string, number>>;
+  attempt: number;
+  endHash: string;
+  limits: GameOutcome["limits"];
+  modelLimits: GameOutcome["modelLimits"] | null;
+  invalidActions: Record<PlayerId, number>;
+  /** Separate model-call, decision and action counts per hero (see EpisodeMetrics). */
+  metrics: Record<PlayerId, EpisodeMetrics>;
+  metricsVersion: number;
+  messages: Record<PlayerId, number>;
+  batchStops: number;
+  modelCalls: { attempted: number; failed: number; timedOut: number; unknownUsage: number };
+  latencyMs: { mean: number | null; max: number | null };
+  tokens: { input: number; output: number; cacheRead: number; cacheWrite: number };
+  spendUsd: { known: number; charged: number };
+  priceSource: string | null;
+  ledgerEntry: string | null;
+  /** The per-episode spend cap actually reserved and enforced (model runs), or null. */
+  episodeCapUsd: number | null;
+  /** The real-time limit that applied (s). */
+  wallLimitSeconds: number;
+  launch: LaunchInfo;
+  /** Final runs: the register claim this episode ran under. */
+  finalClaim: string | null;
+  /** Stage notes of a scripted baseline (its own log; never shown to the partner). */
+  baselineLog?: Record<PlayerId, { tick: number; note: string }[]>;
+  trace: string;
+}
+
+/** Check a planned run against the suite's rules before anything starts. */
+export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | "seeds" | "final" | "model">) {
+  if (!PLAYER_KINDS.includes(o.player)) throw Error(`Unknown player ${o.player}.`);
+  if (new Set(o.situations).size !== o.situations.length || new Set(o.seeds).size !== o.seeds.length) throw Error("Duplicate scenarios or seeds are not allowed.");
+  if (!o.situations.length || !o.seeds.length) throw Error("Name at least one scenario and one seed.");
+  for (const id of o.situations) situation(id);
+  // Each guided scenario has its own owner-approved walkthrough (policies/guided.ts).
+  if (o.player === "model-guided" && (o.final || o.situations.some((id) => !GUIDED_SITUATIONS.includes(id))))
+    throw Error("model-guided is restricted to current S2-local Hedge Maze and S3-local Mirror Pond tuning runs.");
+  // Opt-in persistent memory (docs/midterm/MODEL_MEMORY.md): tuning pilots on
+  // S1-S3 only until the owner approves it for anything else.
+  if (o.player === "model-memory" && (o.final || o.situations.some((id) => !OBS_ONLY_SITUATIONS.includes(id))))
+    throw Error("model-memory is restricted to S1-S3 tuning runs (including approved local variants); it is not approved for final runs.");
+  const heldOut = o.situations.filter((id) => situation(id).heldOut);
+  const allowed = o.final ? SEEDS.final : SEEDS.tuning;
+  const bad = o.seeds.filter((s) => !allowed.includes(s));
+  if (bad.length) throw Error(`${o.final ? "Final" : "Tuning"} runs use seeds ${allowed.join(", ")} only (got ${bad.join(", ")}).`);
+  if (heldOut.length && !o.final) throw Error(`${heldOut.join(", ")} ${heldOut.length > 1 ? "are" : "is"} held out: run only in a final run.`);
+  // Owner decision 2026-10-28: the revision 1 definitions (-v1 ids) are for
+  // scripted historical reproduction only. A model run on them, paid or not,
+  // needs separate owner approval and a code change; there is no override.
+  const historical = o.situations.filter((id) => situation(id).revision === 1 && situation(id).supersededBy);
+  if (historical.length && isModel(o.player))
+    throw Error(`${historical.join(", ")} ${historical.length > 1 ? "are" : "is"} a historical revision 1 definition: scripted baselines only. Model runs on it need separate owner approval.`);
+  if (o.player === "model-obs-only") {
+    const outside = o.situations.filter((id) => !OBS_ONLY_SITUATIONS.includes(id));
+    if (outside.length) throw Error(`model-obs-only runs on S1-S3 only, including approved local variants (got ${outside.join(", ")}).`);
+  }
+  if (isModel(o.player)) {
+    if (!o.model) throw Error(`${o.player} needs a model setup (gateway, manual, ledger, stage).`);
+    const stages = o.final ? ["final", "contingency"] : ["pilot", "contingency"];
+    if (!stages.includes(o.model.stage)) throw Error(`A ${o.final ? "final" : "tuning"} run spends from ${stages.join(" or ")}, not "${o.model.stage}".`);
+  } else if (o.model) throw Error("Scripted baselines take no model setup.");
+}
+
+/** The two heroes' policies for one episode of scenario `id`. Model players get the scenario's briefing, if any. */
+export function policiesFor(player: PlayerKind, budget: ModelBudget | undefined, model: ModelSetup | undefined, id?: SituationId): Record<PlayerId, Policy> {
+  const briefing = id ? situation(id).briefing : undefined;
+  const tutorial = id ? situation(id).tutorial : undefined;
+  switch (player) {
+    case "baseline-quest":
+      return { sieg: new QuestBaseline("Sieg"), coco: new QuestBaseline("Coco") };
+    case "baseline-explore":
+      return { sieg: new ExplorationBaseline(), coco: new ExplorationBaseline() };
+    case "model-guided": {
+      const guide = id ? GUIDES[id] : undefined;
+      if (!guide) throw Error("model-guided requires current S2-local Hedge Maze or S3-local Mirror Pond.");
+      const make = (hero: "Sieg" | "Coco", pid: PlayerId) => new GuidedPlayer(hero, pid, model!.gateway, budget!, model!.manual, model!.maxBatch, briefing, tutorial, guide);
+      return { sieg: make("Sieg", "sieg"), coco: make("Coco", "coco") };
+    }
+    case "model-history":
+    case "model-obs-only":
+    case "model-memory": {
+      const memory = player === "model-history" ? "history" : player === "model-memory" ? "persistent" : "none";
+      const make = (hero: "Sieg" | "Coco", pid: PlayerId) => new LLMPlayer(hero, model!.manual, new MeteredGateway(model!.gateway, budget!, pid), model!.maxBatch, memory, briefing, tutorial);
+      return { sieg: make("Sieg", "sieg"), coco: make("Coco", "coco") };
+    }
+  }
+}
+
+function atomicJson(path: string, data: unknown) {
+  writeFileSync(`${path}.tmp`, JSON.stringify(data, null, 2));
+  renameSync(`${path}.tmp`, path);
+}
+
+/** Prior interrupted attempts remain visible; their spend is never erased. */
+interface PreviousAttempt { directory: string; summary?: EpisodeSummary }
+
+/** A final run needs an owner approval for this exact plan (review H2). */
+/** The per-episode cap actually used: the suite's, or a lower one the operator chose. */
+export function episodeCap(o: Pick<SuiteRunOptions, "episodeCapUsd">, id: SituationId) {
+  if (o.episodeCapUsd === undefined) return EPISODE_CAP_USD[id];
+  if (!Number.isFinite(o.episodeCapUsd) || !(o.episodeCapUsd > 0)) throw Error("The episode spend cap must be a positive number.");
+  if (o.episodeCapUsd > EPISODE_CAP_USD[id]) throw Error(`${id}'s episode cap is $${EPISODE_CAP_USD[id]}; a run may lower it, never raise it (got $${o.episodeCapUsd}).`);
+  return o.episodeCapUsd;
+}
+
+function requireFinalGrant(o: SuiteRunOptions) {
+  if (!o.final) {
+    if (o.finalGrant) throw new FinalAccessError("A final grant is only used by a final run.");
+    return;
+  }
+  const g = o.finalGrant;
+  if (!isGrant(g)) throw new FinalAccessError("A final run needs an owner approval for this revision (scripts/midterm/final-approve.ts).");
+  const stage = o.model?.stage ?? g.approval.stage;
+  for (const id of o.situations)
+    for (const seed of o.seeds)
+      if (!g.covers(o.player, id, seed, stage)) throw new FinalAccessError(`The approval does not cover ${o.player} ${id} seed ${seed} (${stage}).`);
+}
+
+export async function runSuite(o: SuiteRunOptions): Promise<EpisodeSummary[]> {
+  validatePlan(o);
+  requireFinalGrant(o);
+  if (o.episodeCapUsd !== undefined) {
+    if (!o.model) throw Error("An episode spend cap applies to model runs only.");
+    for (const id of o.situations) episodeCap(o, id);
+  }
+  if (o.wallSeconds !== undefined && (!Number.isFinite(o.wallSeconds) || o.wallSeconds <= 0)) throw Error("wallSeconds must be finite and positive.");
+  mkdirSync(o.outDir, { recursive: true });
+  const manifest = {
+    suiteRevision: SUITE_REVISION,
+    player: o.player, situations: o.situations, seeds: o.seeds, final: !!o.final, gitHash: o.gitHash,
+    wallSeconds: o.wallSeconds ?? (o.model ? 3600 : 600),
+    model: o.model ? { gateway: o.model.gateway.label, stage: o.model.stage, priceSource: o.model.priceSource,
+      maxBatch: o.model.maxBatch ?? 4, manualHash: createHash("sha256").update(o.model.manual).digest("hex") } : null,
+    ...(o.episodeCapUsd !== undefined ? { episodeCapUsd: o.episodeCapUsd } : {}),
+    launch: o.launch ?? DEFAULT_LAUNCH,
+  };
+  const manifestPath = join(o.outDir, "run.json");
+  if (existsSync(manifestPath)) {
+    if (!o.resume) throw Error("Output already exists; use resume to preserve and continue it.");
+    if (JSON.stringify(JSON.parse(readFileSync(manifestPath, "utf8"))) !== JSON.stringify(manifest)) throw Error("Resume configuration does not match the saved run.");
+  } else writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), { flag: "wx" });
+  const summaries: EpisodeSummary[] = [];
+  const previous: PreviousAttempt[] = [];
+  for (const id of o.situations)
+    for (const seed of o.seeds) {
+      if (o.signal?.aborted) { writeResults(o.outDir, summaries, previous); return summaries; }
+      let attempt = 1;
+      let saved: EpisodeSummary | undefined;
+      let dir = join(o.outDir, `${id}-seed${seed}`);
+      while (existsSync(dir)) {
+        if (!o.resume) throw Error(`Episode output already exists: ${dir}`);
+        const path = join(dir, "summary.json");
+        if (existsSync(path)) {
+          saved = JSON.parse(readFileSync(path, "utf8")) as EpisodeSummary;
+          const lines = readFileSync(join(dir, "trace.jsonl"), "utf8").trim().split("\n").map((l) => JSON.parse(l));
+          verifyTrace(lines);
+          const reset = lines.find((l) => l.type === "reset")?.data;
+          const end = lines.at(-1);
+          if (saved.situation !== id || saved.seed !== seed || saved.player !== o.player || saved.gitHash !== o.gitHash ||
+            saved.attempt !== attempt || saved.startHash !== reset?.startHash || end?.type !== "outcome" ||
+            saved.reason !== end.data.outcome.reason || saved.endHash !== end.data.evaluator.stateHash)
+            throw Error(`Incomplete or mismatched saved episode: ${dir}`);
+          if (saved.reason !== "manual_stop") break;
+        }
+        previous.push({ directory: dir, ...(saved ? { summary: saved } : {}) });
+        saved = undefined;
+        dir = join(o.outDir, `${id}-seed${seed}-attempt${++attempt}`);
+      }
+      const summary = saved ?? await runOne(o, id, seed, dir, attempt);
+      summaries.push(summary);
+      // Checkpoint before callbacks/next episode, including interrupted runs.
+      writeResults(o.outDir, summaries, previous);
+      o.onEpisode?.(summary);
+    }
+  return summaries;
+}
+
+async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: string, attempt: number): Promise<EpisodeSummary> {
+  mkdirSync(dir, { recursive: true });
+  const tracePath = join(dir, "trace.jsonl");
+  const trace = new TraceWriter(tracePath, o.onTrace);
+  const env = environmentFor(id, { ...o.environment, trace: (e) => trace.write(e) });
+  const cap = episodeCap(o, id);
+  const limits = episodes[situation(id).preset].limits;
+  const model = isModel(o.player) ? o.model! : undefined;
+  const budget = model
+    ? new ModelBudget({
+        maxModelCallsPerPlayer: limits.maxModelCallsPerPlayer,
+        maxTokensPerPlayer: limits.maxTokensPerPlayer,
+        maxSpendUsd: cap,
+        callTimeoutMs: defaultBudgetLimits.callTimeoutMs,
+      })
+    : undefined;
+  const policies = policiesFor(o.player, budget, model, id);
+  // Final runs: claim the episode in the append-only register first (H2).
+  // The single-use ticket is bound to these policies by runEpisode.
+  const ticket = o.final ? o.finalGrant!.claim(o.player, id, seed, attempt) : null;
+  // Reserve before anything can spend; the reservation is on disk first, and
+  // the trace names it so an interrupted episode can be reconciled from it.
+  const run = `${o.player}/${id}/seed${seed}/${o.gitHash}`;
+  const ledgerEntry = model ? model.ledger.reserve(model.stage, run, cap) : null;
+  if (model && ledgerEntry) budget!.bindLedger(model.ledger, ledgerEntry);
+  if (model && ledgerEntry) trace.write({ type: "ledger_reservation", tick: 0, data: { entry: ledgerEntry, stage: model.stage, run, reservedUsd: cap, ledger: model.ledger.path } });
+  const wallLimitSeconds = o.wallSeconds ?? (model ? 3600 : 600);
+  const started = Date.now();
+  let outcome: GameOutcome;
+  try {
+    outcome = await runEpisode(env, policies, trace, {
+      seed,
+      signal: o.signal,
+      wallClockMs: wallLimitSeconds * 1000,
+      ...(budget ? { budget } : {}),
+      ...(ticket ? { finalTicket: ticket } : {}),
+    });
+  } catch (e) {
+    if (model && ledgerEntry) model.ledger.settle(ledgerEntry, null, `episode failed: ${(e as Error).message.slice(0, 200)}`);
+    if (ticket) o.finalGrant!.finish(ticket, { status: "error", reason: (e as Error).message.slice(0, 200), endHash: null, chargedUsd: model ? cap : null });
+    throw e;
+  }
+  if (model && ledgerEntry) {
+    const unknown = budget!.records.filter((r) => r.costUsd === null).length;
+    model.ledger.settle(ledgerEntry, budget!.chargedUsd, unknown ? `${unknown} call(s) of unknown cost charged at their reservation` : undefined);
+  }
+  if (ticket) o.finalGrant!.finish(ticket, { status: outcome.status, reason: outcome.reason ?? null, endHash: env.evaluatorReport().stateHash, chargedUsd: budget ? budget.chargedUsd : null });
+  verifyTrace(trace.lines);
+  const reset = trace.lines.find((l) => l.type === "reset")!.data as { startHash: string; tick: number; prefix?: { name: string } };
+  const steps = trace.lines.filter((l) => l.type === "step");
+  const records: CallRecord[] = budget?.records ?? [];
+  const lat = records.map((r) => r.latencyMs);
+  const sum = (f: (r: CallRecord) => number) => records.reduce((a, r) => a + f(r), 0);
+  const per = <T>(f: (id: PlayerId) => T) => ({ sieg: f("sieg"), coco: f("coco") });
+  const def = situation(id);
+  const summary: EpisodeSummary = {
+    situation: id,
+    suiteRevision: SUITE_REVISION,
+    scenario: { preset: def.preset, title: def.title, goal: episodes[def.preset].goal, revision: def.revision,
+      tutorialId: isModel(o.player) && def.tutorial ? tutorialId(def.tutorial) : null, briefing: isModel(o.player) && !!def.briefing },
+    seed,
+    player: o.player,
+    policies: per((p) => policies[p].name),
+    gateway: model ? model.gateway.label : null,
+    modelIds: [...new Set(records.map((r) => r.model).filter((m): m is string => !!m))],
+    gitHash: o.gitHash,
+    startHash: reset.startHash,
+    startTick: reset.tick,
+    prefix: reset.prefix?.name ?? null,
+    status: outcome.status,
+    reason: outcome.reason ?? null,
+    success: outcome.status === "success",
+    gameTicks: outcome.ticks,
+    gameSeconds: outcome.seconds,
+    wallSeconds: Math.round((Date.now() - started) / 100) / 10,
+    decisions: outcome.decisions,
+    actions: per((p) => {
+      const counts: Record<string, number> = {};
+      for (const line of steps.filter((l) => l.player === p)) {
+        const type = (line.data as { action: { type: string } }).action.type;
+        counts[type] = (counts[type] ?? 0) + 1;
+      }
+      return counts;
+    }),
+    attempt,
+    endHash: env.evaluatorReport().stateHash,
+    limits: outcome.limits,
+    modelLimits: outcome.modelLimits ?? null,
+    invalidActions: outcome.invalidActions,
+    metrics: per((p) => episodeMetrics(trace.lines, records, p)),
+    metricsVersion: METRICS_VERSION,
+    messages: per((p) => trace.lines.filter((l) => l.player === p && l.type === "message").length),
+    batchStops: trace.lines.filter((l) => l.type === "batch_stop").length,
+    modelCalls: {
+      attempted: records.length,
+      failed: records.filter((r) => r.status !== "ok").length,
+      timedOut: records.filter((r) => r.status === "timeout").length,
+      unknownUsage: records.filter((r) => r.tokens === null).length,
+    },
+    latencyMs: { mean: lat.length ? Math.round(lat.reduce((a, b) => a + b, 0) / lat.length) : null, max: lat.length ? Math.max(...lat) : null },
+    tokens: {
+      input: sum((r) => r.tokens?.input ?? 0),
+      output: sum((r) => r.tokens?.output ?? 0),
+      cacheRead: sum((r) => r.cache?.read ?? 0),
+      cacheWrite: sum((r) => r.cache?.write ?? 0),
+    },
+    spendUsd: outcome.spendUsd,
+    priceSource: model?.priceSource ?? null,
+    ledgerEntry,
+    episodeCapUsd: model ? cap : null,
+    wallLimitSeconds,
+    launch: o.launch ?? DEFAULT_LAUNCH,
+    finalClaim: ticket?.claim ?? null,
+    ...(o.player === "baseline-quest" ? { baselineLog: per((p) => (policies[p] as QuestBaseline).log) } : {}),
+    trace: tracePath,
+  };
+  atomicJson(join(dir, "summary.json"), summary);
+  return summary;
+}
+
+/** Aggregate per scenario: successes, mean game time, decisions, invalid actions. */
+export function aggregate(summaries: EpisodeSummary[]) {
+  const by = new Map<SituationId, EpisodeSummary[]>();
+  for (const s of summaries) by.set(s.situation, [...(by.get(s.situation) ?? []), s]);
+  const mean = (xs: number[]) => (xs.length ? Math.round((xs.reduce((a, b) => a + b, 0) / xs.length) * 10) / 10 : null);
+  return [...by].map(([id, xs]) => ({
+    situation: id,
+    trials: xs.length,
+    successes: xs.filter((x) => x.success).length,
+    reasons: xs.map((x) => x.reason),
+    meanGameSeconds: mean(xs.map((x) => x.gameSeconds)),
+    meanWallSeconds: mean(xs.map((x) => x.wallSeconds)),
+    gameTicks: xs.reduce((a, x) => a + x.gameTicks, 0),
+    actions: xs.reduce((a, x) => a + Object.values(x.actions.sieg).reduce((u, v) => u + v, 0) + Object.values(x.actions.coco).reduce((u, v) => u + v, 0), 0),
+    failedModelCalls: xs.reduce((a, x) => a + x.modelCalls.failed, 0),
+    unknownUsageCalls: xs.reduce((a, x) => a + x.modelCalls.unknownUsage, 0),
+    tokens: { input: xs.reduce((a, x) => a + x.tokens.input, 0), output: xs.reduce((a, x) => a + x.tokens.output, 0),
+      cacheRead: xs.reduce((a, x) => a + x.tokens.cacheRead, 0), cacheWrite: xs.reduce((a, x) => a + x.tokens.cacheWrite, 0) },
+    knownUsd: xs.reduce((a, x) => a + x.spendUsd.known, 0),
+    meanDecisions: mean(xs.map((x) => x.decisions.sieg + x.decisions.coco)),
+    invalidActions: xs.reduce((a, x) => a + x.invalidActions.sieg + x.invalidActions.coco, 0),
+    messages: xs.reduce((a, x) => a + x.messages.sieg + x.messages.coco, 0),
+    modelCalls: xs.reduce((a, x) => a + x.modelCalls.attempted, 0),
+    chargedUsd: Math.round(xs.reduce((a, x) => a + x.spendUsd.charged, 0) * 1e6) / 1e6,
+    startHashes: [...new Set(xs.map((x) => x.startHash.slice(0, 16)))],
+    // Episodes saved before metricsVersion 2 have no per-hero metrics; they are left out of these sums.
+    metrics: sumMetrics(xs.flatMap((x) => (x.metrics ? [x.metrics.sieg, x.metrics.coco] : []))),
+    metricsEpisodes: xs.filter((x) => x.metrics).length,
+  }));
+}
+
+function sumMetrics(ms: EpisodeMetrics[]): EpisodeMetrics {
+  const total = { modelCalls: 0, modelDecisions: 0, parseFailures: 0, recoveredReplies: 0, proposedActions: 0, submittedActions: 0, executedActions: 0, staleSubmissions: 0, gameplayRejections: 0, skippedActions: 0 };
+  for (const m of ms) for (const k of Object.keys(total) as (keyof EpisodeMetrics)[]) total[k] += m[k];
+  return total;
+}
+
+function writeResults(dir: string, summaries: EpisodeSummary[], previous: PreviousAttempt[] = []) {
+  mkdirSync(dir, { recursive: true });
+  const rows = aggregate(summaries);
+  atomicJson(join(dir, "results.json"), { episodes: summaries.map(({ trace: _t, ...s }) => s), aggregate: rows, previousAttempts: previous });
+  const md = [
+    "| Scenario | Successes | Mean game time (s) | Mean decisions (both heroes) | Invalid actions | Messages | Model calls | Charged (USD) |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- |",
+    ...rows.map((r) => `| ${r.situation} | ${r.successes}/${r.trials} | ${r.meanGameSeconds} | ${r.meanDecisions} | ${r.invalidActions} | ${r.messages} | ${r.modelCalls} | ${r.chargedUsd} |`),
+    "",
+    "Both heroes, summed (metrics version 2):",
+    "",
+    "| Scenario | Model calls | Model decisions | Parse failures | Submitted | Executed | Stale | Rejected by game | Skipped |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    ...rows.map((r) => `| ${r.situation} | ${r.metrics.modelCalls} | ${r.metrics.modelDecisions} | ${r.metrics.parseFailures} | ${r.metrics.submittedActions} | ${r.metrics.executedActions} | ${r.metrics.staleSubmissions} | ${r.metrics.gameplayRejections} | ${r.metrics.skippedActions} |`),
+  ].join("\n");
+  writeFileSync(join(dir, "results.md"), md + "\n");
+}
+
+/**
+ * Smoke stage: exactly one model call through the metered gateway, from the
+ * S1 start, reserved in the ledger's smoke stage. Returns the call record and
+ * the reply so tokens, cost, the reported model id and the cache fields can
+ * be checked.
+ */
+export async function smokeCall(gateway: Gateway, manual: string, ledger: SpendLedger, gitHash: string, reserveUsd = 0.01, trace?: TraceWriter, signal?: AbortSignal) {
+  const run = `smoke/S1/${gitHash}`;
+  const entry = ledger.reserve("smoke", run, reserveUsd);
+  trace?.write({ type: "ledger_reservation", tick: 0, data: { entry, stage: "smoke", run, reservedUsd: reserveUsd, ledger: ledger.path } });
+  const budget = new ModelBudget({ maxModelCallsPerPlayer: 1, maxTokensPerPlayer: 100_000, maxSpendUsd: reserveUsd, callTimeoutMs: defaultBudgetLimits.callTimeoutMs });
+  budget.bindLedger(ledger, entry);
+  let settled = false;
+  const abort = () => budget.abortAll();
+  signal?.addEventListener("abort", abort, { once: true });
+  if (signal?.aborted) abort();
+  try {
+    const env = environmentFor("S1", { trace: (event) => trace?.write(event) });
+    await env.reset(SEEDS.tuning[0]);
+    budget.onStart = (s) => trace?.write({ type: "model_call_start", tick: env.currentTick(), player: "sieg", data: s });
+    budget.onRecord = (record) => trace?.write({ type: "model_call", tick: env.currentTick(), player: "sieg", data: record });
+    const player = new LLMPlayer("Sieg", manual, new MeteredGateway(gateway, budget, "sieg"));
+    let decision;
+    try {
+      const observation = await env.observe("sieg"), legal = await env.legal_actions("sieg");
+      trace?.write({ type: "observation", tick: observation.tick, player: "sieg", data: { observation, legal } });
+      decision = await player.decide({ observation, legal });
+      trace?.write({ type: "model_reply", tick: observation.tick, player: "sieg", data: { raw: decision.raw, action: decision.action ?? null, ...(decision.replyProblem ? { problem: decision.replyProblem } : {}), ...(decision.usage?.meta ? { meta: decision.usage.meta } : {}) } });
+    } catch (e) {
+      decision = { error: (e as Error).message };
+    }
+    const record = budget.records[0] ?? null;
+    ledger.settle(entry, budget.chargedUsd, record?.costUsd === null ? "smoke call of unknown cost" : undefined);
+    settled = true;
+    const result = { record, decision, chargedUsd: budget.chargedUsd, ledgerEntry: entry };
+    trace?.write({ type: "smoke_outcome", tick: env.currentTick(), data: result });
+    if (trace) verifyTrace(trace.lines);
+    return result;
+  } catch (e) {
+    // Anything unexpected: the reservation is charged in full.
+    if (!settled) ledger.settle(entry, null, `smoke failed: ${(e as Error).message.slice(0, 200)}`);
+    throw e;
+  } finally {
+    signal?.removeEventListener("abort", abort);
+  }
+}

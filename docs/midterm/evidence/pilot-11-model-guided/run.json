@@ -1,0 +1,26 @@
+{
+  "suiteRevision": 2,
+  "player": "model-guided",
+  "situations": [
+    "S2-local"
+  ],
+  "seeds": [
+    0
+  ],
+  "final": false,
+  "gitHash": "74adda8",
+  "wallSeconds": 3600,
+  "model": {
+    "gateway": "openai:gpt-6-luna@medium",
+    "stage": "pilot",
+    "priceSource": "https://developers.openai.com/api/docs/models/gpt-6-luna (verified 2026-10-28); https://developers.openai.com/api/docs/pricing; https://developers.openai.com/api/docs/guides/prompt-caching",
+    "maxBatch": 4,
+    "manualHash": "4b091a6630dd56f236f89f8e2213a6bb7cad4a31d4851d1883f95867d92bfa86"
+  },
+  "episodeCapUsd": 0.3,
+  "launch": {
+    "launcher": "scripts/midterm/live.ts",
+    "speed": 1,
+    "viewer": true
+  }
+}
