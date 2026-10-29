@@ -362,6 +362,16 @@
    "role": "Implementation agent (Claude Code, CLAUDE.md and AGENTS.md) on midterm/evaluation: suite revision 2 (S2/S3 swap with preserved -v1 definitions), the verbatim player manual and a tutorial-completion briefing for model players, then the owner's follow-up decisions. Invoked game-rules-audit (same-session checkpoint, not an independent review) and session-evidence for this record. No subagent and no independent review.",
    "title": "Suite revision 2: S2/S3 swap, player manual and tutorial knowledge",
    "note": "No paid call, held-out S4/F run, push or merge. The full npm test and checkpointFreeze were not run because they build held-out starts. The S2-local cost estimate uses the owner's pilot-8 local run record (not run in this session)."
+  },
+  {
+   "number": 40,
+   "slug": "claude-pilot10-diagnosis",
+   "ids": [
+    "ce758032"
+   ],
+   "role": "Implementation agent under CLAUDE.md and AGENTS.md, read-only for this task: investigated the owner's paid pilot-10 run from its existing local trace (no paid call), wrote docs/midterm/PILOT10_DIAGNOSIS.md, checked whether the browser client shows a hero's own sent messages, and invoked session-evidence for this record. No implementation change, no subagent, no independent review",
+   "title": "Pilot-10 diagnosis: spatial memory, the cow passage and the stale dry-hedge request",
+   "note": "Documentation only. No observation, memory, prompt, gameplay, baseline or pin change; no tests run; no paid call, S4/F or route/seed1 inspection, push or merge."
   }
  ]
 }

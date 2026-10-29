@@ -218,3 +218,8 @@ The shared `explore/S2`/`explore/S3` freeze entry was re-pinned with owner appro
 - **2c:** Hedge Maze captions as labels; the cow's full footprint and extent; Push movement and object feedback. Implementation `a3b19ad`, tests `packages/agent/test/pilot9Fixes.test.ts`, record [PILOT9_FIXES.md](PILOT9_FIXES.md).
 - **5a:** all 14 permitted scripted trajectories are identical before and after, with no re-pin. Model results before and after `a3b19ad` are reported separately (change log in `EVALUATION_SUITE.md`).
 - **5c:** a recording-finalization finding and a proposed fix (not implemented) in `PILOT9_FIXES.md`.
+
+## Pilot-10 diagnosis (2026-10-29)
+
+- **2b / 2c:** read-only diagnosis of pilot-10 (S2-local, seed 0, manual stop): per-call context and memory limits, the cow-passage visibility timeline, the stale dry-hedge request, the unwalked northern corridor, and proposed observation and memory fixes with risks (none implemented). Record: [PILOT10_DIAGNOSIS.md](PILOT10_DIAGNOSIS.md).
+- **3d (session):** implementation session [S40](../agent-sessions/40-claude-pilot10-diagnosis.md) (`ce758032`), documentation only. It invoked `session-evidence`. Not an independent review.
