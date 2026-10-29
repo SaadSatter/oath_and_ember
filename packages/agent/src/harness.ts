@@ -31,6 +31,7 @@ import type { GameOutcome, PlayerId } from "./types.js";
 import { episodes } from "./evaluator.js";
 import { FinalAccessError, isGrant, type FinalGrant } from "./finalAccess.js";
 import { PLAYER_KINDS, type PlayerKind } from "./playerKinds.js";
+import { canonicalJson, evaluationLabel } from "./situationA.js";
 
 export { PLAYER_KINDS, type PlayerKind };
 const isModel = (p: PlayerKind) => p === "model-history" || p === "model-obs-only" || p === "model-guided" || p === "model-memory";
@@ -196,9 +197,35 @@ export interface EpisodeSummary {
   launch: LaunchInfo;
   /** Final runs: the register claim this episode ran under. */
   finalClaim: string | null;
+  /**
+   * Evaluation label of the scenario and its frozen definition hash (S2-local
+   * is "S2-A", situationA.ts), or null. Added 2026-10-29; older records lack it.
+   */
+  evaluation?: { label: string; definitionHash: string } | null;
+  /** SHA-256 of each hero's system prompt (model players), or null for scripted players. Added 2026-10-29. */
+  promptHashes?: Record<PlayerId, string | null>;
+  /**
+   * SHA-256 of the run configuration (runConfigHash): scenario, label, player,
+   * policies, prompts, gateway, batch size, manual and every limit. The game
+   * version is gitHash and the seed is seed, both recorded separately. Added 2026-10-29.
+   */
+  configHash?: string;
   /** Stage notes of a scripted baseline (its own log; never shown to the partner). */
   baselineLog?: Record<PlayerId, { tick: number; note: string }[]>;
   trace: string;
+}
+
+/**
+ * The configuration of one episode, hashed. Two runs with the same configHash,
+ * gitHash and seed ran the same players under the same limits on the same
+ * start; only the model's replies (and the wall clock) can differ.
+ */
+export function runConfigHash(c: {
+  situation: SituationId; preset: string; suiteRevision: number; evaluation: { label: string; definitionHash: string } | null;
+  player: PlayerKind; policies: Record<PlayerId, string>; promptHashes: Record<PlayerId, string | null>; gateway: string | null;
+  maxBatch: number | null; manualHash: string | null; limits: unknown; modelLimits: unknown; wallLimitSeconds: number; episodeCapUsd: number | null;
+}) {
+  return createHash("sha256").update(canonicalJson(c)).digest("hex");
 }
 
 /** Check a planned run against the suite's rules before anything starts. */
@@ -405,6 +432,14 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
   const sum = (f: (r: CallRecord) => number) => records.reduce((a, r) => a + f(r), 0);
   const per = <T>(f: (id: PlayerId) => T) => ({ sieg: f("sieg"), coco: f("coco") });
   const def = situation(id);
+  const evaluation = evaluationLabel(id);
+  const promptHashes = per((p) => (policies[p] as { promptHash?: string }).promptHash ?? null);
+  const configHash = runConfigHash({
+    situation: id, preset: def.preset, suiteRevision: SUITE_REVISION, evaluation, player: o.player,
+    policies: per((p) => policies[p].name), promptHashes, gateway: model ? model.gateway.label : null,
+    maxBatch: model ? model.maxBatch ?? 4 : null, manualHash: model ? createHash("sha256").update(model.manual).digest("hex") : null,
+    limits: outcome.limits, modelLimits: budget ? budget.limits : null, wallLimitSeconds, episodeCapUsd: model ? cap : null,
+  });
   const summary: EpisodeSummary = {
     situation: id,
     suiteRevision: SUITE_REVISION,
@@ -463,6 +498,9 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
     wallLimitSeconds,
     launch: o.launch ?? DEFAULT_LAUNCH,
     finalClaim: ticket?.claim ?? null,
+    evaluation,
+    promptHashes,
+    configHash,
     ...(o.player === "baseline-quest" ? { baselineLog: per((p) => (policies[p] as QuestBaseline).log) } : {}),
     trace: tracePath,
   };

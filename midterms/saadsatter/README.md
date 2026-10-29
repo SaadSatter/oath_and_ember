@@ -90,6 +90,9 @@ cd midterms/saadsatter
 # The scripted reference baseline on the Hedge Maze (expect success, 2,990 ticks, end hash bf31311f…)
 node --import tsx scripts/midterm/evaluate.ts --player baseline-quest --situations S2-local --seeds 0
 
+# Situation A (S2-A, the frozen Hedge Maze): definition, resets, planned runs, baseline on seeds 0 and 1
+node --import tsx scripts/midterm/situation-a.ts --baseline
+
 # Check the packaged Hedge Maze evidence against its manifest and summaries
 python3 -I scripts/midterm/collect_evidence.py --verify
 

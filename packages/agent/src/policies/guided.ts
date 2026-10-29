@@ -3,6 +3,7 @@
 // a static, scenario-specific walkthrough is appended to every system request.
 // Owner-approved walkthroughs: Hedge Maze for S2-local (2026-10-29) and Mirror
 // Pond for S3-local (2026-10-29). Each carries its own ID in labels and names.
+import { createHash } from "node:crypto";
 import type { Gateway, CompletionOptions } from "../budget.js";
 import { MeteredGateway, type ModelBudget } from "../budget.js";
 import type { PlayerId } from "../types.js";
@@ -40,12 +41,15 @@ class GuidedGateway implements Gateway {
 export class GuidedPlayer implements Policy {
   readonly name: string;
   readonly model: MeteredGateway;
+  /** SHA-256 of the full system text this hero's calls send: the LLM player's prompt plus the walkthrough. */
+  readonly promptHash: string;
   private readonly player: LLMPlayer;
   constructor(hero: "Sieg" | "Coco", pid: PlayerId, gateway: Gateway, budget: ModelBudget, manual: string, maxBatch?: number, briefing?: string, tutorial?: string, guide: Guide = MAZE_WALKTHROUGH) {
     if ((hero === "Sieg") !== (pid === "sieg")) throw Error("Guided hero/meter identity mismatch.");
     this.model = new MeteredGateway(new GuidedGateway(gateway, hero, guide), budget, pid);
     this.player = new LLMPlayer(hero, manual, this.model, maxBatch, "history", briefing, tutorial);
     this.name = `model-guided:${this.player.name}·walkthrough-${guide.id}`;
+    this.promptHash = createHash("sha256").update(this.player.promptHash).update(guide.instructions(hero)).digest("hex");
   }
   decide(input: Parameters<Policy["decide"]>[0]) {
     // No decision, navigation, checkpoint evaluation or World access here.

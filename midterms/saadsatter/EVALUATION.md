@@ -32,6 +32,14 @@ All costs are in US dollars, charged by the runner's own accounting from dated l
 
 Mirror Pond (S3) and the Griffin (part of S4) remain implemented content. They appear below only as exploratory pilots and scripted results, not in the Hedge Maze comparison.
 
+### Situation A (S2-A), the frozen form of this episode
+
+On 2026-10-29 this episode was frozen as **S2-A — Full Hedge Maze**, version 1. It is the first situation of a proposed three-situation Hedge Maze suite; the other two are proposals only, so **the three-situation requirement is not met** ([SITUATION_A.md](docs/midterm/SITUATION_A.md)).
+- S2-A is a label for S2-local, not a new scenario. It has the same start, success, limits and prompts, and the historical traces still replay.
+- The runs in the table below are historical tuning pilots on that same start. They are not S2-A trials and were not re-run.
+- Seed 1 differs from seed 0 only in room code and hero ids, so it is a repeated trial, not a second situation.
+- The planned primary comparison is `baseline-quest` against unaided `model-memory`; `model-guided` stays supplementary. No new model run has been made.
+
 ## Policies and what each one knows
 
 The three policies do **not** have equal information. The comparison separates scripted reference performance, guided execution of a supplied solution, and unaided problem solving.

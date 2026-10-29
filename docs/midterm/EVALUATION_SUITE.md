@@ -109,3 +109,8 @@ Owner explicitly approved a separate `model-guided` player for current revision 
 ## 2026-10-29 change log: opt-in persistent memory player
 
 `model-memory`: `model-history` plus per-hero memory built only from that hero's own observations and results ([MODEL_MEMORY.md](MODEL_MEMORY.md)). Restricted to S1–S3 tuning runs; not approved for final runs. Its results are a separate player kind and are not pooled with `model-history`. Scenarios, seeds, success predicates, limits, frozen pins, existing prompts and observations are unchanged. No model-memory result exists yet.
+
+
+## 2026-10-29 change log: S2-A evaluation label (Situation A)
+
+`S2-A — Full Hedge Maze` is the evaluation label for current revision 2 S2-local, version 1, and the first situation of a proposed three-situation Hedge Maze suite. It is a label, not a new scenario. S2-local's id, preset, start state (seed 0 `2b9eddd4…`, seed 1 `ebea7d5c…`), success predicate, limits, briefings and observations are unchanged, and historical S2-local traces still replay (tested). Run summaries gain the additive fields `evaluation` (label and definition hash `4b3c9bb3…`), `promptHashes` and `configHash`. Seed 1 differs from seed 0 only in room code and hero ids, so it is a repeated trial, not a distinct situation. Situations B and C are proposed, not implemented. No paid or held-out run. Record: [SITUATION_A.md](SITUATION_A.md).

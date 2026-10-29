@@ -247,3 +247,16 @@ This section supersedes the 4b, 5a and 5c rows above for the submission. The own
 | 4b | Solution-aware scripted reference `baseline-quest`: success on S2-local, reproduced four times with one end hash. Walkthrough-guided `model-guided` and unaided `model-memory` on the same start hash. `midterms/saadsatter/EVALUATION.md`, "Hedge Maze results" |
 | 5a | The comparison table with outcomes, invalid actions, limits, latency, tokens, dated cost, git hashes and failures. Every value is checked against `summary.json` by `scripts/midterm/collect_evidence.py`. The manifest with SHA-256 checksums is in `midterms/saadsatter/evidence/manifests/`. Missing: held-out cases, three situations, the observation-only player |
 | 5c | Live: the scripted baseline (not an LLM) and pilot 15 (`model-memory`, about 19 min). Replays verified against their traces: pilots 11, 12 and 13. Delivery and caveats: `midterms/saadsatter/evidence/README.md` |
+
+## Situation A, S2-A Full Hedge Maze (2026-10-29)
+
+Supports 3b, 3c and 5a (partially). [SITUATION_A.md](SITUATION_A.md) freezes the Hedge Maze episode as S2-A, a label for S2-local with a pinned definition hash. `packages/agent/test/situationA.test.ts` (24 tests) covers:
+- the reset state at seeds 0 and 1;
+- reset determinism;
+- the information boundary over a full baseline episode;
+- legal actions;
+- baseline completion matching the committed live trace per hero;
+- terminal reporting;
+- replay compatibility of the committed S2-local traces.
+
+`scripts/midterm/situation-a.ts --baseline` is the free reproduction. Situations B and C are proposals only. The three-situation and held-out gaps remain.

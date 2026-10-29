@@ -296,6 +296,8 @@ export class LLMPlayer implements Policy {
   /** Refused or stale actions, oldest first, kept apart from completed history. */
   private rejected: { action: GameAction; status: "rejected" | "stale"; error: string }[] = [];
   private readonly system: string;
+  /** SHA-256 of the system prompt (manual, rules, tutorial and briefing blocks), recorded in run summaries. */
+  readonly promptHash: string;
   private readonly schema: Record<string, unknown>;
   private readonly maxBatch: number;
   readonly memory: Memory;
@@ -327,6 +329,7 @@ export class LLMPlayer implements Policy {
     if (tutorial !== undefined && !tutorial.trim()) throw Error("A tutorial briefing must not be empty.");
     this.name = `llm(${model.label})${this.maxBatch > 1 ? `·batch${this.maxBatch}` : ""}${memory === "none" ? "·obs-only" : memory === "persistent" ? "·memory" : ""}${tutorial ? `·tutorial-${tutorialId(tutorial)}` : ""}${briefing ? `·briefing-${briefingId(briefing)}` : ""}`;
     this.system = systemPrompt(hero, manual, this.maxBatch, memory) + (tutorial ? tutorialBlock(tutorial) : "") + (briefing ? briefingBlock(briefing) : "");
+    this.promptHash = createHash("sha256").update(this.system).digest("hex");
     this.schema = replySchema(this.maxBatch, memory);
   }
 
