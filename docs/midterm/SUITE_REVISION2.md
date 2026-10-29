@@ -53,12 +53,12 @@ Excluded from the model (`MANUAL_EXCLUSIONS`):
 
 The player manual itself contains no puzzle solution and names no evaluated area or item (tested). Manual statements that differ from what the agents get (reported, not edited):
 - The HUD objective line is hidden from agents (owner decision 2026-10-23).
-- The manual says Flight lasts "up to 20 seconds", but a flight cannot be ended early.
+- The manual says Flight lasts "up to 20 seconds", but a flight cannot be ended early. The tutorial briefing states the exact behaviour (owner decision 4).
 - Jump and side view: the interface has no jump action. The only platformer maps are the airship maps, outside the episode.
 
 ## Tutorial-completion briefing
 
-`TUTORIAL_BRIEFING` (`playerKnowledge.ts`, id `4242ec52`, 7,221 characters) is its own system-prompt block. It comes after the manual and before the episode briefing. Policy names gain `·tutorial-4242ec52`.
+`TUTORIAL_BRIEFING` (`playerKnowledge.ts`, id `2ec2f251`, 7,426 characters) is its own system-prompt block. It comes after the manual and before the episode briefing. Policy names gain `·tutorial-2ec2f251`. The first draft (`4242ec52`) was never used in a run. It was replaced the same day by the Flight clarification below.
 
 **Sources** (player-facing only):
 - the Mossling Woods tutorial's guide lines and lesson goals (`packages/shared/src/prologueWoods.ts`);
@@ -82,12 +82,13 @@ Both heroes read both sections, but each controls only their own hero. Every num
 - anything about the shrine, pond, maze, griffin or finale;
 - coordinates and routes.
 
-## Pending owner approval
+## Owner decisions (2026-10-28, after the first implementation)
 
-1. The wording of the revision 2 S2 (Hedge Maze) episode briefing. It adapts the approved Mirror Pond text: area, item and the "other area" example swapped. S3 reuses the approved text with only its label changed. Revision 1 S3 had no briefing.
-2. Revision 2 scripted freeze pins.
-3. Whether `-v1` ids may be used for paid model runs.
-4. Re-estimating the pilot budget for the larger prompt (about 1.8k more tokens per call, cached).
+1. **S2 Hedge Maze briefing approved**, provided it names the Enchanted Shears objective without revealing the solution. Tests check that it names no route, direction, coordinate or mechanism.
+2. **No revision 2 freeze pins yet.** The historical pins stay on the `-v1` definitions.
+3. **`-v1` ids are for scripted historical reproduction only.** `validatePlan` refuses any model player on them, paid or mock, including through `live.ts` and `evaluate.ts`. There is no override: a paid `-v1` evaluation needs separate owner approval and a code change.
+4. **Manual unchanged.** The tutorial briefing now states Flight's behaviour, matching `movement.ts` and `GameRoom.ts`: a flight lasts 20 seconds and cannot be cancelled; it ends sooner only on defeat or area travel; Flight is not offered again until it has recharged.
+5. **Cost:** S2-local re-estimated with the added prompt. See `MODEL_BUDGET.md`, "S2-local cost estimate with the tutorial briefing".
 
 ## Verification (this session)
 
