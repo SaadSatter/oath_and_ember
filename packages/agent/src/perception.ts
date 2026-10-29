@@ -229,6 +229,13 @@ interface Prop {
   details?: string;
   /** Screen-grid character; none for a floating label that hides no cell. */
   mark?: string;
+  /**
+   * Floor art drawn across several tiles (world px). Every cell it covers gets
+   * `mark`, drawn under people and other things, and the listing gives its
+   * extent. Pilot-7: a spike column drawn as one cell looked like a row with
+   * clear lanes beside it.
+   */
+  floor?: Rect;
 }
 
 function griffinLabel(g: GriffinState, mode: LabelMode) {
@@ -297,13 +304,16 @@ function sceneProps(w: World, scene: SceneId, mode: LabelMode): Prop[] {
         details: pond?.torches[i] ? "lit" : "unlit",
         mark: "o",
       });
+      // Painted on the pad (MirrorPondView's text label): read, not used.
       props.push({
-        kind: "object",
+        kind: "label",
         name: label(mode, `floor marking A${i + 1} ${["→", "↑", "←", "↓"][i]}`, `floor marking A${i + 1}`),
         ...s.shot,
-        mark: "o",
       });
     });
+    // MirrorPondView draws each column as one plate per tile down the whole
+    // corridor (four tiles), all in the same phase. Only the current phase is
+    // reported, as drawn: never its timing or what comes next.
     pondSpikeColumns.forEach((r, i) => {
       const phase = pond ? pondSpikeState(pond.clock, i).phase : "down";
       props.push({
@@ -313,14 +323,17 @@ function sceneProps(w: World, scene: SceneId, mode: LabelMode): Prop[] {
         y: r.y + r.h / 2,
         details: phase,
         mark: phase === "raised" ? "^" : "o",
+        floor: r,
       });
     });
     if (pond?.raised)
       props.push({ kind: "object", name: "sanctuary (risen from the water)", x: 24 * TILE, y: 19 * TILE, mark: "o" });
+    // Text MirrorPondView draws on the ground: labels, not objects to use
+    // (pilot-7: both heroes pressed E on them about 30 times).
     props.push(
-      { kind: "object", name: label(mode, "SIEG · Super Speed (2) · East spike entrance", "east entrance"), x: 1440, y: 760, mark: "o" },
-      { kind: "object", name: label(mode, "COCO · Flight (2) · Water culvert → pond", "water culvert"), x: 1408, y: 1010, mark: "o" },
-      { kind: "object", name: label(mode, "MIRROR POND · Four flames raise the sunken sanctuary", "MIRROR POND sign"), x: 768, y: 1240, mark: "o" },
+      { kind: "label", name: label(mode, "SIEG · Super Speed (2) · East spike entrance", "east entrance"), x: 1440, y: 760 },
+      { kind: "label", name: label(mode, "COCO · Flight (2) · Water culvert → pond", "water culvert"), x: 1408, y: 1010 },
+      { kind: "label", name: label(mode, "MIRROR POND · Four flames raise the sunken sanctuary", "MIRROR POND sign"), x: 768, y: 1240 },
       { kind: "exit", name: "Return · E", ...maps.MIRROR_POND.points.back, mark: ">" },
     );
   }
@@ -435,9 +448,16 @@ export function perceive(
   const view = viewRect(w, me);
   const visible: VisibleThing[] = [];
   const marks: { x: number; y: number; mark: string }[] = [];
+  /** Floor art cells, drawn before every other mark (people stand on it). */
+  const floorMarks: { x: number; y: number; mark: string }[] = [];
   const counters: Record<string, number> = {};
   const add = (p: Prop) => {
-    if (!inRect(p, view, VIEW_PAD)) return;
+    const f = p.floor;
+    // Floor art is on screen while any part of it is.
+    const shown = f
+      ? f.x < view.x + view.w + VIEW_PAD && f.x + f.w > view.x - VIEW_PAD && f.y < view.y + view.h + VIEW_PAD && f.y + f.h > view.y - VIEW_PAD
+      : inRect(p, view, VIEW_PAD);
+    if (!shown) return;
     const n = (counters[p.kind] = (counters[p.kind] ?? 0) + 1);
     const dx = p.x - me.x,
       dy = p.y - me.y,
@@ -455,8 +475,12 @@ export function perceive(
       distance: round1(d / TILE),
       direction: d < TILE / 2 ? "here" : directionOf(Math.atan2(dy, dx)),
       ...(p.details ? { details: p.details } : {}),
+      ...(f ? { extent: { x: round1(f.x / TILE), y: round1(f.y / TILE), w: round1(f.w / TILE), h: round1(f.h / TILE) } } : {}),
     });
-    if (p.mark) marks.push({ x: p.x, y: p.y, mark: p.mark });
+    if (p.mark && f)
+      for (let y = f.y + TILE / 2; y < f.y + f.h; y += TILE)
+        for (let x = f.x + TILE / 2; x < f.x + f.w; x += TILE) floorMarks.push({ x, y, mark: p.mark });
+    else if (p.mark) marks.push({ x: p.x, y: p.y, mark: p.mark });
   };
 
   // Partner: drawn with a health bar whenever on the same map and on screen.
@@ -548,7 +572,7 @@ export function perceive(
       r = Math.floor(y / TILE) - oy;
     if (r >= 0 && r < rows && c >= 0 && c < cols) grid[r][c] = ch;
   };
-  for (const m of marks) put(m.x, m.y, m.mark);
+  for (const m of [...floorMarks, ...marks]) put(m.x, m.y, m.mark);
   put(me.x, me.y, "@");
 
   // Explored outline of this area (4×4-tile blocks).

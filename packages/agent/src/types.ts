@@ -98,11 +98,15 @@ export interface VisibleThing {
     | "object"
     | "exit"
     | "projectile"
-    | "effect";
+    | "effect"
+    /** Text painted or floating in the world: something to read, drawn without a screen character. */
+    | "label";
   name: string;
   /** Tile coordinates (32 px tiles) within the current area. */
   x: number;
   y: number;
+  /** For something drawn across several tiles (a floor trap column): the block it covers, top-left tile and size in tiles. */
+  extent?: { x: number; y: number; w: number; h: number };
   /** Distance from you in tiles, and the compass direction toward it. */
   distance: number;
   direction: Direction | "here";

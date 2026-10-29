@@ -11,7 +11,7 @@ import { evaluationRuntime } from "./runtime.js";
 import { admitReset, FinalAccessError, isTicket, type Admission, type EpisodeTicket, type RouteDevelopmentAccess } from "./finalAccess.js";
 import type { ModelBudget } from "./budget.js";
 import { GameRoom } from "../../../apps/server/src/GameRoom.js";
-import { neutral, type InputFrame, type Player, type Role, type SceneId } from "../../shared/src/gameTypes.js";
+import { neutral, type InputFrame, type Player, type Role, type SceneId, type World } from "../../shared/src/gameTypes.js";
 import { storyView } from "../../../apps/client/src/ui/storyDialogue.js";
 import { items, type ItemId } from "../../shared/src/items.js";
 import { questLog } from "../../../apps/client/src/ui/questLog.js";
@@ -122,6 +122,8 @@ interface Running {
   cow?: SeenMove;
   /** Move actions: where and in which area the hero started, and what each tick did so far (movementReport.ts). */
   move?: { direction: Direction; scene: SceneId; from: { x: number; y: number }; tally: MoveTally };
+  /** An E press with nothing in the backpack panel's reach: what it could change, before it ran (pressFingerprint). */
+  press?: string;
 }
 
 interface Slot {
@@ -164,6 +166,39 @@ export function noAttackLine(role: Role, recovering: boolean) {
  * at the current map's spawn. No source or amount is given.
  */
 export const KNOCKED_OUT = "Your health ran out. You are back at this area's starting point with full health.";
+
+/** Feedback for an E press that changed nothing (owner approval 2026-10-28, after pilot-7). */
+export const NOTHING_RESPONDED = "You pressed E; nothing responded.";
+
+/**
+ * Everything an E press can change, for one hero: their area and placement
+ * (travel, doors, relocation), the story (scene spots, dialogue, villager
+ * talks), the backpack and its targets, puzzle and bridge state (including
+ * hold-E progress) and movable objects. Trusted side, read only. A press is
+ * reported as answering nothing only if none of this changed while it ran,
+ * so a press with any effect, even one with no visible result yet, is never
+ * called a failure. The pond's spike clock runs every tick by itself, so it
+ * is left out; anything else that changes on its own only suppresses the line.
+ */
+function pressFingerprint(w: World, p: Player): string {
+  const puzzles = structuredClone(w.puzzles) as Record<string, { pond?: { clock?: number } }>;
+  if (puzzles.mirrorPond?.pond) delete puzzles.mirrorPond.pond.clock;
+  return JSON.stringify([
+    w.phase,
+    w.sceneId,
+    sceneOf(w, p),
+    p.movementEpoch ?? 0,
+    w.checkpoint,
+    w.story ?? null,
+    w.npcTalks ?? null,
+    w.inventory ?? null,
+    w.inventoryTargets ?? null,
+    puzzles,
+    w.bridgePuzzle ?? null,
+    w.interactables,
+    w.pushableOffsets ?? null,
+  ]);
+}
 
 export class AgentEnvironment implements GameInterface {
   private room!: GameRoom;
@@ -459,6 +494,7 @@ export class AgentEnvironment implements GameInterface {
           resolve: sub.resolve,
           ...(sub.action.type === "attack" ? { attack: { recovering: (me.cooldowns.attack ?? 0) > 0, performed: false } } : {}),
           ...(sub.action.type === "move" ? { move: { direction: sub.action.direction, scene: sceneOf(this.room.state, me), from: { x: me.x, y: me.y }, tally: newTally() } } : {}),
+          ...(sub.action.type === "interact" ? { press: pressFingerprint(this.room.state, me) } : {}),
         };
       }
     }
@@ -651,6 +687,7 @@ export class AgentEnvironment implements GameInterface {
       ...walked,
       ...(moved ? [moved] : []),
       ...(r.attack && !r.attack.performed ? [noAttackLine(s.role, r.attack.recovering)] : []),
+      ...(r.press !== undefined && !interrupted && pressFingerprint(this.room.state, me) === r.press ? [NOTHING_RESPONDED] : []),
     ];
     for (const line of extra) {
       r.feedback.push(line);

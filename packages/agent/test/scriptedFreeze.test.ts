@@ -38,9 +38,15 @@ const PINNED = {
   "quest/S2": { status: "success", ticks: 8786, end: "3119923352c08724", digest: "95ba992c670b8575" },
   // explore/S2 and explore/S3 are one trajectory (same post-opening start; the
   // exploration baseline has no briefing): not two independent results.
-  "explore/S2": { status: "terminated", ticks: 6000, end: "cc9ad696c917e214", digest: "53edd2605b70c7ac" },
+  // RE-PINNED with owner approval 2026-10-28 (pilot-7 observation fixes), this
+  // shared entry only. The old values (end cc9ad696c917e214, digest
+  // 53edd2605b70c7ac) relied on the "East spike entrance" painted label drawing
+  // "o" over the impassable wall cell (45,23); it is now drawn "#". First
+  // divergence: decision 214, tick 2999. Restoring only that "o" reproduces the
+  // old values. Evidence: docs/midterm/PILOT7_FIXES.md.
+  "explore/S2": { status: "terminated", ticks: 6000, end: "ba34603a00ee793d", digest: "e78c8b162f8c735b" },
   "quest/S3": { status: "success", ticks: 3174, end: "bf31311f6c56638b", digest: "a6518c4acff7a7e8" },
-  "explore/S3": { status: "terminated", ticks: 6000, end: "cc9ad696c917e214", digest: "53edd2605b70c7ac" },
+  "explore/S3": { status: "terminated", ticks: 6000, end: "ba34603a00ee793d", digest: "e78c8b162f8c735b" },
 } as const;
 
 describe("scripted players behave exactly as before the pilot-6 interface changes", () => {
