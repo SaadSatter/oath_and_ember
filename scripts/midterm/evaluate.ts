@@ -7,7 +7,7 @@
 //    scripts/midterm/final-approve.ts; review H2)
 //
 // Model players (PAID; only after the owner has authorized the stage):
-//   --player model-history|model-obs-only --stage pilot|final|contingency --effort medium|low --paid
+//   --player model-history|model-obs-only|model-memory --stage pilot|final|contingency --effort medium|low --paid
 //   --smoke --paid    one call, from the smoke stage
 // Every paid episode is reserved in the one shared spend ledger, in the git
 // common directory (packages/agent/src/repo.ts), before it starts.
@@ -100,7 +100,7 @@ if (final) {
 }
 let model: ModelSetup | undefined;
 let ledger: SpendLedger | undefined;
-if (player === "model-history" || player === "model-obs-only" || player === "model-guided") {
+if (player === "model-history" || player === "model-obs-only" || player === "model-guided" || player === "model-memory") {
   const stage = arg("--stage");
   if (!stage) throw Error("--stage is required for model runs.");
   // Check the plan before touching the ledger or the network.

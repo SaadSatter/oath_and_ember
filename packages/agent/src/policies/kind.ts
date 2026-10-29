@@ -16,7 +16,7 @@ function kindOf(p: Policy): PlayerKind | null {
   if (proto === QuestBaseline.prototype) return "baseline-quest";
   if (proto === ExplorationBaseline.prototype) return "baseline-explore";
   if (proto === GuidedMazePlayer.prototype) return "model-guided";
-  if (proto === LLMPlayer.prototype) return (p as LLMPlayer).memory === "history" ? "model-history" : (p as LLMPlayer).memory === "none" ? "model-obs-only" : null;
+  if (proto === LLMPlayer.prototype) return (p as LLMPlayer).memory === "history" ? "model-history" : (p as LLMPlayer).memory === "none" ? "model-obs-only" : (p as LLMPlayer).memory === "persistent" ? "model-memory" : null;
   return null;
 }
 

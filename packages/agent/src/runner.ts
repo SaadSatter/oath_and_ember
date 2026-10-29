@@ -168,6 +168,7 @@ export async function runEpisode(
         if (last.done) break;
         if (k === queue.length - 1) break;
         const after = await env.observe(id);
+        report.steps[k].after = after;
         const stop = batchStop(before, last, after);
         if (stop) {
           report.stopped = stop;

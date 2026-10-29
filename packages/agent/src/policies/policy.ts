@@ -38,8 +38,13 @@ export function stepStatus(result: StepResult): StepStatus {
 
 /** The previous decision's fate, step by step (runner.ts builds it). */
 export interface TurnReport {
-  /** Every submitted action, in order, with its result and status. */
-  steps: { action: GameAction; result: StepResult; status: StepStatus }[];
+  /**
+   * Every submitted action, in order, with its result and status. `after` is
+   * the hero's own observation the runner took right after that step, when
+   * another action of the batch followed (the same observation the trace
+   * records with inBatch). Only the model-memory player reads it.
+   */
+  steps: { action: GameAction; result: StepResult; status: StepStatus; after?: Observation }[];
   /** Proposed actions that were never submitted, and why. They did not happen. */
   skipped: { action: GameAction; reason: string }[];
   /** Why the batch stopped before its end, if it did. */

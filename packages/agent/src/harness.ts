@@ -33,7 +33,7 @@ import { FinalAccessError, isGrant, type FinalGrant } from "./finalAccess.js";
 import { PLAYER_KINDS, type PlayerKind } from "./playerKinds.js";
 
 export { PLAYER_KINDS, type PlayerKind };
-const isModel = (p: PlayerKind) => p === "model-history" || p === "model-obs-only" || p === "model-guided";
+const isModel = (p: PlayerKind) => p === "model-history" || p === "model-obs-only" || p === "model-guided" || p === "model-memory";
 
 /** Per-episode spend caps, both heroes together (MODEL_BUDGET.md). */
 export const EPISODE_CAP_USD: Record<SituationId, number> = {
@@ -209,6 +209,10 @@ export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | 
   for (const id of o.situations) situation(id);
   if (o.player === "model-guided" && (o.final || o.situations.some((id) => id !== "S2-local")))
     throw Error("model-guided is restricted to current S2-local Hedge Maze tuning runs.");
+  // Opt-in persistent memory (docs/midterm/MODEL_MEMORY.md): tuning pilots on
+  // S1-S3 only until the owner approves it for anything else.
+  if (o.player === "model-memory" && (o.final || o.situations.some((id) => !OBS_ONLY_SITUATIONS.includes(id))))
+    throw Error("model-memory is restricted to S1-S3 tuning runs (including approved local variants); it is not approved for final runs.");
   const heldOut = o.situations.filter((id) => situation(id).heldOut);
   const allowed = o.final ? SEEDS.final : SEEDS.tuning;
   const bad = o.seeds.filter((s) => !allowed.includes(s));
@@ -246,8 +250,9 @@ export function policiesFor(player: PlayerKind, budget: ModelBudget | undefined,
       return { sieg: make("Sieg", "sieg"), coco: make("Coco", "coco") };
     }
     case "model-history":
-    case "model-obs-only": {
-      const memory = player === "model-history" ? "history" : "none";
+    case "model-obs-only":
+    case "model-memory": {
+      const memory = player === "model-history" ? "history" : player === "model-memory" ? "persistent" : "none";
       const make = (hero: "Sieg" | "Coco", pid: PlayerId) => new LLMPlayer(hero, model!.manual, new MeteredGateway(model!.gateway, budget!, pid), model!.maxBatch, memory, briefing, tutorial);
       return { sieg: make("Sieg", "sieg"), coco: make("Coco", "coco") };
     }

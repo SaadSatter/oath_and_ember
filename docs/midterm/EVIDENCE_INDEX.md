@@ -228,3 +228,8 @@ The shared `explore/S2`/`explore/S3` freeze entry was re-pinned with owner appro
 ## Instruction-guided Maze baseline (2026-10-29)
 
 Implementation `3b7115b`: explicitly solution-informed model-guided, current revision 2 S2-local only. [Guide, validation and future pilot command](GUIDED_MAZE_BASELINE.md); [preflight audit](agent-evidence/skill-runs/2026-10-29-guided-maze-preflight.md); [checkpoint](agent-evidence/skill-runs/2026-10-29-guided-maze-checkpoint.md); [S41 same-session supplement](../agent-sessions/41-codex-guided-maze-supplement.md). 201 distinct targeted offline cases and Node 24.19.0 typecheck/build pass. Scripted Maze proof is not an LLM result. No paid or held-out execution; existing policies/prompts, scenarios, pins and gameplay unchanged.
+
+
+## Persistent memory player (2026-10-29)
+
+`model-memory` (Workstream B, after the pilot-10 diagnosis): [design, schema, comparison, tests and proposed pilot](MODEL_MEMORY.md); tests in `packages/agent/test/modelMemory.test.ts` (27). Existing `model-history` and `model-obs-only` prompts are pinned unchanged. The 6 permitted frozen baseline pins and 8 revision 2 baseline trajectories are identical before and after. No paid or held-out execution.

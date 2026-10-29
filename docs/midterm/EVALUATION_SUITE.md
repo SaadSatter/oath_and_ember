@@ -104,3 +104,8 @@ Owner-approved S2-local and S3-local were added in `115c542`. Original scenarios
 ## 2026-10-29 change log: opt-in instruction-guided Maze treatment
 
 Owner explicitly approved a separate `model-guided` player for current revision 2 S2-local, with a static source-verified, role-specific solution walkthrough. Implementation `3b7115b`; [protocol/evidence](GUIDED_MAZE_BASELINE.md). This is intentionally not an information-equal comparison with unaided model-history. Existing scenario definitions, seeds, success predicates, limits, frozen pins and ordinary prompts are unchanged. No guided model result exists yet; no paid or held-out run is authorized here.
+
+
+## 2026-10-29 change log: opt-in persistent memory player
+
+`model-memory`: `model-history` plus per-hero memory built only from that hero's own observations and results ([MODEL_MEMORY.md](MODEL_MEMORY.md)). Restricted to S1–S3 tuning runs; not approved for final runs. Its results are a separate player kind and are not pooled with `model-history`. Scenarios, seeds, success predicates, limits, frozen pins, existing prompts and observations are unchanged. No model-memory result exists yet.

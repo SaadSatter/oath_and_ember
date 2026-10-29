@@ -136,3 +136,8 @@ Since suite revision 2 (2026-10-28), `--scenario S2` is Hedge Maze and `--scenar
 ## Opt-in guided Maze player (2026-10-29)
 
 `--player model-guided` selects a separately labelled solution-informed LLM baseline for current revision 2 `--scenario S2-local` only. It retains the shared ledger, ordinary action validation, traces and automatic recording. Existing players do not receive its walkthrough. Proposed paid command, cap and offline evidence: [GUIDED_MAZE_BASELINE.md](GUIDED_MAZE_BASELINE.md). No paid run is authorized by this documentation.
+
+
+## Opt-in persistent memory player (2026-10-29)
+
+`--player model-memory` selects `model-history` plus per-hero persistent memory (S1–S3 tuning scenarios only, never final). Same ledger, validation, traces and recording. Other players are unchanged. Proposed paid S2-local command: [MODEL_MEMORY.md](MODEL_MEMORY.md) §6. No paid run is authorized by this documentation.

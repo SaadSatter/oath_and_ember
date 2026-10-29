@@ -333,3 +333,8 @@ The verbatim player manual has always been in every model player's system prompt
 ## Pilot-9 fixes (2026-10-29)
 
 Hedge Maze captions are labels. The cow is drawn across its 4×4 body with an `extent`, using the terrain's cell-centre rule. Push with a direction carries the same `movement` report as a move, plus one line saying whether anything Push can move actually moved. The general prompt has new communication rules. The scripted route and quest baseline rebuild the earlier maze screen (`asTunedMaze`). Details, tests and the before/after trajectory comparison: [PILOT9_FIXES.md](PILOT9_FIXES.md).
+
+
+## Opt-in persistent memory player (2026-10-29)
+
+`model-memory` is `model-history` plus a per-hero `memory` field: a tile-resolution remembered map with walked tiles, dated last-seen things, verified events from the hero's own screens and feedback, and its own sent messages. It is built only from that hero's observations and action results, in the policy (`heroMemory.ts`). The observation schema is unchanged. The turn report gained `steps[k].after`, the hero's own observation between batched actions, which only `model-memory` reads. S1–S3 tuning only. Schema, tests and comparison: [MODEL_MEMORY.md](MODEL_MEMORY.md).

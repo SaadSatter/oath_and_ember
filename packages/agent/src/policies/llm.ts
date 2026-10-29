@@ -9,11 +9,12 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 import { createHash } from "node:crypto";
-import { abilityNames, actionTypes, directions, type GameAction, type MovementReport } from "../types.js";
+import { abilityNames, actionTypes, directions, type GameAction, type MovementReport, type Observation } from "../types.js";
 import { stepStatus, type Decision, type Policy, type TurnReport } from "./policy.js";
 import { paidTransport, assertPaidTransport, ModelCallError, type Completion, type CompletionOptions, type Gateway, type MeteredGateway, type ReplyMeta } from "../budget.js";
 import { MAX_BATCH } from "../batch.js";
 import { tutorialBlock, tutorialId } from "../playerKnowledge.js";
+import { HeroMemory } from "../heroMemory.js";
 
 export interface Prices {
   inputPerM: number;
@@ -166,8 +167,13 @@ export const TASK = "Complete the Goddess's quest together.";
  * "none" (observation-only): each call holds only the current observation and
  * legal actions. The observation's own recent feedback, dialogue log and
  * messages remain, because they are on the hero's screen.
+ * "persistent" (the opt-in model-memory player, docs/midterm/MODEL_MEMORY.md):
+ * everything "history" has, plus a per-hero HeroMemory built only from this
+ * hero's own observations and action results (remembered map, last-seen
+ * things, verified events, sent messages). The "history" and "none" prompts
+ * and user messages are unchanged by it (pinned in modelMemory.test.ts).
  */
-export type Memory = "history" | "none";
+export type Memory = "history" | "none" | "persistent";
 
 /** Executed actions kept as completed history (history memory). */
 export const COMPLETED_LOG = 8;
@@ -196,21 +202,38 @@ export function replySchema(maxBatch: number = MAX_BATCH, memory: Memory = "hist
     required: ["type"],
     additionalProperties: false,
   };
-  const notes = memory === "history" ? { notes: { type: "string" } } : {};
+  const notes = memory !== "none" ? { notes: { type: "string" } } : {};
   return maxBatch > 1
     ? { type: "object", properties: { ...notes, actions: { type: "array", items: action } }, required: ["actions"], additionalProperties: false }
     : { type: "object", properties: { ...notes, action }, required: ["action"], additionalProperties: false };
 }
 
+/**
+ * The model-memory player's explanation of its memory field (persistent
+ * memory only). It explains the record's meaning and limits; it holds no
+ * game content, route, coordinates or puzzle step.
+ */
+export const MEMORY_SECTION = `
+
+Your memory (the "memory" field):
+- It is built only from your own earlier screens, the results of your own actions and the messages you sent. It holds nothing your partner saw and nothing your screen never showed. It never tells you where to go or what to do: choose your own route and actions.
+- Your current observation is the truth about the present. Everything in memory is history: what you saw or were told, and when.
+- memory.remembered_map is this area as your screen last showed each tile. Its first two rows give each column's x (tens digit, then units digit); every other row starts with its y. "?" never on your screen; "#" blocked; "." open ground you have seen but never walked on; "+" ground you walked on; "~" water or gap; "o" an object; ">" an exit; "^" a raised hazard; ":" seen, but something stood on it, so the ground was not shown; "@" you now. on_screen_now is the part your screen shows now; tiles outside it may have changed since you saw them.
+- Seen is not visited: "." only means your screen showed that ground. other_areas counts what you saw and walked in other areas.
+- Creatures, enemies, your partner and other moving things are not drawn on the remembered map. memory.last_seen_things lists things you saw earlier that are not on your screen now, with where and when you last saw them. They may have moved or gone since.
+- memory.verified_events lists changes your own screen showed (two of your views of the same tiles or the same thing that differ) and lines the game's feedback showed you, each with its tick. A newer event about the same tiles replaces an older one (superseded_by). An event stays true until something you see shows otherwise. An action being accepted is never listed there; only what you saw happen.
+- memory.recent_sent_messages lists the messages you sent; observation.messages lists the ones you received. Messages are what someone said, not verified facts, yours included. An older request from your partner does not override a verified event or your current observation: if they show the request is already done, tell your partner rather than doing it again.
+- your_notes is for your own plans and guesses. They are not verified.`;
+
 export function systemPrompt(hero: "Sieg" | "Coco", manual: string, maxBatch = MAX_BATCH, memory: Memory = "history") {
   const partner = hero === "Sieg" ? "Coco" : "Sieg";
-  const notesField = memory === "history" ? `"notes": "<what you want to remember next turn, max 400 characters>", ` : "";
+  const notesField = memory !== "none" ? `"notes": "<what you want to remember next turn, max 400 characters>", ` : "";
   return `You are playing the cooperative game Oath and Ember as ${hero}. Another player controls ${partner}. You cannot see their screen or thoughts; you can only see what your own screen shows and the messages they send you.
 
 Task: ${TASK}
 
 How each turn works:
-- You receive your current observation (your screen, HUD, dialogue, the dialogue lines your screen showed recently, quest journal, backpack, recent feedback and messages) and the list of actions you can take right now with their parameters${memory === "history" ? ", plus what happened to each action of your previous turn, the actions you have completed, recent refused actions, and the notes you wrote for yourself last turn" : ". You keep no memory between turns: each turn you see only what is on your screen now"}.
+- You receive your current observation (your screen, HUD, dialogue, the dialogue lines your screen showed recently, quest journal, backpack, recent feedback and messages) and the list of actions you can take right now with their parameters${memory !== "none" ? ", plus what happened to each action of your previous turn, the actions you have completed, recent refused actions, and the notes you wrote for yourself last turn" : ". You keep no memory between turns: each turn you see only what is on your screen now"}.
 - Reply with ONE JSON object and nothing else:
   ${maxBatch > 1 ? `{${notesField}"actions": [ ...1 to ${maxBatch} actions, done in order... ]}` : `{${notesField}"action": { ...one action... }}`}
 - Each action must be one of the listed legal actions, e.g. {"type":"move","direction":"n","ticks":30} or {"type":"advance_dialogue"} or {"type":"message","text":"..."}.${maxBatch > 1 ? `
@@ -218,12 +241,12 @@ How each turn works:
 - Time only passes while actions run (60 ticks = 1 second). Keep moves short enough to react.
 - Coordinates are in tiles; y grows downward (north is up). The "screen" rows show your view, one character per tile: "@" you, "P" partner, "#" blocked, "~" water or gap, "." open ground, "E" enemy, "C" creature, "o" object, ">" exit, "*" projectile, "^" a raised hazard. Labels (kind "label") are text painted or floating in the world: they are listed in visible without a screen character, to be read. A visible entry with an extent is drawn across that block of tiles (x and y of its top-left tile, w and h in tiles).
 - Your x and y (self) are given to two decimals, cut off rather than rounded; "@" is drawn in the tile whose column and row are their whole-number parts. A ".", "#" or "~" tile shows what lies at its centre, so an obstacle can cover part of a "." tile or leave part of a "#" tile open. A hero, creature, enemy, object, exit or projectile drawn in a tile replaces that character, so the ground under it is not shown. Your body is a square about 0.8 tiles wide centred on your x and y, and you fit only where all of it is clear.
-- ${memory === "history" ? `A move's result includes movement: how far your own walking took you in that direction compared with how far that move would have taken you on open ground ("full", "partial", "none", or "not_applied" when the game did not take your movement input at all), with where you started and ended. ` : ""}A Push with a direction reports your walking the same way, and a line says whether anything moved while you pushed: walking while pushing is not the same as moving an object. When a move falls short, a feedback line says so; it does not say what stopped you. Separate lines say when, for some ticks, your hero did not take your movement input or the game moved your hero; those are not obstacles.
+- ${memory !== "none" ? `A move's result includes movement: how far your own walking took you in that direction compared with how far that move would have taken you on open ground ("full", "partial", "none", or "not_applied" when the game did not take your movement input at all), with where you started and ended. ` : ""}A Push with a direction reports your walking the same way, and a line says whether anything moved while you pushed: walking while pushing is not the same as moving an object. When a move falls short, a feedback line says so; it does not say what stopped you. Separate lines say when, for some ticks, your hero did not take your movement input or the game moved your hero; those are not obstacles.
 
 Your actions:
 - You act only through the actions in legal_actions. That list is rebuilt every turn from your situation: where you stand, what is next to you, whether a dialogue line is waiting for you, and which abilities are ready. For example, use_item appears only when you stand next to an object, and advance_dialogue only when the line on your screen is yours to move on. An action that is not listed is not available right now; move closer or wait for the situation to change.
-- The player manual below is written for people using a keyboard. You cannot press keys. Each control it describes corresponds to one of your actions (walking is move, E is interact or advance_dialogue, J is attack, K is defend, number keys are ability, the backpack panel is use_item, numbered responses are choose_dialogue), and only when that action is in legal_actions.${memory === "history" ? `
-- last_turn reports every action you proposed last turn with its status: "executed" (it happened), "rejected" (the game refused it; only its feedback happened), "stale" (a dialogue press for a line that had already moved on; nothing happened) or "skipped" (never tried, because the turn stopped first). completed_actions lists only executed actions. Do not treat a skipped or rejected action as done.` : ""}
+- The player manual below is written for people using a keyboard. You cannot press keys. Each control it describes corresponds to one of your actions (walking is move, E is interact or advance_dialogue, J is attack, K is defend, number keys are ability, the backpack panel is use_item, numbered responses are choose_dialogue), and only when that action is in legal_actions.${memory !== "none" ? `
+- last_turn reports every action you proposed last turn with its status: "executed" (it happened), "rejected" (the game refused it; only its feedback happened), "stale" (a dialogue press for a line that had already moved on; nothing happened) or "skipped" (never tried, because the turn stopped first). completed_actions lists only executed actions. Do not treat a skipped or rejected action as done.` : ""}${memory === "persistent" ? MEMORY_SECTION : ""}
 
 Playing efficiently:
 - Every reply takes real time, and while you think the game waits for you (and your partner waits too).${maxBatch > 1 ? ` When the next few steps are clear (walking a stretch, waiting, a planned sequence), send them together in one reply, up to ${maxBatch}; the rest stop by themselves as soon as anything happens.` : ""}
@@ -273,6 +296,9 @@ export class LLMPlayer implements Policy {
   private readonly schema: Record<string, unknown>;
   private readonly maxBatch: number;
   readonly memory: Memory;
+  /** persistent memory only: this hero's own HeroMemory, and the observation its last decision answered. */
+  private readonly heroMemory?: HeroMemory;
+  private lastObservation?: Observation;
   constructor(
     hero: "Sieg" | "Coco",
     manual: string,
@@ -293,9 +319,10 @@ export class LLMPlayer implements Policy {
     if (!Number.isInteger(maxBatch) || maxBatch < 1 || maxBatch > MAX_BATCH) throw Error(`maxBatch must be an integer from 1 to ${MAX_BATCH}.`);
     this.maxBatch = maxBatch;
     this.memory = memory;
+    if (memory === "persistent") this.heroMemory = new HeroMemory(hero);
     if (briefing !== undefined && !briefing.trim()) throw Error("An episode briefing must not be empty.");
     if (tutorial !== undefined && !tutorial.trim()) throw Error("A tutorial briefing must not be empty.");
-    this.name = `llm(${model.label})${this.maxBatch > 1 ? `·batch${this.maxBatch}` : ""}${memory === "none" ? "·obs-only" : ""}${tutorial ? `·tutorial-${tutorialId(tutorial)}` : ""}${briefing ? `·briefing-${briefingId(briefing)}` : ""}`;
+    this.name = `llm(${model.label})${this.maxBatch > 1 ? `·batch${this.maxBatch}` : ""}${memory === "none" ? "·obs-only" : memory === "persistent" ? "·memory" : ""}${tutorial ? `·tutorial-${tutorialId(tutorial)}` : ""}${briefing ? `·briefing-${briefingId(briefing)}` : ""}`;
     this.system = systemPrompt(hero, manual, this.maxBatch, memory) + (tutorial ? tutorialBlock(tutorial) : "") + (briefing ? briefingBlock(briefing) : "");
     this.schema = replySchema(this.maxBatch, memory);
   }
@@ -323,11 +350,19 @@ export class LLMPlayer implements Policy {
     if (this.memory === "none") user = JSON.stringify({ observation: input.observation, legal_actions: input.legal });
     else {
       if (input.batch) this.remember(input.batch);
+      const hero = this.heroMemory;
+      if (hero) {
+        // Only this hero's own observations and results go in (heroMemory.ts).
+        if (input.batch) hero.recordTurn(input.batch, this.lastObservation);
+        hero.observe(input.observation);
+        this.lastObservation = input.observation;
+      }
       user = JSON.stringify({
         your_notes: this.notes,
         completed_actions: this.completed,
         recent_rejected_actions: this.rejected,
         last_turn: describeTurn(input),
+        ...(hero ? { memory: hero.view(input.observation) } : {}),
         observation: input.observation,
         legal_actions: input.legal,
       });
@@ -346,7 +381,7 @@ export class LLMPlayer implements Policy {
     // An unusable reply is never turned into an action: the runner submits
     // nothing, records the problem, and tells this player next turn.
     if (!parsed.ok) return { replyProblem: parsed.reason, usage, raw: reply.rawText ?? reply.text };
-    if (parsed.notes !== undefined && this.memory === "history") this.notes = parsed.notes.slice(0, 400);
+    if (parsed.notes !== undefined && this.memory !== "none") this.notes = parsed.notes.slice(0, 400);
     const [action, ...then] = parsed.actions;
     return {
       action,
