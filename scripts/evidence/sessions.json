@@ -352,6 +352,16 @@
    "role": "Same-session Codex implementation supplement under AGENTS.md and CLAUDE.md: owner-approved S2-local/S3-local only; game-rules-audit preflight and session-evidence. Same session as S28/S30/S33, not independent review or an additional distinct session.",
    "title": "Additive S2-local and S3-local tuning starts",
    "note": "Another owner-confirmed session was active in the canonical worktree. Only owned files committed; validation uses an isolated fb844ae snapshot plus the eight files in 115c542. No paid calls or held-out episodes/tests. Follow-up: owner provisionally approved both implementations and evidence; combined canonical verification at e1829af began clean, with 924 permitted Vitest checks passing. Test-only stale expectation correction c35f6c5. No paid or held-out execution."
+  },
+  {
+   "number": 39,
+   "slug": "claude-suite-revision2-tutorial",
+   "ids": [
+    "a209a67a"
+   ],
+   "role": "Implementation agent (Claude Code, CLAUDE.md and AGENTS.md) on midterm/evaluation: suite revision 2 (S2/S3 swap with preserved -v1 definitions), the verbatim player manual and a tutorial-completion briefing for model players, then the owner's follow-up decisions. Invoked game-rules-audit (same-session checkpoint, not an independent review) and session-evidence for this record. No subagent and no independent review.",
+   "title": "Suite revision 2: S2/S3 swap, player manual and tutorial knowledge",
+   "note": "No paid call, held-out S4/F run, push or merge. The full npm test and checkpointFreeze were not run because they build held-out starts. The S2-local cost estimate uses the owner's pilot-8 local run record (not run in this session)."
   }
  ]
 }
