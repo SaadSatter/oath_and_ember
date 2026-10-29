@@ -6,7 +6,7 @@ This folder holds the evidence for the primary evaluated episode, **S2-local, th
 | --- | --- |
 | [manifests/evidence-manifest.json](manifests/evidence-manifest.json) | Every run: pilot id, policy, scenario, seed, git hash, model, outcome, stop reason, recording type, and each file's source path, destination, size and SHA-256 |
 | [manifests/evidence-manifest.md](manifests/evidence-manifest.md) | The same, as tables (generated, do not edit) |
-| `traces/<run>/` | Each run's hash-chained `trace.jsonl`, `summary.json` (authoritative result), launch records (`run.json`, `live.json`), result rows and recording manifest |
+| `traces/<run>/` | Each run's hash-chained `trace.jsonl`, `summary.json` (authoritative result), launch records (`run.json`, `live.json`), result rows and recording manifest (`live-recording.json` or `replay-recording.json`) |
 | [../docs/midterm/evidence/pilot-11-model-guided/](../docs/midterm/evidence/pilot-11-model-guided/README.md) | Pilot 11, committed earlier and referenced in place (not duplicated) |
 
 ## Runs

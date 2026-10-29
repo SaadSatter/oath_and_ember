@@ -1,0 +1,69 @@
+{
+  "runId": "S2-local-seed0-model-memory-openai-2026-10-29T14-31-49-822Z",
+  "scenario": "S2-local",
+  "seed": 0,
+  "player": "model-memory",
+  "model": "gpt-6-luna",
+  "effort": "medium",
+  "gateway": "openai:gpt-6-luna@medium",
+  "paid": true,
+  "speed": 1,
+  "gitHash": "7022ea1",
+  "viewerUrl": "http://127.0.0.1:3030/watch",
+  "passive": true,
+  "shutdown": {
+    "activeStage": null,
+    "stages": [
+      {
+        "stage": "context.close",
+        "elapsedMs": 393,
+        "status": "completed"
+      },
+      {
+        "stage": "video.saveAs",
+        "elapsedMs": 7122,
+        "status": "completed"
+      },
+      {
+        "stage": "video.delete",
+        "elapsedMs": 14,
+        "status": "completed"
+      },
+      {
+        "stage": "browser.close",
+        "elapsedMs": 230,
+        "status": "completed"
+      }
+    ],
+    "elapsedMs": 7759,
+    "saved": true,
+    "timedOut": false,
+    "timeoutStage": null,
+    "activeStageElapsedMs": 0,
+    "cleanup": "completed",
+    "forcedCleanup": []
+  },
+  "status": "saved",
+  "path": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/S2-local-seed0-model-memory-openai-2026-10-29T14-31-49-822Z/recording.webm",
+  "relativePath": "evaluation-runs/live/S2-local-seed0-model-memory-openai-2026-10-29T14-31-49-822Z/recording.webm",
+  "bytes": 99660125,
+  "resolution": "1280x720",
+  "browser": "chromium (GPU)",
+  "readyConfirmed": true,
+  "finalConfirmed": true,
+  "startedAt": "2026-10-29T14:32:04.252Z",
+  "readyAt": "2026-10-29T14:32:16.412Z",
+  "stoppedAt": "2026-10-29T14:51:25.706Z",
+  "wallSeconds": 1161.5,
+  "completion": "interrupted",
+  "episode": {
+    "status": "terminated",
+    "reason": "manual_stop",
+    "success": false,
+    "startHash": "2b9eddd41bdd6a25457eb66d7d5b3dde66047b2d9103b4be334b378497c8b53e",
+    "endHash": "669a2e2cdb2ef84e649a75b1f9c549353e1bccecbd169acf3308cd1bacadfcdf",
+    "trace": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/S2-local-seed0-model-memory-openai-2026-10-29T14-31-49-822Z/S2-local-seed0/trace.jsonl"
+  },
+  "error": null,
+  "warnings": []
+}

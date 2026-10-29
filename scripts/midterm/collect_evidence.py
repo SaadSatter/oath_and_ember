@@ -262,8 +262,9 @@ def collect(paths, videos_out):
             s = os.path.join(src, rel)
             if e["dest"]:
                 d = f"{e['dest']}/{os.path.basename(rel) if kind != 'live_recording_manifest' else 'live-recording.json'}"
-                if kind == "recording_manifest" and e["recording_type"] == "replay":
-                    d = f"{e['dest']}/replay-recording.json"
+                if kind == "recording_manifest":
+                    # recording.json is gitignored repository-wide; keep the type in the name.
+                    d = f"{e['dest']}/{e['recording_type']}-recording.json"
                 dd = paths.sub(d)
                 if os.path.exists(dd):
                     if sha256(dd) != sha256(s):
