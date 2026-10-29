@@ -6,7 +6,7 @@ The owner's paid tuning pilot on 2026-10-29: revision 2 `S2-local`, seed 0, play
 - 147 model calls (Sieg 101, Coco 46), $0.083545 charged.
 - 0 invalid actions.
 
-**This is the solution-informed player.** `model-guided` receives a static, source-verified walkthrough of the Hedge Maze in its system prompt (`docs/midterm/GUIDED_MAZE_BASELINE.md`). It is not information-equal to `model-history` or `model-memory`, and it must never be reported as an unaided model result.
+**This is the model-guided baseline.** `model-guided` receives a static, source-verified walkthrough of the Hedge Maze in its system prompt (`docs/midterm/GUIDED_MAZE_BASELINE.md`). It is not information-equal to `model-history` or `model-memory`, and it must never be reported as an unaided model result.
 
 ## Files
 

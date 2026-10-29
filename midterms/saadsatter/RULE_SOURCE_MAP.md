@@ -66,7 +66,7 @@ That file's §8 proposes an earlier episode (the Bridge); the owner replaced it 
 | Only Sieg can take the key from the wolf, within normal reach | `code` | [hedgeMaze.ts, key target, lines 36–56](apps/server/src/hedgeMaze.ts#L36) |
 | The key opens the gate once; the open gate makes the shears chest available | `code` | [hedgeMaze.ts, gate line 58, chest line 67](apps/server/src/hedgeMaze.ts#L58) |
 | Taking the key does not require both timed abilities to be active (older notes said it did) | `code` | [hedgeMaze.test.ts, line 253](apps/server/test/hedgeMaze.test.ts#L253); discrepancy recorded in [GAME_DESIGN_RATIONALE.md §4](docs/GAME_DESIGN_RATIONALE.md#discrepancies-to-resolve-rather-than-conceal) |
-| LLM players solved the maze with a solution-informed guide (pilots 11 and 12) | `observed` | [evidence/pilot-11-model-guided](docs/midterm/evidence/pilot-11-model-guided/README.md); [EVALUATION.md](EVALUATION.md) |
+| The model-guided baseline (an LLM with a written maze guide) solved the maze (pilots 11 and 12) | `observed` | [evidence/pilot-11-model-guided](docs/midterm/evidence/pilot-11-model-guided/README.md); [EVALUATION.md](EVALUATION.md) |
 
 ## Mirror Pond (Vanity Mirror)
 

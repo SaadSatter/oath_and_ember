@@ -38,7 +38,7 @@ The suite was declared before any tuning and frozen, provisionally, in commit `0
 | `model-history` | LLM, one per hero | Observation, legal actions, the manual, its own 400-character notes, last 8 actions and last turn's results. The main model player. |
 | `model-obs-only` | LLM | The current observation only; the rubric's observation-only comparison. Not run yet. |
 | `model-memory` | LLM | `model-history` plus a per-hero remembered map and verified events built from its own observations ([MODEL_MEMORY.md](docs/midterm/MODEL_MEMORY.md)). Added 2026-10-29 after pilot-10. |
-| `model-guided` | LLM | `model-history` plus a static, **solution-informed** Hedge Maze walkthrough. Not information-equal; reported apart ([GUIDED_MAZE_BASELINE.md](docs/midterm/GUIDED_MAZE_BASELINE.md)). |
+| `model-guided` | LLM baseline | The model-guided baseline: `model-history` plus a static, written Hedge Maze guide in its prompt. Not information-equal to the other model players; reported apart ([GUIDED_MAZE_BASELINE.md](docs/midterm/GUIDED_MAZE_BASELINE.md)). |
 
 Each hero's model has its own context and memory. The two heroes share nothing except the game world and in-game messages.
 
@@ -83,7 +83,7 @@ Ledger totals (all settled): 11 pilots plus 2 one-call smoke tests, **$1.59** ch
 **Reading these results:**
 - Unaided model players finished S1 once.
 - On the Hedge Maze they reached the key gate but never caught the key-carrying wolf: pilots 10 and 13.
-- Only the solution-informed `model-guided` player finished the maze (pilots 11 and 12).
+- Only the model-guided baseline (`model-guided`) finished the maze (pilots 11 and 12).
 - Each pilot's diagnosis led to interface fixes (movement reports, drawn labels, the cow's extent, partner messaging, persistent memory). Results from before and after each change are therefore not one experiment.
 - With one trial per configuration, no rate or statistical claim is made.
 
@@ -136,7 +136,7 @@ whole section with your paragraph. -->
 
 _To be written by the owner._ Facts on record for it:
 - No final trial has been run; the results above are single tuning pilots.
-- The only maze successes used a solution-informed guide.
+- The only maze successes are the model-guided baseline's, which has a written maze guide.
 - The suite is provisional until the professor confirms it.
 - Peer playtest notes have not arrived ([PEER_NOTES.md](PEER_NOTES.md)).
 - The owner's full playthrough has no recording.

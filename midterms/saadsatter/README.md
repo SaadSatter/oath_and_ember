@@ -8,7 +8,7 @@ GitHub login: `saadsatter`. Project: **Oath and Ember**, an original two-player 
 | Agent team log | [AGENT-TEAM.md](AGENT-TEAM.md) |
 | Rule and source map | [RULE_SOURCE_MAP.md](RULE_SOURCE_MAP.md) |
 | Peer playtest notes | [PEER_NOTES.md](PEER_NOTES.md) |
-| Recording | [pilot-11 replay video](https://github.com/SaadSatter/oath_and_ember/blob/midterm/evaluation/docs/midterm/evidence/pilot-11-model-guided/replay.webm): a trace-verified replay of a real model run (`model-guided`, which received a solution-informed Hedge Maze walkthrough; not an unaided result) that succeeded (see [its notes](docs/midterm/evidence/pilot-11-model-guided/README.md)) |
+| Recording | [pilot-11 replay video](https://github.com/SaadSatter/oath_and_ember/blob/midterm/evaluation/docs/midterm/evidence/pilot-11-model-guided/replay.webm): a trace-verified replay of the model-guided baseline (`model-guided`: an LLM with a written Hedge Maze guide in its prompt) succeeding (see [its notes](docs/midterm/evidence/pilot-11-model-guided/README.md)) |
 | CI | `.github/workflows/midterm-saadsatter.yml` running [scripts/midterm/ci-checks.sh](scripts/midterm/ci-checks.sh) |
 | The game's own README | [GAME_README.md](GAME_README.md) |
 
