@@ -1,5 +1,7 @@
 # S2-local and S3-local: additive tuning starts
 
+> **Suite revision 2 (2026-10-28):** this record describes the revision 1 ids. Here S2-local is the Mirror Pond entrance and S3-local the Hedge Maze entrance; these are now S2-local-v1 and S3-local-v1, unchanged. The current S2-local is the Hedge Maze entrance and S3-local the Mirror Pond entrance, with the same start states and hashes, swapped. See [SUITE_REVISION2.md](SUITE_REVISION2.md).
+
 Owner approval: implement these two variants only (2026-10-28). Implementation: `115c542`, based on `fb844ae`, on `midterm/evaluation`. Preflight: [game-rules-audit](agent-evidence/skill-runs/2026-10-28-suite-local-starts-preflight.md). This is an implementer audit, not independent review.
 
 ## Protocol

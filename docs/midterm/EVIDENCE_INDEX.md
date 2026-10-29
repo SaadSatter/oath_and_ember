@@ -205,3 +205,9 @@ Session [S36](../agent-sessions/36-claude-pilot6-navigation-fixes.md) (`4bd24137
 - general communication rules in the prompt.
 
 The shared `explore/S2`/`explore/S3` freeze entry was re-pinned with owner approval. Cause: a painted label hid the wall cell at (45,23). The first divergence is at decision 214. The old values are recorded and reproduced. No other pin changed. Results: 12/12 new tests, 202/202 focused tests, 6/6 S1–S3 freeze checks, typecheck and build pass. No paid, held-out or full-suite run.
+
+## Suite revision 2: S2/S3 swap, manual and tutorial knowledge (2026-10-28)
+
+- **5a:** S2 is now Hedge Maze (Enchanted Shears) and S3 Mirror Pond (Vanity Mirror); S2-local/S3-local likewise. Revision 1 definitions are kept as S2-v1, S3-v1, S2-local-v1 and S3-local-v1. **Every record above this section, including `evidence/phase4/quest-tuning-summary.json` and pilots 4–7, uses revision 1 ids ("S2" = Mirror Pond).** Record: [SUITE_REVISION2.md](SUITE_REVISION2.md); change log in `EVALUATION_SUITE.md`.
+- **2b / 2c:** both heroes receive the verbatim player manual and, in the revised S2/S3 and local starts, a tutorial-completion briefing (`packages/agent/src/playerKnowledge.ts`, tests `packages/agent/test/playerKnowledge.test.ts`). Non-player-facing manual files are excluded.
+- **3d:** same-session `game-rules-audit` checkpoint `agent-evidence/skill-runs/2026-10-28-suite-revision2-tutorial.md`. It is not an independent review.

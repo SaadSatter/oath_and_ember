@@ -324,3 +324,8 @@ Full files: `docs/midterm/evidence/session1/`.
 
 - Implementation session: Claude Code session `3d2319ad-79d1-4d3d-a243-e5cd03a8b685` (2026-10-23). The owner adds the shareable link.
 - Branch `midterm/agent-interface`, based on `midterm/agent-team` (PR #6, which holds `CLAUDE.md`).
+
+
+## Suite revision 2: manual and tutorial knowledge (2026-10-28)
+
+The verbatim player manual has always been in every model player's system prompt. In the revised S2 (Hedge Maze), S3 (Mirror Pond), S2-local and S3-local, both heroes also receive a tutorial-completion briefing (`packages/agent/src/playerKnowledge.ts`). It is a separate block, after the manual and before the episode briefing: what the Mossling Woods tutorial and the controls teach, written for this action interface, covering both heroes' abilities. The non-player-facing files in `manual/` are excluded (`MANUAL_EXCLUSIONS`). Observations, legal actions and validation are unchanged. Details and exclusions: [SUITE_REVISION2.md](SUITE_REVISION2.md).

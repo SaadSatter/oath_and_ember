@@ -16,6 +16,8 @@ After the prefix:
 - the episode's game time starts at that tick;
 - the trace's `reset` line records the prefix's name and the start-state hash.
 
+> **Suite revision 2 (2026-10-28):** S2 and S3 are swapped. S2 is now Hedge Maze (Enchanted Shears) and S3 Mirror Pond (Vanity Mirror); S2-local and S3-local likewise. The table below is the **revision 1** declaration, kept as written. Revision 1 S2/S3 survive unchanged as S2-v1/S3-v1 (and S2-local-v1/S3-local-v1). Records without `suiteRevision` use revision 1 ids. See the change log and [SUITE_REVISION2.md](SUITE_REVISION2.md).
+
 | Id | Role | Start | Success (read from the authoritative state) | Game time | Model calls / decisions per hero | Route reference |
 | --- | --- | --- | --- | --- | --- | --- |
 | S1 | tuning | the `goddess` checkpoint (tick 0) | the opening scene is finished and the party is in a quest area (Mirror Pond, Hedge Maze or Griffin Enclosure) | 90 s | 60 / 240 | 426 ticks |
@@ -89,3 +91,10 @@ All players get the same observations and legal actions, under the same informat
 ## 2026-10-28 change log: approved additive local starts
 
 Owner-approved S2-local and S3-local were added in `115c542`. Original scenarios and frozen route/checkpoints remain unchanged. These tuning variants end preparation at ordinary area entry, preserve arrival dialogue and the authoritative world, and reuse parent success predicates/limits with separate identities and results. Do not pool them with travel-inclusive scenarios. Protocol, hashes and restricted test selection: [LOCAL_STARTS.md](LOCAL_STARTS.md). No further local variant is implemented or authorized.
+
+
+## 2026-10-28 change log: suite revision 2
+
+| Date | Change | Reason |
+| --- | --- | --- |
+| 2026-10-28 | **Suite revision 2** (owner request). S2 = Hedge Maze, success with the Enchanted Shears; S3 = Mirror Pond, success with the Vanity Mirror; S2-local/S3-local swapped the same way. S1, S4 (held out) and F are unchanged. Starts, limits, caps and predicates are those of the revision 1 definition for the same area. In S2, S3, S2-local and S3-local, model players receive the tutorial-completion briefing (`·tutorial-4242ec52`) as its own block after the verbatim player manual. S2 and S3 each carry an episode briefing: S3 is the approved Mirror Pond text relabelled; the S2 Hedge Maze text is a draft pending the owner's wording. Revision 1 definitions are kept unchanged as S2-v1, S3-v1, S2-local-v1 and S3-local-v1 (same presets, so old episode ids and goals reproduce). Scripted freeze pins are unchanged and run on the v1 ids; no revision 2 pin yet (needs approval). Records gain `suiteRevision` and `scenario`. | Owner: evaluate players who have completed the tutorial, with Hedge Maze as S2 and Mirror Pond as S3. **Revision 1 and revision 2 results are never pooled or compared directly. Every earlier record (pilot-4 to pilot-7, phase-4 summaries) uses revision 1 ids.** Record: [SUITE_REVISION2.md](SUITE_REVISION2.md). Audit: `agent-evidence/skill-runs/2026-10-28-suite-revision2-tutorial.md`. |
