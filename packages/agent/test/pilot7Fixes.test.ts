@@ -1,6 +1,8 @@
 // Regression tests for the pilot-7 observation and prompt changes (owner
 // approval 2026-10-28, after pilot-7: S2-local seed 0, gpt-6-luna medium).
-// Offline, tuning scenario S2-local at tuning seed 0 only. LABELLED TEST
+// Offline, tuning scenario S2-local at tuning seed 0 only (since suite
+// revision 2 that Mirror Pond start is the preserved S2-local-v1; the
+// current S3-local is the same start). LABELLED TEST
 // FIXTURES place heroes; every outcome comes from real inputs and the
 // server's own ticks.
 import { describe, expect, it } from "vitest";
@@ -21,7 +23,7 @@ const cell = (o: Observation, x: number, y: number) => o.screen.rows[y - o.scree
 const spikes = (o: Observation) => o.visible.filter((v) => v.name === "spike trap").sort((a, b) => a.x - b.x);
 
 async function pond() {
-  const env = environmentFor("S2-local");
+  const env = environmentFor("S2-local-v1");
   await env.reset(0);
   return env;
 }

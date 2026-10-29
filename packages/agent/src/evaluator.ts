@@ -7,7 +7,14 @@ import { FINALE } from "../../shared/src/chapter0Finale.js";
 import { shrineComplete } from "../../shared/src/shrine.js";
 import type { EpisodeLimits } from "./types.js";
 
-export type EpisodePreset = "S2-local" | "S3-local" | "full" | "milestone" | "S1" | "S2" | "S3" | "S4";
+/**
+ * "S2", "S3", "S2-local" and "S3-local" are the revision 1 definitions, kept
+ * unchanged (now used by S2-v1, S3-v1, S2-local-v1, S3-local-v1). The "-v2"
+ * presets serve the current S2/S3 after the suite's swap (suite.ts).
+ */
+export type EpisodePreset =
+  | "S2-local" | "S3-local" | "full" | "milestone" | "S1" | "S2" | "S3" | "S4"
+  | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2";
 
 export interface EpisodeDefinition {
   preset: EpisodePreset;
@@ -26,7 +33,7 @@ const QUEST_AREAS = new Set(["MIRROR_POND", "HEDGE_MAZE", "GRIFFIN_ENCLOSURE"]);
 const holding = (w: World, item: string) => ((w.inventory?.counts as Record<string, number> | undefined)?.[item] ?? 0) > 0;
 
 /** Owner-approved episode definitions and limits (2026-10-23). */
-const coreEpisodes: Record<Exclude<EpisodePreset, "S2-local" | "S3-local">, EpisodeDefinition> = {
+const coreEpisodes: Record<Exclude<EpisodePreset, "S2-local" | "S3-local" | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2">, EpisodeDefinition> = {
   full: {
     preset: "full",
     goal: "Bald Goddess quest: from the goddess checkpoint to chapter0.complete.",
@@ -86,6 +93,12 @@ export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
   ...coreEpisodes,
   "S2-local": { ...coreEpisodes.S2, preset: "S2-local", goal: "S2-local: from the Mirror Pond entrance, obtain the Vanity Mirror." },
   "S3-local": { ...coreEpisodes.S3, preset: "S3-local", goal: "S3-local: from the Hedge Maze entrance, obtain the Enchanted Shears." },
+  // Suite revision 2 (2026-10-28): S2 and S3 swapped. Each reuses exactly the
+  // predicate and limits of the revision 1 definition for the same area.
+  "S2-v2": { ...coreEpisodes.S3, preset: "S2-v2", goal: "S2 (suite revision 2): from the shrine after the opening scene, obtain the Enchanted Shears (Hedge Maze)." },
+  "S3-v2": { ...coreEpisodes.S2, preset: "S3-v2", goal: "S3 (suite revision 2): from the shrine after the opening scene, obtain the Vanity Mirror (Mirror Pond)." },
+  "S2-local-v2": { ...coreEpisodes.S3, preset: "S2-local-v2", goal: "S2-local (suite revision 2): from the Hedge Maze entrance, obtain the Enchanted Shears." },
+  "S3-local-v2": { ...coreEpisodes.S2, preset: "S3-local-v2", goal: "S3-local (suite revision 2): from the Mirror Pond entrance, obtain the Vanity Mirror." },
 };
 
 /** Private progress markers recorded in traces (never shown to players). */

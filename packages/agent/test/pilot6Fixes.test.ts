@@ -299,7 +299,8 @@ describe("prompt lines shared by every scenario and provider", () => {
 
   it("gives the communication line and the screen legend to both heroes in every tuning scenario, for both providers and both memories", async () => {
     // Only the prompt is built; no episode is run, and S4/F are not touched.
-    for (const id of ["S1", "S2", "S3"] as SituationId[])
+    // Current S1-S3 (suite revision 2) and the preserved revision 1 S2/S3.
+    for (const id of ["S1", "S2", "S3", "S2-v1", "S3-v1"] as SituationId[])
       for (const label of ["openai:gpt-6-luna@medium", "anthropic:claude-haiku-5-5@medium"])
         for (const kind of ["model-history", "model-obs-only"] as const) {
           const [sieg, coco] = await systems(id, label, kind);
@@ -307,7 +308,7 @@ describe("prompt lines shared by every scenario and provider", () => {
             expect(s, `${id} ${label} ${kind}`).toContain(COMMUNICATE);
             expect(s).toContain("Your body is a square about 0.8 tiles wide");
             expect(s).toContain("cut off rather than rounded");
-            expect(s.includes("=== Episode briefing ==="), id).toBe(id === "S2");
+            expect(s.includes("=== Episode briefing ==="), id).toBe(["S2", "S3", "S2-v1"].includes(id));
           }
         }
   });

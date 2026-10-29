@@ -15,7 +15,8 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createHash } from "node:crypto";
-import { environmentFor, SEEDS, situation, type SituationId } from "./suite.js";
+import { environmentFor, SEEDS, situation, SUITE_REVISION, type SituationId } from "./suite.js";
+import { tutorialId } from "./playerKnowledge.js";
 import { runEpisode } from "./runner.js";
 import { TraceWriter, verifyTrace, type TraceLine } from "./trace.js";
 import type { EnvironmentOptions } from "./environment.js";
@@ -34,8 +35,12 @@ export { PLAYER_KINDS, type PlayerKind };
 const isModel = (p: PlayerKind) => p === "model-history" || p === "model-obs-only";
 
 /** Per-episode spend caps, both heroes together (MODEL_BUDGET.md). */
-export const EPISODE_CAP_USD: Record<SituationId, number> = { "S2-local": 1.25, "S3-local": 1.25, S1: 0.2, S2: 1.25, S3: 1.25, S4: 1.0, F: 3.0 };
-export const OBS_ONLY_SITUATIONS: readonly SituationId[] = ["S1", "S2", "S3", "S2-local", "S3-local"];
+export const EPISODE_CAP_USD: Record<SituationId, number> = {
+  "S2-local": 1.25, "S3-local": 1.25, S1: 0.2, S2: 1.25, S3: 1.25, S4: 1.0, F: 3.0,
+  // Revision 1 definitions keep their original caps.
+  "S2-v1": 1.25, "S3-v1": 1.25, "S2-local-v1": 1.25, "S3-local-v1": 1.25,
+};
+export const OBS_ONLY_SITUATIONS: readonly SituationId[] = ["S1", "S2", "S3", "S2-local", "S3-local", "S2-v1", "S3-v1", "S2-local-v1", "S3-local-v1"];
 
 export interface ModelSetup {
   /** A provider adapter for paid runs; a fake in tests. */
@@ -142,6 +147,14 @@ const DEFAULT_LAUNCH: LaunchInfo = { launcher: "runSuite", speed: null, viewer: 
 
 export interface EpisodeSummary {
   situation: SituationId;
+  /**
+   * Suite revision whose ids this record uses (suite.ts SUITE_REVISION).
+   * Records without it predate revision 2 and use revision 1 ids: "S2" there
+   * is Mirror Pond (now S2-v1). Read them with historicalSituationId().
+   */
+  suiteRevision: number;
+  /** The definition actually played: evaluator preset, title and evaluator goal. */
+  scenario: { preset: string; title: string; goal: string; revision: number; tutorialId: string | null; briefing: boolean };
   seed: number;
   player: PlayerKind;
   policies: Record<PlayerId, string>;
@@ -212,6 +225,7 @@ export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | 
 /** The two heroes' policies for one episode of scenario `id`. Model players get the scenario's briefing, if any. */
 export function policiesFor(player: PlayerKind, budget: ModelBudget | undefined, model: ModelSetup | undefined, id?: SituationId): Record<PlayerId, Policy> {
   const briefing = id ? situation(id).briefing : undefined;
+  const tutorial = id ? situation(id).tutorial : undefined;
   switch (player) {
     case "baseline-quest":
       return { sieg: new QuestBaseline("Sieg"), coco: new QuestBaseline("Coco") };
@@ -220,7 +234,7 @@ export function policiesFor(player: PlayerKind, budget: ModelBudget | undefined,
     case "model-history":
     case "model-obs-only": {
       const memory = player === "model-history" ? "history" : "none";
-      const make = (hero: "Sieg" | "Coco", pid: PlayerId) => new LLMPlayer(hero, model!.manual, new MeteredGateway(model!.gateway, budget!, pid), model!.maxBatch, memory, briefing);
+      const make = (hero: "Sieg" | "Coco", pid: PlayerId) => new LLMPlayer(hero, model!.manual, new MeteredGateway(model!.gateway, budget!, pid), model!.maxBatch, memory, briefing, tutorial);
       return { sieg: make("Sieg", "sieg"), coco: make("Coco", "coco") };
     }
   }
@@ -266,6 +280,7 @@ export async function runSuite(o: SuiteRunOptions): Promise<EpisodeSummary[]> {
   if (o.wallSeconds !== undefined && (!Number.isFinite(o.wallSeconds) || o.wallSeconds <= 0)) throw Error("wallSeconds must be finite and positive.");
   mkdirSync(o.outDir, { recursive: true });
   const manifest = {
+    suiteRevision: SUITE_REVISION,
     player: o.player, situations: o.situations, seeds: o.seeds, final: !!o.final, gitHash: o.gitHash,
     wallSeconds: o.wallSeconds ?? (o.model ? 3600 : 600),
     model: o.model ? { gateway: o.model.gateway.label, stage: o.model.stage, priceSource: o.model.priceSource,
@@ -368,8 +383,12 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
   const lat = records.map((r) => r.latencyMs);
   const sum = (f: (r: CallRecord) => number) => records.reduce((a, r) => a + f(r), 0);
   const per = <T>(f: (id: PlayerId) => T) => ({ sieg: f("sieg"), coco: f("coco") });
+  const def = situation(id);
   const summary: EpisodeSummary = {
     situation: id,
+    suiteRevision: SUITE_REVISION,
+    scenario: { preset: def.preset, title: def.title, goal: episodes[def.preset].goal, revision: def.revision,
+      tutorialId: isModel(o.player) && def.tutorial ? tutorialId(def.tutorial) : null, briefing: isModel(o.player) && !!def.briefing },
     seed,
     player: o.player,
     policies: per((p) => policies[p].name),

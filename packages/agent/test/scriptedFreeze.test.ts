@@ -10,6 +10,12 @@
 // check, not an evaluation. Baselines run on the tuning scenarios S1-S3 only.
 // Never update these values to make a test pass: a change means scripted
 // behaviour changed, and the owner decides.
+//
+// Suite revision 2 (2026-10-28) swapped S2 and S3. The pins below are the
+// revision 1 trajectories and keep their keys and values unchanged: "S2" and
+// "S3" here are run on the preserved revision 1 definitions S2-v1 (Mirror
+// Pond) and S3-v1 (Hedge Maze). No pin exists yet for the revision 2 ids;
+// adding one needs the owner's approval.
 import { describe, expect, it } from "vitest";
 import { createHash } from "node:crypto";
 import { Director } from "../src/route/director.js";
@@ -57,11 +63,12 @@ describe("scripted players behave exactly as before the pilot-6 interface change
     expect({ status: o.status, ticks: o.ticks, end: d.env.evaluatorReport().stateHash.slice(0, 16), digest: digest(trace.lines) }).toEqual(PINNED["route/seed1"]);
   }, 120_000);
 
+  const definitions = { S1: "S1", S2: "S2-v1", S3: "S3-v1" } as const;
   for (const id of ["S1", "S2", "S3"] as const)
     for (const kind of ["quest", "explore"] as const)
-      it(`the ${kind} baseline on ${id}, seed 0`, async () => {
+      it(`the ${kind} baseline on ${id}, seed 0${id === "S1" ? "" : ` (revision 1, ${definitions[id]})`}`, async () => {
         const trace = new TraceWriter();
-        const env = environmentFor(id, { trace: (e) => trace.write(e), ...(kind === "explore" ? { limits: { maxTicks: 6000 } } : {}) });
+        const env = environmentFor(definitions[id], { trace: (e) => trace.write(e), ...(kind === "explore" ? { limits: { maxTicks: 6000 } } : {}) });
         const p = kind === "quest" ? { sieg: new QuestBaseline("Sieg"), coco: new QuestBaseline("Coco") } : { sieg: new ExplorationBaseline(), coco: new ExplorationBaseline() };
         const o = await runEpisode(env, p, trace, { seed: 0, wallClockMs: 300_000 });
         expect({ status: o.status, ticks: o.ticks, end: env.evaluatorReport().stateHash.slice(0, 16), digest: digest(trace.lines) }).toEqual(PINNED[`${kind}/${id}`]);

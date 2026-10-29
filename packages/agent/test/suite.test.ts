@@ -30,7 +30,8 @@ describe("suite scenarios", () => {
       const o = await env.observe("sieg");
       const out = await env.outcome();
       expect(out).toMatchObject({ status: "ongoing", ticks: 0, decisions: { sieg: 0, coco: 0 }, invalidActions: { sieg: 0, coco: 0 } });
-      expect(o.area.name, s.id).toBe(s.id === "S2-local" ? "Mirror Pond" : s.id === "S3-local" ? "Hedge Maze" : "Goddess Shrine");
+      // Suite revision 2: S2-local is the Hedge Maze entrance, S3-local the Mirror Pond entrance.
+      expect(o.area.name, s.id).toBe(s.id === "S2-local" ? "Hedge Maze" : s.id === "S3-local" ? "Mirror Pond" : "Goddess Shrine");
       expect(quest(o.inventory.items), s.id).toEqual(s.id === "S4" ? ["enchanted_shears", "vanity_mirror"] : []);
       if (s.id === "S2" || s.id === "S3" || s.id === "S4" || s.id.endsWith("-local")) expect(o.journal.current?.step).toBe("Recover the Divine Wig");
     }

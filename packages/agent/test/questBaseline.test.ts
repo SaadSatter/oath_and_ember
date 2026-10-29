@@ -75,7 +75,7 @@ describe("quest-aware baseline on the tuning scenarios", () => {
 
   it("is deterministic: the same seed gives the same trace", async () => {
     const steps = async () =>
-      (await play("S3", SEEDS.tuning[1])).trace.lines.filter((l) => l.type === "step").map((l) => `${l.player}@${l.tick}:${JSON.stringify((l.data as { action: unknown }).action)}`);
+      (await play("S2", SEEDS.tuning[1])).trace.lines.filter((l) => l.type === "step").map((l) => `${l.player}@${l.tick}:${JSON.stringify((l.data as { action: unknown }).action)}`);
     const a = await steps(),
       b = await steps();
     expect(a.length).toBeGreaterThan(100);
@@ -83,7 +83,8 @@ describe("quest-aware baseline on the tuning scenarios", () => {
   }, 120_000);
 
   it("coordinates only by message: the heroes exchange the protocol phrases, and nothing else", async () => {
-    const { trace } = await play("S3", SEEDS.tuning[0]);
+    // S2 is Hedge Maze since suite revision 2 (it was S3 before).
+    const { trace } = await play("S2", SEEDS.tuning[0]);
     const sent = trace.lines
       .filter((l) => l.type === "step" && (l.data as { action: { type: string } }).action.type === "message")
       .map((l) => `${l.player}: ${(l.data as { action: { text: string } }).action.text}`);
@@ -100,7 +101,7 @@ describe("quest-aware baseline on the tuning scenarios", () => {
   it("a hero whose partner never messages waits, and the episode ends at a limit instead of hanging", async () => {
     const silent: Policy = { name: "silent", decide: async () => ({ action: { type: "wait", ticks: 30 } }) };
     const sieg = new QuestBaseline("Sieg");
-    const { out } = await play("S3", SEEDS.tuning[0], { sieg, coco: silent }, { maxTicks: 3000 });
+    const { out } = await play("S2", SEEDS.tuning[0], { sieg, coco: silent }, { maxTicks: 3000 });
     expect(out.status).toBe("terminated");
     expect(out.reason).toBe("tick_limit");
     // Sieg cleared the guards and then waited for Coco's message about the cow.

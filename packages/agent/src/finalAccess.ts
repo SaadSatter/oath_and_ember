@@ -34,7 +34,7 @@ import { createHash } from "node:crypto";
 import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, unlinkSync, writeSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { evalStateDir, repoInfo, type RepoInfo } from "./repo.js";
-import { SEEDS, SITUATIONS, type SituationId } from "./suite.js";
+import { HISTORICAL_SITUATIONS, SEEDS, SITUATIONS, type SituationId } from "./suite.js";
 
 import { PLAYER_KINDS, type PlayerKind } from "./playerKinds.js";
 
@@ -308,7 +308,13 @@ export function needsFinalGrant(scenario: { situation: SituationId | null; prefi
   return scenario.prefix !== null && heldOutPrefixes.includes(scenario.prefix);
 }
 
-const PRESET_TO_SITUATION: Record<string, SituationId> = { "S2-local": "S2-local", "S3-local": "S3-local", S1: "S1", S2: "S2", S3: "S3", S4: "S4", full: "F" };
+// Derived from the suite, so each preset maps to the one definition using it:
+// revision 1 presets "S2"/"S3"/... to S2-v1/S3-v1/..., "-v2" presets to the
+// current S2/S3 (suite revision 2).
+// Built on first use: suite.ts and this module import each other.
+let presetMap: Record<string, SituationId> | undefined;
+const presetToSituation = (preset: string): SituationId | null =>
+  (presetMap ??= Object.fromEntries([...SITUATIONS, ...HISTORICAL_SITUATIONS].map((s) => [s.preset, s.id])))[preset] ?? null;
 
 export type Admission =
   | { kind: "open" }
@@ -326,7 +332,7 @@ export function admitReset(
   seed: number,
   access: { ticket?: unknown; routeDevelopment?: unknown },
 ): Admission {
-  const situation = PRESET_TO_SITUATION[scenario.preset] ?? null;
+  const situation = presetToSituation(scenario.preset);
   const what = `${situation ?? scenario.preset}${scenario.prefix ? ` (prefix: ${scenario.prefix})` : ""} seed ${seed}`;
   if (access.routeDevelopment !== undefined && !isRouteDevelopmentAccess(access.routeDevelopment)) throw new FinalAccessError("Invalid route development access.");
   if (access.ticket !== undefined && access.routeDevelopment !== undefined) throw new FinalAccessError("A final ticket and route development access cannot be combined.");

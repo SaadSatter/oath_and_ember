@@ -1,4 +1,6 @@
 // The owner-approved S2 episode briefing (2026-10-28, after pilot-5).
+// Since suite revision 2 (S2/S3 swapped) this briefing belongs to the
+// preserved revision 1 definition S2-v1 (Mirror Pond); S3-v1 is old S3.
 // Offline: recording gateways only, no provider request.
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
@@ -36,8 +38,10 @@ async function systemsFor(id: SituationId, gateway: Recording, kind: "model-hist
 
 describe("S2 episode briefing", () => {
   it("is defined for S2 only among the original scenarios", () => {
-    expect(situation("S2").briefing).toBe(S2_BRIEFING);
-    for (const s of SITUATIONS) if (s.id !== "S2" && !s.id.endsWith("-local")) expect(s.briefing, s.id).toBeUndefined();
+    // Suite revision 2: this is the revision 1 S2 (Mirror Pond), now S2-v1.
+    expect(situation("S2-v1").briefing).toBe(S2_BRIEFING);
+    expect(situation("S3-v1").briefing).toBeUndefined();
+    for (const s of SITUATIONS) if (s.revision === 1) expect(s.briefing, s.id).toBeUndefined();
   });
 
   it("states exactly the second revision (after pilot-6, 2026-10-28: owner-approved content, wording pending the owner)", () => {
@@ -72,7 +76,7 @@ describe("S2 episode briefing", () => {
   });
 
   it("reaches both heroes in S2, identically, as a separate block after the unchanged general prompt", async () => {
-    const { sieg, coco, policies } = await systemsFor("S2", new Recording("openai:test"));
+    const { sieg, coco, policies } = await systemsFor("S2-v1", new Recording("openai:test"));
     const block = briefingBlock(S2_BRIEFING);
     expect(sieg.endsWith(block)).toBe(true);
     expect(coco.endsWith(block)).toBe(true);
@@ -83,7 +87,7 @@ describe("S2 episode briefing", () => {
   });
 
   it("is absent from S1 and S3 (and from the general prompt everywhere)", async () => {
-    for (const id of ["S1", "S3"] as const) {
+    for (const id of ["S1", "S3-v1"] as const) {
       const { sieg, coco, policies } = await systemsFor(id, new Recording("openai:test"));
       expect(sieg, id).toBe(systemPrompt("Sieg", MANUAL));
       expect(coco, id).toBe(systemPrompt("Coco", MANUAL));
@@ -94,20 +98,20 @@ describe("S2 episode briefing", () => {
   });
 
   it("is the same system text whichever provider serves the players", async () => {
-    const a = await systemsFor("S2", new Recording("openai:gpt-6-luna@medium"));
-    const b = await systemsFor("S2", new Recording("anthropic:claude-haiku-5-5@medium"));
+    const a = await systemsFor("S2-v1", new Recording("openai:gpt-6-luna@medium"));
+    const b = await systemsFor("S2-v1", new Recording("anthropic:claude-haiku-5-5@medium"));
     expect(a.sieg).toBe(b.sieg);
     expect(a.coco).toBe(b.coco);
   });
 
   it("is also given to the observation-only player, which keeps it as a fixed instruction, not memory", async () => {
-    const { sieg } = await systemsFor("S2", new Recording("openai:test"), "model-obs-only");
+    const { sieg } = await systemsFor("S2-v1", new Recording("openai:test"), "model-obs-only");
     expect(sieg.endsWith(briefingBlock(S2_BRIEFING))).toBe(true);
   });
 
   it("does not affect the scripted baselines or the game", async () => {
     for (const kind of ["baseline-quest", "baseline-explore"] as const) {
-      const p = policiesFor(kind, undefined, undefined, "S2");
+      const p = policiesFor(kind, undefined, undefined, "S2-v1");
       expect(JSON.stringify(Object.keys(p))).toBe('["sieg","coco"]');
       expect(p.sieg.name).not.toContain("briefing");
     }

@@ -13,6 +13,7 @@ import { abilityNames, actionTypes, directions, type GameAction, type MovementRe
 import { stepStatus, type Decision, type Policy, type TurnReport } from "./policy.js";
 import { paidTransport, assertPaidTransport, ModelCallError, type Completion, type CompletionOptions, type Gateway, type MeteredGateway, type ReplyMeta } from "../budget.js";
 import { MAX_BATCH } from "../batch.js";
+import { tutorialBlock, tutorialId } from "../playerKnowledge.js";
 
 export interface Prices {
   inputPerM: number;
@@ -278,13 +279,20 @@ export class LLMPlayer implements Policy {
     memory: Memory = "history",
     /** The scenario's episode briefing (suite.ts), if it has one. */
     readonly briefing?: string,
+    /**
+     * Tutorial-completion knowledge (playerKnowledge.ts), if the scenario gives
+     * it. Its own block after the manual, before the episode briefing, so the
+     * system string stays identical for every call of the episode.
+     */
+    readonly tutorial?: string,
   ) {
     if (!Number.isInteger(maxBatch) || maxBatch < 1 || maxBatch > MAX_BATCH) throw Error(`maxBatch must be an integer from 1 to ${MAX_BATCH}.`);
     this.maxBatch = maxBatch;
     this.memory = memory;
     if (briefing !== undefined && !briefing.trim()) throw Error("An episode briefing must not be empty.");
-    this.name = `llm(${model.label})${this.maxBatch > 1 ? `·batch${this.maxBatch}` : ""}${memory === "none" ? "·obs-only" : ""}${briefing ? `·briefing-${briefingId(briefing)}` : ""}`;
-    this.system = systemPrompt(hero, manual, this.maxBatch, memory) + (briefing ? briefingBlock(briefing) : "");
+    if (tutorial !== undefined && !tutorial.trim()) throw Error("A tutorial briefing must not be empty.");
+    this.name = `llm(${model.label})${this.maxBatch > 1 ? `·batch${this.maxBatch}` : ""}${memory === "none" ? "·obs-only" : ""}${tutorial ? `·tutorial-${tutorialId(tutorial)}` : ""}${briefing ? `·briefing-${briefingId(briefing)}` : ""}`;
+    this.system = systemPrompt(hero, manual, this.maxBatch, memory) + (tutorial ? tutorialBlock(tutorial) : "") + (briefing ? briefingBlock(briefing) : "");
     this.schema = replySchema(this.maxBatch, memory);
   }
 

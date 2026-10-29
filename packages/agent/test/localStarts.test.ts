@@ -1,4 +1,7 @@
 // Only approved S2-local/S3-local and historical S1-S3 tuning seeds.
+// Suite revision 2 swapped S2 and S3: S2-local is now the Hedge Maze entrance
+// and S3-local the Mirror Pond entrance. The revision 1 definitions are kept as
+// S2-local-v1 (Mirror Pond) and S3-local-v1 (Hedge Maze) and tested the same way.
 // Evaluator-only raw-state assertions never enter a policy's observation.
 import { afterEach, describe, expect, it } from "vitest";
 import { mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
@@ -29,24 +32,15 @@ import type { Gateway } from "../src/budget.js";
 import type { Observation } from "../src/types.js";
 import { verifyTrace, type TraceLine } from "../src/trace.js";
 
+const pond = { area: "Mirror Pond", scene: "MIRROR_POND", item: "vanity_mirror", direction: "west" } as const;
+const maze = { area: "Hedge Maze", scene: "HEDGE_MAZE", item: "enchanted_shears", direction: "east" } as const;
 const variants = [
-  {
-    id: "S2-local",
-    parent: "S2",
-    area: "Mirror Pond",
-    scene: "MIRROR_POND",
-    item: "vanity_mirror",
-    direction: "west",
-  },
-  {
-    id: "S3-local",
-    parent: "S3",
-    area: "Hedge Maze",
-    scene: "HEDGE_MAZE",
-    item: "enchanted_shears",
-    direction: "east",
-  },
+  { id: "S2-local", parent: "S2", ...maze },
+  { id: "S3-local", parent: "S3", ...pond },
+  { id: "S2-local-v1", parent: "S2-v1", ...pond },
+  { id: "S3-local-v1", parent: "S3-v1", ...maze },
 ] as const;
+const presetOf = (id: SituationId) => situation(id).preset;
 const dirs: string[] = [];
 const scratch = () => {
   const d = mkdtempSync(join(tmpdir(), "local-starts-"));
@@ -81,16 +75,16 @@ for (const v of variants)
         };
         expect(stateHash(world)).toBe(first.startHash);
         expect(world.sceneId).toBe(v.scene);
-        expect(first.episode).toMatch(new RegExp(`^${v.id}-${seed}-`));
+        expect(first.episode).toMatch(new RegExp(`^${presetOf(v.id)}-${seed}-`));
         expect(first.tick).toBeGreaterThan(221);
-        expect(episodes[v.id].success(world)).toBe(false);
+        expect(episodes[presetOf(v.id)].success(world)).toBe(false);
         expect(world.inventory!.counts[v.item] ?? 0).toBe(0);
         expect(world.story!.stage).toBe("WIG");
         expect(world.story!.flags).toContain("chapter0.goddess-meet");
         const heroes = Object.values(world.players);
         for (const [i, p] of heroes.entries()) {
           const at =
-            v.id === "S2-local"
+            v.scene === "MIRROR_POND"
               ? pondSpawn(p.role)
               : {
                   x: maps.HEDGE_MAZE.spawn.x + i * 50,
@@ -100,7 +94,7 @@ for (const v of variants)
           expect(p.hp).toBe(100);
           expect(p.sceneId).toBe(v.scene);
         }
-        if (v.id === "S2-local") {
+        if (v.scene === "MIRROR_POND") {
           expect(world.puzzles.mirrorPond.pond).toEqual(newMirrorPond());
           expect(Object.keys(world.enemies)).toHaveLength(0);
         } else {
@@ -155,7 +149,7 @@ for (const v of variants)
       const reset = await actual.env.reset(0);
       let atEnd!: string;
       const env = new AgentEnvironment({
-        preset: v.parent,
+        preset: presetOf(v.parent),
         room: (r) => {
           referenceRoom = r;
         },
@@ -184,8 +178,8 @@ for (const v of variants)
       expect(stateHash(referenceRoom.state)).toBe(atEnd);
       expect(referenceRoom.state).toEqual(actual.room().state);
       expect(atEnd).toBe(reset.startHash);
-      expect(episodes[v.id].success).toBe(episodes[v.parent].success);
-      expect(episodes[v.id].limits).toBe(episodes[v.parent].limits);
+      expect(episodes[presetOf(v.id)].success).toBe(episodes[presetOf(v.parent)].success);
+      expect(episodes[presetOf(v.id)].limits).toBe(episodes[presetOf(v.parent)].limits);
       expect(EPISODE_CAP_USD[v.id]).toBe(EPISODE_CAP_USD[v.parent]);
     });
 
@@ -193,7 +187,7 @@ for (const v of variants)
       let room!: GameRoom;
       const afterEntry: string[] = [];
       const env = new AgentEnvironment({
-        preset: v.id,
+        preset: presetOf(v.id),
         room: (r) => {
           room = r;
         },
@@ -307,6 +301,11 @@ for (const v of variants)
             readFileSync(join(outDir, "run.json"), "utf8"),
           );
           expect(manifest.situations).toEqual([v.id]);
+          // Every record names the suite revision and the definition it played.
+          expect(manifest.suiteRevision).toBe(2);
+          expect(s.suiteRevision).toBe(2);
+          expect(s.scenario).toMatchObject({ preset: presetOf(v.id), title: situation(v.id).title, revision: situation(v.id).revision, briefing: true });
+          expect(s.scenario.tutorialId).toEqual(situation(v.id).tutorial ? expect.any(String) : null);
           expect(manifest.model.gateway).toBe(`offline-fixture:${provider}`);
           expect(readdirSync(outDir)).toContain(`${v.id}-seed0`);
           const trace = readFileSync(s.trace, "utf8")
@@ -341,7 +340,7 @@ for (const v of variants)
   });
 
 it("keeps the maze arrival's first meaningful line unread until agents act", async () => {
-  const { env, room } = start("S3-local");
+  const { env, room } = start("S2-local");
   await env.reset(0);
   expect(room().state.story!.flags).not.toContain("chapter0.maze-banter");
   const d = new Director({ env });
@@ -359,9 +358,12 @@ it("keeps parent tuning start hashes and limits unchanged and distinct from loca
   };
   for (const id of ["S1", "S2", "S3"] as const)
     expect((await environmentFor(id).reset(0)).startHash).toBe(parents[id]);
+  // The preserved revision 1 parents start at the same (shared) state.
+  for (const id of ["S2-v1", "S3-v1"] as const)
+    expect((await environmentFor(id).reset(0)).startHash).toBe(parents.S2);
   for (const v of variants) {
     expect((await environmentFor(v.id).reset(0)).startHash).not.toBe(
-      parents[v.parent],
+      parents.S2,
     );
     expect(situation(v.id).heldOut).toBe(false);
     expect(() =>
