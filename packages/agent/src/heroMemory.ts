@@ -26,7 +26,14 @@ export const MEMORY_LIMITS = Object.freeze({
   eventTiles: 64,
   /** Messages this hero sent, most recent last. */
   sent: 6,
+  /** Repeated-action records kept (only those repeated at least twice are shown). */
+  repeats: 8,
+  /** Recent moves that stopped short. */
+  blocked: 4,
 });
+
+/** Repeats of one action within this many tiles of where it was first done count as the same place. */
+const SAME_PLACE = 2;
 
 /** Map characters. Terrain as the screen drew it, plus memory-only marks. */
 export const MAP_LEGEND = Object.freeze({
@@ -98,6 +105,31 @@ export interface SentMessage {
   tick: number;
 }
 
+/** One action done again and again at about the same place, and how often nothing new came of it. */
+export interface RepeatRecord {
+  action: string;
+  area: string;
+  near: { x: number; y: number };
+  /** Times done since the last new result (the first of them included). */
+  times: number;
+  firstTick: number;
+  lastTick: number;
+  /** The result serial when this run of repeats started. */
+  serial: number;
+}
+
+/** A move that stopped short, with what this hero's own map shows just ahead of where it stopped. */
+export interface BlockedMove {
+  tick: number;
+  direction: Direction;
+  from: { x: number; y: number };
+  to: { x: number; y: number };
+  /** The tile just ahead of the hero's centre, as the hero's map shows it. */
+  ahead: "open" | "blocked" | "unknown";
+  /** When ahead is open (straight moves only): the run of open tiles across the way ahead, on the hero's map. */
+  opening?: { x_from: number; x_to: number; y: number } | { y_from: number; y_to: number; x: number };
+}
+
 interface RememberedThing {
   area: string;
   kind: VisibleThing["kind"];
@@ -136,6 +168,15 @@ export class HeroMemory {
   private nextId = 1;
   private lastFeedback: string[] = [];
   private lastTick = -1;
+  private repeats: RepeatRecord[] = [];
+  private blocked: BlockedMove[] = [];
+  /**
+   * Counts new results this hero saw: a feedback line it had not seen before
+   * (routine action lines excluded), a terrain change, or a change of area,
+   * backpack, journal or dialogue line. Moving creatures do not count.
+   */
+  private serial = 0;
+  private lastSig?: string;
   private readonly partner: "Sieg" | "Coco";
 
   constructor(readonly hero: "Sieg" | "Coco") {
@@ -151,6 +192,10 @@ export class HeroMemory {
     this.nextId = 1;
     this.lastFeedback = [];
     this.lastTick = -1;
+    this.repeats = [];
+    this.blocked = [];
+    this.serial = 0;
+    this.lastSig = undefined;
   }
 
   // ── Updates ─────────────────────────────────────────────────────────────
@@ -161,6 +206,9 @@ export class HeroMemory {
     // Game time only moves forward within an episode; going back means a new one.
     if (o.tick < this.lastTick) this.clear();
     this.lastTick = o.tick;
+    const sig = JSON.stringify([o.area.name, o.inventory.items.map((i) => [i.id, i.count]), o.journal, o.dialogue?.text ?? null]);
+    if (this.lastSig !== undefined && sig !== this.lastSig) this.serial++;
+    this.lastSig = sig;
     this.newFeedback(o);
     const map = this.map(o);
     if (map) {
@@ -187,8 +235,13 @@ export class HeroMemory {
         const dir = directionOf(step.action);
         if (mv && before) {
           const map = this.areas.get(before.area.name);
-          if (map) this.walkMove(map, mv, dir);
+          if (map) {
+            this.walkMove(map, mv, dir);
+            if (mv.blocked && dir && step.action.type === "move") this.noteBlocked(map, mv, dir, before.tick);
+          }
         }
+        const label = repeatLabel(step.action);
+        if (label && before) this.noteRepeat(label, before);
       }
       if (step.after) {
         this.observe(step.after);
@@ -234,6 +287,11 @@ export class HeroMemory {
         ...(e.supersededBy !== undefined ? { superseded_by: e.supersededBy } : {}),
       })),
       recent_sent_messages: this.sent.map((m) => ({ ...m })),
+      repeated_without_new_result: this.repeats
+        .filter((r) => r.times >= 2)
+        .sort((a, b) => a.lastTick - b.lastTick || cmp(a.action, b.action))
+        .map((r) => ({ action: r.action, area: r.area, near: r.near, times: r.times, first_tick: r.firstTick, last_tick: r.lastTick })),
+      recent_blocked_moves: this.blocked.map((b) => ({ ...b })),
     };
   }
 
@@ -256,8 +314,14 @@ export class HeroMemory {
   sentMessages(): readonly SentMessage[] {
     return this.sent;
   }
+  repeatRecords(): readonly RepeatRecord[] {
+    return this.repeats;
+  }
+  blockedMoves(): readonly BlockedMove[] {
+    return this.blocked;
+  }
   size() {
-    return { areas: this.areas.size, things: this.things.length, events: this.events.length, sent: this.sent.length };
+    return { areas: this.areas.size, things: this.things.length, events: this.events.length, sent: this.sent.length, repeats: this.repeats.length, blocked: this.blocked.length };
   }
 
   // ── Internals ───────────────────────────────────────────────────────────
@@ -291,7 +355,8 @@ export class HeroMemory {
         // A mobile thing hides the ground: keep what was there before, if known.
         const next = STORED.has(ch) ? ch : prev === "?" ? ":" : prev;
         if (STORED.has(prev) && STORED.has(next) && prev !== next) {
-          const key = `${prev}>${next}`;
+          // Both are single screen characters; the key is the pair itself (">" is a terrain character).
+          const key = prev + next;
           const g = changes.get(key) ?? { tiles: [], since: -1 };
           g.tiles.push(`${x},${y}`);
           g.since = Math.max(g.since, m.seen[i]);
@@ -302,13 +367,14 @@ export class HeroMemory {
       }
     });
     for (const [key, g] of [...changes.entries()].sort((a, b) => cmp(a[0], b[0]))) {
-      const [from, to] = key.split(">");
+      const [from, to] = [key[0], key[1]];
       const xs = g.tiles.map((t) => Number(t.split(",")[0])),
         ys = g.tiles.map((t) => Number(t.split(",")[1]));
       const span = (v: number[]) => (Math.min(...v) === Math.max(...v) ? `${Math.min(...v)}` : `${Math.min(...v)}–${Math.max(...v)}`);
       const n = g.tiles.length;
       const text = `${n} tile${n > 1 ? "s" : ""} at x ${span(xs)}, y ${span(ys)} changed from "${from}" (${shortLegend(from)}) to "${to}" (${shortLegend(to)}) between your views at tick ${g.since} and tick ${o.tick}.`;
       const tiles = g.tiles.slice(0, MEMORY_LIMITS.eventTiles);
+      this.serial++;
       const id = this.addEvent({ kind: "terrain_changed", source: "your screen", area: m.name, text, firstTick: o.tick, lastTick: o.tick, count: 1, tiles });
       const set = new Set(tiles);
       for (const e of this.events)
@@ -359,7 +425,10 @@ export class HeroMemory {
       if (same) {
         same.count++;
         same.lastTick = o.tick;
-      } else this.addEvent({ kind: "game_feedback", source: "game feedback", area: o.area.name, text: line, firstTick: o.tick, lastTick: o.tick, count: 1 });
+      } else {
+        this.addEvent({ kind: "game_feedback", source: "game feedback", area: o.area.name, text: line, firstTick: o.tick, lastTick: o.tick, count: 1 });
+        this.serial++;
+      }
     }
     this.trimEvents();
   }
@@ -407,6 +476,46 @@ export class HeroMemory {
       this.events = [...this.events.filter((e) => e !== ev), ev];
     } else this.addEvent({ kind: "seen_moving", source: "your screen", area, text, firstTick: origin.tick, lastTick: tick, count: 1, thing: { kind: v.kind, name: v.name }, origin });
     this.trimEvents();
+  }
+
+  /** Count one more doing of `label` here, or start over if something new happened since the last time. */
+  private noteRepeat(label: string, at: Observation) {
+    const area = at.area.name,
+      x = at.self.x,
+      y = at.self.y;
+    const r = this.repeats.find((e) => e.action === label && e.area === area && Math.abs(e.near.x - x) <= SAME_PLACE && Math.abs(e.near.y - y) <= SAME_PLACE);
+    if (r && r.serial === this.serial) {
+      r.times++;
+      r.lastTick = at.tick;
+    } else if (r) Object.assign(r, { near: { x, y }, times: 1, firstTick: at.tick, lastTick: at.tick, serial: this.serial });
+    else this.repeats.push({ action: label, area, near: { x, y }, times: 1, firstTick: at.tick, lastTick: at.tick, serial: this.serial });
+    if (this.repeats.length > MEMORY_LIMITS.repeats) {
+      this.repeats.sort((a, b) => a.lastTick - b.lastTick || cmp(a.action, b.action));
+      this.repeats.shift();
+    }
+  }
+
+  private noteBlocked(m: AreaMap, mv: NonNullable<TurnReport["steps"][number]["result"]["movement"]>, dir: Direction, tick: number) {
+    const [ux, uy] = UNIT[dir];
+    const ax = Math.floor(mv.to.x + ux * 0.6),
+      ay = Math.floor(mv.to.y + uy * 0.6);
+    const open = (x: number, y: number) => inside(m, x, y) && (m.terrain[y * m.w + x] === "." || m.walked[y * m.w + x] === 1);
+    const t = inside(m, ax, ay) ? m.terrain[ay * m.w + ax] : "?";
+    const ahead: BlockedMove["ahead"] = open(ax, ay) ? "open" : t === "?" || t === ":" ? "unknown" : "blocked";
+    let opening: BlockedMove["opening"];
+    if (ahead === "open" && (dir === "n" || dir === "s")) {
+      let a = ax, b = ax;
+      while (a - 1 >= ax - 4 && open(a - 1, ay)) a--;
+      while (b + 1 <= ax + 4 && open(b + 1, ay)) b++;
+      opening = { x_from: a, x_to: b, y: ay };
+    } else if (ahead === "open" && (dir === "e" || dir === "w")) {
+      let a = ay, b = ay;
+      while (a - 1 >= ay - 4 && open(ax, a - 1)) a--;
+      while (b + 1 <= ay + 4 && open(ax, b + 1)) b++;
+      opening = { y_from: a, y_to: b, x: ax };
+    }
+    this.blocked.push({ tick, direction: dir, from: { ...mv.from }, to: { ...mv.to }, ahead, ...(opening ? { opening } : {}) });
+    if (this.blocked.length > MEMORY_LIMITS.blocked) this.blocked.shift();
   }
 
   private addEvent(e: Omit<VerifiedEvent, "id">) {
@@ -473,6 +582,14 @@ export class HeroMemory {
       tiles_walked: count(m, (i) => m.walked[i] === 1),
     };
   }
+}
+
+/** The actions whose repeats are tracked: E, backpack items and abilities. Moves, attacks, waits and messages are not. */
+function repeatLabel(a: GameAction): string | undefined {
+  if (a.type === "interact") return "interact (E)";
+  if (a.type === "use_item") return a.item ? `use_item ${a.item}` : "use_item";
+  if (a.type === "ability") return a.direction ? `ability ${a.ability} ${a.direction}` : `ability ${a.ability}`;
+  return undefined;
 }
 
 function directionOf(a: GameAction): Direction | undefined {

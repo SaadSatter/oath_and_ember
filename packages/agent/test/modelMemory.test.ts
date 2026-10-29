@@ -237,6 +237,101 @@ describe("SYNTHETIC: verified events", () => {
   });
 });
 
+describe("SYNTHETIC: after the model-memory pilot (2026-10-29)", () => {
+  it("names an exit tile's change correctly (\">\" is a terrain character, not a separator)", () => {
+    const m = new HeroMemory("Sieg");
+    m.observe(obs({ tick: 10, origin: [0, 0], rows: [">..."], self: [2.5, 0.5] }));
+    m.observe(obs({ tick: 20, origin: [0, 0], rows: ["...."], self: [2.5, 0.5] }));
+    expect(m.verifiedEvents().map((e) => e.text)).toEqual(['1 tile at x 0, y 0 changed from ">" (exit) to "." (open) between your views at tick 10 and tick 20.']);
+  });
+
+  const press = (m: HeroMemory, at: Observation, action: GameAction = { type: "interact" }, feedback: string[] = []) =>
+    m.recordTurn({ steps: [{ action, result: { accepted: true, ticks: 2, feedback, done: false }, status: "executed" }], skipped: [] }, at);
+  const here = (tick: number, x = 5.5, feedback: string[] = [], items: Observation["inventory"]["items"] = []) => {
+    const o = obs({ tick, origin: [0, 0], rows: [OPEN, OPEN], self: [x, 0.5], feedback });
+    return { ...o, inventory: { items } };
+  };
+
+  it("counts an action repeated at about the same place while nothing new comes of it", () => {
+    const m = new HeroMemory("Sieg");
+    for (const t of [10, 20, 30]) {
+      const o = here(t);
+      m.observe(o);
+      press(m, o);
+    }
+    // Done again 3 tiles away: a different place, its own record.
+    const away = here(40, 9.5);
+    m.observe(away);
+    press(m, away);
+    m.observe(here(50));
+    const v = m.view(here(50));
+    expect(v.repeated_without_new_result).toEqual([{ action: "interact (E)", area: "Test Field", near: { x: 5.5, y: 0.5 }, times: 3, first_tick: 10, last_tick: 30 }]);
+  });
+
+  it("starts over when something new comes of it, but not for the same old feedback line", () => {
+    const m = new HeroMemory("Sieg");
+    let t = 0;
+    const step = (feedback: string[] = [], items: Observation["inventory"]["items"] = []) => {
+      const o = here((t += 10), 5.5, feedback, items);
+      m.observe(o);
+      press(m, o);
+    };
+    step();
+    step(["Select the correct key."]); // a line never seen before: new
+    step(["Select the correct key."]);
+    step(["Select the correct key.", "Select the correct key."]); // the same old line again: nothing new
+    // The run restarted at tick 20, the first press after the new line; 20, 30 and 40 since then.
+    expect(m.repeatRecords()[0]).toMatchObject({ times: 3, firstTick: 20, lastTick: 40 });
+    step(["Select the correct key.", "Select the correct key."], [{ id: "k", name: "Key", count: 1, description: "" }]); // backpack changed: new
+    expect(m.repeatRecords()[0]).toMatchObject({ times: 1, firstTick: 50 });
+  });
+
+  it("an ability is new again once its effect shows up, even seconds later, and is tracked with its direction", () => {
+    const m = new HeroMemory("Coco");
+    const at = (tick: number, feedback: string[] = []) => obs({ player: "coco", tick, origin: [0, 0], rows: [OPEN], self: [1.5, 0.5], feedback });
+    const cast = (o: Observation) => press(m, o, { type: "ability", ability: "black_hole", direction: "e" });
+    let o = at(100);
+    m.observe(o);
+    cast(o);
+    m.observe(at(160));
+    m.observe((o = at(400, ["The cow moved w, from (26, 25) to (25.3, 25)."])));
+    cast(o);
+    expect(m.repeatRecords()[0]).toMatchObject({ action: "ability black_hole e", times: 1, firstTick: 400 });
+    m.observe((o = at(900, ["The cow moved w, from (26, 25) to (25.3, 25)."])));
+    cast(o);
+    m.observe((o = at(1500, ["The cow moved w, from (26, 25) to (25.3, 25)."])));
+    cast(o);
+    expect(m.repeatRecords()[0]).toMatchObject({ times: 3, firstTick: 400, lastTick: 1500 });
+    // A different direction is a different action.
+    press(m, o, { type: "ability", ability: "black_hole", direction: "n" });
+    expect(m.repeatRecords().map((r) => r.action)).toEqual(["ability black_hole e", "ability black_hole n"]);
+    // Moves, attacks, waits and messages are never tracked.
+    for (const a of [{ type: "move", direction: "e", ticks: 5 }, { type: "attack", direction: "e" }, { type: "wait", ticks: 5 }, { type: "message", text: "hi" }] as GameAction[]) press(m, o, a);
+    expect(m.repeatRecords()).toHaveLength(2);
+  });
+
+  it("notes what the hero's own map shows just ahead of a move that stopped short, and the width of an opening", () => {
+    const m = new HeroMemory("Coco");
+    // Row 2 has a two-tile opening at x 2-3; the hero is at x 2.03, so its body overlaps the wall at x 1.
+    const a = obs({ player: "coco", tick: 10, origin: [0, 0], rows: ["......", "......", "##..##", "......"], self: [2.03, 1.59] });
+    m.observe(a);
+    const stuck = (to: { x: number; y: number }, direction: "s" | "e") =>
+      m.recordTurn({ steps: [moveStep(direction as "s", report({ outcome: "none", movedTiles: 0, blocked: true, from: to, to }))], skipped: [] }, a);
+    stuck({ x: 2.03, y: 1.59 }, "s");
+    expect(m.blockedMoves().at(-1)).toEqual({ tick: 10, direction: "s", from: { x: 2.03, y: 1.59 }, to: { x: 2.03, y: 1.59 }, ahead: "open", opening: { x_from: 2, x_to: 3, y: 2 } });
+    // Straight into a wall: blocked, no opening.
+    m.recordTurn({ steps: [moveStep("s", report({ outcome: "none", movedTiles: 0, blocked: true, from: { x: 0.5, y: 1.59 }, to: { x: 0.5, y: 1.59 } }))], skipped: [] }, a);
+    expect(m.blockedMoves().at(-1)).toMatchObject({ ahead: "blocked" });
+    expect(m.blockedMoves().at(-1)).not.toHaveProperty("opening");
+    // Toward ground never seen: unknown.
+    m.recordTurn({ steps: [moveStep("s", report({ outcome: "partial", blocked: true, from: { x: 4.5, y: 3.2 }, to: { x: 4.5, y: 3.5 } }))], skipped: [] }, a);
+    expect(m.blockedMoves().at(-1)).toMatchObject({ ahead: "unknown" });
+    // A clear move is not noted.
+    m.recordTurn({ steps: [moveStep("e", report({ from: { x: 0.5, y: 0.5 }, to: { x: 3.5, y: 0.5 } }))], skipped: [] }, a);
+    expect(m.blockedMoves()).toHaveLength(3);
+  });
+});
+
 describe("SYNTHETIC: sent messages", () => {
   it("records only executed message actions, from this hero to the partner, with the tick of the observation they answered", () => {
     const m = new HeroMemory("Coco");
@@ -282,13 +377,19 @@ describe("SYNTHETIC: isolation, reset and bounds", () => {
         feedback: [`Unique event number ${t}.`],
       });
       m.observe(last);
-      m.recordTurn({ steps: [{ action: { type: "message", text: `hello ${t}` }, result: { accepted: true, ticks: 0, feedback: [], done: false }, status: "executed" }], skipped: [] }, last);
+      m.recordTurn({ steps: [
+        { action: { type: "message", text: `hello ${t}` }, result: { accepted: true, ticks: 0, feedback: [], done: false }, status: "executed" },
+        { action: { type: "ability", ability: t % 3 ? "push" : "black_hole", direction: (["n", "e", "s", "w"] as const)[t % 4] }, result: { accepted: true, ticks: 2, feedback: [], done: false }, status: "executed" },
+        moveStep("e", report({ outcome: "none", movedTiles: 0, blocked: true, from: { x: (t % 20) + 0.5, y: 0.5 }, to: { x: (t % 20) + 0.5, y: 0.5 } })),
+      ], skipped: [] }, last);
     }
     const size = m.size();
     expect(size.areas).toBeLessThanOrEqual(MEMORY_LIMITS.areas);
     expect(size.things).toBeLessThanOrEqual(MEMORY_LIMITS.things);
     expect(size.events).toBeLessThanOrEqual(MEMORY_LIMITS.events);
     expect(size.sent).toBe(MEMORY_LIMITS.sent);
+    expect(size.repeats).toBeLessThanOrEqual(MEMORY_LIMITS.repeats);
+    expect(size.blocked).toBeLessThanOrEqual(MEMORY_LIMITS.blocked);
     expect(JSON.stringify(m.view(last)).length).toBeLessThan(12_000);
   });
 });

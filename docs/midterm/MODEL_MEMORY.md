@@ -185,3 +185,36 @@ Questions it answers:
 - **Identity is heuristic.** "Same thing" means one of that kind and name seen now and one remembered. Several identical enemies are tracked by position only, with no movement events.
 - **Prompt size.** Up to about 3 k extra tokens per call.
 - **Not an independent review.** A same-session `game-rules-audit` ran at `dc00de2` ([report](agent-evidence/skill-runs/2026-10-29-adapter-model-memory.md): 2 Medium, 4 Low, no Critical or High). The `rules-reviewer` independent review has not been run and is pending the owner's decision.
+
+## 8. Revision after the first model-memory pilot (2026-10-29)
+
+The owner's paid pilot ran at `88587ce`: S2-local, seed 0, OpenAI `gpt-6-luna` at medium effort. It was stopped by hand after 76.1 game-seconds, with 386 calls and $0.323 charged. The video was not saved because of a forced exit. The trace is local and not committed. Findings from the trace:
+- **Coco in the grazing bay, ticks 2589–3931.**
+  - Her map showed the open lane east of the cow, and her own `+` trail through the bay's 2-tile south exit at x 20–21.
+  - At tick 3721 a move south at x 20.03 stopped, although the tile ahead was open: her body caught the wall edge at x 19. She reported "South is blocked".
+  - She cast Black Hole twice more after the cow had stopped moving.
+- **Sieg pressed E 13 times near the chase sign** (top corridor), and 5 more where Coco had last seen the wolf. 18 of his 19 presses after the gate returned no feedback at all, because of the known maze limitation in `PILOT9_FIXES.md`.
+- **Sieg never had the wolf on screen.** Coco saw it 14 times. The first Slow Time + Super Speed overlap lasted about 9 s, but Sieg was 17 tiles away at the sign.
+- **A memory bug:** a terrain change involving the exit character `>` was rendered as `"" ()`, because `>` was also the internal key separator.
+
+Changes (owner request after the pilot; `model-memory` only, no game, environment, runner or other-player change):
+- **Separator bug fixed.** The change key is now the character pair itself.
+- **`repeated_without_new_result`** lists E, item and ability actions done at least twice within 2 tiles of the same place while nothing new came of them.
+  - "New" means a feedback line not seen before (routine action lines excluded), a terrain change, or a change of area, backpack, journal or dialogue line. Moving creatures do not count.
+  - A run of repeats starts over after anything new.
+  - Abilities are tracked with their direction.
+  - Replayed on this pilot's trace, it shows Sieg's E at the sign at 4 repeats by tick 3754, and Coco's eastward Black Hole at 2 from tick 3677.
+- **`recent_blocked_moves`** keeps the last 4 moves that stopped short, with what the hero's own map shows just ahead.
+  - When the tile ahead is open on a straight move, it also gives the run of open tiles across the way (`opening`).
+  - Replayed, Coco's tick-3721 move shows `ahead: "open"`, `opening: {x_from: 20, x_to: 21, y: 27}`.
+- **`MEMORY_SECTION`** explains both fields and adds one general line: look on your map for open ground around whatever stands in your way, and your `+` tiles include the way you came in.
+  - It still contains no digits, compass directions, area, creature or puzzle words (tested).
+
+Not changed: the missing "nothing responded" line in the maze (an environment fix affecting every player, pending the owner), and the batch stopping after each "Message sent." (a runner change affecting every model player, pending the owner).
+
+Checks at this revision:
+- `modelMemory.test.ts` 32/32, including the unchanged `model-history` and `model-obs-only` prompt pins;
+- `openai`, `s2Briefing`, `pilot6Fixes`, `pilot9Fixes`, `playerKnowledge`, `modelPlayers`, `guidedMaze`, `batch`, `harness`: 136/136 (`--maxWorkers=1`);
+- typecheck and build pass.
+
+Not rerun: the scripted freeze pins (no baseline, runner or environment code changed). Results after this revision are reported separately from the first pilot.
