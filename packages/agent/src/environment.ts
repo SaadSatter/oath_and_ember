@@ -34,6 +34,7 @@ import {
 import { cowLine, tickEvents, worldSnapshot, type SeenMove, type WorldSnapshot } from "./worldEvents.js";
 import { movementLines, movementReport, newTally, openGroundStep, tallyApplied, type MoveTally } from "./movementReport.js";
 import { maps } from "../../shared/src/maps.js";
+import { mirrorPondState } from "../../shared/src/mirrorPond.js";
 import {
   episodes,
   milestones,
@@ -120,8 +121,14 @@ interface Running {
   attack?: { recovering: boolean; performed: boolean };
   /** A cow move this hero watched during the action (worldEvents.ts). */
   cow?: SeenMove;
-  /** Move actions: where and in which area the hero started, and what each tick did so far (movementReport.ts). */
-  move?: { direction: Direction; scene: SceneId; from: { x: number; y: number }; tally: MoveTally };
+  /**
+   * Move actions, and Push with a direction (it walks with the same input):
+   * where and in which area the hero started, and what each tick did so far
+   * (movementReport.ts).
+   */
+  move?: { direction: Direction; scene: SceneId; from: { x: number; y: number }; tally: MoveTally; push?: boolean };
+  /** Push actions: the things a push can move, before it ran (pushFingerprint). */
+  pushables?: string;
   /** An E press with nothing in the backpack panel's reach: what it could change, before it ran (pressFingerprint). */
   press?: string;
 }
@@ -196,6 +203,30 @@ function pressFingerprint(w: World, p: Player): string {
     puzzles,
     w.bridgePuzzle ?? null,
     w.interactables,
+    w.pushableOffsets ?? null,
+  ]);
+}
+
+/**
+ * Feedback for a Push, saying whether anything moved while it ran (owner
+ * approval 2026-10-29, after pilot-9). A player sees a pushed boulder slide, a
+ * mirror turn or a crate move, and sees nothing move when they push a wall,
+ * a sign or a creature. Walking while pushing is reported like any move.
+ */
+export const PUSH_MOVED = "Something you could push moved while you were pushing.";
+export const PUSH_NOTHING = "You pushed, but nothing moved.";
+
+/**
+ * The things Sieg's Push can move (GameRoom: the bridge boulder, the pond
+ * mirrors, the forest crate and pushable offsets). Trusted side, read only.
+ * Nothing else, so a creature or a timer changing on its own is never taken
+ * for a push.
+ */
+function pushFingerprint(w: World): string {
+  return JSON.stringify([
+    w.bridgePuzzle?.boulder ?? null,
+    mirrorPondState(w.puzzles)?.mirrors ?? null,
+    (w.interactables as { crate?: unknown } | undefined)?.crate ?? null,
     w.pushableOffsets ?? null,
   ]);
 }
@@ -494,6 +525,14 @@ export class AgentEnvironment implements GameInterface {
           resolve: sub.resolve,
           ...(sub.action.type === "attack" ? { attack: { recovering: (me.cooldowns.attack ?? 0) > 0, performed: false } } : {}),
           ...(sub.action.type === "move" ? { move: { direction: sub.action.direction, scene: sceneOf(this.room.state, me), from: { x: me.x, y: me.y }, tally: newTally() } } : {}),
+          ...(sub.action.type === "ability" && sub.action.ability === "push"
+            ? {
+                pushables: pushFingerprint(this.room.state),
+                ...(sub.action.direction
+                  ? { move: { direction: sub.action.direction, scene: sceneOf(this.room.state, me), from: { x: me.x, y: me.y }, tally: newTally(), push: true } }
+                  : {}),
+              }
+            : {}),
           ...(sub.action.type === "interact" ? { press: pressFingerprint(this.room.state, me) } : {}),
         };
       }
@@ -682,12 +721,13 @@ export class AgentEnvironment implements GameInterface {
     // A move that ended in another area is reported by its arrival line instead.
     const movement =
       r.move && sceneOf(this.room.state, me) === r.move.scene ? movementReport(r.move.from, me, r.move.tally) : undefined;
-    const walked = movement && r.move ? movementLines(r.move.direction, movement, r.move.from, me) : [];
+    const walked = movement && r.move ? movementLines(r.move.direction, movement, r.move.from, me, r.move.push ? "push" : "move") : [];
     const extra = [
       ...walked,
       ...(moved ? [moved] : []),
       ...(r.attack && !r.attack.performed ? [noAttackLine(s.role, r.attack.recovering)] : []),
       ...(r.press !== undefined && !interrupted && pressFingerprint(this.room.state, me) === r.press ? [NOTHING_RESPONDED] : []),
+      ...(r.pushables !== undefined ? [pushFingerprint(this.room.state) === r.pushables ? PUSH_NOTHING : PUSH_MOVED] : []),
     ];
     for (const line of extra) {
       r.feedback.push(line);

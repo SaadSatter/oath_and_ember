@@ -158,13 +158,16 @@ describe("listed coordinates of moving things match their marked cell (finding 3
       if (row) expect("EPC").toContain(row[Math.floor(v.x) - o.screen.originX]);
     }
     expect(o.visible.find((v) => v.name === "Harmless cow · blocks the lane")).toMatchObject({ x: 26, y: 27.7 });
-    // Exactly what the pre-change code lists here (checked at 6448dc1): truncation changes formatting only.
+    // What the pre-change code listed here (checked at 6448dc1): truncation changes formatting only.
+    // Since the pilot-9 perception fixes (owner approval 2026-10-29) the caption is a label, and the
+    // cow is listed while any part of its 4×4 body is on screen (its centre row is just off screen here).
     expect(o.visible.map((v) => `${v.kind}:${v.name}`).sort()).toEqual([
+      "creature:cow",
       "enemy:cinder wisp",
       "enemy:ironbound sentinel",
       "enemy:mossling",
+      "label:Harmless cow · blocks the lane",
       "object:FIREBALL · dry hedge",
-      "object:Harmless cow · blocks the lane",
       "partner:Coco",
     ]);
   });

@@ -21,6 +21,7 @@ import {
 import {
   hedgeMazeState,
   mazeBurnBush,
+  mazeCowRect,
 } from "../../shared/src/hedgeMaze.js";
 import {
   griffinNest,
@@ -230,10 +231,11 @@ interface Prop {
   /** Screen-grid character; none for a floating label that hides no cell. */
   mark?: string;
   /**
-   * Floor art drawn across several tiles (world px). Every cell it covers gets
+   * Something drawn across several tiles (world px): floor art, or a large
+   * body such as the Hedge Maze cow. Every cell whose centre it covers gets
    * `mark`, drawn under people and other things, and the listing gives its
    * extent. Pilot-7: a spike column drawn as one cell looked like a row with
-   * clear lanes beside it.
+   * clear lanes beside it. Pilot-9: the cow's 4×4 body was drawn as hedge.
    */
   floor?: Rect;
 }
@@ -254,6 +256,11 @@ function griffinLabel(g: GriffinState, mode: LabelMode) {
   if (g.hp <= 0) return label(mode, "DEFEATED · E at nest for wig", "defeated");
   return `GRIFFIN ${g.hp}/320 · ${g.phase.replaceAll("_", " ")}`;
 }
+
+/** The Hedge Maze's two caption texts (HedgeMazeView.label); labels since pilot-9. */
+export const MAZE_COW_CAPTION = "Harmless cow · blocks the lane";
+export const MAZE_BAY_SIGN = "BLACK HOLE → grazing bay";
+export const MAZE_BAY_SIGN_SHORT = "grazing bay";
 
 /** Scene props and labels the client's environment views draw. */
 function sceneProps(w: World, scene: SceneId, mode: LabelMode): Prop[] {
@@ -350,12 +357,15 @@ function sceneProps(w: World, scene: SceneId, mode: LabelMode): Prop[] {
     if (maze) {
       // HedgeMazeView draws the cow sprite where the cow is, and its label as
       // separate text fixed at (26, 27.7) that never moves or hides. The cow
-      // itself carries no text (pilot-6 audit finding 3). The label floats over
-      // open floor in the lane, so it gets no grid mark that would hide it.
-      props.push({ kind: "creature", name: "cow", x: maze.cow.x, y: maze.cow.y, mark: "C" });
+      // itself carries no text (pilot-6 audit finding 3). Pilot-9 (owner
+      // approval 2026-10-29): the cow is drawn across the 4×4 tiles its body
+      // occupies (the same rectangle the engine collides with, which the
+      // client's 128 px sprite covers), every cell "C", with its extent; the
+      // caption is a label, text to read, with no grid mark.
+      props.push({ kind: "creature", name: "cow", x: maze.cow.x, y: maze.cow.y, mark: "C", floor: mazeCowRect(maze) });
       props.push({
-        kind: "object",
-        name: label(mode, "Harmless cow · blocks the lane", "lane sign"),
+        kind: "label",
+        name: label(mode, MAZE_COW_CAPTION, "lane sign"),
         x: 26 * TILE,
         y: 27.7 * TILE,
       });
@@ -370,7 +380,9 @@ function sceneProps(w: World, scene: SceneId, mode: LabelMode): Prop[] {
         });
     }
     props.push(
-      { kind: "object", name: label(mode, "BLACK HOLE → grazing bay", "grazing bay"), x: 22.2 * TILE, y: 22.2 * TILE, mark: "o" },
+      // Painted text over the hedge (HedgeMazeView.label), not an object: a
+      // label with no grid mark, so the hedge cell under it stays "#" (pilot-9).
+      { kind: "label", name: label(mode, MAZE_BAY_SIGN, MAZE_BAY_SIGN_SHORT), x: 22.2 * TILE, y: 22.2 * TILE },
       {
         kind: "object",
         name: label(mode, "E · key gate", "key gate"),
@@ -466,6 +478,7 @@ export function perceive(
     // the whole part is the cell their mark is drawn in (independent review
     // finding 3). Fixed signs, objects and exits keep one decimal.
     const coordinate = MOVING_KINDS.has(p.kind) ? truncate2 : round1;
+    const extentAt = MOVING_KINDS.has(p.kind) ? (v: number) => Math.round(v * 100) / 100 : round1;
     visible.push({
       ref: `${p.kind}-${n}`,
       kind: p.kind,
@@ -475,11 +488,20 @@ export function perceive(
       distance: round1(d / TILE),
       direction: d < TILE / 2 ? "here" : directionOf(Math.atan2(dy, dx)),
       ...(p.details ? { details: p.details } : {}),
-      ...(f ? { extent: { x: round1(f.x / TILE), y: round1(f.y / TILE), w: round1(f.w / TILE), h: round1(f.h / TILE) } } : {}),
+      // A moving body's extent is rounded to two decimals (its cells follow
+      // the rectangle itself, not this rounding); fixed floor art keeps one.
+      ...(f ? { extent: { x: extentAt(f.x / TILE), y: extentAt(f.y / TILE), w: extentAt(f.w / TILE), h: extentAt(f.h / TILE) } } : {}),
     });
+    // The cells marked are those whose centre the rectangle covers: the same
+    // rule the terrain grid uses (inRect), so a solid body marks exactly the
+    // cells that would otherwise show "#". (For whole-tile floor art such as
+    // the spike columns this is the same set as before.)
     if (p.mark && f)
-      for (let y = f.y + TILE / 2; y < f.y + f.h; y += TILE)
-        for (let x = f.x + TILE / 2; x < f.x + f.w; x += TILE) floorMarks.push({ x, y, mark: p.mark });
+      for (let cy = Math.floor(f.y / TILE) - 1; cy <= Math.ceil((f.y + f.h) / TILE); cy++)
+        for (let cx = Math.floor(f.x / TILE) - 1; cx <= Math.ceil((f.x + f.w) / TILE); cx++) {
+          const centre = { x: (cx + 0.5) * TILE, y: (cy + 0.5) * TILE };
+          if (inRect(centre, f)) floorMarks.push({ ...centre, mark: p.mark });
+        }
     else if (p.mark) marks.push({ x: p.x, y: p.y, mark: p.mark });
   };
 

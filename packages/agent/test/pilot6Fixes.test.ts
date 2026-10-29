@@ -213,7 +213,8 @@ describe("the cow and its sign, as the client draws them", () => {
     expect(cow).toMatchObject({ x: 26, y: 25 });
     expect(cow.details).toBeUndefined();
     const sign = o.visible.find((v) => v.name === "Harmless cow · blocks the lane")!;
-    expect(sign).toMatchObject({ kind: "object", x: 26, y: 27.7 });
+    // A label since the pilot-9 perception fixes (owner approval 2026-10-29); position unchanged.
+    expect(sign).toMatchObject({ kind: "label", x: 26, y: 27.7 });
     expect(o.visible.filter((v) => v.kind === "creature").map((v) => v.name)).not.toContain("Harmless cow · blocks the lane");
     // Tile (26, 27) under the sign is open floor and stays "." on the grid.
     expect(o.screen.rows[27 - o.screen.originY][26 - o.screen.originX]).toBe(".");

@@ -129,13 +129,13 @@ export function movementReport(
  * on open ground). Separate neutral lines for ticks the game did not take the
  * input or moved the hero itself: those are not collisions.
  */
-export function movementLines(direction: Direction, r: MovementReport, from: { x: number; y: number }, to: { x: number; y: number }): string[] {
+export function movementLines(direction: Direction, r: MovementReport, from: { x: number; y: number }, to: { x: number; y: number }, action: "move" | "push" = "move"): string[] {
   const lines: string[] = [];
   const total = r.ticks.applied + r.ticks.notApplied + r.ticks.movedByGame;
   if (r.blocked)
     lines.push(
       r.outcome === "none"
-        ? `Your move ${direction} was blocked at once: you made ${r.movedTiles} of ${r.requestedTiles} tiles and are at ${at(to)}. Something blocked your way.`
+        ? `Your ${action} ${direction} was blocked at once: you made ${r.movedTiles} of ${r.requestedTiles} tiles and are at ${at(to)}. Something blocked your way.`
         : `You moved ${direction} only ${r.movedTiles} of ${r.requestedTiles} tiles, from ${at(from)} to ${at(to)}. Something stopped you.`,
     );
   if (r.ticks.notApplied) lines.push(`For ${r.ticks.notApplied} of ${total} ticks your hero did not take your movement input.`);

@@ -19,7 +19,7 @@
 
 import type { ActionSpec, Direction, GameAction, Observation, StepResult } from "../types.js";
 import type { Decision, Policy } from "./policy.js";
-import { asTuned, directionTo, planStep, type NavOptions, type Point } from "./navigate.js";
+import { asTuned, asTunedMaze, directionTo, planStep, type NavOptions, type Point } from "./navigate.js";
 import { planFight, type FightOptions } from "./combat.js";
 import {
   FINALE_PATH,
@@ -439,7 +439,7 @@ export class QuestBaseline implements Policy {
   }
 
   async decide(input: { observation: Observation; legal: ActionSpec[]; last?: StepResult }): Promise<Decision> {
-    const o = asTuned(input.observation);
+    const o = asTuned(asTunedMaze(input.observation));
     if (o.hero !== this.hero) throw Error(`baseline for ${this.hero} was given ${o.hero}'s observation`);
     this.ctx ??= { hero: this.hero, o, legal: input.legal, heard: new Set(), note: (note) => this.log.push({ tick: this.ctx!.o.tick, note }) };
     const c = this.ctx;

@@ -6,7 +6,7 @@
 // shown to one.
 
 import { AgentEnvironment } from "../environment.js";
-import { asTuned, planStep, type NavOptions, type Point } from "../policies/navigate.js";
+import { asTuned, asTunedMaze, planStep, type NavOptions, type Point } from "../policies/navigate.js";
 import { planFight, type FightOptions } from "../policies/combat.js";
 import type { GameAction, Observation, PlayerId, StepResult } from "../types.js";
 
@@ -52,7 +52,7 @@ export class Director {
   measurePrompts = false;
 
   async obs(id: PlayerId): Promise<Observation> {
-    const o = asTuned(await this.env.observe(id));
+    const o = asTuned(asTunedMaze(await this.env.observe(id)));
     if (o.dialogue) this.dialogues.push({ id, tick: o.tick, dialogue: o.dialogue });
     if (this.measurePrompts) this.promptChars.push(JSON.stringify({ observation: o, legal_actions: await this.env.legal_actions(id) }).length);
     return o;

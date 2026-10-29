@@ -105,7 +105,7 @@ export interface VisibleThing {
   /** Tile coordinates (32 px tiles) within the current area. */
   x: number;
   y: number;
-  /** For something drawn across several tiles (a floor trap column): the block it covers, top-left tile and size in tiles. */
+  /** For something drawn across several tiles (a floor trap column, a large creature): the block it covers, top-left tile and size in tiles. Its screen cells are those whose centre lies in that block. */
   extent?: { x: number; y: number; w: number; h: number };
   /** Distance from you in tiles, and the compass direction toward it. */
   distance: number;
@@ -188,7 +188,7 @@ export interface StepResult {
    */
   attack?: "performed" | "none";
   /**
-   * Move actions only, when the hero stayed in the same area: how far the
+   * Move actions, and Push with a direction (since pilot-9), when the hero stayed in the same area: how far the
    * move actually carried the hero compared with how far the same input
    * would have carried them on open ground. `accepted` still only means the
    * input was taken; this says how far it went. Never names an obstacle.

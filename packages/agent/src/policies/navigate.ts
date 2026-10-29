@@ -30,6 +30,45 @@ export function asTuned(o: Observation): Observation {
     visible: o.visible?.map((v) => (MOVING.has(v.kind) ? { ...v, x: one(v.x), y: one(v.y) } : v)),
   };
 }
+/**
+ * The Hedge Maze screen as the scripted route and quest baseline were tuned on
+ * it, before the pilot-9 perception fixes (owner approval 2026-10-29). Since
+ * then the interface draws the cow's 4×4 body as "C" cells with an extent,
+ * and the "BLACK HOLE → grazing bay" caption as a label with no grid mark.
+ * The route and quest baseline navigate by "#" and treat "C" and "o" as
+ * passable, so seeing the new screen would change their frozen behaviour and
+ * the held-out start states the route builds. This rebuilds the earlier
+ * screen from the observation alone: the cow's "C" cells back to "#", its
+ * centre cell back to "C", and the caption's cell back to "o". A policy-side
+ * choice like asTuned: every player still receives the same observation. Not
+ * used by the exploration baseline, which sees the new screen (its pins were
+ * re-pinned with approval). Apply before asTuned, which rounds positions.
+ */
+export function asTunedMaze(o: Observation): Observation {
+  if (o.area?.name !== "Hedge Maze") return o;
+  const cow = o.visible.find((v) => v.kind === "creature" && v.name === "cow" && v.extent);
+  const sign = o.visible.find((v) => v.kind === "label" && (v.name === "BLACK HOLE → grazing bay" || v.name === "grazing bay"));
+  if (!cow && !sign) return o;
+  const { originX, originY } = o.screen;
+  const rows = o.screen.rows.map((r) => [...r]);
+  const set = (x: number, y: number, ch: string, only?: string) => {
+    const row = rows[y - originY];
+    if (row && x - originX >= 0 && x - originX < row.length && (only === undefined || row[x - originX] === only)) row[x - originX] = ch;
+  };
+  if (cow?.extent) {
+    const e = cow.extent;
+    for (let y = Math.floor(e.y) - 1; y <= Math.ceil(e.y + e.h); y++)
+      for (let x = Math.floor(e.x) - 1; x <= Math.ceil(e.x + e.w); x++) set(x, y, "#", "C");
+    set(Math.floor(cow.x), Math.floor(cow.y), "C");
+  }
+  if (sign) {
+    const x = Math.floor(sign.x),
+      y = Math.floor(sign.y);
+    if (rows[y - originY]?.[x - originX] !== "@") set(x, y, "o");
+  }
+  return { ...o, screen: { ...o.screen, rows: rows.map((r) => r.join("")) } };
+}
+
 /** The kinds perception lists with two decimals (perception.ts MOVING_KINDS; kept here so this module reads only observations). */
 const MOVING: ReadonlySet<string> = new Set(["partner", "enemy", "creature", "projectile", "effect"]);
 
