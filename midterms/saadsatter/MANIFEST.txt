@@ -21,6 +21,7 @@
 #     PEER_NOTES.md); the repository's own README.md becomes GAME_README.md.
 
 # Project configuration and agent configuration
+README.md
 package.json
 package-lock.json
 tsconfig.json
@@ -68,3 +69,6 @@ Images/*/CREDITS*
 Images/*provenance*.json
 Images/*PROVENANCE*
 !Images/art_history/*
+
+# The four source sheets apps/client/test/siegAttack.test.ts checks the runtime atlas against (72 KB)
+Images/Sprites/Sieg/fighting-integration-v3/*-decoded.png
