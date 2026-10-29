@@ -65,12 +65,12 @@ function fakeDriver(o: { launch?: Error; render?: "ok" | "timeout" | "hang"; fin
 }
 
 describe("recorder (fake browser)", () => {
-  it("starts at 1920×1080, waits for the render, then saves the video once and cleans up", async () => {
+  it("starts at 1280×720, waits for the render, then saves the video once and cleans up", async () => {
     const out = tmp();
     const { driver, calls } = fakeDriver();
     const rec = await startRecorder({ url: "http://127.0.0.1:1/watch", outDir: out, driver });
     expect(calls.open).toHaveLength(1);
-    expect(calls.open[0]).toMatchObject({ url: "http://127.0.0.1:1/watch", size: { width: 1920, height: 1080 } });
+    expect(calls.open[0]).toMatchObject({ url: "http://127.0.0.1:1/watch", size: { width: 1280, height: 720 } });
     expect(calls.open[0]!.videoDir.startsWith(out)).toBe(true);
     expect(rec.result.status).toBe("recording");
     await rec.ready();
@@ -223,17 +223,17 @@ describe("live launcher recording", () => {
     verifyTrace(readTrace(summary.trace));
   }, 240_000);
 
-  it.skipIf(!hasChromium)("records a watchable 1920×1080 video and leaves the trace identical to a headless run", async () => {
+  it.skipIf(!hasChromium)("records a watchable 1280×720 video and leaves the trace identical to a headless run", async () => {
     const headless = join(tmp(), "headless");
     expect((await launch(["--scenario", "S1", "--player", "baseline-quest", "--no-viewer", "--out", headless])).code).toBe(0);
     const out = join(tmp(), "recorded");
     const r = await launch([...QUICK, "--out", out]);
     expect(r.code, r.out).toBe(0);
-    expect(r.out).toContain(`Video:   ${join(out, RECORDING_FILE)} (1920×1080`);
+    expect(r.out).toContain(`Video:   ${join(out, RECORDING_FILE)} (1280×720`);
     const meta = json(join(out, RECORDING_META));
     expect(meta).toMatchObject({
       runId: "recorded", scenario: "S1", seed: 0, player: "baseline-quest", model: null, status: "saved",
-      path: join(out, RECORDING_FILE), resolution: "1920x1080", readyConfirmed: true, finalConfirmed: true, completion: "success", passive: true, error: null,
+      path: join(out, RECORDING_FILE), resolution: "1280x720", readyConfirmed: true, finalConfirmed: true, completion: "success", passive: true, error: null,
     });
     expect(meta.browser).toMatch(/^chromium/);
     expect(meta.bytes).toBeGreaterThan(10_000);

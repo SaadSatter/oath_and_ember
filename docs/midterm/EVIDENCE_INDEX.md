@@ -233,3 +233,7 @@ Implementation `3b7115b`: explicitly solution-informed model-guided, current rev
 ## Persistent memory player (2026-10-29)
 
 `model-memory` (Workstream B, after the pilot-10 diagnosis): [design, schema, comparison, tests and proposed pilot](MODEL_MEMORY.md); tests in `packages/agent/test/modelMemory.test.ts` (27). Existing `model-history` and `model-obs-only` prompts are pinned unchanged. The 6 permitted frozen baseline pins and 8 revision 2 baseline trajectories are identical before and after. No paid or held-out execution. Audit: [`2026-10-29-adapter-model-memory.md`](agent-evidence/skill-runs/2026-10-29-adapter-model-memory.md) (same session, not independent). Session record: [S42](../agent-sessions/42-claude-model-memory.md).
+
+## 2026-10-29 recorder shutdown evidence (S43)
+
+Supports 3c/3d/5c: [S43 session record](../agent-sessions/43-codex-recorder-shutdown.md), [same-session recording audit](agent-evidence/skill-runs/2026-10-29-recording-shutdown.md), and [recording lifecycle](LIVE_RUN.md#2026-10-29-shutdown-diagnostics-and-viewer-lifetime). Final recorder tests: 25/25 pass. Offline S1 baseline video: 42.76 s, 1280x720, 3,723,034 bytes; playback verified, headless/recorded end hashes match. This is a scripted baseline verification, not a recovered Pilot-11/12 model recording or independent review. No paid call, held-out run, historical trace write or commit.

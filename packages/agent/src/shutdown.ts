@@ -54,3 +54,15 @@ export class SignalCounter {
     return signalAction(phase, this.count++);
   }
 }
+
+/** Starts the viewer's post-episode lifetime immediately, independently of recording. */
+export async function finishViewerAfterGrace(o: { milliseconds: number; signal: AbortSignal; close: () => Promise<void> }) {
+  if (o.milliseconds > 0 && !o.signal.aborted) {
+    await new Promise<void>((resolve) => {
+      const done = () => { clearTimeout(timer); o.signal.removeEventListener("abort", done); resolve(); };
+      const timer = setTimeout(done, o.milliseconds);
+      o.signal.addEventListener("abort", done, { once: true });
+    });
+  }
+  await o.close();
+}

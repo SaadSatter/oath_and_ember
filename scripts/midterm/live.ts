@@ -11,7 +11,7 @@
 // What it does: one runSuite() episode (same suite rules, budget, ledger,
 // traces and records as evaluate.ts), with the environment's room served to
 // a local read-only browser viewer and game time paced to real time. A
-// headless Chromium records the viewer to <out>/recording.webm (1920×1080)
+// headless Chromium records the viewer to <out>/recording.webm (1280×720)
 // with its metadata in <out>/recording.json; --no-record turns this off.
 //
 // What it never does: run S4 or F, run final seeds, take a credential on the
@@ -27,7 +27,7 @@ import { APPROVED_LEDGER, SpendLedger } from "../../packages/agent/src/ledger.js
 import { startViewer, type Viewer } from "../../packages/agent/src/liveViewer.js";
 import { RECORDING_META, startRecorder, type Recorder, type RecordingResult } from "../../packages/agent/src/recorder.js";
 import { filesContaining } from "../../packages/agent/src/secretScan.js";
-import { SignalCounter } from "../../packages/agent/src/shutdown.js";
+import { finishViewerAfterGrace, SignalCounter } from "../../packages/agent/src/shutdown.js";
 import { providerConfig } from "../../packages/agent/src/policies/providers.js";
 import type { Gateway } from "../../packages/agent/src/budget.js";
 import { MockGateway } from "../../packages/agent/src/policies/mockGateway.js";
@@ -304,6 +304,7 @@ if (viewer && recordOn) {
       model: paid ? get("--model", "claude-haiku-5-5") : null, effort: paid ? get("--effort", "medium") : null,
       gateway: model?.gateway.label ?? paidGateway?.gateway.label ?? null, paid, speed: paced ? speed : null, gitHash: version,
       viewerUrl: viewer!.url, passive: true,
+      shutdown: r.shutdown,
       status: r.status, path: r.path, relativePath: r.path ? relative(repo.root, r.path) : null, bytes: r.bytes,
       resolution: `${r.size.width}x${r.size.height}`, browser: r.browser, readyConfirmed: r.readyConfirmed, finalConfirmed: r.finalConfirmed,
       startedAt: r.startedAt, readyAt: r.readyAt, stoppedAt: r.stoppedAt, wallSeconds: r.wallSeconds,
@@ -436,7 +437,20 @@ try {
   if (paid && remaining) console.log(`Ledger: $${remaining.pilot.toFixed(4)} left in pilot, $${remaining.total.toFixed(4)} left in total.`);
 }
 
-// ── Finish the recording before reporting (and before the viewer lingers) ───
+// Start the interactive viewer grace now, not after encoding/cleanup.
+const viewerShutdown = viewer && !error ? finishViewerAfterGrace({
+  milliseconds: controller.signal.aborted ? 0 : lingerSeconds * 1000,
+  signal: linger.signal,
+  close: async () => {
+    // Keep the final-screen capture alive, but never wait for video encoding/cleanup.
+    await recorder?.captureFinished;
+    await bounded(viewer!.close(), VIEWER_CLOSE_MS, "Closing the viewer");
+  },
+}) : Promise.resolve();
+if (viewer && !error && lingerSeconds > 0 && !controller.signal.aborted)
+  console.log(`Viewer stays up for ${lingerSeconds} s (Ctrl-C to close now).`);
+
+// ── Finalize the independent recording browser ─────────────────────────────
 // The recorder waits until the viewer itself shows the episode's end, then
 // keeps a 3 s tail so the final screen is in the video. After Ctrl-C there
 // is no tail, and a Ctrl-C during these waits cuts them short.
@@ -469,14 +483,5 @@ if (s) {
 } else {
   console.log(`No episode completed. Records kept in ${out}`);
 }
-if (viewer) {
-  if (lingerSeconds > 0 && !controller.signal.aborted && !linger.signal.aborted) {
-    console.log(`Viewer stays up for ${lingerSeconds} s (Ctrl-C to close now).`);
-    await new Promise<void>((r) => {
-      const t = setTimeout(r, lingerSeconds * 1000);
-      linger.signal.addEventListener("abort", () => { clearTimeout(t); r(); }, { once: true });
-    });
-  }
-  await bounded(viewer.close(), VIEWER_CLOSE_MS, "Closing the viewer");
-}
+await viewerShutdown;
 process.exit(process.exitCode ?? 0);

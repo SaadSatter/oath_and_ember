@@ -392,6 +392,16 @@
    "role": "Implementation agent (Claude Code, CLAUDE.md and AGENTS.md) on midterm/evaluation: Workstream B, the opt-in model-memory player (per-hero persistent memory). Invoked game-rules-audit (same-session checkpoint, not an independent review) and session-evidence for this record. No subagent and no independent review.",
    "title": "Opt-in persistent memory player (model-memory)",
    "note": "No paid call, held-out S4/F run or inspection, pin change, gameplay change, push or merge. The full npm test, route/seed1, checkpointFreeze, suite.test.ts and finalAccess.test.ts were not run because they reach held-out content. The model-guided session edited the same worktree concurrently; this session paused shared-file edits until its commits (3b7115b, 74adda8) landed."
+  },
+  {
+   "number": 43,
+   "slug": "codex-recorder-shutdown",
+   "ids": [
+    "01a1862b"
+   ],
+   "role": "Codex implementation agent under AGENTS.md and CLAUDE.md: owner-approved recorder diagnostics and shutdown lifecycle only. Invoked game-rules-audit recording (same-session checkpoint, not independent review) and session-evidence.",
+   "title": "Recorder shutdown diagnostics, independent viewer grace, and pilot trace recovery investigation",
+   "note": "No paid calls, held-out execution, gameplay/policy/pin changes, historical trace writes, commits, push or merge. Local video verification artifacts are in /private/tmp; not committed."
   }
  ]
 }

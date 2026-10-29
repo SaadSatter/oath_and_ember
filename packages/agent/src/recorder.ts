@@ -13,16 +13,30 @@
 // without a video. A video path is reported only after Playwright has
 // finished writing the file and it exists with a non-zero size.
 
-import { existsSync, mkdirSync, rmSync, statSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, rmSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { execFileSync } from "node:child_process";
 
 export const RECORDING_FILE = "recording.webm";
 export const RECORDING_META = "recording.json";
-export const DEFAULT_SIZE = { width: 1920, height: 1080 } as const;
+export const DEFAULT_SIZE = { width: 1280, height: 720 } as const;
 
 export type RecordingStatus = "recording" | "saved" | "failed";
 
+export type ShutdownStage = "context.close" | "video.saveAs" | "video.delete" | "browser.close";
+export interface ShutdownDiagnostics {
+  activeStage: ShutdownStage | null;
+  stages: { stage: ShutdownStage; elapsedMs: number; status: "completed" | "failed"; error?: string }[];
+  elapsedMs: number;
+  saved: boolean;
+  timedOut: boolean;
+  timeoutStage: ShutdownStage | null;
+  activeStageElapsedMs: number;
+  cleanup: "pending" | "completed" | "failed";
+  forcedCleanup: string[];
+}
 export interface RecordingResult {
+  shutdown: ShutdownDiagnostics;
   status: RecordingStatus;
   /** Absolute path of the saved video; null unless status is "saved". */
   path: string | null;
@@ -53,9 +67,9 @@ export interface RecordingSession {
   label?: string;
   warnings?: string[];
   /** Closes the page and browser and writes the video to `target`. */
-  close(target: string): Promise<void>;
-  /** Best effort, never waits: shuts the browser down after a close that did not finish in time. */
-  abandon?(): void;
+  close(target: string, progress?: (stage: ShutdownStage, status: "started" | "completed" | "failed", error?: string) => void, signal?: AbortSignal): Promise<void>;
+  /** Force owned browser/encoder cleanup after a failed or timed-out close. */
+  abandon?(): void | Promise<string[]>;
 }
 
 /** Opens a recorded page. Replaceable in tests; the default uses Playwright. */
@@ -63,6 +77,8 @@ export type RecordingDriver = (o: { url: string; videoDir: string; size: { width
 
 export interface Recorder {
   readonly result: RecordingResult;
+  /** Final-screen capture/tail is done; encoding and cleanup may still be pending. */
+  readonly captureFinished: Promise<void>;
   /**
    * The environment's `ready` hook: waits until the viewer has rendered the
    * episode's start, or until it fails, times out or `signal` aborts. Never
@@ -147,20 +163,51 @@ export const playwrightDriver: RecordingDriver = async ({ url, videoDir, size, e
   const { chromium } = await import("playwright");
   // The launcher handles Ctrl-C itself and closes the browser after saving;
   // Playwright must not close it first on the same signal.
-  const options = { headless: true, handleSIGINT: false, handleSIGTERM: false, handleSIGHUP: false, ...(env ? { env } : {}) };
+  const options = { artifactsDir: videoDir, headless: true, handleSIGINT: false, handleSIGTERM: false, handleSIGHUP: false, ...(env ? { env } : {}) };
   // The full Chromium build draws WebGL on the GPU. Playwright's default
   // headless shell draws it on the CPU (SwiftShader), which with two game
   // views at 1080p falls behind real time, so the video would lag the game.
   const warnings: string[] = [];
   let label = "chromium (GPU)";
+  let server: import("playwright").BrowserServer;
   let browser: import("playwright").Browser;
   try {
-    browser = await chromium.launch({ ...options, channel: "chromium" });
+    server = await chromium.launchServer({ ...options, channel: "chromium" });
   } catch (e) {
-    browser = await chromium.launch(options);
+    server = await chromium.launchServer(options);
     label = "chromium headless shell (software WebGL)";
     warnings.push(`Full Chromium unavailable (${message(e)}); recorded with the headless shell, whose software rendering may lag behind the game.`);
   }
+  try { browser = await chromium.connect(server.wsEndpoint()); }
+  catch (e) { await server.kill(); throw e; }
+  // The browser server owns Chromium. Playwright's encoder is a direct child
+  // of this Node process; only select ffmpeg children naming this unique directory.
+  const forceCleanup = async () => {
+    const actions: string[] = [];
+    const encoders: number[] = [];
+    try {
+      const rows = execFileSync("ps", ["-axo", "pid=,ppid=,command="], { encoding: "utf8", timeout: 2000, maxBuffer: 4 * 1024 * 1024 }).split("\n");
+      for (const row of rows) {
+        const m = row.match(/^\s*(\d+)\s+(\d+)\s+(.*)$/);
+        if (m && Number(m[2]) === process.pid && m[3]!.includes(videoDir + "/") && /ffmpeg/i.test(m[3]!)) {
+          try { process.kill(Number(m[1]), "SIGKILL"); encoders.push(Number(m[1])); actions.push(`Sent SIGKILL to owned encoder ${m[1]}`); }
+          catch (e) { if ((e as NodeJS.ErrnoException).code !== "ESRCH") throw e; }
+        }
+      }
+    } catch (e) { actions.push(`Encoder cleanup inspection failed: ${message(e)}`); }
+    await server.kill();
+    actions.push("Owned Chromium server terminated");
+    for (const pid of encoders) {
+      let exited = false;
+      for (let n = 0; n < 40; n++) {
+        try { process.kill(pid, 0); }
+        catch (e) { if ((e as NodeJS.ErrnoException).code === "ESRCH") { exited = true; break; } throw e; }
+        await new Promise((resolve) => setTimeout(resolve, 25));
+      }
+      actions.push(exited ? `Owned encoder ${pid} exit confirmed` : `WARNING: owned encoder ${pid} exit not confirmed`);
+    }
+    return actions;
+  };
   try {
     const context = await browser.newContext({ viewport: size, deviceScaleFactor: 1, recordVideo: { dir: videoDir, size } });
     const page = await context.newPage();
@@ -176,20 +223,29 @@ export const playwrightDriver: RecordingDriver = async ({ url, videoDir, size, e
         await Promise.race([page.waitForFunction(STATUS_FINISHED, undefined, { timeout: timeoutMs, polling: 100 }), aborted(signal)]);
         await Promise.race([page.evaluate(FRAMES_DRAWN), aborted(signal)]);
       },
-      async close(target) {
+      async close(target, progress, signal) {
         const video = page.video();
-        await context.close();
+        const stage = async (name: ShutdownStage, action: () => Promise<unknown>) => {
+          if (signal?.aborted) throw Error("Recording shutdown cancelled");
+          progress?.(name, "started");
+          try { await action(); }
+          catch (e) { if (!signal?.aborted) progress?.(name, "failed", message(e)); throw e; }
+          if (signal?.aborted) throw Error("Recording shutdown cancelled");
+          progress?.(name, "completed");
+        };
+        await stage("context.close", () => context.close());
         if (!video) throw Error("Playwright produced no video for the page.");
-        await video.saveAs(target);
-        await video.delete();
-        await browser.close();
+        await stage("video.saveAs", () => video.saveAs(target));
+        // Cleanup failures must still attempt browser shutdown.
+        let cleanupError: unknown;
+        try { await stage("video.delete", () => video.delete()); } catch (e) { cleanupError = e; }
+        await stage("browser.close", async () => { await browser.close(); await server.close(); });
+        if (cleanupError) throw cleanupError;
       },
-      abandon() {
-        void browser.close().catch(() => {});
-      },
+      abandon: forceCleanup,
     };
   } catch (e) {
-    await browser.close().catch(() => {});
+    await forceCleanup().catch(() => {});
     throw e;
   }
 };
@@ -211,6 +267,7 @@ export async function startRecorder(o: {
   const target = join(o.outDir, RECORDING_FILE);
   const videoDir = join(o.outDir, ".recording-tmp");
   const result: RecordingResult = {
+    shutdown: { activeStage: null, stages: [], elapsedMs: 0, saved: false, timedOut: false, timeoutStage: null, activeStageElapsedMs: 0, cleanup: "pending", forcedCleanup: [] },
     status: "recording", path: null, bytes: null, size, readyConfirmed: false, finalConfirmed: false, browser: null,
     startedAt: new Date(started).toISOString(), readyAt: null, stoppedAt: null, wallSeconds: null, error: null, warnings: [],
   };
@@ -223,13 +280,17 @@ export async function startRecorder(o: {
   } catch (e) {
     result.status = "failed";
     result.error = `Could not start the recording browser: ${message(e)}`;
-    rmSync(videoDir, { recursive: true, force: true });
+    if (existsSync(videoDir) && readdirSync(videoDir).length === 0) rmSync(videoDir, { recursive: true, force: true });
+    else result.warnings.push(`Startup diagnostic files retained in ${videoDir}`);
   }
+  let captured!: () => void;
+  const captureFinished = new Promise<void>((resolve) => { captured = resolve; });
   let waited: Promise<void> | undefined;
   let stopped: Promise<RecordingResult> | undefined;
-  let closeTimedOut = false;
+  let retainDiagnostics = result.status === "failed";
   return {
     result,
+    captureFinished,
     ready(signal) {
       if (!session || result.status !== "recording" || result.readyConfirmed) return Promise.resolve();
       // A later reset (a retried attempt) checks again.
@@ -260,34 +321,56 @@ export async function startRecorder(o: {
             }
           }
           await sleep(s.holdMs ?? 0, s.signal);
+          captured();
           const closeMs = s.closeTimeoutMs ?? CLOSE_TIMEOUT_MS;
           const limit = deadline(closeMs, "Finalizing the video");
-          try {
-            await Promise.race([session.close(target), limit.expired]);
+          const shutdown = result.shutdown;
+          const closing = new AbortController();
+          const began = Date.now();
+          let stageBegan = began;
+          const saved = () => {
             const bytes = existsSync(target) ? statSync(target).size : 0;
             if (!bytes) throw Error(`no video data at ${target}`);
             Object.assign(result, { status: "saved", path: target, bytes });
-          } catch (e) {
-            result.status = "failed";
-            result.error = `Could not save the video: ${message(e)}`;
-            if (/did not finish within/.test(result.error)) {
-              // The browser may still be writing: keep its unfinished file
-              // for inspection (never reported as a video) and shut it down.
-              closeTimedOut = true;
-              result.error += `. An unfinished partial file may remain in ${videoDir}; it is not a valid recording.`;
-              try {
-                session.abandon?.();
-              } catch {
-                // Best effort only.
-              }
+            shutdown.saved = true;
+          };
+          const progress = (stage: ShutdownStage, status: "started" | "completed" | "failed", error?: string) => {
+            if (closing.signal.aborted) return;
+            if (status === "started") { shutdown.activeStage = stage; stageBegan = Date.now(); }
+            else {
+              shutdown.stages.push({ stage, elapsedMs: Date.now() - stageBegan, status, ...(error ? { error } : {}) });
+              shutdown.activeStage = null;
+              if (stage === "video.saveAs" && status === "completed") saved();
             }
+          };
+          try {
+            await Promise.race([session.close(target, progress, closing.signal), limit.expired]);
+            if (!shutdown.saved) saved(); // Legacy/test drivers without stage callbacks.
+            shutdown.cleanup = "completed";
+          } catch (e) {
+            shutdown.timedOut = /did not finish within/.test(message(e));
+            shutdown.timeoutStage = shutdown.timedOut ? shutdown.activeStage : null;
+            shutdown.activeStageElapsedMs = shutdown.activeStage ? Date.now() - stageBegan : 0;
+            shutdown.cleanup = "failed";
+            retainDiagnostics = true; // Preserve diagnostic artifacts on every shutdown failure.
+            const detail = `${message(e)}; stage=${shutdown.activeStage ?? "between stages"}; elapsed=${Date.now() - began} ms; saved=${shutdown.saved}`;
+            if (shutdown.saved) result.warnings.push(`Video saved; cleanup failed: ${detail}`);
+            else { result.status = "failed"; result.error = `Could not save the video: ${detail}. Diagnostic files retained in ${videoDir}`; }
+            closing.abort(); // Prevent late continuation from saving/deleting diagnostic files.
+            const cleanupLimit = deadline(10_000, "Forced recorder cleanup");
+            try {
+              shutdown.forcedCleanup = (await Promise.race([Promise.resolve(session.abandon?.()), cleanupLimit.expired])) ?? [];
+            } catch (e) { shutdown.forcedCleanup.push(`Forced cleanup failed: ${message(e)}`); }
+            finally { cleanupLimit.clear(); }
           } finally {
+            shutdown.elapsedMs = Date.now() - began;
             limit.clear();
           }
         }
+        captured();
         result.stoppedAt = new Date().toISOString();
         result.wallSeconds = Math.round((Date.now() - started) / 100) / 10;
-        if (!closeTimedOut) rmSync(videoDir, { recursive: true, force: true });
+        if (!retainDiagnostics) rmSync(videoDir, { recursive: true, force: true });
         return result;
       })();
       return stopped;
