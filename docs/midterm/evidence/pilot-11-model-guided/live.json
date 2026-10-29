@@ -1,0 +1,22 @@
+{
+  "launcher": "scripts/midterm/live.ts",
+  "scenario": "S2-local",
+  "seed": 0,
+  "player": "model-guided",
+  "gateway": "openai:gpt-6-luna@medium",
+  "paid": true,
+  "episodeCapUsd": 0.3,
+  "speed": 1,
+  "viewer": true,
+  "viewsIssued": 2,
+  "gitHash": "74adda8",
+  "interrupted": false,
+  "error": null,
+  "ledger": {
+    "path": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/.git/oath-eval/spend-ledger.json",
+    "remainingAfter": {
+      "pilot": 6.825446,
+      "total": 23.823919
+    }
+  }
+}
