@@ -184,4 +184,4 @@ Questions it answers:
 - **Interpolation is conservative.** Walked tiles between a move's ends are filled only for straight, self-driven moves, so some walked tiles may show as `.`.
 - **Identity is heuristic.** "Same thing" means one of that kind and name seen now and one remembered. Several identical enemies are tracked by position only, with no movement events.
 - **Prompt size.** Up to about 3 k extra tokens per call.
-- **Not an independent review.** The `rules-reviewer` subagent and the `game-rules-audit` skill have not been run on this change. Both are pending the owner's decision.
+- **Not an independent review.** A same-session `game-rules-audit` ran at `dc00de2` ([report](agent-evidence/skill-runs/2026-10-29-adapter-model-memory.md): 2 Medium, 4 Low, no Critical or High). The `rules-reviewer` independent review has not been run and is pending the owner's decision.

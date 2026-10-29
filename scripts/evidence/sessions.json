@@ -382,6 +382,16 @@
    "role": "Same-session Codex implementation supplement under AGENTS.md/CLAUDE.md: owner-approved solution-informed model-guided baseline for revision 2 S2-local Hedge Maze, independent of persistent-memory work. Invoked game-rules-audit, oath-rule-information-boundary and session-evidence; same session as S28/S30/S33/S38, not independent review or a new distinct session.",
    "title": "Opt-in instruction-guided LLM Hedge Maze baseline",
    "note": "No paid calls or held-out evaluation in this task. Another session owns prompt-capture helper files; preserved and excluded. Scripted Maze-only proof is engineering verification, not live LLM success."
+  },
+  {
+   "number": 42,
+   "slug": "claude-model-memory",
+   "ids": [
+    "682df3aa"
+   ],
+   "role": "Implementation agent (Claude Code, CLAUDE.md and AGENTS.md) on midterm/evaluation: Workstream B, the opt-in model-memory player (per-hero persistent memory). Invoked game-rules-audit (same-session checkpoint, not an independent review) and session-evidence for this record. No subagent and no independent review.",
+   "title": "Opt-in persistent memory player (model-memory)",
+   "note": "No paid call, held-out S4/F run or inspection, pin change, gameplay change, push or merge. The full npm test, route/seed1, checkpointFreeze, suite.test.ts and finalAccess.test.ts were not run because they reach held-out content. The model-guided session edited the same worktree concurrently; this session paused shared-file edits until its commits (3b7115b, 74adda8) landed."
   }
  ]
 }

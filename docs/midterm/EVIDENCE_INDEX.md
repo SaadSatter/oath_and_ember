@@ -232,4 +232,4 @@ Implementation `3b7115b`: explicitly solution-informed model-guided, current rev
 
 ## Persistent memory player (2026-10-29)
 
-`model-memory` (Workstream B, after the pilot-10 diagnosis): [design, schema, comparison, tests and proposed pilot](MODEL_MEMORY.md); tests in `packages/agent/test/modelMemory.test.ts` (27). Existing `model-history` and `model-obs-only` prompts are pinned unchanged. The 6 permitted frozen baseline pins and 8 revision 2 baseline trajectories are identical before and after. No paid or held-out execution.
+`model-memory` (Workstream B, after the pilot-10 diagnosis): [design, schema, comparison, tests and proposed pilot](MODEL_MEMORY.md); tests in `packages/agent/test/modelMemory.test.ts` (27). Existing `model-history` and `model-obs-only` prompts are pinned unchanged. The 6 permitted frozen baseline pins and 8 revision 2 baseline trajectories are identical before and after. No paid or held-out execution. Audit: [`2026-10-29-adapter-model-memory.md`](agent-evidence/skill-runs/2026-10-29-adapter-model-memory.md) (same session, not independent). Session record: [S42](../agent-sessions/42-claude-model-memory.md).
