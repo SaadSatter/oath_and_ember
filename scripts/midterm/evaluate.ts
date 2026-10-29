@@ -100,7 +100,7 @@ if (final) {
 }
 let model: ModelSetup | undefined;
 let ledger: SpendLedger | undefined;
-if (player === "model-history" || player === "model-obs-only") {
+if (player === "model-history" || player === "model-obs-only" || player === "model-guided") {
   const stage = arg("--stage");
   if (!stage) throw Error("--stage is required for model runs.");
   // Check the plan before touching the ledger or the network.

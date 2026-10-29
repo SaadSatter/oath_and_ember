@@ -21,6 +21,7 @@ import { runEpisode } from "./runner.js";
 import { TraceWriter, verifyTrace, type TraceLine } from "./trace.js";
 import type { EnvironmentOptions } from "./environment.js";
 import { ModelBudget, MeteredGateway, defaultBudgetLimits, type CallRecord, type Gateway } from "./budget.js";
+import { GuidedMazePlayer } from "./policies/guidedMaze.js";
 import { LLMPlayer } from "./policies/llm.js";
 import { ExplorationBaseline } from "./policies/baseline.js";
 import { QuestBaseline } from "./policies/questBaseline.js";
@@ -32,7 +33,7 @@ import { FinalAccessError, isGrant, type FinalGrant } from "./finalAccess.js";
 import { PLAYER_KINDS, type PlayerKind } from "./playerKinds.js";
 
 export { PLAYER_KINDS, type PlayerKind };
-const isModel = (p: PlayerKind) => p === "model-history" || p === "model-obs-only";
+const isModel = (p: PlayerKind) => p === "model-history" || p === "model-obs-only" || p === "model-guided";
 
 /** Per-episode spend caps, both heroes together (MODEL_BUDGET.md). */
 export const EPISODE_CAP_USD: Record<SituationId, number> = {
@@ -206,6 +207,8 @@ export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | 
   if (new Set(o.situations).size !== o.situations.length || new Set(o.seeds).size !== o.seeds.length) throw Error("Duplicate scenarios or seeds are not allowed.");
   if (!o.situations.length || !o.seeds.length) throw Error("Name at least one scenario and one seed.");
   for (const id of o.situations) situation(id);
+  if (o.player === "model-guided" && (o.final || o.situations.some((id) => id !== "S2-local")))
+    throw Error("model-guided is restricted to current S2-local Hedge Maze tuning runs.");
   const heldOut = o.situations.filter((id) => situation(id).heldOut);
   const allowed = o.final ? SEEDS.final : SEEDS.tuning;
   const bad = o.seeds.filter((s) => !allowed.includes(s));
@@ -237,6 +240,11 @@ export function policiesFor(player: PlayerKind, budget: ModelBudget | undefined,
       return { sieg: new QuestBaseline("Sieg"), coco: new QuestBaseline("Coco") };
     case "baseline-explore":
       return { sieg: new ExplorationBaseline(), coco: new ExplorationBaseline() };
+    case "model-guided": {
+      if (id !== "S2-local") throw Error("model-guided requires current S2-local Hedge Maze.");
+      const make = (hero: "Sieg" | "Coco", pid: PlayerId) => new GuidedMazePlayer(hero, pid, model!.gateway, budget!, model!.manual, model!.maxBatch, briefing, tutorial);
+      return { sieg: make("Sieg", "sieg"), coco: make("Coco", "coco") };
+    }
     case "model-history":
     case "model-obs-only": {
       const memory = player === "model-history" ? "history" : "none";

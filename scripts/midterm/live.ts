@@ -98,7 +98,7 @@ const seed = Number(get("--seed", "0"));
 if (!SEEDS.tuning.includes(seed)) fail(`the live launcher uses the tuning seeds ${SEEDS.tuning.join(", ")} only.`);
 const player = get("--player", "model-history") as PlayerKind;
 if (!PLAYER_KINDS.includes(player)) fail(`--player must be one of ${PLAYER_KINDS.join(", ")}.`);
-const isModel = player === "model-history" || player === "model-obs-only";
+const isModel = player === "model-history" || player === "model-obs-only" || player === "model-guided";
 const gatewayKind = get("--gateway", isModel ? "anthropic" : "none")!;
 if (!isModel && opts.has("--gateway")) fail("scripted baselines use no gateway.");
 if (isModel && !["anthropic", "openai", "mock"].includes(gatewayKind)) fail("--gateway must be anthropic, openai or mock.");
