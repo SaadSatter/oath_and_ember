@@ -329,3 +329,7 @@ Full files: `docs/midterm/evidence/session1/`.
 ## Suite revision 2: manual and tutorial knowledge (2026-10-28)
 
 The verbatim player manual has always been in every model player's system prompt. In the revised S2 (Hedge Maze), S3 (Mirror Pond), S2-local and S3-local, both heroes also receive a tutorial-completion briefing (`packages/agent/src/playerKnowledge.ts`). It is a separate block, after the manual and before the episode briefing: what the Mossling Woods tutorial and the controls teach, written for this action interface, covering both heroes' abilities. The non-player-facing files in `manual/` are excluded (`MANUAL_EXCLUSIONS`). Observations, legal actions and validation are unchanged. Details and exclusions: [SUITE_REVISION2.md](SUITE_REVISION2.md).
+
+## Pilot-9 fixes (2026-10-29)
+
+Hedge Maze captions are labels. The cow is drawn across its 4×4 body with an `extent`, using the terrain's cell-centre rule. Push with a direction carries the same `movement` report as a move, plus one line saying whether anything Push can move actually moved. The general prompt has new communication rules. The scripted route and quest baseline rebuild the earlier maze screen (`asTunedMaze`). Details, tests and the before/after trajectory comparison: [PILOT9_FIXES.md](PILOT9_FIXES.md).

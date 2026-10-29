@@ -212,3 +212,9 @@ The shared `explore/S2`/`explore/S3` freeze entry was re-pinned with owner appro
 - **2b / 2c:** both heroes receive the verbatim player manual and, in the revised S2/S3 and local starts, a tutorial-completion briefing (`packages/agent/src/playerKnowledge.ts`, tests `packages/agent/test/playerKnowledge.test.ts`). Non-player-facing manual files are excluded.
 - **3d:** same-session `game-rules-audit` checkpoint `agent-evidence/skill-runs/2026-10-28-suite-revision2-tutorial.md`. It is not an independent review.
 - **3d (session):** implementation session [S39](../agent-sessions/39-claude-suite-revision2-tutorial.md) (`a209a67a`). It invoked `game-rules-audit` and `session-evidence`. Owner decisions (approved S2 briefing, no revision 2 pins, `-v1` ids scripted-only, Flight wording, S2-local cost estimate) are in `SUITE_REVISION2.md` and `MODEL_BUDGET.md`.
+
+## Pilot-9 fixes (2026-10-29)
+
+- **2c:** Hedge Maze captions as labels; the cow's full footprint and extent; Push movement and object feedback. Implementation `a3b19ad`, tests `packages/agent/test/pilot9Fixes.test.ts`, record [PILOT9_FIXES.md](PILOT9_FIXES.md).
+- **5a:** all 14 permitted scripted trajectories are identical before and after, with no re-pin. Model results before and after `a3b19ad` are reported separately (change log in `EVALUATION_SUITE.md`).
+- **5c:** a recording-finalization finding and a proposed fix (not implemented) in `PILOT9_FIXES.md`.
