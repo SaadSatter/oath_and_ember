@@ -1,0 +1,43 @@
+# Course workflow (rubric 3c). At transfer, scripts/midterm/package-submission.sh
+# copies this file to game-dev-f26/.github/workflows/midterm-saadsatter.yml.
+# It touches only midterms/saadsatter/, needs no secrets and runs only
+# deterministic checks: no network calls to model providers, no API key.
+name: midterm-saadsatter
+
+on:
+  pull_request:
+    paths:
+      - 'midterms/saadsatter/**'
+      - '.github/workflows/midterm-saadsatter.yml'
+  push:
+    paths:
+      - 'midterms/saadsatter/**'
+      - '.github/workflows/midterm-saadsatter.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic:
+    name: saadsatter deterministic checks (Node 24)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: midterms/saadsatter
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: midterms/saadsatter/package-lock.json
+      - name: Install from the folder's lockfile
+        run: npm ci
+      - name: Browser for the recorder and launcher tests
+        run: npx playwright install --with-deps chromium
+      - name: Typecheck, deterministic tests and build
+        run: bash scripts/midterm/ci-checks.sh

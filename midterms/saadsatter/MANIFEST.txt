@@ -1,0 +1,70 @@
+# What scripts/midterm/package_submission.py copies into the course folder
+# game-dev-f26/midterms/saadsatter/, from one commit of this repository.
+#
+# One glob per line. "*" matches any characters, "/" included. Lines starting
+# with "!" exclude what earlier lines included. Later lines win. Paths keep
+# their layout, so the folder is a runnable copy of the project root.
+#
+# Not copied, and why:
+#   Images/ art sources and art history (184+ MB): the game loads its runtime
+#     assets from apps/client/public/. Licence and provenance texts are kept.
+#   docs/quests and docs/puzzles images and videos (270+ MB of PNG/WebM QA
+#     captures): their Markdown and JSON reports are kept.
+#   qa/, tools/, Images/art_history/: historical QA captures and art tooling.
+#   The source DOCX brief, deep-research-report.md, Game_Guidance.md,
+#     Dockerfile, render.yaml: reference or deployment files not needed to
+#     build, play, test or evaluate.
+#   evaluation-runs/ (never tracked): local run records. Committed evidence
+#     lives in docs/midterm/evidence/.
+#   midterms/: this staging folder itself. Its files are laid over the copy
+#     instead (README.md, EVALUATION.md, AGENT-TEAM.md, RULE_SOURCE_MAP.md,
+#     PEER_NOTES.md); the repository's own README.md becomes GAME_README.md.
+
+# Project configuration and agent configuration
+package.json
+package-lock.json
+tsconfig.json
+.gitignore
+AGENTS.md
+CLAUDE.md
+.claude/agents/*
+.claude/skills/*
+.agents/skills/*
+.codex/agents/*
+
+# Game, interface, players and tests
+apps/*
+packages/*
+manual/*
+
+# Evaluation and evidence tooling
+scripts/midterm/*
+scripts/evidence/*
+!scripts/evidence/__pycache__/*
+
+# Design and evaluation documents, evidence and session records
+docs/*.md
+docs/*.json
+docs/midterm/*
+docs/agent-sessions/*
+docs/quests/*.md
+docs/quests/*.json
+docs/puzzles/*.md
+docs/puzzles/*.json
+docs/audio/*.md
+docs/audio/*.json
+# Videos are linked from the README, not copied (large generated files).
+!*.webm
+!*.mp4
+
+# Asset licences and provenance (texts only; the art itself is not copied)
+Images/*.md
+Images/*/License.txt
+Images/*/license.txt
+Images/*/LICENSE*
+Images/*/readme.txt
+Images/*/README*
+Images/*/CREDITS*
+Images/*provenance*.json
+Images/*PROVENANCE*
+!Images/art_history/*
