@@ -46,7 +46,15 @@ Each hero's model has its own context and memory. The two heroes share nothing e
 
 ### Scripted baselines (tuning scenarios)
 
-_Filled from the clean-clone run in this commit; see below._
+Run on 2026-10-29 with the README's commands, from a clean clone of the packaged folder at `c65dbe2` (Node 24.22.1). Free and deterministic: both seeds give identical trajectories, because no randomness is added (owner decision 2026-10-27).
+
+| Scenario | Quest baseline (seeds 0, 1) | Exploration baseline (seeds 0, 1) |
+| --- | --- | --- |
+| S1 | 2/2 success, 4.8 s game time, 0 invalid | 2/2 success, 5.4 s, 0 invalid |
+| S2 (Hedge Maze) | 2/2 success, 52.9 s, 0 invalid | 0/2: tick limit at 300 s, 0 invalid |
+| S3 (Mirror Pond) | 2/2 success, 146.4 s, 0 invalid | 0/2: tick limit at 300 s, 0 invalid |
+
+On the local starts (seed 0, from the frozen fingerprints), the quest baseline succeeds in 2,990 ticks (S2-local) and 4,544 ticks (S3-local). The exploration baseline reaches the tick limit on both.
 
 ### LLM players (paid tuning pilots, one trial each, seed 0)
 
@@ -112,7 +120,13 @@ The workflow `.github/workflows/midterm-saadsatter.yml` runs [scripts/midterm/ci
 
 **Excluded from CI:** the tests that build or play the held-out S4 and F starts (the full scripted route `fullQuest.test.ts`, `checkpointFreeze.test.ts`, `suite.test.ts`, `finalAccess.test.ts`, and the route case of `scriptedFreeze.test.ts`). The owner's rule keeps held-out content out of tuning sessions; whether CI may run them is an open owner decision. They still run with `npm test`.
 
-**Runs for this version:** _filled below from the clean-clone rehearsal and the GitHub Actions run._
+**Runs for this version** (2026-10-29, clean clone of the packaged folder in a stand-in course repository, Node 24.22.1, machine load average 7–15):
+- typecheck and build pass;
+- the deterministic test step passed 1,023 of 1,025 tests. The 2 failures were timeouts (`courseLayout.test.ts`, then given a 30 s limit; `questBaseline.test.ts` determinism at 120 s). Both files passed, 11/11, when rerun alone;
+- the frozen baseline pins failed once (output not captured) and passed 6/6, with the route case skipped, on rerun;
+- the first rehearsal found the project-root defect now covered by `courseLayout.test.ts`.
+
+The GitHub Actions run of this repository's workflow is linked from the pull request. The course workflow runs only once the course PR exists.
 
 ## Limitations
 
