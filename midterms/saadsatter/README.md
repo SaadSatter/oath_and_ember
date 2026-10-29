@@ -1,6 +1,11 @@
-# Oath and Ember: the Bald Goddess episode, played by two AI players
+# Oath and Ember: two AI players in the Hedge Maze
 
-GitHub login: `saadsatter`. Project: **Oath and Ember**, an original two-player fantasy action-adventure. For the midterm, its Bald Goddess quest is played by two independent AI players, one for Sieg and one for Coco, and compared with scripted baselines.
+GitHub login: `saadsatter`. Project: **Oath and Ember**, an original cooperative two-character fantasy action-adventure.
+
+- **Implemented game:** the Bald Goddess quest, with several areas and puzzles (the shrine, Mirror Pond, the Hedge Maze, the Griffin Enclosure and the finale), playable from the goddess checkpoint to `chapter0.complete`.
+- **Primary evaluated episode:** **S2-local, the Hedge Maze**: from the maze entrance, the two heroes must get the Enchanted Shears into the shared backpack. Sieg and Coco are each controlled by an independent player.
+- **Evaluation question:** how do a scripted policy, walkthrough-guided LLM agents and unaided memory-based LLM agents differ in their ability to coordinate and complete a bounded cooperative puzzle?
+- **Main results (tuning stage, seed 0):** the scripted reference completes it reproducibly (49.8 game-seconds, 0 invalid actions, identical across four runs). The walkthrough-guided LLM pair completed it in both trials (38.6 s and 44.0 s). The unaided memory-based LLM pair did not complete either trial: one reached the key gate, and the other was interrupted at the cow. The three policies do not have equal information; see [EVALUATION.md](EVALUATION.md).
 
 | Deliverable | Where |
 | --- | --- |
@@ -8,13 +13,16 @@ GitHub login: `saadsatter`. Project: **Oath and Ember**, an original two-player 
 | Agent team log | [AGENT-TEAM.md](AGENT-TEAM.md) |
 | Rule and source map | [RULE_SOURCE_MAP.md](RULE_SOURCE_MAP.md) |
 | Peer playtest notes | [PEER_NOTES.md](PEER_NOTES.md) |
-| Recording | [pilot-11 replay video](https://github.com/SaadSatter/oath_and_ember/blob/midterm/evaluation/docs/midterm/evidence/pilot-11-model-guided/replay.webm): a trace-verified replay of the model-guided baseline (`model-guided`: an LLM with a written Hedge Maze guide in its prompt) succeeding (see [its notes](docs/midterm/evidence/pilot-11-model-guided/README.md)) |
+| Recording | [pilot-11 replay video](https://github.com/SaadSatter/oath_and_ember/blob/midterm/evaluation/docs/midterm/evidence/pilot-11-model-guided/replay.webm): a trace-verified **replay**, not a live capture, of the walkthrough-guided LLM pair (`model-guided`: an LLM with a written Hedge Maze walkthrough in its prompt) succeeding (see [its notes](docs/midterm/evidence/pilot-11-model-guided/README.md)). It shows execution of a supplied solution, not unaided play. Which recording to submit is still the owner's choice; the other videos and their delivery status are in [evidence/README.md](evidence/README.md#recordings-and-delivery) |
+| Hedge Maze evidence | [evidence/](evidence/README.md): traces, summaries and a SHA-256 manifest for every run in the comparison |
 | CI | `.github/workflows/midterm-saadsatter.yml` running [scripts/midterm/ci-checks.sh](scripts/midterm/ci-checks.sh) |
 | The game's own README | [GAME_README.md](GAME_README.md) |
 
 ## Scope
 
-**The episode.** It starts at the title screen's "The Bald Goddess" chapter start: story stage `GODDESS`, both heroes arriving at the Goddess Shrine. It ends when the story records `chapter0.complete` and players see "CHAPTER 0 COMPLETE".
+**The evaluated episode.** The agent evaluation centres on S2-local, the Hedge Maze ([EVALUATION.md](EVALUATION.md#the-hedge-maze-episode)). It starts with both heroes entering the maze by ordinary play and succeeds when the Enchanted Shears are in the shared backpack, within 300 game-seconds and per-hero step, call, token and spend limits. It tests navigation and combat, each hero's abilities, environmental puzzles, in-game messaging between the two players, and shared quest progress. Mirror Pond and the Griffin remain implemented and appear only as exploratory runs. Narrowing the evaluation to one puzzle leaves the course's suite requirements (three situations, held-out cases) unmet; [EVALUATION.md](EVALUATION.md#rubric-gaps-and-scope-risks) lists the gaps.
+
+**The game around it.** The full Bald Goddess quest starts at the title screen's "The Bald Goddess" chapter start: story stage `GODDESS`, both heroes arriving at the Goddess Shrine. It ends when the story records `chapter0.complete` and players see "CHAPTER 0 COMPLETE".
 - In between: the shrine hub, Mirror Pond (the Vanity Mirror), the Hedge Maze (the Enchanted Shears), the Griffin Enclosure (the wig), the offering and the finale.
 - Everything is played with the real game rules on the authoritative server.
 
@@ -24,7 +32,7 @@ GitHub login: `saadsatter`. Project: **Oath and Ember**, an original two-player 
 - anything after Chapter 0;
 - persistence and online matchmaking.
 
-The game itself is larger. The episode is a bounded slice of it, and nothing outside it is evaluated.
+The game itself is larger. The Bald Goddess quest is a bounded slice of it, and nothing outside the quest is evaluated.
 
 **What was adapted for the AI players.** The game was not changed to suit them. A headless interface (`packages/agent/`) drives a real `GameRoom` through five operations: `reset`, `observe`, `legal_actions`, `step` and `outcome`.
 - Each hero's observation is built from what that player's screen, dialogue, journal, backpack and HUD show, plus the public [player manual](manual/Oath_and_Ember_Player_Manual.md).
@@ -78,6 +86,12 @@ Free, offline commands (no model, no key):
 
 ```sh
 cd midterms/saadsatter
+
+# The scripted reference baseline on the Hedge Maze (expect success, 2,990 ticks, end hash bf31311f…)
+node --import tsx scripts/midterm/evaluate.ts --player baseline-quest --situations S2-local --seeds 0
+
+# Check the packaged Hedge Maze evidence against its manifest and summaries
+python3 -I scripts/midterm/collect_evidence.py --verify
 
 # Scripted quest-aware baseline and exploration baseline on the tuning scenarios, seeds 0 and 1
 node --import tsx scripts/midterm/evaluate.ts --player baseline-quest --situations S1,S2,S3 --seeds tuning

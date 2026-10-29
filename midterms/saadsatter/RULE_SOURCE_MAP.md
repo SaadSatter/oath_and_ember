@@ -1,6 +1,8 @@
 # Rule and source map: the Bald Goddess episode
 
-Each rule of the evaluated episode carries one evidence label:
+This map covers the whole Bald Goddess quest, the game's bounded episode. The agent evaluation focuses on one part of it, the Hedge Maze (S2-local); its rules are in the "Hedge Maze" section below ([EVALUATION.md](EVALUATION.md#the-hedge-maze-episode)).
+
+Each rule of the episode carries one evidence label:
 
 | Label | Meaning |
 | --- | --- |

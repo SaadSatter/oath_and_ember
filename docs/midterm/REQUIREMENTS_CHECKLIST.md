@@ -10,6 +10,8 @@ Maps every rubric check in `docs/midterm/MIDTERM_GUIDELINES.md` to its deliverab
 
 Evidence pointers are in `docs/midterm/EVIDENCE_INDEX.md`. Updated 2026-10-27, after phase 2 (server changes, runner budget, information boundary).
 
+**2026-10-29:** the submission's current status, with the Hedge Maze (S2-local) as the primary evaluated episode, is in [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md). The table below has not been re-dated.
+
 ## Rubric checks
 
 | Check | Deliverable | Verification | Status |

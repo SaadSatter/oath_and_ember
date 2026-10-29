@@ -15,10 +15,12 @@
 #     Dockerfile, render.yaml: reference or deployment files not needed to
 #     build, play, test or evaluate.
 #   evaluation-runs/ (never tracked): local run records. Committed evidence
-#     lives in docs/midterm/evidence/.
+#     lives in docs/midterm/evidence/ and, for the Hedge Maze comparison, in
+#     midterms/saadsatter/evidence/ (collected by scripts/midterm/collect_evidence.py;
+#     videos are not committed there).
 #   midterms/: this staging folder itself. Its files are laid over the copy
 #     instead (README.md, EVALUATION.md, AGENT-TEAM.md, RULE_SOURCE_MAP.md,
-#     PEER_NOTES.md); the repository's own README.md becomes GAME_README.md.
+#     PEER_NOTES.md, evidence/); the repository's own README.md becomes GAME_README.md.
 
 # Project configuration and agent configuration
 README.md

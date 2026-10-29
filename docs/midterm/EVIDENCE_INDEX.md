@@ -237,3 +237,13 @@ Implementation `3b7115b`: explicitly solution-informed model-guided, current rev
 ## 2026-10-29 recorder shutdown evidence (S43)
 
 Supports 3c/3d/5c: [S43 session record](../agent-sessions/43-codex-recorder-shutdown.md), [same-session recording audit](agent-evidence/skill-runs/2026-10-29-recording-shutdown.md), and [recording lifecycle](LIVE_RUN.md#2026-10-29-shutdown-diagnostics-and-viewer-lifetime). Final recorder tests: 25/25 pass. Offline S1 baseline video: 42.76 s, 1280x720, 3,723,034 bytes; playback verified, headless/recorded end hashes match. This is a scripted baseline verification, not a recovered Pilot-11/12 model recording or independent review. No paid call, held-out run, historical trace write or commit.
+
+## Hedge Maze submission evidence (2026-10-29)
+
+This section supersedes the 4b, 5a and 5c rows above for the submission. The owner directed on 2026-10-29 that S2-local, the Hedge Maze, be the primary evaluated episode. No professor approval of that narrowing is recorded. Gaps and status: [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md).
+
+| Check | Evidence |
+| --- | --- |
+| 4b | Solution-aware scripted reference `baseline-quest`: success on S2-local, reproduced four times with one end hash. Walkthrough-guided `model-guided` and unaided `model-memory` on the same start hash. `midterms/saadsatter/EVALUATION.md`, "Hedge Maze results" |
+| 5a | The comparison table with outcomes, invalid actions, limits, latency, tokens, dated cost, git hashes and failures. Every value is checked against `summary.json` by `scripts/midterm/collect_evidence.py`. The manifest with SHA-256 checksums is in `midterms/saadsatter/evidence/manifests/`. Missing: held-out cases, three situations, the observation-only player |
+| 5c | Live: the scripted baseline (not an LLM) and pilot 15 (`model-memory`, about 19 min). Replays verified against their traces: pilots 11, 12 and 13. Delivery and caveats: `midterms/saadsatter/evidence/README.md` |
