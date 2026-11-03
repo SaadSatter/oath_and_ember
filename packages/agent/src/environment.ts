@@ -38,6 +38,7 @@ import { mirrorPondState } from "../../shared/src/mirrorPond.js";
 import {
   episodes,
   milestones,
+  prologueMilestones,
   stateHash,
   type EpisodePreset,
 } from "./evaluator.js";
@@ -280,12 +281,14 @@ export class AgentEnvironment implements GameInterface {
     for (const slot of Object.values(this.slots ?? {})) this.release(slot, "The episode was reset.");
     this.seed = seed;
     this.reason = undefined;
-    // The title screen's "The Bald Goddess" checkpoint, as RoomManager makes it.
+    // A title-screen story checkpoint, as RoomManager makes it: "The Bald
+    // Goddess" unless the episode names another (P1 starts at the Prologue).
     // Seeded ids and a game-time clock (runtime.ts): the same seed gives the
     // same hero ids and id-based tie-breaks; production rooms are unaffected.
     let room: GameRoom | undefined;
     const runtime = evaluationRuntime(seed, () => room?.state.serverTick ?? 0);
-    this.room = room = new GameRoom(`EVAL${seed}`.slice(0, 12), false, "MAIN_HOUSE", true, "goddess", runtime);
+    const checkpoint = episodes[this.preset].checkpoint ?? "goddess";
+    this.room = room = new GameRoom(`EVAL${seed}`.slice(0, 12), false, "MAIN_HOUSE", true, checkpoint, runtime);
     const sieg = this.room.add("agent-sieg").playerId;
     const coco = this.room.add("agent-coco").playerId;
     this.room.select(sieg, "OATH");
@@ -310,7 +313,7 @@ export class AgentEnvironment implements GameInterface {
     let prefixInfo: { name: string; ticks: number } | undefined;
     if (this.prefix) {
       // Change watchers must be initialised before the prefix plays.
-      this.lastMilestones = new Set(milestones(this.room.state));
+      this.lastMilestones = new Set(this.progress(this.room.state));
       this.lastBag = JSON.stringify(this.room.state.inventory?.counts ?? {});
       this.lastJournal = JSON.stringify(questLog(this.room.state));
       this.lastWorld = worldSnapshot(this.room.state);
@@ -331,7 +334,7 @@ export class AgentEnvironment implements GameInterface {
     }
     const startHash = this.hash();
     this.episodeId = `${this.preset}-${seed}-${startHash.slice(0, 8)}`;
-    this.lastMilestones = new Set(milestones(this.room.state));
+    this.lastMilestones = new Set(this.progress(this.room.state));
     this.lastBag = JSON.stringify(this.room.state.inventory?.counts ?? {});
     this.lastJournal = JSON.stringify(questLog(this.room.state));
     this.lastWorld = worldSnapshot(this.room.state);
@@ -455,13 +458,13 @@ export class AgentEnvironment implements GameInterface {
   stop(reason: TerminationReason) {
     if (this.reason) return;
     this.reason = reason;
-    this.trace("terminal", { reason, milestones: milestones(this.room.state), hash: this.hash() });
+    this.trace("terminal", { reason, milestones: this.progress(this.room.state), hash: this.hash() });
     for (const s of Object.values(this.slots)) this.release(s, `Episode ended: ${reason}.`);
   }
   /** Evaluator-only progress report. Never pass this to a player. */
   evaluatorReport() {
     return {
-      milestones: milestones(this.room.state),
+      milestones: this.progress(this.room.state),
       area: this.room.state.sceneId,
       stateHash: this.hash(),
     };
@@ -754,7 +757,7 @@ export class AgentEnvironment implements GameInterface {
   private checkEnd() {
     if (this.reason) return;
     const w = this.room.state;
-    const now = milestones(w);
+    const now = this.progress(w);
     for (const m of now) if (!this.lastMilestones.has(m)) this.trace("milestone", { milestone: m });
     this.lastMilestones = new Set(now);
     // A scenario prefix only reaches the start state: no success or limits yet.
@@ -811,5 +814,10 @@ export class AgentEnvironment implements GameInterface {
 
   private hash() {
     return stateHash(this.room.state);
+  }
+
+  /** Evaluator progress markers; P1 adds its Prologue markers (other episodes unchanged). */
+  private progress(w: World) {
+    return this.preset === "P1" ? [...milestones(w), ...prologueMilestones(w)] : milestones(w);
   }
 }

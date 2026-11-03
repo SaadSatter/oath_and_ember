@@ -14,7 +14,7 @@ const quest = (items: { id: string }[]) => items.map((i) => i.id).filter((i) => 
 
 describe("suite scenarios", () => {
   it("declares S1-S3 and approved local variants as tuning cases, with S4, F held out", () => {
-    expect(SITUATIONS.map((s) => [s.id, s.heldOut])).toEqual([["S1", false], ["S2", false], ["S3", false], ["S4", true], ["F", true], ["S2-local", false], ["S3-local", false]]);
+    expect(SITUATIONS.map((s) => [s.id, s.heldOut])).toEqual([["S1", false], ["S2", false], ["S3", false], ["S4", true], ["F", true], ["S2-local", false], ["S3-local", false], ["P1", false]]);
     expect(SEEDS).toEqual({ tuning: [0, 1], final: [100, 101] });
   });
 
@@ -31,13 +31,14 @@ describe("suite scenarios", () => {
       const out = await env.outcome();
       expect(out).toMatchObject({ status: "ongoing", ticks: 0, decisions: { sieg: 0, coco: 0 }, invalidActions: { sieg: 0, coco: 0 } });
       // Suite revision 2: S2-local is the Hedge Maze entrance, S3-local the Mirror Pond entrance.
-      expect(o.area.name, s.id).toBe(s.id === "S2-local" ? "Hedge Maze" : s.id === "S3-local" ? "Mirror Pond" : "Goddess Shrine");
+      // P1 starts at the Prologue's opening: Sieg on the road outside the shop.
+      expect(o.area.name, s.id).toBe(s.id === "S2-local" ? "Hedge Maze" : s.id === "S3-local" ? "Mirror Pond" : s.id === "P1" ? "Main house" : "Goddess Shrine");
       expect(quest(o.inventory.items), s.id).toEqual(s.id === "S4" ? ["enchanted_shears", "vanity_mirror"] : []);
       if (s.id === "S2" || s.id === "S3" || s.id === "S4" || s.id.endsWith("-local")) expect(o.journal.current?.step).toBe("Recover the Divine Wig");
     }
     expect(starts.S2).toBe(starts.S3);
     expect(starts.S1).toBe(starts.F);
-    expect(new Set(Object.values(starts)).size).toBe(5);
+    expect(new Set(Object.values(starts)).size).toBe(6);
   }, 120_000);
 
   it("measures game time from the scenario's start, and keeps the prefix out of the trace", async () => {

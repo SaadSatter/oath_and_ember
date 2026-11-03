@@ -114,3 +114,23 @@ Owner explicitly approved a separate `model-guided` player for current revision 
 ## 2026-10-29 change log: S2-A evaluation label (Situation A)
 
 `S2-A — Full Hedge Maze` is the evaluation label for current revision 2 S2-local, version 1, and the first situation of a proposed three-situation Hedge Maze suite. It is a label, not a new scenario. S2-local's id, preset, start state (seed 0 `2b9eddd4…`, seed 1 `ebea7d5c…`), success predicate, limits, briefings and observations are unchanged, and historical S2-local traces still replay (tested). Run summaries gain the additive fields `evaluation` (label and definition hash `4b3c9bb3…`), `promptHashes` and `configHash`. Seed 1 differs from seed 0 only in room code and hero ids, so it is a repeated trial, not a distinct situation. Situations B and C are proposed, not implemented. No paid or held-out run. Record: [SITUATION_A.md](SITUATION_A.md).
+
+
+## 2026-11-03 change log: P1 "Into the Forest" (the Prologue)
+
+Owner approval (2026-11-03) of the proposal in [PROLOGUE_SITUATION_PROPOSAL.md](PROLOGUE_SITUATION_PROPOSAL.md). P1 is a new tuning-seed scenario, `P1`. It is a directed narrative and navigation situation, distinct from the Hedge Maze.
+
+- **Start:** the game's own `prologue` checkpoint, with no prefix and no fixture. Story stage `ARRIVAL`: Sieg is outside the shop, Coco inside with Alden.
+- **Success:** the authoritative story stage reaches `WOODS`. The game sets it when a hero presses E at the Forest Trail's exit after the cart has been found.
+- **Limits:**
+  - owner-approved: 10,800 ticks (180 s), 250 model calls per hero, a 3,600 s wall clock and $0.60 per episode;
+  - retained unchanged: S2-A's 1,600 decisions and 4,000,000 tokens per hero, the 30 s call timeout and 3 consecutive failures.
+- **Information:** HUD goal lines hidden; no briefing, tutorial block or walkthrough.
+  - New observations apply in the Prologue's scenes and stages only: map labels as the client draws them, `door`, `tipped cart`, `garden gate (open)`, Alden with `E Talk`, and Alden's and the trail's local dialogue as feedback.
+- **Frozen:** the definition hash is `baa6b04b…73ac`, pinned by `prologueSituation.test.ts`. The hash includes every model player's full system-prompt hash.
+  - P1 is excluded from prompt tuning. Any later change is a new P1 revision, reported separately.
+  - P1 is not formally held out: it was designed with full knowledge of the code, and the baseline's route was developed on it.
+- **Cooperation:** success does not require Coco (checked in the code and by test). Nothing was added to require it.
+- **Unchanged:** S2-A (`4b3c9bb3…`), S2-B, S2-C, S1–S4 and F, every existing start hash, frozen pin, prompt and observation outside the Prologue.
+
+`baseline-quest` (with a disclosed Prologue route) succeeds at seeds 0 and 1: 1,058 ticks, 161 decisions, 0 invalid actions. No model run, no paid call, no held-out run. Record: [PROLOGUE_SITUATION.md](PROLOGUE_SITUATION.md).

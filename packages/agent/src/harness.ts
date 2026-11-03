@@ -32,6 +32,7 @@ import { episodes } from "./evaluator.js";
 import { FinalAccessError, isGrant, type FinalGrant } from "./finalAccess.js";
 import { PLAYER_KINDS, type PlayerKind } from "./playerKinds.js";
 import { canonicalJson, evaluationLabel } from "./situationA.js";
+import { prologueEvaluationLabel } from "./prologueSituation.js";
 
 export { PLAYER_KINDS, type PlayerKind };
 const isModel = (p: PlayerKind) => p === "model-history" || p === "model-obs-only" || p === "model-guided" || p === "model-memory";
@@ -41,8 +42,10 @@ export const EPISODE_CAP_USD: Record<SituationId, number> = {
   "S2-local": 1.25, "S3-local": 1.25, S1: 0.2, S2: 1.25, S3: 1.25, S4: 1.0, F: 3.0,
   // Revision 1 definitions keep their original caps.
   "S2-v1": 1.25, "S3-v1": 1.25, "S2-local-v1": 1.25, "S3-local-v1": 1.25,
+  // P1 Into the Forest: the owner's cap (2026-11-03).
+  P1: 0.6,
 };
-export const OBS_ONLY_SITUATIONS: readonly SituationId[] = ["S1", "S2", "S3", "S2-local", "S3-local", "S2-v1", "S3-v1", "S2-local-v1", "S3-local-v1"];
+export const OBS_ONLY_SITUATIONS: readonly SituationId[] = ["S1", "S2", "S3", "S2-local", "S3-local", "S2-v1", "S3-v1", "S2-local-v1", "S3-local-v1", "P1"];
 
 export interface ModelSetup {
   /** A provider adapter for paid runs; a fake in tests. */
@@ -432,7 +435,7 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
   const sum = (f: (r: CallRecord) => number) => records.reduce((a, r) => a + f(r), 0);
   const per = <T>(f: (id: PlayerId) => T) => ({ sieg: f("sieg"), coco: f("coco") });
   const def = situation(id);
-  const evaluation = evaluationLabel(id);
+  const evaluation = evaluationLabel(id) ?? prologueEvaluationLabel(id);
   const promptHashes = per((p) => (policies[p] as { promptHash?: string }).promptHash ?? null);
   const configHash = runConfigHash({
     situation: id, preset: def.preset, suiteRevision: SUITE_REVISION, evaluation, player: o.player,

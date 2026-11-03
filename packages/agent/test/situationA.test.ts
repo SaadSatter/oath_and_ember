@@ -83,7 +83,9 @@ describe("S2-A definition", () => {
     expect(A.situation).toBe("S2-local");
     expect(A.preset).toBe(def.preset);
     expect(A.preset).toBe("S2-local-v2");
-    expect(SITUATIONS.map((s) => s.id)).toEqual(["S1", "S2", "S3", "S4", "F", "S2-local", "S3-local"]);
+    // The scenarios that existed when S2-A was frozen are unchanged and in place;
+    // P1 (the Prologue, 2026-11-03) was appended later as a separate situation.
+    expect(SITUATIONS.map((s) => s.id).slice(0, 7)).toEqual(["S1", "S2", "S3", "S4", "F", "S2-local", "S3-local"]);
     expect(HISTORICAL_SITUATIONS.map((s) => s.id)).toEqual(["S2-v1", "S3-v1", "S2-local-v1", "S3-local-v1"]);
     expect(def.heldOut).toBe(false);
     // Limits, goal and spend cap are read from, and equal to, what the harness enforces.

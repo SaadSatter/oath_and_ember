@@ -49,3 +49,18 @@ Rubric checks are those of [MIDTERM_GUIDELINES.md](MIDTERM_GUIDELINES.md). The e
 - Whether to authorize final or held-out runs, and on what budget (the ledger has $6.17 left in the pilot stage and $15 in the final stage).
 - Which recording to submit, and where to host the videos.
 - Whether to commit any video. The precedent is pilot 11's replay, committed at the owner's request; the others are not committed.
+
+## P1 "Into the Forest" (added 2026-11-03)
+
+| Item | Status | Notes |
+| --- | --- | --- |
+| P1 defined, frozen and tested (directed narrative situation from the Prologue's opening) | complete | [PROLOGUE_SITUATION.md](PROLOGUE_SITUATION.md). The definition hash is pinned by `prologueSituation.test.ts` |
+| P1 scripted baseline (seeds 0 and 1) | complete | Success, 1,058 ticks, 161 decisions, 0 invalid. Evidence in `docs/midterm/evidence/p1-baseline/` |
+| `game-rules-audit` on the P1 observation boundary | see the EVALUATION_SUITE change log | Required before any paid run |
+| Independent `rules-reviewer` review of P1 | see the EVALUATION_SUITE change log | Required before any paid run |
+| P1 model trials (`model-memory`, seeds 0 and 1; optionally `model-obs-only`) | **blocked: owner** | Paid. Estimated $0.09–$0.42 per episode; cap $0.60 |
+
+P1 limits that remain:
+- Success does not require Coco.
+- P1 is not held out from development knowledge.
+- With P1 the three-situation requirement is still not met: live trials and a held-out case are missing.

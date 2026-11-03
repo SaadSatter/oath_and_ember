@@ -22,17 +22,19 @@ GitHub login: `saadsatter`. Project: **Oath and Ember**, an original cooperative
 
 **The evaluated episode.** The agent evaluation centres on S2-local, the Hedge Maze ([EVALUATION.md](EVALUATION.md#the-hedge-maze-episode)). It starts with both heroes entering the maze by ordinary play and succeeds when the Enchanted Shears are in the shared backpack, within 300 game-seconds and per-hero step, call, token and spend limits. It tests navigation and combat, each hero's abilities, environmental puzzles, in-game messaging between the two players, and shared quest progress. Mirror Pond and the Griffin remain implemented and appear only as exploratory runs. Narrowing the evaluation to one puzzle leaves the course's suite requirements (three situations, held-out cases) unmet; [EVALUATION.md](EVALUATION.md#rubric-gaps-and-scope-risks) lists the gaps.
 
+**A second, different situation: P1 "Into the Forest" (frozen 2026-11-03).** A directed narrative and navigation episode from the Prologue's own opening, with no puzzle and no combat: Sieg visits Alden's shop, the two set off, take the forest road, find the merchants' tipped cart, and follow its tracks. It succeeds when the game moves the story into the Mossling Woods, within 180 game-seconds, 250 model calls per hero and $0.60 per episode. **Limitation: success does not require Coco.** Sieg alone can complete it, so it does not test cooperation. P1 is frozen and excluded from prompt tuning, but it is not held out from development knowledge, and it does not by itself meet the three-situation requirement. Record: [PROLOGUE_SITUATION.md](docs/midterm/PROLOGUE_SITUATION.md).
+
 **The game around it.** The full Bald Goddess quest starts at the title screen's "The Bald Goddess" chapter start: story stage `GODDESS`, both heroes arriving at the Goddess Shrine. It ends when the story records `chapter0.complete` and players see "CHAPTER 0 COMPLETE".
 - In between: the shrine hub, Mirror Pond (the Vanity Mirror), the Hedge Maze (the Enchanted Shears), the Griffin Enclosure (the wig), the offering and the finale.
 - Everything is played with the real game rules on the authoritative server.
 
 **Excluded:**
-- the prologue, the village and the earlier Chapter 0 parts before the shrine;
+- the prologue after the Mossling Woods (its tutorial, the ambush and the evening at home), the village and the earlier Chapter 0 parts before the shrine (the Prologue's opening is evaluated only as P1);
 - the legacy airship and boss;
 - anything after Chapter 0;
 - persistence and online matchmaking.
 
-The game itself is larger. The Bald Goddess quest is a bounded slice of it, and nothing outside the quest is evaluated.
+The game itself is larger. The Bald Goddess quest is a bounded slice of it; outside the quest, only the Prologue's opening (P1) is evaluated.
 
 **What was adapted for the AI players.** The game was not changed to suit them. A headless interface (`packages/agent/`) drives a real `GameRoom` through five operations: `reset`, `observe`, `legal_actions`, `step` and `outcome`.
 - Each hero's observation is built from what that player's screen, dialogue, journal, backpack and HUD show, plus the public [player manual](manual/Oath_and_Ember_Player_Manual.md).
@@ -92,6 +94,9 @@ node --import tsx scripts/midterm/evaluate.ts --player baseline-quest --situatio
 
 # Situation A (S2-A, the frozen Hedge Maze): definition, resets, planned runs, baseline on seeds 0 and 1
 node --import tsx scripts/midterm/situation-a.ts --baseline
+
+# P1 "Into the Forest" (the Prologue): definition, resets, planned runs, baseline on seeds 0 and 1 (expect success, 1,058 ticks)
+node --import tsx scripts/midterm/prologue-situation.ts --baseline
 
 # Check the packaged Hedge Maze evidence against its manifest and summaries
 python3 -I scripts/midterm/collect_evidence.py --verify

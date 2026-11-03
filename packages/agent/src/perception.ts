@@ -33,6 +33,9 @@ import { SHRINE_OFFERING, shrineComplete, shrinePoints } from "../../shared/src/
 import { MAZE_GATE_TARGET, MAZE_RUNNER_TARGET } from "../../../apps/server/src/hedgeMaze.js";
 import { POND_CHEST_TARGET } from "../../../apps/server/src/mirrorPond.js";
 import { storyView } from "../../../apps/client/src/ui/storyDialogue.js";
+import { stageReached } from "../../shared/src/prologue.js";
+import { NPC_TALK_RANGE } from "../../shared/src/npcs.js";
+import { WOODS_NAME } from "../../shared/src/prologueWoods.js";
 import { questLog } from "../../../apps/client/src/ui/questLog.js";
 import type {
   Direction,
@@ -69,6 +72,14 @@ export const areaNames: Partial<Record<SceneId, string>> = {
   GRIFFIN_ENCLOSURE: "Griffin Enclosure",
   PUZZLE_GLADE: "Puzzle Glade",
   BRIDGE_RUINS: "Bridge Ruins",
+  // The Prologue (P1, 2026-11-03): the game's own names for these scenes
+  // (composed scene names, travelTo's checkpoint names, WOODS_NAME).
+  MAIN_HOUSE: "Main house",
+  HOUSE_INTERIOR: "Alden's Magic Shop",
+  HOUSE_UPPER: "Alden's Magic Shop · Upstairs",
+  PROLOGUE_TRAIL: "Forest Trail",
+  PROLOGUE_WOODS: WOODS_NAME,
+  PROLOGUE_CLEARING: "Forest Clearing",
 };
 export const areaName = (s: SceneId) =>
   areaNames[s] ??
@@ -434,6 +445,78 @@ function sceneProps(w: World, scene: SceneId, mode: LabelMode): Prop[] {
   return props;
 }
 
+/**
+ * Whether a hero stands close enough to talk to Alden: the client's nearAlden
+ * (apps/client/src/entities/AldenView.ts, which imports Phaser and so cannot be
+ * imported here), line for line.
+ */
+export function nearAlden(w: World, scene: SceneId, at: { x: number; y: number }) {
+  const story = w.story,
+    alden = story?.alden;
+  return (
+    !!alden &&
+    !story!.cutscene &&
+    (alden.action === "idle" || alden.action === "walk") &&
+    alden.scene === scene &&
+    Math.hypot(alden.x - at.x, alden.y - at.y) <= NPC_TALK_RANGE
+  );
+}
+
+/** The Prologue proper: from the opening until Coco's errand begins (Chapter 0). */
+export const inPrologue = (w: World) => !!w.story && !stageReached(w.story, "ERRAND");
+
+/**
+ * What the client draws in the Prologue's scenes (P1, owner approval
+ * 2026-11-03), during the Prologue only. Mirrors apps/client/src/main.ts: its
+ * map-point labels and markers, including sealedExit (the cart and the
+ * clearing are never signposted; the trail's way on appears only once the
+ * cart is found; the woods' way out only once every lesson is done) and the
+ * road signs it shows while the roads are closed; and AldenView (his sprite
+ * and its "E Talk" prompt). The shop's front door is drawn as part of the
+ * house art with no label; it is listed as "door" (owner's wording), as is
+ * the doorway out of the shop. The merchants' cart is drawn art with no label;
+ * it is listed as "tipped cart" (owner's wording). No story flag, stage name,
+ * objective or future event is given.
+ */
+function prologueProps(w: World, scene: SceneId, me: Player, mode: LabelMode): Prop[] {
+  if (!inPrologue(w)) return [];
+  const story = w.story!;
+  const props: Prop[] = [];
+  const pts = maps[scene].points;
+  if (scene === "MAIN_HOUSE") {
+    props.push({ kind: "exit", name: "door", ...pts.door, mark: ">" });
+    // The garden fence's one opening (aldenYardFenceSolids: x 464-496 at y 432),
+    // drawn as a gap in the fence art. It lies between two tile centres, so the
+    // centre-sampled grid shows the fence as unbroken "#"; it is listed and
+    // marked so the screen shows what the picture shows.
+    props.push({ kind: "object", name: "garden gate (open)", x: 480, y: 436, mark: "o" });
+    // The road signs the client draws while the roads are closed (always, in the Prologue).
+    props.push({ kind: "exit", name: label(mode, "EMBERBROOK →", "east road"), ...pts.exit, mark: ">" });
+    props.push({ kind: "exit", name: label(mode, "← FOREST", "west road"), ...pts.shrine, mark: ">" });
+  }
+  if (scene === "HOUSE_INTERIOR") {
+    props.push({ kind: "exit", name: "door", ...pts.leave, mark: ">" });
+    props.push({ kind: "exit", name: label(mode, "E · UPSTAIRS", "stairs up"), ...pts.upstairs, mark: ">" });
+  }
+  if (scene === "HOUSE_UPPER") props.push({ kind: "exit", name: label(mode, "E · DOWNSTAIRS", "stairs down"), ...pts.downstairs, mark: ">" });
+  if (scene === "PROLOGUE_TRAIL") {
+    // The cart art (prologueForest.json, merchant-cart: 714,146 140x102), at its centre.
+    props.push({ kind: "object", name: "tipped cart", x: 784, y: 197, mark: "o" });
+    props.push({ kind: "object", name: "crates", ...pts.crates, ...(mode === "as-drawn" ? { details: "E · INSPECT" } : {}), mark: "o" });
+    props.push({ kind: "object", name: "barrel", ...pts.barrel, ...(mode === "as-drawn" ? { details: "E · INSPECT" } : {}), mark: "o" });
+    if (story.flags.includes("prologue.cart"))
+      props.push({ kind: "exit", name: label(mode, "E · FOLLOW THE TRACKS", "trail onward"), ...pts.exit, mark: ">" });
+  }
+  // Alden, wherever the story puts him; "E Talk" while the hero is in reach
+  // and no story line is on this hero's screen (AldenView's promptHidden).
+  const alden = story.alden;
+  if (alden && alden.scene === scene) {
+    const talk = !storyView(w, me.role!) && nearAlden(w, scene, me);
+    props.push({ kind: "creature", name: "Alden", x: alden.x, y: alden.y, ...(talk ? { details: "E Talk" } : {}), mark: "C" });
+  }
+  return props;
+}
+
 const enemyNames: Record<string, string> = {
   mossling: "mossling",
   cinder_wisp: "cinder wisp",
@@ -567,6 +650,7 @@ export function perceive(
     });
   }
   for (const p of sceneProps(w, scene, options.labels)) add(p);
+  for (const p of prologueProps(w, scene, me, options.labels)) add(p);
 
   // The screen as a tile grid.
   const walls = collisionRects(scene, w.puzzles, w.pushableOffsets, w.bridgePuzzle, w.players, w.serverTick, role);

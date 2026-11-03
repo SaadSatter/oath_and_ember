@@ -7,7 +7,9 @@ import type { GameRoom } from "../../../apps/server/src/GameRoom.js";
 import type { InputFrame, Player, World } from "../../shared/src/gameTypes.js";
 import { items, type ItemId } from "../../shared/src/items.js";
 import { storyView } from "../../../apps/client/src/ui/storyDialogue.js";
-import { nearbyTarget, vectorOf } from "./perception.js";
+import { inPrologue, nearAlden, nearbyTarget, vectorOf } from "./perception.js";
+import { maps } from "../../shared/src/maps.js";
+import { aldenIdleLines, trailInspections } from "../../shared/src/prologue.js";
 import {
   directions,
   MAX_ACTION_TICKS,
@@ -211,7 +213,12 @@ export function planFor(
       const w = room.state,
         me = w.players[playerKey],
         target = nearbyTarget(w, me);
-      if (!target) return { kind: "timed", frames: tap({ interactHeld: true }) };
+      if (!target) {
+        // Prologue conversations the client keeps local (P1): no E reaches the server.
+        const talk = localTalk(w, me);
+        if (talk) return { kind: "instant", run: () => ({ ok: true, feedback: talk }) };
+        return { kind: "timed", frames: tap({ interactHeld: true }) };
+      }
       const gateKey =
         target.kind === "gate" && target.itemId && (w.inventory?.counts[target.itemId] ?? 0) > 0
           ? target.itemId
@@ -275,4 +282,32 @@ function useItem(
   } catch (e) {
     return { ok: false, feedback: [(e as Error).message] };
   }
+}
+
+/**
+ * The client's local E conversations in the Prologue (apps/client/src/main.ts
+ * keydown handler, in its order), during the Prologue only (P1, owner approval
+ * 2026-11-03). A human pressing E there reads a dialogue box and the press
+ * never reaches the server; the interface returns the same pages as feedback,
+ * one line per page, and sends nothing to the game:
+ *   1. spilled cargo on the forest trail: each hero's own words;
+ *   2. nothing beside a door or exit (E is left for the door);
+ *   3. Alden, in reach and idle: his line for this stage and hero.
+ * Villager talks and the inscriptions of later chapters are not covered.
+ */
+export function localTalk(w: World, me: Player): string[] | undefined {
+  if (!me.role || !inPrologue(w) || storyView(w, me.role)) return;
+  const scene = me.sceneId ?? w.sceneId;
+  const page = (speaker: string) => (text: string) => `${speaker}: "${text}"`;
+  if (scene === "PROLOGUE_TRAIL") {
+    const spot = Object.keys(trailInspections).find((id) => {
+      const q = maps.PROLOGUE_TRAIL.points[id];
+      return q && Math.hypot(q.x - me.x, q.y - me.y) <= 50;
+    });
+    if (spot) return trailInspections[spot][me.role].map(page(me.role === "OATH" ? "Sieg" : "Coco"));
+  }
+  if (Object.values(maps[scene].points).some((q) => Math.hypot(q.x - me.x, q.y - me.y) <= 50)) return;
+  if (nearAlden(w, scene, me))
+    return (aldenIdleLines[w.story!.stage]?.[me.role] ?? ["Mind the shelves on your way past."]).map(page("Alden"));
+  return;
 }

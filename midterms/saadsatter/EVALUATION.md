@@ -106,6 +106,21 @@ The gap between guided and unaided play is the main finding. The cause is not is
 - `gpt-6-luna`: $0.10 input, $0.50 output per million tokens, cache write ×1.25. Verified on 2026-10-28 against https://developers.openai.com/api/docs/models/gpt-6-luna. Costs carry a 1.1 safety uplift ([MODEL_BUDGET.md](docs/midterm/MODEL_BUDGET.md)).
 - `claude-haiku-5-5` (pilot 2 only): $0.10 / $0.50. Verified on 2026-10-27 against https://platform.claude.com/docs/en/about-claude/pricing.
 
+## P1 "Into the Forest": a directed narrative situation (frozen 2026-11-03, not yet run by a model)
+
+P1 is a second situation, different in kind from the Hedge Maze: directed narrative and navigation in the Prologue, with no puzzle and no combat.
+- **Start:** the game's own opening. Sieg is on the road outside Alden's shop; Coco is inside with Alden.
+- **Success:** the authoritative story reaches the Mossling Woods. That happens when a hero presses E at the Forest Trail's exit after the cart has been found.
+- **Limits:** 180 game-seconds and 250 model calls per hero, with S2-A's decision and token limits; $0.60 per episode; 3,600 s wall clock.
+- **Information:** HUD goal lines hidden, and no briefing, tutorial or walkthrough. The players have only the dialogue, the quest journal, what the world shows, and the manual.
+- **Limitation:** success does not require Coco. Sieg alone can complete it, so P1 does not test cooperation.
+
+| Run | Policy | Outcome | Game time | Decisions | Invalid S / C | Messages | Calls | Charged | Git |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| seeds 0 and 1, 2026-11-03 | `baseline-quest` (route-aware) | **success** ×2, identical play | 17.6 s | 161 | 0 / 0 | 0 | 0 | $0 | see [evidence](docs/midterm/evidence/p1-baseline/) |
+
+No model player has run P1. The expected cost is about $0.09–$0.42 per model episode (estimate). The definition, observation contract, prompt freeze and reproduction commands are in [PROLOGUE_SITUATION.md](docs/midterm/PROLOGUE_SITUATION.md).
+
 ## Rubric gaps and scope risks
 
 These are stated plainly rather than worked around. None of them is fixed by narrowing the scope to the Hedge Maze.
@@ -122,6 +137,7 @@ These are stated plainly rather than worked around. None of them is fixed by nar
    - The baseline's live recording is not an LLM agent.
    - Most videos are not yet delivered ([evidence/README.md](evidence/README.md#recordings-and-delivery)).
 8. **Unequal information.** The baseline is solution-aware and `model-guided` has a walkthrough. Only `model-memory` is unaided, so the only unaided-versus-scripted contrast is between unequal players.
+9. **P1 adds a different situation, but not the missing trials.** P1 (the Prologue) is frozen and has a scripted baseline result. It has no model trial, it is not held out from development knowledge, and it does not require Coco. With P1 the suite still lacks two live trials per situation and a held-out case, so the three-situation requirement is not met.
 
 ## Full Bald Goddess suite and pilot history
 
@@ -243,3 +259,4 @@ _To be written by the owner._ Facts on record for it:
 - The owner's full playthrough has no recording.
 - Recordings: pilots 11–13 are trace-verified replays, not live captures. The baseline's live video shows a final clock of 43.1 s, against the authoritative 49.8 s, and shows HUD goal hints that no agent receives. It was recorded at `7022ea1+dirty`.
 - The generated sprites' terms need confirmation before publication ([README.md](README.md#sources-and-terms)).
+- P1 (the Prologue, frozen 2026-11-03) has only a scripted baseline result. Its success does not require Coco, and it was designed with full knowledge of the code.

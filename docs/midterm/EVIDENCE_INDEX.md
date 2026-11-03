@@ -260,3 +260,14 @@ Supports 3b, 3c and 5a (partially). [SITUATION_A.md](SITUATION_A.md) freezes the
 - replay compatibility of the committed S2-local traces.
 
 `scripts/midterm/situation-a.ts --baseline` is the free reproduction. Situations B and C are proposals only. The three-situation and held-out gaps remain.
+
+## P1 "Into the Forest", the Prologue situation (2026-11-03)
+
+| Check | Evidence |
+| --- | --- |
+| 2a bounded episode | `P1` in `packages/agent/src/{suite,evaluator}.ts`: start at the game's `prologue` checkpoint; success when the authoritative stage reaches `WOODS` |
+| 2c observation boundary | `perception.ts` `prologueProps` and `actions.ts` `localTalk`. Tests in `packages/agent/test/prologueSituation.test.ts` cover no flags, stage or scene ids, HUD lines or future dialogue over a whole episode; the cart unsignposted; inner narration only to its hero |
+| 3b limits | `episodes.P1` and `EPISODE_CAP_USD.P1`. Tick and decision limits are tested |
+| 4b baseline | `baseline-quest` with the disclosed `PROLOGUE` route (`policies/questKnowledge.ts`). Evidence in `docs/midterm/evidence/p1-baseline/` |
+| 5a freeze | `prologueSituation.ts`, definition hash `baa6b04b…73ac` (pinned); system prompts pinned |
+| Record | [PROLOGUE_SITUATION.md](PROLOGUE_SITUATION.md); design: [PROLOGUE_SITUATION_PROPOSAL.md](PROLOGUE_SITUATION_PROPOSAL.md) |

@@ -34,6 +34,7 @@ import {
   MIRROR_TARGET,
   PAD,
   POND_FLIGHT_IN,
+  PROLOGUE,
   POND_FLIGHT_OUT,
   POND_PLAN,
   SANCTUARY,
@@ -110,11 +111,11 @@ function* go(c: Ctx, to: Point, opts: NavOptions = {}, maxSteps = 200): Script {
   }
   throw new ScriptFailed(`did not reach ${to.x},${to.y}`);
 }
-function* goVia(c: Ctx, points: Point[], opts: NavOptions = {}): Script {
+function* goVia(c: Ctx, points: readonly Point[], opts: NavOptions = {}): Script {
   for (const p of points) yield* go(c, p, opts);
 }
 /** Walk through exact points, steering from the hero's own position. */
-function* walkExact(c: Ctx, points: number[][], tolerance = 0.1): Script {
+function* walkExact(c: Ctx, points: readonly (readonly number[])[], tolerance = 0.1): Script {
   for (const [x, y] of points)
     for (let k = 0; k < 40; k++) {
       const dx = x - c.o.self.x,
@@ -419,7 +420,55 @@ function* griffinCoco(c: Ctx): Script {
   yield* say(PHRASE.wigOnShore);
 }
 
+// ── P1 Into the Forest (the Prologue) ─────────────────────────────────────
+// Sieg leads, as the story is built: only his entering the shop starts it.
+// Coco leaves the shop once the visit has played (her own dialogue log) and
+// otherwise waits; the game brings her along for the fork and the travel.
+const VISIT_STEP = "Visit Alden's magic shop";
+const SHOP = "Alden's Magic Shop";
+function* prologueYardSieg(c: Ctx): Script {
+  if (c.o.journal.current?.step === VISIT_STEP && !c.o.discovered.areas.includes(SHOP)) {
+    yield* goVia(c, PROLOGUE.toGate, { tolerance: 0.4 });
+    yield* walkExact(c, PROLOGUE.gateToDoor);
+    c.note("at the shop door");
+    yield* leave(c);
+    return;
+  }
+  if (c.o.journal.current?.step === VISIT_STEP) {
+    yield* walkExact(c, PROLOGUE.toRoad);
+    // The fork scene plays here (the driver reads it); then the journal moves on.
+    yield* waitUntil(c, () => c.o.journal.current?.step !== VISIT_STEP, 1800, 10, "the road scene");
+  }
+  yield* go(c, PROLOGUE.forestSign, { tolerance: 0.4 });
+  c.note("at the forest sign");
+  yield* leave(c);
+}
+function* prologueShop(c: Ctx): Script {
+  // Wait for the visit to play (the driver reads it), then go out of the door.
+  yield* waitUntil(c, () => c.o.dialogueLog.length > 0, 1800, 10, "the visit");
+  yield* go(c, PROLOGUE.shopDoorway, { tolerance: 0.4 });
+  yield* leave(c);
+}
+function* prologueTrailSieg(c: Ctx): Script {
+  // Walk toward the cart; its scene starts on the way and the driver reads it.
+  // A line heard on this trail (own dialogue log) means the scene has played.
+  const arrived = c.o.tick;
+  const sceneHeard = () => c.o.dialogueLog.some((l) => l.tick >= arrived);
+  for (const p of PROLOGUE.toCart) {
+    if (sceneHeard()) break;
+    yield* go(c, p, { tolerance: 0.5 });
+  }
+  yield* waitUntil(c, sceneHeard, 1800, 10, "the cart's scene");
+  c.note("found the cart");
+  yield* goVia(c, PROLOGUE.toTrailExit, { tolerance: 0.5 });
+  yield* leave(c);
+}
+
 const SCRIPTS: Record<string, Record<Hero, (c: Ctx) => Script>> = {
+  // P1 (the Prologue). Coco's scripts outside the shop are idle: she waits.
+  "Main house": { Sieg: prologueYardSieg, Coco: idle },
+  [SHOP]: { Sieg: prologueShop, Coco: prologueShop },
+  "Forest Trail": { Sieg: prologueTrailSieg, Coco: idle },
   "Goddess Shrine": { Sieg: shrine, Coco: shrine },
   "Hedge Maze": { Sieg: mazeSieg, Coco: mazeCoco },
   "Mirror Pond": { Sieg: pondSieg, Coco: pondCoco },

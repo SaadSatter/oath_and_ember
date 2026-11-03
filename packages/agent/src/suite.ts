@@ -23,7 +23,7 @@ import { TUTORIAL_BRIEFING } from "./playerKnowledge.js";
  */
 export const SUITE_REVISION = 2;
 
-export type CurrentSituationId = "S1" | "S2" | "S3" | "S4" | "F" | "S2-local" | "S3-local";
+export type CurrentSituationId = "S1" | "S2" | "S3" | "S4" | "F" | "S2-local" | "S3-local" | "P1";
 export type HistoricalSituationId = "S2-v1" | "S3-v1" | "S2-local-v1" | "S3-local-v1";
 export type SituationId = CurrentSituationId | HistoricalSituationId;
 
@@ -138,6 +138,10 @@ export const SITUATIONS: readonly Situation[] = Object.freeze([
   { id: "F", preset: "full", heldOut: true, title: "Full episode", start: "goddess checkpoint", revision: 1 },
   { id: "S2-local", preset: "S2-local-v2", heldOut: false, title: "Hedge Maze — local start", start: "Hedge Maze entrance, after the opening and ordinary travel", prefix: localEntry("Hedge Maze"), briefing: localBriefing("S2-local", "Hedge Maze", "Enchanted Shears"), tutorial: TUTORIAL_BRIEFING, revision: 2 },
   { id: "S3-local", preset: "S3-local-v2", heldOut: false, title: "Mirror Pond — local start", start: "Mirror Pond entrance, after the opening and ordinary travel", prefix: localEntry("Mirror Pond"), briefing: localBriefing("S3-local", "Mirror Pond", "Vanity Mirror"), tutorial: TUTORIAL_BRIEFING, revision: 2 },
+  // P1 "Into the Forest" (owner approval 2026-11-03; prologueSituation.ts): the
+  // Prologue's own opening, no prefix, no briefing, no tutorial text. Frozen and
+  // excluded from prompt tuning; not formally held out (see its definition).
+  { id: "P1", preset: "P1", heldOut: false, title: "Into the Forest (Prologue)", start: "prologue checkpoint: the game's own opening", revision: 2 },
 ]);
 
 /**

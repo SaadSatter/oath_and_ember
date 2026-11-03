@@ -6,6 +6,8 @@ import type { World } from "../../shared/src/gameTypes.js";
 import { FINALE } from "../../shared/src/chapter0Finale.js";
 import { shrineComplete } from "../../shared/src/shrine.js";
 import type { EpisodeLimits } from "./types.js";
+import type { StoryCheckpointId } from "../../shared/src/storyCheckpoints.js";
+import { stageReached } from "../../shared/src/prologue.js";
 
 /**
  * "S2", "S3", "S2-local" and "S3-local" are the revision 1 definitions, kept
@@ -14,7 +16,7 @@ import type { EpisodeLimits } from "./types.js";
  */
 export type EpisodePreset =
   | "S2-local" | "S3-local" | "full" | "milestone" | "S1" | "S2" | "S3" | "S4"
-  | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2";
+  | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "P1";
 
 export interface EpisodeDefinition {
   preset: EpisodePreset;
@@ -22,6 +24,11 @@ export interface EpisodeDefinition {
   goal: string;
   limits: EpisodeLimits;
   success: (w: World) => boolean;
+  /**
+   * The title-screen story checkpoint the room starts at (default "goddess").
+   * P1 starts at "prologue", the game's own opening (2026-11-03).
+   */
+  checkpoint?: StoryCheckpointId;
 }
 
 const has = (w: World, flag: string) => !!w.story?.flags.includes(flag);
@@ -33,7 +40,7 @@ const QUEST_AREAS = new Set(["MIRROR_POND", "HEDGE_MAZE", "GRIFFIN_ENCLOSURE"]);
 const holding = (w: World, item: string) => ((w.inventory?.counts as Record<string, number> | undefined)?.[item] ?? 0) > 0;
 
 /** Owner-approved episode definitions and limits (2026-10-23). */
-const coreEpisodes: Record<Exclude<EpisodePreset, "S2-local" | "S3-local" | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2">, EpisodeDefinition> = {
+const coreEpisodes: Record<Exclude<EpisodePreset, "S2-local" | "S3-local" | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "P1">, EpisodeDefinition> = {
   full: {
     preset: "full",
     goal: "Bald Goddess quest: from the goddess checkpoint to chapter0.complete.",
@@ -88,6 +95,23 @@ const coreEpisodes: Record<Exclude<EpisodePreset, "S2-local" | "S3-local" | "S2-
 
 };
 
+/**
+ * P1 "Into the Forest" (owner approval 2026-11-03; docs/midterm/PROLOGUE_SITUATION.md).
+ * From the Prologue's opening to the party's arrival in the Mossling Woods. The
+ * game itself moves the story to WOODS when a hero presses E at the forest
+ * trail's exit after the cart has been found (apps/server/src/prologue.ts
+ * storyTravel); the evaluator only reads that authoritative stage.
+ * Game time and model calls are the owner's values; decisions and tokens are
+ * S2-A's existing limits, retained unchanged as instructed.
+ */
+export const P1_EPISODE: EpisodeDefinition = {
+  preset: "P1",
+  goal: "P1 Into the Forest: from the Prologue's opening, reach the Mossling Woods (story stage WOODS).",
+  limits: { maxTicks: 180 * 60, maxDecisionsPerPlayer: 1_600, maxModelCallsPerPlayer: 250, maxTokensPerPlayer: 4_000_000 },
+  success: (w: World) => stageReached(w.story, "WOODS"),
+  checkpoint: "prologue",
+};
+
 /** Additive variants reuse exactly the parent's predicate and limits. */
 export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
   ...coreEpisodes,
@@ -99,6 +123,7 @@ export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
   "S3-v2": { ...coreEpisodes.S2, preset: "S3-v2", goal: "S3 (suite revision 2): from the shrine after the opening scene, obtain the Vanity Mirror (Mirror Pond)." },
   "S2-local-v2": { ...coreEpisodes.S3, preset: "S2-local-v2", goal: "S2-local (suite revision 2): from the Hedge Maze entrance, obtain the Enchanted Shears." },
   "S3-local-v2": { ...coreEpisodes.S2, preset: "S3-local-v2", goal: "S3-local (suite revision 2): from the Mirror Pond entrance, obtain the Vanity Mirror." },
+  P1: P1_EPISODE,
 };
 
 /** Private progress markers recorded in traces (never shown to players). */
@@ -124,6 +149,21 @@ export function milestones(w: World): string[] {
  * 2026-10-27 ids were random and were renamed before hashing; that hid
  * id-based tie-breaks, so hashes from before then are not comparable.)
  */
+/**
+ * P1 progress markers (evaluator-only, recorded in P1 traces). Each is a story
+ * flag the game sets as a scene ends, or the stage the game moves to.
+ */
+export function prologueMilestones(w: World): string[] {
+  const out: string[] = [];
+  const flag = (f: string, name: string) => has(w, f) && out.push(name);
+  flag("prologue.visit", "prologue:shop-visit");
+  flag("prologue.detour", "prologue:road-fork");
+  if (stageReached(w.story, "TRAIL")) out.push("prologue:forest-trail");
+  flag("prologue.cart", "prologue:cart-found");
+  if (stageReached(w.story, "WOODS")) out.push("prologue:mossling-woods");
+  return out;
+}
+
 export function stateHash(w: World): string {
   return createHash("sha256").update(JSON.stringify(w)).digest("hex");
 }

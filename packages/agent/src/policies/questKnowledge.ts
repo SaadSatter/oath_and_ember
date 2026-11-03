@@ -96,3 +96,30 @@ export const SANCTUARY = { siegAside: [{ x: 27.5, y: 21.5 }, { x: 24.5, y: 20.5 
 // ── Griffin Enclosure ──────────────────────────────────────────────────────
 /** Coco flies to the nest; E there gives the griffin the tools; E again picks up the wig. */
 export const GRIFFIN = { nest: { x: 20, y: 4.4 }, cocoShore: { x: 20.5, y: 14 }, siegExit: { x: 20, y: 33.4 } };
+
+// ── P1 Into the Forest (the Prologue, owner approval 2026-11-03) ───────────
+/**
+ * The intended P1 route, worked out on 2026-11-03 from the story code
+ * (apps/server/src/prologue.ts: the visit starts when Sieg is inside the
+ * shop; the road fork when a hero reaches the road south of the garden,
+ * y >= 456 px; the forest trail with E at the west road point; the cart scene
+ * within 96 px of the cart; the woods with E at the trail's exit) and from the
+ * static map geometry. Disclosed: the baseline knows this route; the unaided
+ * model players are never given it.
+ */
+export const PROLOGUE = {
+  /** Outside the shop: along the road to the garden gate (x 15)... */
+  toGate: [{ x: 16, y: 15.2 }, { x: 15, y: 15.1 }],
+  /** ...then exactly through its 1-tile opening to the front door (steered, not searched). */
+  gateToDoor: [[15, 15.0], [15, 12.6], [15, 10.6]],
+  /** Inside the shop: the doorway out. */
+  shopDoorway: { x: 19.5, y: 17.4 },
+  /** From the shop door back through the gate to the road (the fork plays there). */
+  toRoad: [[15, 10.8], [15, 12.6], [15, 14.7]],
+  /** The west road point, signed "← FOREST". */
+  forestSign: { x: 4.3, y: 15.6 },
+  /** On the trail: toward the tipped cart until its scene plays. */
+  toCart: [{ x: 30, y: 11 }, { x: 26, y: 10 }],
+  /** From the cart to the trail's way on ("E · FOLLOW THE TRACKS"). */
+  toTrailExit: [{ x: 22, y: 12.5 }, { x: 13, y: 13.5 }, { x: 9, y: 9.5 }, { x: 5.5, y: 5 }, { x: 3.6, y: 1.9 }],
+} as const;
