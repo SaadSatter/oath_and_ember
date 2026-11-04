@@ -402,6 +402,16 @@
    "role": "Codex implementation agent under AGENTS.md and CLAUDE.md: owner-approved recorder diagnostics and shutdown lifecycle only. Invoked game-rules-audit recording (same-session checkpoint, not independent review) and session-evidence.",
    "title": "Recorder shutdown diagnostics, independent viewer grace, and pilot trace recovery investigation",
    "note": "No paid calls, held-out execution, gameplay/policy/pin changes, historical trace writes, commits, push or merge. Local video verification artifacts are in /private/tmp; not committed."
+  },
+  {
+   "number": 44,
+   "slug": "claude-cow-posts-repin",
+   "ids": [
+    "9741c85a"
+   ],
+   "role": "Implementation agent (Claude Code, AGENTS.md) on main, then on midterm/evaluation: owner-requested gameplay and story changes, and the owner-chosen re-pin of the frozen evaluation values. Invoked session-evidence for this record (following the skill file by hand; it is not loaded as a skill on main). No subagent and no independent review.",
+   "title": "Cow posts, griffin HP and story lines; evaluation re-pinned as a new revision",
+   "note": "No paid call, no model run, no live recording and no push. The S4 and final-seed start hashes were recomputed under the existing reset-only route-development access, as checkpointFreeze.test.ts already does. The commit ab70771 also contains another session's earlier uncommitted work in progress (Hedge Maze situations B and C, the wolf glide, the maze navigation cache), committed at the owner's request."
   }
  ]
 }

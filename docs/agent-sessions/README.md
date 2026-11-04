@@ -83,6 +83,7 @@ Latest record: [32 — Automatic gameplay video recording for eval:live](32-clau
 | [41 — Opt-in instruction-guided LLM Hedge Maze baseline](41-codex-guided-maze-supplement.md) | `01a17e49` | Same-session implementation supplement, not independent review: `3b7115b`, two audits, 201 distinct permitted offline cases/typecheck/build; guided live pilot awaits approval |
 | [42 — Opt-in persistent memory player (model-memory)](42-claude-model-memory.md) | `682df3aa` | Implementation `dc00de2`; same-session game-rules-audit (not independent review); 27 new tests, existing prompts pinned unchanged, permitted baseline pins and revision 2 trajectories identical; pilot awaits approval |
 | [43 — Recorder shutdown diagnostics and viewer lifecycle](43-codex-recorder-shutdown.md) | `01a1862b` | Codex implementation; offline recording and recovery investigation; same-session skills, not independent review |
+| [44 — Cow posts, griffin HP and story lines; evaluation re-pinned](44-claude-cow-posts-repin.md) | `9741c85a` | Claude Code implementation; owner-requested game change on `main` (`ffbdecb`), merge and new evaluation revision on `midterm/evaluation` (`ab70771`); session-evidence followed by hand; not independent review |
 | [00 — Codex briefs without a surviving transcript](00-pre-log-codex-briefs.md) | attachments only | Owner's instructions; no session record |
 
 Sessions after 2026-10-26 (this evidence work onward) are added here as they are recorded.
