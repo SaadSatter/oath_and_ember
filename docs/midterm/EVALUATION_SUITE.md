@@ -134,3 +134,18 @@ Owner approval (2026-11-03) of the proposal in [PROLOGUE_SITUATION_PROPOSAL.md](
 - **Unchanged:** S2-A (`4b3c9bb3…`), S2-B, S2-C, S1–S4 and F, every existing start hash, frozen pin, prompt and observation outside the Prologue.
 
 `baseline-quest` (with a disclosed Prologue route) succeeds at seeds 0 and 1: 1,058 ticks, 161 decisions, 0 invalid actions. No model run, no paid call, no held-out run. Record: [PROLOGUE_SITUATION.md](PROLOGUE_SITUATION.md).
+
+### 2026-11-03: P1 audit, independent review and evidence
+
+- **Audit.** `game-rules-audit` (adapter, P1) ran in the implementation session, so it is a self-check: [report](agent-evidence/skill-runs/2026-11-03-adapter-p1-prologue.md). Its two Medium findings (a type error in the new test, and an S2-A test that pinned the exact list of situation ids) were fixed before commit `b62df73`.
+- **Independent review.** `rules-reviewer` ran in a separate invocation on the tree later committed as `b62df73`: [review](agent-evidence/reviews/2026-11-03-p1-rules-review.md). It found nothing Critical or High.
+  - **Resolved:** Medium F3, the missing baseline evidence, by `docs/midterm/evidence/p1-baseline/` (generated at clean `b62df73`).
+  - **Open, awaiting the owner's decision:**
+    - F1 (Medium): the shared system prompt's task line names the Goddess's quest, which is not P1's objective.
+    - F2 (Medium): indoor scenes ignore the client's camera bounds, so Coco's start view omits "E · UPSTAIRS".
+    - F4 (Low): the name `garden gate (open)` is not owner-approved.
+    - F5 (Low): confirm the retained limits of 1,600 decisions and 4,000,000 tokens.
+    - F6 (Low): the wall clock can be raised by a run.
+    - F7 (Low): pinning the prompt hashes couples P1 to any prompt tuning on S1–S3.
+  - Any fix to F1, F2 or F4 changes P1 and is a new P1 revision. **No paid P1 run should be made before the owner decides on F1 and F2.**
+- **Tests at clean `b62df73`:** typecheck passes; tests 1,123 passed, 1 failed (`s2Shutdown.test.ts`, which also fails at base `16f1a6d`); build passes.

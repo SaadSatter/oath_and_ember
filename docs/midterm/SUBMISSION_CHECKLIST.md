@@ -64,3 +64,8 @@ P1 limits that remain:
 - Success does not require Coco.
 - P1 is not held out from development knowledge.
 - With P1 the three-situation requirement is still not met: live trials and a held-out case are missing.
+
+P1 review status (2026-11-03):
+- `game-rules-audit` (self-check) and the independent `rules-reviewer` review are done; see the EVALUATION_SUITE change log.
+- The baseline evidence is committed.
+- Reviewer findings F1 (task line names the Goddess) and F2 (indoor camera bounds) block paid P1 runs until the owner decides.
