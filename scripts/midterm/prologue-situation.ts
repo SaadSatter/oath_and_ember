@@ -13,7 +13,7 @@ import { resolve } from "node:path";
 import { createHash } from "node:crypto";
 import { runSuite, validatePlan, EPISODE_CAP_USD, WALL_CLOCK_CEILING_S, type ModelSetup, type PlayerKind } from "../../packages/agent/src/harness.js";
 import { environmentFor } from "../../packages/agent/src/suite.js";
-import { P1, P1_HASH, P1_V1_HASH } from "../../packages/agent/src/prologueSituation.js";
+import { P1, P1_HASH, P1_REVISIONS } from "../../packages/agent/src/prologueSituation.js";
 import { repoInfo } from "../../packages/agent/src/repo.js";
 import type { PlayerId } from "../../packages/agent/src/types.js";
 
@@ -28,8 +28,15 @@ const check = (ok: boolean, what: string) => { console.log(`  ${ok ? "ok  " : "F
 console.log(`${P1.label} — ${P1.name} (version ${P1.version}, frozen ${P1.frozenOn})`);
 console.log(`  scenario ${P1.situation} (preset ${P1.preset}, suite revision ${P1.suiteRevision}); game version ${version}`);
 console.log(`  definition hash ${P1_HASH}`);
-console.log(`  supersedes revision 1 (definition hash ${P1_V1_HASH}, commit ${P1.supersedes.commit}; evidence docs/midterm/evidence/p1-baseline/)`);
-check(P1_V1_HASH === P1.supersedes.definitionHash, "revision 1 is kept verbatim with its original hash");
+console.log(`  supersedes revision ${P1.supersedes.version} (definition hash ${P1.supersedes.definitionHash}, commit ${P1.supersedes.commit})`);
+// Earlier revisions are kept verbatim; each keeps the hash it was frozen with.
+const FROZEN: Record<number, string> = {
+  1: "baa6b04b7de3d56e479cbb092d5d8a10875a290c89748b836917e32a895f73ac",
+  2: "7dfac8cd2b91b5d096328265a4eba068a8a86055750c204896394ebdc6b1a655",
+};
+for (const r of P1_REVISIONS.filter((x) => x.version < P1.version))
+  check(r.definitionHash === FROZEN[r.version], `revision ${r.version} (preset ${r.preset}) is kept verbatim with its original hash ${FROZEN[r.version]?.slice(0, 8)}…`);
+check(P1.supersedes.definitionHash === FROZEN[P1.supersedes.version], `the current revision supersedes revision ${P1.supersedes.version} by its frozen hash`);
 console.log(`  objective: ${P1.objective}`);
 console.log(`  success:   ${P1.success}`);
 console.log(`  limits:    ${P1.limits.maxTicks} ticks; per hero ${P1.limits.maxDecisionsPerPlayer} decisions, ${P1.limits.maxModelCallsPerPlayer} model calls, ${P1.limits.maxTokensPerPlayer} tokens;`);
