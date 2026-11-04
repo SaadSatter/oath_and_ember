@@ -13,7 +13,8 @@ import { abilityNames, actionTypes, directions, type GameAction, type MovementRe
 import { stepStatus, type Decision, type Policy, type TurnReport } from "./policy.js";
 import { paidTransport, assertPaidTransport, ModelCallError, type Completion, type CompletionOptions, type Gateway, type MeteredGateway, type ReplyMeta } from "../budget.js";
 import { MAX_BATCH } from "../batch.js";
-import { tutorialBlock, tutorialId } from "../playerKnowledge.js";
+import { NEUTRAL_TASK, taskId, tutorialBlock, tutorialId } from "../playerKnowledge.js";
+export { NEUTRAL_TASK, taskId };
 import { HeroMemory } from "../heroMemory.js";
 
 export interface Prices {
@@ -158,7 +159,13 @@ export class AnthropicGateway implements Gateway {
 
 export { OpenAIGateway } from "./openai.js";
 
+/**
+ * The task line of the original system prompt (the Bald Goddess quest). Kept
+ * byte for byte: every Hedge Maze situation, S1-S4, F and every historical
+ * pilot was run or frozen with it, and their prompt hashes depend on it.
+ */
 export const TASK = "Complete the Goddess's quest together.";
+
 
 /**
  * "history": the player keeps its own notes (400 characters), its last 8
@@ -228,12 +235,12 @@ Your memory (the "memory" field):
 - When something stands in your direct way, look on your map for open ground that leads around it. Your "+" tiles include the way you came in.
 - your_notes is for your own plans and guesses. They are not verified.`;
 
-export function systemPrompt(hero: "Sieg" | "Coco", manual: string, maxBatch = MAX_BATCH, memory: Memory = "history") {
+export function systemPrompt(hero: "Sieg" | "Coco", manual: string, maxBatch = MAX_BATCH, memory: Memory = "history", task: string = TASK) {
   const partner = hero === "Sieg" ? "Coco" : "Sieg";
   const notesField = memory !== "none" ? `"notes": "<what you want to remember next turn, max 400 characters>", ` : "";
   return `You are playing the cooperative game Oath and Ember as ${hero}. Another player controls ${partner}. You cannot see their screen or thoughts; you can only see what your own screen shows and the messages they send you.
 
-Task: ${TASK}
+Task: ${task}
 
 How each turn works:
 - You receive your current observation (your screen, HUD, dialogue, the dialogue lines your screen showed recently, quest journal, backpack, recent feedback and messages) and the list of actions you can take right now with their parameters${memory !== "none" ? ", plus what happened to each action of your previous turn, the actions you have completed, recent refused actions, and the notes you wrote for yourself last turn" : ". You keep no memory between turns: each turn you see only what is on your screen now"}.
@@ -320,6 +327,11 @@ export class LLMPlayer implements Policy {
      * system string stays identical for every call of the episode.
      */
     readonly tutorial?: string,
+    /**
+     * The task text (default: the original TASK, so existing prompts are
+     * unchanged). P1 revision 2 passes NEUTRAL_TASK.
+     */
+    readonly task: string = TASK,
   ) {
     if (!Number.isInteger(maxBatch) || maxBatch < 1 || maxBatch > MAX_BATCH) throw Error(`maxBatch must be an integer from 1 to ${MAX_BATCH}.`);
     this.maxBatch = maxBatch;
@@ -327,8 +339,9 @@ export class LLMPlayer implements Policy {
     if (memory === "persistent") this.heroMemory = new HeroMemory(hero);
     if (briefing !== undefined && !briefing.trim()) throw Error("An episode briefing must not be empty.");
     if (tutorial !== undefined && !tutorial.trim()) throw Error("A tutorial briefing must not be empty.");
-    this.name = `llm(${model.label})${this.maxBatch > 1 ? `·batch${this.maxBatch}` : ""}${memory === "none" ? "·obs-only" : memory === "persistent" ? "·memory" : ""}${tutorial ? `·tutorial-${tutorialId(tutorial)}` : ""}${briefing ? `·briefing-${briefingId(briefing)}` : ""}`;
-    this.system = systemPrompt(hero, manual, this.maxBatch, memory) + (tutorial ? tutorialBlock(tutorial) : "") + (briefing ? briefingBlock(briefing) : "");
+    this.name = `llm(${model.label})${this.maxBatch > 1 ? `·batch${this.maxBatch}` : ""}${memory === "none" ? "·obs-only" : memory === "persistent" ? "·memory" : ""}${tutorial ? `·tutorial-${tutorialId(tutorial)}` : ""}${briefing ? `·briefing-${briefingId(briefing)}` : ""}${task !== TASK ? `·task-${taskId(task)}` : ""}`;
+    if (!task.trim()) throw Error("A task must not be empty.");
+    this.system = systemPrompt(hero, manual, this.maxBatch, memory, task) + (tutorial ? tutorialBlock(tutorial) : "") + (briefing ? briefingBlock(briefing) : "");
     this.promptHash = createHash("sha256").update(this.system).digest("hex");
     this.schema = replySchema(this.maxBatch, memory);
   }

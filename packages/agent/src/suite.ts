@@ -10,7 +10,7 @@ import type { EpisodePreset } from "./evaluator.js";
 import { enterLocalArea } from "./route/localStarts.js";
 import { Director } from "./route/director.js";
 import { hedgeMaze, mirrorPond, opening, travelFromShrine } from "./route/fullQuest.js";
-import { TUTORIAL_BRIEFING } from "./playerKnowledge.js";
+import { NEUTRAL_TASK, TUTORIAL_BRIEFING } from "./playerKnowledge.js";
 
 /**
  * Suite revision. Revision 2 (owner request, 2026-10-28) swapped S2 and S3:
@@ -49,6 +49,11 @@ export interface Situation {
    * Revision 2 S2/S3 and their local starts only.
    */
   tutorial?: string;
+  /**
+   * The task line of model players' system prompt, when it is not the original
+   * one (llm.ts TASK). P1 revision 2 uses the episode-neutral NEUTRAL_TASK.
+   */
+  task?: string;
   /** Suite revision of this definition. */
   revision: 1 | 2;
   /** Historical definitions only: the current id that replaced this one. */
@@ -141,7 +146,8 @@ export const SITUATIONS: readonly Situation[] = Object.freeze([
   // P1 "Into the Forest" (owner approval 2026-11-03; prologueSituation.ts): the
   // Prologue's own opening, no prefix, no briefing, no tutorial text. Frozen and
   // excluded from prompt tuning; not formally held out (see its definition).
-  { id: "P1", preset: "P1", heldOut: false, title: "Into the Forest (Prologue)", start: "prologue checkpoint: the game's own opening", revision: 2 },
+  // Revision 2 (review fixes): preset P1-v2 and the episode-neutral task line.
+  { id: "P1", preset: "P1-v2", heldOut: false, title: "Into the Forest (Prologue)", start: "prologue checkpoint: the game's own opening", task: NEUTRAL_TASK, revision: 2 },
 ]);
 
 /**

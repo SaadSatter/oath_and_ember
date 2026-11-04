@@ -119,3 +119,16 @@ export const tutorialId = (text: string = TUTORIAL_BRIEFING) => createHash("sha2
 export function tutorialBlock(text: string = TUTORIAL_BRIEFING) {
   return `\n\n=== Tutorial-completion knowledge (shared by both players) ===\n${text.trim()}\n=== End of tutorial-completion knowledge ===`;
 }
+
+/**
+ * An episode-neutral task (version 1, owner request 2026-11-03, review finding
+ * F1). Used by a situation that names it (suite.ts `task`): P1 revision 2. It
+ * names no place, character, item or event of any episode and gives no route.
+ */
+export const NEUTRAL_TASK = `Play the game together with your partner. You are not told your goal in advance: discover your objectives through play, from what the game itself shows you (its dialogue, your quest journal and what you see in the world), and follow them.
+- Base every decision on your current observation and the legal actions you are given.
+- Do not assume what will happen later in the story; find out by playing.
+- You have no walkthrough and no access to hidden game state.
+- Coordinate with your partner through messages when it helps.`;
+/** Short id of a task text, recorded in the player's name when it is not the original TASK. */
+export const taskId = (text: string) => createHash("sha256").update(text).digest("hex").slice(0, 8);

@@ -149,3 +149,25 @@ Owner approval (2026-11-03) of the proposal in [PROLOGUE_SITUATION_PROPOSAL.md](
     - F7 (Low): pinning the prompt hashes couples P1 to any prompt tuning on S1–S3.
   - Any fix to F1, F2 or F4 changes P1 and is a new P1 revision. **No paid P1 run should be made before the owner decides on F1 and F2.**
 - **Tests at clean `b62df73`:** typecheck passes; tests 1,123 passed, 1 failed (`s2Shutdown.test.ts`, which also fails at base `16f1a6d`); build passes.
+
+
+## 2026-11-03 change log: P1 revision 2 (review fixes)
+
+Owner-approved remediation of the independent review's findings. **P1 is now revision 2.** Revision 1 (`baa6b04b…73ac`, commit `b62df73`) is kept verbatim as `P1_V1`, together with its evidence, and was never run by a model.
+
+- **F1.** Model players on P1 get an episode-neutral task line, `NEUTRAL_TASK` (id `4079cad5`), through the situation's new `task` field. The original line ("Complete the Goddess's quest together.") stays byte for byte the default for every other situation, so S2-A, S2-B, S2-C, S1–S4, F and every historical prompt hash are unchanged (tested).
+- **F2.** Indoor observations follow the client's house camera (`cameraBounds`): Coco's opening view now includes "E · UPSTAIRS". No other scene is affected.
+- **F4.** `garden gate (open)` is removed. The opening is listed as `garden gateway`, with its exact collision gap as extent and no grid mark. The name comes from a source region id (`mapClassification.ts`); it is not on-screen text, and the owner has not yet approved it.
+- **F6.** P1's wall clock may be lowered, never raised above 3,600 s (`WALL_CLOCK_CEILING_S`).
+- **F5.** The owner confirmed 1,600 decisions and 4,000,000 tokens per hero.
+- **F7.** The prompt-hash coupling is documented; the owner has not ruled on it.
+- **Revision 2 itself:** preset `P1-v2` (episode ids `P1-v2-<seed>-<start>`), definition hash `7dfac8cd…a655`.
+- **Unchanged:** start hashes, success predicate and every limit.
+- **Baseline:** `baseline-quest` result unchanged (success, 1,058 ticks, 161 decisions, 0 invalid). Evidence: `docs/midterm/evidence/p1-v2-baseline/`.
+- No paid call. Record: [PROLOGUE_SITUATION.md](PROLOGUE_SITUATION.md).
+- **Revision 2 checks.**
+  - [Self-check audit](agent-evidence/skill-runs/2026-11-03-adapter-p1-revision2.md): 3 Low, 2 Info.
+  - [Independent review](agent-evidence/reviews/2026-11-03-p1-revision2-rules-review.md): 1 Medium (the revision 2 evidence, committed right after this commit), 8 Low, 3 Info.
+  - Wording errors in `PROLOGUE_SITUATION.md` were corrected before commit.
+  - Open for the owner: approval of the name `garden gateway`, the suggested test pins (tutorial id; S2-A full prompt hashes), and the legacy `run-episode.ts` wall clock (scripted only).
+  - Verified: `playerKnowledge.ts` only gained lines, `tutorialId()` is still `2ec2f251`, and the revision 1 evidence is byte-unchanged.

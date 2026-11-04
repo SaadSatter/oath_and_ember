@@ -119,7 +119,7 @@ P1 is a second situation, different in kind from the Hedge Maze: directed narrat
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | seeds 0 and 1, 2026-11-03 | `baseline-quest` (route-aware) | **success** ×2, identical play | 17.6 s | 161 | 0 / 0 | 0 | 0 | $0 | see [evidence](docs/midterm/evidence/p1-baseline/) |
 
-No model player has run P1. The expected cost is about $0.09–$0.42 per model episode (estimate). The definition, observation contract, prompt freeze and reproduction commands are in [PROLOGUE_SITUATION.md](docs/midterm/PROLOGUE_SITUATION.md).
+No model player has run P1. The expected cost is about $0.09–$0.42 per model episode (estimate). P1 is now revision 2: the independent review's fixes give model players an episode-neutral task line, the client's indoor camera, and an exact listing of the fence opening. Revision 1 is kept for provenance; it was never run by a model. The definition, observation contract, prompt freeze and reproduction commands are in [PROLOGUE_SITUATION.md](docs/midterm/PROLOGUE_SITUATION.md).
 
 ## Rubric gaps and scope risks
 

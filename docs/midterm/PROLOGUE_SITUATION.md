@@ -1,4 +1,4 @@
-# P1 — Into the Forest (version 1, frozen 2026-11-03)
+# P1 — Into the Forest (revision 2, frozen 2026-11-03)
 
 P1 is a **directed narrative and navigation** situation in the Prologue. It sits alongside the frozen Hedge Maze Situation A (S2-A).
 
@@ -10,7 +10,43 @@ P1 is a **directed narrative and navigation** situation in the Prologue. It sits
 - **Tests:** [`packages/agent/test/prologueSituation.test.ts`](../../packages/agent/test/prologueSituation.test.ts).
 - **Free check script:** [`scripts/midterm/prologue-situation.ts`](../../scripts/midterm/prologue-situation.ts).
 
-**Definition hash** (SHA-256 of the canonical definition): `baa6b04b7de3d56e479cbb092d5d8a10875a290c89748b836917e32a895f73ac`. The test pins it. Any change to the start, success rule, limits, observation contract, prompts or baseline reference changes this hash and fails CI. Such a change is a new revision of P1, recorded with the owner's approval. It is never folded into version 1.
+**Definition hash of the current revision (2)** (SHA-256 of the canonical definition): `7dfac8cd2b91b5d096328265a4eba068a8a86055750c204896394ebdc6b1a655`. The test pins it. Any change to the start, success rule, limits, stated observation contract, prompts, start views or baseline reference changes this hash and fails CI. Observations later in an episode are not hashed; the other P1 tests guard those. Such a change is a new revision of P1, recorded with the owner's approval. It is never folded into an earlier revision.
+
+**Revision 1** (hash `baa6b04b7de3d56e479cbb092d5d8a10875a290c89748b836917e32a895f73ac`, commit `b62df73`) is kept verbatim as `P1_V1` and is still pinned. It was never run by a model.
+- **Reproducing it.** Revision 1 can be reproduced only at commit `b62df73`. At later commits the same script runs revision 2.
+- **Telling the revisions' records apart.** Both use situation id `P1` and suite revision 2. Use the preset (`P1` or `P1-v2`), the episode-id prefix, or `evaluation.definitionHash`.
+
+See "Revision history".
+
+## Revision history
+
+| Revision | Preset (episode ids) | Hash | Status | Evidence |
+| --- | --- | --- | --- | --- |
+| 1 | `P1` (`P1-<seed>-<start>`) | `baa6b04b…73ac` | Superseded on 2026-11-03, before any model run | `docs/midterm/evidence/p1-baseline/` (generated at `b62df73`) |
+| 2 | `P1-v2` (`P1-v2-<seed>-<start>`) | `7dfac8cd…a655` | Current | `docs/midterm/evidence/p1-v2-baseline/` (generated at a clean checkout of the revision 2 commit; committed separately, after it) |
+
+Revision 2 applies the owner-approved fixes from the independent review ([review](agent-evidence/reviews/2026-11-03-p1-rules-review.md)):
+
+- **F1, task line.** The shared system prompt's task line, "Complete the Goddess's quest together.", is wrong for P1 and names a future character.
+  - **Versioning decision.** The original line is kept byte for byte as the default. A new, versioned, episode-neutral text `NEUTRAL_TASK` (`packages/agent/src/playerKnowledge.ts`, id `4079cad5`) is used only by a situation that names it (`task` in `suite.ts`). Only P1 does.
+  - **Why not edit the shared line.** That would change every model prompt hash. It would break the comparability of S2-A, S2-B and S2-C with the historical pilots, and the provenance of their records.
+  - **What stays unchanged.** S2-A's definition, its run configuration and every other situation's prompt. The test proves the default prompt still reproduces revision 1's pinned hashes exactly.
+  - **The new text** asks the players to discover objectives through play, from dialogue, the journal and the world; to base decisions on the current observation and legal actions; not to assume future events; and to coordinate by messages. It says they have no walkthrough and no access to hidden state. It names no place, character, item or route.
+  - **How to tell the prompts apart.** Model players on P1 carry `·task-4079cad5` in their names.
+- **F2, indoor camera.** Indoors (the main house, the shop's floors, village interiors), the observation now uses the client's house camera. The view is held inside the map's `cameraBounds`, and centred where the bounds are narrower than the screen.
+  - Coco's opening view now includes `E · UPSTAIRS`, as the client shows it.
+  - Points outside the client's camera, such as the shop's unseen east strip, are never listed.
+  - The main house has no `cameraBounds`, so its view is unchanged.
+  - **Scope.** The rule applies to every house and interior scene (the main house, the shop's floors, village interiors) in any situation. It is not limited to P1. No current situation other than P1 enters those scenes, so no other frozen hash moves (tested).
+- **F4, fence opening.**
+  - **Removed:** the authored label `garden gate (open)` and its `o` mark on a blocked cell.
+  - **Replaced by:** the opening listed as `garden gateway`. **The name is not on-screen text.** It comes from a source region id (`garden-gateway` in `mapClassification.ts`, which spans tiles 14–15). The extent is narrower than that region: it is the passable gap. Its extent is the exact gap between the fence's collision rectangles: x 14.5–15.5 tiles at y 13.5. It puts no mark on the grid.
+  - **How the grid shows it.** The centre-sampled grid shows `#` on both straddled cells, which is true at each cell's centre. The passable line is x = 15.0, inside the listed extent.
+  - **Precision.** The listing gives the gap's height to one decimal (0.3 tiles; it is 8 px, 0.25).
+  - **Prompt legend.** The shared system prompt says an entry with an extent "is drawn across that block of tiles". This entry is deliberately not drawn: both cells stay `#`, as the legend's note on partly open `#` tiles allows. The shared prompt was not changed.
+- **F6, wall clock.** A P1 run may lower the 3,600 s wall clock but never raise it (`WALL_CLOCK_CEILING_S`, `checkWallSeconds` in `harness.ts`). Other scenarios are unchanged.
+
+The world, the start state and its hashes, the success predicate and every limit are the same in both revisions. Reviewer finding F5: the owner confirmed the retained limits (1,600 decisions and 4,000,000 tokens per hero) on 2026-11-03. Finding F7, the prompt-hash coupling, is documented below; the owner has not ruled on it.
 
 ## How P1 differs from the Hedge Maze
 
@@ -29,13 +65,13 @@ The game gives no goal line to agents. Its Prologue was built as a guided sequen
 | End (success) | The authoritative story stage is `WOODS` or later. The game sets it, and moves the party into the Mossling Woods, when a hero presses E at the Forest Trail's exit after the cart has been found (`storyTravel`, `apps/server/src/prologue.ts`) | Owner: "the game's existing authoritative transition" |
 | Game time | 10,800 ticks (180 s) | Owner |
 | Model calls | 250 per hero, failed and timed-out calls included | Owner |
-| Wall clock | 3,600 s for model players, 600 s for scripted players | Owner (model); harness default (scripted) |
+| Wall clock | 3,600 s for model players, 600 s for scripted players. A run may lower it, never raise it above 3,600 s | Owner (model); harness default (scripted) |
 | Spend cap | $0.60 per episode (`EPISODE_CAP_USD.P1`). A run may lower it, never raise it | Owner |
 | Decisions | 1,600 per hero | Retained: S2-A's existing value |
 | Tokens | 4,000,000 per hero | Retained: S2-A's existing value |
 | Per-call timeout and failures | 30 s, SDK retries off; 3 consecutive policy failures end the episode with `error` | Retained |
 | HUD goal lines | Hidden from every player | Owner |
-| Briefing | None. No tutorial block, no walkthrough. Model players get the normal system prompt and the player manual only | Owner |
+| Briefing | None. No tutorial block, no walkthrough. Model players get the system prompt, with the episode-neutral task line `NEUTRAL_TASK` (revision 2), and the player manual | Owner |
 | Seeds | Tuning seeds 0 and 1 | As for S2-A |
 
 **Terminal reasons:** `success`, `tick_limit`, `decision_limit`, `model_call_limit`, `token_limit`, `spend_limit`, `wall_clock_limit`, `error`, `manual_stop`. All are enforced and logged by the existing runner and budget.
@@ -58,14 +94,18 @@ Checked in the code (`apps/server/src/prologue.ts`, `tickStory` and `storyTravel
 
 ## What agents observe in P1
 
-Everything below comes from the actual game state and the client's own drawing rules. Code: `perception.ts` (`prologueProps`) and `actions.ts` (`localTalk`). They apply to the Prologue's stages only, so every other situation's observations are unchanged; the frozen hashes are tested.
+Everything below comes from the actual game state and the client's own drawing rules. Code: `perception.ts` (`prologueProps`, `viewRect`) and `actions.ts` (`localTalk`).
+- The Prologue props and local conversations apply to the Prologue's stages only.
+- The indoor camera rule applies to house scenes in any situation. No current situation other than P1 enters them.
+- Every other situation's observations are unchanged; the frozen hashes are tested.
 
 **Shown, as a human player sees it:**
 - the screen grid, partner, abilities, quest journal and dialogue, as in every situation (inner narration only to its own hero; the partner sees the neutral line and cannot move it on);
 - **Main house:**
   - `door`, the shop's front door. It is drawn as house art with no label; the name is the owner's wording;
   - the road signs `EMBERBROOK →` and `← FOREST`, which the client draws while the roads are closed;
-  - `garden gate (open)`, the fence's one opening;
+  - `garden gateway`, the fence's one opening, with its exact passable span as extent and no grid mark (revision 2);
+- **Indoors:** the view is the client's house camera, kept inside the map's camera bounds (revision 2);
 - **Alden's Magic Shop:** `door` (the doorway out), `E · UPSTAIRS` and Alden;
 - **Forest Trail:**
   - `tipped cart`. The cart is unlabelled art; the name is the owner's wording;
@@ -82,11 +122,7 @@ Everything below comes from the actual game state and the client's own drawing r
 - the scripted route;
 - signposts the client does not draw: no label on the cart or the clearing, and no trail exit before the cart is found.
 
-**One addition to flag for review: the garden gate.**
-- The shop's garden fence has a single opening, 32 px wide (`aldenYardFenceSolids`: x 464–496 at y 432). It lies exactly between two tile centres.
-- The grid shows what lies at each tile's centre (the rule every situation uses), so it draws the fence as unbroken `#`. The picture shows the gap.
-- Rather than change the grid rule, which would move every frozen hash, P1 lists the opening as `garden gate (open)` and marks its cell `o`.
-- The opening leaves only about 6 px of clearance on each side, so a player must line up with it. That is part of the game, not of the interface.
+**The fence opening (revision 2).** The garden fence's one opening is 32 px wide and lies between two tile centres, so the grid shows `#` on both cells. The observation lists it as `garden gateway` (the art's own name), with the exact gap as extent and no grid mark. Revision 1 listed it as `garden gate (open)` with an `o` on a blocked cell; that was an authored label, and it implied a blocked cell was passable.
 
 ## Scripted baseline
 
@@ -101,6 +137,8 @@ The route:
 Coco leaves the shop after the visit and otherwise waits; the game brings her along. The baseline writes nothing to the game, uses no fixture and sends no message.
 
 Its route was developed on P1 itself, so it is a **solution-aware reference**, like the Hedge Maze baseline. Nothing from it is given to the unaided model players.
+
+Revision 2 results; revision 1's were identical in every column (its evidence is in `docs/midterm/evidence/p1-baseline/`):
 
 | Seed | Outcome | Game time | Decisions (Sieg / Coco) | Invalid | Messages | Model calls | Start hash | End hash |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -117,9 +155,9 @@ Progress, from the trace's evaluator markers (seed 0):
 | 745 | cart found |
 | 1,058 | Mossling Woods (success) |
 
-**Seeds.** Seed 1 differs from seed 0 only in the room code and the two hero ids. Both heroes' first observations and legal actions are byte-identical (views hash `27cf4ce6…ff3a`), and the baseline plays the same steps. Seed 1 is therefore a repeated trial.
+**Seeds.** Seed 1 differs from seed 0 only in the room code and the two hero ids. Both heroes' first observations and legal actions are byte-identical, and the baseline plays the same steps. The views hash is `5ff8926c…ca76` for revision 2 and was `27cf4ce6…ff3a` for revision 1. Seed 1 is therefore a repeated trial.
 
-**Evidence.** The traces and summaries are in `docs/midterm/evidence/p1-baseline/`. They were generated at a clean checkout of the implementation commit; the commit is named in that folder's README.
+**Evidence.** Revision 2: `docs/midterm/evidence/p1-v2-baseline/`. Revision 1: `docs/midterm/evidence/p1-baseline/`. Each was generated at a clean checkout of its commit, named in the folder's README.
 
 ## Players planned (prepared, not run)
 
@@ -132,7 +170,9 @@ Progress, from the trace's evaluator markers (seed 0):
 
 `model-guided` is not available on P1: there is no walkthrough.
 
-**Prompt freeze.** Each model player's full system prompt (manual included) is pinned by SHA-256 in the definition. P1 is excluded from prompt tuning, so a changed prompt fails the P1 test and would be a new P1 revision. The prompts must not be changed in response to P1 results.
+**Prompt freeze.** Each model player's full system prompt (manual and task line included) is pinned by SHA-256 in the definition. P1 is excluded from prompt tuning, so a changed prompt fails the P1 test and would be a new P1 revision. The prompts must not be changed in response to P1 results.
+
+**Coupling (review finding F7).** P1 pins the shared prompt code. Any permitted prompt change for S1–S3 tuning therefore also fails the P1 test. Such a failure must not be fixed by re-pinning: re-pinning is a new P1 revision and needs the owner's approval.
 
 ## Expected evaluation cost (estimate, not measured)
 
@@ -170,4 +210,9 @@ The script makes no model call: it builds no gateway, reads no key and opens no 
 - **Cooperation.** P1 does not require meaningful cooperation from both agents (see above).
 - **Ceiling.** The baseline finishes in under 18 game-seconds, so P1 may be easy for a model. That is still an interpretable result, but it may separate the players less than the maze does.
 - **Scope.** Adding P1 extends the evaluated scope beyond the Hedge Maze into the Prologue. The README's scope statement has been updated. Professor approval of the scope is still not recorded.
-- **Review.** The `game-rules-audit` skill and the independent `rules-reviewer` review are required before any paid run. Their outcomes are recorded in the change log of [EVALUATION_SUITE.md](EVALUATION_SUITE.md).
+- **Review.** Revision 1 had a `game-rules-audit` self-check and an independent `rules-reviewer` review; revision 2 fixes its findings. Revision 2's own self-check and independent review are recorded:
+  - [audit](agent-evidence/skill-runs/2026-11-03-adapter-p1-revision2.md);
+  - [review](agent-evidence/reviews/2026-11-03-p1-revision2-rules-review.md).
+
+  Their remaining Low findings await the owner's decision.
+- **Manual captions.** The public player manual, which every player receives, mentions "the Forest Ruins" and "the shop" in two image captions. This is pre-existing, outside P1's task line, and unchanged.

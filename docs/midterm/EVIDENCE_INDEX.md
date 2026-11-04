@@ -271,3 +271,12 @@ Supports 3b, 3c and 5a (partially). [SITUATION_A.md](SITUATION_A.md) freezes the
 | 4b baseline | `baseline-quest` with the disclosed `PROLOGUE` route (`policies/questKnowledge.ts`). Evidence in `docs/midterm/evidence/p1-baseline/` |
 | 5a freeze | `prologueSituation.ts`, definition hash `baa6b04b…73ac` (pinned); system prompts pinned |
 | Record | [PROLOGUE_SITUATION.md](PROLOGUE_SITUATION.md); design: [PROLOGUE_SITUATION_PROPOSAL.md](PROLOGUE_SITUATION_PROPOSAL.md) |
+
+### P1 revision 2 (2026-11-03)
+
+| Check | Evidence |
+| --- | --- |
+| 2b/2c prompt and observation fixes | `NEUTRAL_TASK` (`playerKnowledge.ts`) via `suite.ts` `task`; `perception.ts` `viewRect` (house camera) and `GARDEN_GATEWAY`; tests in `prologueSituation.test.ts` ("P1 revision 2 observation fixes", F1, F6) |
+| 3b wall clock | `harness.ts` `WALL_CLOCK_CEILING_S`, `checkWallSeconds` (tested) |
+| 5a freeze | Revision 2 hash `7dfac8cd…a655` pinned; revision 1 `baa6b04b…73ac` kept verbatim and pinned |
+| 4b baseline | `docs/midterm/evidence/p1-v2-baseline/` |

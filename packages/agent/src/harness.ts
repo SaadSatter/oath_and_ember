@@ -45,6 +45,20 @@ export const EPISODE_CAP_USD: Record<SituationId, number> = {
   // P1 Into the Forest: the owner's cap (2026-11-03).
   P1: 0.6,
 };
+/**
+ * Wall-clock ceilings (seconds) a run may lower but never raise (review finding
+ * F6, 2026-11-03). P1 only; other scenarios keep their behaviour.
+ */
+export const WALL_CLOCK_CEILING_S: Partial<Record<SituationId, number>> = { P1: 3600 };
+/** Refuses a wall-clock override above a scenario's ceiling. */
+export function checkWallSeconds(o: Pick<SuiteRunOptions, "situations" | "wallSeconds">) {
+  if (o.wallSeconds === undefined) return;
+  for (const id of o.situations) {
+    const ceiling = WALL_CLOCK_CEILING_S[id];
+    if (ceiling !== undefined && o.wallSeconds > ceiling)
+      throw Error(`${id}'s wall-clock limit is ${ceiling} s; a run may lower it, never raise it (got ${o.wallSeconds} s).`);
+  }
+}
 export const OBS_ONLY_SITUATIONS: readonly SituationId[] = ["S1", "S2", "S3", "S2-local", "S3-local", "S2-v1", "S3-v1", "S2-local-v1", "S3-local-v1", "P1"];
 
 export interface ModelSetup {
@@ -270,6 +284,7 @@ export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | 
 export function policiesFor(player: PlayerKind, budget: ModelBudget | undefined, model: ModelSetup | undefined, id?: SituationId): Record<PlayerId, Policy> {
   const briefing = id ? situation(id).briefing : undefined;
   const tutorial = id ? situation(id).tutorial : undefined;
+  const task = id ? situation(id).task : undefined;
   switch (player) {
     case "baseline-quest":
       return { sieg: new QuestBaseline("Sieg"), coco: new QuestBaseline("Coco") };
@@ -285,7 +300,7 @@ export function policiesFor(player: PlayerKind, budget: ModelBudget | undefined,
     case "model-obs-only":
     case "model-memory": {
       const memory = player === "model-history" ? "history" : player === "model-memory" ? "persistent" : "none";
-      const make = (hero: "Sieg" | "Coco", pid: PlayerId) => new LLMPlayer(hero, model!.manual, new MeteredGateway(model!.gateway, budget!, pid), model!.maxBatch, memory, briefing, tutorial);
+      const make = (hero: "Sieg" | "Coco", pid: PlayerId) => new LLMPlayer(hero, model!.manual, new MeteredGateway(model!.gateway, budget!, pid), model!.maxBatch, memory, briefing, tutorial, task);
       return { sieg: make("Sieg", "sieg"), coco: make("Coco", "coco") };
     }
   }
@@ -329,6 +344,7 @@ export async function runSuite(o: SuiteRunOptions): Promise<EpisodeSummary[]> {
     for (const id of o.situations) episodeCap(o, id);
   }
   if (o.wallSeconds !== undefined && (!Number.isFinite(o.wallSeconds) || o.wallSeconds <= 0)) throw Error("wallSeconds must be finite and positive.");
+  checkWallSeconds(o);
   mkdirSync(o.outDir, { recursive: true });
   const manifest = {
     suiteRevision: SUITE_REVISION,

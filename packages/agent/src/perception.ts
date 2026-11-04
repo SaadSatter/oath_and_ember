@@ -36,6 +36,8 @@ import { storyView } from "../../../apps/client/src/ui/storyDialogue.js";
 import { stageReached } from "../../shared/src/prologue.js";
 import { NPC_TALK_RANGE } from "../../shared/src/npcs.js";
 import { WOODS_NAME } from "../../shared/src/prologueWoods.js";
+import { isShopScene } from "../../shared/src/magicShop.js";
+import { isVillageInterior } from "../../shared/src/villageInteriors.js";
 import { questLog } from "../../../apps/client/src/ui/questLog.js";
 import type {
   Direction,
@@ -173,9 +175,27 @@ export function sceneOf(w: World, p: Player): SceneId {
   return p.sceneId ?? w.sceneId;
 }
 
-/** The camera rectangle: centred on the hero, held inside the map. */
+/**
+ * The camera rectangle: centred on the hero, held inside the map. In houses
+ * (the main house's yard, the magic shop's floors, village interiors) the
+ * client holds the camera inside the map's cameraBounds instead, centring it
+ * on any axis the bounds are narrower than the screen (apps/client/src/main.ts,
+ * `house`; P1 revision 2, review finding F2). Every other scene is unchanged.
+ */
 export function viewRect(w: World, p: Player): Rect {
-  const map = maps[sceneOf(w, p)];
+  const scene = sceneOf(w, p);
+  const map = maps[scene];
+  if (scene === "MAIN_HOUSE" || isShopScene(scene) || isVillageInterior(scene)) {
+    const b = map.cameraBounds ?? { x: 0, y: 0, w: map.width, h: map.height };
+    const centre = (c: number, start: number, size: number, half: number) =>
+      size < half * 2 ? start + size / 2 : Math.min(Math.max(c, start + half), start + size - half);
+    return {
+      x: centre(p.x, b.x, b.w, VIEW_W / 2) - VIEW_W / 2,
+      y: centre(p.y, b.y, b.h, VIEW_H / 2) - VIEW_H / 2,
+      w: VIEW_W,
+      h: VIEW_H,
+    };
+  }
   const clamp = (c: number, size: number, limit: number) =>
     size >= limit ? (limit - size) / 2 : Math.min(Math.max(c - size / 2, 0), limit - size);
   return {
@@ -478,6 +498,9 @@ export const inPrologue = (w: World) => !!w.story && !stageReached(w.story, "ERR
  * it is listed as "tipped cart" (owner's wording). No story flag, stage name,
  * objective or future event is given.
  */
+/** The yard fence's opening: the gap between its collision rectangles (world px). */
+export const GARDEN_GATEWAY: Rect = { x: 464, y: 432, w: 32, h: 8 };
+
 function prologueProps(w: World, scene: SceneId, me: Player, mode: LabelMode): Prop[] {
   if (!inPrologue(w)) return [];
   const story = w.story!;
@@ -485,11 +508,15 @@ function prologueProps(w: World, scene: SceneId, me: Player, mode: LabelMode): P
   const pts = maps[scene].points;
   if (scene === "MAIN_HOUSE") {
     props.push({ kind: "exit", name: "door", ...pts.door, mark: ">" });
-    // The garden fence's one opening (aldenYardFenceSolids: x 464-496 at y 432),
-    // drawn as a gap in the fence art. It lies between two tile centres, so the
-    // centre-sampled grid shows the fence as unbroken "#"; it is listed and
-    // marked so the screen shows what the picture shows.
-    props.push({ kind: "object", name: "garden gate (open)", x: 480, y: 436, mark: "o" });
+    // The garden fence's one opening, drawn in the fence art (the art's own
+    // region name is "garden-gateway", apps/client/src/environment/
+    // mapClassification.ts). Its passable span is exactly the gap between the
+    // fence's collision rectangles (aldenYardFenceSolids: x 464-496, y 432-440),
+    // given as the listing's extent. The gap straddles two tile centres, so the
+    // centre-sampled grid still shows "#" there, truthfully for each centre; the
+    // listing puts no mark on the grid, so no blocked cell is shown as open
+    // (P1 revision 2, review finding F4).
+    props.push({ kind: "object", name: "garden gateway", x: 480, y: 436, floor: GARDEN_GATEWAY });
     // The road signs the client draws while the roads are closed (always, in the Prologue).
     props.push({ kind: "exit", name: label(mode, "EMBERBROOK →", "east road"), ...pts.exit, mark: ">" });
     props.push({ kind: "exit", name: label(mode, "← FOREST", "west road"), ...pts.shrine, mark: ">" });

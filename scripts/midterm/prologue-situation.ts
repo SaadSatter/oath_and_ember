@@ -1,4 +1,4 @@
-// P1 "Into the Forest" (the Prologue): free, deterministic checks.
+// P1 "Into the Forest" (the Prologue): free, deterministic checks of the current revision.
 // Definition: packages/agent/src/prologueSituation.ts; record: docs/midterm/PROLOGUE_SITUATION.md.
 //
 //   node --import tsx scripts/midterm/prologue-situation.ts              # definition, resets, planned runs
@@ -11,9 +11,9 @@
 
 import { resolve } from "node:path";
 import { createHash } from "node:crypto";
-import { runSuite, validatePlan, EPISODE_CAP_USD, type ModelSetup, type PlayerKind } from "../../packages/agent/src/harness.js";
+import { runSuite, validatePlan, EPISODE_CAP_USD, WALL_CLOCK_CEILING_S, type ModelSetup, type PlayerKind } from "../../packages/agent/src/harness.js";
 import { environmentFor } from "../../packages/agent/src/suite.js";
-import { P1, P1_HASH } from "../../packages/agent/src/prologueSituation.js";
+import { P1, P1_HASH, P1_V1_HASH } from "../../packages/agent/src/prologueSituation.js";
 import { repoInfo } from "../../packages/agent/src/repo.js";
 import type { PlayerId } from "../../packages/agent/src/types.js";
 
@@ -28,11 +28,14 @@ const check = (ok: boolean, what: string) => { console.log(`  ${ok ? "ok  " : "F
 console.log(`${P1.label} — ${P1.name} (version ${P1.version}, frozen ${P1.frozenOn})`);
 console.log(`  scenario ${P1.situation} (preset ${P1.preset}, suite revision ${P1.suiteRevision}); game version ${version}`);
 console.log(`  definition hash ${P1_HASH}`);
+console.log(`  supersedes revision 1 (definition hash ${P1_V1_HASH}, commit ${P1.supersedes.commit}; evidence docs/midterm/evidence/p1-baseline/)`);
+check(P1_V1_HASH === P1.supersedes.definitionHash, "revision 1 is kept verbatim with its original hash");
 console.log(`  objective: ${P1.objective}`);
 console.log(`  success:   ${P1.success}`);
 console.log(`  limits:    ${P1.limits.maxTicks} ticks; per hero ${P1.limits.maxDecisionsPerPlayer} decisions, ${P1.limits.maxModelCallsPerPlayer} model calls, ${P1.limits.maxTokensPerPlayer} tokens;`);
 console.log(`             ${P1.limits.modelCallTimeoutMs / 1000} s per call; wall clock ${P1.limits.wallClockSeconds.model} s (model) / ${P1.limits.wallClockSeconds.scripted} s (scripted); $${P1.limits.episodeSpendCapUsd} per episode`);
 check(EPISODE_CAP_USD.P1 === P1.limits.episodeSpendCapUsd, `harness episode cap $${EPISODE_CAP_USD.P1}`);
+check(WALL_CLOCK_CEILING_S.P1 === P1.limits.wallClockCeilingSeconds, `harness wall-clock ceiling ${WALL_CLOCK_CEILING_S.P1} s (a run may lower it, never raise it)`);
 
 console.log("\nResets (free):");
 for (const seed of P1.seeds.tuning) {

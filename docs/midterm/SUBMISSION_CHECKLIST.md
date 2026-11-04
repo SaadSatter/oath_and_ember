@@ -69,3 +69,8 @@ P1 review status (2026-11-03):
 - `game-rules-audit` (self-check) and the independent `rules-reviewer` review are done; see the EVALUATION_SUITE change log.
 - The baseline evidence is committed.
 - Reviewer findings F1 (task line names the Goddess) and F2 (indoor camera bounds) block paid P1 runs until the owner decides.
+
+P1 revision 2 (2026-11-03):
+- Review findings F1, F2, F4 and F6 are fixed and F5 is confirmed (see the EVALUATION_SUITE change log).
+- Revision 1 and its evidence are kept.
+- Paid P1 runs remain blocked until revision 2's audit and independent review are recorded and the owner approves a run.

@@ -11,8 +11,13 @@ import type { GameRoom } from "../../../apps/server/src/GameRoom.js";
 import { cutscenes, storyObjectives, TRAIL_ONWARD, storyStages } from "../../shared/src/prologue.js";
 import { episodes, stateHash } from "../src/evaluator.js";
 import { environmentFor, situation, SITUATIONS } from "../src/suite.js";
-import { EPISODE_CAP_USD, OBS_ONLY_SITUATIONS, policiesFor, validatePlan, type ModelSetup } from "../src/harness.js";
-import { P1, P1_HASH, prologueEvaluationLabel } from "../src/prologueSituation.js";
+import { EPISODE_CAP_USD, OBS_ONLY_SITUATIONS, WALL_CLOCK_CEILING_S, checkWallSeconds, policiesFor, validatePlan, type ModelSetup } from "../src/harness.js";
+import { P1, P1_HASH, P1_REVISIONS, P1_V1, P1_V1_HASH, prologueEvaluationLabel } from "../src/prologueSituation.js";
+import { GARDEN_GATEWAY, onScreen, viewRect } from "../src/perception.js";
+import { aldenYardFenceSolids } from "../../shared/src/environmentSolids.js";
+import { maps } from "../../shared/src/maps.js";
+import { NEUTRAL_TASK, taskId } from "../src/playerKnowledge.js";
+import { TASK, systemPrompt } from "../src/policies/llm.js";
 import { SITUATION_A_HASH, evaluationLabel } from "../src/situationA.js";
 import { runEpisode } from "../src/runner.js";
 import { TraceWriter, verifyTrace, type TraceLine } from "../src/trace.js";
@@ -65,23 +70,36 @@ async function pair(env: ReturnType<typeof start>["env"], sieg: GameAction, coco
 
 describe("P1 definition", () => {
   it("is frozen: any change to the definition changes this hash and is a new revision", () => {
-    expect(P1_HASH).toBe("baa6b04b7de3d56e479cbb092d5d8a10875a290c89748b836917e32a895f73ac");
+    expect(P1_HASH).toBe("7dfac8cd2b91b5d096328265a4eba068a8a86055750c204896394ebdc6b1a655");
+    expect(P1.version).toBe(2);
     expect(prologueEvaluationLabel("P1")).toEqual({ label: "P1", definitionHash: P1_HASH });
     expect(prologueEvaluationLabel("S2-local")).toBeNull();
   });
 
+  it("keeps revision 1 verbatim, with its original hash, and records the succession", () => {
+    expect(P1_V1_HASH).toBe("baa6b04b7de3d56e479cbb092d5d8a10875a290c89748b836917e32a895f73ac");
+    expect(P1_V1).toMatchObject({ version: 1, preset: "P1" });
+    expect(P1.supersedes).toEqual({ version: 1, definitionHash: P1_V1_HASH, commit: "b62df73" });
+    expect(P1_REVISIONS.map((r) => [r.version, r.preset, r.definitionHash])).toEqual([[1, "P1", P1_V1_HASH], [2, "P1-v2", P1_HASH]]);
+    // Revision 1's preset stays defined, unchanged, so its records stay readable.
+    expect(episodes.P1).toMatchObject({ preset: "P1", checkpoint: "prologue" });
+    expect(episodes["P1-v2"].limits).toEqual(episodes.P1.limits);
+    expect(episodes["P1-v2"].success).toBe(episodes.P1.success);
+  });
+
   it("is read from the code the harness runs: preset, checkpoint, success, limits, cap, players", () => {
     const def = situation("P1");
-    expect(def).toMatchObject({ id: "P1", preset: "P1", heldOut: false, revision: 2 });
+    expect(def).toMatchObject({ id: "P1", preset: "P1-v2", heldOut: false, revision: 2, task: NEUTRAL_TASK });
     expect(def.prefix).toBeUndefined();
     expect(def.briefing).toBeUndefined();
     expect(def.tutorial).toBeUndefined();
     expect(SITUATIONS.at(-1)!.id).toBe("P1");
-    const ep = episodes.P1;
+    const ep = episodes["P1-v2"];
     expect(ep.checkpoint).toBe("prologue");
     // The owner's values (game time, calls) and S2-A's retained decision and token limits.
     expect(ep.limits).toEqual({ maxTicks: 10_800, maxDecisionsPerPlayer: 1_600, maxModelCallsPerPlayer: 250, maxTokensPerPlayer: 4_000_000 });
-    expect(P1.limits).toMatchObject({ ...ep.limits, wallClockSeconds: { model: 3600, scripted: 600 }, modelCallTimeoutMs: 30_000, maxConsecutivePolicyFailures: 3, episodeSpendCapUsd: 0.6 });
+    expect(P1.limits).toMatchObject({ ...ep.limits, wallClockSeconds: { model: 3600, scripted: 600 }, modelCallTimeoutMs: 30_000, maxConsecutivePolicyFailures: 3, episodeSpendCapUsd: 0.6, wallClockCeilingSeconds: 3600 });
+    expect(WALL_CLOCK_CEILING_S).toEqual({ P1: 3600 });
     expect(EPISODE_CAP_USD.P1).toBe(0.6);
     expect(OBS_ONLY_SITUATIONS).toContain("P1");
     expect(P1.prompts).toMatchObject({ briefing: null, tutorial: null, walkthrough: null });
@@ -89,23 +107,52 @@ describe("P1 definition", () => {
 
   it("succeeds exactly when the authoritative story stage reaches WOODS", () => {
     const at = (stage: string) => ({ story: { stage, flags: [] } }) as never;
-    for (const stage of storyStages) expect(episodes.P1.success(at(stage)), stage).toBe(storyStages.indexOf(stage) >= storyStages.indexOf("WOODS"));
-    expect(episodes.P1.success({} as never)).toBe(false);
+    for (const stage of storyStages) expect(episodes["P1-v2"].success(at(stage)), stage).toBe(storyStages.indexOf(stage) >= storyStages.indexOf("WOODS"));
+    expect(episodes["P1-v2"].success({} as never)).toBe(false);
   });
 
-  it("model players get the normal prompt only: no briefing, no tutorial, no walkthrough; prompts frozen", () => {
+  it("model players get the episode-neutral task and the normal prompt only: no briefing, tutorial or walkthrough; prompts frozen", () => {
     const { text, sha256 } = loadPlayerManual(root);
     expect(sha256).toBe(P1.prompts.manualSha256);
     const memory = { "model-history": "history", "model-obs-only": "none", "model-memory": "persistent" } as const;
     for (const [kind, mem] of Object.entries(memory))
       for (const [h, hero] of [["sieg", "Sieg"], ["coco", "Coco"]] as const) {
-        const p = new LLMPlayer(hero, text, { label: "test" } as never, 4, mem, situation("P1").briefing, situation("P1").tutorial);
+        const d = situation("P1");
+        const p = new LLMPlayer(hero, text, { label: "test" } as never, 4, mem, d.briefing, d.tutorial, d.task);
         expect(p.promptHash, `${kind} ${h}`).toBe(P1.prompts.systemPromptSha256[kind as keyof typeof memory][h]);
         expect(p.name).not.toMatch(/tutorial|briefing/);
+        expect(p.name).toContain(`·task-${taskId(NEUTRAL_TASK)}`);
+        // Revision 1's prompts were built with the original task: the default is byte-identical.
+        const original = new LLMPlayer(hero, text, { label: "test" } as never, 4, mem);
+        expect(original.promptHash, `${kind} ${h} default`).toBe((P1_V1 as never as { prompts: { systemPromptSha256: Record<string, Record<string, string>> } }).prompts.systemPromptSha256[kind][h]);
+        expect(original.name).not.toContain("·task-");
       }
     // No walkthrough exists for P1.
     const setup = { gateway: { label: "test" }, manual: text, ledger: undefined as never, stage: "pilot", priceSource: "test", maxBatch: 4 } as unknown as ModelSetup;
     expect(() => policiesFor("model-guided", undefined, setup, "P1")).toThrow(/model-guided requires/);
+  });
+
+  it("F1: the P1 prompt names no character, place or event of any episode; other situations keep the original task", () => {
+    expect(P1.prompts.task).toEqual({ id: taskId(NEUTRAL_TASK), text: NEUTRAL_TASK });
+    // The prompt's own instructions, without the public manual (which every
+    // player receives and which is not part of this fix).
+    for (const hero of ["Sieg", "Coco"] as const) {
+      const prompt = systemPrompt(hero, "", 4, "persistent", NEUTRAL_TASK);
+      expect(prompt).toContain(`Task: ${NEUTRAL_TASK}`);
+      expect(prompt).not.toMatch(/Goddess|shrine|Alden|forest|Mossling|cart|shop|Emberbrook|wig|Hedge Maze|Mirror Pond|Griffin|Prologue/i);
+    }
+    expect(NEUTRAL_TASK).not.toMatch(/\b(north|south|east|west)\b|\(\s*\d/i);
+    expect(TASK).toBe("Complete the Goddess's quest together.");
+    for (const s of SITUATIONS.filter((x) => x.id !== "P1")) expect(s.task, s.id).toBeUndefined();
+  });
+
+  it("F6: a run may lower P1's wall clock but never raise it; other scenarios are unchanged", () => {
+    expect(() => checkWallSeconds({ situations: ["P1"], wallSeconds: 1800 })).not.toThrow();
+    expect(() => checkWallSeconds({ situations: ["P1"], wallSeconds: 3600 })).not.toThrow();
+    expect(() => checkWallSeconds({ situations: ["P1"] })).not.toThrow();
+    expect(() => checkWallSeconds({ situations: ["P1"], wallSeconds: 3601 })).toThrow(/never raise/);
+    expect(() => checkWallSeconds({ situations: ["S2-local", "P1"], wallSeconds: 7200 })).toThrow(/P1's wall-clock limit is 3600 s/);
+    expect(() => checkWallSeconds({ situations: ["S2-local"], wallSeconds: 7200 })).not.toThrow();
   });
 
   it("plans: baseline and unaided model players on tuning seeds; never final seeds without approval", () => {
@@ -128,7 +175,7 @@ describe("P1 reset", () => {
       const s = start(seed);
       const first = await s.env.reset(seed);
       expect(first).toMatchObject({ tick: 0, startHash: P1.start.hashes[seed] });
-      expect(first.episode).toBe(`P1-${seed}-${P1.start.hashes[seed].slice(0, 8)}`);
+      expect(first.episode).toBe(`P1-v2-${seed}-${P1.start.hashes[seed].slice(0, 8)}`);
       const w = s.room().state;
       expect(stateHash(w)).toBe(first.startHash);
       expect(w.story).toMatchObject({ stage: "ARRIVAL", flags: [] });
@@ -152,21 +199,86 @@ describe("P1 reset", () => {
     expect(sieg.area.name).toBe("Main house");
     expect(coco.area.name).toBe("Alden's Magic Shop");
     const names = (o: Observation) => o.visible.map((v) => `${v.kind}:${v.name}`);
-    expect(names(sieg)).toEqual(expect.arrayContaining(["exit:door", "object:garden gate (open)", "exit:EMBERBROOK →"]));
+    expect(names(sieg)).toEqual(expect.arrayContaining(["exit:door", "object:garden gateway", "exit:EMBERBROOK →"]));
+    expect(JSON.stringify(sieg)).not.toContain("garden gate (open)");
     expect(names(sieg).some((n) => n.startsWith("partner") || n.includes("Alden"))).toBe(false);
-    expect(names(coco)).toEqual(["creature:Alden"]);
+    // F2: the client's shop camera shows the stairs from where Coco starts.
+    expect(names(coco)).toEqual(["exit:E · UPSTAIRS", "creature:Alden"]);
     // Out of reach: no "E Talk" yet.
-    expect(coco.visible[0].details).toBeUndefined();
-    // The gate is drawn on its cell, where the centre-sampled grid would show fence.
+    expect(coco.visible.find((v) => v.name === "Alden")!.details).toBeUndefined();
+    // F4: the opening is listed with its exact passable span; the grid keeps
+    // each centre's truth ("#" on both straddled cells), so no blocked cell is shown as open.
+    const gateway = sieg.visible.find((v) => v.name === "garden gateway")!;
+    expect(gateway.extent).toEqual({ x: 14.5, y: 13.5, w: 1, h: 0.3 });
     const { originX, originY, rows } = sieg.screen;
-    expect(rows[13 - originY][15 - originX]).toBe("o");
     expect(rows[13 - originY][14 - originX]).toBe("#");
+    expect(rows[13 - originY][15 - originX]).toBe("#");
     // The journal names the current step; no HUD goal line anywhere.
     expect(sieg.journal.current).toEqual({ quest: "Prologue · A Promise Kept", step: "Visit Alden's magic shop", done: [] });
     for (const o of [sieg, coco]) {
       const text = JSON.stringify(o);
       for (const goal of Object.values(storyObjectives.ARRIVAL!)) expect(text).not.toContain(goal.slice(11, 50));
     }
+  });
+});
+
+describe("P1 revision 2 observation fixes", () => {
+  it("F4: the listed gateway is exactly the gap between the fence's collision rectangles", () => {
+    const fence = aldenYardFenceSolids.filter((r) => r.y === GARDEN_GATEWAY.y && r.h === GARDEN_GATEWAY.h);
+    expect(fence).toHaveLength(2);
+    const [left, right] = [...fence].sort((a, b) => a.x - b.x);
+    expect(left.x + left.w).toBe(GARDEN_GATEWAY.x);
+    expect(right.x).toBe(GARDEN_GATEWAY.x + GARDEN_GATEWAY.w);
+    // Nothing else of the yard's solids covers the gap.
+    const blocks = (x: number) => maps.MAIN_HOUSE.walls.some((r) => x > r.x && x < r.x + r.w && 436 > r.y && 436 < r.y + r.h);
+    for (let x = GARDEN_GATEWAY.x + 1; x < GARDEN_GATEWAY.x + GARDEN_GATEWAY.w; x++) expect(blocks(x), `x ${x}`).toBe(false);
+    expect(blocks(GARDEN_GATEWAY.x - 1)).toBe(true);
+    expect(blocks(GARDEN_GATEWAY.x + GARDEN_GATEWAY.w + 1)).toBe(true);
+  });
+
+  it("F2: indoors the view is the client's house camera: inside cameraBounds, centred when narrower than the screen", () => {
+    const at = (scene: string, x: number, y: number) =>
+      viewRect({ sceneId: scene, players: {} } as never, { sceneId: scene, x, y } as never);
+    // The shop floor: bounds x 64-768, y 128-640.
+    expect(maps.HOUSE_INTERIOR.cameraBounds).toEqual({ x: 64, y: 128, w: 704, h: 512 });
+    expect(at("HOUSE_INTERIOR", 590, 322)).toEqual({ x: 128, y: 142, w: 640, h: 360 });
+    expect(at("HOUSE_INTERIOR", 800, 700)).toEqual({ x: 128, y: 280, w: 640, h: 360 });
+    expect(at("HOUSE_INTERIOR", 0, 0)).toEqual({ x: 64, y: 128, w: 640, h: 360 });
+    // Upstairs: bounds narrower than the screen are centred.
+    const up = maps.HOUSE_UPPER.cameraBounds!;
+    expect(up.w).toBeLessThan(640);
+    expect(at("HOUSE_UPPER", 0, 0).x).toBe(up.x + up.w / 2 - 320);
+    // The main house has no cameraBounds: the same view as before.
+    expect(at("MAIN_HOUSE", 760, 490)).toEqual({ x: 224, y: 280, w: 640, h: 360 });
+    // The Hedge Maze is not a house: unchanged rule.
+    expect(at("HEDGE_MAZE", 0, 0)).toEqual({ x: 0, y: 0, w: 640, h: 360 });
+  });
+
+  it("F2: Coco sees 'E · UPSTAIRS' where the client shows it, and nothing outside the client's camera", async () => {
+    const s = start(0);
+    await s.env.reset(0);
+    const w = s.room().state;
+    const coco = Object.values(w.players).find((p) => p.role === "EMBER")!;
+    const sieg = Object.values(w.players).find((p) => p.role === "OATH")!;
+    const stairs = maps.HOUSE_INTERIOR.points.upstairs;
+    expect(onScreen(w, coco, stairs)).toBe(true);
+    // A point inside the shop map but outside the client's camera bounds is never listed.
+    expect(onScreen(w, coco, { x: 800, y: 322 })).toBe(false);
+    const o = await s.env.observe("coco");
+    expect(o.visible.find((v) => v.name === "E · UPSTAIRS")).toMatchObject({ kind: "exit", x: 4.4, y: 9.7 });
+    expect(o.screen.originX).toBe(4);
+    // Sieg, outside, never sees the shop's stairs.
+    expect(sieg.sceneId).toBe("MAIN_HOUSE");
+    expect(JSON.stringify(await s.env.observe("sieg"))).not.toContain("UPSTAIRS");
+  });
+
+  it("names-only labels show no drawn instruction text", async () => {
+    const s = start(0, { labels: "names-only" });
+    await s.env.reset(0);
+    const names = (await s.env.observe("sieg")).visible.map((v) => v.name);
+    expect(names).toEqual(expect.arrayContaining(["door", "garden gateway", "east road"]));
+    expect(names).not.toContain("EMBERBROOK →");
+    expect((await s.env.observe("coco")).visible.map((v) => v.name)).toContain("stairs up");
   });
 });
 
