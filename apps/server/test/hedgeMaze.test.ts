@@ -15,6 +15,8 @@ import {
   mazeCowRect,
   mazeHedges,
   mazeBurnBush,
+  mazeCowPosts,
+  MAZE_POST_GAP,
 } from "../../../packages/shared/src/hedgeMaze.js";
 import { maps, collisionRects } from "../../../packages/shared/src/maps.js";
 import {
@@ -26,6 +28,12 @@ import { neutral } from "../../../packages/shared/src/gameTypes.js";
 import { tickBlackHoles } from "../src/blackHoles.js";
 import { segmentHits } from "../src/enemySimulation.js";
 import { tickEnemies } from "../src/enemySimulation.js";
+const mazePosts = (maze: Parameters<typeof mazeCowRect>[0]) =>
+  mazeCowPosts.some((r) => overlapsRect(mazeCowRect(maze), r));
+const overlapsRect = (
+  a: { x: number; y: number; w: number; h: number },
+  b: { x: number; y: number; w: number; h: number },
+) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 function setup() {
   const room = new GameRoom("ABC234", false, "HEDGE_MAZE"),
     a = room.add("a"),
@@ -158,6 +166,57 @@ describe("Hedge Maze cooperative sequence", () => {
       collisionRects("HEDGE_MAZE", w.puzzles),
     );
     expect(clear.y).toBe(22 * 32);
+  });
+  it("posts north and south of the cow let heroes through but never the cow", () => {
+    const { w, s, c, maze } = setup();
+    // The opening is wider than a hero but far narrower than the cow.
+    expect(MAZE_POST_GAP.w).toBeGreaterThan(26);
+    expect(MAZE_POST_GAP.w).toBeLessThan(mazeCowRect(maze).w);
+    expect(mazePosts(maze)).toBe(false);
+    // Pulling straight along the lane (north or south) never moves the cow.
+    Object.assign(s, { x: 27 * 32, y: 34 * 32 });
+    Object.assign(c, { x: 20.5 * 32, y: 25 * 32 });
+    const start = { ...maze.cow };
+    for (const y of [maze.cow.y - 90, maze.cow.y + 90])
+      for (let n = 0; n < ticksFor(2); n++)
+        pullMazeCow(w, { x: maze.cow.x, y, sceneId: "HEDGE_MAZE" }, 100);
+    expect(maze.cow).toEqual(start);
+    // Unparked, the cow seals the lane: a hero in the gap is stopped below it.
+    const walls = () => collisionRects("HEDGE_MAZE", w.puzzles);
+    const gapX = MAZE_POST_GAP.x + MAZE_POST_GAP.w / 2;
+    const blocked = constrainMotion(
+      { x: gapX, y: 29 * 32 },
+      { x: 0, y: -8 * 32 },
+      maps.HEDGE_MAZE,
+      walls(),
+    );
+    expect(blocked.y).toBeGreaterThan(
+      mazeCowRect(maze).y + mazeCowRect(maze).h,
+    );
+    // Pulled sideways into the bay, the lane through both openings is clear.
+    for (let n = 0; n < ticksFor(3) && !maze.cow.parked; n++)
+      pullMazeCow(
+        w,
+        { x: 23.5 * 32, y: maze.cow.y, sceneId: "HEDGE_MAZE" },
+        100,
+      );
+    expect(maze.cow.parked).toBe(true);
+    expect(mazePosts(maze)).toBe(false);
+    const through = constrainMotion(
+      { x: gapX, y: 29 * 32 },
+      { x: 0, y: -8 * 32 },
+      maps.HEDGE_MAZE,
+      walls(),
+    );
+    expect(through.y).toBe(21 * 32);
+    // Outside the opening, the posts themselves stop a hero.
+    const post = constrainMotion(
+      { x: 24.6 * 32, y: 29 * 32 },
+      { x: 0, y: -2 * 32 },
+      maps.HEDGE_MAZE,
+      walls(),
+    );
+    expect(post.y).toBe(mazeCowPosts[2].y + mazeCowPosts[2].h + 13);
   });
   it("does not pull the cow through a wall or an occupied player position", () => {
     const { w, s, c, maze } = setup();

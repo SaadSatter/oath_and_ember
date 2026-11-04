@@ -6,6 +6,7 @@ import type {
 import {
   hedgeMazeState,
   mazeCellOpen,
+  mazeCowPosts,
   mazePaths,
 } from "../../../../packages/shared/src/hedgeMaze.js";
 import { EnemyView } from "../entities/EnemyView.js";
@@ -183,9 +184,20 @@ export class HedgeMazeView {
               .setDepth(-25),
           );
       this.label("FIREBALL · dry hedge", 19 * 32, 31.5 * 32, "#ffbd75");
+      // Low stone posts: a hero fits through the gap, the cow does not.
+      for (const post of mazeCowPosts) {
+        const stone = this.scene.add.graphics().setDepth(post.y + post.h);
+        stone.fillStyle(0x3d4038).fillRect(post.x, post.y + 4, post.w, post.h);
+        stone.fillStyle(0x8f9282).fillRect(post.x, post.y, post.w, post.h - 4);
+        stone
+          .fillStyle(0xb7b9a8)
+          .fillRect(post.x + 2, post.y + 2, post.w - 4, 3);
+        stone.lineStyle(2, 0x2b2d27).strokeRect(post.x, post.y, post.w, post.h);
+        this.objects.push(stone);
+      }
       this.cow = this.image("maze:cow", state.cow.x, state.cow.y).setDepth(800);
       this.label("BLACK HOLE → grazing bay", 22.2 * 32, 22.2 * 32, "#dbb0ff");
-      this.label("Harmless cow · blocks the lane", 26 * 32, 27.7 * 32);
+      this.label("Harmless cow · too wide for the posts", 26 * 32, 28.8 * 32);
       this.gate = this.image("ruins:overhead-gate", 41 * 32, 14 * 32)
         .setRotation(Math.PI / 2)
         .setDepth(448);

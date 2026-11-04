@@ -554,6 +554,23 @@ chapter0Cutscenes.funeral = {
     { speaker: "SIEG", text: "He believed in both of us." },
     { speaker: "COCO", text: "I wish I'd said goodbye." },
     { speaker: "NARRATION", text: "..." },
+    {
+      speaker: "SIEG",
+      text: "Coco. Whoever did this didn't come out of nowhere.",
+    },
+    {
+      speaker: "SIEG",
+      text: "The only road to the shop runs through Emberbrook. Someone there must have seen a stranger pass.",
+    },
+    {
+      speaker: "COCO",
+      text: "And Papa knew everyone in town. If he had secrets, somebody heard a whisper of them.",
+    },
+    { speaker: "SIEG", text: "Then we start with the people who knew him." },
+    {
+      speaker: "QUEST",
+      text: "New objective: Ask around Emberbrook: Elder Bertram, Brynn and the traveling merchant.",
+    },
   ],
 };
 
@@ -673,6 +690,14 @@ chapter0Cutscenes["clues-done"] = {
       text: "Investigation: Emberbrook has told them all it knows.",
     },
     {
+      speaker: "SIEG",
+      text: "A hidden past, rumors of the Ember, a cloaked woman heading for the shrine...",
+    },
+    {
+      speaker: "COCO",
+      text: "If Papa really kept something that important, he'd have left a clue at home. Let's search his things before we chase her.",
+    },
+    {
       speaker: "QUEST",
       text: "New objective: Search Papa's belongings at the shop.",
     },
@@ -739,6 +764,22 @@ chapter0Cutscenes.journal = {
     {
       speaker: "SIEG",
       text: "That's exactly what I was afraid you'd say.",
+    },
+    {
+      speaker: "COCO",
+      text: "Before we decide anything... I want to go back to Papa's grave.",
+    },
+    {
+      speaker: "COCO",
+      text: "If we're leaving to follow his secrets, I want to tell him first.",
+    },
+    {
+      speaker: "SIEG",
+      text: "Then let's go together. The old tree, beside the shop.",
+    },
+    {
+      speaker: "QUEST",
+      text: "New objective: Return to Papa's grave beneath the old tree beside the shop.",
     },
   ],
 };
@@ -1105,7 +1146,7 @@ export function chapter0Objective(story: StoryState, role: Role) {
       : "Search Papa's belongings: his desk in the shop carries one of his seals (E).";
   }
   if (story.stage === "DECISION")
-    return "Papa's journal points to the guardian at the abandoned shrine. Meet beneath the old tree beside the shop.";
+    return "Papa's journal points to the guardian at the abandoned shrine. Return to Papa's grave beneath the old tree beside the shop (walk up to it).";
   return undefined;
 }
 
