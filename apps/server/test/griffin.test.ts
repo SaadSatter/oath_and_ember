@@ -10,6 +10,7 @@ import {
   griffinNest,
   GRIFFIN_NEST,
   griffinWater,
+  GRIFFIN_MAX_HP,
 } from "../../../packages/shared/src/griffin.js";
 import {
   shrinePoints,
@@ -123,7 +124,7 @@ it("pulls the airborne guardian ashore with Black Hole, respecting pillars and o
   expect(g.y).toBeGreaterThanOrEqual(400);
   expect(g.phase).toBe("LAND");
   expect(g.grounded).toBe(14);
-  expect(g.hp).toBe(296);
+  expect(g.hp).toBe(GRIFFIN_MAX_HP - 24);
   Object.assign(g, { x: 330, y: 576 });
   const before = g.x;
   for (let i = 0; i < ticksFor(2); i++)
@@ -502,7 +503,7 @@ it("Black Hole overcomes flight AI and really drags the Griffin onto land over s
   }
   expect(g.y).toBeGreaterThanOrEqual(400);
   expect(g.grounded).toBeGreaterThan(0);
-  expect(g.hp).toBe(296);
+  expect(g.hp).toBe(GRIFFIN_MAX_HP - 24);
 });
 
 it("loops a two-second beam from its mouth and explodes only at the nearest contact", () => {
@@ -561,7 +562,7 @@ it("drags a Griffin hit by a shoreline vortex physically onto land, with stronge
   }
   expect(g.y).toBeGreaterThan(400);
   expect(g.grounded).toBe(14);
-  expect(g.hp).toBe(296);
+  expect(g.hp).toBe(GRIFFIN_MAX_HP - 24);
   const distant = setup();
   Object.assign(distant.g, { x: 640, y: 312 });
   pullGriffin(distant.w, { ...hole, x: 790, y: 312, damaged: [] }, 100);
@@ -607,7 +608,7 @@ it("detects Sieg too and wakes if attacked at the nest", () => {
   const b = setup();
   damageGriffin(b.w, 5);
   expect(b.g.phase).toBe("WAKING");
-  expect(b.g.hp).toBe(315);
+  expect(b.g.hp).toBe(GRIFFIN_MAX_HP - 5);
 });
 
 it("does not detect a hero behind a solid pillar", () => {

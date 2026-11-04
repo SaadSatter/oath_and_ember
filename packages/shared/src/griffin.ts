@@ -82,10 +82,12 @@ export const griffinSpawn = (role: Role | null) => ({
   x: role === "EMBER" ? 688 : 592,
   y: 1056,
 });
+/** Doubled from 320 so the fight lasts long enough to use the pillars. */
+export const GRIFFIN_MAX_HP = 640;
 export const newGriffin = (): GriffinState => ({
   ...griffinNest,
   facing: Math.PI / 2,
-  hp: 320,
+  hp: GRIFFIN_MAX_HP,
   phase: "NEST",
   timer: 0,
   clock: 0,

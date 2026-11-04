@@ -18,6 +18,7 @@ import {
   griffinState,
   griffinWater,
   griffinTrees,
+  GRIFFIN_MAX_HP,
 } from "../../../../packages/shared/src/griffin.js";
 import { griffinProps } from "../animation/griffinProps.js";
 import { enemyDirection } from "../animation/EnemyPresentation.js";
@@ -416,7 +417,7 @@ export class GriffinView {
                     : "CHECKING THAT MAGNIFICENT HAIR"
               : g.hp <= 0
                 ? "DEFEATED · E at nest for wig"
-                : `GRIFFIN ${g.hp}/320 · ${g.phase.replaceAll("_", " ")}`,
+                : `GRIFFIN ${g.hp}/${GRIFFIN_MAX_HP} · ${g.phase.replaceAll("_", " ")}`,
     );
     const fx = this.effects;
     fx.clear();

@@ -32,6 +32,24 @@ export const mazeBurnBush: Rect = {
   w: 2 * 32,
   h: 4 * 32,
 };
+/**
+ * Stone posts across the lane just north and south of the cow. Their 56px gap
+ * lets a hero (26px) through but never the 128px cow, so the cow can only be
+ * pulled sideways into its grazing bay. The gap sits on the east side, in line
+ * with the strip the cow leaves free once it is parked.
+ */
+export const MAZE_POST_GAP = { x: 830, w: 56 } as const;
+export const mazeCowPosts: Rect[] = [22 * 32 + 8, 27 * 32 + 4].flatMap((y) => [
+  { x: 24 * 32, y, w: MAZE_POST_GAP.x - 24 * 32, h: 20 },
+  {
+    x: MAZE_POST_GAP.x + MAZE_POST_GAP.w,
+    y,
+    w: 28 * 32 - (MAZE_POST_GAP.x + MAZE_POST_GAP.w),
+    h: 20,
+  },
+]);
+/** The furthest west the cow's centre can be pulled into the bay. */
+export const MAZE_COW_PARKED_X = 23.8 * 32;
 export const mazeGate: Rect = { x: 40 * 32, y: 12 * 32, w: 2 * 32, h: 4 * 32 };
 export interface HedgeMazeState {
   burned: boolean;

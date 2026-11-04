@@ -6,6 +6,7 @@ import {
 import {
   hedgeMazeState,
   mazeBurnBush,
+  MAZE_COW_PARKED_X,
   mazeCowRect,
   mazeDynamicWalls,
   mazeEnemySpawns,
@@ -172,10 +173,11 @@ export function pullMazeCow(
     ...(!w.puzzles.hedgeGate.complete ? [mazeGate] : []),
   ];
   if (walls.some((r) => segmentHits(hole.x, hole.y, cow.x, cow.y, r))) return;
-  // The grazing bay has a horizontal physical lane. Never teleport or pull through its walls.
+  // The posts north and south keep the cow on a horizontal lane into the bay.
+  // Never teleport or pull through its walls.
   const dx =
     Math.max(
-      23.8 * 32,
+      MAZE_COW_PARKED_X,
       Math.min(
         26 * 32,
         cow.x +

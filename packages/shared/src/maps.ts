@@ -15,6 +15,7 @@ import {
 } from "./mirrorPond.js";
 import {
   mazeHedges,
+  mazeCowPosts,
   mazeDynamicWalls,
   type HedgeMazeState,
 } from "./hedgeMaze.js";
@@ -199,7 +200,7 @@ export const maps: Record<SceneId, MapDefinition> = {
     width: 1536,
     height: 1280,
     spawn: { x: 4 * 32, y: 34 * 32 },
-    walls: mazeHedges,
+    walls: [...mazeHedges, ...mazeCowPosts],
     points: { back: { x: 48, y: 34 * 32 } },
   },
   BRIDGE_RUINS: {
