@@ -76,8 +76,8 @@ node --import tsx scripts/midterm/evaluate.ts --player model-memory --situations
 
 ## Recording
 
-`replay/recording.webm` (1280×720, 34.6 s) is a **trace-verified replay**, not a live capture. It was made with `scripts/midterm/replay-video.ts` at a clean checkout of `b61035f`.
-- **Verification:** it reports "REPLAY MATCHES THE TRACE: start hash, 217 step results, end (success, df298be7…) and 1574 ticks". The details are in `replay/recording.json` (`matchesTrace: true`).
+`replay.webm` (1280×720, 34.6 s) is a **trace-verified replay**, not a live capture. It was made with `scripts/midterm/replay-video.ts` at a clean checkout of `b61035f`.
+- **Verification:** it reports "REPLAY MATCHES THE TRACE: start hash, 217 step results, end (success, df298be7…) and 1574 ticks". The details are in `replay-recording.json` (`matchesTrace: true`).
 - **Labelling:** the video is titled "REPLAY of pilot-17 … (recorded actions, no model calls)".
 - **Timing:** it plays the recorded actions at game speed, so model latency is not shown.
 - **What the viewer adds:** the HUD goal lines and an evaluator milestone strip. **No agent received either.**
@@ -86,7 +86,7 @@ Video SHA-256: `8dea8ce06e55e43dafb1dbd7afb62022f90535b9cd033a4c66ff7bcf61bb791c
 
 ## Infrastructure
 
-- No errors: 0 failed calls, 0 timeouts, no warnings in `launcher.log`.
+- No errors: 0 failed calls, 0 timeouts, no warnings in `launcher-output.txt` (the launcher's console output).
 - Secret scan: 0 findings. The trace's only "sk-" substring is the `task-4079cad5` id in the policy name.
 
 **Interpretation.** This is one trial at one seed. It shows one unaided completion, not a success rate. No prompt or configuration was changed in response to it.
