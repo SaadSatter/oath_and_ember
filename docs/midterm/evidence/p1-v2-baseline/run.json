@@ -1,0 +1,20 @@
+{
+  "suiteRevision": 2,
+  "player": "baseline-quest",
+  "situations": [
+    "P1"
+  ],
+  "seeds": [
+    0,
+    1
+  ],
+  "final": false,
+  "gitHash": "28a28de",
+  "wallSeconds": 600,
+  "model": null,
+  "launch": {
+    "launcher": "scripts/midterm/prologue-situation.ts",
+    "speed": null,
+    "viewer": false
+  }
+}
