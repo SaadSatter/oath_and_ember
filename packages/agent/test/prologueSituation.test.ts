@@ -12,7 +12,7 @@ import { cutscenes, storyObjectives, TRAIL_ONWARD, storyStages } from "../../sha
 import { episodes, stateHash } from "../src/evaluator.js";
 import { environmentFor, situation, SITUATIONS } from "../src/suite.js";
 import { EPISODE_CAP_USD, OBS_ONLY_SITUATIONS, WALL_CLOCK_CEILING_S, checkWallSeconds, policiesFor, validatePlan, type ModelSetup } from "../src/harness.js";
-import { P1, P1_HASH, P1_REVISIONS, P1_V1, P1_V1_HASH, prologueEvaluationLabel } from "../src/prologueSituation.js";
+import { P1, P1_HASH, P1_REVISIONS, P1_V1, P1_V1_HASH, P1_V2, P1_V2_HASH, prologueEvaluationLabel } from "../src/prologueSituation.js";
 import { GARDEN_GATEWAY, onScreen, viewRect } from "../src/perception.js";
 import { aldenYardFenceSolids } from "../../shared/src/environmentSolids.js";
 import { maps } from "../../shared/src/maps.js";
@@ -70,8 +70,8 @@ async function pair(env: ReturnType<typeof start>["env"], sieg: GameAction, coco
 
 describe("P1 definition", () => {
   it("is frozen: any change to the definition changes this hash and is a new revision", () => {
-    expect(P1_HASH).toBe("7dfac8cd2b91b5d096328265a4eba068a8a86055750c204896394ebdc6b1a655");
-    expect(P1.version).toBe(2);
+    expect(P1_HASH).toBe("05a2e7442d5271f04af135ddcfec687c23c756e3cc9e6894f43182dd0d7161aa");
+    expect(P1.version).toBe(3);
     expect(prologueEvaluationLabel("P1")).toEqual({ label: "P1", definitionHash: P1_HASH });
     expect(prologueEvaluationLabel("S2-local")).toBeNull();
   });
@@ -79,22 +79,31 @@ describe("P1 definition", () => {
   it("keeps revision 1 verbatim, with its original hash, and records the succession", () => {
     expect(P1_V1_HASH).toBe("baa6b04b7de3d56e479cbb092d5d8a10875a290c89748b836917e32a895f73ac");
     expect(P1_V1).toMatchObject({ version: 1, preset: "P1" });
-    expect(P1.supersedes).toEqual({ version: 1, definitionHash: P1_V1_HASH, commit: "b62df73" });
-    expect(P1_REVISIONS.map((r) => [r.version, r.preset, r.definitionHash])).toEqual([[1, "P1", P1_V1_HASH], [2, "P1-v2", P1_HASH]]);
+    // Revision 2 likewise, verbatim, with its original hash.
+    expect(P1_V2_HASH).toBe("7dfac8cd2b91b5d096328265a4eba068a8a86055750c204896394ebdc6b1a655");
+    expect(P1_V2).toMatchObject({ version: 2, preset: "P1-v2" });
+    expect(P1.supersedes).toEqual({ version: 2, definitionHash: P1_V2_HASH, commit: "28a28de" });
+    expect(P1_REVISIONS.map((r) => [r.version, r.preset, r.definitionHash])).toEqual([[1, "P1", P1_V1_HASH], [2, "P1-v2", P1_V2_HASH], [3, "P1-v3", P1_HASH]]);
+    // Revision 3 changes only the fence opening's name: same prompts and limits as revision 2.
+    const v2 = P1_V2 as never as { prompts: unknown; limits: unknown };
+    expect(P1.prompts).toEqual(v2.prompts);
+    expect(P1.limits).toEqual(v2.limits);
     // Revision 1's preset stays defined, unchanged, so its records stay readable.
     expect(episodes.P1).toMatchObject({ preset: "P1", checkpoint: "prologue" });
-    expect(episodes["P1-v2"].limits).toEqual(episodes.P1.limits);
-    expect(episodes["P1-v2"].success).toBe(episodes.P1.success);
+    for (const preset of ["P1-v2", "P1-v3"] as const) {
+      expect(episodes[preset].limits).toEqual(episodes.P1.limits);
+      expect(episodes[preset].success).toBe(episodes.P1.success);
+    }
   });
 
   it("is read from the code the harness runs: preset, checkpoint, success, limits, cap, players", () => {
     const def = situation("P1");
-    expect(def).toMatchObject({ id: "P1", preset: "P1-v2", heldOut: false, revision: 2, task: NEUTRAL_TASK });
+    expect(def).toMatchObject({ id: "P1", preset: "P1-v3", heldOut: false, revision: 2, task: NEUTRAL_TASK });
     expect(def.prefix).toBeUndefined();
     expect(def.briefing).toBeUndefined();
     expect(def.tutorial).toBeUndefined();
     expect(SITUATIONS.at(-1)!.id).toBe("P1");
-    const ep = episodes["P1-v2"];
+    const ep = episodes["P1-v3"];
     expect(ep.checkpoint).toBe("prologue");
     // The owner's values (game time, calls) and S2-A's retained decision and token limits.
     expect(ep.limits).toEqual({ maxTicks: 10_800, maxDecisionsPerPlayer: 1_600, maxModelCallsPerPlayer: 250, maxTokensPerPlayer: 4_000_000 });
@@ -107,8 +116,8 @@ describe("P1 definition", () => {
 
   it("succeeds exactly when the authoritative story stage reaches WOODS", () => {
     const at = (stage: string) => ({ story: { stage, flags: [] } }) as never;
-    for (const stage of storyStages) expect(episodes["P1-v2"].success(at(stage)), stage).toBe(storyStages.indexOf(stage) >= storyStages.indexOf("WOODS"));
-    expect(episodes["P1-v2"].success({} as never)).toBe(false);
+    for (const stage of storyStages) expect(episodes["P1-v3"].success(at(stage)), stage).toBe(storyStages.indexOf(stage) >= storyStages.indexOf("WOODS"));
+    expect(episodes["P1-v3"].success({} as never)).toBe(false);
   });
 
   it("model players get the episode-neutral task and the normal prompt only: no briefing, tutorial or walkthrough; prompts frozen", () => {
@@ -175,7 +184,7 @@ describe("P1 reset", () => {
       const s = start(seed);
       const first = await s.env.reset(seed);
       expect(first).toMatchObject({ tick: 0, startHash: P1.start.hashes[seed] });
-      expect(first.episode).toBe(`P1-v2-${seed}-${P1.start.hashes[seed].slice(0, 8)}`);
+      expect(first.episode).toBe(`P1-v3-${seed}-${P1.start.hashes[seed].slice(0, 8)}`);
       const w = s.room().state;
       expect(stateHash(w)).toBe(first.startHash);
       expect(w.story).toMatchObject({ stage: "ARRIVAL", flags: [] });
@@ -199,8 +208,8 @@ describe("P1 reset", () => {
     expect(sieg.area.name).toBe("Main house");
     expect(coco.area.name).toBe("Alden's Magic Shop");
     const names = (o: Observation) => o.visible.map((v) => `${v.kind}:${v.name}`);
-    expect(names(sieg)).toEqual(expect.arrayContaining(["exit:door", "object:garden gateway", "exit:EMBERBROOK →"]));
-    expect(JSON.stringify(sieg)).not.toContain("garden gate (open)");
+    expect(names(sieg)).toEqual(expect.arrayContaining(["exit:door", "object:gap in garden fence", "exit:EMBERBROOK →"]));
+    expect(JSON.stringify(sieg)).not.toMatch(/garden gate \(open\)|garden gateway/);
     expect(names(sieg).some((n) => n.startsWith("partner") || n.includes("Alden"))).toBe(false);
     // F2: the client's shop camera shows the stairs from where Coco starts.
     expect(names(coco)).toEqual(["exit:E · UPSTAIRS", "creature:Alden"]);
@@ -208,7 +217,7 @@ describe("P1 reset", () => {
     expect(coco.visible.find((v) => v.name === "Alden")!.details).toBeUndefined();
     // F4: the opening is listed with its exact passable span; the grid keeps
     // each centre's truth ("#" on both straddled cells), so no blocked cell is shown as open.
-    const gateway = sieg.visible.find((v) => v.name === "garden gateway")!;
+    const gateway = sieg.visible.find((v) => v.name === "gap in garden fence")!;
     expect(gateway.extent).toEqual({ x: 14.5, y: 13.5, w: 1, h: 0.3 });
     const { originX, originY, rows } = sieg.screen;
     expect(rows[13 - originY][14 - originX]).toBe("#");
@@ -223,7 +232,29 @@ describe("P1 reset", () => {
 });
 
 describe("P1 revision 2 observation fixes", () => {
-  it("F4: the listed gateway is exactly the gap between the fence's collision rectangles", () => {
+  it("revision 3: the opening is 'gap in garden fence' at the exact passable span, with no mark on a blocked cell", async () => {
+    const s = start(0);
+    await s.env.reset(0);
+    const o = await s.env.observe("sieg");
+    const gaps = o.visible.filter((v) => /fence|gate/i.test(v.name));
+    expect(gaps).toHaveLength(1);
+    const gap = gaps[0];
+    expect(gap).toMatchObject({ kind: "object", name: "gap in garden fence", x: 15, y: 13.6 });
+    expect(gap.details).toBeUndefined();
+    // The extent is the collision gap: x 14.5-15.5 tiles (464-496 px), from y 13.5 (432 px).
+    expect(gap.extent).toEqual({ x: GARDEN_GATEWAY.x / 32, y: GARDEN_GATEWAY.y / 32, w: GARDEN_GATEWAY.w / 32, h: Math.round((GARDEN_GATEWAY.h / 32) * 10) / 10 });
+    // Every grid cell the extent touches keeps its centre's truth: blocked ("#"), never "o", "." or ">".
+    const { originX, originY, rows } = o.screen;
+    for (const x of [14, 15]) expect(rows[13 - originY][x - originX], `cell ${x},13`).toBe("#");
+    expect(rows.join("")).not.toContain("o");
+    // The two cells' centres really are inside fence collision, and the gap's centre line is not.
+    const blocked = (px: number, py: number) => maps.MAIN_HOUSE.walls.some((r) => px >= r.x && px <= r.x + r.w && py >= r.y && py <= r.y + r.h);
+    expect(blocked(14.5 * 32, 13.5 * 32)).toBe(true);
+    expect(blocked(15.5 * 32, 13.5 * 32)).toBe(true);
+    expect(blocked(15 * 32, 13.5 * 32 + 4)).toBe(false);
+  });
+
+  it("F4: the listed gap is exactly the gap between the fence's collision rectangles", () => {
     const fence = aldenYardFenceSolids.filter((r) => r.y === GARDEN_GATEWAY.y && r.h === GARDEN_GATEWAY.h);
     expect(fence).toHaveLength(2);
     const [left, right] = [...fence].sort((a, b) => a.x - b.x);
@@ -276,7 +307,7 @@ describe("P1 revision 2 observation fixes", () => {
     const s = start(0, { labels: "names-only" });
     await s.env.reset(0);
     const names = (await s.env.observe("sieg")).visible.map((v) => v.name);
-    expect(names).toEqual(expect.arrayContaining(["door", "garden gateway", "east road"]));
+    expect(names).toEqual(expect.arrayContaining(["door", "gap in garden fence", "east road"]));
     expect(names).not.toContain("EMBERBROOK →");
     expect((await s.env.observe("coco")).visible.map((v) => v.name)).toContain("stairs up");
   });

@@ -74,3 +74,7 @@ P1 revision 2 (2026-11-03):
 - Review findings F1, F2, F4 and F6 are fixed and F5 is confirmed (see the EVALUATION_SUITE change log).
 - Revision 1 and its evidence are kept.
 - Paid P1 runs remain blocked until revision 2's audit and independent review are recorded and the owner approves a run.
+
+P1 revision 3 (2026-11-03):
+- Final freeze before the first live trial, with the label `gap in garden fence`. Prompt pins added.
+- One paid `model-memory` trial (seed 0, $0.15 cap) is approved, subject to the preflight gates.

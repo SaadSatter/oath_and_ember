@@ -16,7 +16,7 @@ import { stageReached } from "../../shared/src/prologue.js";
  */
 export type EpisodePreset =
   | "S2-local" | "S3-local" | "full" | "milestone" | "S1" | "S2" | "S3" | "S4"
-  | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "P1" | "P1-v2";
+  | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "P1" | "P1-v2" | "P1-v3";
 
 export interface EpisodeDefinition {
   preset: EpisodePreset;
@@ -40,7 +40,7 @@ const QUEST_AREAS = new Set(["MIRROR_POND", "HEDGE_MAZE", "GRIFFIN_ENCLOSURE"]);
 const holding = (w: World, item: string) => ((w.inventory?.counts as Record<string, number> | undefined)?.[item] ?? 0) > 0;
 
 /** Owner-approved episode definitions and limits (2026-10-23). */
-const coreEpisodes: Record<Exclude<EpisodePreset, "S2-local" | "S3-local" | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "P1" | "P1-v2">, EpisodeDefinition> = {
+const coreEpisodes: Record<Exclude<EpisodePreset, "S2-local" | "S3-local" | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "P1" | "P1-v2" | "P1-v3">, EpisodeDefinition> = {
   full: {
     preset: "full",
     goal: "Bald Goddess quest: from the goddess checkpoint to chapter0.complete.",
@@ -127,6 +127,8 @@ export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
   // P1 revision 2 (2026-11-03, review fixes F1/F2/F4): the same start, success
   // predicate and limits; its own preset so episode ids differ from revision 1.
   "P1-v2": { ...P1_EPISODE, preset: "P1-v2", goal: "P1 Into the Forest (revision 2): from the Prologue's opening, reach the Mossling Woods (story stage WOODS)." },
+  // P1 revision 3 (2026-11-03): the fence opening's listing renamed by the owner; otherwise as revision 2.
+  "P1-v3": { ...P1_EPISODE, preset: "P1-v3", goal: "P1 Into the Forest (revision 3): from the Prologue's opening, reach the Mossling Woods (story stage WOODS)." },
 };
 
 /** Private progress markers recorded in traces (never shown to players). */

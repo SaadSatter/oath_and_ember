@@ -146,8 +146,9 @@ export const SITUATIONS: readonly Situation[] = Object.freeze([
   // P1 "Into the Forest" (owner approval 2026-11-03; prologueSituation.ts): the
   // Prologue's own opening, no prefix, no briefing, no tutorial text. Frozen and
   // excluded from prompt tuning; not formally held out (see its definition).
-  // Revision 2 (review fixes): preset P1-v2 and the episode-neutral task line.
-  { id: "P1", preset: "P1-v2", heldOut: false, title: "Into the Forest (Prologue)", start: "prologue checkpoint: the game's own opening", task: NEUTRAL_TASK, revision: 2 },
+  // Revision 2 (review fixes): the episode-neutral task line. Revision 3: the
+  // fence opening's listing renamed (owner's wording); preset P1-v3.
+  { id: "P1", preset: "P1-v3", heldOut: false, title: "Into the Forest (Prologue)", start: "prologue checkpoint: the game's own opening", task: NEUTRAL_TASK, revision: 2 },
 ]);
 
 /**

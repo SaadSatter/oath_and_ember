@@ -280,3 +280,11 @@ Supports 3b, 3c and 5a (partially). [SITUATION_A.md](SITUATION_A.md) freezes the
 | 3b wall clock | `harness.ts` `WALL_CLOCK_CEILING_S`, `checkWallSeconds` (tested) |
 | 5a freeze | Revision 2 hash `7dfac8cd…a655` pinned; revision 1 `baa6b04b…73ac` kept verbatim and pinned |
 | 4b baseline | `docs/midterm/evidence/p1-v2-baseline/` |
+
+### P1 revision 3 (2026-11-03)
+
+| Check | Evidence |
+| --- | --- |
+| 2c observation | `perception.ts` (`gap in garden fence`); the focused test "revision 3: the opening is 'gap in garden fence' …" in `prologueSituation.test.ts` |
+| 5a freeze | Revision 3 hash `05a2e744…61aa`. Revisions 1 (`baa6b04b…`) and 2 (`7dfac8cd…`) are kept verbatim and pinned. `promptFreeze.test.ts` pins the tutorial and S2-A prompts |
+| 4b baseline | `docs/midterm/evidence/p1-v3-baseline/` |

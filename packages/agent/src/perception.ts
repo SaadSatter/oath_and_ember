@@ -508,15 +508,15 @@ function prologueProps(w: World, scene: SceneId, me: Player, mode: LabelMode): P
   const pts = maps[scene].points;
   if (scene === "MAIN_HOUSE") {
     props.push({ kind: "exit", name: "door", ...pts.door, mark: ">" });
-    // The garden fence's one opening, drawn in the fence art (the art's own
-    // region name is "garden-gateway", apps/client/src/environment/
-    // mapClassification.ts). Its passable span is exactly the gap between the
+    // The garden fence's one opening, drawn as a gap in the fence art. Listed
+    // as "gap in garden fence" (owner's wording, P1 revision 3; revision 2
+    // used "garden gateway"). Its passable span is exactly the gap between the
     // fence's collision rectangles (aldenYardFenceSolids: x 464-496, y 432-440),
     // given as the listing's extent. The gap straddles two tile centres, so the
     // centre-sampled grid still shows "#" there, truthfully for each centre; the
     // listing puts no mark on the grid, so no blocked cell is shown as open
     // (P1 revision 2, review finding F4).
-    props.push({ kind: "object", name: "garden gateway", x: 480, y: 436, floor: GARDEN_GATEWAY });
+    props.push({ kind: "object", name: "gap in garden fence", x: 480, y: 436, floor: GARDEN_GATEWAY });
     // The road signs the client draws while the roads are closed (always, in the Prologue).
     props.push({ kind: "exit", name: label(mode, "EMBERBROOK →", "east road"), ...pts.exit, mark: ">" });
     props.push({ kind: "exit", name: label(mode, "← FOREST", "west road"), ...pts.shrine, mark: ">" });

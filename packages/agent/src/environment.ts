@@ -818,6 +818,6 @@ export class AgentEnvironment implements GameInterface {
 
   /** Evaluator progress markers; P1 adds its Prologue markers (other episodes unchanged). */
   private progress(w: World) {
-    return this.preset === "P1" || this.preset === "P1-v2" ? [...milestones(w), ...prologueMilestones(w)] : milestones(w);
+    return this.preset === "P1" || this.preset === "P1-v2" || this.preset === "P1-v3" ? [...milestones(w), ...prologueMilestones(w)] : milestones(w);
   }
 }

@@ -8,6 +8,7 @@
 //
 // Model players (PAID; only after the owner has authorized the stage):
 //   --player model-history|model-obs-only|model-memory --stage pilot|final|contingency --effort medium|low --paid
+//   --max-spend-usd <n>   optional per-episode cap below the suite's (never above; harness episodeCap)
 //   --smoke --paid    one call, from the smoke stage
 // Every paid episode is reserved in the one shared spend ledger, in the git
 // common directory (packages/agent/src/repo.ts), before it starts.
@@ -100,6 +101,11 @@ if (final) {
 }
 let model: ModelSetup | undefined;
 let ledger: SpendLedger | undefined;
+// An optional per-episode spend cap below the suite's cap (the same harness
+// rule as live.ts: it may lower the cap, never raise it). Model runs only.
+const maxSpend = arg("--max-spend-usd");
+const episodeCapUsd = maxSpend === undefined ? undefined : Number(maxSpend);
+if (episodeCapUsd !== undefined && !player.startsWith("model")) throw Error("--max-spend-usd applies to model runs only.");
 if (player === "model-history" || player === "model-obs-only" || player === "model-guided" || player === "model-memory") {
   const stage = arg("--stage");
   if (!stage) throw Error("--stage is required for model runs.");
@@ -124,6 +130,7 @@ try {
     signal: controller.signal,
     ...(model ? { model } : {}),
     ...(finalGrant ? { finalGrant } : {}),
+    ...(episodeCapUsd !== undefined ? { episodeCapUsd } : {}),
     onEpisode: (s) =>
       console.log(`${s.situation} seed ${s.seed}: ${s.status}${s.reason && s.reason !== "success" ? ` (${s.reason})` : ""}, ${s.gameSeconds}s game time, decisions ${s.decisions.sieg}/${s.decisions.coco}, invalid ${s.invalidActions.sieg + s.invalidActions.coco}, ${s.wallSeconds}s real${s.gateway ? `, $${s.spendUsd.charged.toFixed(4)} charged` : ""}`),
   });

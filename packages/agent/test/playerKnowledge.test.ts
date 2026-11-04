@@ -246,8 +246,8 @@ describe("3. S2 and S3 map to the right areas and success conditions", () => {
     // S1, S4 and F are unchanged; S4 and F stay held out.
     expect(SITUATIONS.map((s) => [s.id, s.preset, s.heldOut])).toEqual([
       ["S1", "S1", false], ["S2", "S2-v2", false], ["S3", "S3-v2", false], ["S4", "S4", true], ["F", "full", true], ["S2-local", "S2-local-v2", false], ["S3-local", "S3-local-v2", false],
-      // P1 "Into the Forest" (2026-11-03), appended; revision 2 runs preset P1-v2.
-      ["P1", "P1-v2", false],
+      // P1 "Into the Forest" (2026-11-03), appended; revision 3 runs preset P1-v3.
+      ["P1", "P1-v3", false],
     ]);
   });
 

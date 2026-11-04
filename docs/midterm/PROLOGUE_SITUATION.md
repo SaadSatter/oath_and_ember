@@ -1,4 +1,4 @@
-# P1 — Into the Forest (revision 2, frozen 2026-11-03)
+# P1 — Into the Forest (revision 3, frozen 2026-11-03)
 
 P1 is a **directed narrative and navigation** situation in the Prologue. It sits alongside the frozen Hedge Maze Situation A (S2-A).
 
@@ -10,11 +10,13 @@ P1 is a **directed narrative and navigation** situation in the Prologue. It sits
 - **Tests:** [`packages/agent/test/prologueSituation.test.ts`](../../packages/agent/test/prologueSituation.test.ts).
 - **Free check script:** [`scripts/midterm/prologue-situation.ts`](../../scripts/midterm/prologue-situation.ts).
 
-**Definition hash of the current revision (2)** (SHA-256 of the canonical definition): `7dfac8cd2b91b5d096328265a4eba068a8a86055750c204896394ebdc6b1a655`. The test pins it. Any change to the start, success rule, limits, stated observation contract, prompts, start views or baseline reference changes this hash and fails CI. Observations later in an episode are not hashed; the other P1 tests guard those. Such a change is a new revision of P1, recorded with the owner's approval. It is never folded into an earlier revision.
+**Definition hash of the current revision (3)** (SHA-256 of the canonical definition): `05a2e7442d5271f04af135ddcfec687c23c756e3cc9e6894f43182dd0d7161aa`. The test pins it. Any change to the start, success rule, limits, stated observation contract, prompts, start views or baseline reference changes this hash and fails CI. Observations later in an episode are not hashed; the other P1 tests guard those. Such a change is a new revision of P1, recorded with the owner's approval. It is never folded into an earlier revision.
 
-**Revision 1** (hash `baa6b04b7de3d56e479cbb092d5d8a10875a290c89748b836917e32a895f73ac`, commit `b62df73`) is kept verbatim as `P1_V1` and is still pinned. It was never run by a model.
-- **Reproducing it.** Revision 1 can be reproduced only at commit `b62df73`. At later commits the same script runs revision 2.
-- **Telling the revisions' records apart.** Both use situation id `P1` and suite revision 2. Use the preset (`P1` or `P1-v2`), the episode-id prefix, or `evaluation.definitionHash`.
+**Revisions 1 and 2** are kept verbatim and still pinned; neither was run by a model:
+- revision 1 as `P1_V1` (hash `baa6b04b7de3d56e479cbb092d5d8a10875a290c89748b836917e32a895f73ac`, commit `b62df73`);
+- revision 2 as `P1_V2` (hash `7dfac8cd2b91b5d096328265a4eba068a8a86055750c204896394ebdc6b1a655`, commit `28a28de`).
+- **Reproducing them.** Each can be reproduced only at its own commit. At later commits the same script runs the current revision.
+- **Telling the revisions' records apart.** All use situation id `P1` and suite revision 2. Use the preset (`P1`, `P1-v2` or `P1-v3`), the episode-id prefix, or `evaluation.definitionHash`.
 
 See "Revision history".
 
@@ -23,9 +25,14 @@ See "Revision history".
 | Revision | Preset (episode ids) | Hash | Status | Evidence |
 | --- | --- | --- | --- | --- |
 | 1 | `P1` (`P1-<seed>-<start>`) | `baa6b04b…73ac` | Superseded on 2026-11-03, before any model run | `docs/midterm/evidence/p1-baseline/` (generated at `b62df73`) |
-| 2 | `P1-v2` (`P1-v2-<seed>-<start>`) | `7dfac8cd…a655` | Current | `docs/midterm/evidence/p1-v2-baseline/` (generated at a clean checkout of the revision 2 commit; committed separately, after it) |
+| 2 | `P1-v2` (`P1-v2-<seed>-<start>`) | `7dfac8cd…a655` | Superseded on 2026-11-03, before any model run | `docs/midterm/evidence/p1-v2-baseline/` (generated at `28a28de`) |
+| 3 | `P1-v3` (`P1-v3-<seed>-<start>`) | `05a2e744…61aa` | Current | `docs/midterm/evidence/p1-v3-baseline/` (generated at a clean checkout of the revision 3 commit) |
 
-Revision 2 applies the owner-approved fixes from the independent review ([review](agent-evidence/reviews/2026-11-03-p1-rules-review.md)):
+**Revision 3** changes one thing, at the owner's request: the fence opening is listed as `gap in garden fence` instead of `garden gateway`. Its coordinates, its extent (the exact collision gap) and the grid (no mark; `#` on both straddled cells) are unchanged. A focused test checks the listing, the extent and every cell it touches. Prompts, world, start, success rule and limits are the same as revision 2.
+
+**Prompt freeze across revisions.** `packages/agent/test/promptFreeze.test.ts` pins the tutorial briefing (id `2ec2f251`) and S2-A's full system prompts (`model-history`, `model-obs-only`, `model-memory`, both heroes), directly and through the harness. The values are those at `16f1a6d`, before any P1 work; they were checked equal there and now.
+
+Revision 2 applied the owner-approved fixes from the independent review ([review](agent-evidence/reviews/2026-11-03-p1-rules-review.md)):
 
 - **F1, task line.** The shared system prompt's task line, "Complete the Goddess's quest together.", is wrong for P1 and names a future character.
   - **Versioning decision.** The original line is kept byte for byte as the default. A new, versioned, episode-neutral text `NEUTRAL_TASK` (`packages/agent/src/playerKnowledge.ts`, id `4079cad5`) is used only by a situation that names it (`task` in `suite.ts`). Only P1 does.
@@ -104,7 +111,7 @@ Everything below comes from the actual game state and the client's own drawing r
 - **Main house:**
   - `door`, the shop's front door. It is drawn as house art with no label; the name is the owner's wording;
   - the road signs `EMBERBROOK →` and `← FOREST`, which the client draws while the roads are closed;
-  - `garden gateway`, the fence's one opening, with its exact passable span as extent and no grid mark (revision 2);
+  - `gap in garden fence`, the fence's one opening, with its exact passable span as extent and no grid mark (owner's wording, revision 3);
 - **Indoors:** the view is the client's house camera, kept inside the map's camera bounds (revision 2);
 - **Alden's Magic Shop:** `door` (the doorway out), `E · UPSTAIRS` and Alden;
 - **Forest Trail:**
@@ -122,7 +129,9 @@ Everything below comes from the actual game state and the client's own drawing r
 - the scripted route;
 - signposts the client does not draw: no label on the cart or the clearing, and no trail exit before the cart is found.
 
-**The fence opening (revision 2).** The garden fence's one opening is 32 px wide and lies between two tile centres, so the grid shows `#` on both cells. The observation lists it as `garden gateway` (the art's own name), with the exact gap as extent and no grid mark. Revision 1 listed it as `garden gate (open)` with an `o` on a blocked cell; that was an authored label, and it implied a blocked cell was passable.
+**The fence opening (revision 3).** The garden fence's one opening is 32 px wide and lies between two tile centres, so the grid shows `#` on both cells. The observation lists it as `gap in garden fence` (the owner's wording), with the exact gap as extent and no grid mark.
+- Revision 2 used `garden gateway`, a source region id.
+- Revision 1 used `garden gate (open)` with an `o` on a blocked cell, which implied a blocked cell was passable.
 
 ## Scripted baseline
 
@@ -138,7 +147,7 @@ Coco leaves the shop after the visit and otherwise waits; the game brings her al
 
 Its route was developed on P1 itself, so it is a **solution-aware reference**, like the Hedge Maze baseline. Nothing from it is given to the unaided model players.
 
-Revision 2 results; revision 1's were identical in every column (its evidence is in `docs/midterm/evidence/p1-baseline/`):
+Revision 3 results; revisions 1 and 2 were identical in every column (their evidence is in `docs/midterm/evidence/p1-baseline/` and `p1-v2-baseline/`):
 
 | Seed | Outcome | Game time | Decisions (Sieg / Coco) | Invalid | Messages | Model calls | Start hash | End hash |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -155,9 +164,9 @@ Progress, from the trace's evaluator markers (seed 0):
 | 745 | cart found |
 | 1,058 | Mossling Woods (success) |
 
-**Seeds.** Seed 1 differs from seed 0 only in the room code and the two hero ids. Both heroes' first observations and legal actions are byte-identical, and the baseline plays the same steps. The views hash is `5ff8926c…ca76` for revision 2 and was `27cf4ce6…ff3a` for revision 1. Seed 1 is therefore a repeated trial.
+**Seeds.** Seed 1 differs from seed 0 only in the room code and the two hero ids. Both heroes' first observations and legal actions are byte-identical, and the baseline plays the same steps. The views hash is `dbfbef0b…363d` for revision 3. It was `5ff8926c…ca76` for revision 2 and `27cf4ce6…ff3a` for revision 1. Seed 1 is therefore a repeated trial.
 
-**Evidence.** Revision 2: `docs/midterm/evidence/p1-v2-baseline/`. Revision 1: `docs/midterm/evidence/p1-baseline/`. Each was generated at a clean checkout of its commit, named in the folder's README.
+**Evidence.** Revision 3: `docs/midterm/evidence/p1-v3-baseline/`. Revision 2: `p1-v2-baseline/`. Revision 1: `p1-baseline/`. Each was generated at a clean checkout of its commit, named in the folder's README.
 
 ## Players planned (prepared, not run)
 

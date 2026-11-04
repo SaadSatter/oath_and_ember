@@ -171,3 +171,14 @@ Owner-approved remediation of the independent review's findings. **P1 is now rev
   - Wording errors in `PROLOGUE_SITUATION.md` were corrected before commit.
   - Open for the owner: approval of the name `garden gateway`, the suggested test pins (tutorial id; S2-A full prompt hashes), and the legacy `run-episode.ts` wall clock (scripted only).
   - Verified: `playerKnowledge.ts` only gained lines, `tutorialId()` is still `2ec2f251`, and the revision 1 evidence is byte-unchanged.
+
+
+## 2026-11-03 change log: P1 revision 3 (final freeze before the first live trial)
+
+Owner-approved.
+- **The only change:** the fence opening is listed as `gap in garden fence` (owner's wording) instead of `garden gateway`. Its coordinates, extent (the exact collision gap) and the grid (no mark) are unchanged. A focused test covers the listing.
+- **Revision 3 itself:** preset `P1-v3` (episode ids `P1-v3-<seed>-<start>`), definition hash `05a2e744…61aa`.
+- **Revision 2** (`7dfac8cd…a655`, commit `28a28de`) is kept verbatim as `P1_V2`, with its evidence. Neither revision 1 nor revision 2 was run by a model.
+- **Prompt freeze.** `promptFreeze.test.ts` pins the tutorial briefing (id `2ec2f251`) and S2-A's full system prompts for `model-history`, `model-obs-only` and `model-memory`, directly and through the harness, at their values at `16f1a6d`, which were checked equal there and now.
+- **Spend cap on the evaluate launcher.** `evaluate.ts` gains `--max-spend-usd`, the existing harness per-episode cap: it may lower a scenario's cap, never raise it. This allows the owner's $0.15 cap for the first P1 trial.
+- **Unchanged:** prompts, start hashes, success predicate and limits. No paid call in this change.
