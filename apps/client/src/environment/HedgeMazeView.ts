@@ -184,16 +184,18 @@ export class HedgeMazeView {
               .setDepth(-25),
           );
       this.label("FIREBALL · dry hedge", 19 * 32, 31.5 * 32, "#ffbd75");
-      // Low stone posts: a hero fits through the gap, the cow does not.
+      // Short hedge walls beside the cow: a hero fits through the gap, the cow
+      // does not. One whole horizontal shrub (62px of foliage) at its native
+      // size, centred on each wall, cropped to the wall's width. The narrow
+      // east wall shows the shrub's end, poking out of the maze's east hedge.
+      const [bx, by, right, bottom] = bounds.north;
       for (const post of mazeCowPosts) {
-        const stone = this.scene.add.graphics().setDepth(post.y + post.h);
-        stone.fillStyle(0x3d4038).fillRect(post.x, post.y + 4, post.w, post.h);
-        stone.fillStyle(0x8f9282).fillRect(post.x, post.y, post.w, post.h - 4);
-        stone
-          .fillStyle(0xb7b9a8)
-          .fillRect(post.x + 2, post.y + 2, post.w - 4, 3);
-        stone.lineStyle(2, 0x2b2d27).strokeRect(post.x, post.y, post.w, post.h);
-        this.objects.push(stone);
+        const width = Math.min(post.w, right - bx),
+          left = post.x + post.w - (right - bx),
+          top = Math.round(post.y + post.h / 2 - (bottom - by) / 2);
+        this.hedge("north", left + 42 - bx, top + 42 - by)
+          .setCrop(right - width, 0, width, 85)
+          .setDepth(post.y + post.h);
       }
       this.cow = this.image("maze:cow", state.cow.x, state.cow.y).setDepth(800);
       this.label("BLACK HOLE → grazing bay", 22.2 * 32, 22.2 * 32, "#dbb0ff");
