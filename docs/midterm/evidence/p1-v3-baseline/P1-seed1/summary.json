@@ -1,0 +1,177 @@
+{
+  "situation": "P1",
+  "suiteRevision": 2,
+  "scenario": {
+    "preset": "P1-v3",
+    "title": "Into the Forest (Prologue)",
+    "goal": "P1 Into the Forest (revision 3): from the Prologue's opening, reach the Mossling Woods (story stage WOODS).",
+    "revision": 2,
+    "tutorialId": null,
+    "briefing": false
+  },
+  "seed": 1,
+  "player": "baseline-quest",
+  "policies": {
+    "sieg": "baseline-quest(Sieg)",
+    "coco": "baseline-quest(Coco)"
+  },
+  "gateway": null,
+  "modelIds": [],
+  "gitHash": "702d715",
+  "startHash": "e9922b16b72471fa38d5f50271e23c81a127bca5e2b563b79949a794e74b0f12",
+  "startTick": 0,
+  "prefix": null,
+  "status": "success",
+  "reason": "success",
+  "success": true,
+  "gameTicks": 1058,
+  "gameSeconds": 17.6,
+  "wallSeconds": 0.1,
+  "decisions": {
+    "sieg": 104,
+    "coco": 57
+  },
+  "actions": {
+    "sieg": {
+      "move": 57,
+      "interact": 4,
+      "wait": 10,
+      "advance_dialogue": 33
+    },
+    "coco": {
+      "wait": 55,
+      "move": 2
+    }
+  },
+  "attempt": 1,
+  "endHash": "30565934487b970a9835e08e24f3bcbb4d1b111cc52b723552cd6bdea3a087d3",
+  "limits": {
+    "maxTicks": 10800,
+    "maxDecisionsPerPlayer": 1600,
+    "maxModelCallsPerPlayer": 250,
+    "maxTokensPerPlayer": 4000000
+  },
+  "modelLimits": null,
+  "invalidActions": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "metrics": {
+    "sieg": {
+      "modelCalls": 0,
+      "modelDecisions": 0,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 0,
+      "submittedActions": 104,
+      "executedActions": 104,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 0
+    },
+    "coco": {
+      "modelCalls": 0,
+      "modelDecisions": 0,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 0,
+      "submittedActions": 57,
+      "executedActions": 57,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 0
+    }
+  },
+  "metricsVersion": 2,
+  "messages": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "batchStops": 0,
+  "modelCalls": {
+    "attempted": 0,
+    "failed": 0,
+    "timedOut": 0,
+    "unknownUsage": 0
+  },
+  "latencyMs": {
+    "mean": null,
+    "max": null
+  },
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0
+  },
+  "spendUsd": {
+    "known": 0,
+    "charged": 0
+  },
+  "priceSource": null,
+  "ledgerEntry": null,
+  "episodeCapUsd": null,
+  "wallLimitSeconds": 600,
+  "launch": {
+    "launcher": "scripts/midterm/prologue-situation.ts",
+    "speed": null,
+    "viewer": false
+  },
+  "finalClaim": null,
+  "evaluation": {
+    "label": "P1",
+    "definitionHash": "05a2e7442d5271f04af135ddcfec687c23c756e3cc9e6894f43182dd0d7161aa"
+  },
+  "promptHashes": {
+    "sieg": null,
+    "coco": null
+  },
+  "configHash": "8e06a578154a19108de1a034dc63b0f627c2acc2e416eddf43a4d731c9e5db26",
+  "baselineLog": {
+    "sieg": [
+      {
+        "tick": 0,
+        "note": "entered Main house"
+      },
+      {
+        "tick": 135,
+        "note": "at the shop door"
+      },
+      {
+        "tick": 136,
+        "note": "entered Alden's Magic Shop"
+      },
+      {
+        "tick": 235,
+        "note": "entered Main house"
+      },
+      {
+        "tick": 409,
+        "note": "at the forest sign"
+      },
+      {
+        "tick": 410,
+        "note": "entered Forest Trail"
+      },
+      {
+        "tick": 754,
+        "note": "found the cart"
+      }
+    ],
+    "coco": [
+      {
+        "tick": 0,
+        "note": "entered Alden's Magic Shop"
+      },
+      {
+        "tick": 272,
+        "note": "entered Main house"
+      },
+      {
+        "tick": 410,
+        "note": "entered Forest Trail"
+      }
+    ]
+  },
+  "trace": "/private/tmp/claude-501/-Users-saadsatter-Classes-AI-Pract-Building-Games-oath-and-ember-eval/2535c444-503f-4bd0-b122-23d0289cd46a/scratchpad/wt3/docs/midterm/evidence/p1-v3-baseline/P1-seed1/trace.jsonl"
+}
