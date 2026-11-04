@@ -50,6 +50,31 @@ export const mazeCowPosts: Rect[] = [22 * 32 + 8, 27 * 32 + 4].flatMap((y) => [
 ]);
 /** The furthest west the cow's centre can be pulled into the bay. */
 export const MAZE_COW_PARKED_X = 23.8 * 32;
+/**
+ * The wolf's loop: the top lane, the row-12 lane and the two columns joining
+ * them (tile rects from mazePaths). Corners, in order, are the centres of the
+ * four turns. A hero inside the loop sets the wolf running laps.
+ */
+export const mazeLoop = [
+  [8, 4, 32, 4],
+  [8, 12, 32, 4],
+  [8, 4, 4, 12],
+  [36, 4, 4, 12],
+] as const;
+export const mazeLoopCorners = [
+  { x: 10, y: 6 },
+  { x: 38, y: 6 },
+  { x: 38, y: 14 },
+  { x: 10, y: 14 },
+] as const;
+export const inMazeLoop = (p: { x: number; y: number }) =>
+  mazeLoop.some(
+    ([x, y, w, h]) =>
+      p.x >= x * 32 &&
+      p.x < (x + w) * 32 &&
+      p.y >= y * 32 &&
+      p.y < (y + h) * 32,
+  );
 export const mazeGate: Rect = { x: 40 * 32, y: 12 * 32, w: 2 * 32, h: 4 * 32 };
 export interface HedgeMazeState {
   burned: boolean;
@@ -64,6 +89,8 @@ export interface HedgeMazeState {
     fleeing?: boolean;
     /** Current wander destination while no hero can reach the wolf. */
     roam?: { x: number; y: number };
+    /** Running laps of the loop: the corner it is heading for and the direction. */
+    lap?: { corner: number; dir: 1 | -1 };
   };
 }
 export const newHedgeMaze = (): HedgeMazeState => ({
