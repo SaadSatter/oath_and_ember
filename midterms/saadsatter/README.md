@@ -98,6 +98,9 @@ node --import tsx scripts/midterm/situation-a.ts --baseline
 # P1 "Into the Forest" (the Prologue): definition, resets, planned runs, baseline on seeds 0 and 1 (expect success, 1,058 ticks)
 node --import tsx scripts/midterm/prologue-situation.ts --baseline
 
+# All three Hedge Maze situations (S2-A full, S2-B cow puzzle, S2-C wolf and key): resets and the baseline on each
+node --import tsx scripts/midterm/hedge-maze-situations.ts --baseline
+
 # Check the packaged Hedge Maze evidence against its manifest and summaries
 python3 -I scripts/midterm/collect_evidence.py --verify
 

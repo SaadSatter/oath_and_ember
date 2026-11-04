@@ -76,7 +76,7 @@ describe("Hedge Maze captions are labels, not objects", () => {
     const o = await env.observe("sieg");
     const cap = o.visible.find((v) => v.name === MAZE_COW_CAPTION)!;
     const bay = o.visible.find((v) => v.name === MAZE_BAY_SIGN)!;
-    expect(cap).toMatchObject({ kind: "label", x: 26, y: 27.7 });
+    expect(cap).toMatchObject({ kind: "label", x: 26, y: 28.8 });
     expect(bay).toMatchObject({ kind: "label", x: 22.2, y: 22.2 });
     expect(cap.extent).toBeUndefined();
     expect(cell(o, 22, 22)).toBe("#");
@@ -142,7 +142,7 @@ describe("the cow is drawn across its 4×4 body", () => {
     expectCowCells(o, cow.x);
     expect(r.coco.flatMap((x) => x.feedback).join(" ")).toMatch(/The cow moved w, from \(26, 25\)/);
     // No hidden state: the caption is unchanged text and nothing says parked or cleared.
-    expect(o.visible.find((v) => v.name === MAZE_COW_CAPTION)).toMatchObject({ kind: "label", x: 26, y: 27.7 });
+    expect(o.visible.find((v) => v.name === MAZE_COW_CAPTION)).toMatchObject({ kind: "label", x: 26, y: 28.8 });
     expect(JSON.stringify(o)).not.toMatch(/parked|cleared/i);
   });
 });

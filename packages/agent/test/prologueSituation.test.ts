@@ -12,7 +12,7 @@ import { cutscenes, storyObjectives, TRAIL_ONWARD, storyStages } from "../../sha
 import { episodes, stateHash } from "../src/evaluator.js";
 import { environmentFor, situation, SITUATIONS } from "../src/suite.js";
 import { EPISODE_CAP_USD, OBS_ONLY_SITUATIONS, WALL_CLOCK_CEILING_S, checkWallSeconds, policiesFor, validatePlan, type ModelSetup } from "../src/harness.js";
-import { P1, P1_HASH, P1_REVISIONS, P1_V1, P1_V1_HASH, P1_V2, P1_V2_HASH, prologueEvaluationLabel } from "../src/prologueSituation.js";
+import { P1, P1_HASH, P1_REVISIONS, P1_V1, P1_V1_HASH, P1_V2, P1_V2_HASH, P1_V3, P1_V3_HASH, prologueEvaluationLabel } from "../src/prologueSituation.js";
 import { GARDEN_GATEWAY, onScreen, viewRect } from "../src/perception.js";
 import { aldenYardFenceSolids } from "../../shared/src/environmentSolids.js";
 import { maps } from "../../shared/src/maps.js";
@@ -70,8 +70,8 @@ async function pair(env: ReturnType<typeof start>["env"], sieg: GameAction, coco
 
 describe("P1 definition", () => {
   it("is frozen: any change to the definition changes this hash and is a new revision", () => {
-    expect(P1_HASH).toBe("05a2e7442d5271f04af135ddcfec687c23c756e3cc9e6894f43182dd0d7161aa");
-    expect(P1.version).toBe(3);
+    expect(P1_HASH).toBe("be986cfa1767e26e5aa80a1304cd7d5ce7f1de1e81cb63e23e8df50409c5296d");
+    expect(P1.version).toBe(4);
     expect(prologueEvaluationLabel("P1")).toEqual({ label: "P1", definitionHash: P1_HASH });
     expect(prologueEvaluationLabel("S2-local")).toBeNull();
   });
@@ -82,8 +82,19 @@ describe("P1 definition", () => {
     // Revision 2 likewise, verbatim, with its original hash.
     expect(P1_V2_HASH).toBe("7dfac8cd2b91b5d096328265a4eba068a8a86055750c204896394ebdc6b1a655");
     expect(P1_V2).toMatchObject({ version: 2, preset: "P1-v2" });
-    expect(P1.supersedes).toEqual({ version: 2, definitionHash: P1_V2_HASH, commit: "28a28de" });
-    expect(P1_REVISIONS.map((r) => [r.version, r.preset, r.definitionHash])).toEqual([[1, "P1", P1_V1_HASH], [2, "P1-v2", P1_V2_HASH], [3, "P1-v3", P1_HASH]]);
+    // Revision 3 likewise, verbatim, with its original hash.
+    expect(P1_V3_HASH).toBe("05a2e7442d5271f04af135ddcfec687c23c756e3cc9e6894f43182dd0d7161aa");
+    expect(P1_V3).toMatchObject({ version: 3, preset: "P1-v3", supersedes: { version: 2, definitionHash: P1_V2_HASH, commit: "28a28de" } });
+    expect(P1.supersedes).toEqual({ version: 3, definitionHash: P1_V3_HASH, commit: "96625b5" });
+    expect(P1_REVISIONS.map((r) => [r.version, r.preset, r.definitionHash])).toEqual([[1, "P1", P1_V1_HASH], [2, "P1-v2", P1_V2_HASH], [3, "P1-v3", P1_V3_HASH], [4, "P1-v3", P1_HASH]]);
+    // Revision 4 changes only the start and end state hashes (the story content
+    // hash): the same views, prompts, limits and baseline play as revision 3.
+    const v3 = P1_V3 as never as { prompts: unknown; limits: unknown; start: { viewsHash: string; tick: number }; baseline: { reference: Record<string, unknown> } };
+    expect(P1.prompts).toEqual(v3.prompts);
+    expect(P1.limits).toEqual(v3.limits);
+    expect(P1.start.viewsHash).toBe(v3.start.viewsHash);
+    const { endHash: _a, ...now } = P1.baseline.reference, { endHash: _b, ...before } = v3.baseline.reference;
+    expect(now).toEqual(before);
     // Revision 3 changes only the fence opening's name: same prompts and limits as revision 2.
     const v2 = P1_V2 as never as { prompts: unknown; limits: unknown };
     expect(P1.prompts).toEqual(v2.prompts);
@@ -171,7 +182,8 @@ describe("P1 definition", () => {
   });
 
   it("leaves Situation A untouched", () => {
-    expect(SITUATION_A_HASH).toBe("4b3c9bb309e7d0bcc022f1df6a7e58cf11a3767c02fd7bd6cb62dfa845cd4207");
+    // S2-A version 2 (game change ffbdecb, 2026-11-04); P1 itself never changes it. Version 1 was 4b3c9bb3…4207.
+    expect(SITUATION_A_HASH).toBe("a9ee23855c17c18aa5228f5a554607362b87958642c942335fdfd4d06a58bc66");
     expect(evaluationLabel("S2-local")?.label).toBe("S2-A");
     expect(episodes["S2-local-v2"].checkpoint).toBeUndefined();
   });

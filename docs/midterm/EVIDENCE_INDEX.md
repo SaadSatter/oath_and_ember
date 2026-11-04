@@ -261,6 +261,27 @@ Supports 3b, 3c and 5a (partially). [SITUATION_A.md](SITUATION_A.md) freezes the
 
 `scripts/midterm/situation-a.ts --baseline` is the free reproduction. Situations B and C are proposals only. The three-situation and held-out gaps remain.
 
+## Hedge Maze Situations B and C (2026-10-29)
+
+Supports 3c, 4b and 5a (partially). [HEDGE_MAZE_SITUATIONS.md](HEDGE_MAZE_SITUATIONS.md) records:
+- the B and C definitions and checkpoint provenance;
+- the start hashes;
+- the baseline results;
+- the trial matrix and budget estimate.
+
+`packages/agent/test/hedgeMazeSituations.test.ts` (30 tests) covers:
+- provenance and re-derivation;
+- start hashes equal to the recorded world at the cut;
+- repeatable resets;
+- reachability by replaying the rest of the recording;
+- baseline results on B and C;
+- the information boundary;
+- illegal actions;
+- tick limits;
+- the same start for scripted and model players.
+
+The free reproduction is `scripts/midterm/hedge-maze-situations.ts --baseline`. No live trials have been run; the held-out gap remains.
+
 ## P1 "Into the Forest", the Prologue situation (2026-11-03)
 
 | Check | Evidence |

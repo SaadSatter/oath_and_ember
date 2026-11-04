@@ -212,28 +212,28 @@ describe("the cow and its sign, as the client draws them", () => {
     const cow = o.visible.find((v) => v.kind === "creature" && v.name === "cow")!;
     expect(cow).toMatchObject({ x: 26, y: 25 });
     expect(cow.details).toBeUndefined();
-    const sign = o.visible.find((v) => v.name === "Harmless cow · blocks the lane")!;
+    const sign = o.visible.find((v) => v.name === "Harmless cow · too wide for the posts")!;
     // A label since the pilot-9 perception fixes (owner approval 2026-10-29); position unchanged.
-    expect(sign).toMatchObject({ kind: "label", x: 26, y: 27.7 });
-    expect(o.visible.filter((v) => v.kind === "creature").map((v) => v.name)).not.toContain("Harmless cow · blocks the lane");
+    expect(sign).toMatchObject({ kind: "label", x: 26, y: 28.8 });
+    expect(o.visible.filter((v) => v.kind === "creature").map((v) => v.name)).not.toContain("Harmless cow · too wide for the posts");
     // Tile (26, 27) under the sign is open floor and stays "." on the grid.
     expect(o.screen.rows[27 - o.screen.originY][26 - o.screen.originX]).toBe(".");
     expect(JSON.stringify(o)).not.toMatch(/parked|cleared/i);
   });
 
   it("after a real Black Hole pull, the cow is listed where it now is and the sign has not moved", async () => {
-    // Coco casts north-west from the lane's south-west corner (as in pilot-6,
-    // tick 2229). y 27.45: the server pulls the cow only while no hero is
-    // within 77 px of it (hedgeMaze.ts), and 27.4 is 76.8 px away.
-    const env = await inMaze({ sieg: { x: 5, y: 34 }, coco: { x: 24.4, y: 27.45 } });
+    // Pilot-6 (tick 2229) cast north-west from the lane's south-west corner;
+    // a stone post has stood there since 2026-11-04, so Coco now casts east
+    // from the grazing bay, the way the game intends.
+    const env = await inMaze({ sieg: { x: 5, y: 34 }, coco: { x: 20.5, y: 25.5 } });
     await play(env, {
       sieg: [{ type: "wait", ticks: 60 }, { type: "wait", ticks: 60 }, { type: "wait", ticks: 60 }, { type: "wait", ticks: 60 }, { type: "wait", ticks: 60 }],
-      coco: [{ type: "ability", ability: "black_hole", direction: "nw" }, { type: "wait", ticks: 60 }, { type: "wait", ticks: 60 }, { type: "wait", ticks: 60 }, { type: "wait", ticks: 60 }],
+      coco: [{ type: "ability", ability: "black_hole", direction: "e" }, { type: "wait", ticks: 60 }, { type: "wait", ticks: 60 }, { type: "wait", ticks: 60 }, { type: "wait", ticks: 60 }],
     });
     const o = await env.observe("coco");
     const cow = o.visible.find((v) => v.name === "cow")!;
     expect(cow.x).toBeLessThan(26);
-    expect(o.visible.find((v) => v.name === "Harmless cow · blocks the lane")).toMatchObject({ x: 26, y: 27.7 });
+    expect(o.visible.find((v) => v.name === "Harmless cow · too wide for the posts")).toMatchObject({ x: 26, y: 28.8 });
     expect(JSON.stringify(o)).not.toMatch(/parked|cleared/i);
   });
 

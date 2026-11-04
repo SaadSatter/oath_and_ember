@@ -106,9 +106,9 @@ export async function hedgeMaze(d: Director) {
   await d.wait(300);
   d.note("cow pulled into the bay");
   // Wolf chase: Sieg enters the wolf's corridor; Slow Time + Super Speed; E when the panel offers the wolf.
-  const aroundCow = [{ x: 20.5, y: 27.5 }, { x: 21.5, y: 27.5 }, { x: 21.5, y: 30.5 }, { x: 27.5, y: 30.5 }];
-  await goVia(d, "coco", [...aroundCow, { x: 27.5, y: 19.5 }, { x: 32.5, y: 19.5 }]);
-  await goVia(d, "sieg", [{ x: 20.5, y: 34.5 }, { x: 20.5, y: 27.5 }, ...aroundCow.slice(1), { x: 27.5, y: 15.5 }, { x: 11.5, y: 15.5 }, { x: 11.5, y: 7.5 }, { x: 19.5, y: 7.5 }]);
+  const aroundCow = [{ x: 20.5, y: 27.5 }, { x: 21.5, y: 27.5 }, { x: 21.5, y: 30.5 }, { x: 26.5, y: 30.5 }];
+  await goVia(d, "coco", [...aroundCow, { x: 26.5, y: 19.5 }, { x: 32.5, y: 19.5 }]);
+  await goVia(d, "sieg", [{ x: 20.5, y: 34.5 }, { x: 20.5, y: 27.5 }, ...aroundCow.slice(1), { x: 26.5, y: 15.5 }, { x: 11.5, y: 15.5 }, { x: 11.5, y: 7.5 }, { x: 19.5, y: 7.5 }]);
   const corridor = [{ x: 4, y: 4.5 }, { x: 19.5, y: 4.5 }, { x: 34, y: 4.5 }];
   for (let attempt = 0; attempt < 4 && !has(await d.obs("sieg"), "hedge_gate_key"); attempt++) {
     await untilReady(d, "coco", "Slow Time");
@@ -149,7 +149,7 @@ export async function hedgeMaze(d: Director) {
   if (!has(await d.obs("coco"), "enchanted_shears")) throw Error("no shears");
   d.note("Coco took the Enchanted Shears");
   // Coco walks out; travel moves the whole party.
-  await goVia(d, "coco", [{ x: 42.5, y: 6.5 }, { x: 42.5, y: 12.5 }, { x: 26.5, y: 12.5 }, { x: 26.5, y: 27.5 }, { x: 24.5, y: 27.5 }, { x: 24.5, y: 30.5 }, { x: 20.5, y: 30.5 }, { x: 20.5, y: 32.5 }, { x: 4.5, y: 32.5 }, { x: 4.2, y: 34 }]);
+  await goVia(d, "coco", [{ x: 42.5, y: 6.5 }, { x: 42.5, y: 12.5 }, { x: 26.5, y: 12.5 }, { x: 26.5, y: 30.5 }, { x: 20.5, y: 30.5 }, { x: 20.5, y: 32.5 }, { x: 4.5, y: 32.5 }, { x: 4.2, y: 34 }]);
   await leaveBy(d, "coco");
 }
 

@@ -246,6 +246,8 @@ describe("3. S2 and S3 map to the right areas and success conditions", () => {
     // S1, S4 and F are unchanged; S4 and F stay held out.
     expect(SITUATIONS.map((s) => [s.id, s.preset, s.heldOut])).toEqual([
       ["S1", "S1", false], ["S2", "S2-v2", false], ["S3", "S3-v2", false], ["S4", "S4", true], ["F", "full", true], ["S2-local", "S2-local-v2", false], ["S3-local", "S3-local-v2", false],
+      // Hedge Maze Situations B and C (2026-10-29), appended.
+      ["S2-B", "S2-B", false], ["S2-C", "S2-C", false],
       // P1 "Into the Forest" (2026-11-03), appended; revision 3 runs preset P1-v3.
       ["P1", "P1-v3", false],
     ]);
@@ -313,10 +315,12 @@ describe("6. historical evaluations remain identifiable and reproducible", () =>
   it("a revision 1 S2 episode has the same episode id and start hash as before; revision 2 ids cannot be confused with it", async () => {
     const old = await new AgentEnvironment({ preset: "S2", prefix: situation("S2-v1").prefix }).reset(0);
     const now = await new AgentEnvironment({ preset: "S2-v2", prefix: situation("S2").prefix }).reset(0);
-    expect(old.startHash).toBe("5397eba5c68d4770bf41e742e5ae9474a256a30f9ddd4149a6bf35592bc2c9ab");
+    // Re-pinned with owner approval 2026-11-04 after game change ffbdecb (new
+    // story lines change every start's story hash); old values reproduce at 96625b5.
+    expect(old.startHash).toBe("ec2026386b19ab503c1176a897da23492c219ffe6963610e90123db3a4f71558");
     expect(now.startHash).toBe(old.startHash);
-    expect(old.episode).toMatch(/^S2-0-5397eba5$/);
-    expect(now.episode).toMatch(/^S2-v2-0-5397eba5$/);
+    expect(old.episode).toMatch(/^S2-0-ec202638$/);
+    expect(now.episode).toMatch(/^S2-v2-0-ec202638$/);
   }, 60_000);
 
   it("restricts the -v1 ids to scripted reproduction: model runs are refused, even through the live launcher with the free mock gateway", async () => {

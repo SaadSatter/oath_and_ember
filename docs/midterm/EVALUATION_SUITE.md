@@ -116,6 +116,20 @@ Owner explicitly approved a separate `model-guided` player for current revision 
 `S2-A — Full Hedge Maze` is the evaluation label for current revision 2 S2-local, version 1, and the first situation of a proposed three-situation Hedge Maze suite. It is a label, not a new scenario. S2-local's id, preset, start state (seed 0 `2b9eddd4…`, seed 1 `ebea7d5c…`), success predicate, limits, briefings and observations are unchanged, and historical S2-local traces still replay (tested). Run summaries gain the additive fields `evaluation` (label and definition hash `4b3c9bb3…`), `promptHashes` and `configHash`. Seed 1 differs from seed 0 only in room code and hero ids, so it is a repeated trial, not a distinct situation. Situations B and C are proposed, not implemented. No paid or held-out run. Record: [SITUATION_A.md](SITUATION_A.md).
 
 
+## 2026-10-29 change log: Hedge Maze Situations B and C
+
+Owner request. Two new tuning scenarios, `S2-B` (cow puzzle; start at tick 1197) and `S2-C` (wolf and key; start at tick 1962). With S2-A (= S2-local) they form three distinct starting tasks in the Hedge Maze. All three are **development-informed, not held out**.
+- **Starts:** each is reached by S2-A's normal entry, then a prefix of the committed live `baseline-quest` trace replayed through `step()`. No fixture is used. One of Coco's moves is shortened, for B only.
+- **Unchanged rules:** S2-A's success predicate, limits and cap.
+- **Briefing:** one shared briefing (draft wording, pending the owner's), plus the tutorial block.
+
+S2-A, S1–S4, F, all existing start hashes, frozen pins and prompts are unchanged.
+
+`baseline-quest`, unchanged, completes B. It ends C at the tick limit: its fixed maze script cannot resume mid-maze. C's completability is shown by replaying the rest of the recorded run. `model-guided` is not available on B or C.
+
+No paid or held-out run. Record: [HEDGE_MAZE_SITUATIONS.md](HEDGE_MAZE_SITUATIONS.md).
+
+
 ## 2026-11-03 change log: P1 "Into the Forest" (the Prologue)
 
 Owner approval (2026-11-03) of the proposal in [PROLOGUE_SITUATION_PROPOSAL.md](PROLOGUE_SITUATION_PROPOSAL.md). P1 is a new tuning-seed scenario, `P1`. It is a directed narrative and navigation situation, distinct from the Hedge Maze.
@@ -192,3 +206,14 @@ One owner-approved paid trial on P1 revision 3:
 - **Recording:** a trace-verified replay video.
 - **Not changed:** no prompt or configuration was changed afterwards, and no second trial was started.
 - **Evidence:** [p1-v3-trial1-model-memory-seed0](evidence/p1-v3-trial1-model-memory-seed0/).
+
+
+## 2026-11-04 change log: game change ffbdecb (cow posts, griffin HP, story lines)
+
+Owner request: agents struggled to see that the Hedge Maze cow cannot be pulled along its lane, the griffin fight was short, and some story turns were unexplained. Implemented on `main` as `ffbdecb` and merged here as `ea654e8`; the owner then chose a new revision of the frozen evaluation values over reverting the merge.
+
+- **Game.** Stone posts north and south of the cow with a 56 px opening (heroes fit, the cow does not); griffin 640 HP (was 320); new dialogue after the funeral (why ask Emberbrook), after the clues (why search Papa's things) and after the journal (why return to the grave), each ending in a quest line. The cow caption now reads "Harmless cow · too wide for the posts" and sits lower, at (26, 28.8); the agent's copy (`perception.ts`) and the griffin label (`GRIFFIN <hp>/640`) follow the client.
+- **Scripted players.** The route, the quest baseline and the guided Maze walkthrough pass the posts at x = 26.5 instead of x = 27.5 (walkthrough `hedge-maze-walkthrough-v2`, id `8fdd1b2d7e65`; v1 was `975e5580671c`). Every scripted outcome is unchanged; runs that cross the maze are 16 ticks shorter.
+- **Re-pinned frozen values.** Every start hash changed (the world records a hash of all story content). S1–S4 start hashes, the scripted-freeze fingerprints, S2-A (version 2), S2-B and S2-C (version 2, checkpoints re-derived from S2-A v2's reference run at the same cut ticks) and P1 (revision 4; play identical, only the two hashes moved). Each file records the old value or where it reproduces (`96625b5`).
+- **Historical runs.** Version 1 traces (S2-A live baseline, pilots 11–15, the P1 live trial) were played on the earlier game. They replay step for step only at `96625b5`; their tests now check integrity and their recorded start instead. Results before and after this change are reported separately.
+- **Not done.** No new live (paced, recorded) baseline run and no model run. The new reference traces are offline scripted runs generated on a worktree with uncommitted work in progress.

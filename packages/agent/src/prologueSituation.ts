@@ -22,6 +22,14 @@
 //   3 (frozen 2026-11-03): the fence opening's listing renamed by the owner
 //     from "garden gateway" (a source region id) to "gap in garden fence".
 //     Coordinates, extent, grid, prompts, world and limits are unchanged.
+//     Run live once (model-memory, seed 0, 332050a). Kept verbatim below as
+//     P1_V3 (last at 96625b5). Superseded by
+//   4 (frozen 2026-11-04, owner approval): the game change ffbdecb added
+//     chapter 0 story lines (after the funeral, after the clues, after the
+//     journal) that P1 never reaches. The world records a hash of all story
+//     content, so P1's start and end state hashes changed. Its world,
+//     observations (viewsHash), prompts, trajectory, ticks, decisions, success
+//     rule and limits are unchanged. The preset stays "P1-v3".
 
 import { createHash } from "node:crypto";
 import { episodes } from "./evaluator.js";
@@ -352,6 +360,174 @@ export const P1_V2 = Object.freeze({
 }) as Readonly<Record<string, unknown>>;
 export const P1_V2_HASH = createHash("sha256").update(canonicalJson(P1_V2)).digest("hex");
 
+/**
+ * P1 revision 3 exactly as frozen at commit 45e5148 and last current at
+ * 96625b5 (definition hash 05a2e744…61aa, pinned in the test). A literal, so
+ * later code cannot change it. Its baseline evidence is
+ * docs/midterm/evidence/p1-v3-baseline/; its live trial is at 332050a.
+ */
+export const P1_V3 = Object.freeze({
+  "label": "P1",
+  "name": "Into the Forest",
+  "version": 3,
+  "frozenOn": "2026-11-03",
+  "supersedes": {
+    "version": 2,
+    "definitionHash": "7dfac8cd2b91b5d096328265a4eba068a8a86055750c204896394ebdc6b1a655",
+    "commit": "28a28de"
+  },
+  "changes": [
+    "Owner's wording: the fence opening is listed as 'gap in garden fence' instead of 'garden gateway' (a source region id). Coordinates, extent (the exact collision gap) and the grid (no mark) are unchanged",
+    "Everything else as revision 2: NEUTRAL_TASK, the client's house camera, the 3,600 s wall-clock ceiling"
+  ],
+  "situation": "P1",
+  "preset": "P1-v3",
+  "suiteRevision": 2,
+  "kind": "directed narrative and navigation (the Prologue's opening): no puzzle, no combat",
+  "role": "Frozen and excluded from prompt tuning from version 1. Not formally held out: it was designed with full knowledge of the game's code, and the scripted baseline's route was developed on it.",
+  "start": {
+    "description": "prologue checkpoint: the game's own opening",
+    "checkpoint": "prologue",
+    "prefix": null,
+    "stage": "ARRIVAL",
+    "heroes": {
+      "sieg": "outside the shop, on the road (Main house, 760, 490 px), facing west",
+      "coco": "inside the shop with Alden (Alden's Magic Shop, 590, 322 px), facing north"
+    },
+    "tick": 0,
+    "hashes": {
+      "0": "688b246237f8183790ca7f1f0d38a5b96570ffd323c3d662683ca04cf1b71530",
+      "1": "e9922b16b72471fa38d5f50271e23c81a127bca5e2b563b79949a794e74b0f12"
+    },
+    "viewsHash": "dbfbef0bbac8df08c1b749ea47e991ed130a3f501b442841b32b657e2d60363d"
+  },
+  "objective": "Follow the Prologue's story from its opening until the party reaches the Mossling Woods, through normal gameplay.",
+  "success": "The authoritative story stage is WOODS or later (evaluator preset P1-v3, the same predicate as revisions 1 and 2, stageReached). The game itself sets it when a hero presses E at the Forest Trail's exit after the cart has been found (storyTravel, apps/server/src/prologue.ts).",
+  "goal": "P1 Into the Forest (revision 3): from the Prologue's opening, reach the Mossling Woods (story stage WOODS).",
+  "terminalReasons": [
+    "success",
+    "tick_limit",
+    "decision_limit",
+    "model_call_limit",
+    "token_limit",
+    "spend_limit",
+    "wall_clock_limit",
+    "error",
+    "manual_stop"
+  ],
+  "cooperation": "Not required: Sieg alone can complete P1; Coco may simply follow.",
+  "limits": {
+    "maxTicks": 10800,
+    "maxDecisionsPerPlayer": 1600,
+    "maxModelCallsPerPlayer": 250,
+    "maxTokensPerPlayer": 4000000,
+    "wallClockSeconds": {
+      "model": 3600,
+      "scripted": 600
+    },
+    "modelCallTimeoutMs": 30000,
+    "maxConsecutivePolicyFailures": 3,
+    "episodeSpendCapUsd": 0.6,
+    "wallClockCeilingSeconds": 3600
+  },
+  "prompts": {
+    "briefing": null,
+    "tutorial": null,
+    "walkthrough": null,
+    "task": {
+      "id": "4079cad5",
+      "text": "Play the game together with your partner. You are not told your goal in advance: discover your objectives through play, from what the game itself shows you (its dialogue, your quest journal and what you see in the world), and follow them.\n- Base every decision on your current observation and the legal actions you are given.\n- Do not assume what will happen later in the story; find out by playing.\n- You have no walkthrough and no access to hidden game state.\n- Coordinate with your partner through messages when it helps."
+    },
+    "manualSha256": "4b091a6630dd56f236f89f8e2213a6bb7cad4a31d4851d1883f95867d92bfa86",
+    "systemPromptSha256": {
+      "model-history": {
+        "sieg": "d4408182509f64d2a14fcba1a85141ac96aef46db66b24494a6b344d05689796",
+        "coco": "3dc3102c3831efd54558b98abb88e283e107a3fdeaf80a721ee45bf18e058320"
+      },
+      "model-obs-only": {
+        "sieg": "00f567e87a373b1fd2912bed5c6b8d588673eee2044bfd6285194919ee95ad2e",
+        "coco": "602c7e3c6ff754fb173f6faa2321c6e59d2ede341459170dde39dfe3c884e184"
+      },
+      "model-memory": {
+        "sieg": "3902600e793433812c5310463ef4c6775abc453c5a40d2dc377c1d8789425279",
+        "coco": "37d7fd978756337ea904c6a8c515310789d57020e3fa8bdd35b0cd1f57964ae5"
+      }
+    }
+  },
+  "observation": {
+    "hudGoalLines": "hidden from every player (standing owner decision)",
+    "shown": [
+      "the screen grid, partner, enemies and abilities as in every situation",
+      "dialogue lines as each hero's own dialogue box shows them (inner narration only to its hero)",
+      "the quest journal (quest and current step names)",
+      "map labels and markers exactly as the client draws them, with its sealing: no label on the cart or the clearing; the trail's way on only after the cart is found",
+      "'door' for the shop's front door and doorway (unlabelled art; owner's wording)",
+      "'tipped cart' for the merchants' cart (unlabelled art; owner's wording)",
+      "'gap in garden fence' (owner's wording) for the fence's one opening, with its exact collision gap as extent and no grid mark; the centre-sampled grid shows '#' there",
+      "indoors, the client's house camera: the view is held inside the map's cameraBounds",
+      "Alden where the story puts him, with 'E Talk' when in reach",
+      "E at Alden or at the trail's crates and barrel returns the client's local dialogue pages as feedback"
+    ],
+    "gardenGateway": {
+      "x": 464,
+      "y": 432,
+      "w": 32,
+      "h": 8
+    },
+    "hidden": [
+      "story flags and stage names",
+      "future dialogue",
+      "HUD goal lines",
+      "hero ids and room code",
+      "state hashes",
+      "the scripted route"
+    ]
+  },
+  "seeds": {
+    "tuning": [
+      0,
+      1
+    ],
+    "note": "Seeds 0 and 1 differ only in the room code and the two hero ids; both heroes' observations and legal actions at reset are identical, and the scripted baseline plays an identical trajectory. Seed 1 is a repeated trial."
+  },
+  "players": {
+    "primary": [
+      "baseline-quest",
+      "model-memory"
+    ],
+    "secondary": [
+      "model-obs-only"
+    ],
+    "reference": [
+      "baseline-explore"
+    ]
+  },
+  "baseline": {
+    "player": "baseline-quest",
+    "knowledge": "Disclosed route knowledge (policies/questKnowledge.ts PROLOGUE), worked out from the story code and static map geometry. It plays only through the five operations, from its own observation; no state is written.",
+    "routeSha256": "3594738b4912e6131fe63c748fd50dce2d8b7de6c742c69f467f1c6a9cbde6f5",
+    "evidence": "docs/midterm/evidence/p1-v3-baseline/",
+    "reference": {
+      "seed": 0,
+      "status": "success",
+      "reason": "success",
+      "gameTicks": 1058,
+      "gameSeconds": 17.6,
+      "decisions": 161,
+      "invalidActions": 0,
+      "messages": 0,
+      "modelCalls": 0,
+      "endHash": "c2f3b973456f4c0dd693afa2c5c0dafc5cd5138f32c88bb3afe2bbd55d797e54"
+    }
+  },
+  "reproduce": [
+    "node --import tsx scripts/midterm/prologue-situation.ts",
+    "node --import tsx scripts/midterm/prologue-situation.ts --baseline --out <dir>",
+    "npx vitest run packages/agent/test/prologueSituation.test.ts"
+  ]
+});
+export const P1_V3_HASH = createHash("sha256").update(canonicalJson(P1_V3)).digest("hex");
+
 const ID: SituationId = "P1";
 const def = situation(ID);
 const EP = episodes[def.preset];
@@ -372,13 +548,13 @@ export const P1_PLAYERS: Readonly<Record<"primary" | "secondary" | "reference", 
 export const P1 = Object.freeze({
   label: "P1",
   name: "Into the Forest",
-  version: 3,
-  frozenOn: "2026-11-03",
-  /** The revision this one replaces, unchanged and still pinned (P1_V1). */
-  supersedes: Object.freeze({ version: 2, definitionHash: "7dfac8cd2b91b5d096328265a4eba068a8a86055750c204896394ebdc6b1a655", commit: "28a28de" }),
+  version: 4,
+  frozenOn: "2026-11-04",
+  /** The revision this one replaces, unchanged and still pinned (P1_V3). */
+  supersedes: Object.freeze({ version: 3, definitionHash: "05a2e7442d5271f04af135ddcfec687c23c756e3cc9e6894f43182dd0d7161aa", commit: "96625b5" }),
   changes: Object.freeze([
-    "Owner's wording: the fence opening is listed as 'gap in garden fence' instead of 'garden gateway' (a source region id). Coordinates, extent (the exact collision gap) and the grid (no mark) are unchanged",
-    "Everything else as revision 2: NEUTRAL_TASK, the client's house camera, the 3,600 s wall-clock ceiling",
+    "Game change ffbdecb (owner request 2026-11-04) added chapter 0 story lines that P1 never reaches. The world records a hash of all story content, so the start and end state hashes changed",
+    "P1's world, observations (viewsHash), prompts, trajectory, ticks, decisions, success rule and limits are unchanged; the preset stays P1-v3",
   ]),
   situation: ID,
   preset: def.preset,
@@ -400,8 +576,8 @@ export const P1 = Object.freeze({
     tick: 0,
     /** Raw authoritative state hash after reset (ids and room code included). */
     hashes: Object.freeze({
-      0: "688b246237f8183790ca7f1f0d38a5b96570ffd323c3d662683ca04cf1b71530",
-      1: "e9922b16b72471fa38d5f50271e23c81a127bca5e2b563b79949a794e74b0f12",
+      0: "e60f35262a0cdef00d3f8b2fc13ec307d14db263a7e31da45054765cedd2d532",
+      1: "240103bde2ce5cc4c6f801857bba02d76758d5ff22549cd989255b686a6ea136",
     } as Record<number, string>),
     /** SHA-256 of both heroes' first observation and legal actions (identical at seeds 0 and 1). */
     viewsHash: "dbfbef0bbac8df08c1b749ea47e991ed130a3f501b442841b32b657e2d60363d",
@@ -487,7 +663,7 @@ export const P1 = Object.freeze({
       "Disclosed route knowledge (policies/questKnowledge.ts PROLOGUE), worked out from the story code and static map " +
       "geometry. It plays only through the five operations, from its own observation; no state is written.",
     routeSha256: createHash("sha256").update(canonicalJson(PROLOGUE)).digest("hex"),
-    evidence: "docs/midterm/evidence/p1-v3-baseline/",
+    evidence: "docs/midterm/evidence/p1-v4-baseline/",
     reference: Object.freeze({
       seed: 0,
       status: "success",
@@ -498,7 +674,7 @@ export const P1 = Object.freeze({
       invalidActions: 0,
       messages: 0,
       modelCalls: 0,
-      endHash: "c2f3b973456f4c0dd693afa2c5c0dafc5cd5138f32c88bb3afe2bbd55d797e54",
+      endHash: "7aebea79f5ef03042b21655f352bacd0ec01706bf6ac54493ddcf7d19b978a62",
     }),
   }),
   reproduce: Object.freeze([
@@ -508,7 +684,7 @@ export const P1 = Object.freeze({
   ]),
 });
 
-/** Hash of the current (revision 3) definition. Pinned in the test; recorded in every P1 run summary. */
+/** Hash of the current (revision 4) definition. Pinned in the test; recorded in every P1 run summary. */
 export const P1_HASH = createHash("sha256").update(canonicalJson(P1)).digest("hex");
 
 /** The evaluation label of a scenario id, if it is P1. */
@@ -516,7 +692,8 @@ export const P1_HASH = createHash("sha256").update(canonicalJson(P1)).digest("he
 export const P1_REVISIONS = Object.freeze([
   { version: 1, preset: "P1", definitionHash: P1_V1_HASH, status: "superseded before any model run (review findings F1, F2, F4, F6)" },
   { version: 2, preset: "P1-v2", definitionHash: P1_V2_HASH, status: "superseded before any model run (owner's wording for the fence opening)" },
-  { version: 3, preset: "P1-v3", definitionHash: P1_HASH, status: "current" },
+  { version: 3, preset: "P1-v3", definitionHash: P1_V3_HASH, status: "superseded after one live model trial (332050a): the game's story content hash changed (ffbdecb)" },
+  { version: 4, preset: "P1-v3", definitionHash: P1_HASH, status: "current" },
 ] as const);
 
 export function prologueEvaluationLabel(id: SituationId): { label: string; definitionHash: string } | null {

@@ -19,16 +19,23 @@ const ROUTE_DEV = routeDevelopmentAccess("checkpointFreeze.test.ts: pinned start
 
 const SRC = join(dirname(fileURLToPath(import.meta.url)), "../../src");
 
-/** Start tick and state hash of each scenario, recorded at commit bc377ee before the split. */
+/**
+ * Start tick and state hash of each scenario. First recorded at commit bc377ee
+ * before the split. RE-PINNED with owner approval 2026-11-04 after the game
+ * change ffbdecb (cow posts in the Hedge Maze, griffin 640 HP, new story
+ * lines): every start carries the story's content hash, and the S4 prefix's
+ * route now passes the posts through their opening (start tick 9979 -> 9963).
+ * The previous values reproduce at 96625b5.
+ */
 const PINNED: Record<string, [number, string]> = {
-  "S2/0": [221, "5397eba5c68d4770bf41e742e5ae9474a256a30f9ddd4149a6bf35592bc2c9ab"],
-  "S2/1": [221, "d109db6679d708103648fedd33562a17dc05f6e37b83b19af70374411c3dbb57"],
-  "S2/100": [221, "6028e2a9c8c836b6ab05e1cf3e3ad835fd488158f5a1edf633cab7802e91657b"],
-  "S2/101": [221, "97682f9b462b2b45b833d9f3d81d6db39f2599257d3a4db3009e3a0aabb69221"],
-  "S4/0": [9979, "0a07acef49819dff992bc2575850c8943df4943471f3f022e7ebdb6713c2fcf3"],
-  "S4/1": [9979, "3eac7f228479e7df2f3636c2458452f0f083381075a97e9a5f57cdad6aaafc93"],
-  "S4/100": [9979, "325e9ee5195bbe50279cc90c91f19aa69e808a0d12814df637e85acabcf9f162"],
-  "S4/101": [9979, "3cc6250f22230b7f35f66d075b155fa6a29f0d2da210da8a96e6e87e1566fe1d"],
+  "S2/0": [221, "ec2026386b19ab503c1176a897da23492c219ffe6963610e90123db3a4f71558"],
+  "S2/1": [221, "0f1bb75edaea970c8de3795f28850a5ec5e4458ad01967dd50b73597c3cd6cdd"],
+  "S2/100": [221, "de7b0b78710ed9c0698e6bcc18853a4a5cbf8f92d7d88aa027e603d04af71171"],
+  "S2/101": [221, "6350a405073b8efd65f0186c98f5a6a1eff4fda2035b8d9dd3e73ce7a37e96a3"],
+  "S4/0": [9963, "e5361f3f51783e13c132695921428bff193e23f901538950d5196760eafa6c66"],
+  "S4/1": [9963, "edb277661d49f1eb7200823a7547ec46bd85feb925c97c8202c832cef8059e3f"],
+  "S4/100": [9963, "ea2dca5f9a1f5476b3bde3f9235dcf604834b08de7b618295612403de28b3d35"],
+  "S4/101": [9963, "f899c7fc273e84567b2277956fe3a2278caefb76801dbac39bf9ccde4b0753fb"],
 };
 
 const start = async (key: string) => {

@@ -492,11 +492,13 @@ describe("FIXTURE: a real Black Hole pull, as Coco's memory records it", () => {
     await env.reset(0);
     roomOf(env).transition("HEDGE_MAZE");
     Object.assign(heroOf(env, "sieg"), { x: 5 * TILE, y: 34 * TILE });
-    Object.assign(heroOf(env, "coco"), { x: 24.4 * TILE, y: 27.45 * TILE });
+    // Coco casts east from the grazing bay (the old south-west corner spot has
+    // held a stone post since 2026-11-04).
+    Object.assign(heroOf(env, "coco"), { x: 20.5 * TILE, y: 25.5 * TILE });
     const mem = { sieg: new HeroMemory("Sieg"), coco: new HeroMemory("Coco") };
     for (const p of ["sieg", "coco"] as PlayerId[]) mem[p].observe(await env.observe(p));
     const waits = (n: number) => Array.from({ length: n }, () => ({ type: "wait", ticks: 60 }) as GameAction);
-    await drive(env, mem, { sieg: waits(5), coco: [{ type: "ability", ability: "black_hole", direction: "nw" }, ...waits(4)] });
+    await drive(env, mem, { sieg: waits(5), coco: [{ type: "ability", ability: "black_hole", direction: "e" }, ...waits(4)] });
     const o = await env.observe("coco");
     const cow = o.visible.find((v) => v.name === "cow")!;
     expect(cow.x).toBeLessThan(26);

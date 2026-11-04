@@ -357,10 +357,12 @@ it("keeps the maze arrival's first meaningful line unread until agents act", asy
 });
 
 it("keeps parent tuning start hashes and limits unchanged and distinct from local starts", async () => {
+  // Re-pinned with owner approval 2026-11-04 after game change ffbdecb (new
+  // story lines change every start's story hash); old values reproduce at 96625b5.
   const parents = {
-    S1: "d9b2359a956db64d0a489c4367bc313523da7e617e3d8cc68e02b5ffbbac95a2",
-    S2: "5397eba5c68d4770bf41e742e5ae9474a256a30f9ddd4149a6bf35592bc2c9ab",
-    S3: "5397eba5c68d4770bf41e742e5ae9474a256a30f9ddd4149a6bf35592bc2c9ab",
+    S1: "9d565ae90d161cc9e79979e0b9b66b1c5499d5a22e5292ba10ca271bda12cb50",
+    S2: "ec2026386b19ab503c1176a897da23492c219ffe6963610e90123db3a4f71558",
+    S3: "ec2026386b19ab503c1176a897da23492c219ffe6963610e90123db3a4f71558",
   };
   for (const id of ["S1", "S2", "S3"] as const)
     expect((await environmentFor(id).reset(0)).startHash).toBe(parents[id]);

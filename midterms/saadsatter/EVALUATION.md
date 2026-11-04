@@ -34,7 +34,15 @@ Mirror Pond (S3) and the Griffin (part of S4) remain implemented content. They a
 
 ### Situation A (S2-A), the frozen form of this episode
 
-On 2026-10-29 this episode was frozen as **S2-A — Full Hedge Maze**, version 1. It is the first situation of a proposed three-situation Hedge Maze suite; the other two are proposals only, so **the three-situation requirement is not met** ([SITUATION_A.md](docs/midterm/SITUATION_A.md)).
+On 2026-10-29 this episode was frozen as **S2-A — Full Hedge Maze**, version 1 ([SITUATION_A.md](docs/midterm/SITUATION_A.md)). Two more Hedge Maze situations were then implemented and frozen ([HEDGE_MAZE_SITUATIONS.md](docs/midterm/HEDGE_MAZE_SITUATIONS.md)):
+- **S2-B, cow puzzle:** starts with the hedge burned and the cow still in the lane.
+- **S2-C, wolf and key:** starts with the cow moved and the wolf holding the key.
+
+Both are reached by replaying the committed baseline run through the interface. All three are development-informed tuning situations, not held-out cases.
+
+The scripted baseline succeeds on A (49.8 s) and B (38.9 s). On C it reaches the tick limit, because its fixed script cannot resume mid-maze.
+
+**No live trial has been run on B or C, so the requirement of three situations with two live trials each is not yet met.**
 - S2-A is a label for S2-local, not a new scenario. It has the same start, success, limits and prompts, and the historical traces still replay.
 - The runs in the table below are historical tuning pilots on that same start. They are not S2-A trials and were not re-run.
 - Seed 1 differs from seed 0 only in room code and hero ids, so it is a repeated trial, not a second situation.

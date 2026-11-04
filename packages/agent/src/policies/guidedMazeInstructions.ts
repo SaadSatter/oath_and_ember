@@ -4,12 +4,13 @@
 // engine, route, navigation or observation imports. Never add this to llm.ts.
 import { createHash } from "node:crypto";
 
-export const GUIDED_MAZE_VERSION = "hedge-maze-walkthrough-v1";
+// v2 (2026-11-04): legs pass the new stone posts through their opening at x=26.5.
+export const GUIDED_MAZE_VERSION = "hedge-maze-walkthrough-v2";
 export const MAZE_GUIDE_LEGS = Object.freeze({
   cowApproach: [[20.5, 34.5], [20.5, 25.5]],
-  aroundCow: [[20.5, 27.5], [21.5, 27.5], [21.5, 30.5], [27.5, 30.5]],
-  cocoStage: [[27.5, 19.5], [32.5, 19.5]],
-  siegNorth: [[27.5, 15.5], [11.5, 15.5], [11.5, 7.5], [19.5, 7.5]],
+  aroundCow: [[20.5, 27.5], [21.5, 27.5], [21.5, 30.5], [26.5, 30.5]],
+  cocoStage: [[26.5, 19.5], [32.5, 19.5]],
+  siegNorth: [[26.5, 15.5], [11.5, 15.5], [11.5, 7.5], [19.5, 7.5]],
   topSweep: [[4, 4.5], [19.5, 4.5], [34, 4.5]],
   loopWest: [[11.5, 4.5], [11.5, 12.5]],
   loopEast: [[39.5, 4.5], [39.5, 12.5]],

@@ -55,7 +55,13 @@ verifyTrace(lines); // hash chain: no edits or gaps
 const resetLine = lines.find((l) => l.type === "reset");
 if (!resetLine) fail("the trace has no reset line.");
 const reset = resetLine.data as { episode: string; seed: number; startHash: string; tick: number };
-const terminal = lines.find((l) => l.type === "terminal")?.data as { reason: string; hash: string } | undefined;
+const terminalLine = lines.find((l) => l.type === "terminal");
+const terminal = terminalLine?.data as { reason: string; hash: string } | undefined;
+// Ends the game decides (success, tick limit) replay by themselves. Any other
+// end (Ctrl-C, wall clock, budget, error) came from outside the game: the
+// replay stops at the same tick, for the same reason, and the terminal hash
+// must still match.
+const externalStop = terminal && !["success", "tick_limit"].includes(terminal.reason) ? { tick: terminalLine!.tick, reason: terminal.reason } : null;
 const outcome = lines.find((l) => l.type === "outcome")?.data as { outcome: { ticks: number; status: string } } | undefined;
 const ledgerEntry = (lines.find((l) => l.type === "ledger_reservation")?.data as { entry?: string } | undefined)?.entry ?? null;
 const summaryPath = join(dirname(resolve(tracePath)), "summary.json");
@@ -72,10 +78,13 @@ const heroes: PlayerId[] = ["sieg", "coco"];
 const actions: Record<PlayerId, GameAction[]> = { sieg: [], coco: [] };
 // Expected result hashes per hero, in order (timed actions carry a hash; instant ones do not).
 const expected: Record<PlayerId, (string | null)[]> = { sieg: [], coco: [] };
+// Actions the game refused in the recorded run must be refused again, in order.
+const expectedRefusals: Record<PlayerId, string[]> = { sieg: [], coco: [] };
 for (const l of lines) {
   const p = l.player as PlayerId | undefined;
   if (l.type === "action" && p) actions[p].push((l.data as { action: GameAction }).action);
   if (l.type === "result" && p) expected[p].push((l.data as { hash?: string }).hash ?? null);
+  if (l.type === "invalid_action" && p) expectedRefusals[p].push((l.data as { error: string }).error);
 }
 const traceSha = createHash("sha256").update(raw).digest("hex");
 console.log(`Trace ${relative(process.cwd(), resolve(tracePath))} (sha256 ${traceSha.slice(0, 16)}, chain verified${ledgerEntry ? `, ${ledgerEntry}` : ""})`);
@@ -105,6 +114,7 @@ if (!checkOnly) {
 // ── Replay ───────────────────────────────────────────────────────────────────
 const mismatches: string[] = [];
 const got: Record<PlayerId, (string | null)[]> = { sieg: [], coco: [] };
+const refused: Record<PlayerId, string[]> = { sieg: [], coco: [] };
 let gotTerminal: { reason: string; hash: string } | undefined;
 let startTick = 0;
 const env = environmentFor(scenario, {
@@ -119,7 +129,11 @@ const env = environmentFor(scenario, {
       }
     }
     if (e.type === "terminal") gotTerminal = d as { reason: string; hash: string };
-    if (e.type === "invalid_action") mismatches.push(`${e.player} action refused at tick ${e.tick}: ${d.error}`);
+    if (e.type === "invalid_action" && e.player) {
+      const p = e.player;
+      const i = refused[p].push(d.error) - 1;
+      if (expectedRefusals[p][i] !== d.error) mismatches.push(`${p} action refused at tick ${e.tick} (${d.error}), not refused in the trace`);
+    }
     if (viewer && e.player && (e.type === "action" || e.type === "result")) {
       const h = viewer.status.heroes[e.player as "sieg" | "coco"];
       if (e.type === "action") h.state = `acting: ${JSON.stringify(d.action).slice(0, 80)}`;
@@ -131,6 +145,15 @@ const env = environmentFor(scenario, {
     }
   },
   ...(viewer ? { ...viewer.hooks, ...(recorder ? { ready: () => recorder!.ready() } : {}) } : {}),
+  // An external stop that came while game time was running: stop between the same ticks.
+  ...(externalStop
+    ? {
+        pace: async () => {
+          await viewer?.hooks.pace?.();
+          if (env.currentTick() >= externalStop.tick) env.stop(externalStop.reason as never);
+        },
+      }
+    : {}),
 });
 
 const state = await env.reset(seed);
@@ -138,11 +161,24 @@ startTick = state.tick;
 if (state.startHash !== reset.startHash) mismatches.push(`start hash ${state.startHash.slice(0, 16)} ≠ trace ${reset.startHash.slice(0, 16)}`);
 if (state.tick !== reset.tick) mismatches.push(`start tick ${state.tick} ≠ trace ${reset.tick}`);
 
+let outOfActions = 0;
 async function play(p: PlayerId) {
   for (const action of actions[p]) {
     if (mismatches.length) return;
     const r = await env.step(p, action);
     if (r.done) return;
+  }
+  // This hero's recorded actions are all used. The game cannot advance until it
+  // acts again, so this is where an external stop made while a hero was deciding
+  // happened. Let the partner's pending instant actions settle first.
+  if (++outOfActions && externalStop && (await env.outcome()).status === "ongoing") {
+    for (let k = 0; k < 20; k++) await new Promise((r) => setImmediate(r));
+    if ((await env.outcome()).status !== "ongoing") return;
+    if (env.currentTick() === externalStop.tick) env.stop(externalStop.reason as never);
+    else {
+      mismatches.push(`${p} ran out of recorded actions at tick ${env.currentTick()}, the trace stopped at ${externalStop.tick}`);
+      env.stop("error");
+    }
   }
 }
 if (!mismatches.length) await Promise.all(heroes.map(play));
@@ -152,6 +188,7 @@ if (!mismatches.length) {
     mismatches.push(`terminal ${gotTerminal?.reason ?? "none"} ${gotTerminal?.hash.slice(0, 16) ?? ""} ≠ trace ${terminal.reason} ${terminal.hash.slice(0, 16)}`);
   if (outcome && end.ticks !== outcome.outcome.ticks) mismatches.push(`episode ticks ${end.ticks} ≠ trace ${outcome.outcome.ticks}`);
   for (const p of heroes) if (got[p].length !== expected[p].length) mismatches.push(`${p}: ${got[p].length} results ≠ trace ${expected[p].length}`);
+  for (const p of heroes) if (refused[p].length !== expectedRefusals[p].length) mismatches.push(`${p}: ${refused[p].length} refusals ≠ trace ${expectedRefusals[p].length}`);
 }
 const matched = mismatches.length === 0;
 console.log(matched

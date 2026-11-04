@@ -33,6 +33,7 @@ console.log(`  supersedes revision ${P1.supersedes.version} (definition hash ${P
 const FROZEN: Record<number, string> = {
   1: "baa6b04b7de3d56e479cbb092d5d8a10875a290c89748b836917e32a895f73ac",
   2: "7dfac8cd2b91b5d096328265a4eba068a8a86055750c204896394ebdc6b1a655",
+  3: "05a2e7442d5271f04af135ddcfec687c23c756e3cc9e6894f43182dd0d7161aa",
 };
 for (const r of P1_REVISIONS.filter((x) => x.version < P1.version))
   check(r.definitionHash === FROZEN[r.version], `revision ${r.version} (preset ${r.preset}) is kept verbatim with its original hash ${FROZEN[r.version]?.slice(0, 8)}…`);

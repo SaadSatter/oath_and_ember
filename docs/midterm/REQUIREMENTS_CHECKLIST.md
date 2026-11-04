@@ -48,7 +48,7 @@ Evidence pointers are in `docs/midterm/EVIDENCE_INDEX.md`. Updated 2026-10-27, a
 - **Time limits (2026-10-27).** 480 s means game time (`tick_limit`). The real-world ceiling for model runs is 3,600 s (`wall_clock_limit`), separate and configurable.
 - **Model-call limit (2026-10-27).** 400 calls per hero is provisional. Reassess it, and the cost, after the scripted route is complete. No paid calls yet.
 - **Hero ids (2026-10-27).** Seeded and deterministic (`packages/agent/src/runtime.ts`). The same seed gives the same hero ids and id-based tie-breaks; different seeds may vary the tie order. Hero ids depend only on the seed (they are drawn at reset, before any action). The seed and the raw start-state hash are in each trace's `reset` line. Production rooms keep random UUIDs.
-- **Griffin label (2026-10-27).** Agents receive the griffin's exact HP and phase text (`GRIFFIN <hp>/320 · <PHASE>`) because the game draws that label on screen (`GriffinView.ts`). This is a deliberate, documented choice. The HUD goal lines stay hidden from both the baseline and the model.
+- **Griffin label (2026-10-27).** Agents receive the griffin's exact HP and phase text (`GRIFFIN <hp>/640 · <PHASE>`; 320 before the 2026-11-04 game change `ffbdecb`) because the game draws that label on screen (`GriffinView.ts`). This is a deliberate, documented choice. The HUD goal lines stay hidden from both the baseline and the model.
 - **Submission.** Prepare Oath and Ember, but do not replace Prince of Persia in course PR #57 until the professor resolves the scope and submission questions.
 
 ## CI test groups required by 3c (planned)

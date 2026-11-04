@@ -31,7 +31,8 @@ import type { GameOutcome, PlayerId } from "./types.js";
 import { episodes } from "./evaluator.js";
 import { FinalAccessError, isGrant, type FinalGrant } from "./finalAccess.js";
 import { PLAYER_KINDS, type PlayerKind } from "./playerKinds.js";
-import { canonicalJson, evaluationLabel } from "./situationA.js";
+import { canonicalJson } from "./situationA.js";
+import { mazeEvaluationLabel } from "./hedgeMazeSituations.js";
 import { prologueEvaluationLabel } from "./prologueSituation.js";
 
 export { PLAYER_KINDS, type PlayerKind };
@@ -42,6 +43,8 @@ export const EPISODE_CAP_USD: Record<SituationId, number> = {
   "S2-local": 1.25, "S3-local": 1.25, S1: 0.2, S2: 1.25, S3: 1.25, S4: 1.0, F: 3.0,
   // Revision 1 definitions keep their original caps.
   "S2-v1": 1.25, "S3-v1": 1.25, "S2-local-v1": 1.25, "S3-local-v1": 1.25,
+  // Hedge Maze Situations B and C: the same cap as S2-A (S2-local).
+  "S2-B": 1.25, "S2-C": 1.25,
   // P1 Into the Forest: the owner's cap (2026-11-03).
   P1: 0.6,
 };
@@ -59,7 +62,7 @@ export function checkWallSeconds(o: Pick<SuiteRunOptions, "situations" | "wallSe
       throw Error(`${id}'s wall-clock limit is ${ceiling} s; a run may lower it, never raise it (got ${o.wallSeconds} s).`);
   }
 }
-export const OBS_ONLY_SITUATIONS: readonly SituationId[] = ["S1", "S2", "S3", "S2-local", "S3-local", "S2-v1", "S3-v1", "S2-local-v1", "S3-local-v1", "P1"];
+export const OBS_ONLY_SITUATIONS: readonly SituationId[] = ["S1", "S2", "S3", "S2-local", "S3-local", "S2-v1", "S3-v1", "S2-local-v1", "S3-local-v1", "S2-B", "S2-C", "P1"];
 
 export interface ModelSetup {
   /** A provider adapter for paid runs; a fake in tests. */
@@ -216,7 +219,8 @@ export interface EpisodeSummary {
   finalClaim: string | null;
   /**
    * Evaluation label of the scenario and its frozen definition hash (S2-local
-   * is "S2-A", situationA.ts), or null. Added 2026-10-29; older records lack it.
+   * is "S2-A", S2-B and S2-C are themselves; hedgeMazeSituations.ts), or null.
+   * Added 2026-10-29; older records lack it.
    */
   evaluation?: { label: string; definitionHash: string } | null;
   /** SHA-256 of each hero's system prompt (model players), or null for scripted players. Added 2026-10-29. */
@@ -451,7 +455,7 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
   const sum = (f: (r: CallRecord) => number) => records.reduce((a, r) => a + f(r), 0);
   const per = <T>(f: (id: PlayerId) => T) => ({ sieg: f("sieg"), coco: f("coco") });
   const def = situation(id);
-  const evaluation = evaluationLabel(id) ?? prologueEvaluationLabel(id);
+  const evaluation = mazeEvaluationLabel(id) ?? prologueEvaluationLabel(id);
   const promptHashes = per((p) => (policies[p] as { promptHash?: string }).promptHash ?? null);
   const configHash = runConfigHash({
     situation: id, preset: def.preset, suiteRevision: SUITE_REVISION, evaluation, player: o.player,

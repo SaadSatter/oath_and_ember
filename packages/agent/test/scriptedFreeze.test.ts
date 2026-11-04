@@ -37,22 +37,29 @@ function digest(lines: { type: string; tick: number; player?: string; data: unkn
   return h.digest("hex").slice(0, 16);
 }
 
+// RE-PINNED with owner approval 2026-11-04 after the game change ffbdecb
+// (stone posts around the Hedge Maze cow, griffin 640 HP, new story lines).
+// The story content hash moved every state hash. The route and the quest
+// baseline now pass the posts through their opening at x=26.5 instead of
+// x=27.5, so runs that cross the maze are 16 ticks shorter. Every status is
+// unchanged. The previous values (below each entry) reproduce at 96625b5.
 const PINNED = {
-  "route/seed1": { status: "success", ticks: 12412, end: "32e8611191b9c283", digest: "9a4c1785bf28cee8" },
-  "quest/S1": { status: "success", ticks: 290, end: "7e22d17e885d2cd2", digest: "a6f172d50b64d36c" },
-  "explore/S1": { status: "success", ticks: 323, end: "8b2f4551ddf45c6d", digest: "1789d50e2aa172dd" },
-  "quest/S2": { status: "success", ticks: 8786, end: "3119923352c08724", digest: "95ba992c670b8575" },
+  // was 12412, 32e8611191b9c283, 9a4c1785bf28cee8
+  "route/seed1": { status: "success", ticks: 12396, end: "df4b0d238894d83a", digest: "8e548149a1a2c416" },
+  // was 7e22d17e885d2cd2, a6f172d50b64d36c
+  "quest/S1": { status: "success", ticks: 290, end: "3bdadd9f450227dc", digest: "c6c6def39a2062fe" },
+  // was 8b2f4551ddf45c6d, 1789d50e2aa172dd
+  "explore/S1": { status: "success", ticks: 323, end: "12324b18ecbb15df", digest: "8f6d4d3419922945" },
+  // was 8786, 3119923352c08724, 95ba992c670b8575
+  "quest/S2": { status: "success", ticks: 8770, end: "1069b26a745c6a8e", digest: "18bfbbb675dff04d" },
   // explore/S2 and explore/S3 are one trajectory (same post-opening start; the
   // exploration baseline has no briefing): not two independent results.
-  // RE-PINNED with owner approval 2026-10-28 (pilot-7 observation fixes), this
-  // shared entry only. The old values (end cc9ad696c917e214, digest
-  // 53edd2605b70c7ac) relied on the "East spike entrance" painted label drawing
-  // "o" over the impassable wall cell (45,23); it is now drawn "#". First
-  // divergence: decision 214, tick 2999. Restoring only that "o" reproduces the
-  // old values. Evidence: docs/midterm/PILOT7_FIXES.md.
-  "explore/S2": { status: "terminated", ticks: 6000, end: "ba34603a00ee793d", digest: "e78c8b162f8c735b" },
-  "quest/S3": { status: "success", ticks: 3174, end: "bf31311f6c56638b", digest: "a6518c4acff7a7e8" },
-  "explore/S3": { status: "terminated", ticks: 6000, end: "ba34603a00ee793d", digest: "e78c8b162f8c735b" },
+  // Re-pinned 2026-10-28 (pilot-7 observation fixes; docs/midterm/PILOT7_FIXES.md)
+  // and 2026-11-04 (was ba34603a00ee793d, e78c8b162f8c735b).
+  "explore/S2": { status: "terminated", ticks: 6000, end: "479f4bb8fe2b2693", digest: "f14da233005710c3" },
+  // was 3174, bf31311f6c56638b, a6518c4acff7a7e8
+  "quest/S3": { status: "success", ticks: 3158, end: "22900abe990a552a", digest: "d7d795fa01a31a7d" },
+  "explore/S3": { status: "terminated", ticks: 6000, end: "479f4bb8fe2b2693", digest: "f14da233005710c3" },
 } as const;
 
 describe("scripted players behave exactly as before the pilot-6 interface changes", () => {

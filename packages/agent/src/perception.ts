@@ -27,6 +27,7 @@ import {
   griffinNest,
   griffinPillars,
   griffinState,
+  GRIFFIN_MAX_HP,
   type GriffinState,
 } from "../../shared/src/griffin.js";
 import { SHRINE_OFFERING, shrineComplete, shrinePoints } from "../../shared/src/shrine.js";
@@ -285,11 +286,11 @@ function griffinLabel(g: GriffinState, mode: LabelMode) {
           ? "A LITTLE TRIM…"
           : "CHECKING THAT MAGNIFICENT HAIR";
   if (g.hp <= 0) return label(mode, "DEFEATED · E at nest for wig", "defeated");
-  return `GRIFFIN ${g.hp}/320 · ${g.phase.replaceAll("_", " ")}`;
+  return `GRIFFIN ${g.hp}/${GRIFFIN_MAX_HP} · ${g.phase.replaceAll("_", " ")}`;
 }
 
 /** The Hedge Maze's two caption texts (HedgeMazeView.label); labels since pilot-9. */
-export const MAZE_COW_CAPTION = "Harmless cow · blocks the lane";
+export const MAZE_COW_CAPTION = "Harmless cow · too wide for the posts";
 export const MAZE_BAY_SIGN = "BLACK HOLE → grazing bay";
 export const MAZE_BAY_SIGN_SHORT = "grazing bay";
 
@@ -387,7 +388,7 @@ function sceneProps(w: World, scene: SceneId, mode: LabelMode): Prop[] {
       });
     if (maze) {
       // HedgeMazeView draws the cow sprite where the cow is, and its label as
-      // separate text fixed at (26, 27.7) that never moves or hides. The cow
+      // separate text fixed at (26, 28.8) that never moves or hides. The cow
       // itself carries no text (pilot-6 audit finding 3). Pilot-9 (owner
       // approval 2026-10-29): the cow is drawn across the 4×4 tiles its body
       // occupies (the same rectangle the engine collides with, which the
@@ -398,7 +399,7 @@ function sceneProps(w: World, scene: SceneId, mode: LabelMode): Prop[] {
         kind: "label",
         name: label(mode, MAZE_COW_CAPTION, "lane sign"),
         x: 26 * TILE,
-        y: 27.7 * TILE,
+        y: 28.8 * TILE,
       });
       if (!maze.runner.caught)
         props.push({

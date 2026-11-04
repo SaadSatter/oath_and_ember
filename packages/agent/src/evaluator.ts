@@ -16,7 +16,7 @@ import { stageReached } from "../../shared/src/prologue.js";
  */
 export type EpisodePreset =
   | "S2-local" | "S3-local" | "full" | "milestone" | "S1" | "S2" | "S3" | "S4"
-  | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "P1" | "P1-v2" | "P1-v3";
+  | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "S2-B" | "S2-C" | "P1" | "P1-v2" | "P1-v3";
 
 export interface EpisodeDefinition {
   preset: EpisodePreset;
@@ -40,7 +40,7 @@ const QUEST_AREAS = new Set(["MIRROR_POND", "HEDGE_MAZE", "GRIFFIN_ENCLOSURE"]);
 const holding = (w: World, item: string) => ((w.inventory?.counts as Record<string, number> | undefined)?.[item] ?? 0) > 0;
 
 /** Owner-approved episode definitions and limits (2026-10-23). */
-const coreEpisodes: Record<Exclude<EpisodePreset, "S2-local" | "S3-local" | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "P1" | "P1-v2" | "P1-v3">, EpisodeDefinition> = {
+const coreEpisodes: Record<Exclude<EpisodePreset, "S2-local" | "S3-local" | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "S2-B" | "S2-C" | "P1" | "P1-v2" | "P1-v3">, EpisodeDefinition> = {
   full: {
     preset: "full",
     goal: "Bald Goddess quest: from the goddess checkpoint to chapter0.complete.",
@@ -123,6 +123,9 @@ export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
   "S3-v2": { ...coreEpisodes.S2, preset: "S3-v2", goal: "S3 (suite revision 2): from the shrine after the opening scene, obtain the Vanity Mirror (Mirror Pond)." },
   "S2-local-v2": { ...coreEpisodes.S3, preset: "S2-local-v2", goal: "S2-local (suite revision 2): from the Hedge Maze entrance, obtain the Enchanted Shears." },
   "S3-local-v2": { ...coreEpisodes.S2, preset: "S3-local-v2", goal: "S3-local (suite revision 2): from the Mirror Pond entrance, obtain the Vanity Mirror." },
+  // Hedge Maze Situations B and C (2026-10-29): the same predicate and limits as S2-A.
+  "S2-B": { ...coreEpisodes.S3, preset: "S2-B", goal: "S2-B: from inside the Hedge Maze with the hedge burned and the cow still in the lane, obtain the Enchanted Shears." },
+  "S2-C": { ...coreEpisodes.S3, preset: "S2-C", goal: "S2-C: from inside the Hedge Maze with the cow moved and the wolf still holding the key, obtain the Enchanted Shears." },
   P1: P1_EPISODE,
   // P1 revision 2 (2026-11-03, review fixes F1/F2/F4): the same start, success
   // predicate and limits; its own preset so episode ids differ from revision 1.

@@ -80,7 +80,8 @@ describe("instruction-guided Mirror Pond policy", () => {
     expect(guided.sieg.name).toContain(`walkthrough-${GUIDED_POND_ID}`);
     expect((guided.sieg as GuidedPlayer).model.label).toContain(`guided-${GUIDED_POND_ID}`);
     // The Maze walkthrough and its labels are byte-unchanged by the generalization.
-    expect(GUIDED_MAZE_ID).toBe("975e5580671c");
+    // v2 since 2026-11-04 (paths through the new cow posts); v1 was 975e5580671c.
+    expect(GUIDED_MAZE_ID).toBe("8fdd1b2d7e65");
     const maze = policiesFor("model-guided", budget(), setup(new Recording()), "S2-local");
     expect(maze.sieg.name).toContain(`walkthrough-${GUIDED_MAZE_ID}`);
     expect(GUIDES["S2-local"].id).toBe(GUIDED_MAZE_ID);

@@ -29,7 +29,8 @@ Rubric checks are those of [MIDTERM_GUIDELINES.md](MIDTERM_GUIDELINES.md). The e
 | Generated sprites' terms confirmed for publication | **blocked: owner** | README "Sources and terms" |
 | Fresh-clone rehearsal and CI at the submitted commit | **pending** | The last rehearsal was at `c65dbe2`, before this documentation commit |
 | Course PR opened and URL submitted on CourseWorks | **blocked: owner** | Not opened. No push or PR from this session |
-| Situation A (S2-A, Full Hedge Maze) frozen as a label for S2-local | complete | [SITUATION_A.md](SITUATION_A.md): definition hash pinned by `situationA.test.ts`, baseline reproduced at seeds 0 and 1 (free). Situations B and C proposed, not implemented; the three-situation gap below stands |
+| Situation A (S2-A, Full Hedge Maze) frozen as a label for S2-local | complete | [SITUATION_A.md](SITUATION_A.md): definition hash pinned by `situationA.test.ts`, baseline reproduced at seeds 0 and 1 (free) |
+| Situations B (cow puzzle) and C (wolf and key) implemented and frozen | complete (no live trials) | [HEDGE_MAZE_SITUATIONS.md](HEDGE_MAZE_SITUATIONS.md). The baseline succeeds on B and reaches the tick limit on C (it cannot resume mid-maze; owner decision pending). The model trial matrix and budget are prepared, not run. The three-situation gap below now needs only the live trials |
 
 ## Rubric gaps and scope-approval risks
 

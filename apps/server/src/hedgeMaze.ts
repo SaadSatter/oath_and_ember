@@ -209,8 +209,21 @@ export function pullMazeCow(
   cow.parked = cow.x <= 23.85 * 32;
 }
 const cellKey = (x: number, y: number) => y * 48 + x;
+// The wolf replans at every cell it reaches (about 13 times a second while it
+// flees). Rebuilding the grid each time tested every cell against every wall.
+// The grid only changes when a wall does (bush burned, gate opened, cow moved),
+// so it is cached by the wall layout. Callers only read it.
+let navigationCache:
+  | { key: string; cells: ReadonlyMap<number, { x: number; y: number }> }
+  | undefined;
 function mazeNavigation(w: World) {
-  const walls = collisionRects("HEDGE_MAZE", w.puzzles);
+  const walls = collisionRects("HEDGE_MAZE", w.puzzles),
+    key = JSON.stringify(walls);
+  if (navigationCache?.key !== key)
+    navigationCache = { key, cells: buildMazeNavigation(walls) };
+  return navigationCache.cells;
+}
+function buildMazeNavigation(walls: Rect[]) {
   const cells = new Map<number, { x: number; y: number }>();
   for (let y = 4; y < 22; y++)
     for (let x = 2; x < 40; x++) {
@@ -228,12 +241,12 @@ function mazeNavigation(w: World) {
     }
   return cells;
 }
-function neighbors(key: number, cells: Map<number, unknown>) {
+function neighbors(key: number, cells: ReadonlyMap<number, unknown>) {
   return [key - 1, key + 1, key - 48, key + 48].filter(
     (n) => cells.has(n) && Math.abs((n % 48) - (key % 48)) <= 1,
   );
 }
-function distances(start: number, cells: Map<number, unknown>) {
+function distances(start: number, cells: ReadonlyMap<number, unknown>) {
   const d = new Map([[start, 0]]),
     q = [start];
   for (let i = 0; i < q.length; i++)
@@ -302,21 +315,33 @@ export function tickMazeRunner(w: World) {
     start = cellKey(Math.floor(runner.x / 32), Math.floor(runner.y / 32));
   if (!cells.has(start)) return;
   const threats = players.map((player) => {
-    const closest = [...cells].sort(
-      (a, b) =>
-        Math.hypot(a[1].x - player.x, a[1].y - player.y) -
-          Math.hypot(b[1].x - player.x, b[1].y - player.y) || a[0] - b[0],
-    )[0][0];
+    // The nearest cell to the hero (ties: lowest key), found in one pass.
+    let closest = -1,
+      best = Infinity;
+    for (const [key, cell] of cells) {
+      const d = Math.hypot(cell.x - player.x, cell.y - player.y);
+      if (d < best || (d === best && key < closest)) {
+        best = d;
+        closest = key;
+      }
+    }
     return distances(closest, cells);
   });
   const reachable = distances(start, cells);
   // A hero who cannot walk to the wolf's section is no threat. Counting such a
   // hero as distance 0 made every cell equal, so the wolf froze in place.
   const chasers = threats.filter((d) => d.has(start));
-  const score = (key: number) =>
-    chasers.length
-      ? Math.min(...chasers.map((d) => d.get(key) ?? Infinity))
-      : 0;
+  const scores = new Map<number, number>();
+  const score = (key: number) => {
+    let s = scores.get(key);
+    if (s === undefined) {
+      s = chasers.length
+        ? Math.min(...chasers.map((d) => d.get(key) ?? Infinity))
+        : 0;
+      scores.set(key, s);
+    }
+    return s;
+  };
   let goal: number;
   if (chasers.length) {
     runner.fleeing = true;
@@ -359,6 +384,7 @@ export function tickMazeRunner(w: World) {
       ? center
       : cells.get(next);
   if (!waypoint) return;
-  runner.waypoint = waypoint;
-  advance(waypoint);
+  // A copy: the cached grid is shared and must never be changed.
+  runner.waypoint = { x: waypoint.x, y: waypoint.y };
+  advance(runner.waypoint);
 }

@@ -161,11 +161,7 @@ import { preloadTreasure } from "./environment/TreasureChestView.js";
 import { PlayerView, type CharacterRendering } from "./entities/PlayerView.js";
 import "./styles.css";
 import { NetworkClient } from "./net/NetworkClient.js";
-import {
-  CastPrediction,
-  shotLead,
-  staffOrigin,
-} from "./net/castPrediction.js";
+import { CastPrediction, shotLead, staffOrigin } from "./net/castPrediction.js";
 import { fireballLevel } from "../../../packages/shared/src/abilities.js";
 import {
   maps,
@@ -184,7 +180,22 @@ const net = new NetworkClient(),
   panel = document.querySelector<HTMLDivElement>("#panel")!,
   hud = document.querySelector<HTMLDivElement>("#hud")!,
   notice = document.querySelector<HTMLDivElement>("#notice")!;
-const storyQA = new URLSearchParams(location.search).has("storyQA");
+const urlFlags = new URLSearchParams(location.search),
+  storyQA = urlFlags.has("storyQA"),
+  enemyQA = urlFlags.has("enemyQA"),
+  movementQA = urlFlags.has("movementQA"),
+  siegQA = urlFlags.has("siegQA"),
+  // QA scripts load the page with a ...QA=1 flag. Only they read the
+  // per-frame JSON written on #game, so normal play skips building it.
+  qaHooks = [...urlFlags.keys()].some((key) => key.endsWith("QA"));
+// Writing the same text again still replaces the DOM text node and forces a
+// page layout; the HUD is redrawn every frame, so only write real changes.
+function setTextIfChanged(el: Element, text: string) {
+  if (el.textContent !== text) el.textContent = text;
+}
+function setDataIfChanged(el: HTMLElement, key: string, value: string) {
+  if (el.dataset[key] !== value) el.dataset[key] = value;
+}
 let debug = false,
   uiKey = "",
   keys = new Set<string>();
@@ -309,10 +320,7 @@ const inventory = new InventoryPanel(
 // Quests sit beside the backpack in the top-right corner.
 const hudButtons = document.createElement("div");
 hudButtons.id = "hud-buttons";
-hudButtons.append(
-  quests.button,
-  document.getElementById("inventory-toggle")!,
-);
+hudButtons.append(quests.button, document.getElementById("inventory-toggle")!);
 document.body.append(hudButtons);
 // Talk to villagers with E. Registered after the inventory, so an item or
 // gate in reach still takes E first. Conversation is local presentation.
@@ -1137,7 +1145,7 @@ class Adventure extends Phaser.Scene {
       : undefined;
     offstageCard.hidden = !away;
     outdatedCard.hidden = !storyOutdated(w.storyVersion);
-    offstageCard.textContent = away?.text ?? "";
+    setTextIfChanged(offstageCard, away?.text ?? "");
     const sceneId = (watched ?? me).sceneId ?? w.sceneId;
     const indoors = isShopScene(sceneId) || isVillageInterior(sceneId);
     const house = sceneId === "MAIN_HOUSE" || indoors;
@@ -1748,7 +1756,10 @@ class Adventure extends Phaser.Scene {
         );
     const stats = hud.querySelector("#stats");
     if (stats)
-      stats.textContent = `${me.role ? heroNames[me.role] : "Choosing"} · HP ${Math.round(me.hp)} · Room ${w.roomCode} · ${net.socket.connected ? "Connected" : "Reconnecting"}`;
+      setTextIfChanged(
+        stats,
+        `${me.role ? heroNames[me.role] : "Choosing"} · HP ${Math.round(me.hp)} · Room ${w.roomCode} · ${net.socket.connected ? "Connected" : "Reconnecting"}`,
+      );
     let goal =
       sceneId === "MAIN_HOUSE"
         ? "E by the front door: enter house. Follow the path east; E at the exit for Emberbrook Village. Playtest shortcut: E at the west sign for the Goddess Shrine."
@@ -1843,7 +1854,10 @@ class Adventure extends Phaser.Scene {
           : `${quest} · ${goal}`;
     if (Object.values(w.players).some((p) => !p.connected))
       goal = "Partner disconnected. Game paused for up to 30 seconds.";
-    document.querySelector<HTMLDivElement>("#objective")!.textContent = goal;
+    setTextIfChanged(
+      document.querySelector<HTMLDivElement>("#objective")!,
+      goal,
+    );
     quests.update(w, goal);
     const debugPanel = document.querySelector<HTMLDivElement>("#debug")!;
     debugPanel.hidden = !debug;
@@ -1851,11 +1865,11 @@ class Adventure extends Phaser.Scene {
       debugPanel.textContent = `F3 · ${characterRendering} (F4) · tick ${w.serverTick} · seq ${net.seq} / ack ${me.lastProcessedInputSeq}\npending ${net.prediction.pending.length} · correction ${net.prediction.error.toFixed(1)}px · buffer ${net.interpolation.buffer.length} · viewport ${this.scale.width}×${this.scale.height} @${pixelZoom(this)}×`;
     this.temporalView.update(w, sceneId, this.playerViews, this.time.now);
     const root = document.querySelector<HTMLDivElement>("#game")!;
-    root.dataset.playerId = me.id;
+    setDataIfChanged(root, "playerId", me.id);
     // QA (scripts/qa-walk.ts): where this screen draws its hero, every frame.
     if (storyQA)
       root.dataset.hero = `${this.rendered.x.toFixed(2)},${this.rendered.y.toFixed(2)},${sceneId}`;
-    if (new URLSearchParams(location.search).has("enemyQA")) {
+    if (enemyQA) {
       root.dataset.enemyState = JSON.stringify({
         serverTick: w.serverTick,
         enemies: w.enemies,
@@ -1868,7 +1882,7 @@ class Adventure extends Phaser.Scene {
         ),
       );
     }
-    if (debug || new URLSearchParams(location.search).has("movementQA")) {
+    if (debug || movementQA) {
       root.dataset.movementSample = JSON.stringify({
         delta,
         keys: [...keys],
@@ -1928,8 +1942,8 @@ class Adventure extends Phaser.Scene {
         root.dataset.movementTrace = `[${this.movementTrace.join(",")}]`;
       }
     }
-    root.dataset.worldPosition = `${me.x},${me.y}`;
-    root.dataset.scene = sceneId;
+    setDataIfChanged(root, "worldPosition", `${me.x},${me.y}`);
+    setDataIfChanged(root, "scene", sceneId);
     (
       window as unknown as { __enemyRendered?: (sample: unknown) => void }
     ).__enemyRendered?.({
@@ -1939,27 +1953,30 @@ class Adventure extends Phaser.Scene {
         [...this.enemyViews].map(([id, v]) => [id, v.inspect()]),
       ),
     });
-    root.dataset.projectileVisuals = JSON.stringify(
-      this.projectileView.inspect(),
-    );
-    root.dataset.projectileState = JSON.stringify({
-      projectiles: w.projectiles,
-      impacts: w.projectileImpacts,
-    });
-    if (new URLSearchParams(location.search).has("siegQA"))
+    if (qaHooks || debug) {
+      root.dataset.projectileVisuals = JSON.stringify(
+        this.projectileView.inspect(),
+      );
+      root.dataset.projectileState = JSON.stringify({
+        projectiles: w.projectiles,
+        impacts: w.projectileImpacts,
+      });
+    }
+    if (siegQA)
       root.dataset.playerVisuals = JSON.stringify(
         Object.fromEntries(
           [...this.playerViews].map(([id, view]) => [id, view.inspectCombat()]),
         ),
       );
-    root.dataset.combatActions = JSON.stringify(
-      Object.values(w.players).map((p) => ({
-        id: p.id,
-        role: p.role,
-        combat: p.combat,
-        heavyCharge: p.heavyCharge,
-      })),
-    );
+    if (qaHooks || debug)
+      root.dataset.combatActions = JSON.stringify(
+        Object.values(w.players).map((p) => ({
+          id: p.id,
+          role: p.role,
+          combat: p.combat,
+          heavyCharge: p.heavyCharge,
+        })),
+      );
   }
 }
 new Phaser.Game({

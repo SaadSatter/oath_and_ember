@@ -15,7 +15,7 @@ import { newHedgeMaze } from "../../shared/src/hedgeMaze.js";
 import { episodes, stateHash } from "../src/evaluator.js";
 import { environmentFor, situation, SITUATIONS, HISTORICAL_SITUATIONS } from "../src/suite.js";
 import { EPISODE_CAP_USD, runConfigHash, validatePlan, type ModelSetup } from "../src/harness.js";
-import { SITUATION_A, SITUATION_A_HASH, evaluationLabel } from "../src/situationA.js";
+import { SITUATION_A, SITUATION_A_HASH, SITUATION_A_V1, canonicalJson, evaluationLabel } from "../src/situationA.js";
 import { runEpisode } from "../src/runner.js";
 import { TraceWriter, verifyTrace, type TraceLine } from "../src/trace.js";
 import { QuestBaseline } from "../src/policies/questBaseline.js";
@@ -27,6 +27,9 @@ const A = SITUATION_A;
 const root = fileURLToPath(new URL("../../..", import.meta.url));
 // In this repository the packaged evidence is under midterms/saadsatter/; in the course folder it is at the root.
 const stage = existsSync(join(root, "midterms/saadsatter/evidence")) ? join(root, "midterms/saadsatter") : root;
+/** S2-A version 2's reference run (offline, 2026-11-04). It replays under the current game. */
+const REFERENCE_V2 = join(stage, "evidence/traces/baseline-quest-S2-local-seed0-v2/trace.jsonl");
+/** Version 1 runs: played on the game before ffbdecb; they replay only at 96625b5. */
 const COMMITTED = {
   "baseline-live": join(stage, "evidence/traces/baseline-quest-S2-local-seed0-live/trace.jsonl"),
   "pilot-11": join(root, "docs/midterm/evidence/pilot-11-model-guided/trace.jsonl"),
@@ -75,7 +78,19 @@ const baselineSeed0 = () => (seed0 ??= baselineRun(0));
 
 describe("S2-A definition", () => {
   it("is frozen: any change to the definition changes this hash and needs the owner's approval", () => {
-    expect(SITUATION_A_HASH).toBe("4b3c9bb309e7d0bcc022f1df6a7e58cf11a3767c02fd7bd6cb62dfa845cd4207");
+    expect(SITUATION_A_HASH).toBe("a9ee23855c17c18aa5228f5a554607362b87958642c942335fdfd4d06a58bc66");
+    expect(A.version).toBe(2);
+  });
+
+  it("keeps version 1 verbatim, with its original hash, and records the succession", () => {
+    expect(createHash("sha256").update(canonicalJson(SITUATION_A_V1)).digest("hex")).toBe("4b3c9bb309e7d0bcc022f1df6a7e58cf11a3767c02fd7bd6cb62dfa845cd4207");
+    expect(SITUATION_A_V1).toMatchObject({ version: 1, frozenOn: "2026-10-29", situation: "S2-local", preset: "S2-local-v2" });
+    expect(A.supersedes).toEqual({ version: 1, definitionHash: "4b3c9bb309e7d0bcc022f1df6a7e58cf11a3767c02fd7bd6cb62dfa845cd4207", commit: "96625b5" });
+    // Version 2 changes the game, not the situation: same scenario, objective, limits and prompts.
+    const v1 = SITUATION_A_V1 as never as Record<string, unknown>;
+    for (const k of ["situation", "preset", "objective", "success", "goal", "limits", "prompts", "seeds", "players"] as const) expect(A[k], k).toEqual(v1[k]);
+    expect((v1.start as { tick: number }).tick).toBe(A.start.tick);
+    expect(A.start.hashes).not.toEqual((v1.start as { hashes: unknown }).hashes);
   });
 
   it("is a label for the existing S2-local scenario, adding no scenario id and changing none", () => {
@@ -84,7 +99,7 @@ describe("S2-A definition", () => {
     expect(A.preset).toBe(def.preset);
     expect(A.preset).toBe("S2-local-v2");
     // The scenarios that existed when S2-A was frozen are unchanged and in place;
-    // P1 (the Prologue, 2026-11-03) was appended later as a separate situation.
+    // S2-B and S2-C (Hedge Maze Situations B and C) were appended later.
     expect(SITUATIONS.map((s) => s.id).slice(0, 7)).toEqual(["S1", "S2", "S3", "S4", "F", "S2-local", "S3-local"]);
     expect(HISTORICAL_SITUATIONS.map((s) => s.id)).toEqual(["S2-v1", "S3-v1", "S2-local-v1", "S3-local-v1"]);
     expect(def.heldOut).toBe(false);
@@ -244,7 +259,7 @@ describe("S2-A information boundary over a full baseline episode", { timeout: 12
       for (const f of forbidden) expect(legalText, `${h} legal actions at tick ${l.tick} leak "${f}"`).not.toContain(f);
       expect(legalText).not.toMatch(UUID);
     }
-    expect(observations).toBe(340);
+    expect(observations).toBe(A.baselineReference.decisions);
     expect(sent.sieg.length + sent.coco.length).toBe(6);
   });
 
@@ -293,9 +308,9 @@ describe("S2-A baseline and terminal outcome", { timeout: 120_000 }, () => {
     verifyTrace(trace);
   });
 
-  it("plays the puzzle exactly as the committed live baseline did: same actions and the same authoritative state after every action", async () => {
+  it("plays the puzzle exactly as the committed version 2 reference did: same actions and the same authoritative state after every action", async () => {
     const { trace } = await baselineSeed0();
-    expect(perHero(trace)).toEqual(perHero(readTrace(COMMITTED["baseline-live"])));
+    expect(perHero(trace)).toEqual(perHero(readTrace(REFERENCE_V2)));
   });
 
   it("reports success only when the evaluator sees the Shears; a run that runs out of time ends tick_limit, not success", async () => {
@@ -317,22 +332,30 @@ describe("S2-A baseline and terminal outcome", { timeout: 120_000 }, () => {
   });
 });
 
-describe("historical S2-local traces stay replay-compatible under the S2-A label", { timeout: 120_000 }, () => {
+describe("version 1 S2-local traces stay identifiable", { timeout: 120_000 }, () => {
+  // They were played on the game before ffbdecb (no cow posts, griffin 320 HP),
+  // so they replay step for step only at commit 96625b5. Here each one is
+  // checked for integrity and for its recorded version 1 start; the current
+  // start differs, so their episode ids cannot be confused with version 2's.
+  const v1 = SITUATION_A_V1 as never as { start: { tick: number; hashes: Record<number, string> } };
   for (const [name, path] of Object.entries(COMMITTED))
-    it(`${name}: the same episode id, start tick and start hash`, async () => {
+    it(`${name}: an intact trace that began at version 1's start`, async () => {
       const lines = readTrace(path);
       verifyTrace(lines);
       const reset = lines.find((l) => l.type === "reset")!.data as { episode: string; seed: number; startHash: string; tick: number };
+      expect(reset.startHash).toBe(v1.start.hashes[0]);
+      expect(reset.tick).toBe(v1.start.tick);
+      expect(reset.episode).toBe(`S2-local-v2-0-${v1.start.hashes[0].slice(0, 8)}`);
       const r = await start(reset.seed).reset();
-      expect({ episode: r.episode, tick: r.tick, startHash: r.startHash }).toEqual({ episode: reset.episode, tick: reset.tick, startHash: reset.startHash });
-      expect(reset.startHash).toBe(A.start.hashes[0]);
+      expect(r.startHash).not.toBe(reset.startHash);
+      expect(r.episode).not.toBe(reset.episode);
     });
 
-  // Successful traces replay end to end: each hero's recorded actions, re-submitted
-  // in order, reproduce every result's state hash and the terminal state.
-  for (const name of ["baseline-live", "pilot-11", "pilot-12"] as const)
+  // The version 2 reference replays end to end: each hero's recorded actions,
+  // re-submitted in order, reproduce every result's state hash and the terminal state.
+  for (const [name, path] of [["baseline-v2", REFERENCE_V2]] as const)
     it(`${name}: replays to the same results and terminal state`, async () => {
-      const lines = readTrace(COMMITTED[name]);
+      const lines = readTrace(path);
       const reset = lines.find((l) => l.type === "reset")!.data as { seed: number };
       const terminal = lines.find((l) => l.type === "terminal")!.data as { reason: string; hash: string };
       const actions: Record<PlayerId, GameAction[]> = { sieg: [], coco: [] };

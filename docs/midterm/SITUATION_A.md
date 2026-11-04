@@ -1,4 +1,30 @@
-# Situation A: S2-A — Full Hedge Maze (version 1, frozen 2026-10-29)
+# Situation A: S2-A — Full Hedge Maze (version 2, frozen 2026-11-04)
+
+## Version 2 (2026-11-04): the game changed
+
+The owner changed the game (`ffbdecb`, merged into `midterm/evaluation` as `ea654e8`):
+- **Stone posts** north and south of the cow leave a 56 px opening. A hero (26 px) fits through; the 128 px cow does not, so it can only be pulled sideways into its bay. The opening is at x ≈ 26.5 tiles, in line with the strip the parked cow leaves free.
+- The griffin has **640 HP** instead of 320.
+- New **story lines** after the funeral, after the clues and after the journal. Every state carries a hash of all story content, so every start hash changed.
+
+What changed in S2-A:
+
+| | Version 1 | Version 2 |
+| --- | --- | --- |
+| Definition hash | `4b3c9bb3…4207` | `a9ee2385…bc66` |
+| Start hash, seed 0 / 1 | `2b9eddd4…` / `ebea7d5c…` | `fdc49877…03ca` / `febddd1a…6519` |
+| Episode id, seed 0 / 1 | `S2-local-v2-0-2b9eddd4` / `-1-ebea7d5c` | `S2-local-v2-0-fdc49877` / `-1-febddd1a` |
+| Baseline reference (seed 0) | success, 2,990 ticks (49.8 s), 340 decisions, end `bf31311f…f936` | success, 2,974 ticks (49.6 s), 339 decisions (178 Sieg, 161 Coco), end `22900abe…495e` |
+| Reference trace | `…/baseline-quest-S2-local-seed0-live/` (live, paced) | `…/baseline-quest-S2-local-seed0-v2/` (offline) |
+
+Unchanged: scenario id, preset, prefix and start tick (405), objective, success rule, limits, prompts, seeds, players, and both heroes' observations at reset. The baseline now walks through the posts' opening (x = 26.5) instead of along x = 27.5, which is 16 ticks shorter.
+
+**Version 1 runs** (the live baseline and pilots 11–15) were played on the game before `ffbdecb`. They replay step for step only at commit `96625b5`. The test now checks each one's integrity and its recorded version 1 start, and that the current start differs, so their ids cannot be confused with version 2's. Version 1's definition is kept verbatim as `SITUATION_A_V1`.
+
+**The rest of this document describes version 1** unless it says otherwise.
+
+---
+
 
 Situation A is the first of a **proposed** three-situation Hedge Maze suite. Situations B and C are proposals only (below); they are not implemented and have not been approved. The course's three-situation requirement is **not** met by this document.
 
@@ -178,7 +204,14 @@ The pilots and baseline runs already in `EVALUATION.md` were played on exactly t
 7. **Manual stops.** Earlier unaided trials were stopped by hand. For S2-A trials to count as failures or successes, they need to run to a terminal reason.
 8. **Replay of interrupted traces.** The committed `manual_stop` traces (pilots 13 and 15) are checked here for their start state only. Their full action replay depends on `replay-video.ts`'s external-stop handling, which another session is editing (uncommitted) and this change does not touch.
 
-## Proposal: Situations B and C (not implemented)
+## Proposal: Situations B and C (superseded)
+
+> **2026-10-29:** B and C are now implemented: [HEDGE_MAZE_SITUATIONS.md](HEDGE_MAZE_SITUATIONS.md). They differ from this proposal in three ways:
+> - B starts after the guards are cleared, at tick 1197, rather than "beside the burned gap".
+> - B and C use S2-A's limits rather than shorter ones.
+> - At the owner's direction, C is a development-informed tuning case, not held out.
+>
+> The proposal below is kept as written.
 
 The goal is three distinct Hedge Maze situations that test different challenges, each reached by real play. This uses the existing method: the start is a prefix of real actions through the five operations, never fixtures or flags. Proposed:
 

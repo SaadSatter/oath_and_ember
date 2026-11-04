@@ -49,10 +49,10 @@ export const MAZE_GUARD_SPOTS = [{ x: 10, y: 34.5 }, { x: 16.5, y: 34.5 }];
 export const MAZE_HEDGE_SPOT = { x: 16.5, y: 34.5 };
 /** Coco's Black Hole spot (cast east) and Sieg's waiting spot. */
 export const MAZE_COW = { cocoApproach: { x: 20.5, y: 34.5 }, cocoCast: { x: 20.5, y: 25.5 }, castDirection: "e" as Direction, siegWait: { x: 17.5, y: 34.5 } };
-const AROUND_COW = [{ x: 20.5, y: 27.5 }, { x: 21.5, y: 27.5 }, { x: 21.5, y: 30.5 }, { x: 27.5, y: 30.5 }];
+const AROUND_COW = [{ x: 20.5, y: 27.5 }, { x: 21.5, y: 27.5 }, { x: 21.5, y: 30.5 }, { x: 26.5, y: 30.5 }];
 export const MAZE_PATH = {
-  cocoToGateSide: [...AROUND_COW, { x: 27.5, y: 19.5 }, { x: 32.5, y: 19.5 }],
-  siegToWolf: [{ x: 20.5, y: 34.5 }, { x: 20.5, y: 27.5 }, ...AROUND_COW.slice(1), { x: 27.5, y: 15.5 }, { x: 11.5, y: 15.5 }, { x: 11.5, y: 7.5 }, { x: 19.5, y: 7.5 }],
+  cocoToGateSide: [...AROUND_COW, { x: 26.5, y: 19.5 }, { x: 32.5, y: 19.5 }],
+  siegToWolf: [{ x: 20.5, y: 34.5 }, { x: 20.5, y: 27.5 }, ...AROUND_COW.slice(1), { x: 26.5, y: 15.5 }, { x: 11.5, y: 15.5 }, { x: 11.5, y: 7.5 }, { x: 19.5, y: 7.5 }],
   /** The wolf's top corridor (row 4.5), swept when the wolf is out of sight. */
   wolfCorridor: [{ x: 4, y: 4.5 }, { x: 19.5, y: 4.5 }, { x: 34, y: 4.5 }],
   /** Sieg to the gate: from the top corridor, or from the row-12.5 lane. */
@@ -60,7 +60,7 @@ export const MAZE_PATH = {
   siegToGateFromLane: (x: number) => [{ x, y: 12.5 }, { x: 39.5, y: 12.5 }, { x: 39.5, y: 14.5 }],
   cocoToGate: [{ x: 33.5, y: 18.5 }, { x: 39.5, y: 18.5 }, { x: 39.5, y: 15.8 }],
   cocoToChest: [{ x: 39.5, y: 15.5 }, { x: 44.5, y: 15.5 }, { x: 44.5, y: 6.5 }],
-  cocoToExit: [{ x: 42.5, y: 6.5 }, { x: 42.5, y: 12.5 }, { x: 26.5, y: 12.5 }, { x: 26.5, y: 27.5 }, { x: 24.5, y: 27.5 }, { x: 24.5, y: 30.5 }, { x: 20.5, y: 30.5 }, { x: 20.5, y: 32.5 }, { x: 4.5, y: 32.5 }, { x: 4.2, y: 34 }],
+  cocoToExit: [{ x: 42.5, y: 6.5 }, { x: 42.5, y: 12.5 }, { x: 26.5, y: 12.5 }, { x: 26.5, y: 30.5 }, { x: 20.5, y: 30.5 }, { x: 20.5, y: 32.5 }, { x: 4.5, y: 32.5 }, { x: 4.2, y: 34 }],
 };
 
 // ── Mirror Pond ────────────────────────────────────────────────────────────

@@ -87,9 +87,11 @@ describe("instruction-guided Maze policy", () => {
     expect(() => validatePlan({ player: "model-guided", situations: ["S2-local"], seeds: [100], final: true, model: setup(new Recording()) })).toThrow(/restricted/);
     expect(() => policiesFor("model-guided", budget(), setup(new Recording()), "S3")).toThrow(/requires/);
     expect(() => new GuidedMazePlayer("Sieg", "coco", new Recording(), budget(), MANUAL)).toThrow(/identity/);
-    // 8 since 2026-11-03: P1 (the Prologue), on which model-guided is refused too (no walkthrough).
-    expect(SITUATIONS).toHaveLength(8);
-    expect(() => validatePlan({ player: "model-guided", situations: ["P1"], seeds: [0], model: setup(new Recording()) })).toThrow(/restricted/);
+    // 9 since 2026-10-29: Hedge Maze Situations B and C (S2-B, S2-C), on which model-guided is refused too.
+    // 10 since 2026-11-03: P1 (the Prologue), on which model-guided is refused too (no walkthrough).
+    expect(SITUATIONS).toHaveLength(10);
+    for (const id of ["S2-B", "S2-C", "P1"] as const)
+      expect(() => validatePlan({ player: "model-guided", situations: [id], seeds: [0], model: setup(new Recording()) })).toThrow(/restricted/);
   });
 
   it("reserves the walkthrough before dispatch and fails closed when it does not fit", async () => {

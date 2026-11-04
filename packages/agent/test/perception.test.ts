@@ -42,7 +42,7 @@ describe("the griffin as the client draws it", () => {
     const seen = async () => [...(await env.observe("sieg")).visible, ...(await env.observe("coco")).visible].filter((v) => v.name === "griffin");
     const before = await seen();
     expect(before.length).toBeGreaterThan(0);
-    expect(before[0].details).toMatch(/^GRIFFIN \d+\/320 · /);
+    expect(before[0].details).toMatch(/^GRIFFIN \d+\/640 · /);
     // Labelled fixture: the state GriffinView treats as departed.
     g.groomingStage = "DONE";
     expect(await seen()).toEqual([]);

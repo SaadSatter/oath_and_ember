@@ -8,6 +8,8 @@
 import { AgentEnvironment, type EnvironmentOptions } from "./environment.js";
 import type { EpisodePreset } from "./evaluator.js";
 import { enterLocalArea } from "./route/localStarts.js";
+import { playCheckpoint } from "./route/mazeCheckpoints.js";
+import { MAZE_CHECKPOINTS } from "./route/mazeCheckpointData.js";
 import { Director } from "./route/director.js";
 import { hedgeMaze, mirrorPond, opening, travelFromShrine } from "./route/fullQuest.js";
 import { NEUTRAL_TASK, TUTORIAL_BRIEFING } from "./playerKnowledge.js";
@@ -23,7 +25,7 @@ import { NEUTRAL_TASK, TUTORIAL_BRIEFING } from "./playerKnowledge.js";
  */
 export const SUITE_REVISION = 2;
 
-export type CurrentSituationId = "S1" | "S2" | "S3" | "S4" | "F" | "S2-local" | "S3-local" | "P1";
+export type CurrentSituationId = "S1" | "S2" | "S3" | "S4" | "F" | "S2-local" | "S3-local" | "S2-B" | "S2-C" | "P1";
 export type HistoricalSituationId = "S2-v1" | "S3-v1" | "S2-local-v1" | "S3-local-v1";
 export type SituationId = CurrentSituationId | HistoricalSituationId;
 
@@ -122,6 +124,24 @@ const localEntry = (area: "Mirror Pond" | "Hedge Maze"): EnvironmentOptions["pre
 const localBriefing = (id: "S2-local" | "S3-local", area: string, item: string) =>
   `Episode briefing (${id}), the same for both players: you start at the ${area} entrance. Your objective is to obtain the ${item} in the shared inventory. Normal movement, travel, interaction and messages remain available; you may leave this area and return. Use your own observations and coordinate with your partner.`;
 
+// Hedge Maze Situations B and C (2026-10-29; docs/midterm/HEDGE_MAZE_SITUATIONS.md):
+// the S2-local entry, then a prefix of the committed live baseline trace,
+// replayed through step() to a cut tick (route/mazeCheckpoints.ts).
+const mazeCheckpoint = (id: "S2-B" | "S2-C"): EnvironmentOptions["prefix"] => ({
+  name: `opening scene, normal entry to Hedge Maze, recorded baseline play to tick ${MAZE_CHECKPOINTS[id].cutTick} (${id} checkpoint)`,
+  run: async (env) => {
+    await localEntry("Hedge Maze")!.run(env);
+    await playCheckpoint(env, MAZE_CHECKPOINTS[id]);
+  },
+});
+/**
+ * One text for both mid-maze starts, differing only in the id, so it tells a
+ * player nothing about which obstacles remain or how to pass them. DRAFT by the
+ * implementation agent, pending the owner's wording.
+ */
+export const midMazeBriefing = (id: "S2-B" | "S2-C") =>
+  `Episode briefing (${id}), the same for both players: you start inside the Hedge Maze, partway through it, so some of its obstacles may already have been dealt with. Your own observations show where things stand. Your objective is to obtain the Enchanted Shears in the shared inventory. Normal movement, travel, interaction and messages remain available; you may leave this area and return. Use your own observations and coordinate with your partner.`;
+
 const withMirrorAndShears: EnvironmentOptions["prefix"] = {
   name: "opening scene, Hedge Maze, Mirror Pond",
   run: async (env) => {
@@ -143,6 +163,8 @@ export const SITUATIONS: readonly Situation[] = Object.freeze([
   { id: "F", preset: "full", heldOut: true, title: "Full episode", start: "goddess checkpoint", revision: 1 },
   { id: "S2-local", preset: "S2-local-v2", heldOut: false, title: "Hedge Maze — local start", start: "Hedge Maze entrance, after the opening and ordinary travel", prefix: localEntry("Hedge Maze"), briefing: localBriefing("S2-local", "Hedge Maze", "Enchanted Shears"), tutorial: TUTORIAL_BRIEFING, revision: 2 },
   { id: "S3-local", preset: "S3-local-v2", heldOut: false, title: "Mirror Pond — local start", start: "Mirror Pond entrance, after the opening and ordinary travel", prefix: localEntry("Mirror Pond"), briefing: localBriefing("S3-local", "Mirror Pond", "Vanity Mirror"), tutorial: TUTORIAL_BRIEFING, revision: 2 },
+  { id: "S2-B", preset: "S2-B", heldOut: false, title: "Hedge Maze — cow puzzle", start: "inside the Hedge Maze after the guards and dry hedge, reached by replaying recorded baseline play", prefix: mazeCheckpoint("S2-B"), briefing: midMazeBriefing("S2-B"), tutorial: TUTORIAL_BRIEFING, revision: 2 },
+  { id: "S2-C", preset: "S2-C", heldOut: false, title: "Hedge Maze — wolf and key", start: "inside the Hedge Maze after the cow is moved, reached by replaying recorded baseline play", prefix: mazeCheckpoint("S2-C"), briefing: midMazeBriefing("S2-C"), tutorial: TUTORIAL_BRIEFING, revision: 2 },
   // P1 "Into the Forest" (owner approval 2026-11-03; prologueSituation.ts): the
   // Prologue's own opening, no prefix, no briefing, no tutorial text. Frozen and
   // excluded from prompt tuning; not formally held out (see its definition).
