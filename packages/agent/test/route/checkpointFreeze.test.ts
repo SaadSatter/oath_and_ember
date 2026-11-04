@@ -25,17 +25,18 @@ const SRC = join(dirname(fileURLToPath(import.meta.url)), "../../src");
  * change ffbdecb (cow posts in the Hedge Maze, griffin 640 HP, new story
  * lines): every start carries the story's content hash, and the S4 prefix's
  * route now passes the posts through their opening (start tick 9979 -> 9963).
- * The previous values reproduce at 96625b5.
+ * Updated again for 3ca9792 (the wolf runs laps of its loop): the S4 prefix's
+ * wolf chase takes longer (9963 -> 10202). The previous values reproduce at 96625b5.
  */
 const PINNED: Record<string, [number, string]> = {
   "S2/0": [221, "ec2026386b19ab503c1176a897da23492c219ffe6963610e90123db3a4f71558"],
   "S2/1": [221, "0f1bb75edaea970c8de3795f28850a5ec5e4458ad01967dd50b73597c3cd6cdd"],
   "S2/100": [221, "de7b0b78710ed9c0698e6bcc18853a4a5cbf8f92d7d88aa027e603d04af71171"],
   "S2/101": [221, "6350a405073b8efd65f0186c98f5a6a1eff4fda2035b8d9dd3e73ce7a37e96a3"],
-  "S4/0": [9963, "e5361f3f51783e13c132695921428bff193e23f901538950d5196760eafa6c66"],
-  "S4/1": [9963, "edb277661d49f1eb7200823a7547ec46bd85feb925c97c8202c832cef8059e3f"],
-  "S4/100": [9963, "ea2dca5f9a1f5476b3bde3f9235dcf604834b08de7b618295612403de28b3d35"],
-  "S4/101": [9963, "f899c7fc273e84567b2277956fe3a2278caefb76801dbac39bf9ccde4b0753fb"],
+  "S4/0": [10202, "273f86fc4257546f6d0db8f87efe17f871303a063ac4c23c131311b18542505e"],
+  "S4/1": [10202, "fc3881479280e6b36f6be4db520ed2aa59af79f01e5fd86021ce3f95355e9a25"],
+  "S4/100": [10202, "e20e020781426c97f2d20708a9877e4bb40b5f89b87ebad1ce77d9c3cbd5ae9c"],
+  "S4/101": [10202, "dfc072a20fa378f5acca12302af3503b2a50e64b6fc7fe3777809e6ba20b0532"],
 };
 
 const start = async (key: string) => {

@@ -2,16 +2,16 @@
 
 ## Version 2 (2026-11-04): the game changed
 
-After the owner's game change `ffbdecb` (stone posts around the cow, griffin 640 HP, new story lines; see [SITUATION_A.md](SITUATION_A.md)), all three situations moved to version 2. Version 1 was never committed and never run by a model.
+After the owner's game changes `ffbdecb` (stone posts around the cow, griffin 640 HP, new story lines) and `3ca9792` (the wolf runs laps of its loop once a hero enters it; see [SITUATION_A.md](SITUATION_A.md)), all three situations moved to version 2. Version 1 was never committed and never run by a model.
 
-- **Source trace.** The checkpoints are now derived from S2-A version 2's reference run, `midterms/saadsatter/evidence/traces/baseline-quest-S2-local-seed0-v2/trace.jsonl` (SHA-256 `c8d8098ce45d1c1ee57928003ce1b0efc521916271b5da266f3a65ef259bd079`, offline `baseline-quest`, `ea654e8+dirty`).
+- **Source trace.** The checkpoints are now derived from S2-A version 2's reference run, `midterms/saadsatter/evidence/traces/baseline-quest-S2-local-seed0-v2/trace.jsonl` (SHA-256 `8fa140f8446d9dec8c0574e3f317eab60ba76105d27b085995dc3f81d96b5d6f`, offline `baseline-quest`, `198ef3a+dirty`).
 - **Cuts.** The same ticks, chosen by the same rules. B: 1197, identical prefix to version 1 (Sieg 59 actions, Coco 64, Coco's move west shortened 59 → 53). C: 1962. In version 2 no tick after the cow moves has both heroes between actions; at 1962 Sieg starts an action and Coco is 1 tick into a 20-tick wait, so that wait is shortened 20 → 1 (Sieg 96 actions, Coco 85).
 
 | | Definition hash (v1 → v2) | Start hash seed 0 / 1 (v2) | Baseline-quest, seed 0 (v1 → v2) |
 | --- | --- | --- | --- |
-| S2-A | `4b3c9bb3…` → `a9ee2385…` | `fdc49877…` / `febddd1a…` | success 2,990 → 2,974 ticks, 340 → 339 decisions |
-| S2-B | `8032c9f2…` → `016f1671…` | `8e3b386b…` / `c4349ca0…` | success 2,334 → 2,313 ticks, 224 → 225 decisions, end `b77d51ff…` |
-| S2-C | `7d9014a1…` → `74b15da2…` | `6d59c47c…` / `c4884758…` | tick_limit (unchanged limitation), 1,561 → 1,562 decisions, end `0fca3656…` |
+| S2-A | `4b3c9bb3…` → `7efb771a…` | `fdc49877…` / `febddd1a…` | success 2,990 → 3,128 ticks, 340 → 395 decisions |
+| S2-B | `8032c9f2…` → `e82e335d…` | `8e3b386b…` / `c4349ca0…` | success 2,334 → 2,487 ticks, 224 → 284 decisions, end `90366830…` |
+| S2-C | `7d9014a1…` → `92d67d4e…` | `6d59c47c…` / `c4884758…` | tick_limit (unchanged limitation), 1,561 → 1,562 decisions, end `0fca3656…` |
 
 **The rest of this document describes version 1** unless it says otherwise.
 

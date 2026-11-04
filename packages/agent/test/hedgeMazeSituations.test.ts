@@ -88,9 +88,9 @@ async function baselineRun(id: SituationId, seed: number) {
 describe("Hedge Maze situations: definitions", () => {
   it("are frozen: any change changes these hashes and needs the owner's approval", () => {
     // Version 2 (2026-11-04, game change ffbdecb). Version 1: 4b3c9bb3…4207, 8032c9f2…e089, 7d9014a1…4695.
-    expect(SITUATION_A_HASH).toBe("a9ee23855c17c18aa5228f5a554607362b87958642c942335fdfd4d06a58bc66");
-    expect(SITUATION_B_HASH).toBe("016f1671da9a04f51d01ccde2b5c988f2d54a2907f628c3817fc51621183e919");
-    expect(SITUATION_C_HASH).toBe("74b15da288fd405eca7d9451ca4781a5e88cff7c59194f66b1cc314fc5ffb890");
+    expect(SITUATION_A_HASH).toBe("7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab");
+    expect(SITUATION_B_HASH).toBe("e82e335ddaa7a5b115ab8ddc06ffef7c5d179ecec574151ef4ef2e171c62cbad");
+    expect(SITUATION_C_HASH).toBe("92d67d4efd52ffdcd388e40b25ee410cc3330c65900dc7d3c9b946a75b56a52d");
   });
 
   it("are three distinct situations with distinct ids, presets, definition hashes and start hashes", () => {

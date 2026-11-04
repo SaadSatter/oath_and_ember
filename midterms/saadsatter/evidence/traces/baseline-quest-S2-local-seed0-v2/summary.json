@@ -17,33 +17,33 @@
   },
   "gateway": null,
   "modelIds": [],
-  "gitHash": "ea654e8+dirty",
+  "gitHash": "198ef3a+dirty",
   "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
   "startTick": 405,
   "prefix": "opening scene, normal entry to Hedge Maze (before arrival dialogue)",
   "status": "success",
   "reason": "success",
   "success": true,
-  "gameTicks": 2974,
-  "gameSeconds": 49.6,
-  "wallSeconds": 0.9,
+  "gameTicks": 3128,
+  "gameSeconds": 52.1,
+  "wallSeconds": 1,
   "decisions": {
-    "sieg": 178,
-    "coco": 161
+    "sieg": 231,
+    "coco": 164
   },
   "actions": {
     "sieg": {
-      "move": 81,
+      "move": 148,
       "advance_dialogue": 4,
       "attack": 16,
-      "wait": 71,
+      "wait": 57,
       "message": 3,
       "ability": 1,
       "interact": 2
     },
     "coco": {
-      "move": 54,
-      "wait": 75,
+      "move": 39,
+      "wait": 93,
       "attack": 26,
       "ability": 2,
       "message": 3,
@@ -51,7 +51,7 @@
     }
   },
   "attempt": 1,
-  "endHash": "22900abe990a552a3daecc404c57700b3f69da51f51161802fd8c74b5687495e",
+  "endHash": "6644f2cac04b945444c3ec609d59d798cd767ecad80405d49ce8cd26314c7f56",
   "limits": {
     "maxTicks": 18000,
     "maxDecisionsPerPlayer": 1600,
@@ -70,8 +70,8 @@
       "parseFailures": 0,
       "recoveredReplies": 0,
       "proposedActions": 0,
-      "submittedActions": 178,
-      "executedActions": 178,
+      "submittedActions": 231,
+      "executedActions": 231,
       "staleSubmissions": 0,
       "gameplayRejections": 0,
       "skippedActions": 0
@@ -82,8 +82,8 @@
       "parseFailures": 0,
       "recoveredReplies": 0,
       "proposedActions": 0,
-      "submittedActions": 161,
-      "executedActions": 161,
+      "submittedActions": 164,
+      "executedActions": 164,
       "staleSubmissions": 0,
       "gameplayRejections": 0,
       "skippedActions": 0
@@ -127,13 +127,13 @@
   "finalClaim": null,
   "evaluation": {
     "label": "S2-A",
-    "definitionHash": "a9ee23855c17c18aa5228f5a554607362b87958642c942335fdfd4d06a58bc66"
+    "definitionHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab"
   },
   "promptHashes": {
     "sieg": null,
     "coco": null
   },
-  "configHash": "357f1838e34aefcf7cdc45a44cd73750e504cb75dcad99ef7f4a0cbc40c7df64",
+  "configHash": "51b861b9ff20dd892f7cdddc7116bd6b769042a314deb905a0c70ef27465ca8b",
   "baselineLog": {
     "sieg": [
       {
@@ -141,7 +141,7 @@
         "note": "entered Hedge Maze"
       },
       {
-        "tick": 2748,
+        "tick": 3004,
         "note": "wolf chase 1: caught"
       }
     ],

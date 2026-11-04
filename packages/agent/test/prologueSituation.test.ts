@@ -183,7 +183,7 @@ describe("P1 definition", () => {
 
   it("leaves Situation A untouched", () => {
     // S2-A version 2 (game change ffbdecb, 2026-11-04); P1 itself never changes it. Version 1 was 4b3c9bb3…4207.
-    expect(SITUATION_A_HASH).toBe("a9ee23855c17c18aa5228f5a554607362b87958642c942335fdfd4d06a58bc66");
+    expect(SITUATION_A_HASH).toBe("7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab");
     expect(evaluationLabel("S2-local")?.label).toBe("S2-A");
     expect(episodes["S2-local-v2"].checkpoint).toBeUndefined();
   });

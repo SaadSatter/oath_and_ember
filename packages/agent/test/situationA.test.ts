@@ -78,7 +78,7 @@ const baselineSeed0 = () => (seed0 ??= baselineRun(0));
 
 describe("S2-A definition", () => {
   it("is frozen: any change to the definition changes this hash and needs the owner's approval", () => {
-    expect(SITUATION_A_HASH).toBe("a9ee23855c17c18aa5228f5a554607362b87958642c942335fdfd4d06a58bc66");
+    expect(SITUATION_A_HASH).toBe("7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab");
     expect(A.version).toBe(2);
   });
 

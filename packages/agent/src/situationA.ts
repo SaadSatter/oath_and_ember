@@ -14,7 +14,9 @@
 //     on, last at commit 96625b5.
 //   2 (frozen 2026-11-04, owner approval): the game change ffbdecb put stone
 //     posts north and south of the cow (a 56 px opening heroes fit through,
-//     the cow does not), doubled the griffin's HP and added story lines. The
+//     the cow does not), doubled the griffin's HP and added story lines; then,
+//     the same day and before any run, 3ca9792 made the wolf run laps of its
+//     loop once a hero enters it (folded into version 2, never run). The
 //     start hashes and the baseline reference changed; the scenario id,
 //     preset, prefix, objective, success rule, limits and prompts did not.
 
@@ -145,7 +147,7 @@ export const SITUATION_A = Object.freeze({
   frozenOn: "2026-11-04",
   /** The version this one replaces, kept verbatim as SITUATION_A_V1. */
   supersedes: Object.freeze({ version: 1, definitionHash: "4b3c9bb309e7d0bcc022f1df6a7e58cf11a3767c02fd7bd6cb62dfa845cd4207", commit: "96625b5" }),
-  gameChange: "ffbdecb: stone posts north and south of the Hedge Maze cow, griffin 640 HP, new chapter 0 story lines",
+  gameChange: "ffbdecb: stone posts north and south of the Hedge Maze cow, griffin 640 HP, new chapter 0 story lines; 3ca9792: the wolf runs laps of its loop once a hero enters it",
   /** The scenario the harness actually runs. Pass this id to evaluate.ts and live.ts. */
   situation: UNDERLYING,
   preset: def.preset,
@@ -199,13 +201,13 @@ export const SITUATION_A = Object.freeze({
     player: "baseline-quest" as PlayerKind,
     seed: 0,
     status: "success",
-    gameTicks: 2974,
-    gameSeconds: 49.6,
-    decisions: 339,
+    gameTicks: 3128,
+    gameSeconds: 52.1,
+    decisions: 395,
     invalidActions: 0,
     messages: 6,
     modelCalls: 0,
-    endHash: "22900abe990a552a3daecc404c57700b3f69da51f51161802fd8c74b5687495e",
+    endHash: "6644f2cac04b945444c3ec609d59d798cd767ecad80405d49ce8cd26314c7f56",
   }),
 });
 

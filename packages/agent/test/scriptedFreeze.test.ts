@@ -43,22 +43,24 @@ function digest(lines: { type: string; tick: number; player?: string; data: unkn
 // baseline now pass the posts through their opening at x=26.5 instead of
 // x=27.5, so runs that cross the maze are 16 ticks shorter. Every status is
 // unchanged. The previous values (below each entry) reproduce at 96625b5.
+// Updated again the same day for 3ca9792 (the wolf runs laps of its loop
+// once a hero enters it): the chase now takes longer; outcomes unchanged.
 const PINNED = {
-  // was 12412, 32e8611191b9c283, 9a4c1785bf28cee8
-  "route/seed1": { status: "success", ticks: 12396, end: "df4b0d238894d83a", digest: "8e548149a1a2c416" },
+  // was 12412, 32e8611191b9c283, 9a4c1785bf28cee8 (ffbdecb alone: 12396, df4b0d238894d83a, 8e548149a1a2c416)
+  "route/seed1": { status: "success", ticks: 12635, end: "9cfbb57d449a591f", digest: "189b131e132120dd" },
   // was 7e22d17e885d2cd2, a6f172d50b64d36c
   "quest/S1": { status: "success", ticks: 290, end: "3bdadd9f450227dc", digest: "c6c6def39a2062fe" },
   // was 8b2f4551ddf45c6d, 1789d50e2aa172dd
   "explore/S1": { status: "success", ticks: 323, end: "12324b18ecbb15df", digest: "8f6d4d3419922945" },
-  // was 8786, 3119923352c08724, 95ba992c670b8575
-  "quest/S2": { status: "success", ticks: 8770, end: "1069b26a745c6a8e", digest: "18bfbbb675dff04d" },
+  // was 8786, 3119923352c08724, 95ba992c670b8575 (ffbdecb alone: 8770, 1069b26a745c6a8e, 18bfbbb675dff04d)
+  "quest/S2": { status: "success", ticks: 8924, end: "cefc48fc0ace8907", digest: "cade2f62d72ede3e" },
   // explore/S2 and explore/S3 are one trajectory (same post-opening start; the
   // exploration baseline has no briefing): not two independent results.
   // Re-pinned 2026-10-28 (pilot-7 observation fixes; docs/midterm/PILOT7_FIXES.md)
   // and 2026-11-04 (was ba34603a00ee793d, e78c8b162f8c735b).
   "explore/S2": { status: "terminated", ticks: 6000, end: "479f4bb8fe2b2693", digest: "f14da233005710c3" },
-  // was 3174, bf31311f6c56638b, a6518c4acff7a7e8
-  "quest/S3": { status: "success", ticks: 3158, end: "22900abe990a552a", digest: "d7d795fa01a31a7d" },
+  // was 3174, bf31311f6c56638b, a6518c4acff7a7e8 (ffbdecb alone: 3158, 22900abe990a552a, d7d795fa01a31a7d)
+  "quest/S3": { status: "success", ticks: 3312, end: "6644f2cac04b9454", digest: "72c1e5ad22817fb5" },
   "explore/S3": { status: "terminated", ticks: 6000, end: "479f4bb8fe2b2693", digest: "f14da233005710c3" },
 } as const;
 

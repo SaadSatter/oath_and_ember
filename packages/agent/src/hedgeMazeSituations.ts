@@ -10,8 +10,9 @@
 // packages/agent/test/hedgeMazeSituations.test.ts; a change to any of them is
 // a new version and needs the owner's approval.
 //
-// Version 2 (2026-11-04, owner approval): the game change ffbdecb (stone posts
-// around the cow, griffin 640 HP, story lines). The checkpoints are re-derived
+// Version 2 (2026-11-04, owner approval): the game changes ffbdecb (stone posts
+// around the cow, griffin 640 HP, story lines) and 3ca9792 (the wolf runs laps
+// of its loop once a hero enters it; folded in the same day, before any run). The checkpoints are re-derived
 // from S2-A version 2's reference run at the same cut ticks. Version 1
 // (2026-10-29, definition hashes 8032c9f2…e089 and 7d9014a1…4695) was never
 // committed or run by a model.
@@ -90,7 +91,7 @@ export const SITUATION_B = midMaze(
   "Cow puzzle",
   ["Coco's Black Hole and Sieg's Push against a large blocker", "spatial reasoning about the lane and the grazing bay", "messages between the heroes", "then the wolf, key, gate and chest"],
   { 0: "8e3b386ba9e26694a120d23cf84ae1f20b47423647816142c1fd8e0191bc7666", 1: "c4349ca0d7960601b558f15e4e11c68e19df2ec2402ddf959a070f8e3a8d7a30" },
-  { player: "baseline-quest", seed: 0, status: "success", reason: "success", gameTicks: 2313, gameSeconds: 38.6, decisions: 225, invalidActions: 0, messages: 6, modelCalls: 0, endHash: "b77d51ff1b9cd7ba1b9c0da552e7cb4fa1e3e9dece934eab7a27256830b23fd3" },
+  { player: "baseline-quest", seed: 0, status: "success", reason: "success", gameTicks: 2487, gameSeconds: 41.5, decisions: 284, invalidActions: 0, messages: 6, modelCalls: 0, endHash: "903668302d0f723ece4a49851e13f47abb96283983a3519e7b337237d8f0ef68" },
 );
 
 export const SITUATION_C = midMaze(

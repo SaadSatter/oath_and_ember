@@ -6,18 +6,19 @@ The owner changed the game (`ffbdecb`, merged into `midterm/evaluation` as `ea65
 - **Stone posts** north and south of the cow leave a 56 px opening. A hero (26 px) fits through; the 128 px cow does not, so it can only be pulled sideways into its bay. The opening is at x ≈ 26.5 tiles, in line with the strip the parked cow leaves free.
 - The griffin has **640 HP** instead of 320.
 - New **story lines** after the funeral, after the clues and after the journal. Every state carries a hash of all story content, so every start hash changed.
+- Then, the same day and before any run used version 2, `3ca9792`: once a hero enters the wolf's loop (the top lane, the row-12 lane and the two columns joining them), the wolf **runs laps** of it, turning back only when a hero blocks the way ahead. It is folded into version 2.
 
 What changed in S2-A:
 
 | | Version 1 | Version 2 |
 | --- | --- | --- |
-| Definition hash | `4b3c9bb3…4207` | `a9ee2385…bc66` |
+| Definition hash | `4b3c9bb3…4207` | `7efb771a…0eab` |
 | Start hash, seed 0 / 1 | `2b9eddd4…` / `ebea7d5c…` | `fdc49877…03ca` / `febddd1a…6519` |
 | Episode id, seed 0 / 1 | `S2-local-v2-0-2b9eddd4` / `-1-ebea7d5c` | `S2-local-v2-0-fdc49877` / `-1-febddd1a` |
-| Baseline reference (seed 0) | success, 2,990 ticks (49.8 s), 340 decisions, end `bf31311f…f936` | success, 2,974 ticks (49.6 s), 339 decisions (178 Sieg, 161 Coco), end `22900abe…495e` |
+| Baseline reference (seed 0) | success, 2,990 ticks (49.8 s), 340 decisions, end `bf31311f…f936` | success, 3,128 ticks (52.1 s), 395 decisions (231 Sieg, 164 Coco), end `6644f2ca…7f56` |
 | Reference trace | `…/baseline-quest-S2-local-seed0-live/` (live, paced) | `…/baseline-quest-S2-local-seed0-v2/` (offline) |
 
-Unchanged: scenario id, preset, prefix and start tick (405), objective, success rule, limits, prompts, seeds, players, and both heroes' observations at reset. The baseline now walks through the posts' opening (x = 26.5) instead of along x = 27.5, which is 16 ticks shorter.
+Unchanged: scenario id, preset, prefix and start tick (405), objective, success rule, limits, prompts, seeds, players, and both heroes' observations at reset. The baseline now walks through the posts' opening (x = 26.5) instead of along x = 27.5 (16 ticks shorter), and catching the lapping wolf takes longer.
 
 **Version 1 runs** (the live baseline and pilots 11–15) were played on the game before `ffbdecb`. They replay step for step only at commit `96625b5`. The test now checks each one's integrity and its recorded version 1 start, and that the current start differs, so their ids cannot be confused with version 2's. Version 1's definition is kept verbatim as `SITUATION_A_V1`.
 
