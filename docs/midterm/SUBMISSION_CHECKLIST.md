@@ -78,3 +78,5 @@ P1 revision 2 (2026-11-03):
 P1 revision 3 (2026-11-03):
 - Final freeze before the first live trial, with the label `gap in garden fence`. Prompt pins added.
 - One paid `model-memory` trial (seed 0, $0.15 cap) is approved, subject to the preflight gates.
+
+P1 first live trial (2026-11-04 UTC): `model-memory`, seed 0, **success**, $0.111. Evidence: `docs/midterm/evidence/p1-v3-trial1-model-memory-seed0/`, with a trace-verified replay video. One trial only; a second P1 trial needs the owner's approval.

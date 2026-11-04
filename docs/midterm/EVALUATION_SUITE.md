@@ -182,3 +182,13 @@ Owner-approved.
 - **Prompt freeze.** `promptFreeze.test.ts` pins the tutorial briefing (id `2ec2f251`) and S2-A's full system prompts for `model-history`, `model-obs-only` and `model-memory`, directly and through the harness, at their values at `16f1a6d`, which were checked equal there and now.
 - **Spend cap on the evaluate launcher.** `evaluate.ts` gains `--max-spend-usd`, the existing harness per-episode cap: it may lower a scenario's cap, never raise it. This allows the owner's $0.15 cap for the first P1 trial.
 - **Unchanged:** prompts, start hashes, success predicate and limits. No paid call in this change.
+
+
+## 2026-11-04 (UTC): first live P1 trial
+
+One owner-approved paid trial on P1 revision 3:
+- **What ran:** `model-memory`, seed 0, OpenAI `gpt-6-luna` at medium effort, with a $0.15 episode cap. The launch was `evaluate.ts --max-spend-usd 0.15` from a clean checkout of `b61035f`, after every preflight gate passed.
+- **Result:** **success** at 1,574 ticks (26.2 s). Wall time 840.5 s; 177 calls (0 failed); 217 decisions; 0 invalid actions; $0.111395 charged (ledger `pilot-17`).
+- **Recording:** a trace-verified replay video.
+- **Not changed:** no prompt or configuration was changed afterwards, and no second trial was started.
+- **Evidence:** [p1-v3-trial1-model-memory-seed0](evidence/p1-v3-trial1-model-memory-seed0/).

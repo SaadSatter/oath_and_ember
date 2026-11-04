@@ -168,7 +168,17 @@ Progress, from the trace's evaluator markers (seed 0):
 
 **Evidence.** Revision 3: `docs/midterm/evidence/p1-v3-baseline/`. Revision 2: `p1-v2-baseline/`. Revision 1: `p1-baseline/`. Each was generated at a clean checkout of its commit, named in the folder's README.
 
-## Players planned (prepared, not run)
+## Live trials
+
+| Trial | Revision | Player | Seed | Outcome | Game time | Wall time | Decisions (S / C) | Invalid | Calls | Tokens in / out | Charged | Evidence |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| pilot-17, 2026-11-04 UTC | 3 | `model-memory`, `gpt-6-luna` medium, $0.15 cap | 0 | **success** | 26.2 s | 840.5 s | 217 (136 / 81) | 0 / 0 | 177 (0 failed) | 1,403,993 / 58,087 | $0.111395 | [folder](evidence/p1-v3-trial1-model-memory-seed0/) |
+
+**Coco's part.** In this trial Coco pressed E at "← FOREST" and at the trail's exit, and she started the cart scene, although success does not require her.
+
+**What it shows.** One trial at one seed is a single unaided completion, not a success rate. The recording is a trace-verified replay. No prompt or configuration was changed afterwards.
+
+## Players planned
 
 | Role | Player | Information |
 | --- | --- | --- |

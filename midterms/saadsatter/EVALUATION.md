@@ -118,8 +118,9 @@ P1 is a second situation, different in kind from the Hedge Maze: directed narrat
 | Run | Policy | Outcome | Game time | Decisions | Invalid S / C | Messages | Calls | Charged | Git |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | seeds 0 and 1, 2026-11-03 | `baseline-quest` (route-aware) | **success** ×2, identical play | 17.6 s | 161 | 0 / 0 | 0 | 0 | $0 | see [evidence](docs/midterm/evidence/p1-baseline/) |
+| pilot-17, 2026-11-04 UTC | `model-memory` (unaided; `gpt-6-luna` medium; revision 3; $0.15 cap) | **success** | 26.2 s | 217 | 0 / 0 | 20 | 177 (0) | $0.111395 | `b61035f`, [evidence](docs/midterm/evidence/p1-v3-trial1-model-memory-seed0/) |
 
-No model player has run P1. The expected cost is about $0.09–$0.42 per model episode (estimate). P1 is now revision 2: the independent review's fixes give model players an episode-neutral task line, the client's indoor camera, and an exact listing of the fence opening. Revision 1 is kept for provenance; it was never run by a model. The definition, observation contract, prompt freeze and reproduction commands are in [PROLOGUE_SITUATION.md](docs/midterm/PROLOGUE_SITUATION.md).
+One `model-memory` trial has run P1 (revision 3, seed 0): it succeeded at 26.2 game-seconds for $0.111. One trial is not a success rate. The baseline rows are from revisions 1–3, all identical. P1 is now revision 2: the independent review's fixes give model players an episode-neutral task line, the client's indoor camera, and an exact listing of the fence opening. Revision 1 is kept for provenance; it was never run by a model. The definition, observation contract, prompt freeze and reproduction commands are in [PROLOGUE_SITUATION.md](docs/midterm/PROLOGUE_SITUATION.md).
 
 ## Rubric gaps and scope risks
 
