@@ -16,6 +16,8 @@ import {
   mazeHedges,
   mazeBurnBush,
   mazeCowPosts,
+  mazeLoopCorners,
+  inMazeLoop,
   MAZE_POST_GAP,
 } from "../../../packages/shared/src/hedgeMaze.js";
 import { maps, collisionRects } from "../../../packages/shared/src/maps.js";
@@ -230,6 +232,61 @@ describe("Hedge Maze cooperative sequence", () => {
     pullMazeCow(w, { x: 26 * 32, y: 21 * 32, sceneId: "HEDGE_MAZE" }, 100);
     expect(maze.cow.x).toBe(old);
   });
+  it("wolf runs laps of the loop once a hero enters it, and only then", () => {
+    const corners = mazeLoopCorners.map((p) => ({
+      x: (p.x + 0.5) * 32,
+      y: (p.y + 0.5) * 32,
+    }));
+    const run = (hero: { x: number; y: number }, seconds: number) => {
+      const { w, s, c, maze } = setup();
+      w.enemies = {};
+      c.connected = false;
+      Object.assign(s, hero);
+      const visited = new Set<number>();
+      let travelled = 0,
+        last = { x: maze.runner.x, y: maze.runner.y };
+      for (let n = 0; n < ticksFor(seconds); n++) {
+        tickMazeRunner(w);
+        travelled += Math.hypot(maze.runner.x - last.x, maze.runner.y - last.y);
+        last = { x: maze.runner.x, y: maze.runner.y };
+        corners.forEach((p, i) => {
+          if (Math.hypot(p.x - maze.runner.x, p.y - maze.runner.y) < 20)
+            visited.add(i);
+        });
+        // While lapping it never leaves the loop's lanes.
+        if (maze.runner.lap) expect(inMazeLoop(maze.runner)).toBe(true);
+      }
+      return { maze, visited, travelled };
+    };
+    // Sieg steps into the loop's top lane and stands still: the wolf keeps going round.
+    const inLoop = run({ x: 24 * 32, y: 6 * 32 }, 12);
+    expect(inLoop.maze.runner.lap).toBeDefined();
+    expect(inLoop.maze.runner.fleeing).toBe(true);
+    expect(inLoop.visited.size).toBeGreaterThanOrEqual(3);
+    expect(inLoop.travelled).toBeGreaterThan(mazeWolf.speed * 8);
+    // Below the loop (the lane north of the cow) no lap starts.
+    const below = run({ x: 26.5 * 32, y: 19.5 * 32 }, 3);
+    expect(below.maze.runner.lap).toBeUndefined();
+  });
+
+  it("a hero ahead of the lapping wolf turns it back", () => {
+    const { w, s, c, maze } = setup();
+    w.enemies = {};
+    c.connected = false;
+    // Wolf in the top lane heading east; Sieg stands a few tiles ahead of it.
+    Object.assign(maze.runner, {
+      x: 20.5 * 32,
+      y: 6.5 * 32,
+      lap: { corner: 1, dir: 1 },
+    });
+    delete maze.runner.waypoint;
+    Object.assign(s, { x: 25.5 * 32, y: 6.5 * 32 });
+    const x0 = maze.runner.x;
+    for (let n = 0; n < ticksFor(0.5); n++) tickMazeRunner(w);
+    expect(maze.runner.lap).toEqual({ corner: 0, dir: -1 });
+    expect(maze.runner.x).toBeLessThan(x0);
+  });
+
   it("wolf detects distant heroes and accelerates for Super Speed while remaining catchable in Slow Time", () => {
     const measure = (sprint: boolean, slow: boolean) => {
       const { w, s, c, maze } = setup();

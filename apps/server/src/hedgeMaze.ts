@@ -5,6 +5,8 @@ import {
 } from "../../../packages/shared/src/constants.js";
 import {
   hedgeMazeState,
+  inMazeLoop,
+  mazeLoopCorners,
   mazeBurnBush,
   MAZE_COW_PARKED_X,
   mazeCowRect,
@@ -255,6 +257,60 @@ export const mazeWolf = {
   roamMinSteps: 4,
   roamMaxSteps: 14,
 } as const;
+/** How close a hero must be, ahead of the wolf, to turn it back. */
+const LAP_BLOCK_DISTANCE = 224;
+const cornerKey = (i: number) =>
+  cellKey(mazeLoopCorners[i].x, mazeLoopCorners[i].y);
+const cornerPoint = (i: number) => ({
+  x: (mazeLoopCorners[i].x + 0.5) * 32,
+  y: (mazeLoopCorners[i].y + 0.5) * 32,
+});
+function lapGoal(
+  runner: NonNullable<ReturnType<typeof hedgeMazeState>>["runner"],
+  start: number,
+  heroes: { x: number; y: number }[],
+  reachable: Map<number, number>,
+) {
+  const n = mazeLoopCorners.length,
+    at = (i: number) => (i + n) % n,
+    far = (i: number) =>
+      Math.min(
+        ...heroes.map((h) =>
+          Math.hypot(h.x - cornerPoint(i).x, h.y - cornerPoint(i).y),
+        ),
+      );
+  // A hero between the wolf and corner i, close to the wolf.
+  const blocked = (i: number) => {
+    const c = cornerPoint(i),
+      own = Math.hypot(runner.x - c.x, runner.y - c.y);
+    return heroes.some(
+      (h) =>
+        Math.hypot(h.x - c.x, h.y - c.y) < own &&
+        Math.hypot(h.x - runner.x, h.y - runner.y) < LAP_BLOCK_DISTANCE,
+    );
+  };
+  if (!runner.lap || !reachable.has(cornerKey(runner.lap.corner))) {
+    // Join the loop at the reachable corner farthest from the heroes.
+    const options = [...Array(n).keys()].filter((i) =>
+      reachable.has(cornerKey(i)),
+    );
+    if (!options.length) return start;
+    const corner = options.sort((a, b) => far(b) - far(a) || a - b)[0];
+    runner.lap = { corner, dir: 1 };
+  }
+  const lap = runner.lap;
+  if (cornerKey(lap.corner) === start) {
+    // At a turn: keep going round, unless a hero blocks the next lane.
+    if (blocked(at(lap.corner + lap.dir)) && !blocked(at(lap.corner - lap.dir)))
+      lap.dir = -lap.dir as 1 | -1;
+    lap.corner = at(lap.corner + lap.dir);
+  } else if (blocked(lap.corner) && !blocked(at(lap.corner - lap.dir))) {
+    // A hero is in the way: turn back toward the previous corner.
+    lap.corner = at(lap.corner - lap.dir);
+    lap.dir = -lap.dir as 1 | -1;
+  }
+  return cornerKey(lap.corner);
+}
 export function tickMazeRunner(w: World) {
   const state = hedgeMazeState(w.puzzles);
   if (w.sceneId !== "HEDGE_MAZE" || !state || state.runner.caught) return;
@@ -318,7 +374,15 @@ export function tickMazeRunner(w: World) {
       ? Math.min(...chasers.map((d) => d.get(key) ?? Infinity))
       : 0;
   let goal: number;
-  if (chasers.length) {
+  // A hero inside the loop sets the wolf running laps around it, turning
+  // back when a hero blocks the way ahead.
+  const lappers = chasers.length ? present.filter(inMazeLoop) : [];
+  if (lappers.length) {
+    runner.fleeing = true;
+    delete runner.roam;
+    goal = lapGoal(runner, start, lappers, reachable);
+  } else if (chasers.length) {
+    delete runner.lap;
     runner.fleeing = true;
     delete runner.roam;
     // Choose a new safe destination from live hero positions, never a fixed patrol.
@@ -328,6 +392,7 @@ export function tickMazeRunner(w: World) {
     )[0];
   } else {
     runner.fleeing = false;
+    delete runner.lap;
     const roamKey =
       runner.roam &&
       cellKey(Math.floor(runner.roam.x / 32), Math.floor(runner.roam.y / 32));
