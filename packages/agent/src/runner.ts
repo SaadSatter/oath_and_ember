@@ -134,6 +134,7 @@ export async function runEpisode(
             ...(decision.usage?.meta ? { meta: decision.usage.meta } : {}),
           },
         });
+      if (decision.note !== undefined) trace.write({ type: "policy_note", tick: observation.tick, player: id, data: decision.note });
       if ((await env.outcome()).status !== "ongoing") break;
       if (!proposed.length) {
         // An unusable reply is not turned into an action: nothing reaches the

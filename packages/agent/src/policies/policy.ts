@@ -22,6 +22,12 @@ export interface Decision {
   usage?: CallRecord;
   /** The model's raw reply, kept in the evaluator trace only. */
   raw?: string;
+  /**
+   * The policy's own record of this decision (the model-navigator's controller
+   * state and why it asked its model), written to the evaluator trace as a
+   * "policy_note" line. Never shown to any player.
+   */
+  note?: Record<string, unknown>;
 }
 
 /**

@@ -73,6 +73,11 @@ const ROUTINE: readonly RegExp[] = [
   /^Your choice was not taken\.$/,
 ];
 
+/** Whether a feedback line only describes this hero's own action mechanics (the ROUTINE list). */
+export function isRoutineFeedback(line: string) {
+  return ROUTINE.some((re) => re.test(line));
+}
+
 export type EventKind = "game_feedback" | "terrain_changed" | "seen_moving";
 
 /** A fact this hero's own observation verified. Never a hypothesis, never inferred from an action being accepted. */

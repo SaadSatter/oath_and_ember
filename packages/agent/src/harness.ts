@@ -23,6 +23,7 @@ import type { EnvironmentOptions } from "./environment.js";
 import { ModelBudget, MeteredGateway, defaultBudgetLimits, type CallRecord, type Gateway } from "./budget.js";
 import { GUIDED_SITUATIONS, GUIDES, GuidedPlayer } from "./policies/guided.js";
 import { LLMPlayer } from "./policies/llm.js";
+import { NavigatorPlayer } from "./policies/navigator.js";
 import { ExplorationBaseline } from "./policies/baseline.js";
 import { QuestBaseline } from "./policies/questBaseline.js";
 import type { Policy } from "./policies/policy.js";
@@ -36,7 +37,7 @@ import { mazeEvaluationLabel } from "./hedgeMazeSituations.js";
 import { prologueEvaluationLabel } from "./prologueSituation.js";
 
 export { PLAYER_KINDS, type PlayerKind };
-const isModel = (p: PlayerKind) => p === "model-history" || p === "model-obs-only" || p === "model-guided" || p === "model-memory";
+export const isModel = (p: PlayerKind) => p === "model-history" || p === "model-obs-only" || p === "model-guided" || p === "model-memory" || p === "model-navigator";
 
 /** Per-episode spend caps, both heroes together (MODEL_BUDGET.md). */
 export const EPISODE_CAP_USD: Record<SituationId, number> = {
@@ -262,6 +263,9 @@ export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | 
   // S1-S3 only until the owner approves it for anything else.
   if (o.player === "model-memory" && (o.final || o.situations.some((id) => !OBS_ONLY_SITUATIONS.includes(id))))
     throw Error("model-memory is restricted to S1-S3 tuning runs (including approved local variants); it is not approved for final runs.");
+  // Opt-in walking helper (docs/midterm/MODEL_NAVIGATOR.md): the same tuning-only restriction.
+  if (o.player === "model-navigator" && (o.final || o.situations.some((id) => !OBS_ONLY_SITUATIONS.includes(id))))
+    throw Error("model-navigator is restricted to S1-S3 tuning runs (including approved local variants); it is not approved for final runs.");
   const heldOut = o.situations.filter((id) => situation(id).heldOut);
   const allowed = o.final ? SEEDS.final : SEEDS.tuning;
   const bad = o.seeds.filter((s) => !allowed.includes(s));
@@ -298,6 +302,10 @@ export function policiesFor(player: PlayerKind, budget: ModelBudget | undefined,
       const guide = id ? GUIDES[id] : undefined;
       if (!guide) throw Error("model-guided requires current S2-local Hedge Maze or S3-local Mirror Pond.");
       const make = (hero: "Sieg" | "Coco", pid: PlayerId) => new GuidedPlayer(hero, pid, model!.gateway, budget!, model!.manual, model!.maxBatch, briefing, tutorial, guide);
+      return { sieg: make("Sieg", "sieg"), coco: make("Coco", "coco") };
+    }
+    case "model-navigator": {
+      const make = (hero: "Sieg" | "Coco", pid: PlayerId) => new NavigatorPlayer(hero, model!.manual, new MeteredGateway(model!.gateway, budget!, pid), model!.maxBatch, briefing, tutorial, task);
       return { sieg: make("Sieg", "sieg"), coco: make("Coco", "coco") };
     }
     case "model-history":

@@ -80,10 +80,22 @@ export class MockGateway implements Gateway {
     if (signal.aborted) throw new ModelCallError("aborted", "mock call aborted");
     this.random = this.stream(system);
     let legal: ActionSpec[] = [];
+    let parsed: { legal_actions?: ActionSpec[]; navigation?: unknown; observation?: { self?: { x: number; y: number }; area?: { widthTiles: number; heightTiles: number } } } = {};
     try {
-      legal = (JSON.parse(user) as { legal_actions?: ActionSpec[] }).legal_actions ?? [];
+      parsed = JSON.parse(user);
+      legal = parsed.legal_actions ?? [];
     } catch {
       legal = [];
+    }
+    // A model-navigator player (its user message has "navigation"): often
+    // answer with a random walking goal near the hero instead of actions, so
+    // the walking helper is exercised. Other players' replies are unchanged.
+    const self = parsed.observation?.self, area = parsed.observation?.area;
+    if (parsed.navigation !== undefined && self && area && this.random() < 0.6) {
+      const clamp = (v: number, hi: number) => Math.max(0, Math.min(hi - 1, Math.floor(v)));
+      const go_to = { x: clamp(self.x + (this.random() * 16 - 8), area.widthTiles), y: clamp(self.y + (this.random() * 16 - 8), area.heightTiles) };
+      const text = JSON.stringify({ notes: "", go_to, actions: [] });
+      return { text, tokens: { input: Math.ceil(user.length / 4), output: Math.ceil(text.length / 4) }, costUsd: 0, model: "mock" };
     }
     // Messages are skipped so the mock never floods its partner.
     const usable = legal.filter((s) => s.type !== "message");

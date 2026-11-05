@@ -414,7 +414,7 @@ export class LLMPlayer implements Policy {
 }
 
 /** The previous turn as the model sees it: one status per proposed action. */
-function describeTurn(input: Parameters<Policy["decide"]>[0]) {
+export function describeTurn(input: Parameters<Policy["decide"]>[0]) {
   const t = input.batch;
   if (!t) return input.last ? { results: [{ status: stepStatus(input.last), result: input.last }] } : null;
   if (t.replyProblem) return { reply_problem: `${t.replyProblem} Nothing was done.` };

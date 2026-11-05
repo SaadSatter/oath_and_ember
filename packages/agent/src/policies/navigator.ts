@@ -1,0 +1,766 @@
+// Opt-in fast model player, "model-navigator" (docs/midterm/MODEL_NAVIGATOR.md).
+//
+// One instance per hero, each with its own model calls, notes, HeroMemory and
+// walking controller; nothing is shared with the partner except in-game
+// messages. It is the model-memory player plus a walking helper:
+//
+//   - The model may answer with a walking goal, "go_to": {x, y}, as well as
+//     (or instead of) ordinary actions.
+//   - A deterministic local controller then walks the hero there with
+//     ordinary `move` actions, one per decision, planning a path (A*) over
+//     this hero's own remembered map (HeroMemory, built only from its own
+//     screens and move results) and its current screen. It never reads World,
+//     GameRoom, map geometry, puzzle state, a route or the partner's anything;
+//     this module imports only types, the hero's own memory and the prompt
+//     helpers.
+//   - The model is asked again only on an event (dialogue, damage, a new
+//     thing on screen, an enemy coming close, a new action becoming
+//     available, a new partner message, a backpack/journal change, a new
+//     feedback line, arrival, an unreachable goal, or a bounded number of
+//     walking moves). The goal survives a model call unless the model
+//     changes or clears it.
+//
+// The controller only walks. It never attacks, presses E, uses an ability,
+// talks or sends a message, and it never changes or vetoes a model action,
+// with one disclosed exception: a message identical to one this hero sent in
+// the last DUP_MESSAGE_TICKS is not sent, and the model is told so next turn.
+
+import { createHash } from "node:crypto";
+import type { ActionSpec, Direction, GameAction, MovementReport, Observation, VisibleThing } from "../types.js";
+import type { MeteredGateway } from "../budget.js";
+import { MAX_BATCH } from "../batch.js";
+import { HeroMemory, isRoutineFeedback } from "../heroMemory.js";
+import { tutorialBlock, tutorialId, taskId } from "../playerKnowledge.js";
+import { briefingBlock, briefingId, COMPLETED_LOG, describeTurn, parseReply, REJECTED_LOG, replySchema, systemPrompt, TASK, type ParsedReply } from "./llm.js";
+import type { Decision, Policy, TurnReport } from "./policy.js";
+import { directionTo, WALK_TILES_PER_TICK } from "./navigate.js";
+
+/** Controller bounds. Changing any of them changes the player (its name carries NAV_ID). */
+export const NAV = Object.freeze({
+  /** Walking moves in a row before the model is asked again, even if nothing happened. */
+  maxControllerMoves: 12,
+  /** Path replans after a stuck move before the goal is declared unreachable. */
+  maxReplans: 6,
+  /** Moves in a row without getting closer (path cost) before the goal is declared unreachable. */
+  noProgressMoves: 6,
+  /** Arrival distance (tiles) to a goal point on open ground. */
+  arriveTiles: 0.45,
+  /** Enemies within this many tiles count as close. */
+  enemyNearTiles: 2.5,
+  /** Path cost of a tile the hero's screen never showed (it may be open). */
+  unknownCost: 3,
+  /** Extra cost of a tile next to a blocked tile (keeps the body off edges). */
+  edgeCost: 0.6,
+  /** Extra cost of a tile where a creature, enemy or the partner stands now. */
+  occupiedCost: 12,
+  /** Extra cost of a tile a move of this hero was stopped short by, and for how long (ticks). */
+  stuckCost: 10,
+  stuckTtl: 1200,
+  /** A perpendicular offset from the tile centre beyond which the controller first lines up. */
+  alignTiles: 0.3,
+  /** Longest straight run of path cells one move covers. */
+  maxRunCells: 10,
+  /** A message identical to one sent within this many ticks is not sent again. */
+  dupMessageTicks: 600,
+});
+export const NAV_ID = createHash("sha256").update(JSON.stringify(NAV)).digest("hex").slice(0, 8);
+
+// The game constants SPRINT_MULTIPLIER and SLOW_TIME_SCALE, copied so this module imports no engine code.
+const SPRINT_MULTIPLIER = 2;
+const SLOW_SCALE = 0.2;
+
+/** The navigator's explanation of its reply fields. No game content, route, coordinates or puzzle step. */
+export const NAVIGATOR_SECTION = `
+
+Walking helper (the "go_to" field):
+- Besides "actions", your reply may set a walking goal: "go_to": {"x": <tile x>, "y": <tile y>} in this area's tile coordinates. A walking helper then walks you there with ordinary moves, choosing a path over your own remembered map (memory.remembered_map) and your current screen. Tiles your screen never showed are treated as possibly open, so the path may change as you see more. The helper knows nothing else: no map you have not seen, no puzzle, no route, nothing your partner saw.
+- The goal stays until you arrive, the helper cannot get there, you send a new "go_to", or you send "stop_navigation": true. Any "actions" you send run first; the helper walks after them.
+- While it walks you are not asked again unless something happens: dialogue on your screen, damage, an enemy coming close, something you had not seen before coming on screen, a new kind of action becoming available (for example E next to an object), a new message from your partner, a change to your backpack or journal, a new game feedback line, arrival, the helper being unable to get there, or ${NAV.maxControllerMoves} walking moves in a row. navigation.why_you_are_asked lists the reasons; navigation.walked says how far the helper took you since your last reply.
+- When you are asked, your current goal is kept unless you change it. Answering a message does not cancel it: send "go_to" or "stop_navigation" only when you want a different goal or none.
+- "actions" may be empty when you only set or keep a goal, for example {"notes":"...","go_to":{"x":<x>,"y":<y>},"actions":[]}. With no goal and no actions nothing happens, so send at least one of them.
+- The helper only walks. It never attacks, guards, presses E, uses abilities, uses items, advances dialogue or sends messages: you choose all of those.
+- Use go_to for walking more than a couple of tiles. Use your own move actions for short, precise steps (lining up with something, dodging, stepping through a narrow gap).
+
+Abilities and messages:
+- Use an ability when you can say, from what your screen shows now, what it should act on. Abilities that recharge are wasted when nothing they act on is near you. If memory.repeated_without_new_result lists an ability there, do not use it again until something has changed.
+- Message your partner when something happened that they need to know or when you need them to act, in one short message. A message identical to one you sent in the last ${NAV.dupMessageTicks / 60} seconds of game time is not sent again; navigation.notices tells you when that happens.`;
+
+/** The reply schema: the model-memory schema plus the two walking fields. */
+export function navigatorSchema(maxBatch: number = MAX_BATCH): Record<string, unknown> {
+  const base = replySchema(maxBatch, "persistent") as { properties: Record<string, unknown> };
+  return {
+    ...base,
+    properties: {
+      ...base.properties,
+      go_to: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"], additionalProperties: false },
+      stop_navigation: { type: "boolean" },
+    },
+  };
+}
+
+export type NavReply =
+  | { ok: true; notes?: string; actions: GameAction[]; dropped: GameAction[]; recovered?: string; goTo?: { x: number; y: number }; stop: boolean }
+  | { ok: false; reason: string };
+
+/**
+ * Reads a navigator reply: the ordinary envelope (parseReply, unchanged) with
+ * two optional extra fields. A null field counts as absent (OpenAI strict
+ * schemas send unused optional fields as null). Never repairs an action.
+ */
+export function parseNavigatorReply(text: string, maxBatch: number = MAX_BATCH): NavReply {
+  let obj: Record<string, unknown> | undefined;
+  try {
+    const v: unknown = JSON.parse(text);
+    if (v && typeof v === "object" && !Array.isArray(v)) obj = v as Record<string, unknown>;
+  } catch {
+    // Not one clean JSON object: read it as an ordinary reply (no goal).
+  }
+  if (!obj) {
+    const p = parseReply(text, maxBatch);
+    return p.ok ? { ...p, stop: false } : p;
+  }
+  const { go_to: goRaw, stop_navigation: stopRaw, ...rest } = obj;
+  let goTo: { x: number; y: number } | undefined;
+  if (goRaw !== undefined && goRaw !== null) {
+    const g = goRaw as Record<string, unknown>;
+    if (typeof g !== "object" || typeof g.x !== "number" || typeof g.y !== "number" || !Number.isFinite(g.x) || !Number.isFinite(g.y) || Object.keys(g).some((k) => k !== "x" && k !== "y"))
+      return { ok: false, reason: '"go_to" must be {"x": number, "y": number}.' };
+    goTo = { x: g.x, y: g.y };
+  }
+  if (stopRaw !== undefined && stopRaw !== null && typeof stopRaw !== "boolean") return { ok: false, reason: '"stop_navigation" must be true or false.' };
+  const stop = stopRaw === true;
+  if (goTo && stop) return { ok: false, reason: 'The reply had both "go_to" and "stop_navigation": true.' };
+  const list = rest.actions ?? (rest.action !== undefined ? [rest.action] : undefined);
+  if (Array.isArray(list) && list.length === 0 && !("action" in rest)) {
+    const unknown = Object.keys(rest).find((k) => !["notes", "actions"].includes(k));
+    if (unknown) return { ok: false, reason: `The reply had an unexpected field "${unknown}".` };
+    if (rest.notes !== undefined && rest.notes !== null && typeof rest.notes !== "string") return { ok: false, reason: '"notes" must be text.' };
+    if (!goTo && !stop) return { ok: false, reason: 'The reply had no actions and no "go_to".' };
+    return { ok: true, ...(typeof rest.notes === "string" ? { notes: rest.notes } : {}), actions: [], dropped: [], goTo, stop };
+  }
+  if (rest.notes === null) delete rest.notes;
+  const p: ParsedReply = parseReply(JSON.stringify(rest), maxBatch);
+  return p.ok ? { ...p, ...(goTo ? { goTo } : {}), stop } : p;
+}
+
+// ── Path planning over the hero's own map ─────────────────────────────────
+
+export interface Cell {
+  x: number;
+  y: number;
+}
+
+/** A cost map: finite cost to enter a cell, Infinity when blocked. */
+export interface NavGrid {
+  w: number;
+  h: number;
+  cost(x: number, y: number): number;
+  unknown(x: number, y: number): boolean;
+}
+
+const BLOCKING = new Set(["#", "^", "o", ">"]);
+const key = (x: number, y: number) => `${x},${y}`;
+
+/** Cells whose centre lies in a visible thing's extent. */
+function extentCells(v: VisibleThing): Cell[] {
+  const e = v.extent!;
+  const out: Cell[] = [];
+  for (let y = Math.floor(e.y); y < Math.ceil(e.y + e.h); y++) for (let x = Math.floor(e.x); x < Math.ceil(e.x + e.w); x++) out.push({ x, y });
+  return out;
+}
+
+/**
+ * The grid this hero navigates: its remembered terrain (already updated with
+ * the current screen), the things its current screen shows, and the cells its
+ * own moves were stopped short by. `goal` may stand on a blocking cell (an
+ * object, an exit): it is then left blocked and approached from beside.
+ */
+export function buildGrid(memory: HeroMemory, o: Observation, stuck: ReadonlyMap<string, number>): NavGrid {
+  const { name, widthTiles: w, heightTiles: h } = o.area;
+  const flying = o.self.status.some((s) => s.startsWith("flying"));
+  const terrain = (x: number, y: number) => memory.terrainAt(name, x, y) ?? "?";
+  const hard = new Set<string>();
+  const occupied = new Set<string>();
+  for (const v of o.visible) {
+    if (v.kind === "creature" && v.extent) for (const c of extentCells(v)) hard.add(key(c.x, c.y));
+    else if (v.kind === "creature" || v.kind === "enemy" || v.kind === "partner") occupied.add(key(Math.floor(v.x), Math.floor(v.y)));
+  }
+  const blockedChar = (t: string) => BLOCKING.has(t) || (t === "~" && !flying);
+  const inside = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h;
+  return {
+    w,
+    h,
+    unknown: (x, y) => inside(x, y) && terrain(x, y) === "?",
+    cost(x, y) {
+      if (!inside(x, y)) return Infinity;
+      const k = key(x, y);
+      if (hard.has(k)) return Infinity;
+      const t = terrain(x, y);
+      if (blockedChar(t)) return Infinity;
+      let c = t === "?" ? NAV.unknownCost : 1;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]])
+        if (inside(x + dx, y + dy) && terrain(x + dx, y + dy) === "#") {
+          c += NAV.edgeCost;
+          break;
+        }
+      if (occupied.has(k)) c += NAV.occupiedCost;
+      if (stuck.has(k)) c += NAV.stuckCost;
+      return c;
+    },
+  };
+}
+
+const STEPS: [number, number][] = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
+
+/**
+ * A* from `start` to any cell in `goals` (8-way, no corner cutting). Returns
+ * the cells after `start` up to and including the goal cell reached, with the
+ * path's total cost, or null when no goal can be reached on this grid.
+ */
+export function aStar(grid: NavGrid, start: Cell, goals: Cell[]): { path: Cell[]; cost: number } | null {
+  const goalSet = new Set(goals.map((g) => key(g.x, g.y)));
+  if (!goalSet.size) return null;
+  if (goalSet.has(key(start.x, start.y))) return { path: [], cost: 0 };
+  const hFn = (x: number, y: number) => {
+    let best = Infinity;
+    for (const g of goals) {
+      const dx = Math.abs(g.x - x), dy = Math.abs(g.y - y);
+      best = Math.min(best, Math.max(dx, dy) + (Math.SQRT2 - 1) * Math.min(dx, dy));
+    }
+    return best;
+  };
+  const gScore = new Map<string, number>([[key(start.x, start.y), 0]]);
+  const prev = new Map<string, string>();
+  // Small binary heap of [f, tiebreak, x, y].
+  const heap: [number, number, number, number][] = [];
+  let order = 0;
+  const push = (f: number, x: number, y: number) => {
+    heap.push([f, order++, x, y]);
+    let i = heap.length - 1;
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      if (heap[p][0] < heap[i][0] || (heap[p][0] === heap[i][0] && heap[p][1] < heap[i][1])) break;
+      [heap[p], heap[i]] = [heap[i], heap[p]];
+      i = p;
+    }
+  };
+  const pop = () => {
+    const top = heap[0];
+    const last = heap.pop()!;
+    if (heap.length) {
+      heap[0] = last;
+      let i = 0;
+      for (;;) {
+        const l = 2 * i + 1, r = l + 1;
+        let m = i;
+        const less = (a: number, b: number) => heap[a][0] < heap[b][0] || (heap[a][0] === heap[b][0] && heap[a][1] < heap[b][1]);
+        if (l < heap.length && less(l, m)) m = l;
+        if (r < heap.length && less(r, m)) m = r;
+        if (m === i) break;
+        [heap[m], heap[i]] = [heap[i], heap[m]];
+        i = m;
+      }
+    }
+    return top;
+  };
+  push(hFn(start.x, start.y), start.x, start.y);
+  const closed = new Set<string>();
+  const limit = grid.w * grid.h * 4;
+  let expanded = 0;
+  while (heap.length && expanded++ < limit) {
+    const [, , x, y] = pop();
+    const k = key(x, y);
+    if (closed.has(k)) continue;
+    closed.add(k);
+    if (goalSet.has(k)) {
+      const path: Cell[] = [];
+      for (let c: string | undefined = k; c && c !== key(start.x, start.y); c = prev.get(c)) {
+        const [cx, cy] = c.split(",").map(Number);
+        path.unshift({ x: cx, y: cy });
+      }
+      return { path, cost: gScore.get(k)! };
+    }
+    const g0 = gScore.get(k)!;
+    for (const [dx, dy] of STEPS) {
+      const nx = x + dx, ny = y + dy;
+      const c = grid.cost(nx, ny);
+      if (!Number.isFinite(c)) continue;
+      if (dx && dy && (!Number.isFinite(grid.cost(x + dx, y)) || !Number.isFinite(grid.cost(x, y + dy)))) continue;
+      const g = g0 + c * (dx && dy ? Math.SQRT2 : 1);
+      const nk = key(nx, ny);
+      if (g < (gScore.get(nk) ?? Infinity)) {
+        gScore.set(nk, g);
+        prev.set(nk, k);
+        push(g + hFn(nx, ny), nx, ny);
+      }
+    }
+  }
+  return null;
+}
+
+/** Where the goal is approached: its own cell when open, otherwise the open cells around it. */
+export function goalCells(grid: NavGrid, goal: { x: number; y: number }): { cells: Cell[]; onCell: boolean } {
+  const gx = Math.floor(goal.x), gy = Math.floor(goal.y);
+  if (Number.isFinite(grid.cost(gx, gy))) return { cells: [{ x: gx, y: gy }], onCell: true };
+  const around = STEPS.map(([dx, dy]) => ({ x: gx + dx, y: gy + dy })).filter((c) => Number.isFinite(grid.cost(c.x, c.y)));
+  return { cells: around, onCell: false };
+}
+
+/** The point a goal means: an integer tile coordinate means that tile's centre. */
+export function goalPoint(g: { x: number; y: number }) {
+  return { x: Number.isInteger(g.x) ? g.x + 0.5 : g.x, y: Number.isInteger(g.y) ? g.y + 0.5 : g.y };
+}
+
+const VEC: Record<Direction, [number, number]> = { n: [0, -1], ne: [1, -1], e: [1, 0], se: [1, 1], s: [0, 1], sw: [-1, 1], w: [-1, 0], nw: [-1, -1] };
+
+/**
+ * The next move along `path` from the hero's exact position: first line up
+ * with the row or column when far off-centre, then walk the longest straight
+ * run of cells in one direction (at most NAV.maxRunCells), never past the
+ * goal point. `speed` is tiles per tick.
+ */
+export function nextMove(me: { x: number; y: number }, path: Cell[], target: { x: number; y: number }, onGoalCell: boolean, speed: number): { direction: Direction; ticks: number } {
+  const clampTicks = (d: number) => Math.max(1, Math.min(60, Math.round(d / speed)));
+  const sx = Math.floor(me.x), sy = Math.floor(me.y);
+  if (!path.length) {
+    const dx = target.x - me.x, dy = target.y - me.y;
+    return { direction: directionTo(dx, dy), ticks: clampTicks(Math.hypot(dx, dy)) };
+  }
+  const first = path[0];
+  const dir = directionTo(first.x - sx, first.y - sy);
+  const [vx, vy] = VEC[dir];
+  // Line up across the direction of travel when far off the cell centre.
+  if (vx === 0 && Math.abs(me.x - (sx + 0.5)) > NAV.alignTiles) {
+    const off = sx + 0.5 - me.x;
+    return { direction: off > 0 ? "e" : "w", ticks: clampTicks(Math.abs(off)) };
+  }
+  if (vy === 0 && Math.abs(me.y - (sy + 0.5)) > NAV.alignTiles) {
+    const off = sy + 0.5 - me.y;
+    return { direction: off > 0 ? "s" : "n", ticks: clampTicks(Math.abs(off)) };
+  }
+  let end = 0;
+  while (end + 1 < path.length && end + 1 < NAV.maxRunCells && path[end + 1].x - path[end].x === vx && path[end + 1].y - path[end].y === vy) end++;
+  const last = path[end];
+  const isGoal = end === path.length - 1 && onGoalCell;
+  const aim = isGoal ? target : { x: last.x + 0.5, y: last.y + 0.5 };
+  if (vx && vy) {
+    // Diagonal: walk until the nearer axis reaches the aim (each axis moves speed/√2 per tick).
+    const d = Math.min(Math.abs(aim.x - me.x), Math.abs(aim.y - me.y)) * Math.SQRT2;
+    return { direction: dir, ticks: clampTicks(Math.max(d, 0.1)) };
+  }
+  const along = vx ? Math.abs(aim.x - me.x) : Math.abs(aim.y - me.y);
+  return { direction: dir, ticks: clampTicks(Math.max(along, 0.1)) };
+}
+
+// ── Events ────────────────────────────────────────────────────────────────
+
+interface Snapshot {
+  area: string;
+  hp: number;
+  bag: string;
+  journal: string;
+  feedback: string[];
+  legalTypes: Set<string>;
+  closeEnemies: Set<string>;
+  dialogue: string | null;
+}
+
+/** A dialogue line as this hero's screen shows it: who, what, whether it is theirs to move on, and any choices. */
+const dialogueKey = (o: Observation) => (o.dialogue ? JSON.stringify([o.dialogue.speaker, o.dialogue.text, o.dialogue.canAdvance, o.dialogue.choices ?? null]) : null);
+
+const ON_DEMAND = new Set(["interact", "use_item", "advance_dialogue", "choose_dialogue"]);
+
+function snapshot(o: Observation, legal: ActionSpec[]): Snapshot {
+  return {
+    area: o.area.name,
+    hp: o.self.hp,
+    bag: JSON.stringify(o.inventory.items.map((i) => [i.id, i.count])),
+    journal: JSON.stringify(o.journal),
+    feedback: [...o.feedback],
+    legalTypes: new Set(legal.map((l) => l.type)),
+    closeEnemies: new Set(o.visible.filter((v) => v.kind === "enemy" && v.distance <= NAV.enemyNearTiles).map((v) => v.name)),
+    dialogue: dialogueKey(o),
+  };
+}
+
+/** Lines in `cur` after the longest suffix of `prev` that starts `cur` (as HeroMemory does). */
+function newLines(prev: string[], cur: string[]) {
+  for (let k = Math.min(prev.length, cur.length); k > 0; k--) if (prev.slice(prev.length - k).every((l, i) => l === cur[i])) return cur.slice(k);
+  return cur;
+}
+
+/**
+ * Why the model should be asked now, compared with the hero's previous
+ * decision. Pure: reads two of this hero's own observations, its legal
+ * actions, the names it has seen and the messages it has had.
+ */
+export function detectEvents(prev: Snapshot | undefined, o: Observation, legal: ActionSpec[], seen: Set<string>, partnerTexts: Set<string>): string[] {
+  const ev: string[] = [];
+  // A dialogue line is news once, when it appears or changes (who may move it on, its choices).
+  if (o.dialogue && dialogueKey(o) !== (prev?.dialogue ?? null)) ev.push(`dialogue on your screen (${o.dialogue.speaker})`);
+  for (const v of o.visible) {
+    if (!["enemy", "creature", "object", "exit", "label"].includes(v.kind)) continue;
+    const k = `${o.area.name}|${v.kind}|${v.name}`;
+    if (!seen.has(k)) ev.push(`new on your screen: ${v.name} (${v.kind}) at (${v.x}, ${v.y})`);
+  }
+  // Messages: only a text this hero had not received before is news.
+  for (const m of o.messages) if (!partnerTexts.has(normalize(m.text))) ev.push(`new message from ${m.from}`);
+  if (!prev) return ev;
+  if (o.area.name !== prev.area) ev.push(`you are in a new area (${o.area.name})`);
+  if (o.self.hp < prev.hp) ev.push(`you took damage (HP ${prev.hp} → ${o.self.hp})`);
+  if (JSON.stringify(o.inventory.items.map((i) => [i.id, i.count])) !== prev.bag) ev.push("your backpack changed");
+  if (JSON.stringify(o.journal) !== prev.journal) ev.push("your quest journal changed");
+  const lines = newLines(prev.feedback, o.feedback).filter((l) => !isRoutineFeedback(l));
+  if (lines.length) ev.push(`new feedback: ${lines.slice(0, 3).join(" | ")}`);
+  for (const t of legal.map((l) => l.type)) if (ON_DEMAND.has(t) && !prev.legalTypes.has(t)) ev.push(`a new action is available: ${t}`);
+  for (const v of o.visible)
+    if (v.kind === "enemy" && v.distance <= NAV.enemyNearTiles && !prev.closeEnemies.has(v.name)) ev.push(`${v.name} (enemy) is close: ${v.distance} tiles ${v.direction}`);
+  return [...new Set(ev)];
+}
+
+const normalize = (t: string) => t.trim().toLowerCase().replace(/\s+/g, " ");
+
+// ── The player ────────────────────────────────────────────────────────────
+
+interface Goal {
+  area: string;
+  x: number;
+  y: number;
+  setTick: number;
+}
+
+type NavStatus = "none" | "walking" | "arrived" | "unreachable";
+
+/** One decision's controller record, for the evaluator trace (policy_note). */
+export interface NavNote {
+  source: "model" | "controller";
+  events: string[];
+  goal: Goal | null;
+  status: NavStatus;
+  detail?: string;
+  pathCells?: number;
+  unknownCells?: number;
+  controllerMoves?: number;
+  notices?: string[];
+}
+
+export class NavigatorPlayer implements Policy {
+  readonly name: string;
+  readonly memory = "persistent" as const;
+  private notes = "";
+  private completed: { action: GameAction; ticks: number; interrupted?: string; movement?: MovementReport }[] = [];
+  private rejected: { action: GameAction; status: "rejected" | "stale"; error: string }[] = [];
+  private readonly system: string;
+  readonly promptHash: string;
+  private readonly schema: Record<string, unknown>;
+  private readonly maxBatch: number;
+  readonly heroMemory: HeroMemory;
+  private lastObservation?: Observation;
+  // Controller state (this hero only).
+  private goal: Goal | null = null;
+  private status: NavStatus = "none";
+  private detail?: string;
+  private replans = 0;
+  private noProgress = 0;
+  private lastCost = Infinity;
+  private stuckInRow = 0;
+  private controllerMoves = 0;
+  private nudge = 1;
+  private lastControllerMove?: { direction: Direction };
+  private readonly stuck = new Map<string, number>();
+  private speed?: { tilesPerTick: number; status: string };
+  private walkedFrom?: { x: number; y: number; tick: number };
+  private walkedTicks = 0;
+  private snap?: Snapshot;
+  private readonly seen = new Set<string>();
+  private readonly partnerTexts = new Set<string>();
+  private pending: string[] = [];
+  private notices: string[] = [];
+  /** Counts, for the comparison with the other model players. */
+  readonly counts = { modelDecisions: 0, controllerDecisions: 0 };
+
+  constructor(
+    readonly hero: "Sieg" | "Coco",
+    manual: string,
+    readonly model: MeteredGateway,
+    maxBatch: number = MAX_BATCH,
+    readonly briefing?: string,
+    readonly tutorial?: string,
+    readonly task: string = TASK,
+  ) {
+    if (!Number.isInteger(maxBatch) || maxBatch < 1 || maxBatch > MAX_BATCH) throw Error(`maxBatch must be an integer from 1 to ${MAX_BATCH}.`);
+    if (briefing !== undefined && !briefing.trim()) throw Error("An episode briefing must not be empty.");
+    if (tutorial !== undefined && !tutorial.trim()) throw Error("A tutorial briefing must not be empty.");
+    if (!task.trim()) throw Error("A task must not be empty.");
+    this.maxBatch = maxBatch;
+    this.heroMemory = new HeroMemory(hero);
+    this.name = `navigator-${NAV_ID}(${model.label})${maxBatch > 1 ? `·batch${maxBatch}` : ""}·memory${tutorial ? `·tutorial-${tutorialId(tutorial)}` : ""}${briefing ? `·briefing-${briefingId(briefing)}` : ""}${task !== TASK ? `·task-${taskId(task)}` : ""}`;
+    this.system = systemPrompt(hero, manual, maxBatch, "persistent", task) + NAVIGATOR_SECTION + (tutorial ? tutorialBlock(tutorial) : "") + (briefing ? briefingBlock(briefing) : "");
+    this.promptHash = createHash("sha256").update(this.system).digest("hex");
+    this.schema = navigatorSchema(maxBatch);
+  }
+
+  /** The system prompt (for prompt-boundary tests). */
+  systemText() {
+    return this.system;
+  }
+  /** Read-only controller state, for tests and diagnostics. */
+  navState() {
+    return { goal: this.goal ? { ...this.goal } : null, status: this.status, detail: this.detail, controllerMoves: this.controllerMoves };
+  }
+
+  private remember(turn: TurnReport) {
+    for (const s of turn.steps) {
+      if (s.status === "executed") {
+        this.completed.push({ action: s.action, ticks: s.result.ticks, ...(s.result.interrupted ? { interrupted: s.result.interrupted } : {}), ...(s.result.movement ? { movement: s.result.movement } : {}) });
+        if (this.completed.length > COMPLETED_LOG) this.completed.shift();
+      } else {
+        this.rejected.push({ action: s.action, status: s.status, error: (s.result.error ?? s.result.feedback[0] ?? "").slice(0, 200) });
+        if (this.rejected.length > REJECTED_LOG) this.rejected.shift();
+      }
+    }
+  }
+
+  /** Learn from the controller's own last move: speed, being stuck, and progress. */
+  private afterControllerMove(turn: TurnReport | undefined, o: Observation) {
+    const step = turn?.steps[0];
+    const last = this.lastControllerMove;
+    this.lastControllerMove = undefined;
+    if (!last || !step || step.action.type !== "move") return;
+    const mv = step.result.movement;
+    if (!mv) return;
+    this.walkedTicks += step.result.ticks;
+    if (mv.outcome === "full" && mv.ticks.applied > 0) this.speed = { tilesPerTick: mv.requestedTiles / mv.ticks.applied, status: statusKey(o) };
+    if (mv.outcome === "not_applied") {
+      this.pending.push("the game did not take your last walking move (for example during a scene or while you were held)");
+      return;
+    }
+    if (mv.movedTiles < 0.15 && (mv.blocked || mv.outcome === "none")) {
+      const [vx, vy] = VEC[last.direction];
+      const ax = Math.floor(mv.to.x + vx * 0.6), ay = Math.floor(mv.to.y + vy * 0.6);
+      this.stuck.set(key(ax, ay), o.tick);
+      this.replans++;
+      this.stuckInRow++;
+    } else this.stuckInRow = 0;
+  }
+
+  private speedFor(o: Observation) {
+    if (this.speed && this.speed.status === statusKey(o)) return this.speed.tilesPerTick;
+    const sprint = o.self.status.some((s) => s.startsWith("super speed"));
+    const slowed = o.self.status.includes("time is slowed") && !(this.hero === "Sieg" && sprint);
+    return WALK_TILES_PER_TICK * (sprint ? SPRINT_MULTIPLIER : 1) * (slowed ? SLOW_SCALE : 1);
+  }
+
+  private setGoal(g: { x: number; y: number } | null, o: Observation) {
+    this.goal = g ? { area: o.area.name, x: g.x, y: g.y, setTick: o.tick } : null;
+    this.status = g ? "walking" : "none";
+    this.detail = undefined;
+    this.replans = 0;
+    this.noProgress = 0;
+    this.lastCost = Infinity;
+    this.stuckInRow = 0;
+  }
+
+  /** Whether the hero stands at its goal (same rule as plan()). */
+  private atGoal(o: Observation) {
+    const goal = this.goal;
+    if (!goal || goal.area !== o.area.name) return false;
+    const grid = buildGrid(this.heroMemory, o, this.stuck);
+    const target = goalPoint(goal);
+    const { cells, onCell } = goalCells(grid, goal);
+    const here = { x: Math.floor(o.self.x), y: Math.floor(o.self.y) };
+    return onCell ? Math.hypot(target.x - o.self.x, target.y - o.self.y) <= NAV.arriveTiles : cells.some((c) => c.x === here.x && c.y === here.y);
+  }
+
+  /**
+   * One controller step toward the goal, or why the goal ended. Reads only
+   * this hero's own memory and observation.
+   */
+  private plan(o: Observation): { move?: { direction: Direction; ticks: number }; pathCells?: number; unknownCells?: number } {
+    const goal = this.goal!;
+    if (goal.area !== o.area.name) {
+      this.status = "unreachable";
+      this.detail = `your goal was in ${goal.area}; you are now in ${o.area.name}`;
+      return {};
+    }
+    for (const [k, t] of this.stuck) if (o.tick - t > NAV.stuckTtl) this.stuck.delete(k);
+    const grid = buildGrid(this.heroMemory, o, this.stuck);
+    const target = goalPoint(goal);
+    const { cells, onCell } = goalCells(grid, goal);
+    const me = { x: o.self.x, y: o.self.y };
+    const here = { x: Math.floor(me.x), y: Math.floor(me.y) };
+    const atGoal = onCell ? Math.hypot(target.x - me.x, target.y - me.y) <= NAV.arriveTiles : cells.some((c) => c.x === here.x && c.y === here.y);
+    if (atGoal) {
+      this.status = "arrived";
+      this.detail = `you reached (${goal.x}, ${goal.y})`;
+      return {};
+    }
+    if (!cells.length) {
+      this.status = "unreachable";
+      this.detail = `(${goal.x}, ${goal.y}) is blocked on your map and has no open tile beside it`;
+      return {};
+    }
+    if (this.replans > NAV.maxReplans) {
+      this.status = "unreachable";
+      this.detail = `your moves toward (${goal.x}, ${goal.y}) kept stopping short (${this.replans} times)`;
+      return {};
+    }
+    const found = aStar(grid, here, cells);
+    if (!found) {
+      this.status = "unreachable";
+      this.detail = `no path to (${goal.x}, ${goal.y}) on your map: tiles you have seen block every way`;
+      return {};
+    }
+    // Progress is judged against the previous plan, so a path that grew
+    // because new walls came into view is not counted against the hero.
+    const progressed = found.cost < this.lastCost - 0.3;
+    this.lastCost = found.cost;
+    if (progressed) this.noProgress = 0;
+    else if (++this.noProgress > NAV.noProgressMoves) {
+      this.status = "unreachable";
+      this.detail = `you did not get closer to (${goal.x}, ${goal.y}) in ${NAV.noProgressMoves} moves`;
+      return {};
+    }
+    const unknownCells = found.path.filter((c) => grid.unknown(c.x, c.y)).length;
+    let move = nextMove(me, found.path, target, onCell, this.speedFor(o));
+    // Two stuck moves in a row: step sideways once before the next try.
+    if (this.stuckInRow >= 2) {
+      const side: Record<Direction, [Direction, Direction]> = { n: ["e", "w"], s: ["w", "e"], e: ["s", "n"], w: ["n", "s"], ne: ["e", "n"], nw: ["w", "n"], se: ["e", "s"], sw: ["w", "s"] };
+      const pick = side[move.direction][this.nudge > 0 ? 0 : 1];
+      this.nudge = -this.nudge;
+      move = { direction: pick, ticks: 4 };
+      this.stuckInRow = 0;
+    }
+    this.status = "walking";
+    this.detail = undefined;
+    return { move, pathCells: found.path.length, unknownCells };
+  }
+
+  async decide(input: Parameters<Policy["decide"]>[0]): Promise<Decision> {
+    const o = input.observation;
+    if (input.batch) this.remember(input.batch);
+    if (input.batch) this.heroMemory.recordTurn(input.batch, this.lastObservation);
+    this.heroMemory.observe(o);
+    this.afterControllerMove(input.batch, o);
+    this.lastObservation = o;
+    // Events since this hero's previous decision, then remember what it has now seen.
+    const events = detectEvents(this.snap, o, input.legal, this.seen, this.partnerTexts);
+    for (const v of o.visible) if (["enemy", "creature", "object", "exit", "label"].includes(v.kind)) this.seen.add(`${o.area.name}|${v.kind}|${v.name}`);
+    for (const m of o.messages) this.partnerTexts.add(normalize(m.text));
+    this.snap = snapshot(o, input.legal);
+    if (input.batch?.replyProblem) events.push("your last reply could not be used");
+    if (input.batch?.steps.some((s) => s.status !== "executed")) events.push("an action of yours was refused");
+    this.pending.push(...events);
+
+    // Walk without the model while nothing happened and the goal still holds.
+    if (this.goal && this.status === "walking" && !this.pending.length) {
+      if (this.controllerMoves >= NAV.maxControllerMoves) this.pending.push(`${NAV.maxControllerMoves} walking moves since your last reply`);
+      else {
+        const step = this.plan(o);
+        if (step.move) {
+          this.controllerMoves++;
+          this.counts.controllerDecisions++;
+          this.lastControllerMove = { direction: step.move.direction };
+          const action: GameAction = { type: "move", direction: step.move.direction, ticks: step.move.ticks };
+          const note: NavNote = { source: "controller", events: [], goal: { ...this.goal }, status: this.status, pathCells: step.pathCells, unknownCells: step.unknownCells, controllerMoves: this.controllerMoves };
+          return { action, note: note as unknown as Record<string, unknown> };
+        }
+        this.pending.push((this.status as NavStatus) === "arrived" ? "you reached your walking goal" : `the walking helper cannot reach your goal: ${this.detail}`);
+      }
+    }
+    // Asking anyway: if the hero already stands at its goal, say so in this same call.
+    if (this.goal && this.status === "walking" && this.atGoal(o)) {
+      this.status = "arrived";
+      this.detail = `you reached (${this.goal.x}, ${this.goal.y})`;
+      this.pending.push("you reached your walking goal");
+    }
+    if (!this.goal) this.pending.push("you have no walking goal");
+    return this.askModel(input);
+  }
+
+  private async askModel(input: Parameters<Policy["decide"]>[0]): Promise<Decision> {
+    const o = input.observation;
+    const why = [...new Set(this.pending)];
+    this.pending = [];
+    const navigation = {
+      goal: this.goal ? { x: this.goal.x, y: this.goal.y, area: this.goal.area, set_at_tick: this.goal.setTick } : null,
+      status: this.status,
+      ...(this.detail ? { detail: this.detail } : {}),
+      why_you_are_asked: why,
+      walked: this.walkedFrom
+        ? { moves: this.controllerMoves, ticks: this.walkedTicks, from: { x: this.walkedFrom.x, y: this.walkedFrom.y }, to: { x: o.self.x, y: o.self.y }, since_tick: this.walkedFrom.tick }
+        : null,
+      ...(this.notices.length ? { notices: this.notices } : {}),
+    };
+    const goalEnded = this.status === "arrived" || this.status === "unreachable";
+    this.notices = [];
+    const user = JSON.stringify({
+      your_notes: this.notes,
+      completed_actions: this.completed,
+      recent_rejected_actions: this.rejected,
+      last_turn: describeTurn(input),
+      memory: this.heroMemory.view(o),
+      navigation,
+      observation: o,
+      legal_actions: input.legal,
+    });
+    this.controllerMoves = 0;
+    this.walkedTicks = 0;
+    this.walkedFrom = { x: o.self.x, y: o.self.y, tick: o.tick };
+    // An ended goal is reported in this call and then cleared.
+    if (goalEnded) this.setGoal(null, o);
+    this.counts.modelDecisions++;
+    // Throws ModelCallError or BudgetExhausted; the runner handles both.
+    const reply = await this.model.complete(this.system, user, { schema: this.schema });
+    const usage = reply.record;
+    const raw = reply.rawText ?? reply.text;
+    const note: NavNote = { source: "model", events: why, goal: null, status: this.status };
+    if (reply.meta?.stopReason === "max_tokens") return { replyProblem: "The reply was cut off at the output limit (stop reason max_tokens).", usage, raw, note: { ...note } as unknown as Record<string, unknown> };
+    const parsed = parseNavigatorReply(reply.text, this.maxBatch);
+    if (!parsed.ok) return { replyProblem: parsed.reason, usage, raw, note: note as unknown as Record<string, unknown> };
+    if (parsed.notes !== undefined) this.notes = parsed.notes.slice(0, 400);
+    if (parsed.goTo) this.setGoal(parsed.goTo, o);
+    else if (parsed.stop) this.setGoal(null, o);
+    // The one disclosed filter: a message repeated within DUP_MESSAGE_TICKS is not sent.
+    const sent = this.heroMemory.sentMessages();
+    const actions = parsed.actions.filter((a) => {
+      if (a.type !== "message") return true;
+      const dup = sent.find((m) => normalize(m.text) === normalize(a.text) && o.tick - m.tick <= NAV.dupMessageTicks);
+      if (dup) this.notices.push(`Not sent: your message "${a.text.slice(0, 80)}" is identical to the one you sent at tick ${dup.tick}.`);
+      return !dup;
+    });
+    note.goal = this.goal ? { ...this.goal } : null;
+    note.status = this.status;
+    if (this.notices.length) note.notices = [...this.notices];
+    if (actions.length) {
+      const [action, ...then] = actions;
+      return { action, ...(then.length ? { then } : {}), ...(parsed.dropped.length ? { dropped: parsed.dropped } : {}), ...(parsed.recovered ? { recovered: parsed.recovered } : {}), usage, raw, note: note as unknown as Record<string, unknown> };
+    }
+    // Only a goal: take the first walking step now, without another call.
+    if (this.goal) {
+      const step = this.plan(o);
+      note.status = this.status;
+      if (step.move) {
+        this.controllerMoves++;
+        this.counts.controllerDecisions++;
+        this.lastControllerMove = { direction: step.move.direction };
+        Object.assign(note, { pathCells: step.pathCells, unknownCells: step.unknownCells });
+        return { action: { type: "move", direction: step.move.direction, ticks: step.move.ticks }, usage, raw, note: note as unknown as Record<string, unknown> };
+      }
+      const why2 = (this.status as NavStatus) === "arrived" ? `You are already at (${this.goal.x}, ${this.goal.y}).` : `The walking helper cannot reach (${this.goal.x}, ${this.goal.y}): ${this.detail}.`;
+      this.setGoal(null, o);
+      return { replyProblem: `${why2} Nothing was done; choose an action or another goal.`, usage, raw, note: note as unknown as Record<string, unknown> };
+    }
+    return {
+      replyProblem: this.notices.length ? "Your only action was a repeated message, which was not sent. Nothing was done." : "The reply had no actions and no walking goal. Nothing was done.",
+      usage,
+      raw,
+      note: note as unknown as Record<string, unknown>,
+    };
+  }
+}
+
+const statusKey = (o: Observation) => o.self.status.filter((s) => s.startsWith("super speed") || s === "time is slowed" || s.startsWith("flying")).map((s) => s.replace(/ \(.*\)$/, "")).join("|");
+
+/** Exported for tests. */
+export const _internals = { snapshot };
