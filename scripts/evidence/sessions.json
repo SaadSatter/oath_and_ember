@@ -432,6 +432,16 @@
    "role": "Claude Code implementation agent under CLAUDE.md: evidence preservation, verification and reporting for Pilot-30 (Situation A pre-tuned); session-evidence invoked by name; not independent review.",
    "title": "Pilot-30 evidence audit, Situation A pre-tuned registration, A/B/C matrix and post-tuning proposal",
    "note": "No paid calls, model episodes, gameplay, scenario, policy or pin changes. The original run folder was not modified. The owner asked for the commits to be pushed."
+  },
+  {
+   "number": 49,
+   "slug": "claude-situation-b-griffin",
+   "ids": [
+    "959362b9"
+   ],
+   "role": "Claude Code implementation agent under CLAUDE.md: Situation B (Griffin Trial, Unprepared) scenario, strict predicate and failure rules, Griffin warning observations, post-tuned guidance mechanism, offline certification witness; game-rules-audit (griffin) and session-evidence invoked by name in the same session (implementer audit, not independent review). The rules-reviewer subagent was launched by this session, read-only and not instructed to approve; its findings are committed verbatim.",
+   "title": "Situation B: Griffin Trial (Unprepared) implementation, offline certification and review round 1",
+   "note": "Owner pasted a brief written for Codex and asked Claude to implement it, then a review brief. Work in a separate worktree (oath_and_ember-griffin-b, branch midterm/griffin-situation-b off 5388b23) because another session was editing oath_and_ember-eval. No paid call, model episode, push or merge. Guidance griffin-b-post-v1 left proposed. Commits 6deaef3, 96fd952, 0ca9a5f, 3f9f11e, 6e26f76 and this record's commit."
   }
  ]
 }
