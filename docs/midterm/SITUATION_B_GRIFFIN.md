@@ -2,7 +2,7 @@
 
 Prepared 2026-11-06 by the Claude Code implementation agent, at the owner's request, under declaration `oath-ember-abc-2026-11-06` ([DECLARED_EVALUATION_SUITE.md](DECLARED_EVALUATION_SUITE.md)). No paid call, no model episode, no push or merge. Situation A, Pilot-28/29/30 evidence and every frozen scenario are unchanged.
 
-**Status: certified offline. Ready for live approval once the owner settles the decisions at the end of this document.**
+**Status: certified offline. Owner decisions of 2026-11-06 and the pre-run checks for the first paid pre-tuned run are in the last section, "Owner decisions and pre-run preparation". The paid run itself still needs the owner's final go-ahead.**
 
 Code: [`griffinSituations.ts`](../../packages/agent/src/griffinSituations.ts) (frozen definition), [`route/griffinStart.ts`](../../packages/agent/src/route/griffinStart.ts) (start prefix), [`route/griffinWitness.ts`](../../packages/agent/src/route/griffinWitness.ts) (offline witness), [`policies/situationGuidance.ts`](../../packages/agent/src/policies/situationGuidance.ts) (post-tuned mechanism). Tests: [`griffinSituationB.test.ts`](../../packages/agent/test/griffinSituationB.test.ts). Free check: `node --import tsx scripts/midterm/situation-b.ts`. Evidence: [`evidence/situation-b-certification/`](evidence/situation-b-certification/summary.json).
 
@@ -158,7 +158,7 @@ Basis: Pilot-30 (same player, model and effort) used 167 calls, $0.443 (about $0
 | Cost | $0.32–$1.20 uncapped. **The $0.75 cap binds at about 280 calls**, likely before 150 game-s |
 | Wall clock | the 3,600 s limit binds at about 300 calls |
 | Per-hero call cap | 400 is unlikely to bind first |
-| Ceiling for B's four declared model episodes (2 pre + 2 post) | 4 × $0.75 = **$3.00**, reserved per episode in the shared ledger |
+| Ceiling for B's four declared model episodes (2 pre + 2 post) | 4 × $0.75 = **$3.00**, reserved per episode in the shared ledger. *Superseded by declaration r5 (one run per condition): B has one pre-tuned and one post-tuned run, 2 × $0.75 = **$1.50**.* |
 
 `spend_limit` or `wall_clock_limit` are plausible terminal reasons for a long fight. They must be reported as budget limits, not as game failures. Prices must be rechecked before any paid call.
 
@@ -220,8 +220,48 @@ Reviewer report (verbatim): [`agent-evidence/reviews/2026-11-06-situation-b-rule
 | R6 failure-before-success ordering not tested at environment level | Medium | **Fixed:** same-tick knockout + success → `knocked_out`; the same fixture without the hit → `success`; a knockout during the prefix is not judged; a lethal hit in S2-local ends nothing. |
 | R7 `--wall-seconds` could exceed the declared 3,600 s for B | Low | **Fixed:** B ceiling 3,600 s (separate `ABC_WALL_CLOCK_CEILING_S`, so the existing P1 test's pinned map is untouched). Tested. |
 | R8 `replay-video.ts` did not know B or its terminal reasons | Low | **Fixed:** includes `ABC_SITUATIONS`; `knocked_out`/`left_area` are game-decided ends. Not exercised on a real B trace yet. |
-| R9 the beam entry is listed at any length; the client hides very short beams; clipping uses the centreline | Low | **Returned to the owner** (an observation change). Proposal: no entry while the drawn length is ≤ 20 px. |
+| R9 the beam entry is listed at any length; the client hides very short beams; clipping uses the centreline | Low | **Returned to the owner** (an observation change). Proposal: no entry while the drawn length is ≤ 20 px. **Fixed after owner approval** (`3b9eb7b`), see the last section. Centreline clipping is unchanged. |
 | R10, R11 | Info | No change. The witness stays labelled as a joint, solution-aware certification controller. The `mock:` label check is left as is. |
 | Audit 1 (no wake on warnings), 3 (watch burn) | Medium | Policy limitations, disclosed; smallest correction above, not implemented. |
 | Audit 2 (fight excludes creatures) | Low | Policy limitation by design, disclosed. |
 | Audit 4 (witness knockout counter) | Low | **Fixed:** a terminal `knocked_out` now counts. The pinned success values are unchanged. |
+
+---
+
+## Owner decisions and pre-run preparation (2026-11-06)
+
+Recorded by the implementation agent. The owner's message approved configuration and preparation only; it did **not** authorize starting the paid run, which waits for a separate final approval.
+
+### Decisions received
+
+| Item | Decision |
+| --- | --- |
+| Shared Griffin briefing (`GRIFFIN_TRIAL_BRIEFING`, SHA-256 `5fa93722f6a4f86aa6c883a60ad106411cd02babfbb13180e0452ef826fbd75b`) | Approved exactly as proposed |
+| B pre-tuned policy | Pilot-30's generic `model-centralized` planner (`CENTRAL_ID f0592888`), no Griffin-specific guidance. Its controller limits stay unchanged: no planner wake-up on beam warnings, and `fight` targets `enemy` entries only (review R3 definition accepted) |
+| Griffin warning observations (`6deaef3`) | Approved, subject to fixing the short-beam discrepancy (R9). Done below |
+| Model for the first B pre-tuned run | OpenAI `gpt-6-luna`, effort medium, $0.75 maximum spend, 3,600 s wall clock |
+| Post-tuned guidance `griffin-b-post-v1` | **Not approved.** Stays locked (status `proposed`, no approved hash). A revised text will be reviewed separately |
+| `baseline-combat-v1` | Approved for development as a generic, observation-only combat baseline. It must be versioned on its own and frozen before any B or C model outcome is used for tuning. The solution-aware witness must not be used as the cheap baseline. **Not implemented yet** |
+| Constraints | No Griffin balance change, no new controller policy, no change to Situation A evidence, no push |
+
+### Work done
+
+1. **Integration.** `midterm/griffin-situation-b` merged into `midterm/evaluation` (`b1253bb`). The only conflict was `EVIDENCE_INDEX.md`, where both sides had appended sections; both were kept, with nothing removed. No Situation A file, r5 record or result file changed. No code had changed on `midterm/evaluation` since the branch point, so the merged code is Situation B's exactly.
+2. **Short-beam fix** (`3b9eb7b`). The client hides every beam sprite while the beam is 20 px or shorter (`GriffinView.ts`: `beamStart.setVisible(length > 20)`), so `perception.ts` now lists no "griffin beam" then (`BEAM_MIN_DRAWN_PX`). The BEAM CHARGE warning line is drawn with `lineBetween` at any length, so it is still listed at any length. New labelled-fixture tests: 20 px beam not listed for either hero, 21 px listed, a warning line cut short by Coco's body still listed. The change applies in every Griffin Enclosure observation, including S4/F. Their frozen scripted pins (`scriptedFreeze.test.ts` and the route tests) pass, and the B witness and `baseline-quest` pins are unchanged.
+3. **r5 alignment.** Under declaration r5, B has one pre-tuned and one post-tuned run, so B's model ceiling is 2 × $0.75 = $1.50 (§7 annotated).
+
+### Pre-run checks (at `3b9eb7b`; the later documentation commit changes no code)
+
+| Check | Result |
+| --- | --- |
+| `npm run typecheck` | pass |
+| `npm run build` | pass |
+| `npm test` | 1,288 of 1,289 pass. The failure, `s2Shutdown.test.ts` "gives up on a video that never finalizes", also fails on the untouched pre-merge commit `3ba50e6`: its expected error text no longer matches the recorder's message. Not caused by this work; not fixed here |
+| Situation B tests | 25 of 25 pass |
+| Secret scan (`scan_secrets.py`) | 0 findings in the 29 files changed since `3ba50e6`. The whole tree has 5 findings, all known fake canary keys in older test files and a skill report about them |
+| Free mock smoke, headless | `error` (the planner's stall guard on random mock replies) at 204.2 game-s, 108 calls, $0, start `1a270d7b…0051`, the same as the earlier mock rehearsal |
+| Free mock smoke, with viewer and recorder (as the paid command runs) | The same `error` at 204.2 game-s and the same end hash `3a77e12c…f9dc` as headless; `recording.webm` saved (1280×720, 237.5 s, 20.8 MB), with a clean recorder shutdown. Frames not inspected by eye. Scratch output only, not committed |
+| Recorded configuration | label `B`, definition `bbbbc435…1374`, policy `centralized-f0592888(…)·batch4·tutorial-2ec2f251·briefing-5fa93722` (no guidance segment), prompt hash `cbabb78b42b1227bafff0ef9e95b62ad5e03ba725691482e2e032384097bbb6a` for both heroes, cap $0.75, wall limit 3,600 s, 400 calls and 4M tokens per hero |
+| Generic planner | The planner code differs from Pilot-30's (`040685c`) only by an optional guidance argument. Without it, prompt and policy name are byte-identical: the S2-local prompt hash is still Pilot-30's recorded `0616c47b…0c44` (tested) |
+| Shared ledger | Canonical ledger readable, unlocked, 0 open reservations, no unmetered worktree. Pilot stage $3.969 of $8.00 committed, so **$4.03 left**; the run reserves $0.75 |
+| Output paths | The default `evaluation-runs/live/griffin-unprepared-v1-seed0-model-centralized-openai-<timestamp>` is new for each launch, and `live.ts` refuses an existing `--out` |
