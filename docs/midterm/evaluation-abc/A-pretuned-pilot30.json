@@ -100,7 +100,9 @@
       "recordingSha256": "f5100df99e6d248f89f8ceea37e4e8bb86e223bcb01f5d131c1f9aae072c4414",
       "recordingKind": "live viewer capture",
       "recordingBytes": 202356926,
-      "audit": "docs/midterm/PILOT30_AUDIT.md"
+      "audit": "docs/midterm/PILOT30_AUDIT.md",
+      "recordingUrl": "https://github.com/SaadSatter/oath_and_ember/releases/download/pilot-30-evidence/pilot-30-model-centralized-S2-local-seed0-live.webm",
+      "recordingRelease": "https://github.com/SaadSatter/oath_and_ember/releases/tag/pilot-30-evidence"
     },
     "heldOut": false,
     "playerNote": "One LLM planner for both heroes (owner-approved departure from two independent agents; MODEL_CENTRALIZED.md). Report under this player kind only."

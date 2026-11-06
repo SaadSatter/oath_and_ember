@@ -32,4 +32,4 @@ They do not mention a pre/post-tuned comparison. Under the written rules, A is a
 
 ## Video delivery
 
-Pilot-30's live video (202,356,926 bytes, SHA-256 `f5100df99e6d248f89f8ceea37e4e8bb86e223bcb01f5d131c1f9aae072c4414`) is not in Git: GitHub refuses files over 100 MiB. Where it is hosted is recorded here once the owner decides.
+Pilot-30's live video (202,356,926 bytes, SHA-256 `f5100df99e6d248f89f8ceea37e4e8bb86e223bcb01f5d131c1f9aae072c4414`) is not in Git: GitHub refuses files over 100 MiB. At the owner's choice it is delivered as a GitHub release asset: [pilot-30-model-centralized-S2-local-seed0-live.webm](https://github.com/SaadSatter/oath_and_ember/releases/download/pilot-30-evidence/pilot-30-model-centralized-S2-local-seed0-live.webm) (release [`pilot-30-evidence`](https://github.com/SaadSatter/oath_and_ember/releases/tag/pilot-30-evidence)). A downloaded copy matches the SHA-256.
