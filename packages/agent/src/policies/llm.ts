@@ -294,6 +294,12 @@ export function briefingBlock(briefing: string) {
 }
 /** Short id of a briefing for policy names, so briefed runs are told apart in traces and results. */
 export const briefingId = (briefing: string) => createHash("sha256").update(briefing).digest("hex").slice(0, 8);
+/** Post-tuned guidance block (policies/situationGuidance.ts), appended after the episode briefing. */
+export function guidanceBlock(text: string) {
+  return `\n\n=== Post-tuned guidance ===\n${text.trim()}\n=== End of post-tuned guidance ===`;
+}
+/** Short id of a guidance text for policy names. */
+export const guidanceId = (text: string) => createHash("sha256").update(text).digest("hex").slice(0, 8);
 
 export class LLMPlayer implements Policy {
   readonly name: string;

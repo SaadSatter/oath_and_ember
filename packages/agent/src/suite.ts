@@ -8,6 +8,7 @@
 import { AgentEnvironment, type EnvironmentOptions } from "./environment.js";
 import type { EpisodePreset } from "./evaluator.js";
 import { enterLocalArea } from "./route/localStarts.js";
+import { enterGriffinEnclosure } from "./route/griffinStart.js";
 import { playCheckpoint } from "./route/mazeCheckpoints.js";
 import { MAZE_CHECKPOINTS } from "./route/mazeCheckpointData.js";
 import { Director } from "./route/director.js";
@@ -26,8 +27,10 @@ import { NEUTRAL_TASK, TUTORIAL_BRIEFING } from "./playerKnowledge.js";
 export const SUITE_REVISION = 2;
 
 export type CurrentSituationId = "S1" | "S2" | "S3" | "S4" | "F" | "S2-local" | "S3-local" | "S2-B" | "S2-C" | "P1";
+/** A/B/C declaration cases that are new scenarios (ABC_SITUATIONS). */
+export type AbcSituationId = "griffin-unprepared-v1";
 export type HistoricalSituationId = "S2-v1" | "S3-v1" | "S2-local-v1" | "S3-local-v1";
-export type SituationId = CurrentSituationId | HistoricalSituationId;
+export type SituationId = CurrentSituationId | HistoricalSituationId | AbcSituationId;
 
 export interface Situation {
   id: SituationId;
@@ -142,6 +145,29 @@ const mazeCheckpoint = (id: "S2-B" | "S2-C"): EnvironmentOptions["prefix"] => ({
 export const midMazeBriefing = (id: "S2-B" | "S2-C") =>
   `Episode briefing (${id}), the same for both players: you start inside the Hedge Maze, partway through it, so some of its obstacles may already have been dealt with. Your own observations show where things stand. Your objective is to obtain the Enchanted Shears in the shared inventory. Normal movement, travel, interaction and messages remain available; you may leave this area and return. Use your own observations and coordinate with your partner.`;
 
+/**
+ * Griffin Trials B and C (declaration oath-ember-abc-2026-11-06): the opening,
+ * then ordinary north travel from the shrine, stopping on arrival
+ * (route/griffinStart.ts). B takes no detour, so neither tool is held.
+ */
+const griffinEntry: EnvironmentOptions["prefix"] = {
+  name: "opening scene, normal north travel to Griffin Enclosure (before arrival dialogue)",
+  run: async (env) => { await afterOpening!.run(env); await enterGriffinEnclosure(env); },
+};
+/**
+ * One text for both Griffin Trials (B unprepared, C prepared), so it says
+ * nothing about which items the party holds or how to use them: the declared
+ * goal and the survival and boundary rules only. DRAFT by the implementation
+ * agent, pending the owner's wording (docs/midterm/SITUATION_B_GRIFFIN.md).
+ */
+export const GRIFFIN_TRIAL_BRIEFING = [
+  "Episode briefing (Griffin Trial), the same for both players: you start at the entrance of the Griffin Enclosure.",
+  "Your objective is to defeat the Griffin, bringing its health to zero, and to obtain the Magnificent Griffin Wig in the shared inventory. Both are required: a wig obtained while the Griffin still has health does not complete this episode.",
+  "Neither hero may be knocked out: if either hero's health runs out, the episode ends as a failure.",
+  "Both heroes must stay in the Griffin Enclosure: leaving it ends the episode as a failure.",
+  "Use your normal observations, actions and messages to your partner.",
+].join(" ");
+
 const withMirrorAndShears: EnvironmentOptions["prefix"] = {
   name: "opening scene, Hedge Maze, Mirror Pond",
   run: async (env) => {
@@ -171,6 +197,18 @@ export const SITUATIONS: readonly Situation[] = Object.freeze([
   // Revision 2 (review fixes): the episode-neutral task line. Revision 3: the
   // fence opening's listing renamed (owner's wording); preset P1-v3.
   { id: "P1", preset: "P1-v3", heldOut: false, title: "Into the Forest (Prologue)", start: "prologue checkpoint: the game's own opening", task: NEUTRAL_TASK, revision: 2 },
+]);
+
+/**
+ * Cases of the A/B/C declaration (oath-ember-abc-2026-11-06;
+ * docs/midterm/DECLARED_EVALUATION_SUITE.md) that are new scenarios. Kept
+ * apart from SITUATIONS so the frozen suite revision 2 list is unchanged. A
+ * is the existing S2-local; C (griffin-prepared-v1) is not implemented yet.
+ */
+export const ABC_SITUATIONS: readonly Situation[] = Object.freeze([
+  // Situation B, Griffin Trial (Unprepared) (docs/midterm/SITUATION_B_GRIFFIN.md):
+  // a development case under the declaration; C is the declared holdout.
+  { id: "griffin-unprepared-v1", preset: "griffin-unprepared-v1", heldOut: false, title: "Griffin Trial — Unprepared (B)", start: "Griffin Enclosure entrance, after the opening and ordinary north travel; no Vanity Mirror or Enchanted Shears", prefix: griffinEntry, briefing: GRIFFIN_TRIAL_BRIEFING, tutorial: TUTORIAL_BRIEFING, revision: 2 },
 ]);
 
 /**
@@ -207,7 +245,7 @@ export function historicalSituationId(id: string, suiteRevision?: number): Situa
 export const SEEDS = Object.freeze({ tuning: [0, 1], final: [100, 101] });
 
 export function situation(id: SituationId): Situation {
-  const s = SITUATIONS.find((x) => x.id === id) ?? HISTORICAL_SITUATIONS.find((x) => x.id === id);
+  const s = SITUATIONS.find((x) => x.id === id) ?? HISTORICAL_SITUATIONS.find((x) => x.id === id) ?? ABC_SITUATIONS.find((x) => x.id === id);
   if (!s) throw Error(`Unknown situation ${id}`);
   return s;
 }

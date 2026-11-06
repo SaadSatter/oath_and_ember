@@ -238,7 +238,11 @@ export type TerminationReason =
   | "spend_limit"
   | "wall_clock_limit"
   | "error"
-  | "manual_stop";
+  | "manual_stop"
+  /** Griffin trials only: a hero's health ran out (the game respawns them; the trial fails). */
+  | "knocked_out"
+  /** Griffin trials only: a hero left the Griffin Enclosure before success. */
+  | "left_area";
 
 export interface GameOutcome {
   status: "ongoing" | "success" | "terminated";
