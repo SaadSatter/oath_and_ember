@@ -301,3 +301,62 @@ Report, verbatim: [agent-evidence/reviews/2026-11-06-b-post-combined-v3-rules-re
 
 **Prompt-only contrast.** A v3 run at the current commit would differ from Pilot-32 only in the guidance block (scenario, start, observations and code pinned identical). That is the only prompt-only pair available in B. Pilot-31 vs either run is not prompt-only.
 
+## 12. Supplementary candidate `b-post-combined-v4` (2026-11-06)
+
+**Status: proposed, locked for paid runs, not approved.** Owner-written, post-hoc Situation B tuning: the owner directed every change below after Pilot-31 and Pilot-32 were known, and the implementation agent drafted the wording. **Classification (owner decision):** Pilot-32 stays the official B/post-tuned/1 result of declaration r8. A v4 run would be a **supplementary B tuning trial**, not a replacement, and is reported beside Pilot-32, never instead of it. Declaration r8 and its results files are unchanged. v1, v2, v3 and the old draft are unchanged byte for byte (pinned by test).
+
+### Owner's changes from v3
+
+| # | Decision | Change |
+| --- | --- | --- |
+| 1 | No mandatory order every reply | The opening now says to check both heroes and "give a new order only to a hero whose current plan needs to change; a hero whose plan still fits its situation carries on without one" (review round 2, finding 2) |
+| 2 | Health with survival | v3's step 7 health sentence moved into step 1 ("Protect both heroes first. Before any offensive order, check each hero's health and exposure…"), with "keep it doing useful work rather than defending without a threat" so that it doesn't encourage endless defending (finding 3). Step 7 keeps coordination only |
+| 3 | Header | "not facts about any particular place, enemy or solution" replaced by "general-purpose combat and planning guidance, based on what the heroes' screens show" (finding 4) |
+| 4 | Wording | "charging attack" replaced by "visible attack warning … (such as a marked line or area)" (finding 5). "recharges" in step 6 (ability readiness, the base prompt's own word) is unchanged |
+| 5 | Everything else | Steps 2–6 and 8 are v3's text, word for word |
+
+Not changed (not in the owner's list): step 2's two forms of the overlap rule (finding 8), base-prompt repetition (finding 9), `known_obstacles` use (finding 10).
+
+### Text (exact)
+
+```text
+Planner guidance for both heroes (general-purpose combat and planning guidance, based on what the heroes' screens show):
+At each reply, check both heroes against these steps in order. Give a new order only to a hero whose current plan needs to change; a hero whose plan still fits its situation carries on without one.
+
+1. Protect both heroes first. Before any offensive order, check each hero's health and exposure. If a hero's screen shows a visible attack warning for that hero's position (such as a marked line or area), move that hero off it or have it defend before it lands. Do not keep a hero in a warned area to finish an attack. When a hero's health is low, give it a safer role and let the healthier hero take the riskier task, but keep it doing useful work rather than defending without a threat. While threats are close, prefer short actions over long walks or long waits.
+
+2. Find a reachable, effective attack position. Plan over the combined map: walls, water and the listed extents of enemies and creatures block movement, and a hero's body needs open ground around it. Consider a few open tiles from which the hero's attack can plausibly reach the target in a straight line, not at the edge of its range, not overlapping any body, and with the other hero out of that line. Prefer one that is safe and short to reach. Do not stay on top of the target unless attacks from there visibly work.
+
+3. Attack when there is a plausible chance to connect: the target is visible, in reach, in the right direction and not blocked. Otherwise move toward the chosen position instead of attacking.
+
+4. Verify damage from what is shown, such as the target's health or label, allowing a short time for a projectile or effect to arrive before judging.
+
+5. Repeat what works and adjust what does not. Keep in known_obstacles which position, direction and timing combinations showed damage and which showed none, and return to a position that worked when it is safe. When attacks keep showing no effect, name one likely cause (distance, direction, obstruction, timing or the target's state), change only that, and check again. If several changes fail, try a different attack or another part of the objective.
+
+6. Avoid unproductive time. Wait only for a specific expected change; defend only against a concrete, imminent threat. A hero that cannot attack usefully now (for example while its ability recharges) should reposition, get clear or scout. Do not move without a positioning purpose. When what the objective needs next is on neither screen, explore systematically: head for the nearest unvisited edge of the map ("?" next to seen open ground), note searched areas in the plan, and back off and go around when a way is blocked. When the world changes (a way opens, a body moves), drop earlier blocked results near it and test again.
+
+7. Coordinate both heroes. Give the two heroes complementary orders, and do not leave both exposed to the same visible threat; keep both heroes alive when the task requires it.
+
+8. Verify every required success condition from observations before treating the objective as done. Surviving, attacking or reaching one milestone is not the whole objective; follow the task to its end.
+```
+
+| Value | |
+| --- | --- |
+| Text SHA-256 | `1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34` (3,219 characters) |
+| Prompt on `griffin-unprepared-return-v1` | `7ff08ba84c4ab14460d0f6707febdc19b8e417ced89d3127636ce7ed9f352144` |
+| Prompt on `griffin-unprepared-v1` | `473bf220c464d4fca4c7d4267c23011eb2fbcb1a5a3c2001b238fc4a6da07973` |
+| Policy id on the return scenario | `centralized-f0592888(openai:gpt-6-luna@medium)·batch4·task-cdbee612·guidance-12874542` |
+| Tests | `packages/agent/test/bPostCombinedV4Guidance.test.ts` (5) |
+
+### Differs from Pilot-32 only in guidance
+
+- **Prompt:** the v4 prompt is the return scenario's base prompt `7fbaaec7…` plus the v4 block. Pilot-32's prompt `17b89312…` was the same base plus v1's block. Both are tested.
+- **Code:** the reply schema and policy name are equal apart from the `·guidance-` suffix. `perception.ts`, `environment.ts`, `evaluator.ts`, `suite.ts`, `harness.ts`, `centralized.ts`, `navigator.ts` and `actions.ts` are pinned to their `2791bce` (Pilot-32) hashes. Nothing outside `packages/agent` has changed since `2791bce`.
+- **Free mock episode** (`--gateway mock --no-viewer`, scratch output and ledger): scenario, seed, start tick and hash `45b1a6aa…`, prefix, episode limits, model limits, $0.75 cap and 3,600 s wall limit are all **identical** to Pilot-32's summary. Only the guidance, prompt and policy name differ. The random mock ran to `tick_limit` at 300 game-s, $0.
+
+### Proposed command (refused while v4 is `proposed`)
+
+```sh
+npm run eval:live -- --scenario griffin-unprepared-return-v1 --seed 0 --player model-centralized --guidance b-post-combined-v4 --gateway openai --model gpt-6-luna --effort medium --max-spend-usd 0.75 --paid
+```
+
