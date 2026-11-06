@@ -1,5 +1,7 @@
 # Hedge Maze cow passage: root-cause investigation (2026-11-06)
 
+**Follow-up (2026-11-06):** fixes 5a, 5b and 5c are implemented in `9f16035`; see [COW_PASSAGE_FIXES.md](COW_PASSAGE_FIXES.md). 5d (presentation) was not changed. The trace tests described in §6 were replaced by regression tests.
+
 Investigation only. No gameplay, collision, scenario, hash, baseline or prompt change was made. No paid call, push or merge. The only new code is the offline test `packages/agent/test/cowPassage.test.ts` (8 tests). Scratch probes used for exploration are not committed.
 
 Run examined: `evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T03-44-31-567Z` (pilot-29, `327c34a`, `openai:gpt-6-luna@medium`). Its trace is `S2-local-seed0/trace.jsonl`, SHA-256 `c930d8312274d159fdaed4492e709ac7357cc23fe305f311eea19d72dbb622c6`, 2,296 lines. It was not modified. The three model-navigator runs of 2026-11-05/06 were also examined.
