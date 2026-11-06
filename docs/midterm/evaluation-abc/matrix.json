@@ -67,15 +67,15 @@
       "declared": true
     },
     "B": {
-      "name": "Griffin Trial, Unprepared \u2014 Goddess Return",
-      "source": "griffin-unprepared-return-v1",
-      "scenarioHash": "b224f75d2ec71ad61082fe0cba4617057b73cd9feb5173c52f7f32dcd86ed6f1",
-      "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
+      "name": "Griffin Trial, Unprepared",
+      "source": "griffin-unprepared-v1",
+      "scenarioHash": "bbbbc43532324b80179ab8fdf122fe7f6d10446a52d9ac752a0efdeae7671374",
+      "startHash": "1a270d7b5e456d1be0e3250d37baae26a77b5ca3099b18433a9c8e5a25fb0051",
       "seed": 0,
       "frozen": true,
       "heldOut": false,
       "heldOutStatus": "development-informed B; C remains held out",
-      "objective": "authoritative Griffin hp <= 0 AND wigClaimed AND story.flags contains chapter0.complete",
+      "objective": "Defeat the Griffin (its HP reaches 0) and obtain the Magnificent Griffin Wig into the shared backpack through normal gameplay, with neither hero knocked out and both staying in the Griffin Enclosure.",
       "inventory": {
         "vanity_mirror": 0,
         "enchanted_shears": 0,
@@ -90,11 +90,12 @@
             "Pilot-31"
           ],
           "record": "docs/midterm/evaluation-abc/B-pretuned-pilot31.json",
-          "scenarioNote": "Run on enclosure-only griffin-unprepared-v1, counted by owner decision; see record"
+          "scenarioNote": "Run on griffin-unprepared-v1, the r7 B scenario"
         },
         "post-tuned": {
-          "status": "pending",
-          "record": null
+          "status": "pending; prepared, paid run not authorized",
+          "guidance": "b-post-a-transfer-v1 (60a0a013)",
+          "record": "docs/midterm/B_POST_TUNING_TRANSFER.md"
         },
         "cheap-baseline": {
           "status": "1 primary success; 1 matching supplementary reproduction",
@@ -103,12 +104,18 @@
           "sourceCommit": "fbc3627",
           "record": "docs/midterm/evidence/griffin-heuristic-v1/manifest.json",
           "trials": 1,
-          "supplementaryReproductions": 1
+          "supplementaryReproductions": 1,
+          "scenarioNote": "Recorded on griffin-unprepared-return-v1 (r6); not on the r7 B scenario. v1 baseline cell pending owner allocation"
         }
       },
       "declared": true,
-      "id": "griffin-unprepared-return-v1",
-      "successPredicate": "authoritative Griffin hp <= 0 AND wigClaimed AND story.flags contains chapter0.complete"
+      "id": "griffin-unprepared-v1",
+      "successPredicate": "Authoritative Griffin HP == 0 AND shared inventory griffin_wig count > 0 (evaluator griffinDefeatedAndWig).",
+      "r6Scenario": {
+        "id": "griffin-unprepared-return-v1",
+        "scenarioHash": "b224f75d2ec71ad61082fe0cba4617057b73cd9feb5173c52f7f32dcd86ed6f1",
+        "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8"
+      }
     },
     "C": {
       "name": "Griffin Trial, Prepared",
@@ -157,9 +164,9 @@
     "remainingNewBaselineEpisodes": 1,
     "pilot28Allocation": "A pre-tuned run 1, historical manual-stop failure",
     "supplementaryBaselineRuns": "A and B each have a second identical reproduction, outside nine primary cells",
-    "pilot31Allocation": "B pre-tuned run 1, knocked_out; run on griffin-unprepared-v1, counted by owner decision"
+    "pilot31Allocation": "B pre-tuned run 1, knocked_out, on griffin-unprepared-v1 (the r7 B scenario)"
   },
   "baselineImplementation": "baseline-quest at 040685c, existing unchanged solution-aware free comparator",
   "declaration": "docs/midterm/evaluation-abc/declaration.json",
-  "declarationRevision": "oath-ember-abc-2026-11-06-r6-eval-integration"
+  "declarationRevision": "oath-ember-abc-2026-11-06-r7-b-enclosure"
 }

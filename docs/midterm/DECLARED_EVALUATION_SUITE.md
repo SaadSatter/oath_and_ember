@@ -1,6 +1,6 @@
 # Declared evaluation suite — Oath and Ember A/B/C
 
-**Declaration:** `oath-ember-abc-2026-11-06-r6-eval-integration`, 2026-11-06, at the owner's
+**Declaration:** `oath-ember-abc-2026-11-06-r7-b-enclosure` (supersedes r6; r6 archived byte for byte in [evaluation-abc/history/r6/](evaluation-abc/history/r6/)), 2026-11-06, at the owner's
 request against the supplied midterm guidelines. Machine-readable specification:
 [evaluation-abc/declaration.json](evaluation-abc/declaration.json).
 **This declares the experimental design; it does not claim that B/C runtime
@@ -15,10 +15,10 @@ in puzzle/encounter and relevant starting inventory, not unused seed values.
 | Label / logical ID | Initial state | Success | Status |
 | --- | --- | --- | --- |
 | A — Hedge Maze / existing `S2-local` | Frozen v2 seed 0, tick 405, both heroes at maze entrance | Authoritative shared `enchanted_shears` count > 0 | Implemented/frozen; Pilot-30 historical post-tuned result available |
-| B — Griffin Trial, Unprepared — Goddess Return / `griffin-unprepared-return-v1` | Fresh 640-HP Griffin enclosure, both heroes grounded with normal abilities; no Mirror, Shears or wig | Griffin HP == 0 AND wig acquired AND `chapter0.complete`; neither hero knocked out | Frozen legal checkpoint/runtime; baseline 2/2 successes |
+| B — Griffin Trial, Unprepared / `griffin-unprepared-v1` (r7) | Griffin Enclosure entrance after the opening and ordinary north travel, tick 439, start `1a270d7b…0051`; fresh 640-HP Griffin; no Mirror, Shears or wig | Griffin HP == 0 AND `griffin_wig` in the shared backpack; neither hero knocked out; both stay in the enclosure | Certified checkpoint; Pilot-31 pre-tuned failure; post-tuned prepared, not run; v1 baseline cell pending allocation |
 | C — Griffin Trial, Prepared / `griffin-prepared-v1` | Same encounter and matched hero conditions as closely as legal histories permit; Mirror=1, Shears=1, wig=0 | Griffin HP == 0 AND wig acquired; no knockout (no return required) | Design declared; checkpoint pending; reserved from model-outcome tuning |
 
-B requires goddess delivery and Chapter 0 completion; C ends at wig acquisition and retains its enclosure boundary. Both prohibit knockout. B's evaluator is implemented; C still needs certification. No gameplay rule is changed. A's original rules, travel allowance and limits stay intact.
+(r6 text, superseded for B by r7 below:) B requires goddess delivery and Chapter 0 completion; C ends at wig acquisition and retains its enclosure boundary. Both prohibit knockout. B's evaluator is implemented; C still needs certification. No gameplay rule is changed. A's original rules, travel allowance and limits stay intact.
 
 **Strict defeat is intentional in this declaration.** The prepared tools enable
 peaceful grooming, but a peaceful wig with positive Griffin HP does not pass.
@@ -202,3 +202,16 @@ npm run eval:live -- --scenario griffin-unprepared-return-v1 --seed 0 --player b
 ```
 
 The original heuristic archives contain traces/summaries, not videos. A new live run records `recording.webm` and `recording.json` in its printed output folder. Source worktree history is archived under `evaluation-abc/history/parallel-worktree/`; prior native declaration/report under `history/pre-baseline-integration/`.
+
+## Revision r7 (2026-11-06): B is `griffin-unprepared-v1`
+
+Owner decision, recorded by the implementation agent. `griffin-unprepared-v1`, seed 0, is the official Situation B pre/post comparison. This is the scenario that Pilot-31 (B pre-tuned) actually ran on. r6 had declared `griffin-unprepared-return-v1` as B, so r6 counted Pilot-31 against a scenario it did not run on. r7 removes that mismatch.
+
+- **Unchanged:** the scenario checkpoint, objective, success and failure predicates, limits and gameplay. Definition `bbbbc435…1374`, start `1a270d7b…0051`, tick 439, all as certified in [SITUATION_B_GRIFFIN.md](SITUATION_B_GRIFFIN.md).
+- **Observation contract:** Pilot-31's. The straw-nest entry added in `4c9cf9f` is left out for this scenario only (owner-approved), as shown by the parity test `packages/agent/test/griffinObservationParity.test.ts`.
+- **Post-tuned guidance:** `b-post-a-transfer-v1`, text `60a0a013…5263`, full prompt `54605c1b…5627` ([B_POST_TUNING_TRANSFER.md](B_POST_TUNING_TRANSFER.md)). One post-tuned run, not yet authorized.
+- **Kept, not deleted:** `griffin-unprepared-return-v1` and its baseline results (2/2 successes) stay recorded as they were. They are on a different scenario from the r7 B model rows, and must not be pooled with them.
+- **Open:** the B cheap-baseline cell on `griffin-unprepared-v1` has no allocated run. An unregistered free verification run of the frozen `baseline-griffin-heuristic-v1` on v1 succeeded (76.1 game-s, end `a66fbe08…`). It is information only until the owner allocates the cell.
+- **Disclosure:** r7 was made after Pilot-31's outcome was known, and the post-tuned guidance was written after reading Pilot-31. The B pre/post contrast is tuning on B, not an independent transfer test.
+
+Declaration SHA-256 (sorted compact JSON without the field): `b39116b3495dcdebd3eb2f84e1815fb6c7865b3bb7f021d92f32c106144bc442`.
