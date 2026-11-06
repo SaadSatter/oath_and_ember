@@ -216,7 +216,7 @@ Nothing in the list indicates which action helps.
 
 **GameOutcome:**
 - `status`: ongoing / success / terminated
-- `reason`: success, tick_limit, decision_limit, model_call_limit, token_limit, spend_limit, wall_clock_limit, error or manual_stop
+- `reason`: success, tick_limit, decision_limit, model_call_limit, token_limit, spend_limit, wall_clock_limit, error or manual_stop; Griffin Trials (2026-11-06) add knocked_out and left_area ([SITUATION_B_GRIFFIN.md](SITUATION_B_GRIFFIN.md))
 - ticks, per-hero decisions, invalid actions, model calls, tokens, and the limits in force
 
 ## Scheduling and fairness
@@ -338,3 +338,7 @@ Hedge Maze captions are labels. The cow is drawn across its 4×4 body with an `e
 ## Opt-in persistent memory player (2026-10-29)
 
 `model-memory` is `model-history` plus a per-hero `memory` field: a tile-resolution remembered map with walked tiles, dated last-seen things, verified events from the hero's own screens and feedback, and its own sent messages. It is built only from that hero's observations and action results, in the policy (`heroMemory.ts`). The observation schema is unchanged. The turn report gained `steps[k].after`, the hero's own observation between batched actions, which only `model-memory` reads. S1–S3 tuning only. Schema, tests and comparison: [MODEL_MEMORY.md](MODEL_MEMORY.md).
+
+## Griffin attack warnings and Griffin Trial terminal reasons (2026-11-06)
+
+In the Griffin Enclosure, `visible` lists the Griffin's drawn attack warnings as `effect` entries: "griffin beam warning line" (BEAM CHARGE), "griffin beam" (BEAM) and "griffin charge mark" (HEADBUTT CHARGE), at the drawn line's far end or where it leaves the hero's screen, with the direction the line runs. No damage, timer or target identity. Griffin Trial episodes (`griffin-unprepared-v1`) end with `knocked_out` or `left_area` before success is checked. Details and the remaining owner approvals: [SITUATION_B_GRIFFIN.md](SITUATION_B_GRIFFIN.md).
