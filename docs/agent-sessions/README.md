@@ -152,3 +152,7 @@ Totals: Claude Code session 20, Codex permission check 15, Codex subagent 5, Cod
 ## 2026-11-06 Pilot-30 registration
 
 [S48 — Pilot-30 evidence audit and Situation A pre-tuned registration](48-claude-pilot30-situation-a.md), session `13d00d43-3fa6-48e9-a7b0-009f310f5e14`: Claude Code implementation agent; evidence preservation, verification and reporting only. `session-evidence` invoked by name. No independent review or paid evaluation is claimed.
+
+## S47 supplement — Pilot-30 preservation recheck and Griffin planning
+
+Same Codex session, separate documentation worktree: [preservation recheck](../midterm/PILOT30_AUDIT.md#7-preservation-recheck-and-revised-evaluation-planning-codex-2026-11-06), [Griffin feasibility proposal](../midterm/GRIFFIN_EVALUATION_FEASIBILITY.md). Claude S48's original audit/registration remains intact. No new Griffin run, model tuning or independent review.

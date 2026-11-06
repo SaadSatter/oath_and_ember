@@ -74,3 +74,39 @@ Pilot-30 is the first model-driven episode that completed the Hedge Maze. This a
 **Pre-tuned means before explicit puzzle-solution prompt tuning.** The prompts Pilot-30 received contain no Hedge Maze solution: the centralized system prompt holds only general interface rules (its source comment states "no game content, place, coordinate, route or puzzle step", and tests check this), plus the public manual, the tutorial `2ec2f251` and the S2-local briefing `a97d9268`, which names the objective but no solution. The policy id has no `guided` component; the walkthrough used by `model-guided` was not included.
 
 It does **not** mean the player was built without prior pilots. The centralized player and the navigator controller it reuses were developed and debugged over earlier Situation A pilots (including Pilots 28 and 29 on this player), and general controller tools came from that work: the `catch` intention, the Black Hole aim preview, and the rules for retrying a way after something moves (`COW_PASSAGE_FIXES.md`). Those tools contain no places, routes or puzzle steps, but they were shaped by failures in this maze. Pilot-30 is therefore an **unguided, development-informed** result, not a naive first attempt.
+
+
+## 7. Preservation recheck and revised evaluation planning (Codex, 2026-11-06)
+
+The original audit above and original evidence are preserved. This additive
+follow-up inspected preservation commit `0a89094` in a separate documentation
+worktree; it did not modify the active evaluation checkout or any original run.
+
+- Rehashed all seven archived run files: every hash equals `verification.json`
+  and every archived file is byte-identical to its local original. The local
+  video also matches its recorded SHA-256. No video was uploaded/downloaded or
+  decoded again; full decode and terminal-overlay inspection remain the earlier
+  audit's verified checks, not newly performed checks.
+- Re-ran `verifyTrace`: 3,823 lines, valid chain. Recounted 647 steps, 674
+  observations, 2 invalid actions, 27 unusable replies and 167 model calls.
+  Input/output totals are 3,678,281 / 171,240. Per-call charged amounts sum to
+  $0.443258321, rounded to the registered $0.443258. Start/end hashes match the
+  existing A pre-tuned registration. No game replay or model call was run in
+  this follow-up. The original replay result remains documented above.
+- The registration already exists and is complete as a **single completed
+  pre-solution-prompt-tuning pilot**; no duplicate record or second trial is
+  fabricated. `evaluation-abc/A-pretuned-pilot30.json` is unchanged, including
+  its historical suite/schema hash, pilot status, policy identity and caveats.
+  Prompt/config hashes, provider billing and ledger were not independently
+  recomputed in this follow-up. Whether the pilot counts toward final trial
+  quotas remains an owner decision.
+
+Only after that preservation recheck, planning was revised at the owner's
+request: **A = Hedge Maze**, **B = Griffin Trial, Unprepared**, **C = Griffin
+Trial, Prepared**. B/C are proposals, not existing registered/frozen episodes.
+All rows plan pre-tuned, post-tuned and cheap-baseline conditions. C is proposed
+held out from model-outcome tuning; no C-specific walkthrough is authorized.
+See [revised matrix](EVALUATION_ABC_MATRIX.md) and the separate
+[Griffin feasibility proposal](GRIFFIN_EVALUATION_FEASIBILITY.md). No new
+Griffin configuration was implemented, reset, replayed or run. Original A's
+scenario, hashes and Pilot-30 evidence remain unchanged.

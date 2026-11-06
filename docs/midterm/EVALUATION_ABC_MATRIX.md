@@ -1,35 +1,50 @@
-# A/B/C evaluation matrix: pre-tuned, post-tuned and cheap baseline
+# A/B/C evaluation planning: pre-tuned, post-tuned and cheap baseline
 
-Status of each planned cell. Machine-readable copy: [`evaluation-abc/matrix.json`](evaluation-abc/matrix.json). Updated 2026-11-06 by the Claude Code implementation agent. Only Situation A's pre-tuned cell has a registered result.
-
-The situation labels and the row schema follow the A/B/C proposal on `codex/evaluation-suite-abc` (`0c8ef31`, `EVALUATION_ABC_PROPOSAL.md` and `EVALUATION_ABC_RESULTS_TEMPLATE.json`). That branch is not merged, and its suite is a proposal not yet approved for final runs. Nothing from it is copied here except the labels and field names.
+Owner-revised 2026-11-06. Planning only; no Griffin case implemented or run.
+Machine-readable counterpart: [matrix.json](evaluation-abc/matrix.json).
+Separate approval proposal: [Griffin feasibility](GRIFFIN_EVALUATION_FEASIBILITY.md).
+Pilot-30 preservation/audit and registration were verified first and remain intact.
 
 | Situation | Pre-tuned model | Post-tuned model | Cheap baseline |
 | --- | --- | --- | --- |
-| **A — Full Hedge Maze** (S2-A v2 = `S2-local`, seed 0, tick 405) | **Pilot-30: success** (1 trial; 89.5 game-s, 167 calls, $0.443; [record](evaluation-abc/A-pretuned-pilot30.json), [audit](PILOT30_AUDIT.md)) | Pending ([proposal](SITUATION_A_POST_TUNING_PROPOSAL.md), not approved or run) | Pending¹ |
-| **B — Partial Hedge Maze** (S2-B v2, seed 0, tick 1197) | Pending | Pending | Pending¹ |
-| **C — Wig Already Obtained** (proposed) | Pending | Pending | Pending |
+| **A — Hedge Maze**: frozen S2-local seed 0; obtain Enchanted Shears | **Pilot-30 success**, one completed pilot: 89.5 game-s, 167 calls, $0.443258; [unchanged record](evaluation-abc/A-pretuned-pilot30.json) | Pending; [A-only guidance proposal](SITUATION_A_POST_TUNING_PROPOSAL.md), not implemented | Pending; exact implementation TBD |
+| **B — Griffin Trial, Unprepared**: enclosure, no Mirror/Shears; defeat Griffin and acquire Divine Wig; survive | Pending | Pending documented B-derived guidance | Pending; implementation TBD |
+| **C — Griffin Trial, Prepared**: near-matched enclosure start, Mirror + Shears; same strict goal; proposed holdout | Pending; freeze policy before C outcomes | Pending; transfer only, no C-specific walkthrough or outcome tuning | Pending; implementation TBD, frozen before C |
 
-¹ A `baseline-quest` reference run already exists for A (v2 seed 0, offline: success, 3,128 ticks / 52.1 s, 395 decisions, end `6644f2ca…`; `midterms/saadsatter/evidence/traces/baseline-quest-S2-local-seed0-v2/`) and for B (v2 seed 0: success, 2,487 ticks, 284 decisions; [HEDGE_MAZE_SITUATIONS.md](HEDGE_MAZE_SITUATIONS.md)). They are **not registered** as the A/B/C baseline cells: which scripted player is "the cheap baseline" and how many trials it needs are still open. Note that `baseline-quest` is solution-aware, not an equal-information competitor.
+“Pre-tuned” means before explicit situation-specific solution prompting, not
+before controller development. Pilot-30 is the preserved `model-centralized`
+result (one planner, two controllers), with original evidence and hashes.
+Its single-trial/pilot status and whether it counts toward final quotas remain
+unchanged. [Audit and preservation recheck](PILOT30_AUDIT.md).
 
-## Notes on the cells
+New B/C are proposals without IDs/hashes/limits frozen. They replace the prior
+*planning* rows “Partial Hedge Maze” and “Wig Already Obtained,” not the historical
+frozen S2-B/S2-C or the unmerged older checkpoint's code/evidence. Do not reuse
+those scenario hashes or register their results in these cells. A's historical
+suiteHash remains as originally recorded; a new suite manifest is pending.
 
-- **A, pre-tuned.** "Pre-tuned" means before explicit puzzle-solution prompt tuning, not before any development. See [PILOT30_AUDIT.md §6](PILOT30_AUDIT.md#6-what-pre-tuned-means-here). It is a pilot (ledger stage `pilot`, `final: false`) and one trial. Whether it counts as run 1 of A's planned trials is an owner decision.
-- **B.** "Partial Hedge Maze" is the existing frozen S2-B (guards cleared, hedge burned, cow still in the lane). Not the historical S2-C ("Wolf and key"), which keeps its own id.
-- **C.** Proposed, and frozen only on Codex's branch for offline engineering certification (`ABC-C-wig-obtained-v1`). It is not on this branch, has no model run, and is held out. Its objective is to return from the Hedge Maze with the Divine Wig and complete Chapter 0 through the normal goddess interaction (`chapter0.complete`). Not implemented or run here.
-- **Players.** Pilot-30 is the `model-centralized` player (one planner for both heroes). Model cells should use the same player kind per row so that pre- and post-tuned differ only in the prompt.
+**Approval issue:** Mirror + Shears enable peaceful grooming and wig acquisition,
+which does not reduce Griffin HP to zero. Under the requested strict defeat
+predicate, that route is not success. The unchanged quest baseline has no
+Griffin attack routine: source predicts failure on unprepared B and peaceful
+reward without strict defeat on prepared C. These are forecasts, not new trials.
+Read the separate proposal before freezing the goals.
 
-## The course requirement (provisional interpretation)
+C can be a model-outcome holdout if both model conditions and the baseline are
+frozen before any C model outcomes, with post-tuned guidance learned only on
+A/B and no prepared-case walkthrough. No first-C feedback may guide the other
+condition. Keep A's maze guidance scoped to A; B is no longer a maze suffix.
+The normal common manual, observations and public item descriptions remain
+available. Preserve and disclose earlier developer knowledge of Griffin mechanics.
 
-The owner reports that the professor asks for **pre-tuned and post-tuned model play on each situation, plus a cheap baseline**. This is recorded as provisional until it is confirmed against the course instructions. The written guidelines ([MIDTERM_GUIDELINES.md](MIDTERM_GUIDELINES.md), "Evaluation") ask for something related but different:
+Written guidelines require three distinct situations/tasks, two live trials
+per situation, same-case baseline and heldout cases. The owner additionally
+requests pre/post/baseline conditions. Recommend two repetitions per cell,
+subject to approval: 12 model + six baseline episodes in total; do not silently
+count one pre and one post as repeated trials of the same frozen policy.
+All new runs, trial allocation, limits, cheap baseline choice and C registration
+require approval. No paid call, merge or push was performed for this update.
 
-- a suite declared **before tuning**, normally three situations with **two live trials** per situation;
-- some cases **reserved from prompt tuning** (held out);
-- the baseline run on the same cases;
-- outcomes, illegal actions, limits, latency, tokens and dated cost, failures included.
-
-They do not mention a pre/post-tuned comparison. Under the written rules, A is a tuning case and C would be the held-out case, so C should not receive a post-tuned prompt built from C. The matrix is compatible with both readings, but trial counts (one versus two per cell) need the owner's decision.
-
-## Video delivery
-
-Pilot-30's live video (202,356,926 bytes, SHA-256 `f5100df99e6d248f89f8ceea37e4e8bb86e223bcb01f5d131c1f9aae072c4414`) is not in Git: GitHub refuses files over 100 MiB. At the owner's choice it is delivered as a GitHub release asset: [pilot-30-model-centralized-S2-local-seed0-live.webm](https://github.com/SaadSatter/oath_and_ember/releases/download/pilot-30-evidence/pilot-30-model-centralized-S2-local-seed0-live.webm) (release [`pilot-30-evidence`](https://github.com/SaadSatter/oath_and_ember/releases/tag/pilot-30-evidence)). A downloaded copy matches the SHA-256.
+Pilot-30's original live video remains linked from its [preserved evidence
+README](../../midterms/saadsatter/evidence/traces/pilot-30-model-centralized-S2-local-seed0/README.md).
+No recording/evidence file or release asset was modified.

@@ -37,7 +37,7 @@ Alternative: **walkthrough level**. The same steps with coordinates and routes, 
 
 ### What it must not say
 
-- Nothing about returning to the shrine, the goddess, offerings, the Divine Wig, the griffin or Chapter 0. **Situation C stays held out**, so no C-specific hint may enter the tuned prompt. (The existing walkthrough's step G mentions "no return, goddess offering" and must not be copied.)
+- This remains A-only Hedge Maze guidance. New B is the unprepared Griffin trial; C is the prepared Griffin trial and proposed model-outcome holdout. No Griffin/prepared-case solution, nest sequence or C-specific hint may enter this block. (The existing walkthrough's step G mentions "no return, goddess offering" and must not be copied.)
 - Nothing from hidden state: no puzzle-state keys, flags, the HUD's goal lines or the evaluator's checks.
 
 ## Why this is prompt tuning, not fine-tuning
@@ -57,7 +57,7 @@ The model's weights are not changed and the model id is the same. Only the text 
 2. **Situation A is a development case.** The controller was built on A. A post-tuned success on A says nothing about held-out play.
 3. **The wall clock** (3,600 s) may still end runs. Pilot-30 used 1,958 s.
 4. **Drift.** Any controller or game commit between the two conditions breaks the comparison. Both should run at the same commit, recorded in `gitHash`.
-5. **Guidance leaking into C.** If the same block were used on C it would be irrelevant or misleading there. It must be scoped to A (and B, which is a suffix of A), and the C cells must run without it.
+5. **Guidance leaking into C.** If the same block were used on C it would be irrelevant or misleading there. It must be scoped to A only. B is now a different Griffin task, not a suffix of A; C must not receive this maze block or a C-specific walkthrough. Any post-tuned C condition uses only transferable guidance frozen from A/B before C model outcomes.
 
 ## Decisions for the owner
 

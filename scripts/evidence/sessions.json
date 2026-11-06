@@ -421,7 +421,7 @@
    ],
    "role": "Codex implementation agent under AGENTS.md: Pilot-28 diagnosis and owner-approved centralized progress, observation-derived aim and evidence fixes; same-session game-rules-audit checkpoint and session-evidence, not independent review.",
    "title": "Pilot-28 diagnosis, cumulative progress watchdog, pull obstruction preview and verified subgoals",
-   "note": "No paid calls, held-out execution, frozen scenario or pin changes, push or merge. Local commit authorized by the owner after offline verification. The referenced pilot-28 diagnosis originated in the older chat checkout and is copied unchanged into this worktree. Session numbers 45 and 46 already exist in related project worktrees; 47 avoids a numbering collision."
+   "note": "No paid calls, held-out execution, frozen scenario or pin changes, push or merge. Local commit authorized by the owner after offline verification. The referenced pilot-28 diagnosis originated in the older chat checkout and is copied unchanged into this worktree. Session numbers 45 and 46 already exist in related project worktrees; 47 avoids a numbering collision. Same chat later performed documentation-only Pilot-30 preservation recheck and revised Griffin B/C planning on isolated codex/pilot30-griffin-planning, based on 0a89094. No new Griffin configuration, replay, model outcome, policy or game change; Pilot-30 originals/registration unchanged. Same-session audit, not independent review."
   },
   {
    "number": 48,

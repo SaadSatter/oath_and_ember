@@ -5,18 +5,23 @@
 | Agent | Codex (desktop app); model id(s) recorded in the transcript: `gpt-6.1-sol` |
 | Role | Codex implementation agent under AGENTS.md: Pilot-28 diagnosis and owner-approved centralized progress, observation-derived aim and evidence fixes; same-session game-rules-audit checkpoint and session-evidence, not independent review. |
 | Session ID | `01a1aed2-3232-7011-bb41-5fccdea13a5c` |
-| Window (UTC) | 2026-11-06 03:06 → 2026-11-06 03:29 |
+| Window (UTC) | 2026-11-06 03:06 → 2026-11-06 18:03 |
 | Session URL | None. Local session; no shareable URL was created. |
 | Repository | `https://github.com/SaadSatter/oath_and_ember` |
 | Transcript | Local only, not committed: `~/.codex/sessions/2026/11/05/rollout-2026-11-05T22-06-13-01a1aed2-3232-7011-bb41-5fccdea13a5c.jsonl` |
 
-> No paid calls, held-out execution, frozen scenario or pin changes, push or merge. Local commit authorized by the owner after offline verification. The referenced pilot-28 diagnosis originated in the older chat checkout and is copied unchanged into this worktree.
+> No paid calls, held-out execution, frozen scenario or pin changes, push or merge. Local commit authorized by the owner after offline verification. The referenced pilot-28 diagnosis originated in the older chat checkout and is copied unchanged into this worktree. Session numbers 45 and 46 already exist in related project worktrees; 47 avoids a numbering collision. Same chat later performed documentation-only Pilot-30 preservation recheck and revised Griffin B/C planning on isolated codex/pilot30-griffin-planning, based on 0a89094. No new Griffin configuration, replay, model outcome, policy or game change; Pilot-30 originals/registration unchanged. Same-session audit, not independent review.
 
 ## Owner instructions (redacted)
 
 1. 2026-11-06 03:06 — <external_codex_apps_open_page>{"page_id":null}</external_codex_apps_open_page>
 2. 2026-11-06 03:06 — Diagnose the first paid model-centralized run, pilot-28, S2-local seed 0. Use the complete trace, summary, policy_note records, model responses, and saved video metadata. Do not make paid calls or modify the frozen scenario. Focus on the following: 1. Determine whether Sieg successfully captured the wolf at game time 25.9 seconds. Verify whether the gate key entered the shared inventory. Identify the exact interactio … (1660 characters; full text in the local transcript)
 3. 2026-11-06 03:15 — Implement the three targeted fixes identified in the Pilot-28 diagnosis. Reference:\ `docs/midterm/agent-evidence/skill-runs/2026-11-05-pilot28-diagnosis.md` Scope: `model-centralized` and its reusable observation/controller helpers. Preserve frozen scenario definitions, puzzle mechanics, baseline behavior, and the existing five-operation interface. ### 1. Cumulative inactivity watchdog The current per-intention time … (3768 characters; full text in the local transcript)
+4. 2026-11-06 08:07 — You are working on an independent parallel workstream for the Oath and Ember midterm evaluation. Claude is currently implementing fixes to the centralized planner, trace immutability, and `go_to` navigation. Do not duplicate or interfere with that work. Your task is to prepare the three-situation evaluation suite required by the professor. ### Course requirements - One bounded episode design may be evaluated under th … (3277 characters; full text in the local transcript)
+5. 2026-11-06 08:23 — I'd like to revise the proposed evaluation Situation C. Instead of separated heroes in the Hedge Maze, consider a held-out "Return to Goddess" situation: - The heroes start with the completed Divine Wig already in their shared quest inventory. - They begin somewhere outside the goddess shrine, at a legitimate reachable location. - The objective is to navigate to the goddess and deliver the wig through the normal inte … (1423 characters; full text in the local transcript)
+6. 2026-11-06 08:27 — How about we just start them in the hedge maze with the wig, because suppose they defeated the griffin on their own already which is possible as well so its the same hedge maze but a different starting condition
+7. 2026-11-06 08:29 — Revise the proposed A/B/C evaluation suite so Situation C is "Wig Already Obtained." Keep Situations A and B unchanged. For C: - Both heroes begin inside the Hedge Maze. - The shared inventory already contains the completed Divine Wig. - The intended objective is to return to the goddess, offer the wig, and reach the actual `chapter0.complete` event. - The model must receive the normal observations, inventory and jou … (1751 characters; full text in the local transcript)
+8. 2026-11-06 17:56 — Update the evaluation planning section of the Pilot-30 preservation task. We have revised the final three situations: **Situation A — Hedge Maze** - S2-local, seed 0. - Objective: Obtain Enchanted Shears. - Pilot-30 is the successful pre-solution-tuning model run. - Preserve all original evidence. **Situation B — Griffin Trial, Unprepared** - Heroes start at the Griffin enclosure. - They do not have the Mirror or Enc … (2378 characters; full text in the local transcript)
 
 <!-- narrative:start -->
 ## What was done
@@ -31,6 +36,21 @@ Sources: the local Codex transcript, inspected source and Git state, and command
 - Retaining the three-second manual-stop paint tail made the terminal overlay visible. The first smoke exposed a separate double-prefix subtraction in the viewer clock; after fixing it, the second saved WebM decoded fully (27.76 seconds, no errors) and its final frame visibly read `finished: manual_stop · 15.2 s`. Portable metadata is in [pilot28-fixes](../midterm/evidence/pilot28-fixes/); videos remain under `/tmp`.
 - No paid call, held-out run, push, merge or raw transcript commit. Owner authorized a local commit after verification; implementation commit `730e8b1` is verified in Git. Changed-file secret scan: 18 text files / 0 findings. The broader 176-file scan excludes only a documented pre-existing fake-canary example; the unfiltered finding is disclosed in the audit. Final Git status is reported with the resulting commit; no team-log authorship is claimed.
 
+
+
+### Pilot-30 preservation recheck and Griffin planning (same session)
+
+Sources: extracted local transcript, file hashes/byte comparisons, trace verification and source review in isolated `codex/pilot30-griffin-planning`, base `0a89094`. This is a same-session documentation checkpoint, not independent review. Overlapping commits in the mechanical session window are not automatically attributed to this workstream.
+
+- Owner revised planned A/B/C to Hedge Maze / Griffin Unprepared / Griffin Prepared, with pre-tuned, post-tuned and cheap-baseline conditions; C is a proposed model-outcome holdout. Requested Pilot-30 preservation/registration first, then a separate feasibility proposal; no new Griffin runs, gameplay/policy/frozen-scenario changes or paid calls.
+- Verified existing preservation was already committed: seven archived files match both manifest SHA and local original bytes; local video SHA matches. Trace chain passes 3823 lines; 167 calls and input/output sums match the unchanged A pre-tuned registration; rounded charge $0.443258, start/end hashes match. No duplicate trial registered. Previous video decode/replay/public-release checks remain attributed to Claude session 48, not newly claimed checks.
+- Updated only planning docs/matrix JSON and appended audit section 7; preserved original evidence, A registration and hashes. New B/C stay unimplemented/unfrozen with null hashes. Documented previous legal combat engineering evidence without rerunning it, and source-based forecasts rather than new baseline results.
+- Separate proposal flags strict defeat versus peaceful tool reward, incomplete cheap-baseline choice, near-matched legal histories, respawn-sensitive survival, creature versus enemy convenience-controller handling, and C holdout restrictions. No C-specific model walkthrough or tuning based on C outcomes authorized.
+- JSON assertions and whitespace checks passed; changed planning docs initially scanned with zero findings. No typecheck/build/gameplay test or episode run: documentation and read-only artifacts only. Relevant skills game-rules-audit and session-evidence read/applied in this workstream, same session; no subagent, independent review, merge or push.
+- [Preservation recheck](../midterm/evaluation-abc/PILOT30_PRESERVATION_RECHECK.json), [matrix](../midterm/EVALUATION_ABC_MATRIX.md), [Griffin proposal](../midterm/GRIFFIN_EVALUATION_FEASIBILITY.md), [same-session audit](../midterm/agent-evidence/skill-runs/2026-11-06-suite-griffin-proposal.md). Implementation/certification and all new evaluations await approval.
+
+- Griffin-planning final scan: scoped changed files zero findings; broad session/midterm scan 183 files / one unchanged historical fake-canary match, and 182 files / zero findings excluding only that historical file. No scanner rule or historical report altered.
+
 <!-- narrative:end -->
 
 ## Mechanically extracted record
@@ -40,11 +60,26 @@ Sources: the local Codex transcript, inspected source and Git state, and command
 - Pull requests referenced in tool output: https://github.com/SaadSatter/oath_and_ember/pull/1 (the example URL quoted in MIDTERM_GUIDELINES.md was also printed; it is not a PR of this project and is not listed)
 - Files edited through the agent's edit/patch tool: 1 (`docs/midterm` 1)
 - Test-summary lines printed in tool output (last 6 distinct, as printed):
-  - `Test Files  1 passed (1)`
-  - `Tests  6 passed | 1 skipped (7)`
-  - `Tests  8 passed | 6 skipped (14)`
-  - `Test Files  5 passed (5)`
-  - `Tests  66 passed (66)`
-  - `Tests  68 passed (68)`
+  - `Test Files  1 failed (1)`
+  - `Tests  1 failed | 7 passed (8)`
+  - `Tests  8 passed (8)`
+  - `Test Files  2 passed (2)`
+  - `Tests  10 passed (10)`
+  - `Tests  11 passed (11)`
 - TypeScript errors (`error TS…`) appeared in tool output at least once during the session.
-- Commits inside the session window: none
+
+Commits whose author time falls inside this window (any branch). A time match is not proof of authorship when sessions overlap; the co-author trailer is shown where present.
+
+| Commit | Author time (UTC) | Subject | Co-author trailer |
+| --- | --- | --- | --- |
+| `0a89094` | 2026-11-06 17:22 | Link Pilot-30's live video from its GitHub release | Claude Opus 5.5 <noreply@anthropic.com> |
+| `ba88d2a` | 2026-11-06 16:58 | Record session 48: Pilot-30 audit and Situation A pre-tuned registration | Claude Opus 5.5 <noreply@anthropic.com> |
+| `de29af1` | 2026-11-06 16:57 | Propose a controlled Situation A post-tuned comparison (not implemented) | Claude Opus 5.5 <noreply@anthropic.com> |
+| `ff11a44` | 2026-11-06 16:56 | Register Pilot-30 as Situation A's pre-tuned result and add the A/B/C matrix | Claude Opus 5.5 <noreply@anthropic.com> |
+| `e6da000` | 2026-11-06 16:54 | Preserve Pilot-30 evidence: model-centralized success on S2-A seed 0 | Claude Opus 5.5 <noreply@anthropic.com> |
+| `0c8ef31` | 2026-11-06 08:42 | Freeze offline Wig Already Obtained checkpoint for situation C | — |
+| `f40e449` | 2026-11-06 08:17 | Prepare independent Hedge Maze ABC evaluation proposal and certification | — |
+| `040685c` | 2026-11-06 08:14 | Document cow-passage fixes, policy id changes and verification | Claude Opus 5.5 <noreply@anthropic.com> |
+| `9f16035` | 2026-11-06 08:01 | Fix trace snapshots, centralized retry evidence and go_to oscillation | Claude Opus 5.5 <noreply@anthropic.com> |
+| `327c34a` | 2026-11-06 03:39 | Preserve portable Pilot-28 verification metadata | — |
+| `730e8b1` | 2026-11-06 03:39 | Fix centralized planner inactivity, pull previews and verified progress | — |
