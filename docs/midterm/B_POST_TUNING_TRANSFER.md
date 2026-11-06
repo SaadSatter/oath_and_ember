@@ -182,3 +182,16 @@ npm run eval:live -- --scenario griffin-unprepared-return-v1 --seed 0 --player m
 | Griffin/B tests (guidance, parity, Situation B, heuristic, live Griffin, prologue) | 75 of 75 pass |
 | Secret scan, `docs/agent-sessions` + `docs/midterm` | 263 files; 1 finding, the known fake canary key in `skill-runs/2026-10-27-recording.md` (unchanged, excluded as in earlier records); 0 elsewhere |
 
+## 9. Owner-authored candidate `b-post-combat-v2` (2026-11-06)
+
+The owner pasted "Combat Heuristics — Prompt-Only Tuning v2". It is stored **byte for byte** as guidance `b-post-combat-v2` in `situationGuidance.ts`; the agent did not edit it. Status `proposed`: paid runs refuse it until the owner approves its hash. v1 (`b-post-a-transfer-v1`) is unchanged and still approved; declaration r8 still names v1 for B post-tuned.
+
+| Value | |
+| --- | --- |
+| Text SHA-256 | `38adcbce91a2fb7df74f5fab2f780c28cdcf09ad266660ca911c8ed5b3ab80db` (3,594 characters) |
+| Prompt on `griffin-unprepared-return-v1` | `f8008bf17a00f1eda196ac782006245d272b8336f6d544d2f4f462bf007e2216` |
+| Prompt on `griffin-unprepared-v1` | `af944697b98e159cc8d064e88eb6b2b67064a4b0e2c791440bcaef8997fb4262` |
+| Tests | `packages/agent/test/bPostCombatV2Guidance.test.ts` (hashes, appended-block check, paid lock, v1 unchanged) |
+
+Disclosure: written by the owner after Pilot-31 was known. Several lines answer its failures directly (leave a warned danger area, do not occupy the target's position, protect a low-health hero, shorter commitments), so a run with it is tuning on B. It is not derived from the A baseline.
+
