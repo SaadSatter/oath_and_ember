@@ -1,0 +1,108 @@
+{
+  "about": "Additive Situation A pre-tuned evaluation record for Pilot-30. Row fields follow the A/B/C results template on codex/evaluation-suite-abc (0c8ef31, docs/midterm/EVALUATION_ABC_RESULTS_TEMPLATE.json, status PROPOSAL_NOT_APPROVED_FOR_FINAL_RUNS); the fields under 'additions' are not in that template. Verified 2026-11-06: docs/midterm/PILOT30_AUDIT.md.",
+  "schemaSource": {
+    "branch": "codex/evaluation-suite-abc",
+    "commit": "0c8ef31",
+    "file": "docs/midterm/EVALUATION_ABC_RESULTS_TEMPLATE.json",
+    "suiteHash": "8d6684bf33ac14a07867c4a4122744a4ab398e2031536014949b7702d20c7599",
+    "suiteStatus": "proposal, not approved for final runs"
+  },
+  "row": {
+    "situation": "A",
+    "successPredicate": "inventory:enchanted_shears",
+    "runNumber": 1,
+    "playerType": "model-centralized",
+    "success": true,
+    "gameSeconds": 89.5,
+    "wallSeconds": 1958.1,
+    "modelCalls": 167,
+    "inputTokens": 3678281,
+    "outputTokens": 171240,
+    "costUsd": 0.443258,
+    "invalidActions": 2,
+    "confirmedSubgoals": [
+      "maze-banter",
+      "holding:hedge_gate_key",
+      "claimed:hedge-runner-key",
+      "holding:enchanted_shears",
+      "claimed:hedge-shears-chest"
+    ],
+    "tracePath": "midterms/saadsatter/evidence/traces/pilot-30-model-centralized-S2-local-seed0/trace.jsonl",
+    "recordingPath": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T08-17-52-847Z/recording.webm (local, not committed)",
+    "policyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-a97d9268",
+    "scenarioHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab",
+    "suiteHash": "8d6684bf33ac14a07867c4a4122744a4ab398e2031536014949b7702d20c7599",
+    "seed": 0,
+    "status": "completed-pilot",
+    "failureReason": null
+  },
+  "additions": {
+    "situationName": "Full Hedge Maze",
+    "scenario": "S2-local",
+    "preset": "S2-local-v2",
+    "evaluationLabel": "S2-A",
+    "suiteRevision": 2,
+    "condition": "pre-tuned",
+    "conditionMeaning": "Before explicit puzzle-solution prompt tuning. The prompts held no Hedge Maze solution. It does not mean the player was developed without prior pilots: the centralized player and its controller were developed over earlier Situation A pilots (PILOT30_AUDIT.md section 6).",
+    "episode": "Pilot-30",
+    "ledgerEntry": "pilot-30",
+    "ledgerStage": "pilot",
+    "final": false,
+    "countsAsPlannedTrial": null,
+    "countsAsPlannedTrialNote": "Owner decision pending: whether this pilot counts as run 1 of Situation A's planned model trials.",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "gateway": "openai:gpt-6-luna@medium",
+    "gitHash": "040685c",
+    "promptHash": "0616c47baf03f2860f75a4a0867221998b2439f51b55fde33c56111ec8240c44",
+    "configHash": "1cf1224550d1d3f8333d13d5e77190548368d9620b4669fb2095144fe1dd300f",
+    "manualHash": "4b091a6630dd56f236f89f8e2213a6bb7cad4a31d4851d1883f95867d92bfa86",
+    "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+    "endHash": "6deca1132fc2e6268ff841a1b912c754127d31e740538bc662b1fd31bb9b0ec0",
+    "terminalReason": "success",
+    "gameTicks": 5369,
+    "decisions": {
+      "sieg": 401,
+      "coco": 246
+    },
+    "messages": 0,
+    "tokens": {
+      "input": 3678281,
+      "cacheRead": 1238526,
+      "cacheWrite": 2439254,
+      "output": 171240,
+      "reasoning": 133504
+    },
+    "inputTokensNote": "inputTokens includes cache read and cache write tokens.",
+    "costNote": "Runner estimate from list prices verified 2026-10-28 with a 1.1 uplift; not the provider's bill. Ledger settled at 0.443259.",
+    "latencyMs": {
+      "mean": 11048,
+      "max": 20515
+    },
+    "unusableReplies": 27,
+    "gameRejectionsNotCountedInvalid": 1,
+    "limits": {
+      "maxTicks": 18000,
+      "maxDecisionsPerPlayer": 1600,
+      "maxModelCallsPerPlayer": 400,
+      "maxTokensPerPlayer": 4000000,
+      "callTimeoutMs": 30000,
+      "episodeCapUsd": 0.75,
+      "wallLimitSeconds": 3600
+    },
+    "evidence": {
+      "originalRunFolder": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T08-17-52-847Z/",
+      "committedCopy": "midterms/saadsatter/evidence/traces/pilot-30-model-centralized-S2-local-seed0/",
+      "summary": "midterms/saadsatter/evidence/traces/pilot-30-model-centralized-S2-local-seed0/summary.json",
+      "verification": "midterms/saadsatter/evidence/traces/pilot-30-model-centralized-S2-local-seed0/verification.json",
+      "traceSha256": "6aa22739c28c0550d571e79a0fb7182d54f967dfd6f4ace185837098252231fb",
+      "summarySha256": "a0ff114f83a31e9feceb7ab9fde66b66b9436c3044aeda03002eed76fba9f2e9",
+      "recordingSha256": "f5100df99e6d248f89f8ceea37e4e8bb86e223bcb01f5d131c1f9aae072c4414",
+      "recordingKind": "live viewer capture",
+      "recordingBytes": 202356926,
+      "audit": "docs/midterm/PILOT30_AUDIT.md"
+    },
+    "heldOut": false,
+    "playerNote": "One LLM planner for both heroes (owner-approved departure from two independent agents; MODEL_CENTRALIZED.md). Report under this player kind only."
+  }
+}

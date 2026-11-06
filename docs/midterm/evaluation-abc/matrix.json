@@ -1,0 +1,94 @@
+{
+  "about": "A/B/C evaluation matrix. Human-readable: docs/midterm/EVALUATION_ABC_MATRIX.md. Updated 2026-11-06.",
+  "labelsFrom": {
+    "branch": "codex/evaluation-suite-abc",
+    "commit": "0c8ef31",
+    "suiteHash": "8d6684bf33ac14a07867c4a4122744a4ab398e2031536014949b7702d20c7599",
+    "suiteStatus": "proposal, not approved for final runs"
+  },
+  "requirementInterpretation": {
+    "text": "Pre-tuned and post-tuned model play per situation, plus a cheap baseline",
+    "status": "provisional: owner-reported, not yet confirmed against the course instructions"
+  },
+  "conditions": [
+    "pre-tuned",
+    "post-tuned",
+    "cheap-baseline"
+  ],
+  "situations": {
+    "A": {
+      "name": "Full Hedge Maze",
+      "source": "S2-local (S2-A v2)",
+      "scenarioHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab",
+      "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+      "seed": 0,
+      "frozen": true,
+      "heldOut": false,
+      "cells": {
+        "pre-tuned": {
+          "status": "success",
+          "episodes": [
+            "Pilot-30"
+          ],
+          "trials": 1,
+          "record": "docs/midterm/evaluation-abc/A-pretuned-pilot30.json"
+        },
+        "post-tuned": {
+          "status": "pending",
+          "record": null,
+          "proposal": "docs/midterm/SITUATION_A_POST_TUNING_PROPOSAL.md"
+        },
+        "cheap-baseline": {
+          "status": "pending",
+          "record": null,
+          "existingReference": "midterms/saadsatter/evidence/traces/baseline-quest-S2-local-seed0-v2/ (baseline-quest, offline, success; not registered)"
+        }
+      }
+    },
+    "B": {
+      "name": "Partial Hedge Maze",
+      "source": "S2-B v2",
+      "scenarioHash": "e82e335ddaa7a5b115ab8ddc06ffef7c5d179ecec574151ef4ef2e171c62cbad",
+      "startHash": "8e3b386ba9e26694a120d23cf84ae1f20b47423647816142c1fd8e0191bc7666",
+      "seed": 0,
+      "frozen": true,
+      "heldOut": false,
+      "cells": {
+        "pre-tuned": {
+          "status": "pending",
+          "record": null
+        },
+        "post-tuned": {
+          "status": "pending",
+          "record": null
+        },
+        "cheap-baseline": {
+          "status": "pending",
+          "record": null,
+          "existingReference": "baseline-quest S2-B v2 seed 0 success, 2487 ticks (HEDGE_MAZE_SITUATIONS.md; not registered)"
+        }
+      }
+    },
+    "C": {
+      "name": "Wig Already Obtained",
+      "source": "ABC-C-wig-obtained-v1 (codex/evaluation-suite-abc only)",
+      "frozen": "proposed here; frozen on Codex's branch for offline certification only",
+      "heldOut": true,
+      "objective": "Return from the Hedge Maze with the Divine Wig and complete Chapter 0 through the normal goddess interaction (chapter0.complete)",
+      "cells": {
+        "pre-tuned": {
+          "status": "pending",
+          "record": null
+        },
+        "post-tuned": {
+          "status": "pending",
+          "record": null
+        },
+        "cheap-baseline": {
+          "status": "pending",
+          "record": null
+        }
+      }
+    }
+  }
+}
