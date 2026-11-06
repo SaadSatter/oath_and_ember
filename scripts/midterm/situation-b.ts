@@ -92,15 +92,17 @@ check(bq.status === R.status && bq.reason === R.reason && bq.gameTicks === R.gam
 // ── Plans (validated, not run) ──────────────────────────────────────────────
 console.log("\nModel plans (validated only; nothing is called):");
 const mock = { gateway: new MockGateway(0, 0), stage: "pilot" } as unknown as ModelSetup;
-for (const [name, model] of [["pre-tuned", mock], ["post-tuned (mock)", { ...mock, guidance: "griffin-b-post-v1" }]] as const) {
+// Post-tuned candidate since 2026-11-06 (docs/midterm/B_POST_TUNING_TRANSFER.md); griffin-b-post-v1 stays locked and unused.
+const POST_GUIDANCE = "b-post-a-transfer-v1";
+for (const [name, model] of [["pre-tuned", mock], ["post-tuned (mock)", { ...mock, guidance: POST_GUIDANCE }]] as const) {
   try { validatePlan({ player: "model-centralized", situations: [B.situation], seeds: [0], model }); check(true, `${name} plan valid`); }
   catch (e) { check(false, `${name}: ${(e as Error).message}`); }
 }
-const g = guidanceRecord("griffin-b-post-v1");
+const g = guidanceRecord(POST_GUIDANCE);
 console.log(`  post-tuned guidance ${g.id}: status ${g.status}, sha256 ${g.sha256}`);
 console.log("\nLive command templates (paid runs need the owner's authorization, a clean commit and the shared ledger):");
 console.log(`  pre-tuned:  npm run eval:live -- --scenario ${B.situation} --seed 0 --player model-centralized --gateway openai --model gpt-6-luna --effort medium --max-spend-usd 0.75 --paid`);
-console.log(`  post-tuned: npm run eval:live -- --scenario ${B.situation} --seed 0 --player model-centralized --guidance griffin-b-post-v1 --gateway openai --model gpt-6-luna --effort medium --max-spend-usd 0.75 --paid`);
+console.log(`  post-tuned: npm run eval:live -- --scenario ${B.situation} --seed 0 --player model-centralized --guidance ${POST_GUIDANCE} --gateway openai --model gpt-6-luna --effort medium --max-spend-usd 0.75 --paid`);
 console.log(`  baseline:   npm run eval:live -- --scenario ${B.situation} --seed 0 --player baseline-quest`);
 console.log(`  (mock rehearsal: replace the gateway/model/effort/cap/--paid flags with --gateway mock)`);
 

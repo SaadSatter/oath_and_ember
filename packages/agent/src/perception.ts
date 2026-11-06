@@ -371,7 +371,7 @@ export const MAZE_WOLF_SIGN = "KEY GATE · The forest wolf carries its key. · S
 export const MAZE_WOLF_SIGN_AT = { x: 44, y: 17.2 } as const;
 
 /** Scene props and labels the client's environment views draw. */
-function sceneProps(w: World, scene: SceneId, mode: LabelMode): Prop[] {
+function sceneProps(w: World, scene: SceneId, mode: LabelMode, omitNest = false): Prop[] {
   const props: Prop[] = [];
   const cutscene = !!w.story?.cutscene;
   if (scene === "GODDESS_SHRINE") {
@@ -505,7 +505,8 @@ function sceneProps(w: World, scene: SceneId, mode: LabelMode): Prop[] {
   }
   if (scene === "GRIFFIN_ENCLOSURE") {
     // Already-drawn straw nest; normal viewport filtering applies to every player.
-    props.push({kind:"object",name:"nest",...griffinNest,mark:"o"});
+    // Omitted when asked (griffin-unprepared-v1 only), to keep Pilot-31's observations.
+    if (!omitNest) props.push({kind:"object",name:"nest",...griffinNest,mark:"o"});
     const g = griffinState(w.puzzles);
     if (g) {
       // GriffinView hides the griffin, its shadow and its label once it has
@@ -625,6 +626,12 @@ const enemyNames: Record<string, string> = {
 
 export interface PerceptionOptions {
   labels: LabelMode;
+  /**
+   * Leave out the straw-nest entry added in 4c9cf9f. Set only for
+   * griffin-unprepared-v1, so its observations match Pilot-31 (B pre-tuned)
+   * exactly. Owner decision 2026-11-06.
+   */
+  omitNest?: boolean;
 }
 
 /** The observation for one hero. Pure: reads the room, writes nothing. */
@@ -749,7 +756,7 @@ export function perceive(
       mark: "o",
     });
   }
-  for (const p of sceneProps(w, scene, options.labels)) add(p);
+  for (const p of sceneProps(w, scene, options.labels, options.omitNest)) add(p);
   if (scene === "GRIFFIN_ENCLOSURE") for (const p of griffinTelegraphs(w, view)) add(p);
   for (const p of prologueProps(w, scene, me, options.labels)) add(p);
 

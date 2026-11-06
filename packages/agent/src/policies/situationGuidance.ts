@@ -48,8 +48,9 @@ const GRIFFIN_B_POST_V1 = [
 /**
  * PROPOSED, NOT APPROVED (2026-11-06). General play heuristics taken from the
  * Situation A heuristic baseline (baseline-maze-heuristic-v2, mazeHeuristic.ts),
- * restated as advice for the planner. It names no place, enemy, attack, item,
- * coordinate or sequence. Written after Pilot-31 (B pre-tuned) had been run and
+ * restated as advice for the planner. It names no particular place, enemy,
+ * attack, item, ability, coordinate or sequence (it does use the generic words
+ * "enemies", "a ranged attack" and "a recharging ability"). Written after Pilot-31 (B pre-tuned) had been run and
  * its trace read; see docs/midterm/B_POST_TUNING_TRANSFER.md for the source of
  * each line and that disclosure.
  */

@@ -357,7 +357,8 @@ export class AgentEnvironment implements GameInterface {
   // ── 2. observe ──────────────────────────────────────────────────────────
   async observe(player: PlayerId): Promise<Observation> {
     const s = this.slot(player);
-    return perceive(this.room, player, s.key, s.memory, { labels: this.labels });
+    // griffin-unprepared-v1 keeps Pilot-31's observation contract (no straw-nest entry).
+    return perceive(this.room, player, s.key, s.memory, { labels: this.labels, ...(this.preset === "griffin-unprepared-v1" ? { omitNest: true } : {}) });
   }
 
   // ── 3. legal_actions ────────────────────────────────────────────────────
