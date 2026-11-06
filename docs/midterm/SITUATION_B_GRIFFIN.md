@@ -61,7 +61,7 @@ Through the five operations an agent can: see the Griffin (`creature`, "griffin"
 - the beam itself (BEAM);
 - the orange line and circle for the headbutt (HEADBUTT CHARGE).
 
-Each is now an `effect` at the line's far end, or where the drawn line leaves that hero's screen ("continuing off your screen here"). The details give the direction the line runs. The client's own geometry is used (`griffinBeamEnd`, `griffinMouth`, `aimX/aimY`). No damage, timer or target is given. The change affects only the Griffin Enclosure; no other scenario's observations change, and the full test suite (including the observation and route tests) passes.
+Each is now an `effect` at the line's far end, or where the drawn line leaves that hero's screen ("continuing off your screen here"). The details give the direction the line runs. The client's own geometry is used (`griffinBeamEnd`, `griffinMouth`, `aimX/aimY`). No damage, timer or target is given. The change affects every observation in the Griffin Enclosure, **including the held-out S4 and F, which pass through it** (corrected after review finding 2). Their scripted pins (`scriptedFreeze.test.ts`, the route tests) still pass, because they pin actions and state hashes, not observation text. A future S4/F model run would see these entries.
 
 **Not changed (frozen policy, disclosed):**
 - The centralized `fight` intention only targets `enemy` entries, so it cannot fight the Griffin (a `creature`). The planner must use ordinary `attack`/`move`/`defend` actions, up to 4 per order.
@@ -172,3 +172,56 @@ Basis: Pilot-30 (same player, model and effort) used 167 calls, $0.443 (about $0
 6. **Accept the disclosed controller limits** (no Griffin `fight` intention; no wake-up on a beam warning), or approve a controller change. Any change would need a new policy id and re-pinning.
 7. **Registration.** The two free baseline cells for B can be filled from the deterministic result above (`knocked_out`, 10.6 s). Whether they count as the declared baseline trials, and updating `declaration.json`, `matrix.json` and `declared-results.json`, are left to the owner and the session editing those files. This branch does not touch them.
 8. **Independent review** of `6deaef3` and `96fd952` by `rules-reviewer`, and a `game-rules-audit griffin` run, are still to do.
+
+---
+
+## Review round 1 (2026-11-06)
+
+The owner provisionally approved exposing the Griffin's drawn beam warning, active beam and headbutt aim mark, provided they match what human players see and leak no hidden state. No paid call, policy change or gameplay change has been made since.
+
+### Investigation: the two frozen-policy limitations
+
+Both are **policy limitations, not interface defects**. The interface exposes what is needed: the Griffin, its label, the warnings and every legal action. The controller does not act on some of it.
+
+1. **`fight` cannot target the Griffin.** The navigator's `fight` filters `kind === "enemy"` by design (`a3acf69`, 2026-11-05; `combat.ts` `planFightTarget`, `navigator.ts` fight step). The interface lists the Griffin as a `creature`, like the cow and Alden, with its drawn HP/phase label. The planner prompt tells the model that naming a creature ends `fight` at once, so the model is not misled. It must use `attack` (with direction), `move`, `defend` and abilities directly, up to 4 per order. Retargeting would not help much anyway: `planFight` never defends and stops after a 25% HP loss. **Proposed correction:** none for the pre-tuned run. If a helper is wanted, it must be a new controller version.
+2. **Reaction to beam warnings.** The controller's wake-up events (`navigator.ts detectEvents`) do not include a new `effect` or a Griffin phase change, and no feedback line reports either. Measured with the real controller and a free scripted stand-in for the model (Coco on the shore holding; game unchanged): over 5 beam charges there were **0 planner calls inside any 1.2 s charge window**, and 3 of the 5 beams then hit Coco for 26 unguarded. So the planner cannot *react* to a warning during a hold, a wait or a batch. It must defend in advance or keep actions short. A second hazard: `wait_until` watching the flying Griffin ends at once, and repeating it burned 400 calls in 6.2 game-s; the call cap stopped it. **Smallest correction, if approved later:** one generic wake event, "new on your screen: <name> (effect)", when an effect appears that was absent at the hero's previous decision. It changes the controller id and its behaviour elsewhere (Black Hole effects), so the pre-tuned policy would no longer be Pilot-30's.
+
+### Witness legitimacy
+
+- **Legal and observation-only.** The witness acts only through `step()` with ordinary actions. It reads only each hero's observation; the director's `asTuned` only rounds positions. 0 invalid actions.
+- **Solution knowledge from the source**, which a model does not have: the shore line it patrols, Sieg's waiting point, the nest point (20, 4.4), the fireball speed it leads with (not in the manual), and that the Griffin aims at the nearer hero (not in the manual). Every step is observable in play, but none is told to the model.
+- **Timing.** Its 65.5 s does not need tick-precise control. Perturbed copies (scratch only; the committed witness is unchanged) still succeed with every action 2×, 3× and 5× longer (75.9, 82.0, 99.3 s), and without leading the shot at a tighter tolerance (64.2 s). It **fails** without guarding during the warnings (`knocked_out` at 31.6 s). The one capability it relies on is a guard inside each 1.2 s charge window, which is exactly what the frozen controller does not wake for (above).
+- So the witness certifies **feasibility**, not an expected model time.
+
+### Cheap baseline recommendation
+
+Keep these as separate records:
+- the **declared `baseline-quest` result**: `knocked_out` at 10.6 s, a quest script with no combat routine;
+- the **certification witness**: solution-aware, not a competitor.
+
+Recommended additional cheap baseline: a **generic observation-only combat heuristic** (proposed name `baseline-combat-v1`, not implemented). It would contain no Griffin coordinates, no nest point and no fireball constant. Rules:
+- guard while any visible warning effect or a hostile's label shows a CHARGE/BEAM phase;
+- otherwise the ranged hero lines up on one of the eight aim directions toward the nearest hostile with a health label and fires; the melee hero guards at a distance;
+- after a hostile's label reads defeated, walk or fly to it and press E when the backpack panel names a target.
+
+It costs $0 and uses the same five operations, and it would be a real competitor for B and C without any C-specific branch. **Needs:** a new declaration revision, since the declaration says a baseline change needs one; freezing before any B or C model outcome; and a disclosure that it was designed by a developer who knows the encounter. A random-legal floor (the mock gateway's policy) could be listed beside it, but not as the competitor.
+
+### Responses to the independent review and the audit
+
+Reviewer report (verbatim): [`agent-evidence/reviews/2026-11-06-situation-b-rules-review.md`](agent-evidence/reviews/2026-11-06-situation-b-rules-review.md). Implementer audit: [`agent-evidence/skill-runs/2026-11-06-griffin.md`](agent-evidence/skill-runs/2026-11-06-griffin.md).
+
+| Finding | Severity | Response |
+| --- | --- | --- |
+| R1 guidance text is source-derived (targeting rule, witness tactic, no-heal, sword vs flight); the targeting statement is incomplete | High | **Returned to the owner.** It is latent: paid runs refuse the guidance. The text is unchanged, so the owner sees exactly what was proposed. Options are listed in the approval checklist. |
+| R2 doc said no other scenario's observations changed; S4/F pass through the enclosure | Medium | Doc corrected (§3). S4/F scripted pins re-run: pass. Added to approval item 1. |
+| R3 B's "pre-tuned" is Pilot-30's generic policy, which the declaration classes as A-post-tuned | Medium | Disclosed here. B pre-tuned = **Pilot-30's generic controller and prompt, not tuned on B**. It includes A-derived general rules. Owner acceptance is needed (checklist). |
+| R4 approval was a mutable status string | Medium | **Fixed:** `approvedSha256` must equal the text's hash (`guidanceApproved`), in `validatePlan` and `live.ts`. Tested, including an edited text being re-locked. |
+| R5 telegraph tests missed the headbutt mark, fully off-screen lines and the defeated/wig gates | Medium | **Fixed:** tests added (labelled fixtures). |
+| R6 failure-before-success ordering not tested at environment level | Medium | **Fixed:** same-tick knockout + success → `knocked_out`; the same fixture without the hit → `success`; a knockout during the prefix is not judged; a lethal hit in S2-local ends nothing. |
+| R7 `--wall-seconds` could exceed the declared 3,600 s for B | Low | **Fixed:** B ceiling 3,600 s (separate `ABC_WALL_CLOCK_CEILING_S`, so the existing P1 test's pinned map is untouched). Tested. |
+| R8 `replay-video.ts` did not know B or its terminal reasons | Low | **Fixed:** includes `ABC_SITUATIONS`; `knocked_out`/`left_area` are game-decided ends. Not exercised on a real B trace yet. |
+| R9 the beam entry is listed at any length; the client hides very short beams; clipping uses the centreline | Low | **Returned to the owner** (an observation change). Proposal: no entry while the drawn length is ≤ 20 px. |
+| R10, R11 | Info | No change. The witness stays labelled as a joint, solution-aware certification controller. The `mock:` label check is left as is. |
+| Audit 1 (no wake on warnings), 3 (watch burn) | Medium | Policy limitations, disclosed; smallest correction above, not implemented. |
+| Audit 2 (fight excludes creatures) | Low | Policy limitation by design, disclosed. |
+| Audit 4 (witness knockout counter) | Low | **Fixed:** a terminal `knocked_out` now counts. The pinned success values are unchanged. |
