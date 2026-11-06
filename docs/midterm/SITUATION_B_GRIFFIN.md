@@ -265,3 +265,9 @@ Recorded by the implementation agent. The owner's message approved configuration
 | Generic planner | The planner code differs from Pilot-30's (`040685c`) only by an optional guidance argument. Without it, prompt and policy name are byte-identical: the S2-local prompt hash is still Pilot-30's recorded `0616c47b…0c44` (tested) |
 | Shared ledger | Canonical ledger readable, unlocked, 0 open reservations, no unmetered worktree. Pilot stage $3.969 of $8.00 committed, so **$4.03 left**; the run reserves $0.75 |
 | Output paths | The default `evaluation-runs/live/griffin-unprepared-v1-seed0-model-centralized-openai-<timestamp>` is new for each launch, and `live.ts` refuses an existing `--out` |
+
+## Pre-tuned result: Pilot-31 (2026-11-06)
+
+The owner launched the approved command at `6df4bc0` (ledger entry `pilot-31`). **Outcome: `knocked_out` at 50.1 game-s** (3,007 ticks, 1,486.5 s wall). Sieg's health ran out during a HEADBUTT CHARGE while the Griffin showed `152/640`; Coco was at 8 HP. No wig. 287 decisions, 1 invalid action, 0 messages, 117 model calls (0 failed, 6 unusable replies), $0.265961. Policy and prompt hash match the packet above. The trace chain verifies, and an offline replay at `6df4bc0` matches all 284 step results and the end hash `c5f341f5…`. Record: [B-pretuned-pilot31.json](evaluation-abc/B-pretuned-pilot31.json); evidence: `midterms/saadsatter/evidence/traces/pilot-31-model-centralized-griffin-unprepared-v1-seed0/`.
+
+While it ran, commit `4c9cf9f` (declaration r6) made `griffin-unprepared-return-v1` the declared Situation B. The owner counts Pilot-31 as B/pre-tuned/1 without revising r6, because the knockout in the enclosure fails both predicates. The start, briefing and success predicate differ from r6's B, as disclosed in the record.

@@ -84,8 +84,13 @@
       "approvalIssue": "Owner approved new combat plus return objective; no paid models authorized",
       "cells": {
         "pre-tuned": {
-          "status": "pending",
-          "record": null
+          "status": "failure-knocked-out",
+          "trials": 1,
+          "episodes": [
+            "Pilot-31"
+          ],
+          "record": "docs/midterm/evaluation-abc/B-pretuned-pilot31.json",
+          "scenarioNote": "Run on enclosure-only griffin-unprepared-v1, counted by owner decision; see record"
         },
         "post-tuned": {
           "status": "pending",
@@ -148,10 +153,11 @@
     "modelEpisodes": 6,
     "baselineEpisodes": 3,
     "pilot30Allocation": "A post-tuned run 1, historical completed pilot; original run evidence unchanged",
-    "remainingNewModelEpisodes": 4,
+    "remainingNewModelEpisodes": 3,
     "remainingNewBaselineEpisodes": 1,
     "pilot28Allocation": "A pre-tuned run 1, historical manual-stop failure",
-    "supplementaryBaselineRuns": "A and B each have a second identical reproduction, outside nine primary cells"
+    "supplementaryBaselineRuns": "A and B each have a second identical reproduction, outside nine primary cells",
+    "pilot31Allocation": "B pre-tuned run 1, knocked_out; run on griffin-unprepared-v1, counted by owner decision"
   },
   "baselineImplementation": "baseline-quest at 040685c, existing unchanged solution-aware free comparator",
   "declaration": "docs/midterm/evaluation-abc/declaration.json",

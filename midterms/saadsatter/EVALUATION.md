@@ -16,12 +16,12 @@ The separately reviewed **`griffin-unprepared-v1`** is preserved exactly as impl
 
 ## Conditions and primary trial allocation
 
-Preserve the evaluation checkout's owner-approved **one primary run per condition per case**: nine primary cells (six model, three baseline). A/B each additionally have a second identical heuristic reproduction, reported as supplementary evidence rather than another primary cell. Four primary outcomes are available and five cells remain unrun. This is not two independent repetitions of each model condition; a reduced/mixed-condition design must not be described as stronger evidence than it is.
+Preserve the evaluation checkout's owner-approved **one primary run per condition per case**: nine primary cells (six model, three baseline). A/B each additionally have a second identical heuristic reproduction, reported as supplementary evidence rather than another primary cell. Five primary outcomes are available and four cells remain unrun. This is not two independent repetitions of each model condition; a reduced/mixed-condition design must not be described as stronger evidence than it is.
 
 | Situation | Pre-tuned model | Post-tuned model | Cheap baseline |
 | --- | --- | --- | --- |
 | A | 0/1 success: Pilot-28 manually stopped at cow | 1/1 success: Pilot-30 | 1/1 primary success; one matching supplementary reproduction |
-| B | 0/1 run | 0/1 run | 1/1 primary success; one matching supplementary reproduction |
+| B | 0/1 success: Pilot-31 knocked out (run on `griffin-unprepared-v1`, see below) | 0/1 run | 1/1 primary success; one matching supplementary reproduction |
 | C | 0/1 run | 0/1 run | 0/1 run |
 
 “0/1 run” means no outcome, not a measured failure. Do not pool unlike tasks or treat deterministic repeated trajectories as independent statistical evidence.
@@ -33,9 +33,12 @@ Preserve the evaluation checkout's owner-approved **one primary run per conditio
 | A pre-tuned — Pilot-28 | Manual stop; cow passage not cleared; no Shears | 125.267 s | 900.8 s | 79 attempted | See original diagnosis; not inferred | $0.094339 conservative charge; $0.085837 known usage |
 | A post-tuned — Pilot-30 | Shears acquired | 89.5 s | 1958.1 s | 167 | 2 | $0.443258 runner estimate |
 | A heuristic v2, primary / reproduction | Both Shears successes | 31.5 s each | 6.7 /6.4 s | 0 | 0 | $0 |
+| B pre-tuned — Pilot-31 | Knocked out (Sieg) with the Griffin at 152/640; no wig | 50.1 s | 1486.5 s | 117 attempted, 0 failed | 1 | $0.265961 runner estimate |
 | B Griffin heuristic v1, primary / reproduction | Both combat defeat + wig + goddess offering + Chapter 0 completion; no knockout | 89.8 s each | 6.7 /6.6 s | 0 | 0 | $0 |
 
 The owner designated Pilot-28 pre-tuned and Pilot-30 post-tuned. Pilot-28's owner-recalled approximately 128 seconds is retained as recollection; recorded elapsed time is 125.267 seconds. Both are historical development pilots, not retroactively preregistered final runs. Their comparison includes controller/planner changes and does not isolate prompt-only tuning. Pilot-30 used `gpt-6-luna` medium at `040685c`; exact intervention provenance is not independently complete. Provider charges above are saved runner estimates, not a current price lookup or invoice. Input/cache/output/reasoning totals and all available identifiers remain in the original records.
+
+**B pre-tuned (Pilot-31) disclosure.** It ran at `6df4bc0` on the enclosure-only `griffin-unprepared-v1` start (tick 439, start `1a270d7b…`), not the r6 return checkpoint (tick 540, start `45b1a6aa…`). Its prompt carried the v1 briefing, which names the wig as the goal; the return variant has no briefing and requires the goddess offering too. The owner counts it as B/pre-tuned/1 without revising the declaration, because the heroes were knocked out in the enclosure before the Griffin was defeated, which fails both predicates. It is not a trial of the r6 checkpoint, and the B pre-tuned and baseline cells do not share a start state. Policy: Pilot-30's generic planner, no guidance, `gpt-6-luna` medium, prompt hash `cbabb78b…`. Trace chain and offline replay verified; [record](../../docs/midterm/evaluation-abc/B-pretuned-pilot31.json), [evidence](evidence/traces/pilot-31-model-centralized-griffin-unprepared-v1-seed0/README.md).
 
 Original pre/post evidence, hashes and metrics are unchanged. The A baseline policy is `baseline-maze-heuristic-v2` (`1de3b61`); B is `baseline-griffin-heuristic-v1` (`fbc3627`). Archived runs retain those original source commits. Integration tests in this checkout verify availability separately; they are not relabelled as those original trials.
 

@@ -360,3 +360,7 @@ Owner-requested integration into oath_and_ember-eval: both deterministic heurist
 ## Owner-recorded A/B heuristic videos
 
 Owner recorded live A/B heuristic runs at clean 4c9cf9f. Linked both original local recording.webm/recording.json/summary files in course EVALUATION.md and preserved metadata plus SHA256 manifest at docs/midterm/evidence/baseline-live-recordings/. Both saved, speed 1, successful, 31.5/89.8 game-s, zero model calls and invalid actions. Video bytes/hashes and recorded outcomes checked; no full decode or independent terminal-frame inspection claimed. Videos were neither modified, committed nor uploaded. Changed artifact/doc secret scan: 6 files, 0 findings. No new gameplay or paid run.
+
+## Situation B pre-tuned run: Pilot-31 (2026-11-06)
+
+Supports 2b/3b/5a/5c: owner-launched paid run at `6df4bc0`, `model-centralized` `gpt-6-luna` medium, Pilot-30's generic planner without guidance (prompt `cbabb78b…`). `knocked_out` at 50.1 game-s, Griffin at 152/640, 117 calls, $0.265961. Byte-for-byte evidence and SHA-256 values in `midterms/saadsatter/evidence/traces/pilot-31-model-centralized-griffin-unprepared-v1-seed0/`; trace chain and offline replay at `6df4bc0` verified. Registered as B/pre-tuned/1 by owner decision ([record](evaluation-abc/B-pretuned-pilot31.json)) although it ran on `griffin-unprepared-v1`, not r6's return checkpoint; disclosed in the record, the matrix and `EVALUATION.md`. The 139 MB video is local only.

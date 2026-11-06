@@ -1,0 +1,27 @@
+{
+  "launcher": "scripts/midterm/live.ts",
+  "scenario": "griffin-unprepared-v1",
+  "seed": 0,
+  "player": "model-centralized",
+  "gateway": "openai:gpt-6-luna@medium",
+  "paid": true,
+  "episodeCapUsd": 0.75,
+  "speed": 1,
+  "viewer": true,
+  "viewsIssued": 6,
+  "gitHash": "6df4bc0",
+  "interrupted": false,
+  "error": null,
+  "host": {
+    "sleepPrevention": "caffeinate",
+    "suspensions": [],
+    "suspendedSeconds": 0
+  },
+  "ledger": {
+    "path": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/.git/oath-eval/spend-ledger.json",
+    "remainingAfter": {
+      "pilot": 3.764599,
+      "total": 20.761678
+    }
+  }
+}
