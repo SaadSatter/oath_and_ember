@@ -1,0 +1,132 @@
+{
+  "situation": "griffin-unprepared-return-v1",
+  "suiteRevision": 2,
+  "scenario": {
+    "preset": "griffin-unprepared-return-v1",
+    "title": "Griffin Trial Unprepared, return offering",
+    "goal": "Situation B: defeat the Griffin without tools, acquire its wig, return it to the goddess and reach chapter0.complete without a hero knockout.",
+    "revision": 1,
+    "tutorialId": null,
+    "briefing": false
+  },
+  "seed": 0,
+  "player": "baseline-griffin-heuristic",
+  "policies": {
+    "sieg": "baseline-griffin-heuristic-v1",
+    "coco": "baseline-griffin-heuristic-v1"
+  },
+  "gateway": null,
+  "modelIds": [],
+  "gitHash": "2c8337b+dirty",
+  "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
+  "startTick": 540,
+  "prefix": "opening and ordinary north travel to Griffin enclosure (unprepared)",
+  "status": "terminated",
+  "reason": "tick_limit",
+  "success": false,
+  "gameTicks": 18000,
+  "gameSeconds": 300,
+  "wallSeconds": 8.5,
+  "decisions": {
+    "sieg": 1492,
+    "coco": 1579
+  },
+  "actions": {
+    "sieg": {
+      "move": 1329,
+      "attack": 23,
+      "wait": 91,
+      "defend": 48,
+      "interact": 1
+    },
+    "coco": {
+      "move": 1454,
+      "ability": 4,
+      "attack": 19,
+      "wait": 101,
+      "interact": 1
+    }
+  },
+  "attempt": 1,
+  "endHash": "af945ded913013efa2cc383fc2d3a28a9dee0320e73b432b071318e2e1b9b968",
+  "limits": {
+    "maxTicks": 18000,
+    "maxDecisionsPerPlayer": 1600,
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000
+  },
+  "modelLimits": null,
+  "invalidActions": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "metrics": {
+    "sieg": {
+      "modelCalls": 0,
+      "modelDecisions": 0,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 0,
+      "submittedActions": 1492,
+      "executedActions": 1492,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 0
+    },
+    "coco": {
+      "modelCalls": 0,
+      "modelDecisions": 0,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 0,
+      "submittedActions": 1579,
+      "executedActions": 1579,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 0
+    }
+  },
+  "metricsVersion": 2,
+  "messages": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "batchStops": 0,
+  "modelCalls": {
+    "attempted": 0,
+    "failed": 0,
+    "timedOut": 0,
+    "unknownUsage": 0
+  },
+  "latencyMs": {
+    "mean": null,
+    "max": null
+  },
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0
+  },
+  "spendUsd": {
+    "known": 0,
+    "charged": 0
+  },
+  "priceSource": null,
+  "ledgerEntry": null,
+  "episodeCapUsd": null,
+  "wallLimitSeconds": 600,
+  "launch": {
+    "launcher": "scripts/midterm/evaluate.ts",
+    "speed": null,
+    "viewer": false
+  },
+  "finalClaim": null,
+  "evaluation": null,
+  "promptHashes": {
+    "sieg": null,
+    "coco": null
+  },
+  "configHash": "f3eaa101e946fe466243302ca9f617f65596f573cc3c20845ff8b189ee9da6b1",
+  "trace": "/tmp/griffin-heuristic-dev3/griffin-unprepared-return-v1-seed0/trace.jsonl"
+}

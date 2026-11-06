@@ -53,33 +53,35 @@
           "classification": "owner-confirmed post-tuned; prompt tuning documented in docs/midterm/A_PROMPT_TUNING.md"
         },
         "cheap-baseline": {
-          "status": "success",
+          "status": "1 primary success; 1 matching supplementary reproduction",
+          "implementation": "baseline-maze-heuristic",
+          "policyId": "baseline-maze-heuristic-v2",
+          "sourceCommit": "1de3b61",
+          "record": "docs/midterm/evidence/maze-heuristic-v2/manifest.json",
           "trials": 1,
-          "record": "docs/midterm/evaluation-abc/A-baseline-quest.json",
-          "implementation": "baseline-quest",
-          "gameSeconds": 52.1,
-          "endHash": "6644f2cac04b945444c3ec609d59d798cd767ecad80405d49ce8cd26314c7f56"
+          "previousVersion": "v1: 0/2; preserved in history/declared-results-r4.json",
+          "supplementaryReproductions": 1
         }
       },
       "objective": "Obtain Enchanted Shears",
       "declared": true
     },
     "B": {
-      "name": "Griffin Trial, Unprepared",
-      "source": null,
-      "scenarioHash": null,
-      "startHash": null,
-      "seed": null,
-      "frozen": false,
+      "name": "Griffin Trial, Unprepared \u2014 Goddess Return",
+      "source": "griffin-unprepared-return-v1",
+      "scenarioHash": "b224f75d2ec71ad61082fe0cba4617057b73cd9feb5173c52f7f32dcd86ed6f1",
+      "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
+      "seed": 0,
+      "frozen": true,
       "heldOut": false,
-      "heldOutStatus": "declared development case; checkpoint pending",
-      "objective": "Defeat Griffin and obtain Divine Wig through normal gameplay; both heroes survive",
+      "heldOutStatus": "development-informed B; C remains held out",
+      "objective": "authoritative Griffin hp <= 0 AND wigClaimed AND story.flags contains chapter0.complete",
       "inventory": {
         "vanity_mirror": 0,
         "enchanted_shears": 0,
         "griffin_wig": 0
       },
-      "approvalIssue": "Strict defeat retained in declaration r1; peaceful reward with positive HP does not pass",
+      "approvalIssue": "Owner approved new combat plus return objective; no paid models authorized",
       "cells": {
         "pre-tuned": {
           "status": "pending",
@@ -90,14 +92,18 @@
           "record": null
         },
         "cheap-baseline": {
-          "status": "pending",
-          "record": null,
-          "implementation": "baseline-quest"
+          "status": "1 primary success; 1 matching supplementary reproduction",
+          "implementation": "baseline-griffin-heuristic",
+          "policyId": "baseline-griffin-heuristic-v1",
+          "sourceCommit": "fbc3627",
+          "record": "docs/midterm/evidence/griffin-heuristic-v1/manifest.json",
+          "trials": 1,
+          "supplementaryReproductions": 1
         }
       },
       "declared": true,
-      "id": "griffin-unprepared-v1",
-      "successPredicate": "griffin HP == 0 AND shared griffin_wig count > 0; no knockout during episode"
+      "id": "griffin-unprepared-return-v1",
+      "successPredicate": "authoritative Griffin hp <= 0 AND wigClaimed AND story.flags contains chapter0.complete"
     },
     "C": {
       "name": "Griffin Trial, Prepared",
@@ -137,16 +143,17 @@
     }
   },
   "trialPlan": {
-    "perCell": 2,
+    "perCell": 1,
     "status": "declared allocation, not paid authorization",
-    "modelEpisodes": 12,
-    "baselineEpisodes": 6,
+    "modelEpisodes": 6,
+    "baselineEpisodes": 3,
     "pilot30Allocation": "A post-tuned run 1, historical completed pilot; original run evidence unchanged",
-    "remainingNewModelEpisodes": 10,
-    "remainingNewBaselineEpisodes": 6,
-    "pilot28Allocation": "A pre-tuned run 1, historical manual-stop failure"
+    "remainingNewModelEpisodes": 4,
+    "remainingNewBaselineEpisodes": 1,
+    "pilot28Allocation": "A pre-tuned run 1, historical manual-stop failure",
+    "supplementaryBaselineRuns": "A and B each have a second identical reproduction, outside nine primary cells"
   },
   "baselineImplementation": "baseline-quest at 040685c, existing unchanged solution-aware free comparator",
   "declaration": "docs/midterm/evaluation-abc/declaration.json",
-  "declarationRevision": "oath-ember-abc-2026-11-06-r3"
+  "declarationRevision": "oath-ember-abc-2026-11-06-r6-eval-integration"
 }

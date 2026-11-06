@@ -1,0 +1,125 @@
+{
+  "sourceCommit": "fbc3627",
+  "policyId": "baseline-griffin-heuristic-v1",
+  "policySha256": "a7c9ea786a8c57c374952d9425b7a4bc25553aa453913ae3f935fca330792edc",
+  "scenarioDefinition": "docs/midterm/evaluation-abc/B-unprepared-return-definition.json",
+  "kind": "free accelerated offline evaluation; no video",
+  "runs": [
+    {
+      "run": 1,
+      "recordedGitHash": "fbc3627",
+      "success": true,
+      "gameTicks": 5389,
+      "gameSeconds": 89.8,
+      "wallSeconds": 6.7,
+      "decisions": {
+        "sieg": 481,
+        "coco": 646
+      },
+      "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
+      "endHash": "a454145029bba5ad3a669aca2852a4db768536a943946be6720f43435d51275c",
+      "milestones": [
+        {
+          "tick": 2540,
+          "name": "griffin-defeated"
+        },
+        {
+          "tick": 5105,
+          "name": "holding:griffin_wig"
+        },
+        {
+          "tick": 5105,
+          "name": "claimed:griffin-nest"
+        },
+        {
+          "tick": 5748,
+          "name": "offering-accepted"
+        },
+        {
+          "tick": 5929,
+          "name": "chapter0-complete"
+        }
+      ],
+      "traceSha256": "63fc112306dc311d6d67759b76a926ae2a7c1b04845749a75ae64f0abb9428ac",
+      "compressedTraceSha256": "3a49550acd7e66f8955a5c67d5e93cc3c2ae55a5ae2ca19cf224017207165329",
+      "summarySha256": "937f6718ae61d9277e1435f3a4ad408c42bd8490dd25d12b99941da910e57c7e",
+      "lines": 5643,
+      "traceChainVerified": true,
+      "actionResultFingerprint": "dc53baab13038d343c5edb9c2c91ab8f90b329f831da8e1e0b1f2a1e264e54d0",
+      "noKnockout": true
+    },
+    {
+      "run": 2,
+      "recordedGitHash": "fbc3627",
+      "success": true,
+      "gameTicks": 5389,
+      "gameSeconds": 89.8,
+      "wallSeconds": 6.6,
+      "decisions": {
+        "sieg": 481,
+        "coco": 646
+      },
+      "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
+      "endHash": "a454145029bba5ad3a669aca2852a4db768536a943946be6720f43435d51275c",
+      "milestones": [
+        {
+          "tick": 2540,
+          "name": "griffin-defeated"
+        },
+        {
+          "tick": 5105,
+          "name": "holding:griffin_wig"
+        },
+        {
+          "tick": 5105,
+          "name": "claimed:griffin-nest"
+        },
+        {
+          "tick": 5748,
+          "name": "offering-accepted"
+        },
+        {
+          "tick": 5929,
+          "name": "chapter0-complete"
+        }
+      ],
+      "traceSha256": "7b30223204be0b9bf244d9136d2431d38f98c816d2bf35e7cedb5901b462f45e",
+      "compressedTraceSha256": "3ed264cd9f9854fe67e7c3150de13952278b1129ade8eed6b3f79ac3af9f010d",
+      "summarySha256": "b71f4cac617121a664f8a71379b76976c6624a272bc6bf3a5e27d5c614bbbfa1",
+      "lines": 5643,
+      "traceChainVerified": true,
+      "actionResultFingerprint": "dc53baab13038d343c5edb9c2c91ab8f90b329f831da8e1e0b1f2a1e264e54d0",
+      "noKnockout": true
+    }
+  ],
+  "development": [
+    {
+      "attempt": 1,
+      "result": "legal prefix construction failed at shrine statue before baseline episode; fixed with ordinary detour",
+      "originalRunMetadata": "docs/midterm/evidence/griffin-heuristic-v1/development-1-run.json",
+      "sha256": "267a72f18f9b7380c2b607df1d036c53bd139c037d72ba46735f11ee2d65fbd7"
+    },
+    {
+      "attempt": 2,
+      "summary": "docs/midterm/evidence/griffin-heuristic-v1/development-2-summary.json",
+      "sha256": "b66be8dac323b0eb32dfae0f06ec6b4c1b75e016c6bd83b65168c5852e00f305"
+    },
+    {
+      "attempt": 3,
+      "summary": "docs/midterm/evidence/griffin-heuristic-v1/development-3-summary.json",
+      "sha256": "7a245c511374142435963e0979320b8bb04a40f81bccc82390d37f86ec1e67f3"
+    },
+    {
+      "attempt": 4,
+      "summary": "docs/midterm/evidence/griffin-heuristic-v1/development-4-summary.json",
+      "sha256": "bf4c0ae0c5ec39043d73894049f5be38b33e08e9d490a3ec340f6e10308c3f34"
+    }
+  ],
+  "determinism": "Gameplay action/results identical, start/end hashes and game duration identical; host waitMs/latencyMs excluded only from gameplay fingerprint, not raw hash chains.",
+  "ARegression": {
+    "summary": "docs/midterm/evidence/griffin-heuristic-v1/A-regression-summary.json",
+    "sha256": "c78a0a9226f09515f4cd89dc0ae6cabd6d5498c97a989309c9552624fc636c64",
+    "endHash": "1287b39e69747d50c98005d23dd7c6ad5757975ca9e0555e329ac6d27a611b79",
+    "historicalAResultChanged": false
+  }
+}

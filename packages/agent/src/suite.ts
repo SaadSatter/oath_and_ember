@@ -28,7 +28,7 @@ export const SUITE_REVISION = 2;
 
 export type CurrentSituationId = "S1" | "S2" | "S3" | "S4" | "F" | "S2-local" | "S3-local" | "S2-B" | "S2-C" | "P1";
 /** A/B/C declaration cases that are new scenarios (ABC_SITUATIONS). */
-export type AbcSituationId = "griffin-unprepared-v1";
+export type AbcSituationId = "griffin-unprepared-v1" | "griffin-unprepared-return-v1";
 export type HistoricalSituationId = "S2-v1" | "S3-v1" | "S2-local-v1" | "S3-local-v1";
 export type SituationId = CurrentSituationId | HistoricalSituationId | AbcSituationId;
 
@@ -209,6 +209,20 @@ export const ABC_SITUATIONS: readonly Situation[] = Object.freeze([
   // Situation B, Griffin Trial (Unprepared) (docs/midterm/SITUATION_B_GRIFFIN.md):
   // a development case under the declaration; C is the declared holdout.
   { id: "griffin-unprepared-v1", preset: "griffin-unprepared-v1", heldOut: false, title: "Griffin Trial — Unprepared (B)", start: "Griffin Enclosure entrance, after the opening and ordinary north travel; no Vanity Mirror or Enchanted Shears", prefix: griffinEntry, briefing: GRIFFIN_TRIAL_BRIEFING, tutorial: TUTORIAL_BRIEFING, revision: 2 },
+  { id: "griffin-unprepared-return-v1", preset: "griffin-unprepared-return-v1", heldOut: false, title: "Griffin Trial Unprepared, return offering", start: "ordinary opening and north travel to Griffin enclosure, no Mirror or Shears", revision: 1,
+    prefix: { name: "opening and ordinary north travel to Griffin enclosure (unprepared)", run: async env => {
+      const d=new Director({env}); await opening(d);
+      // Evaluator preparation only: walk around the statue/partner through
+      // ordinary step(), preserving this legal history in the checkpoint.
+      for(const to of [{x:18.8,y:21.5},{x:24.5,y:21.5},{x:24.5,y:10.5}]) await d.go({sieg:{to,opts:{tolerance:0.5}}});
+      await travelFromShrine(d,"north","Griffin Enclosure");
+      for(const hero of ["sieg","coco"] as const) {
+        const o=await env.observe(hero);
+        if(o.area.name!=="Griffin Enclosure" || o.inventory.items.some(i=>i.count>0 && /^(vanity_mirror|enchanted_shears|griffin_wig)$/.test(i.id))) throw Error("Invalid unprepared Griffin checkpoint");
+      }
+    }},
+    task: "Defeat the Griffin, obtain its Divine Wig, return it to the goddess and complete Chapter 0. Both heroes must avoid knockout.",
+  },
 ]);
 
 /**

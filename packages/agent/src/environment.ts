@@ -823,6 +823,7 @@ export class AgentEnvironment implements GameInterface {
 
   /** Evaluator progress markers; P1 adds its Prologue markers (other episodes unchanged). */
   private progress(w: World) {
+    if(this.preset === "griffin-unprepared-return-v1" && (w.puzzles.griffin?.griffin?.hp ?? 1) <= 0) return [...milestones(w), "griffin-defeated"];
     if (this.preset === "P1" || this.preset === "P1-v2" || this.preset === "P1-v3") return [...milestones(w), ...prologueMilestones(w)];
     // Griffin trials add evaluator-only Griffin markers; other episodes are unchanged.
     if (this.preset === "griffin-unprepared-v1") return [...milestones(w), ...griffinMilestones(w)];

@@ -11,10 +11,14 @@ import { GuidedPlayer } from "./guided.js";
 import { LLMPlayer } from "./llm.js";
 import { NavigatorPlayer } from "./navigator.js";
 import { CentralizedController } from "./centralized.js";
+import { MazeHeuristic } from "./mazeHeuristic.js";
+import { GriffinHeuristic } from "./griffinHeuristic.js";
 import { QuestBaseline } from "./questBaseline.js";
 
 function kindOf(p: Policy): PlayerKind | null {
   const proto = Object.getPrototypeOf(p);
+  if (proto === MazeHeuristic.prototype) return "baseline-maze-heuristic";
+  if (proto === GriffinHeuristic.prototype) return "baseline-griffin-heuristic";
   if (proto === QuestBaseline.prototype) return "baseline-quest";
   if (proto === ExplorationBaseline.prototype) return "baseline-explore";
   if (proto === GuidedPlayer.prototype) return "model-guided";

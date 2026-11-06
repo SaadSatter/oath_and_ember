@@ -27,6 +27,8 @@ import { NavigatorPlayer } from "./policies/navigator.js";
 import { centralizedPolicies } from "./policies/centralized.js";
 import { guidance, guidanceApproved, guidanceHash } from "./policies/situationGuidance.js";
 import { ExplorationBaseline } from "./policies/baseline.js";
+import { MazeHeuristic } from "./policies/mazeHeuristic.js";
+import { GriffinHeuristic } from "./policies/griffinHeuristic.js";
 import { QuestBaseline } from "./policies/questBaseline.js";
 import type { Policy } from "./policies/policy.js";
 import type { SpendLedger } from "./ledger.js";
@@ -53,6 +55,7 @@ export const EPISODE_CAP_USD: Record<SituationId, number> = {
   P1: 0.6,
   // Situation B, Griffin Trial (Unprepared): the declared A/B/C run cap (DECLARED_EVALUATION_SUITE.md).
   "griffin-unprepared-v1": 0.75,
+  "griffin-unprepared-return-v1": 0.75,
 };
 /**
  * Wall-clock ceilings (seconds) a run may lower but never raise (review finding
@@ -327,6 +330,10 @@ export function policiesFor(player: PlayerKind, budget: ModelBudget | undefined,
   const tutorial = id ? situation(id).tutorial : undefined;
   const task = id ? situation(id).task : undefined;
   switch (player) {
+    case "baseline-maze-heuristic":
+      return { sieg: new MazeHeuristic("Sieg"), coco: new MazeHeuristic("Coco") };
+    case "baseline-griffin-heuristic":
+      return { sieg: new GriffinHeuristic(), coco: new GriffinHeuristic() };
     case "baseline-quest":
       return { sieg: new QuestBaseline("Sieg"), coco: new QuestBaseline("Coco") };
     case "baseline-explore":

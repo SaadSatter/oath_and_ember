@@ -504,6 +504,8 @@ function sceneProps(w: World, scene: SceneId, mode: LabelMode): Prop[] {
     );
   }
   if (scene === "GRIFFIN_ENCLOSURE") {
+    // Already-drawn straw nest; normal viewport filtering applies to every player.
+    props.push({kind:"object",name:"nest",...griffinNest,mark:"o"});
     const g = griffinState(w.puzzles);
     if (g) {
       // GriffinView hides the griffin, its shadow and its label once it has

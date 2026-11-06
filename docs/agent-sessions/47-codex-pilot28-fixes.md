@@ -5,7 +5,7 @@
 | Agent | Codex (desktop app); model id(s) recorded in the transcript: `gpt-6.1-sol` |
 | Role | Codex implementation agent under AGENTS.md: Pilot-28 diagnosis and owner-approved centralized progress, observation-derived aim and evidence fixes; same-session game-rules-audit checkpoint and session-evidence, not independent review. |
 | Session ID | `01a1aed2-3232-7011-bb41-5fccdea13a5c` |
-| Window (UTC) | 2026-11-06 03:06 → 2026-11-06 18:35 |
+| Window (UTC) | 2026-11-06 03:06 → 2026-11-06 20:05 |
 | Session URL | None. Local session; no shareable URL was created. |
 | Repository | `https://github.com/SaadSatter/oath_and_ember` |
 | Transcript | Local only, not committed: `~/.codex/sessions/2026/11/05/rollout-2026-11-05T22-06-13-01a1aed2-3232-7011-bb41-5fccdea13a5c.jsonl` |
@@ -25,6 +25,19 @@
 9. 2026-11-06 18:06 — [attachments: "TL;DR Build a small, complete game and a model-driven agent that plays it, then…"] Make these into the declared suite given the midterm guidelines and make a evaluation md or anything else required.
 10. 2026-11-06 18:26 — Actually this is a post-tuned model driven completion
 11. 2026-11-06 18:34 — Okay let's call pilot 28 to be the pre-tuned, took 128 seconds and couldn't get passed the cow.
+12. 2026-11-06 19:05 — Make a baseline for Situation A: The cheap scripted, heuristic or search player your model player is compared against on the same interface and the same cases. A demonstration win without a baseline is weak evidence. It is completely deterministic. It doesn't know the answer to all the problems, but it knows how to play the game. It knows that the cow can be moved by the black hole and can backtrack and try other mov … (549 characters; full text in the local transcript)
+13. 2026-11-06 19:16 — Did you update the declared suite? Make sure you did for the evaluation.md
+14. 2026-11-06 19:22 — The baseline, could they get the key or where was it stuck at?
+15. 2026-11-06 19:23 — Well during their search they should be able to identify the gate on the map. And use the key right?
+16. 2026-11-06 19:24 — Well after going passed the gate, there should be a heuristic to explore the space passed it
+17. 2026-11-06 19:28 — Continue
+18. 2026-11-06 19:34 — So no solutions are given by default right?
+19. 2026-11-06 19:34 — Perfect
+20. 2026-11-06 19:38 — Now make a cheap baseline for the griffin Situation B. Same ideas, rules based, knows to defeat enemies, knows how to play the game, but this time it needs to be able to return to the goddess with the wig after defeating the griffin as the success criteria. It need not know that black hole will pull the griffin to the ground, but it can know that black hole will pull the griffin like any other organic enemies or life … (421 characters; full text in the local transcript)
+21. 2026-11-06 19:58 — How to watch the recording for this baseline?
+22. 2026-11-06 19:59 — npm run eval:live -- --scenario griffin-unprepared-return-v1 --seed 0 --player baseline-griffin-heuristic > eval:live > node --import tsx scripts/midterm/live.ts --scenario griffin-unprepared-return-v1 --seed 0 --player baseline-griffin-heuristic eval:live: unknown scenario GRIFFIN-UNPREPARED-RETURN-V1 (S1, S2, S3, S2-local, S3-local, S2-B, S2-C, griffin-unprepared-v1, or a historical S2-v1, S3-v1, S2-local-v1, S3-lo … (428 characters; full text in the local transcript)
+23. 2026-11-06 20:00 — What about the hedge maze? Is there no recording information or anything?
+24. 2026-11-06 20:01 — No no all these changes shouldn't be on your own worktree they need to be availabel for oath_and_ember eval
 
 <!-- narrative:start -->
 ## What was done
@@ -74,6 +87,9 @@ Owner correction, 2026-11-06: Pilot-30 is post-tuned. Declaration r2 and the act
 
 Owner subsequently designated Pilot-28 as pre-tuned. Registered historical A/pre-tuned/1 failure using the existing complete-trace diagnosis (125.267 game seconds, 900.8 wall seconds), preserving owner-recalled 128 seconds separately. Original run.json confirms source 678b86c. Original summary was absent at its documented path; no new replay or model call was made. JSON/hash/allocation checks pass. Metadata-only change; no build or gameplay tests required.
 
+
+Owner-requested integration into oath_and_ember-eval: both deterministic heuristic players, separate Griffin return scenario, live launcher support and byte-identical source evidence are now in this checkout. Native reviewed griffin-unprepared-v1 definition/preparation and native nine-cell plan preserved. 78/78 targeted tests, typecheck and build pass; A live CLI reproduces success/end hash 1287b39e…, B CLI regression reproduces a4541450…. Four primary cells observed/five unrun; second baseline runs supplementary. No paid calls, push, merge or gameplay change. Evidence: docs/midterm/evidence/eval-baseline-integration/verification.json. Same-session audit is not independent review.
+
 <!-- narrative:end -->
 
 ## Mechanically extracted record
@@ -83,18 +99,42 @@ Owner subsequently designated Pilot-28 as pre-tuned. Registered historical A/pre
 - Pull requests referenced in tool output: https://github.com/SaadSatter/oath_and_ember/pull/1 (the example URL quoted in MIDTERM_GUIDELINES.md was also printed; it is not a PR of this project and is not listed)
 - Files edited through the agent's edit/patch tool: 1 (`docs/midterm` 1)
 - Test-summary lines printed in tool output (last 6 distinct, as printed):
-  - `Test Files  1 failed (1)`
-  - `Tests  1 failed | 7 passed (8)`
-  - `Tests  8 passed (8)`
-  - `Test Files  2 passed (2)`
-  - `Tests  10 passed (10)`
-  - `Tests  11 passed (11)`
+  - `Test Files  1 failed | 4 passed (5)`
+  - `Tests  1 failed | 75 passed (76)`
+  - `Tests  77 passed (77)`
+  - `Tests  43 passed (43)`
+  - `Tests  1 failed | 1 passed (2)`
+  - `Tests  2 passed (2)`
 - TypeScript errors (`error TS…`) appeared in tool output at least once during the session.
 
 Commits whose author time falls inside this window (any branch). A time match is not proof of authorship when sessions overlap; the co-author trailer is shown where present.
 
 | Commit | Author time (UTC) | Subject | Co-author trailer |
 | --- | --- | --- | --- |
+| `9c46eeb` | 2026-11-06 20:01 | Admit new Griffin baseline in live launcher and document recording commands | — |
+| `6df4bc0` | 2026-11-06 20:00 | Record Situation B owner decisions and pre-run checks for the B pre-tuned run | Claude Opus 5.5 <noreply@anthropic.com> |
+| `3b9eb7b` | 2026-11-06 19:55 | Hide the Griffin beam entry when the game draws no beam (20 px or less) | Claude Opus 5.5 <noreply@anthropic.com> |
+| `a9011f4` | 2026-11-06 19:52 | Register two successful unprepared Griffin combat and goddess-return baseline trials | — |
+| `fbc3627` | 2026-11-06 19:50 | Add rule-aware unprepared Griffin baseline and strict goddess-return episode | — |
+| `b1253bb` | 2026-11-06 19:43 | Merge Situation B (griffin-unprepared-v1) into the r5 evaluation branch | Claude Opus 5.5 <noreply@anthropic.com> |
+| `3b9b56f` | 2026-11-06 19:37 | Record session 49: Situation B implementation and review round 1 | Claude Opus 5.5 <noreply@anthropic.com> |
+| `6e26f76` | 2026-11-06 19:34 | Record Situation B review round 1: reviewer report, audit, responses | Claude Opus 5.5 <noreply@anthropic.com> |
+| `3f9f11e` | 2026-11-06 19:34 | Address Situation B review: guidance hash pin, wall ceiling, replay, tests | Claude Opus 5.5 <noreply@anthropic.com> |
+| `2c8337b` | 2026-11-06 19:31 | Register two successful frozen maze heuristic v2 trials | — |
+| `1de3b61` | 2026-11-06 19:30 | Add observed-gate crossing and interaction follow-through to heuristic v2 | — |
+| `0ca9a5f` | 2026-11-06 19:17 | Document and certify Situation B offline | Claude Opus 5.5 <noreply@anthropic.com> |
+| `ab2775e` | 2026-11-06 19:17 | Align evaluation report main text with declared A heuristic baseline | — |
+| `96fd952` | 2026-11-06 19:15 | Add Situation B: Griffin Trial (Unprepared), griffin-unprepared-v1 | Claude Opus 5.5 <noreply@anthropic.com> |
+| `6deaef3` | 2026-11-06 19:15 | Show the Griffin's drawn attack warnings in observations | Claude Opus 5.5 <noreply@anthropic.com> |
+| `1ceae43` | 2026-11-06 19:15 | Preserve two deterministic A baseline trials and report failures | — |
+| `15edcd6` | 2026-11-06 19:12 | Document A-only heuristic baseline comparator amendment | — |
+| `9bc1a11` | 2026-11-06 19:12 | Add deterministic observation-driven maze heuristic baseline | — |
+| `3ba50e6` | 2026-11-06 19:00 | Declare r5: one run per condition per situation; Situation A complete | Claude Opus 5.5 <noreply@anthropic.com> |
+| `c803baa` | 2026-11-06 19:00 | Preserve Situation A's deterministic baseline run | Claude Opus 5.5 <noreply@anthropic.com> |
+| `af0f19e` | 2026-11-06 18:52 | Record the r4 follow-up in session 48 | Claude Opus 5.5 <noreply@anthropic.com> |
+| `2528948` | 2026-11-06 18:51 | Preserve Pilot-28 and Pilot-29 evidence: A pre-tuned runs | Claude Opus 5.5 <noreply@anthropic.com> |
+| `0ff5345` | 2026-11-06 18:43 | Declare r4: Pilots 28 and 29 as A pre-tuned, document A's prompt tuning | Claude Opus 5.5 <noreply@anthropic.com> |
+| `5388b23` | 2026-11-06 18:35 | Register Pilot-28 as historical pre-tuned Hedge Maze failure | — |
 | `d7e05d7` | 2026-11-06 18:30 | Correct Pilot-30 allocation to post-tuned model completion | — |
 | `b2b4297` | 2026-11-06 18:19 | Declare A/B/C evaluation design and prepare current course report | — |
 | `591b133` | 2026-11-06 18:04 | Update Pilot-30 planning with proposed unprepared and prepared Griffin trials | — |

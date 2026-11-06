@@ -1,0 +1,67 @@
+{
+  "sourceCommit": "15edcd6",
+  "sourceSha256": "a268d234adec49279d89b1ac4b030e19a45ccd8db39b4790736de0f482ebb9e1",
+  "kind": "free offline deterministic baseline; no recording",
+  "development": [
+    {
+      "summary": "docs/midterm/evidence/maze-heuristic-v1/development-1-summary.json",
+      "sha256": "d9ae923e5bf9917c27f74455cddb88e27c5d447f850c658ad163f94abb2647c7"
+    },
+    {
+      "summary": "docs/midterm/evidence/maze-heuristic-v1/development-2-summary.json",
+      "sha256": "cf15ee29d7cf76177a73c8a3e0ed549b3a030c64705bb2883c5c12e5b696cfb0"
+    },
+    {
+      "summary": "docs/midterm/evidence/maze-heuristic-v1/development-3-summary.json",
+      "sha256": "b364d21e352c9efae3c850c38f6a4f7ad9fcc93746c46cb596ff0b2bb33515cd"
+    },
+    {
+      "summary": "docs/midterm/evidence/maze-heuristic-v1/development-4-summary.json",
+      "sha256": "6d5bef0f3d03289b48c22a01cb4bf3bfaf50a0dc79fbdd712f4e07529b7d4265"
+    }
+  ],
+  "runs": [
+    {
+      "run": 1,
+      "recordedGitHash": "15edcd6",
+      "traceSha256": "addbd0ffa4d771c622004ed00bd94242ca75851c03884014565f4fcb0292d34e",
+      "compressedTraceSha256": "4f3e7ce8dadc7dbd67ebd2ce873a4ab46bcaef4293e3274a22567a6bded1e94c",
+      "summarySha256": "7859a2647a52af91e4cf796bbc3fe4692bab8e73d3e7e029c6bcab2b331d22ff",
+      "traceChainVerified": true,
+      "lines": 15761,
+      "actionResultFingerprint": "e306861c77aa477802f4a266ae4fd0d5bff49229cfdf57c6f3edb4996286010d",
+      "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+      "endHash": "aa9d463aac7531a74191fccf20736c18834daac5437478a8d8c393638ff95222",
+      "gameSeconds": 197.4,
+      "wallSeconds": 28,
+      "confirmedMilestones": [
+        "maze-banter",
+        "holding:hedge_gate_key",
+        "claimed:hedge-runner-key"
+      ],
+      "gateOpened": "authoritative visible result: Gate opened."
+    },
+    {
+      "run": 2,
+      "recordedGitHash": "15edcd6+dirty",
+      "traceSha256": "87fda8df11fe2d5428a9d35ea72a0d509ad258b17d18c97d191581a3ccaf6406",
+      "compressedTraceSha256": "172282439e8d2be3148523fd9ce5928bed560652a962bb89ab7d9f4dcb4879ee",
+      "summarySha256": "1c463ed3aa1f2695cf3c9ede1220e4eec071c9c96644fa7cb5ef500d943e42d0",
+      "traceChainVerified": true,
+      "lines": 15761,
+      "actionResultFingerprint": "e306861c77aa477802f4a266ae4fd0d5bff49229cfdf57c6f3edb4996286010d",
+      "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+      "endHash": "aa9d463aac7531a74191fccf20736c18834daac5437478a8d8c393638ff95222",
+      "gameSeconds": 197.4,
+      "wallSeconds": 21.1,
+      "confirmedMilestones": [
+        "maze-banter",
+        "holding:hedge_gate_key",
+        "claimed:hedge-runner-key"
+      ],
+      "gateOpened": "authoritative visible result: Gate opened."
+    }
+  ],
+  "determinism": "Identical action/result fingerprint, start/end hashes, decisions, game duration and zero model use; wall time differs.",
+  "fingerprintSemantics": "SHA256 of JSON tuples [type,tick,player,data] for step/result records in order, omitting data.waitMs and data.latencyMs only (host timing), UTF-8 compact JSON. Raw trace hash chains verified separately."
+}

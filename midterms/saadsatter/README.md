@@ -146,3 +146,14 @@ Development tools are listed in `package.json`.
 ## Repository and version
 
 The project's history and full evidence live in `SaadSatter/oath_and_ember`, branch `midterm/evaluation`. This folder is generated from one of its commits by `scripts/midterm/package_submission.py`; the commit is in `SUBMITTED_COMMIT.txt`. Large art sources and historical QA captures are not copied: [MANIFEST.txt](MANIFEST.txt) lists what is included and why.
+
+## Deterministic heuristic baselines
+
+From the project root (this folder in the packaged submission), run either command separately. Both use zero model calls.
+
+```sh
+npm run eval:live -- --scenario S2-local --seed 0 --player baseline-maze-heuristic
+npm run eval:live -- --scenario griffin-unprepared-return-v1 --seed 0 --player baseline-griffin-heuristic
+```
+
+The live viewer records to `recording.webm` plus `recording.json` in the printed output folder. The archived heuristic evaluation trials are offline traces/summaries, not recordings. The older `griffin-unprepared-v1` is a separate enclosure-only task. See [EVALUATION.md](EVALUATION.md) for current goals, results, declared knowledge and limitations. All implementation is available directly in the development `oath_and_ember-eval` checkout; no separate worktree is needed.

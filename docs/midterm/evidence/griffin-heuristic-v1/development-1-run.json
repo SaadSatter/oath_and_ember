@@ -1,0 +1,19 @@
+{
+  "suiteRevision": 2,
+  "player": "baseline-griffin-heuristic",
+  "situations": [
+    "griffin-unprepared-return-v1"
+  ],
+  "seeds": [
+    0
+  ],
+  "final": false,
+  "gitHash": "2c8337b+dirty",
+  "wallSeconds": 600,
+  "model": null,
+  "launch": {
+    "launcher": "scripts/midterm/evaluate.ts",
+    "speed": null,
+    "viewer": false
+  }
+}

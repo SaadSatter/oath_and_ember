@@ -89,15 +89,15 @@ if (opts.has("--help")) {
   process.exit(0);
 }
 
-const requestedScenario = (get("--scenario") ?? fail("--scenario S1|S2|S3|S2-local|S3-local|S2-B|S2-C|griffin-unprepared-v1 is required.")).toUpperCase();
+const requestedScenario = (get("--scenario") ?? fail("--scenario S1|S2|S3|S2-local|S3-local|S2-B|S2-C|griffin-unprepared-v1|griffin-unprepared-return-v1 is required.")).toUpperCase();
 const scenario = ([...SITUATIONS, ...HISTORICAL_SITUATIONS, ...ABC_SITUATIONS].find((s) => s.id.toUpperCase() === requestedScenario)?.id ?? requestedScenario) as SituationId;
 // Held-out scenarios are refused unconditionally here, whatever else is set (review H2).
 if (scenario === "S4" || scenario === "F") fail(`${scenario} is held out. The live launcher never runs S4 or F; the final evaluation needs separate owner approval through evaluate.ts.`);
 // Suite revision 2: S2 is Hedge Maze and S3 Mirror Pond. The revision 1
 // definitions (-v1 ids) stay runnable to reproduce historical results.
 // griffin-unprepared-v1: Situation B, Griffin Trial (Unprepared), docs/midterm/SITUATION_B_GRIFFIN.md.
-if (!["S1", "S2", "S3", "S2-local", "S3-local", "S2-B", "S2-C", "griffin-unprepared-v1", ...HISTORICAL_SITUATIONS.map((s) => s.id)].includes(scenario))
-  fail(`unknown scenario ${scenario} (S1, S2, S3, S2-local, S3-local, S2-B, S2-C, griffin-unprepared-v1, or a historical ${HISTORICAL_SITUATIONS.map((s) => s.id).join(", ")}).`);
+if (!["S1", "S2", "S3", "S2-local", "S3-local", "S2-B", "S2-C", "griffin-unprepared-v1", "griffin-unprepared-return-v1", ...HISTORICAL_SITUATIONS.map((s) => s.id)].includes(scenario))
+  fail(`unknown scenario ${scenario} (S1, S2, S3, S2-local, S3-local, S2-B, S2-C, griffin-unprepared-v1, griffin-unprepared-return-v1, or a historical ${HISTORICAL_SITUATIONS.map((s) => s.id).join(", ")}).`);
 const seed = Number(get("--seed", "0"));
 if (!SEEDS.tuning.includes(seed)) fail(`the live launcher uses the tuning seeds ${SEEDS.tuning.join(", ")} only.`);
 const player = get("--player", "model-history") as PlayerKind;
