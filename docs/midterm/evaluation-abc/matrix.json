@@ -29,9 +29,12 @@
       "heldOut": false,
       "cells": {
         "pre-tuned": {
-          "status": "pending",
-          "record": null,
-          "trials": 0
+          "status": "failure-manual-stop",
+          "record": "docs/midterm/evaluation-abc/A-pretuned-pilot28.json",
+          "trials": 1,
+          "episodes": [
+            "Pilot-28"
+          ]
         },
         "post-tuned": {
           "status": "success",
@@ -130,10 +133,11 @@
     "modelEpisodes": 12,
     "baselineEpisodes": 6,
     "pilot30Allocation": "A post-tuned run 1, historical completed pilot; original run evidence unchanged",
-    "remainingNewModelEpisodes": 11,
-    "remainingNewBaselineEpisodes": 6
+    "remainingNewModelEpisodes": 10,
+    "remainingNewBaselineEpisodes": 6,
+    "pilot28Allocation": "A pre-tuned run 1, historical manual-stop failure"
   },
   "baselineImplementation": "baseline-quest at 040685c, existing unchanged solution-aware free comparator",
   "declaration": "docs/midterm/evaluation-abc/declaration.json",
-  "declarationRevision": "oath-ember-abc-2026-11-06-r2"
+  "declarationRevision": "oath-ember-abc-2026-11-06-r3"
 }

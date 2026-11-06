@@ -1,5 +1,5 @@
 {
-  "id": "oath-ember-abc-2026-11-06-r2",
+  "id": "oath-ember-abc-2026-11-06-r3",
   "declaredOn": "2026-11-06",
   "status": "declared-design; B/C runtime checkpoints and paid execution pending",
   "guidelines": {
@@ -34,8 +34,8 @@
     "centralizedInformation": "one planner sees both permitted hero observations; no repository/evaluator/hidden state",
     "observedPostTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)\u00b7batch4\u00b7tutorial-2ec2f251\u00b7briefing-a97d9268",
     "observedPostTunedPromptHashA": "0616c47baf03f2860f75a4a0867221998b2439f51b55fde33c56111ec8240c44",
-    "preTunedSnapshotCommit": null,
-    "preTunedStatus": "No registered A pre-tuned completion; comparator snapshot and provenance must be documented before trials",
+    "preTunedSnapshotCommit": "678b86c",
+    "preTunedStatus": "Pilot-28 owner-designated pre-tuned failure, stopped at cow; preserved diagnosis records 125.267 game seconds, not owner-recalled approximately 128 seconds. Planner/controller changes separate it from Pilot-30.",
     "tuningMechanism": "not independently established; no fine-tuning or explicit solution-prompt claim inferred"
   },
   "conditions": [
@@ -115,7 +115,12 @@
     "freshBaselineRunsRemaining": 6,
     "newModelSpendCeilingUsd": 8.25,
     "paidAuthorization": false,
-    "A/post-tuned/1": "Pilot-30 historical completed pilot reused once, condition metadata corrected, original run status/evidence unchanged"
+    "A/post-tuned/1": "Pilot-30 historical completed pilot reused once, condition metadata corrected, original run status/evidence unchanged",
+    "A/pre-tuned/1": {
+      "episode": "Pilot-28",
+      "status": "historical manual-stop failure; owner allocated after outcome",
+      "record": "docs/midterm/evaluation-abc/A-pretuned-pilot28.json"
+    }
   },
   "holdoutOrder": [
     "Complete A/B tuning and freeze all policy/manual/guidance hashes",
@@ -128,7 +133,8 @@
   ],
   "memoryRequirement": "Partial observation: clean bounded-memory versus observation-only comparison still required/pending; pre/post guidance is not a memory ablation",
   "implementationBoundary": "Declaration and documentation only; no new scenarios, policy change, model calls, merge, push or paid-run approval",
-  "supersedes": "oath-ember-abc-2026-11-06-r1",
+  "supersedes": "oath-ember-abc-2026-11-06-r2",
   "correction": "Owner confirms Pilot-30 is post-tuned; historical allocation moves from A/pre/1 to A/post/1. No case design or original evidence change.",
-  "declarationSha256": "0f2c2a9a8da9e7198b776c7b8c7abd63c5c9d1a493a308042732933711bba403"
+  "classificationNote": "Owner designates Pilot-28 as historical A/pre-tuned/1; Pilot-30 remains A/post-tuned/1. Not a prompt-only controlled comparison.",
+  "declarationSha256": "13e1d5d03a2806ca61791b2c226cffe629fbb415a586b6609bfdd088c4d91bc2"
 }

@@ -1,0 +1,63 @@
+{
+  "about": "Owner-designated historical pre-tuned pilot; stopped failure, not a timeout or final preregistered trial. Missing metrics remain null. No raw evidence changed.",
+  "row": {
+    "situation": "A",
+    "condition": "pre-tuned",
+    "runNumber": 1,
+    "scenarioId": "S2-local",
+    "seed": 0,
+    "scenarioHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab",
+    "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+    "declarationId": "oath-ember-abc-2026-11-06-r3",
+    "status": "manually-stopped-pilot",
+    "success": false,
+    "gameSeconds": 125.26666666666667,
+    "wallSeconds": 900.8,
+    "modelCalls": 79,
+    "inputTokens": null,
+    "outputTokens": null,
+    "costUsd": 0.094339,
+    "invalidActions": null,
+    "failureReason": "Manual stop: passage still blocked by cow; no gate key or Enchanted Shears acquired.",
+    "confirmedSubgoals": [
+      "dry hedge removed (diagnosis trace seq 130)"
+    ],
+    "tracePath": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T02-37-35-986Z/trace.jsonl",
+    "recordingPath": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T02-37-35-986Z/recording.webm",
+    "policyId": null,
+    "promptHash": null,
+    "configHash": null,
+    "sourceCommit": "678b86c",
+    "plannedPlayerType": "model-centralized",
+    "declarationHash": "13e1d5d03a2806ca61791b2c226cffe629fbb415a586b6609bfdd088c4d91bc2",
+    "decisions": null,
+    "failedModelCalls": null,
+    "timedOutModelCalls": null,
+    "unknownUsageCalls": null,
+    "unusableReplies": null,
+    "gameRefusalsNotCountedInvalid": null,
+    "latencyMs": {
+      "mean": null,
+      "max": null
+    },
+    "cacheReadTokens": null,
+    "cacheWriteTokens": null,
+    "reasoningTokens": null,
+    "priceSourceDate": null,
+    "costNote": "Diagnosis: conservative charge including unknown usage; known spend 0.085837. Not provider bill.",
+    "manualHash": null,
+    "guidanceHash": null,
+    "guidanceStatus": "owner-designated pre-tuned; historical controller before Pilot-28 fixes",
+    "traceSha256": null,
+    "recordingSha256": null,
+    "endHash": "b639c8c9547e10eab784b61838dcbab2c4ebe122dda96494ea9e6ed826aa3283",
+    "historicalSuiteHash": null,
+    "evidenceSource": "docs/midterm/agent-evidence/skill-runs/2026-11-05-pilot28-diagnosis.md",
+    "timingNote": "Owner recalled 128 seconds; verified diagnosis reports 7516 ticks =125.267 elapsed game seconds. No new replay."
+  },
+  "limitations": [
+    "Comparison includes planner/controller changes, not established prompt-only tuning.",
+    "Original summary not present at recorded local path during registration; values sourced from prior complete trace diagnosis and original run.json.",
+    "Both pilots are development-informed, not held out."
+  ]
+}

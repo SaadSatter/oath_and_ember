@@ -5,7 +5,7 @@
 | Agent | Codex (desktop app); model id(s) recorded in the transcript: `gpt-6.1-sol` |
 | Role | Codex implementation agent under AGENTS.md: Pilot-28 diagnosis and owner-approved centralized progress, observation-derived aim and evidence fixes; same-session game-rules-audit checkpoint and session-evidence, not independent review. |
 | Session ID | `01a1aed2-3232-7011-bb41-5fccdea13a5c` |
-| Window (UTC) | 2026-11-06 03:06 → 2026-11-06 18:29 |
+| Window (UTC) | 2026-11-06 03:06 → 2026-11-06 18:35 |
 | Session URL | None. Local session; no shareable URL was created. |
 | Repository | `https://github.com/SaadSatter/oath_and_ember` |
 | Transcript | Local only, not committed: `~/.codex/sessions/2026/11/05/rollout-2026-11-05T22-06-13-01a1aed2-3232-7011-bb41-5fccdea13a5c.jsonl` |
@@ -24,6 +24,7 @@
 8. 2026-11-06 17:56 — Update the evaluation planning section of the Pilot-30 preservation task. We have revised the final three situations: **Situation A — Hedge Maze** - S2-local, seed 0. - Objective: Obtain Enchanted Shears. - Pilot-30 is the successful pre-solution-tuning model run. - Preserve all original evidence. **Situation B — Griffin Trial, Unprepared** - Heroes start at the Griffin enclosure. - They do not have the Mirror or Enc … (2378 characters; full text in the local transcript)
 9. 2026-11-06 18:06 — [attachments: "TL;DR Build a small, complete game and a model-driven agent that plays it, then…"] Make these into the declared suite given the midterm guidelines and make a evaluation md or anything else required.
 10. 2026-11-06 18:26 — Actually this is a post-tuned model driven completion
+11. 2026-11-06 18:34 — Okay let's call pilot 28 to be the pre-tuned, took 128 seconds and couldn't get passed the cow.
 
 <!-- narrative:start -->
 ## What was done
@@ -71,6 +72,8 @@ Sources: supplied guideline attachment (SHA `a1040a54…c76`), repository files 
 
 Owner correction, 2026-11-06: Pilot-30 is post-tuned. Declaration r2 and the active A/post-tuned/1 registration correct the earlier label; the original metadata is archived. Exact tuning intervention is not independently established. JSON allocation/hash checks and unchanged row/evidence checks passed; no gameplay tests or episodes were needed for this metadata-only change. Earlier narrative classification claims are historical and superseded. Broad secret scan found only the previously documented historical canary in the unchanged 2026-10-27 recording report; scanning all other session/midterm files returned zero findings.
 
+Owner subsequently designated Pilot-28 as pre-tuned. Registered historical A/pre-tuned/1 failure using the existing complete-trace diagnosis (125.267 game seconds, 900.8 wall seconds), preserving owner-recalled 128 seconds separately. Original run.json confirms source 678b86c. Original summary was absent at its documented path; no new replay or model call was made. JSON/hash/allocation checks pass. Metadata-only change; no build or gameplay tests required.
+
 <!-- narrative:end -->
 
 ## Mechanically extracted record
@@ -92,6 +95,7 @@ Commits whose author time falls inside this window (any branch). A time match is
 
 | Commit | Author time (UTC) | Subject | Co-author trailer |
 | --- | --- | --- | --- |
+| `d7e05d7` | 2026-11-06 18:30 | Correct Pilot-30 allocation to post-tuned model completion | — |
 | `b2b4297` | 2026-11-06 18:19 | Declare A/B/C evaluation design and prepare current course report | — |
 | `591b133` | 2026-11-06 18:04 | Update Pilot-30 planning with proposed unprepared and prepared Griffin trials | — |
 | `0a89094` | 2026-11-06 17:22 | Link Pilot-30's live video from its GitHub release | Claude Opus 5.5 <noreply@anthropic.com> |

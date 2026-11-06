@@ -62,8 +62,7 @@ certified unmerged wig-return checkpoint. New logical IDs are not yet CLI IDs.
 ## Players and information
 
 - **Pre-tuned:** intended model comparator without situation-specific tuning.
-  No A run is registered here. The pre-tuned snapshot and tuning provenance
-  need documentation; Pilot-30 must not be used as this condition.
+  Pilot-28 at `678b86c` is registered as historical A/pre-tuned/1 by owner designation. Pilot-30 belongs to post-tuned.
 - **Post-tuned:** Pilot-30 is owner-confirmed post-tuned, with observed source
   `040685c`, recorded model `gpt-6-luna` medium, batch 4 and preserved prompt/
   policy hashes. The exact tuning intervention/diff has not been independently
@@ -102,8 +101,8 @@ are different policies, not two repetitions of one policy.
 
 Pilot-30 is allocated once as A/post-tuned/1 **historical completed pilot**.
 Its original registration, pilot ledger stage, hashes and status remain unchanged;
-it is not retroactively a preregistered final run. The other 17 rows are unrun
-(11 model, six baseline). See [declared-results.json](evaluation-abc/declared-results.json).
+it is not retroactively a preregistered final run. The other 16 rows are unrun
+(10 model, six baseline). See [declared-results.json](evaluation-abc/declared-results.json).
 A post-hoc declaration cannot establish that A was reserved before its earlier
 tuning; disclose this limitation rather than rewriting history.
 
@@ -161,3 +160,9 @@ anonymous observed human playtest, owner-authored reflection/log, scope update
 in the Week 3 thread, and course PR/URL submission remain tracked in
 [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md). Declaration is complete;
 implementation, certification and the repeated experiment are not.
+
+## Historical pre-tuned registration — Pilot-28 (declaration r3)
+
+The owner designates Pilot-28 as **A/pre-tuned/1**. It failed to obtain Enchanted Shears and was manually stopped while the cow still blocked the passage. The [complete-trace diagnosis](agent-evidence/skill-runs/2026-11-05-pilot28-diagnosis.md) records **7,516 ticks / 125.267 game seconds (125.3 rounded)** and **900.8 wall seconds**; the owner recalled approximately 128 seconds. Use recorded elapsed time in results. The dry hedge was removed and the cow partially moved, but the key and Shears were not acquired.
+
+Pilot-30 remains A/post-tuned/1, successful in 89.5 game seconds. Two historical model outcomes are now allocated; 16 of 18 rows remain unrun (10 model, six baseline). Each A model condition still needs its second repetition. These pilots predate declaration and include planner/controller changes; they do not establish a prompt-only causal improvement or matched frozen-policy repeats. Missing Pilot-28 metrics remain null rather than inferred. No raw evidence, frozen configuration or paid run was changed. This revision supersedes earlier statements above that no pre-tuned A trial was registered.

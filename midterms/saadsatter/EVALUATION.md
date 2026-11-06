@@ -39,13 +39,13 @@ Their hashes remain null until approved legal reset certification.
 
 Each case has **pre-tuned model**, **post-tuned model** and **cheap baseline**
 conditions, with **two repetitions per cell**: 12 model and six baseline episodes.
-Pilot-30 is allocated once as historical A/post/1; the other 17 rows remain unrun.
+Pilot-30 is allocated once as historical A/post/1; the other 16 rows remain unrun.
 This reuse does not retroactively make Pilot-30 a preregistered final trial.
 
 - Model: `model-centralized`, `gpt-6-luna` medium, batch 4, game/controller
   observed post-tuned snapshot `040685c`. One planner sees both permitted hero observations and
   directs two legal controllers; it is not two independent LLM agents.
-- Pre-tuned: intended comparator without situation-specific tuning; no A trial is registered in this condition. Its actual snapshot/provenance must be documented.
+- Pre-tuned: intended comparator without situation-specific tuning; Pilot-28 at `678b86c` is the owner-designated historical A/pre-tuned/1 failure.
 - Post-tuned: Pilot-30 is the owner-confirmed completion. Its preserved policy/prompt/config hashes identify the observed run, but the exact tuning intervention and before/after diff are not yet independently documented. Do not infer a particular guidance block or weight fine-tuning.
 - Cheap comparator: existing unchanged `baseline-quest` at `040685c`, free of
   model/API calls. It has hand-coded solution knowledge and independent hero
@@ -61,7 +61,7 @@ the declared baseline trials and has not been silently registered in their place
 
 | Situation | Pre-tuned model | Post-tuned model | Cheap baseline |
 | --- | --- | --- | --- |
-| A | 0/2 run | **1 success / 1 observed trial**, historical post-tuned pilot; second repetition unrun | 0/2 declared trials run; historical free success exists |
+| A | **0 successes / 1 observed trial**, Pilot-28 stopped at cow; second repetition unrun | **1 success / 1 observed trial**, historical post-tuned pilot; second repetition unrun | 0/2 declared trials run; historical free success exists |
 | B | 0/2 run | 0/2 run | 0/2 run |
 | C | 0/2 run | 0/2 run | 0/2 run |
 
@@ -213,3 +213,9 @@ owner must supply their own decisions/reflection in this section and the
 absence. No first-person experience, playtester, review, run or approval has
 been invented. See `docs/midterm/SUBMISSION_CHECKLIST.md` for remaining hand-in
 requirements, including the Week 3 scope update, course PR and CourseWorks URL.
+
+## Historical pre-tuned registration — Pilot-28 (declaration r3)
+
+The owner designates Pilot-28 as **A/pre-tuned/1**. It failed to obtain Enchanted Shears and was manually stopped while the cow still blocked the passage. The [complete-trace diagnosis](docs/midterm/agent-evidence/skill-runs/2026-11-05-pilot28-diagnosis.md) records **7,516 ticks / 125.267 game seconds (125.3 rounded)** and **900.8 wall seconds**; the owner recalled approximately 128 seconds. Use recorded elapsed time in results. The dry hedge was removed and the cow partially moved, but the key and Shears were not acquired.
+
+Pilot-30 remains A/post-tuned/1, successful in 89.5 game seconds. Two historical model outcomes are now allocated; 16 of 18 rows remain unrun (10 model, six baseline). Each A model condition still needs its second repetition. These pilots predate declaration and include planner/controller changes; they do not establish a prompt-only causal improvement or matched frozen-policy repeats. Missing Pilot-28 metrics remain null rather than inferred. No raw evidence, frozen configuration or paid run was changed. This revision supersedes earlier statements above that no pre-tuned A trial was registered.

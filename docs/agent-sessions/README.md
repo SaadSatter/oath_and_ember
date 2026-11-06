@@ -162,3 +162,5 @@ Same Codex session, separate documentation worktree: [preservation recheck](../m
 Same-session documentation work: [declared suite](../midterm/DECLARED_EVALUATION_SUITE.md), [declaration audit](../midterm/agent-evidence/skill-runs/2026-11-06-suite-declaration.md). Course EVALUATION.md updated; original report archived unchanged. Runtime B/C and new experiments remain pending, no independent review or paid run claimed.
 
 Pilot-30 classification correction in S47: owner confirms post-tuned; earlier pre-tuned labels in historical records are superseded by declaration r2. Original run evidence remains unchanged.
+
+Pilot-28 is now owner-designated historical **A/pre-tuned/1**, manual-stop failure at the cow. Declaration r3 and `docs/midterm/evaluation-abc/A-pretuned-pilot28.json` record 125.267 game seconds (owner recalled approximately 128), 900.8 wall seconds; Pilot-30 remains post-tuned. Two observed historical rows /16 unrun. This supersedes earlier no-pre-tuned-trial statements. No new episode, raw evidence change or paid call.
