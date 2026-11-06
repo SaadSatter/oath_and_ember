@@ -10,7 +10,7 @@ import { defaultBudgetLimits, MeteredGateway, ModelBudget, type Completion, type
 import { policiesFor, validatePlan, type ModelSetup } from "../src/harness.js";
 import { HeroMemory } from "../src/heroMemory.js";
 import { policyKind } from "../src/policies/kind.js";
-import { aStar, buildGrid, detectEvents, goalCells, NAV, NAVIGATOR_SECTION, NavigatorPlayer, nextMove, parseNavigatorReply } from "../src/policies/navigator.js";
+import { aimPreview, BLACK_HOLE, aStar, buildGrid, detectEvents, goalCells, NAV, NAVIGATOR_SECTION, NavigatorPlayer, nextMove, parseNavigatorReply } from "../src/policies/navigator.js";
 import type { TurnReport } from "../src/policies/policy.js";
 import { runEpisode } from "../src/runner.js";
 import { environmentFor } from "../src/suite.js";
@@ -249,14 +249,16 @@ describe("boundaries", () => {
   it("imports nothing that can see the engine, the route or the baselines", () => {
     const src = readFileSync("packages/agent/src/policies/navigator.ts", "utf8").replace(/^\s*\/\/.*$/gm, "").replace(/\/\*[\s\S]*?\*\//g, "");
     const imports = [...src.matchAll(/^import .* from "([^"]+)";$/gm)].map((m) => m[1]);
-    expect(imports.sort()).toEqual(["../batch.js", "../budget.js", "../heroMemory.js", "../playerKnowledge.js", "../types.js", "./llm.js", "./navigate.js", "./policy.js", "node:crypto"].sort());
+    expect(imports.sort()).toEqual(["../batch.js", "../budget.js", "../heroMemory.js", "../playerKnowledge.js", "../types.js", "./combat.js", "./llm.js", "./navigate.js", "./policy.js", "node:crypto"].sort());
     expect(src).not.toMatch(/World|GameRoom|environment\.js|route\/|questKnowledge|questBaseline|guided|@oath\/shared|packages\/shared/);
   });
 
   it("adds no game content, coordinates or puzzle steps to the prompt", () => {
-    expect(NAVIGATOR_SECTION).not.toMatch(/cow|wolf|shear|chest|gate|post|bay|hedge|maze|mirror|griffin|key|black hole|slow time|super speed|fireball|push/i);
-    // The only numbers are the controller's own bounds.
-    expect([...NAVIGATOR_SECTION.matchAll(/\d+/g)].map((m) => Number(m[0])).sort()).toEqual([NAV.dupMessageTicks / 60, NAV.maxControllerMoves].sort());
+    // No puzzle content. The one ability it names is the manual's own (for the aim preview).
+    expect(NAVIGATOR_SECTION.replace(/Black Hole/g, "")).not.toMatch(/cow|wolf|shear|chest|gate|post|bay|hedge|maze|mirror|griffin|key|black hole|slow time|super speed|fireball|push|grazing|lane/i);
+    // The only numbers are the controller's own bounds and the manual's range (6) and pull radius (3) tiles.
+    const allowed = new Set([NAV.dupMessageTicks / 60, NAV.maxControllerMoves, NAV.maxWaitSeconds, NAV.maxFightSeconds, 1, BLACK_HOLE.rangeTiles, BLACK_HOLE.pullTiles]);
+    for (const m of NAVIGATOR_SECTION.matchAll(/\d+/g)) expect(allowed.has(Number(m[0])), m[0]).toBe(true);
   });
 
   it("is its own player kind, tuning-only, with separate heroes", () => {

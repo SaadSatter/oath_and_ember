@@ -60,3 +60,20 @@ export function planFight(o: Observation, opts: FightOptions = {}): GameAction |
     ticks: Math.max(2, Math.min(12, Math.round((Math.abs(c) * 32) / (190 / 60)))),
   };
 }
+
+/**
+ * planFight's rules against one named enemy the model chose (the
+ * model-navigator's "fight" intention): the nearest visible enemy with that
+ * name, within `radius`. A separate function so planFight, which the frozen
+ * scripted players use, is unchanged. Null when no such enemy is visible.
+ */
+export function planFightTarget(o: Observation, name: string, radius = 12): GameAction | null {
+  const target = o.visible
+    .filter((v) => v.kind === "enemy" && v.name === name)
+    .map((v) => ({ v, d: Math.hypot(v.x - o.self.x, v.y - o.self.y) }))
+    .filter((e) => e.d <= radius)
+    .sort((a, b) => a.d - b.d)[0];
+  if (!target) return null;
+  // planFight picks the nearest enemy; show it a view with only the chosen target.
+  return planFight({ ...o, visible: o.visible.filter((v) => v.kind !== "enemy" || v === target.v) }, { radius });
+}

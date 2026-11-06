@@ -34,6 +34,7 @@ import { tutorialBlock, tutorialId, taskId } from "../playerKnowledge.js";
 import { briefingBlock, briefingId, COMPLETED_LOG, describeTurn, parseReply, REJECTED_LOG, replySchema, systemPrompt, TASK, type ParsedReply } from "./llm.js";
 import type { Decision, Policy, TurnReport } from "./policy.js";
 import { directionTo, WALK_TILES_PER_TICK } from "./navigate.js";
+import { planFightTarget } from "./combat.js";
 
 /** Controller bounds. Changing any of them changes the player (its name carries NAV_ID). */
 export const NAV = Object.freeze({
@@ -62,6 +63,17 @@ export const NAV = Object.freeze({
   maxRunCells: 10,
   /** A message identical to one sent within this many ticks is not sent again. */
   dupMessageTicks: 600,
+  /** Longest wait_until and fight intentions (game seconds). */
+  maxWaitSeconds: 30,
+  maxFightSeconds: 15,
+  /** One wait chunk (ticks): how often a waiting hero looks again. */
+  waitChunkTicks: 30,
+  /** A watched thing counts as moved when it is this many tiles from where it was. */
+  watchMoveTiles: 0.5,
+  /** A fight ends when the hero has lost this share of its maximum HP since it began. */
+  fightHpLoss: 0.25,
+  /** "X moved" feedback lines for the same thing within this many ticks are one movement. */
+  motionQuietTicks: 60,
 });
 export const NAV_ID = createHash("sha256").update(JSON.stringify(NAV)).digest("hex").slice(0, 8);
 
@@ -81,6 +93,14 @@ Walking helper (the "go_to" field):
 - The helper only walks. It never attacks, guards, presses E, uses abilities, uses items, advances dialogue or sends messages: you choose all of those.
 - Use go_to for walking more than a couple of tiles. Use your own move actions for short, precise steps (lining up with something, dodging, stepping through a narrow gap).
 
+Waiting ("wait_until") and fighting ("fight"):
+- "wait_until": {"seconds": <1-${NAV.maxWaitSeconds}>, "watch": "<name of something on your screen>"} waits with ordinary wait actions until something happens or the seconds run out, without asking you again in between. You are asked again when anything listed above happens (a partner message with new text, damage, dialogue, a backpack or journal change, something new, an enemy close, a new feedback line), when the thing you watch moves or leaves your screen, or when the time is up. "watch" is optional.
+- "fight": {"target": "<enemy name on your screen>", "seconds": <1-${NAV.maxFightSeconds}>} attacks that enemy with ordinary moves and J presses (closing in or lining up as your hero needs) until it is gone from your screen, you have lost a quarter of your maximum HP since the fight began, something else happens, or the seconds run out. Hits you take below that share do not interrupt it.
+- go_to, wait_until and fight are alternatives: sending one replaces the others. Your "actions" run first.
+
+Aiming the Black Hole (navigation.aim_preview, listed while the ability is available):
+- For each of the eight directions it shows where the spell would stop by the rules in the manual (it flies up to 6 tiles and stops at the first blocked tile, enemy or creature body on your map), and which things your screen shows within 3 tiles of that point, with the direction each would be pulled. It is worked out from your own map and screen, to within about half a tile; tiles you never saw count as open. Whether and where to use it is your choice.
+
 Abilities and messages:
 - Use an ability when you can say, from what your screen shows now, what it should act on. Abilities that recharge are wasted when nothing they act on is near you. If memory.repeated_without_new_result lists an ability there, do not use it again until something has changed.
 - Message your partner when something happened that they need to know or when you need them to act, in one short message. A message identical to one you sent in the last ${NAV.dupMessageTicks / 60} seconds of game time is not sent again; navigation.notices tells you when that happens.`;
@@ -94,12 +114,14 @@ export function navigatorSchema(maxBatch: number = MAX_BATCH): Record<string, un
       ...base.properties,
       go_to: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"], additionalProperties: false },
       stop_navigation: { type: "boolean" },
+      wait_until: { type: "object", properties: { seconds: { type: "number" }, watch: { type: "string" } }, required: ["seconds"], additionalProperties: false },
+      fight: { type: "object", properties: { target: { type: "string" }, seconds: { type: "number" } }, required: ["target", "seconds"], additionalProperties: false },
     },
   };
 }
 
 export type NavReply =
-  | { ok: true; notes?: string; actions: GameAction[]; dropped: GameAction[]; recovered?: string; goTo?: { x: number; y: number }; stop: boolean }
+  | { ok: true; notes?: string; actions: GameAction[]; dropped: GameAction[]; recovered?: string; goTo?: { x: number; y: number }; stop: boolean; waitUntil?: { seconds: number; watch?: string }; fight?: { target: string; seconds: number } }
   | { ok: false; reason: string };
 
 /**
@@ -119,7 +141,21 @@ export function parseNavigatorReply(text: string, maxBatch: number = MAX_BATCH):
     const p = parseReply(text, maxBatch);
     return p.ok ? { ...p, stop: false } : p;
   }
-  const { go_to: goRaw, stop_navigation: stopRaw, ...rest } = obj;
+  const { go_to: goRaw, stop_navigation: stopRaw, wait_until: waitRaw, fight: fightRaw, ...rest } = obj;
+  let waitUntil: { seconds: number; watch?: string } | undefined;
+  if (waitRaw !== undefined && waitRaw !== null) {
+    const w = waitRaw as Record<string, unknown>;
+    if (typeof w !== "object" || typeof w.seconds !== "number" || !(w.seconds > 0) || (w.watch !== undefined && w.watch !== null && typeof w.watch !== "string") || Object.keys(w).some((k) => k !== "seconds" && k !== "watch"))
+      return { ok: false, reason: '"wait_until" must be {"seconds": number, "watch"?: text}.' };
+    waitUntil = { seconds: Math.min(NAV.maxWaitSeconds, w.seconds), ...(typeof w.watch === "string" && w.watch.trim() ? { watch: w.watch.trim() } : {}) };
+  }
+  let fight: { target: string; seconds: number } | undefined;
+  if (fightRaw !== undefined && fightRaw !== null) {
+    const f = fightRaw as Record<string, unknown>;
+    if (typeof f !== "object" || typeof f.target !== "string" || !f.target.trim() || typeof f.seconds !== "number" || !(f.seconds > 0) || Object.keys(f).some((k) => k !== "target" && k !== "seconds"))
+      return { ok: false, reason: '"fight" must be {"target": enemy name, "seconds": number}.' };
+    fight = { target: f.target.trim(), seconds: Math.min(NAV.maxFightSeconds, f.seconds) };
+  }
   let goTo: { x: number; y: number } | undefined;
   if (goRaw !== undefined && goRaw !== null) {
     const g = goRaw as Record<string, unknown>;
@@ -130,17 +166,19 @@ export function parseNavigatorReply(text: string, maxBatch: number = MAX_BATCH):
   if (stopRaw !== undefined && stopRaw !== null && typeof stopRaw !== "boolean") return { ok: false, reason: '"stop_navigation" must be true or false.' };
   const stop = stopRaw === true;
   if (goTo && stop) return { ok: false, reason: 'The reply had both "go_to" and "stop_navigation": true.' };
+  if ([goTo, waitUntil, fight].filter(Boolean).length > 1) return { ok: false, reason: 'Send only one of "go_to", "wait_until" and "fight".' };
+  const extra = { ...(goTo ? { goTo } : {}), ...(waitUntil ? { waitUntil } : {}), ...(fight ? { fight } : {}) };
   const list = rest.actions ?? (rest.action !== undefined ? [rest.action] : undefined);
   if (Array.isArray(list) && list.length === 0 && !("action" in rest)) {
     const unknown = Object.keys(rest).find((k) => !["notes", "actions"].includes(k));
     if (unknown) return { ok: false, reason: `The reply had an unexpected field "${unknown}".` };
     if (rest.notes !== undefined && rest.notes !== null && typeof rest.notes !== "string") return { ok: false, reason: '"notes" must be text.' };
-    if (!goTo && !stop) return { ok: false, reason: 'The reply had no actions and no "go_to".' };
-    return { ok: true, ...(typeof rest.notes === "string" ? { notes: rest.notes } : {}), actions: [], dropped: [], goTo, stop };
+    if (!goTo && !stop && !waitUntil && !fight) return { ok: false, reason: 'The reply had no actions and no "go_to", "wait_until" or "fight".' };
+    return { ok: true, ...(typeof rest.notes === "string" ? { notes: rest.notes } : {}), actions: [], dropped: [], ...extra, stop };
   }
   if (rest.notes === null) delete rest.notes;
   const p: ParsedReply = parseReply(JSON.stringify(rest), maxBatch);
-  return p.ok ? { ...p, ...(goTo ? { goTo } : {}), stop } : p;
+  return p.ok ? { ...p, ...extra, stop } : p;
 }
 
 // ── Path planning over the hero's own map ─────────────────────────────────
@@ -410,15 +448,80 @@ export function detectEvents(prev: Snapshot | undefined, o: Observation, legal: 
   if (o.self.hp < prev.hp) ev.push(`you took damage (HP ${prev.hp} → ${o.self.hp})`);
   if (JSON.stringify(o.inventory.items.map((i) => [i.id, i.count])) !== prev.bag) ev.push("your backpack changed");
   if (JSON.stringify(o.journal) !== prev.journal) ev.push("your quest journal changed");
-  const lines = newLines(prev.feedback, o.feedback).filter((l) => !isRoutineFeedback(l));
-  if (lines.length) ev.push(`new feedback: ${lines.slice(0, 3).join(" | ")}`);
+  const lines = newLines(prev.feedback, o.feedback).filter((l) => !isRoutineFeedback(l) && !NAV_ROUTINE.some((re) => re.test(l)));
+  for (const l of lines.slice(0, 4)) ev.push(`new feedback: ${l}`);
   for (const t of legal.map((l) => l.type)) if (ON_DEMAND.has(t) && !prev.legalTypes.has(t)) ev.push(`a new action is available: ${t}`);
   for (const v of o.visible)
     if (v.kind === "enemy" && v.distance <= NAV.enemyNearTiles && !prev.closeEnemies.has(v.name)) ev.push(`${v.name} (enemy) is close: ${v.distance} tiles ${v.direction}`);
   return [...new Set(ev)];
 }
 
+/** Feedback the navigator treats as routine besides HeroMemory's list: a dialogue press that arrived after the line moved on. */
+const NAV_ROUTINE: readonly RegExp[] = [/^That line had already moved on before your press arrived/];
+/** The game's movement line for something on screen: "The <thing> moved <dir>, from (x, y) to (x, y)." */
+export const MOTION_LINE = /^new feedback: The (.+?) moved \w+, from \(([^)]*)\) to \(([^)]*)\)\.$/;
+
 const normalize = (t: string) => t.trim().toLowerCase().replace(/\s+/g, " ");
+
+// ── Aim preview for the Black Hole (manual: up to 6 tiles; pulls within 3) ──
+
+export const BLACK_HOLE = Object.freeze({ rangeTiles: 6, pullTiles: 3, step: 0.05, margin: 0.19, enemyHalf: 0.625 });
+const UNIT8: Record<Direction, [number, number]> = { n: [0, -1], ne: [Math.SQRT1_2, -Math.SQRT1_2], e: [1, 0], se: [Math.SQRT1_2, Math.SQRT1_2], s: [0, 1], sw: [-Math.SQRT1_2, Math.SQRT1_2], w: [-1, 0], nw: [-Math.SQRT1_2, -Math.SQRT1_2] };
+
+export interface AimLine {
+  direction: Direction;
+  stops_at: { x: number; y: number };
+  stopped_by: string;
+  within_pull: { name: string; kind: VisibleThing["kind"]; x: number; y: number; distance: number; pulled_toward: Direction | "here"; line_blocked_on_your_map?: true }[];
+}
+
+/**
+ * Where the Black Hole would stop in each direction and what lies within its
+ * pull, from this hero's own map (terrain) and screen (things). Uses only the
+ * manual's rules: it flies up to 6 tiles, stops on impact, and pulls within 3
+ * tiles. A "#" tile is treated as fully blocked and a never-seen tile as open.
+ */
+export function aimPreview(memory: HeroMemory, o: Observation): AimLine[] {
+  const area = o.area.name;
+  const blockedAt = (x: number, y: number) => memory.terrainAt(area, Math.floor(x), Math.floor(y)) === "#";
+  const bodies = o.visible.filter((v) => v.kind === "creature" && v.extent);
+  const enemies = o.visible.filter((v) => v.kind === "enemy");
+  const inBody = (x: number, y: number) =>
+    bodies.find((b) => x > b.extent!.x - BLACK_HOLE.margin && x < b.extent!.x + b.extent!.w + BLACK_HOLE.margin && y > b.extent!.y - BLACK_HOLE.margin && y < b.extent!.y + b.extent!.h + BLACK_HOLE.margin);
+  const atEnemy = (x: number, y: number) => enemies.find((e) => Math.abs(e.x - x) < BLACK_HOLE.enemyHalf + BLACK_HOLE.margin && Math.abs(e.y - y) < BLACK_HOLE.enemyHalf + BLACK_HOLE.margin);
+  const lineBlocked = (ax: number, ay: number, bx: number, by: number) => {
+    const n = Math.ceil(Math.hypot(bx - ax, by - ay) / 0.1);
+    for (let k = 1; k < n; k++) if (blockedAt(ax + ((bx - ax) * k) / n, ay + ((by - ay) * k) / n)) return true;
+    return false;
+  };
+  const round = (v: number) => Math.round(v * 10) / 10;
+  return (Object.keys(UNIT8) as Direction[]).map((direction) => {
+    const [ux, uy] = UNIT8[direction];
+    let x = o.self.x, y = o.self.y, stoppedBy = "its full range";
+    for (let t = BLACK_HOLE.step; t <= BLACK_HOLE.rangeTiles + 1e-9; t += BLACK_HOLE.step) {
+      const nx = o.self.x + ux * t, ny = o.self.y + uy * t;
+      const ahead = { x: nx + ux * BLACK_HOLE.margin, y: ny + uy * BLACK_HOLE.margin };
+      if (blockedAt(ahead.x, ahead.y)) { stoppedBy = "a blocked tile"; break; }
+      const body = inBody(nx, ny);
+      if (body) { stoppedBy = `the body of ${body.name}`; break; }
+      const enemy = atEnemy(nx, ny);
+      if (enemy) { stoppedBy = `${enemy.name} (enemy)`; break; }
+      x = nx;
+      y = ny;
+    }
+    const within = o.visible
+      .filter((v) => (v.kind === "enemy" || v.kind === "creature" || v.kind === "object") && Math.hypot(v.x - x, v.y - y) <= BLACK_HOLE.pullTiles)
+      .map((v) => {
+        const d = Math.hypot(x - v.x, y - v.y);
+        return {
+          name: v.name, kind: v.kind, x: v.x, y: v.y, distance: round(d),
+          pulled_toward: d < 0.05 ? ("here" as const) : directionTo(x - v.x, y - v.y),
+          ...(lineBlocked(x, y, v.x, v.y) ? { line_blocked_on_your_map: true as const } : {}),
+        };
+      });
+    return { direction, stops_at: { x: round(x), y: round(y) }, stopped_by: stoppedBy, within_pull: within };
+  });
+}
 
 // ── The player ────────────────────────────────────────────────────────────
 
@@ -431,6 +534,11 @@ interface Goal {
 
 type NavStatus = "none" | "walking" | "arrived" | "unreachable";
 
+/** A waiting or fighting intention the model chose (go_to is the walking one). */
+type Intent =
+  | { kind: "wait"; untilTick: number; watch?: { name: string; x?: number; y?: number }; startTick: number }
+  | { kind: "fight"; target: string; untilTick: number; startHp: number; maxHp: number; startTick: number };
+
 /** One decision's controller record, for the evaluator trace (policy_note). */
 export interface NavNote {
   source: "model" | "controller";
@@ -442,6 +550,7 @@ export interface NavNote {
   unknownCells?: number;
   controllerMoves?: number;
   notices?: string[];
+  intent?: ReturnType<typeof describeIntent>;
 }
 
 export class NavigatorPlayer implements Policy {
@@ -475,6 +584,9 @@ export class NavigatorPlayer implements Policy {
   private readonly seen = new Set<string>();
   private readonly partnerTexts = new Set<string>();
   private pending: string[] = [];
+  private intent: Intent | null = null;
+  /** Things the game reported moving, by name: last movement tick and where it ended. */
+  private readonly motion = new Map<string, { tick: number; to: string }>();
   private notices: string[] = [];
   /** Counts, for the comparison with the other model players. */
   readonly counts = { modelDecisions: 0, controllerDecisions: 0 };
@@ -506,7 +618,7 @@ export class NavigatorPlayer implements Policy {
   }
   /** Read-only controller state, for tests and diagnostics. */
   navState() {
-    return { goal: this.goal ? { ...this.goal } : null, status: this.status, detail: this.detail, controllerMoves: this.controllerMoves };
+    return { goal: this.goal ? { ...this.goal } : null, status: this.status, detail: this.detail, controllerMoves: this.controllerMoves, intent: this.intent ? { ...this.intent } : null };
   }
 
   private remember(turn: TurnReport) {
@@ -650,7 +762,19 @@ export class NavigatorPlayer implements Policy {
     this.snap = snapshot(o, input.legal);
     if (input.batch?.replyProblem) events.push("your last reply could not be used");
     if (input.batch?.steps.some((s) => s.status !== "executed")) events.push("an action of yours was refused");
-    this.pending.push(...events);
+    this.pending.push(...this.filterEvents(events, o));
+
+    // A waiting or fighting intention: carry it on while nothing else happened.
+    if (this.intent && !this.pending.length) {
+      const step = this.intentStep(o, input.legal);
+      if (step.action) {
+        this.counts.controllerDecisions++;
+        const note: NavNote = { source: "controller", events: [], goal: null, status: this.status, intent: describeIntent(this.intent) };
+        return { action: step.action, note: note as unknown as Record<string, unknown> };
+      }
+      this.pending.push(step.ended!);
+      this.intent = null;
+    }
 
     // Walk without the model while nothing happened and the goal still holds.
     if (this.goal && this.status === "walking" && !this.pending.length) {
@@ -674,8 +798,72 @@ export class NavigatorPlayer implements Policy {
       this.detail = `you reached (${this.goal.x}, ${this.goal.y})`;
       this.pending.push("you reached your walking goal");
     }
-    if (!this.goal) this.pending.push("you have no walking goal");
+    if (!this.goal && !this.intent) this.pending.push("you have no walking goal");
     return this.askModel(input);
+  }
+
+  /**
+   * Edge-trigger recurring conditions: a run of the game's "X moved" lines is
+   * one event when it starts and one when it stops. During a fight, hits below
+   * the fight's HP threshold and news about its own target do not interrupt.
+   */
+  private filterEvents(events: string[], o: Observation): string[] {
+    const out: string[] = [];
+    for (const e of events) {
+      const m = MOTION_LINE.exec(e);
+      if (m) {
+        const prev = this.motion.get(m[1]);
+        this.motion.set(m[1], { tick: o.tick, to: m[3] });
+        if (prev && o.tick - prev.tick <= NAV.motionQuietTicks) continue;
+        out.push(`${m[1]} started moving (from (${m[2]}) to (${m[3]}))`);
+        continue;
+      }
+      out.push(e);
+    }
+    for (const [name, mv] of this.motion)
+      if (o.tick - mv.tick > NAV.motionQuietTicks) {
+        out.push(`${name} stopped moving, last reported at (${mv.to})`);
+        this.motion.delete(name);
+      }
+    const fight = this.intent?.kind === "fight" ? this.intent : undefined;
+    if (!fight) return out;
+    const lost = fight.startHp - o.self.hp;
+    const kept = out.filter((e) => {
+      if (/^you took damage/.test(e)) return lost >= NAV.fightHpLoss * fight.maxHp;
+      if (e.startsWith(`${fight.target} (enemy) is close`) || e.startsWith(`new on your screen: ${fight.target} (enemy)`)) return false;
+      return true;
+    });
+    if (lost >= NAV.fightHpLoss * fight.maxHp && !kept.some((e) => /^you took damage/.test(e))) kept.push(`you lost ${lost} HP since the fight began`);
+    return kept;
+  }
+
+  /** One ordinary action for the current wait or fight intention, or why it ended. */
+  private intentStep(o: Observation, legal: ActionSpec[]): { action?: GameAction; ended?: string } {
+    const it = this.intent!;
+    const can = (t: string) => legal.some((l) => l.type === t);
+    if (o.tick >= it.untilTick) return { ended: `your ${it.kind === "wait" ? "wait_until" : "fight"} time ran out` };
+    if (it.kind === "wait") {
+      if (it.watch) {
+        const seen = o.visible.filter((v) => v.name === it.watch!.name);
+        const w = it.watch;
+        if (w.x === undefined) {
+          if (!seen.length) return { ended: `"${w.name}", which you asked to watch, is not on your screen` };
+          w.x = seen[0].x;
+          w.y = seen[0].y;
+        } else {
+          const near = seen.sort((a, b) => Math.hypot(a.x - w.x!, a.y - w.y!) - Math.hypot(b.x - w.x!, b.y - w.y!))[0];
+          if (!near) return { ended: `${w.name}, which you were watching, is no longer on your screen` };
+          if (Math.hypot(near.x - w.x, near.y - w.y!) >= NAV.watchMoveTiles) return { ended: `${w.name}, which you were watching, moved from (${w.x}, ${w.y}) to (${near.x}, ${near.y})` };
+        }
+      }
+      if (!can("wait")) return { ended: "you cannot wait now" };
+      return { action: { type: "wait", ticks: Math.max(1, Math.min(NAV.waitChunkTicks, it.untilTick - o.tick)) } };
+    }
+    const act = planFightTarget(o, it.target);
+    if (!act) return { ended: `${it.target} is not on your screen any more (defeated or out of sight)` };
+    if (act.type === "attack" && o.abilities.find((a) => a.key === "J")?.state !== "ready") return can("wait") ? { action: { type: "wait", ticks: 6 } } : { ended: "you cannot wait for your attack to recover now" };
+    if (!can(act.type)) return { ended: `you cannot ${act.type} now` };
+    return { action: act };
   }
 
   private async askModel(input: Parameters<Policy["decide"]>[0]): Promise<Decision> {
@@ -691,6 +879,10 @@ export class NavigatorPlayer implements Policy {
         ? { moves: this.controllerMoves, ticks: this.walkedTicks, from: { x: this.walkedFrom.x, y: this.walkedFrom.y }, to: { x: o.self.x, y: o.self.y }, since_tick: this.walkedFrom.tick }
         : null,
       ...(this.notices.length ? { notices: this.notices } : {}),
+      intent: this.intent ? describeIntent(this.intent) : null,
+      ...(input.legal.some((l) => l.type === "ability" && l.params?.ability?.kind === "enum" && l.params.ability.values.includes("black_hole"))
+        ? { aim_preview: aimPreview(this.heroMemory, o) }
+        : {}),
     };
     const goalEnded = this.status === "arrived" || this.status === "unreachable";
     this.notices = [];
@@ -719,8 +911,19 @@ export class NavigatorPlayer implements Policy {
     const parsed = parseNavigatorReply(reply.text, this.maxBatch);
     if (!parsed.ok) return { replyProblem: parsed.reason, usage, raw, note: note as unknown as Record<string, unknown> };
     if (parsed.notes !== undefined) this.notes = parsed.notes.slice(0, 400);
-    if (parsed.goTo) this.setGoal(parsed.goTo, o);
-    else if (parsed.stop) this.setGoal(null, o);
+    if (parsed.goTo) {
+      this.setGoal(parsed.goTo, o);
+      this.intent = null;
+    } else if (parsed.waitUntil) {
+      this.setGoal(null, o);
+      this.intent = { kind: "wait", untilTick: o.tick + Math.round(parsed.waitUntil.seconds * 60), startTick: o.tick, ...(parsed.waitUntil.watch ? { watch: { name: parsed.waitUntil.watch } } : {}) };
+    } else if (parsed.fight) {
+      this.setGoal(null, o);
+      this.intent = { kind: "fight", target: parsed.fight.target, untilTick: o.tick + Math.round(parsed.fight.seconds * 60), startHp: o.self.hp, maxHp: o.self.maxHp, startTick: o.tick };
+    } else if (parsed.stop) {
+      this.setGoal(null, o);
+      this.intent = null;
+    }
     // The one disclosed filter: a message repeated within DUP_MESSAGE_TICKS is not sent.
     const sent = this.heroMemory.sentMessages();
     const actions = parsed.actions.filter((a) => {
@@ -731,10 +934,21 @@ export class NavigatorPlayer implements Policy {
     });
     note.goal = this.goal ? { ...this.goal } : null;
     note.status = this.status;
+    if (this.intent) note.intent = describeIntent(this.intent);
     if (this.notices.length) note.notices = [...this.notices];
     if (actions.length) {
       const [action, ...then] = actions;
       return { action, ...(then.length ? { then } : {}), ...(parsed.dropped.length ? { dropped: parsed.dropped } : {}), ...(parsed.recovered ? { recovered: parsed.recovered } : {}), usage, raw, note: note as unknown as Record<string, unknown> };
+    }
+    // Only a wait or fight: take its first step now, without another call.
+    if (this.intent) {
+      const step = this.intentStep(o, input.legal);
+      if (step.action) {
+        this.counts.controllerDecisions++;
+        return { action: step.action, usage, raw, note: note as unknown as Record<string, unknown> };
+      }
+      this.intent = null;
+      return { replyProblem: `Your ${parsed.fight ? "fight" : "wait_until"} ended at once: ${step.ended}. Nothing was done; choose an action or another intention.`, usage, raw, note: note as unknown as Record<string, unknown> };
     }
     // Only a goal: take the first walking step now, without another call.
     if (this.goal) {
@@ -758,6 +972,12 @@ export class NavigatorPlayer implements Policy {
       note: note as unknown as Record<string, unknown>,
     };
   }
+}
+
+function describeIntent(it: Intent) {
+  return it.kind === "wait"
+    ? { kind: "wait_until", until_tick: it.untilTick, ...(it.watch ? { watch: it.watch.name } : {}) }
+    : { kind: "fight", target: it.target, until_tick: it.untilTick, hp_at_start: it.startHp };
 }
 
 const statusKey = (o: Observation) => o.self.status.filter((s) => s.startsWith("super speed") || s === "time is slowed" || s.startsWith("flying")).map((s) => s.replace(/ \(.*\)$/, "")).join("|");
