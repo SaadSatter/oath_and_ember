@@ -159,3 +159,7 @@ Offline evidence is in S43. The 720p video passed playback/seek checks and match
 ## Opt-in walking-helper player (2026-11-05)
 
 `--player model-navigator` selects the model-memory player plus a local walking helper: the model may set a `go_to` tile goal, and the helper walks there with ordinary moves over that hero's own remembered map, asking the model again only on events. Tuning scenarios only (S1–S3 and approved local variants), never final. Same ledger, validation, traces (plus `policy_note` lines) and recording. Other players are unchanged. Design, tests, call-rate comparison and the proposed paid command: [MODEL_NAVIGATOR.md](MODEL_NAVIGATOR.md). No paid run is authorized by this documentation.
+
+## Opt-in centralized player (2026-11-05)
+
+`--player model-centralized` selects one shared LLM planner that controls both heroes. Each hero carries out the planner's orders through its own legal controller, reused from the navigator. There is no in-game messaging. It runs on tuning scenarios only (S1–S3 and approved local variants), never final. It uses the same ledger, validation, traces and recording; `policy_note` lines carry the planner metadata. Other players are unchanged. Design, tests and the call-count comparison: [MODEL_CENTRALIZED.md](MODEL_CENTRALIZED.md). Free check: `npm run eval:live -- --scenario S2-local --seed 0 --player model-centralized --gateway mock`. No paid run is authorized by this documentation.

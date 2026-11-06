@@ -87,6 +87,27 @@ export class MockGateway implements Gateway {
     } catch {
       legal = [];
     }
+    // A model-centralized planner (its user message has "heroes" and
+    // "plan_memory"): random orders for each hero, often a walking goal near
+    // it, sometimes a few legal actions or a hold. Other players never reach this.
+    const central = parsed as { heroes?: Record<string, { self?: { x: number; y: number }; legal_actions?: ActionSpec[] } | null>; plan_memory?: unknown; shared?: { maps?: { area: string }[] } };
+    if (central.heroes !== undefined && central.plan_memory !== undefined) {
+      const orders: Record<string, unknown>[] = [];
+      for (const hero of ["sieg", "coco"]) {
+        const h = central.heroes[hero];
+        if (!h?.self || this.random() < 0.25) continue;
+        const r = this.random();
+        if (r < 0.6) {
+          const clamp = (v: number) => Math.max(0, Math.floor(v));
+          orders.push({ hero, go_to: { x: clamp(h.self.x + (this.random() * 16 - 8)), y: clamp(h.self.y + (this.random() * 16 - 8)) } });
+        } else if (r < 0.9) {
+          const usable = (h.legal_actions ?? []).filter((s) => s.type !== "message");
+          if (usable.length) orders.push({ hero, actions: Array.from({ length: this.batch }, () => this.action(this.pick(usable))) });
+        } else orders.push({ hero, hold: true });
+      }
+      const text = JSON.stringify({ plan: "(mock planner)", orders });
+      return { text, tokens: { input: Math.ceil(user.length / 4), output: Math.ceil(text.length / 4) }, costUsd: 0, model: "mock" };
+    }
     // A model-navigator player (its user message has "navigation"): often
     // answer with a random walking goal near the hero instead of actions, so
     // the walking helper is exercised. Other players' replies are unchanged.

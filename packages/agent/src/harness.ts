@@ -24,6 +24,7 @@ import { ModelBudget, MeteredGateway, defaultBudgetLimits, type CallRecord, type
 import { GUIDED_SITUATIONS, GUIDES, GuidedPlayer } from "./policies/guided.js";
 import { LLMPlayer } from "./policies/llm.js";
 import { NavigatorPlayer } from "./policies/navigator.js";
+import { centralizedPolicies } from "./policies/centralized.js";
 import { ExplorationBaseline } from "./policies/baseline.js";
 import { QuestBaseline } from "./policies/questBaseline.js";
 import type { Policy } from "./policies/policy.js";
@@ -37,7 +38,7 @@ import { mazeEvaluationLabel } from "./hedgeMazeSituations.js";
 import { prologueEvaluationLabel } from "./prologueSituation.js";
 
 export { PLAYER_KINDS, type PlayerKind };
-export const isModel = (p: PlayerKind) => p === "model-history" || p === "model-obs-only" || p === "model-guided" || p === "model-memory" || p === "model-navigator";
+export const isModel = (p: PlayerKind) => p === "model-history" || p === "model-obs-only" || p === "model-guided" || p === "model-memory" || p === "model-navigator" || p === "model-centralized";
 
 /** Per-episode spend caps, both heroes together (MODEL_BUDGET.md). */
 export const EPISODE_CAP_USD: Record<SituationId, number> = {
@@ -266,6 +267,9 @@ export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | 
   // Opt-in walking helper (docs/midterm/MODEL_NAVIGATOR.md): the same tuning-only restriction.
   if (o.player === "model-navigator" && (o.final || o.situations.some((id) => !OBS_ONLY_SITUATIONS.includes(id))))
     throw Error("model-navigator is restricted to S1-S3 tuning runs (including approved local variants); it is not approved for final runs.");
+  // Opt-in centralized planner (docs/midterm/MODEL_CENTRALIZED.md): the same tuning-only restriction.
+  if (o.player === "model-centralized" && (o.final || o.situations.some((id) => !OBS_ONLY_SITUATIONS.includes(id))))
+    throw Error("model-centralized is restricted to S1-S3 tuning runs (including approved local variants); it is not approved for final runs.");
   const heldOut = o.situations.filter((id) => situation(id).heldOut);
   const allowed = o.final ? SEEDS.final : SEEDS.tuning;
   const bad = o.seeds.filter((s) => !allowed.includes(s));
@@ -308,6 +312,9 @@ export function policiesFor(player: PlayerKind, budget: ModelBudget | undefined,
       const make = (hero: "Sieg" | "Coco", pid: PlayerId) => new NavigatorPlayer(hero, model!.manual, new MeteredGateway(model!.gateway, budget!, pid), model!.maxBatch, briefing, tutorial, task);
       return { sieg: make("Sieg", "sieg"), coco: make("Coco", "coco") };
     }
+    case "model-centralized":
+      // One shared planner; each hero keeps its own metered gateway (calls are charged to a hero that asked).
+      return centralizedPolicies(model!.manual, { sieg: new MeteredGateway(model!.gateway, budget!, "sieg"), coco: new MeteredGateway(model!.gateway, budget!, "coco") }, model!.maxBatch, briefing, tutorial, task);
     case "model-history":
     case "model-obs-only":
     case "model-memory": {

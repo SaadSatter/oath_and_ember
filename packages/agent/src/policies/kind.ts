@@ -10,6 +10,7 @@ import { ExplorationBaseline } from "./baseline.js";
 import { GuidedPlayer } from "./guided.js";
 import { LLMPlayer } from "./llm.js";
 import { NavigatorPlayer } from "./navigator.js";
+import { CentralizedController } from "./centralized.js";
 import { QuestBaseline } from "./questBaseline.js";
 
 function kindOf(p: Policy): PlayerKind | null {
@@ -18,6 +19,7 @@ function kindOf(p: Policy): PlayerKind | null {
   if (proto === ExplorationBaseline.prototype) return "baseline-explore";
   if (proto === GuidedPlayer.prototype) return "model-guided";
   if (proto === NavigatorPlayer.prototype) return "model-navigator";
+  if (proto === CentralizedController.prototype) return "model-centralized";
   if (proto === LLMPlayer.prototype) return (p as LLMPlayer).memory === "history" ? "model-history" : (p as LLMPlayer).memory === "none" ? "model-obs-only" : (p as LLMPlayer).memory === "persistent" ? "model-memory" : null;
   return null;
 }

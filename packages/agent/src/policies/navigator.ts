@@ -412,7 +412,7 @@ export function nextMove(me: { x: number; y: number }, path: Cell[], target: { x
 
 // ── Events ────────────────────────────────────────────────────────────────
 
-interface Snapshot {
+export interface Snapshot {
   area: string;
   hp: number;
   bag: string;
@@ -428,7 +428,7 @@ const dialogueKey = (o: Observation) => (o.dialogue ? JSON.stringify([o.dialogue
 
 const ON_DEMAND = new Set(["interact", "use_item", "advance_dialogue", "choose_dialogue"]);
 
-function snapshot(o: Observation, legal: ActionSpec[]): Snapshot {
+export function snapshot(o: Observation, legal: ActionSpec[]): Snapshot {
   return {
     area: o.area.name,
     hp: o.self.hp,
@@ -481,7 +481,7 @@ const NAV_ROUTINE: readonly RegExp[] = [/^That line had already moved on before 
 /** The game's movement line for something on screen: "The <thing> moved <dir>, from (x, y) to (x, y)." */
 export const MOTION_LINE = /^new feedback: The (.+?) moved \w+, from \(([^)]*)\) to \(([^)]*)\)\.$/;
 
-const normalize = (t: string) => t.trim().toLowerCase().replace(/\s+/g, " ");
+export const normalize = (t: string) => t.trim().toLowerCase().replace(/\s+/g, " ");
 
 // ── Aim preview for the Black Hole (manual: up to 6 tiles; pulls within 3) ──
 
@@ -545,17 +545,17 @@ export function aimPreview(memory: HeroMemory, o: Observation): AimLine[] {
 
 // ── The player ────────────────────────────────────────────────────────────
 
-interface Goal {
+export interface Goal {
   area: string;
   x: number;
   y: number;
   setTick: number;
 }
 
-type NavStatus = "none" | "walking" | "arrived" | "unreachable";
+export type NavStatus = "none" | "walking" | "arrived" | "unreachable";
 
 /** A waiting or fighting intention the model chose (go_to is the walking one). */
-type Intent =
+export type Intent =
   | { kind: "wait"; untilTick: number; watch?: { name: string; x?: number; y?: number }; startTick: number }
   | { kind: "fight"; target: string; untilTick: number; startHp: number; maxHp: number; startTick: number }
   /** Chase a named thing; `last` is where this hero's screen last showed it. */
@@ -575,41 +575,43 @@ export interface NavNote {
   intent?: ReturnType<typeof describeIntent>;
 }
 
+// Controller members are protected (not private) so model-centralized's
+// per-hero controller (centralized.ts) can reuse them; this class is unchanged.
 export class NavigatorPlayer implements Policy {
   readonly name: string;
   readonly memory = "persistent" as const;
   private notes = "";
-  private completed: { action: GameAction; ticks: number; interrupted?: string; movement?: MovementReport }[] = [];
-  private rejected: { action: GameAction; status: "rejected" | "stale"; error: string }[] = [];
+  protected completed: { action: GameAction; ticks: number; interrupted?: string; movement?: MovementReport }[] = [];
+  protected rejected: { action: GameAction; status: "rejected" | "stale"; error: string }[] = [];
   private readonly system: string;
   readonly promptHash: string;
   private readonly schema: Record<string, unknown>;
   private readonly maxBatch: number;
   readonly heroMemory: HeroMemory;
-  private lastObservation?: Observation;
+  protected lastObservation?: Observation;
   // Controller state (this hero only).
-  private goal: Goal | null = null;
-  private status: NavStatus = "none";
-  private detail?: string;
+  protected goal: Goal | null = null;
+  protected status: NavStatus = "none";
+  protected detail?: string;
   private replans = 0;
   private noProgress = 0;
   private lastCost = Infinity;
   private stuckInRow = 0;
-  private controllerMoves = 0;
+  protected controllerMoves = 0;
   private nudge = 1;
-  private lastControllerMove?: { direction: Direction };
-  private readonly stuck = new Map<string, number>();
+  protected lastControllerMove?: { direction: Direction };
+  protected readonly stuck = new Map<string, number>();
   private speed?: { tilesPerTick: number; status: string };
-  private walkedFrom?: { x: number; y: number; tick: number };
-  private walkedTicks = 0;
-  private snap?: Snapshot;
-  private readonly seen = new Set<string>();
-  private readonly partnerTexts = new Set<string>();
-  private pending: string[] = [];
-  private intent: Intent | null = null;
+  protected walkedFrom?: { x: number; y: number; tick: number };
+  protected walkedTicks = 0;
+  protected snap?: Snapshot;
+  protected readonly seen = new Set<string>();
+  protected readonly partnerTexts = new Set<string>();
+  protected pending: string[] = [];
+  protected intent: Intent | null = null;
   /** Things the game reported moving, by name: last movement tick and where it ended. */
   private readonly motion = new Map<string, { tick: number; to: string }>();
-  private notices: string[] = [];
+  protected notices: string[] = [];
   /** Counts, for the comparison with the other model players. */
   readonly counts = { modelDecisions: 0, controllerDecisions: 0 };
 
@@ -643,7 +645,7 @@ export class NavigatorPlayer implements Policy {
     return { goal: this.goal ? { ...this.goal } : null, status: this.status, detail: this.detail, controllerMoves: this.controllerMoves, intent: this.intent ? { ...this.intent } : null };
   }
 
-  private remember(turn: TurnReport) {
+  protected remember(turn: TurnReport) {
     for (const s of turn.steps) {
       if (s.status === "executed") {
         this.completed.push({ action: s.action, ticks: s.result.ticks, ...(s.result.interrupted ? { interrupted: s.result.interrupted } : {}), ...(s.result.movement ? { movement: s.result.movement } : {}) });
@@ -656,7 +658,7 @@ export class NavigatorPlayer implements Policy {
   }
 
   /** Learn from the controller's own last move: speed, being stuck, and progress. */
-  private afterControllerMove(turn: TurnReport | undefined, o: Observation) {
+  protected afterControllerMove(turn: TurnReport | undefined, o: Observation) {
     const step = turn?.steps[0];
     const last = this.lastControllerMove;
     this.lastControllerMove = undefined;
@@ -678,14 +680,14 @@ export class NavigatorPlayer implements Policy {
     } else this.stuckInRow = 0;
   }
 
-  private speedFor(o: Observation) {
+  protected speedFor(o: Observation) {
     if (this.speed && this.speed.status === statusKey(o)) return this.speed.tilesPerTick;
     const sprint = o.self.status.some((s) => s.startsWith("super speed"));
     const slowed = o.self.status.includes("time is slowed") && !(this.hero === "Sieg" && sprint);
     return WALK_TILES_PER_TICK * (sprint ? SPRINT_MULTIPLIER : 1) * (slowed ? SLOW_SCALE : 1);
   }
 
-  private setGoal(g: { x: number; y: number } | null, o: Observation) {
+  protected setGoal(g: { x: number; y: number } | null, o: Observation) {
     this.goal = g ? { area: o.area.name, x: g.x, y: g.y, setTick: o.tick } : null;
     this.status = g ? "walking" : "none";
     this.detail = undefined;
@@ -696,7 +698,7 @@ export class NavigatorPlayer implements Policy {
   }
 
   /** Whether the hero stands at its goal (same rule as plan()). */
-  private atGoal(o: Observation) {
+  protected atGoal(o: Observation) {
     const goal = this.goal;
     if (!goal || goal.area !== o.area.name) return false;
     const grid = buildGrid(this.heroMemory, o, this.stuck);
@@ -710,7 +712,7 @@ export class NavigatorPlayer implements Policy {
    * One controller step toward the goal, or why the goal ended. Reads only
    * this hero's own memory and observation.
    */
-  private plan(o: Observation): { move?: { direction: Direction; ticks: number }; pathCells?: number; unknownCells?: number } {
+  protected plan(o: Observation): { move?: { direction: Direction; ticks: number }; pathCells?: number; unknownCells?: number } {
     const goal = this.goal!;
     if (goal.area !== o.area.name) {
       this.status = "unreachable";
@@ -834,7 +836,7 @@ export class NavigatorPlayer implements Policy {
    * one event when it starts and one when it stops. During a fight, hits below
    * the fight's HP threshold and news about its own target do not interrupt.
    */
-  private filterEvents(events: string[], o: Observation): string[] {
+  protected filterEvents(events: string[], o: Observation): string[] {
     const out: string[] = [];
     for (const e of events) {
       const m = MOTION_LINE.exec(e);
@@ -876,7 +878,7 @@ export class NavigatorPlayer implements Policy {
   }
 
   /** One ordinary action for the current wait or fight intention, or why it ended. */
-  private intentStep(o: Observation, legal: ActionSpec[]): { action?: GameAction; ended?: string } {
+  protected intentStep(o: Observation, legal: ActionSpec[]): { action?: GameAction; ended?: string } {
     const it = this.intent!;
     const can = (t: string) => legal.some((l) => l.type === t);
     if (o.tick >= it.untilTick) return { ended: `your ${it.kind === "wait" ? "wait_until" : it.kind} time ran out` };
@@ -915,7 +917,7 @@ export class NavigatorPlayer implements Policy {
    * and the backpack panel shows a nearby target; otherwise a short move
    * toward where this hero's screen shows it, or last showed it.
    */
-  private catchStep(it: Extract<Intent, { kind: "catch" }>, o: Observation, can: (t: string) => boolean): { action?: GameAction; ended?: string } {
+  protected catchStep(it: Extract<Intent, { kind: "catch" }>, o: Observation, can: (t: string) => boolean): { action?: GameAction; ended?: string } {
     const seen = o.visible
       .filter((v) => v.name === it.target && v.kind !== "partner")
       .sort((a, b) => a.distance - b.distance)[0];
@@ -1050,7 +1052,7 @@ export class NavigatorPlayer implements Policy {
   }
 }
 
-function describeIntent(it: Intent) {
+export function describeIntent(it: Intent) {
   if (it.kind === "wait") return { kind: "wait_until", until_tick: it.untilTick, ...(it.watch ? { watch: it.watch.name } : {}) };
   if (it.kind === "catch") return { kind: "catch", target: it.target, until_tick: it.untilTick, ...(it.last ? { last_seen: it.last } : {}), e_presses: it.presses };
   return { kind: "fight", target: it.target, until_tick: it.untilTick, hp_at_start: it.startHp };

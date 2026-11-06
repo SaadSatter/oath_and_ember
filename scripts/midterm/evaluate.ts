@@ -7,7 +7,7 @@
 //    scripts/midterm/final-approve.ts; review H2)
 //
 // Model players (PAID; only after the owner has authorized the stage):
-//   --player model-history|model-obs-only|model-memory|model-navigator --stage pilot|final|contingency --effort medium|low --paid
+//   --player model-history|model-obs-only|model-memory|model-navigator|model-centralized --stage pilot|final|contingency --effort medium|low --paid
 //   --max-spend-usd <n>   optional per-episode cap below the suite's (never above; harness episodeCap)
 //   --smoke --paid    one call, from the smoke stage
 // Every paid episode is reserved in the one shared spend ledger, in the git
@@ -107,7 +107,7 @@ let ledger: SpendLedger | undefined;
 const maxSpend = arg("--max-spend-usd");
 const episodeCapUsd = maxSpend === undefined ? undefined : Number(maxSpend);
 if (episodeCapUsd !== undefined && !player.startsWith("model")) throw Error("--max-spend-usd applies to model runs only.");
-if (player === "model-history" || player === "model-obs-only" || player === "model-guided" || player === "model-memory" || player === "model-navigator") {
+if (player === "model-history" || player === "model-obs-only" || player === "model-guided" || player === "model-memory" || player === "model-navigator" || player === "model-centralized") {
   const stage = arg("--stage");
   if (!stage) throw Error("--stage is required for model runs.");
   // Check the plan before touching the ledger or the network.
