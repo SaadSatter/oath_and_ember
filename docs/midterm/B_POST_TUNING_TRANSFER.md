@@ -195,3 +195,80 @@ The owner pasted "Combat Heuristics — Prompt-Only Tuning v2". It is stored **b
 
 Disclosure: written by the owner after Pilot-31 was known. Several lines answer its failures directly (leave a warned danger area, do not occupy the target's position, protect a low-health hero, shorter commitments), so a run with it is tuning on B. It is not derived from the A baseline.
 
+## 10. Proposed combined candidate `b-post-combined-v3` (2026-11-06)
+
+**Status: proposed, locked for paid runs, not approved. Declaration r8 still names v1; it is not changed until the review is complete and the owner approves the final text.**
+
+Owner direction: consolidate v1's spatial/search heuristics and v2's combat heuristics into one hierarchy (survive → find position → attack → verify → repeat/adjust → avoid idle time → coordinate/health → verify success). Address one centralized planner coordinating both heroes, with no messaging and nothing the base prompt already says. Drafted by the implementation agent to that outline. v1 (`60a0a013…`, approved) and v2 (`38adcbce…`, proposed) are unchanged.
+
+**Integrity.** This is owner-directed, post-hoc Situation B tuning, written after Pilot-31 (pre-tuned) and Pilot-32 (v1 post-tuned) were known. It is not an independent transfer experiment. Pilot-32 ran on `griffin-unprepared-return-v1`, a different scenario from Pilot-31's `griffin-unprepared-v1` (start, success predicate, prompt framing and observations all differ; see `evaluation-abc/B-posttuned-pilot32.json`). Both runs' evidence is preserved unchanged. No controller, navigation, action, observation, rule or scenario code changes with v3.
+
+### Text (exact)
+
+```text
+Planner guidance for both heroes (general heuristics; not facts about any particular place, enemy or solution):
+You plan for Sieg and Coco together. At each reply, go through these steps in order for each hero, and give each hero an order for the first step that applies to it.
+
+1. Survive visible threats. If a hero's screen shows a warning of an effect about to reach that hero's position (a marked line, area or charging attack), move that hero off it or have it defend before it lands. Do not keep a hero in a warned area to finish an attack. While threats are close, prefer short actions over long walks or long waits.
+
+2. Find a reachable, effective attack position. Plan over the combined map: walls, water and the listed extents of enemies and creatures block movement, and a hero's body needs open ground around it. Consider a few open tiles from which the hero's attack can plausibly reach the target in a straight line, not at the edge of its range, not overlapping any body, and with the other hero out of that line. Prefer one that is safe and short to reach. Do not stay on top of the target unless attacks from there visibly work.
+
+3. Attack when there is a plausible chance to connect: the target is visible, in reach, in the right direction and not blocked. Otherwise move toward the chosen position instead of attacking.
+
+4. Verify damage from what is shown, such as the target's health or label, allowing a short time for a projectile or effect to arrive before judging.
+
+5. Repeat what works and adjust what does not. Keep in known_obstacles which position, direction and timing combinations showed damage and which showed none, and return to a position that worked when it is safe. When attacks keep showing no effect, name one likely cause (distance, direction, obstruction, timing or the target's state), change only that, and check again. If several changes fail, try a different attack or another part of the objective.
+
+6. Avoid unproductive time. Wait only for a specific expected change; defend only against a concrete, imminent threat. A hero that cannot attack usefully now (for example while its ability recharges) should reposition, get clear or scout. Do not move without a positioning purpose. When what the objective needs next is on neither screen, explore systematically: head for the nearest unvisited edge of the map ("?" next to seen open ground), note searched areas in the plan, and back off and go around when a way is blocked. When the world changes (a way opens, a body moves), drop earlier blocked results near it and test again.
+
+7. Coordinate both heroes and protect their health. Give the two heroes complementary orders, and do not leave both exposed to the same visible threat. When a hero's health is low, give it a safer role and let the healthier hero take the riskier task; keep both heroes alive when the task requires it.
+
+8. Verify every required success condition from observations before treating the objective as done. Surviving, attacking or reaching one milestone is not the whole objective; follow the task to its end.
+```
+
+| Value | |
+| --- | --- |
+| Text SHA-256 | `c94a7bb5281c0db5630dc5af4320b98feb6291950bd965bffbdd1c2ec3886ee3` (3,082 characters) |
+| Prompt on `griffin-unprepared-return-v1` | `42cfa29a803bbf056bf9a39f52b9d81cff27c44d82be2e138a297c2283351487` |
+| Prompt on `griffin-unprepared-v1` | `9927327ee87ca46784ad41fa05f08b8e4afb7c5eb955b815bdcd3da0b821a2d4` |
+| Policy id on the return scenario | `centralized-f0592888(openai:gpt-6-luna@medium)·batch4·task-cdbee612·guidance-c94a7bb5` |
+| Tests | `packages/agent/test/bPostCombinedV3Guidance.test.ts`: hashes; appended block only (same base prompt, schema, batch; name + `·guidance-c94a7bb5`); paid lock; v1/v2 unchanged; wording smoke checks |
+
+### Coverage: v1, v2, v3
+
+"—" means absent. "Base" means the base planner prompt already says it, so v3 leaves it out or only points at it.
+
+| Instruction | v1 (A transfer) | v2 (owner combat) | v3 |
+| --- | --- | --- | --- |
+| Leave a warned danger area / defend before it lands | Yes (generic "effect about to cross") | Yes (priority 1) | Step 1 |
+| Shorter commitments near danger | — | Yes | Step 1 |
+| Blocking terrain and bodies; body clearance (connectivity) | Yes | — | Step 2 |
+| Seen-earlier things may have moved | Yes | — | Dropped: base prompt says `seen_earlier` "may have moved or gone" |
+| Systematic candidate attack positions (open, in reach, not at range edge, clear line, partner out of line, short) | Yes | Partly (check reach/direction/obstruction) | Step 2 |
+| Do not stand on the target | Yes (absolute) | Yes (when ineffective) | Step 2 (v2's conditional form) |
+| Attack only with a plausible chance to connect | — | Yes | Step 3 |
+| Verify damage from shown health; allow time to land | Partly | Yes | Step 4 (base already says accepted ≠ effect, so not restated) |
+| Memory of tried/working positions and aims (`known_obstacles`) | Yes | Yes ("remember positions") | Step 5 |
+| Change one factor at a time; name a cause | Partly ("change one thing") | Yes | Step 5 |
+| Return to an effective position | — | Yes | Step 5 |
+| Switch approach after several failures | Yes | — | Step 5 |
+| Waiting/defending need a concrete reason | — | Yes | Step 6 |
+| Recharging ability is not a reason to stand still | Yes | Partly | Step 6 |
+| No aimless movement | — | Yes | Step 6 |
+| Frontier search, notes on searched areas, backtracking | Yes | — | Step 6 |
+| Environment changes reset blocked results | Yes | — | Step 6 (short; the base prompt covers retrying after changes) |
+| Complementary orders; not both exposed | — | Yes | Step 7 (as one planner) |
+| Low-health hero takes the safer role | — (left out of v1) | Yes | Step 7 |
+| Verify every success condition | — | Yes | Step 8 |
+| "You are controlling a character" / teammate framing | — | Yes (wrong for this player) | Removed: one planner for both heroes |
+| Coordinate through messages | — | Yes (wrong: no messages in this mode) | Removed |
+| "Do not produce lengthy explanations" | — | Yes | Removed: base prompt sets the JSON reply and plan length |
+
+### Proposed run command (not authorized; refused while `proposed`)
+
+```sh
+npm run eval:live -- --scenario griffin-unprepared-return-v1 --seed 0 --player model-centralized --guidance b-post-combined-v3 --gateway openai --model gpt-6-luna --effort medium --max-spend-usd 0.75 --paid
+```
+
+Free mock validation of this path (`--gateway mock --no-viewer`, scratch output and ledger): start `45b1a6aa…`, guidance `b-post-combined-v3` (`proposed`, `c94a7bb5…`), prompt `42cfa29a…` for both heroes, cap $0.75, wall 3,600 s. The random mock ended with `error` at 103.5 game-s (the planner's stall guard on random replies, as in earlier mock rehearsals), $0.
+
