@@ -1,6 +1,6 @@
 # Evaluation — declared Hedge Maze and Griffin suite
 
-**Oath and Ember · `saadsatter` · declaration `oath-ember-abc-2026-11-06-r2`.**
+**Oath and Ember · `saadsatter` · declaration `oath-ember-abc-2026-11-06-r4`.**
 This report declares the three-case experiment and reports the evidence available
 so far. **It is not a completed three-case comparison.** A is implemented/frozen;
 B/C are declared designs awaiting legal checkpoint certification and integration.
@@ -39,14 +39,14 @@ Their hashes remain null until approved legal reset certification.
 
 Each case has **pre-tuned model**, **post-tuned model** and **cheap baseline**
 conditions, with **two repetitions per cell**: 12 model and six baseline episodes.
-Pilot-30 is allocated once as historical A/post/1; the other 16 rows remain unrun.
+Pilots 28 and 29 are allocated as historical A/pre/1–2 and Pilot-30 as A/post/1; the other 15 rows remain unrun.
 This reuse does not retroactively make Pilot-30 a preregistered final trial.
 
 - Model: `model-centralized`, `gpt-6-luna` medium, batch 4, game/controller
   observed post-tuned snapshot `040685c`. One planner sees both permitted hero observations and
   directs two legal controllers; it is not two independent LLM agents.
-- Pre-tuned: intended comparator without situation-specific tuning; Pilot-28 at `678b86c` is the owner-designated historical A/pre-tuned/1 failure.
-- Post-tuned: Pilot-30 is the owner-confirmed completion. Its preserved policy/prompt/config hashes identify the observed run, but the exact tuning intervention and before/after diff are not yet independently documented. Do not infer a particular guidance block or weight fine-tuning.
+- Pre-tuned: the planner prompt before tuning on A. Pilot-28 (`678b86c`) and Pilot-29 (`327c34a`, first tuning round only) are the owner-designated historical A/pre-tuned/1–2.
+- Post-tuned: Pilot-30 (`040685c`), after two rounds of prompt tuning on A. The added prompt rules are listed in [A_PROMPT_TUNING.md](docs/midterm/A_PROMPT_TUNING.md). No weights changed.
 - Cheap comparator: existing unchanged `baseline-quest` at `040685c`, free of
   model/API calls. It has hand-coded solution knowledge and independent hero
   scripts/messages: an information and architecture asymmetry, not an uninformed
@@ -61,7 +61,7 @@ the declared baseline trials and has not been silently registered in their place
 
 | Situation | Pre-tuned model | Post-tuned model | Cheap baseline |
 | --- | --- | --- | --- |
-| A | **0 successes / 1 observed trial**, Pilot-28 stopped at cow; second repetition unrun | **1 success / 1 observed trial**, historical post-tuned pilot; second repetition unrun | 0/2 declared trials run; historical free success exists |
+| A | **0 successes / 2 runs**: Pilots 28 and 29, both stopped by the owner at the cow (125.3 s, 54.6 s) | **1 success / 1 run**: Pilot-30, 89.5 s; second repetition unrun | 0/2 declared trials run; historical free success exists |
 | B | 0/2 run | 0/2 run | 0/2 run |
 | C | 0/2 run | 0/2 run | 0/2 run |
 
@@ -98,7 +98,19 @@ The runner's price source was dated 2026-10-28 with a 1.1 uplift; this is an
 estimate, not the provider's actual bill. Prices must be checked again before
 new paid calls. No current provider pricing or account balance is asserted here.
 
-The owner corrected the earlier pre-tuned classification: Pilot-30 is **post-tuned**. The old metadata is archived, not counted as another trial. Preserved prompt hashes alone do not establish what tuning occurred. Until the tuning diff and pre-tuned snapshot are documented, a prompt-only or matched-repeat claim is unsupported.
+The owner corrected the earlier pre-tuned classification: Pilot-30 is **post-tuned**. The old metadata is archived, not counted as another trial.
+
+### Situation A: prompt tuning
+
+| Condition | Run | Prompt version | Outcome | Game time | Calls | Est. cost |
+| --- | --- | --- | --- | --- | --- | --- |
+| Pre-tuned | Pilot-28 | before tuning | stopped by owner, stuck at the cow | 125.3 s | 79 | $0.094339 |
+| Pre-tuned | Pilot-29 | round 1 only | stopped by owner, cow moved but never passed | 54.6 s | 95 | $0.237263 |
+| Post-tuned | Pilot-30 | rounds 1 and 2 | **success** | 89.5 s | 167 | $0.443258 |
+
+The tuning added general rules to the planner's system prompt after each failed pre-tuned run. Round 1, after Pilot-28: only observed facts count as completed subgoals; an accepted action with no observed effect is not success; a watchdog for time without progress; Black Hole pull direction; keep the evaluation objective separate from the journal. Round 2, after Pilot-29: obstacles can change, so retry a way after something moves; trying is a test, not a claim; signs describe, they do not measure what blocks movement. The model, manual, task, tutorial, briefing, limits and game were the same in all three runs. Details: [A_PROMPT_TUNING.md](docs/midterm/A_PROMPT_TUNING.md).
+
+The same commits also changed controller code (walking, progress tracking and the trace writer) and the planner's input fields, so this is not a prompt-only controlled comparison. The manual stops are not limit failures, and Pilots 28 and 29 ran different prompt versions.
 
 ## Fairness, holdout and history
 
@@ -214,8 +226,10 @@ absence. No first-person experience, playtester, review, run or approval has
 been invented. See `docs/midterm/SUBMISSION_CHECKLIST.md` for remaining hand-in
 requirements, including the Week 3 scope update, course PR and CourseWorks URL.
 
-## Historical pre-tuned registration — Pilot-28 (declaration r3)
+## Historical pre-tuned registrations — Pilots 28 and 29 (declaration r4)
 
-The owner designates Pilot-28 as **A/pre-tuned/1**. It failed to obtain Enchanted Shears and was manually stopped while the cow still blocked the passage. The [complete-trace diagnosis](docs/midterm/agent-evidence/skill-runs/2026-11-05-pilot28-diagnosis.md) records **7,516 ticks / 125.267 game seconds (125.3 rounded)** and **900.8 wall seconds**; the owner recalled approximately 128 seconds. Use recorded elapsed time in results. The dry hedge was removed and the cow partially moved, but the key and Shears were not acquired.
+The owner designates **Pilot-28** as A/pre-tuned/1 and **Pilot-29** as A/pre-tuned/2. Neither obtained the Enchanted Shears; the owner stopped both while the heroes were held up at the cow. Pilot-28: 7,516 ticks (125.3 game-s), 900.8 wall-s, 79 calls, 1 invalid action. Pilot-29: 3,276 ticks (54.6 game-s), 1,193.6 wall-s, 95 calls, 1 invalid action; the cow was parked from tick 1560 but no hero was sent through the gap. Revision 4 fills Pilot-28's metrics from its own `summary.json` and trace (r3 left them null) and keeps the r3 records under `docs/midterm/evaluation-abc/history/`.
 
-Pilot-30 remains A/post-tuned/1, successful in 89.5 game seconds. Two historical model outcomes are now allocated; 16 of 18 rows remain unrun (10 model, six baseline). Each A model condition still needs its second repetition. These pilots predate declaration and include planner/controller changes; they do not establish a prompt-only causal improvement or matched frozen-policy repeats. Missing Pilot-28 metrics remain null rather than inferred. No raw evidence, frozen configuration or paid run was changed. This revision supersedes earlier statements above that no pre-tuned A trial was registered.
+Evidence is copied byte-for-byte to `evidence/traces/pilot-28-…/` and `evidence/traces/pilot-29-…/`. Both trace chains verify, and offline replays through the real engine match every recorded step result and end hash. Pilot-29 has no `summary.json` (the trace-writer bug fixed in `9f16035`), so its prompt and configuration hashes were never recorded. Videos: [pilot-28-29-pretuned-evidence](https://github.com/SaadSatter/oath_and_ember/releases/tag/pilot-28-29-pretuned-evidence).
+
+Three historical model outcomes are allocated; 15 of 18 rows remain unrun (9 model, six baseline). A still needs its second post-tuned repetition. These pilots predate the declaration and are not preregistered trials.

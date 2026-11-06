@@ -130,3 +130,7 @@ The owner subsequently requested formal declaration against the pasted midterm g
 ## 9. Active allocation after owner correction
 
 Pilot-30 occupies **A/post-tuned/1**, historical completed pilot. A/pre-tuned has no registered trial. The 18-row design still has one observed and 17 unrun rows. Declaration revision 2 archives revision 1; run files, original video, scenario/policy/config hashes, outcome and metrics are unchanged. Exact tuning provenance remains to be documented before matched pre/post or repeat claims.
+
+## 10. Tuning history documented (declaration r4)
+
+This supersedes the statements in sections 6 and 9 that the tuning intervention is undocumented and that A/pre-tuned has no trial. Pilot-30's tuning was two rounds of general rules added to the planner's system prompt, each after a failed pre-tuned run on A; the model, manual, task, tutorial, briefing, limits and game were the same throughout. The rules are listed in [A_PROMPT_TUNING.md](A_PROMPT_TUNING.md). Controller code changed in the same commits, so it is not a prompt-only controlled comparison. Pilots 28 and 29 are A/pre-tuned/1–2, and Pilot-30 stays A/post-tuned/1.

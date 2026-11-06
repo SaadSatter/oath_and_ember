@@ -62,13 +62,13 @@ certified unmerged wig-return checkpoint. New logical IDs are not yet CLI IDs.
 ## Players and information
 
 - **Pre-tuned:** intended model comparator without situation-specific tuning.
-  Pilot-28 at `678b86c` is registered as historical A/pre-tuned/1 by owner designation. Pilot-30 belongs to post-tuned.
+  Pilot-28 (`678b86c`) and Pilot-29 (`327c34a`) are registered as historical A/pre-tuned/1–2 by owner designation. Pilot-30 belongs to post-tuned.
 - **Post-tuned:** Pilot-30 is owner-confirmed post-tuned, with observed source
   `040685c`, recorded model `gpt-6-luna` medium, batch 4 and preserved prompt/
-  policy hashes. The exact tuning intervention/diff has not been independently
-  established. Do not infer a specific solution prompt or weight fine-tuning.
-  Document and freeze that intervention before calling a new run a matched
-  repeat. A pure prompt-only contrast cannot yet be claimed.
+  policy hashes. The tuning was planner prompt rules added after each failed
+  pre-tuned run, documented in [A_PROMPT_TUNING.md](A_PROMPT_TUNING.md); controller
+  code changed in the same commits, so a pure prompt-only contrast is not claimed.
+  No weights changed.
 - **Cheap baseline:** select the existing, unchanged **`baseline-quest` at
   `040685c`**, with implementation file SHA-256 values in the declaration JSON.
   It is deterministic, uses no model/API and costs $0 in provider charges.
@@ -161,8 +161,6 @@ in the Week 3 thread, and course PR/URL submission remain tracked in
 [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md). Declaration is complete;
 implementation, certification and the repeated experiment are not.
 
-## Historical pre-tuned registration — Pilot-28 (declaration r3)
+## Historical pre-tuned registrations — Pilots 28 and 29 (declaration r4)
 
-The owner designates Pilot-28 as **A/pre-tuned/1**. It failed to obtain Enchanted Shears and was manually stopped while the cow still blocked the passage. The [complete-trace diagnosis](agent-evidence/skill-runs/2026-11-05-pilot28-diagnosis.md) records **7,516 ticks / 125.267 game seconds (125.3 rounded)** and **900.8 wall seconds**; the owner recalled approximately 128 seconds. Use recorded elapsed time in results. The dry hedge was removed and the cow partially moved, but the key and Shears were not acquired.
-
-Pilot-30 remains A/post-tuned/1, successful in 89.5 game seconds. Two historical model outcomes are now allocated; 16 of 18 rows remain unrun (10 model, six baseline). Each A model condition still needs its second repetition. These pilots predate declaration and include planner/controller changes; they do not establish a prompt-only causal improvement or matched frozen-policy repeats. Missing Pilot-28 metrics remain null rather than inferred. No raw evidence, frozen configuration or paid run was changed. This revision supersedes earlier statements above that no pre-tuned A trial was registered.
+The owner designates **Pilot-28** (`678b86c`) as A/pre-tuned/1 and **Pilot-29** (`327c34a`) as A/pre-tuned/2. Neither obtained the Enchanted Shears; the owner stopped both while the heroes were held up at the cow, at 125.3 and 54.6 game-s. Manual stops are not limit failures. Pilot-30 (`040685c`) remains A/post-tuned/1, a success in 89.5 game-s. The pre/post difference is the planner prompt tuning documented in [A_PROMPT_TUNING.md](A_PROMPT_TUNING.md); the same commits also changed controller code, so it is not a prompt-only controlled comparison. Pilots 28 and 29 ran different prompt versions. Revision 4 fills Pilot-28's metrics from its own `summary.json` and trace; r3 is kept under `evaluation-abc/history/`. Three historical outcomes are allocated; 15 of 18 rows remain unrun (9 model, six baseline).

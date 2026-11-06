@@ -1,5 +1,5 @@
 {
-  "id": "oath-ember-abc-2026-11-06-r3",
+  "id": "oath-ember-abc-2026-11-06-r4",
   "declaredOn": "2026-11-06",
   "status": "declared-design; B/C runtime checkpoints and paid execution pending",
   "guidelines": {
@@ -32,7 +32,7 @@
     "postGuidanceHash": null,
     "postStatus": "Pilot-30 is owner-classified post-tuned; actual tuning intervention/diff must be documented before claiming a matched repeat or prompt-only contrast",
     "centralizedInformation": "one planner sees both permitted hero observations; no repository/evaluator/hidden state",
-    "observedPostTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)\u00b7batch4\u00b7tutorial-2ec2f251\u00b7briefing-a97d9268",
+    "observedPostTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-a97d9268",
     "observedPostTunedPromptHashA": "0616c47baf03f2860f75a4a0867221998b2439f51b55fde33c56111ec8240c44",
     "preTunedSnapshotCommit": "678b86c",
     "preTunedStatus": "Pilot-28 owner-designated pre-tuned failure, stopped at cow; preserved diagnosis records 125.267 game seconds, not owner-recalled approximately 128 seconds. Planner/controller changes separate it from Pilot-30.",
@@ -133,8 +133,9 @@
   ],
   "memoryRequirement": "Partial observation: clean bounded-memory versus observation-only comparison still required/pending; pre/post guidance is not a memory ablation",
   "implementationBoundary": "Declaration and documentation only; no new scenarios, policy change, model calls, merge, push or paid-run approval",
-  "supersedes": "oath-ember-abc-2026-11-06-r2",
-  "correction": "Owner confirms Pilot-30 is post-tuned; historical allocation moves from A/pre/1 to A/post/1. No case design or original evidence change.",
-  "classificationNote": "Owner designates Pilot-28 as historical A/pre-tuned/1; Pilot-30 remains A/post-tuned/1. Not a prompt-only controlled comparison.",
-  "declarationSha256": "13e1d5d03a2806ca61791b2c226cffe629fbb415a586b6609bfdd088c4d91bc2"
+  "supersedes": "oath-ember-abc-2026-11-06-r3",
+  "correction": "r4: owner designates Pilot-29 as historical A/pre-tuned/2. Pilot-28 row filled from its own summary.json and trace (previously null). No case design, limit or original evidence change.",
+  "classificationNote": "Pre-tuned A: Pilot-28 (678b86c) and Pilot-29 (327c34a), both manual stops. Post-tuned A: Pilot-30 (040685c). The pre/post difference is documented as prompt tuning in docs/midterm/A_PROMPT_TUNING.md; the same commits also changed controller code, so it is not a prompt-only controlled comparison.",
+  "promptTuningRecord": "docs/midterm/A_PROMPT_TUNING.md",
+  "declarationSha256": "fee13d3cc324188a50b289bad2b2e194f3bd404fb2cea0bf3ca470538ab9bd8d"
 }

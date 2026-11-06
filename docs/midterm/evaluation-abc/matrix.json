@@ -1,5 +1,5 @@
 {
-  "about": "Declared A/B/C design revision 1; B/C runtime certification and paid approval remain pending.",
+  "about": "Declared A/B/C design revision 1; B/C runtime certification and paid approval remain pending. Updated for declaration r4 (Pilot-29 added as A/pre-tuned/2).",
   "labelsFrom": {
     "source": "owner revised three-situation instruction",
     "status": "declared design; B/C runtime hashes pending certification",
@@ -29,11 +29,16 @@
       "heldOut": false,
       "cells": {
         "pre-tuned": {
-          "status": "failure-manual-stop",
+          "status": "no-success-2-manual-stops",
           "record": "docs/midterm/evaluation-abc/A-pretuned-pilot28.json",
-          "trials": 1,
+          "trials": 2,
           "episodes": [
-            "Pilot-28"
+            "Pilot-28",
+            "Pilot-29"
+          ],
+          "records": [
+            "docs/midterm/evaluation-abc/A-pretuned-pilot28.json",
+            "docs/midterm/evaluation-abc/A-pretuned-pilot29.json"
           ]
         },
         "post-tuned": {
@@ -43,7 +48,7 @@
           ],
           "trials": 1,
           "record": "docs/midterm/evaluation-abc/A-posttuned-pilot30.json",
-          "classification": "owner-confirmed post-tuned; tuning diff pending documentation"
+          "classification": "owner-confirmed post-tuned; prompt tuning documented in docs/midterm/A_PROMPT_TUNING.md"
         },
         "cheap-baseline": {
           "status": "pending",
