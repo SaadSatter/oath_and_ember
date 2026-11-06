@@ -1,0 +1,52 @@
+{
+  "about": "Pilot-29 verification record, written 2026-11-06 by the Claude Code implementation agent (session 48).",
+  "ledgerEntry": "pilot-29",
+  "sourceCommit": "327c34a",
+  "files": [
+    {
+      "file": "live.json",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T03-44-31-567Z/live.json",
+      "bytes": 660,
+      "sha256": "3ad95ba36ef09c6e7980ff64a5cd51f99b6dc8e6fb69499512275794d180528f",
+      "identicalToSource": true
+    },
+    {
+      "file": "recording.json",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T03-44-31-567Z/recording.json",
+      "bytes": 1719,
+      "sha256": "024e4f79151a5db37d21388ef94ac311dc3992154bae0b4477e9078f61b1093b",
+      "identicalToSource": true
+    },
+    {
+      "file": "run.json",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T03-44-31-567Z/run.json",
+      "bytes": 704,
+      "sha256": "3147abe94557d6b817c9fa96b911d18ae627418a67a4828bbec1fdb45e15785d",
+      "identicalToSource": true
+    },
+    {
+      "file": "trace.jsonl",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T03-44-31-567Z/S2-local-seed0/trace.jsonl",
+      "bytes": 4854427,
+      "sha256": "c930d8312274d159fdaed4492e709ac7357cc23fe305f311eea19d72dbb622c6",
+      "identicalToSource": true
+    }
+  ],
+  "video": {
+    "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T03-44-31-567Z/recording.webm",
+    "committed": false,
+    "bytes": 120321703,
+    "sha256": "26482056e7c8ab569a431cecb8a30efd44bf7d4f0254c3e2e6625fc5b1ac3b47",
+    "releaseAsset": "https://github.com/SaadSatter/oath_and_ember/releases/download/pilot-28-29-pretuned-evidence/pilot-29-model-centralized-S2-local-seed0-live.webm",
+    "check": "scripts/evidence/verify-video.ts (Playwright ffmpeg-1011): full decode exit 0, no decode errors, 1194.96 s; frames at 2/50/97/99.9% have real content",
+    "terminalOverlay": "not inspected by eye",
+    "kind": "live viewer capture"
+  },
+  "checks": {
+    "traceChain": "verifyTrace passed: 2296 lines",
+    "replay": "replay-video.ts --check-only at 5388b23, on a scratch copy of the trace with a stand-in summary.json naming scenario S2-local (none was written by the run): REPLAY MATCHES THE TRACE: start hash, 391 step results, end (manual_stop, 559944d7930c18bf) and 3276 ticks. No model calls.",
+    "secrets": "scan_secrets.py on this folder: 0 findings"
+  },
+  "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+  "endHash": "559944d7930c18bf67fa07885c86d0a6970da4d32a3fb5bb839a08c44aa06182"
+}
