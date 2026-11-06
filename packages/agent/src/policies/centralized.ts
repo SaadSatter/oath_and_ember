@@ -95,6 +95,10 @@ Reply with ONE JSON object and nothing else:
 - progress separates actions attempted, input accepted, execution confirmed, observable effects, and completed subgoals. An accepted action without an observed effect is not a successful experiment. If no relevant effect follows, change position, aim or assignment. Do not repeat equivalent ineffective presses indefinitely.
 - The inactivity watchdog counts game time since verified progress across all renewed waits/holds and planner calls. After ${CENTRAL.holdSeconds} seconds, reconsider each overdue hero: give changed active work, or one specific observed cooldown/ongoing-effect condition with a deadline. Repeating an identical passive plan cannot bypass it. Give the other hero productive work while one waits.
 - wait_until may include "ability": "<exact observed ability name>" to end when its visible state becomes ready. Its seconds remain a deadline, not an assertion about a hidden timer. Include the cast and its follow-up wait in one order when appropriate.
+- Obstacles can change. A way that was blocked may open when something in the world changes: a body moves, blocked tiles become open, or a hero stands on a tile that was blocked (observed_evidence kinds "route_change", "terrain", "displacement", "traversal"). After such a change, walking that way again is a reasonable test. You do not need proof that a way is open before trying it; trying is how you find out.
+- Trying a way is a test, not a claim. Do not mark an obstacle solved in subgoals_done because you are trying it; only observed results (for example a "traversal" fact, or the hero arriving) count.
+- Signs, captions and other text in the world describe things; they are not measurements of what blocks movement now. A hero's screen, the visible extents and move results show the current state. When text and the current state disagree, test the current state.
+- A move or go_to that gets through where a hero was blocked before shows that way is passable now. A move that stops short, or a go_to that ends unreachable, says where and what stopped it: use that to change position, approach or order, and try again after something relevant changes, rather than avoiding that place for good. heroes.<hero>.unreachable_goals lists goals that hero found unreachable and whether its map near the way has changed since.
 - A Black Hole pulls toward its predicted landing point, not its firing direction. near_pull_boundary is uncertain, not a confirmed hit. Check obstructing_heroes and move those bodies clear of the possible pull path.
 - evaluation_objective remains the task and episode briefing even when the broader journal has a different objective. Keep them separate in every plan.
 - "plan" replaces your plan. "known_obstacles" replaces that list when sent. Verified subgoals persist and new evidence IDs append to them (at most ${CENTRAL.subgoalsKept} and ${CENTRAL.obstaclesKept} lines are kept).
@@ -673,6 +677,11 @@ export class CentralizedController extends NavigatorPlayer {
   restorePending(reasons: string[]) {
     this.pending.push(...reasons);
   }
+  private takeNotices() {
+    const n = [...this.notices];
+    this.notices = [];
+    return n;
+  }
   takeFresh() {
     const f = this.fresh;
     this.fresh = false;
@@ -856,6 +865,8 @@ export class CentralizedController extends NavigatorPlayer {
       feedback: o.feedback.slice(-CENTRAL.feedbackShown),
       backpack_panel_target: o.inventory.nearbyTarget ?? null,
       recent_blocked_moves: mem.recent_blocked_moves,
+      ...(this.blockedGoals.size ? { unreachable_goals: this.blockedGoalsView(o) } : {}),
+      ...(this.notices.length ? { walking_notices: this.takeNotices() } : {}),
       repeated_without_new_result: mem.repeated_without_new_result,
       verified_events: mem.verified_events.filter((e) => e.superseded_by === undefined).slice(-CENTRAL.verifiedShown),
       legal_actions: input.legal.filter((l) => l.type !== "message"),
@@ -870,6 +881,7 @@ export class CentralizedController extends NavigatorPlayer {
     if (input.batch) this.remember(input.batch);
     if (input.batch) this.heroMemory.recordTurn(input.batch, this.lastObservation);
     this.heroMemory.observe(o);
+    this.observeBodies(o);
     this.afterControllerMove(input.batch, o);
     this.lastObservation = o;
     this.input = input;

@@ -7,7 +7,9 @@ export const PROGRESS = Object.freeze({
   idleTicks: 1800,
   effectTicks: 360,
   kept: 32,
-  version: 1,
+  /** Tiles a hero saw blocked are remembered this long (ticks) for traversal evidence. */
+  blockedMemoryTicks: 7200,
+  version: 2,
 });
 type Evidence = {
   id: string;
@@ -39,6 +41,8 @@ type State = {
   nextReview?: number;
   permit?: { condition: string; until: number };
   usedConditions: Set<string>;
+  /** Tiles this hero saw blocked ("#", a body's "C", or where its own move was stopped), with the tick. */
+  blockedSeen: Map<string, number>;
 };
 const state = (): State => ({
   since: 0,
@@ -48,7 +52,19 @@ const state = (): State => ({
   attempts: [],
   assignments: new Map(),
   usedConditions: new Set(),
+  blockedSeen: new Map(),
 });
+const STEP: Record<string, [number, number]> = { n: [0, -1], ne: [1, -1], e: [1, 0], se: [1, 1], s: [0, 1], sw: [-1, 1], w: [-1, 0], nw: [-1, -1] };
+const cellsOf = (e: { x: number; y: number; w: number; h: number }) => {
+  const out: string[] = [];
+  for (let y = Math.floor(e.y); y < Math.ceil(e.y + e.h); y++) for (let x = Math.floor(e.x); x < Math.ceil(e.x + e.w); x++) out.push(`${x},${y}`);
+  return out;
+};
+const span = (cells: string[]) => {
+  const xs = cells.map((c) => Number(c.split(",")[0])), ys = cells.map((c) => Number(c.split(",")[1]));
+  const r = (v: number[]) => (Math.min(...v) === Math.max(...v) ? `${Math.min(...v)}` : `${Math.min(...v)}–${Math.max(...v)}`);
+  return `x ${r(xs)}, y ${r(ys)}`;
+};
 const bag = (o: Observation) =>
   o.inventory.items
     .map((i) => [i.id, i.count])
@@ -98,6 +114,12 @@ export class CentralProgress {
     for (const step of turn?.steps ?? []) {
       const before = s.observation ?? o;
       const a = step.action;
+      // Where this hero's own walking was stopped: the tile just ahead of where it stopped.
+      const mv = step.result.movement;
+      if (a.type === "move" && mv?.blocked && STEP[a.direction]) {
+        const [vx, vy] = STEP[a.direction];
+        s.blockedSeen.set(`${o.area.name}:${Math.floor(mv.to.x + vx * 0.6)},${Math.floor(mv.to.y + vy * 0.6)}`, before.tick);
+      }
       if (!["wait", "move", "defend"].includes(a.type)) {
         const accepted = step.status === "executed" && step.result.accepted;
         const performed = step.result.attack === "performed";
@@ -181,8 +203,23 @@ export class CentralProgress {
           )
             add(
               "displacement",
-              `Observed ${v.name} move from (${old!.x}, ${old!.y}) to (${v.x}, ${v.y}); this alone does not confirm a puzzle is solved.`,
+              `Observed ${v.name} move from (${old!.x}, ${old!.y}) to (${v.x}, ${v.y}) after this hero's action.`,
             );
+          // A body that moved off tiles it covered: a way through them may be
+          // open now. Recorded as a fact to test, never as a completed subgoal,
+          // and (like any other actor's movement) it does not restart the
+          // inactivity clock.
+          if (old?.extent && v.extent) {
+            const now = new Set(cellsOf(v.extent));
+            const freed = cellsOf(old.extent).filter((c) => !now.has(c));
+            if (freed.length)
+              this.add(
+                o,
+                "route_change",
+                `Observed the body of ${v.name} (${v.kind}) no longer cover ${span(freed)} in ${o.area.name} (it covered them at tick ${prev.tick}). A way through those tiles that was blocked before may be passable now; walking there is the test.`,
+                false,
+              );
+          }
           // Enemy movement and offscreen disappearance are not accomplishments.
           if (
             v.kind === "enemy" &&
@@ -237,6 +274,22 @@ export class CentralProgress {
         }
       }
     const cell = `${o.area.name}:${Math.floor(o.self.x)},${Math.floor(o.self.y)}`;
+    // Standing on a tile this hero saw blocked (or was stopped short of):
+    // direct evidence that the way through it is passable now.
+    const wasBlocked = s.blockedSeen.get(cell);
+    if (wasBlocked !== undefined && wasBlocked < o.tick) {
+      add(
+        "traversal",
+        `Observed ${o.hero} at (${o.self.x}, ${o.self.y}) in ${o.area.name}, on a tile this hero saw blocked or was stopped by at tick ${wasBlocked}: the way through it is passable now.`,
+      );
+      s.blockedSeen.delete(cell);
+    }
+    // Remember what this screen shows blocked: terrain, and bodies with an extent.
+    for (let y = 0; y < o.screen.rows.length; y++)
+      for (let x = 0; x < o.screen.rows[y].length; x++)
+        if (o.screen.rows[y][x] === "#") s.blockedSeen.set(`${o.area.name}:${o.screen.originX + x},${o.screen.originY + y}`, o.tick);
+    for (const v of o.visible) if (v.extent && v.kind === "creature") for (const c of cellsOf(v.extent)) s.blockedSeen.set(`${o.area.name}:${c}`, o.tick);
+    for (const [k, t] of s.blockedSeen) if (o.tick - t > PROGRESS.blockedMemoryTicks) s.blockedSeen.delete(k);
     const firstVisit = !s.walked.has(cell);
     s.walked.add(cell);
     // Mere movement of another actor, damage to us, cooldown countdown and
@@ -279,7 +332,7 @@ export class CentralProgress {
       }
       if (a.effects.length)
         a.outcome =
-          "Observable effects confirmed after this attempt; causation and subgoal completion are not assumed.";
+          "Observable effects followed this attempt. If they changed an obstacle, walking through it is the test; a subgoal still needs its own observed result.";
     }
     for (const a of s.attempts)
       if (a.accepted && !a.effects.length && o.tick >= a.until)
@@ -375,10 +428,11 @@ export class CentralProgress {
       bounded_dependency: s.permit ?? null,
       attempted_actions: s.attempts.map((a) => ({
         tick: a.tick,
-        action: a.action,
+        // Copies: a view is traced and must not change when the attempt does.
+        action: structuredClone(a.action),
         accepted: a.accepted,
         execution: a.execution,
-        confirmed_effect_ids: a.effects,
+        confirmed_effect_ids: [...a.effects],
         outcome: a.outcome,
       })),
       repeated_assignments: [...s.assignments]

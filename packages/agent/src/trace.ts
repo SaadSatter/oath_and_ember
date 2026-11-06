@@ -33,10 +33,15 @@ export class TraceWriter {
   }
   write(event: { type: string; tick: number; player?: string; data: unknown }) {
     const body = { seq: this.seq++, ...event, wallMs: Date.now() - this.started, prev: this.prev };
-    const line = { ...body, hash: digest(body) } as TraceLine;
+    const text = JSON.stringify({ ...body, hash: digest(body) });
+    // The record is a snapshot of what was written: the kept line is parsed
+    // back from the same text, so a caller that later changes an object it
+    // passed in (for example a progress list that keeps growing) cannot change
+    // the recorded line or break its hash. Format and hash are unchanged.
+    const line = JSON.parse(text) as TraceLine;
     this.prev = line.hash;
     this.lines.push(line);
-    if (this.path) appendFileSync(this.path, `${JSON.stringify(line)}\n`);
+    if (this.path) appendFileSync(this.path, `${text}\n`);
     this.onLine?.(line);
   }
 }

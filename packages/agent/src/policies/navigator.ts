@@ -82,6 +82,21 @@ export const NAV = Object.freeze({
   catchMoveTicks: 8,
   /** Lost from sight: the chase ends once the hero is this close (tiles) to where it was last seen. */
   catchLostTiles: 1,
+  /**
+   * Extra cost of a tile a body (a visible thing with an extent) covered when
+   * this hero last saw it, while that tile is off screen. Without it such a
+   * tile read as open ground the moment the body left the screen, and a walk
+   * flipped between two routes as the body came in and out of view.
+   */
+  rememberedBodyCost: 25,
+  /** A walk that enters the same tile this many times without its best path getting shorter is going round in circles. */
+  cycleEntries: 3,
+  /** Bounded local recovery: how many times a circling walk avoids its loop tiles and tries again before it ends unreachable. */
+  cycleRecoveries: 1,
+  /** A goal found unreachable may be sent again this many times while nothing on the hero's map changed near the way. */
+  blockedRetries: 1,
+  /** Tiles around the hero and the goal whose blocked/open state decides whether "something changed" since a goal was found unreachable. */
+  changeMarginTiles: 6,
 });
 export const NAV_ID = createHash("sha256").update(JSON.stringify(NAV)).digest("hex").slice(0, 8);
 
@@ -227,22 +242,40 @@ function extentCells(v: VisibleThing): Cell[] {
   return out;
 }
 
+/** A body this hero saw (a visible thing with an extent) and the tiles it covered then. */
+export interface SeenBody {
+  area: string;
+  name: string;
+  kind: string;
+  cells: Cell[];
+  extent: { x: number; y: number; w: number; h: number };
+  tick: number;
+}
+
 /**
  * The grid this hero navigates: its remembered terrain (already updated with
- * the current screen), the things its current screen shows, and the cells its
- * own moves were stopped short by. `goal` may stand on a blocking cell (an
+ * the current screen), the things its current screen shows, the bodies it saw
+ * earlier where its screen no longer shows those tiles, and the cells its own
+ * moves were stopped short by. `goal` may stand on a blocking cell (an
  * object, an exit): it is then left blocked and approached from beside.
+ * `ignoreBodies` builds the same grid without any body, to tell whether a
+ * body alone closes a way.
  */
-export function buildGrid(memory: HeroMemory, o: Observation, stuck: ReadonlyMap<string, number>): NavGrid {
+export function buildGrid(memory: HeroMemory, o: Observation, stuck: ReadonlyMap<string, number>, bodies: Iterable<SeenBody> = [], ignoreBodies = false): NavGrid {
   const { name, widthTiles: w, heightTiles: h } = o.area;
   const flying = o.self.status.some((s) => s.startsWith("flying"));
   const terrain = (x: number, y: number) => memory.terrainAt(name, x, y) ?? "?";
   const hard = new Set<string>();
   const occupied = new Set<string>();
   for (const v of o.visible) {
-    if (v.kind === "creature" && v.extent) for (const c of extentCells(v)) hard.add(key(c.x, c.y));
-    else if (v.kind === "creature" || v.kind === "enemy" || v.kind === "partner") occupied.add(key(Math.floor(v.x), Math.floor(v.y)));
+    if (v.kind === "creature" && v.extent) {
+      if (!ignoreBodies) for (const c of extentCells(v)) hard.add(key(c.x, c.y));
+    } else if (v.kind === "creature" || v.kind === "enemy" || v.kind === "partner") occupied.add(key(Math.floor(v.x), Math.floor(v.y)));
   }
+  // The screen is the truth for the tiles it shows; elsewhere a body seen earlier is assumed still there.
+  const remembered = new Set<string>();
+  if (!ignoreBodies)
+    for (const b of bodies) if (b.area === name) for (const c of b.cells) if (!onScreen(o, c.x, c.y)) remembered.add(key(c.x, c.y));
   const blockedChar = (t: string) => BLOCKING.has(t) || (t === "~" && !flying);
   const inside = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h;
   return {
@@ -263,9 +296,29 @@ export function buildGrid(memory: HeroMemory, o: Observation, stuck: ReadonlyMap
         }
       if (occupied.has(k)) c += NAV.occupiedCost;
       if (stuck.has(k)) c += NAV.stuckCost;
+      if (remembered.has(k)) c += NAV.rememberedBodyCost;
       return c;
     },
   };
+}
+
+/** Whether this hero's current screen shows tile (x, y). */
+export function onScreen(o: Observation, x: number, y: number) {
+  const { originX, originY, rows } = o.screen;
+  return y >= originY && y < originY + rows.length && x >= originX && x < originX + (rows[0]?.length ?? 0);
+}
+
+/**
+ * The blocked/open state of the tiles around `a` and `b` (plus a margin) on
+ * this grid: "#" blocked, "?" never seen, "." open. Two equal signatures mean
+ * nothing this hero has observed there changed.
+ */
+export function gridSignature(grid: NavGrid, a: Cell, b: Cell, margin = NAV.changeMarginTiles): string {
+  const x0 = Math.max(0, Math.min(a.x, b.x) - margin), x1 = Math.min(grid.w - 1, Math.max(a.x, b.x) + margin);
+  const y0 = Math.max(0, Math.min(a.y, b.y) - margin), y1 = Math.min(grid.h - 1, Math.max(a.y, b.y) + margin);
+  let out = `${x0},${y0}:`;
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) out += !Number.isFinite(grid.cost(x, y)) ? "#" : grid.unknown(x, y) ? "?" : ".";
+  return createHash("sha256").update(out).digest("hex").slice(0, 16);
 }
 
 const STEPS: [number, number][] = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
@@ -601,6 +654,12 @@ export class NavigatorPlayer implements Policy {
   private nudge = 1;
   protected lastControllerMove?: { direction: Direction };
   protected readonly stuck = new Map<string, number>();
+  /** Bodies this hero saw, by area and name, kept until its screen shows their tiles without them. */
+  protected readonly bodies = new Map<string, SeenBody>();
+  /** The current walk: tiles entered (count), the last tile, the shortest path cost so far and recoveries used. */
+  private walk = { entries: new Map<string, number>(), last: "", best: Infinity, recoveries: 0 };
+  /** Goals found unreachable: when, why, how often, and the hero's map around the way at that moment. */
+  protected readonly blockedGoals = new Map<string, { area: string; x: number; y: number; tick: number; detail: string; signature: string; failures: number }>();
   private speed?: { tilesPerTick: number; status: string };
   protected walkedFrom?: { x: number; y: number; tick: number };
   protected walkedTicks = 0;
@@ -688,6 +747,11 @@ export class NavigatorPlayer implements Policy {
   }
 
   protected setGoal(g: { x: number; y: number } | null, o: Observation) {
+    // The same goal sent again while it is still being walked carries on the
+    // same walk: its stuck, progress and circling counts are kept, so asking
+    // again cannot reset a walk that is going round in circles.
+    const same = !!g && !!this.goal && this.status === "walking" && this.goal.area === o.area.name && this.goal.x === g.x && this.goal.y === g.y;
+    if (same) return;
     this.goal = g ? { area: o.area.name, x: g.x, y: g.y, setTick: o.tick } : null;
     this.status = g ? "walking" : "none";
     this.detail = undefined;
@@ -695,13 +759,101 @@ export class NavigatorPlayer implements Policy {
     this.noProgress = 0;
     this.lastCost = Infinity;
     this.stuckInRow = 0;
+    this.walk = { entries: new Map(), last: "", best: Infinity, recoveries: 0 };
+    if (g) this.checkBlocked(o);
+  }
+
+  private goalKey(area: string, x: number, y: number) {
+    return `${area}|${Math.floor(x)},${Math.floor(y)}`;
+  }
+  private grid(o: Observation, ignoreBodies = false) {
+    return buildGrid(this.heroMemory, o, this.stuck, this.bodies.values(), ignoreBodies);
+  }
+  private signatureFor(o: Observation, grid: NavGrid) {
+    const goal = this.goal!;
+    return gridSignature(grid, { x: Math.floor(o.self.x), y: Math.floor(o.self.y) }, { x: Math.floor(goal.x), y: Math.floor(goal.y) });
+  }
+
+  /**
+   * A goal sent again after it was found unreachable: walk it again when the
+   * hero's own map changed near the way since then (or on the first retry,
+   * since a change may be off this hero's screen); otherwise end it at once
+   * with the earlier reason, instead of repeating the same failed walk.
+   */
+  private checkBlocked(o: Observation) {
+    const goal = this.goal!;
+    const k = this.goalKey(goal.area, goal.x, goal.y);
+    const b = this.blockedGoals.get(k);
+    if (!b) return;
+    const changed = this.signatureFor(o, this.grid(o)) !== b.signature;
+    if (changed) {
+      this.notices.push(`your map changed near the way to (${goal.x}, ${goal.y}) since it was found unreachable at tick ${b.tick}; walking it again`);
+      this.blockedGoals.delete(k);
+      return;
+    }
+    if (b.failures <= NAV.blockedRetries) {
+      this.notices.push(`(${goal.x}, ${goal.y}) was found unreachable at tick ${b.tick} and nothing on your map near the way has changed since; trying once more`);
+      return;
+    }
+    this.status = "unreachable";
+    this.detail = `still unreachable: nothing on your map near the way changed since tick ${b.tick} (${b.detail}). Look again from nearby or wait for something to change before sending it again`;
+  }
+
+  /** End the walk as unreachable, remembering the goal and the hero's map around the way. */
+  private fail(o: Observation, grid: NavGrid, detail: string) {
+    const goal = this.goal!;
+    const k = this.goalKey(goal.area, goal.x, goal.y);
+    const prev = this.blockedGoals.get(k);
+    this.status = "unreachable";
+    this.detail = `${detail}${this.obstruction(o)}`;
+    this.blockedGoals.set(k, { area: goal.area, x: goal.x, y: goal.y, tick: o.tick, detail: this.detail.slice(0, 300), signature: this.signatureFor(o, grid), failures: (prev?.failures ?? 0) + 1 });
+    while (this.blockedGoals.size > 16) this.blockedGoals.delete(this.blockedGoals.keys().next().value!);
+  }
+
+  /** What this hero has seen in the way: a body that alone closes every path, with where and when it was seen. */
+  private obstruction(o: Observation) {
+    const goal = this.goal!;
+    if (goal.area !== o.area.name) return "";
+    const without = this.grid(o, true);
+    const { cells } = goalCells(without, goal);
+    if (!cells.length || !aStar(without, { x: Math.floor(o.self.x), y: Math.floor(o.self.y) }, cells)) return "";
+    const seen = [
+      ...o.visible.filter((v) => v.extent).map((v) => ({ name: v.name, kind: v.kind, extent: v.extent!, tick: o.tick, now: true })),
+      ...[...this.bodies.values()].filter((b) => b.area === o.area.name && !o.visible.some((v) => v.name === b.name && v.extent)).map((b) => ({ ...b, now: false })),
+    ];
+    if (!seen.length) return "";
+    const r2 = (v: number) => Math.round(v * 100) / 100;
+    const span = (a: number, w: number) => `${r2(a)}–${r2(a + w)}`;
+    return `. On your map only ${seen.map((b) => `the body of ${b.name} (${b.kind}) ${b.now ? "on your screen now" : `as you last saw it at tick ${b.tick}`}, covering x ${span(b.extent.x, b.extent.w)}, y ${span(b.extent.y, b.extent.h)}`).join(" and ")} closes the way; if it moves, the way may open`;
+  }
+
+  /** Read-only: goals found unreachable, and whether this hero's map near the way changed since. */
+  blockedGoalsView(o: Observation) {
+    return [...this.blockedGoals.values()]
+      .filter((b) => b.area === o.area.name)
+      .map((b) => {
+        const g = this.goal;
+        this.goal = { area: b.area, x: b.x, y: b.y, setTick: 0 };
+        const changed = this.signatureFor(o, this.grid(o)) !== b.signature;
+        this.goal = g;
+        return { goal: { x: b.x, y: b.y }, found_unreachable_at_tick: b.tick, reason: b.detail, times: b.failures, map_changed_near_the_way_since: changed };
+      });
+  }
+
+  /** Remember each body this hero's screen shows; forget one when the screen shows its tiles without it. */
+  protected observeBodies(o: Observation) {
+    for (const v of o.visible)
+      if (v.extent && v.kind === "creature")
+        this.bodies.set(`${o.area.name}|${v.name}`, { area: o.area.name, name: v.name, kind: v.kind, cells: extentCells(v), extent: { ...v.extent }, tick: o.tick });
+    for (const [k, b] of this.bodies)
+      if (b.area === o.area.name && b.tick !== o.tick && b.cells.some((c) => onScreen(o, c.x, c.y))) this.bodies.delete(k);
   }
 
   /** Whether the hero stands at its goal (same rule as plan()). */
   protected atGoal(o: Observation) {
     const goal = this.goal;
     if (!goal || goal.area !== o.area.name) return false;
-    const grid = buildGrid(this.heroMemory, o, this.stuck);
+    const grid = this.grid(o);
     const target = goalPoint(goal);
     const { cells, onCell } = goalCells(grid, goal);
     const here = { x: Math.floor(o.self.x), y: Math.floor(o.self.y) };
@@ -719,8 +871,9 @@ export class NavigatorPlayer implements Policy {
       this.detail = `your goal was in ${goal.area}; you are now in ${o.area.name}`;
       return {};
     }
+    if (this.status === "unreachable") return {};
     for (const [k, t] of this.stuck) if (o.tick - t > NAV.stuckTtl) this.stuck.delete(k);
-    const grid = buildGrid(this.heroMemory, o, this.stuck);
+    const grid = this.grid(o);
     const target = goalPoint(goal);
     const { cells, onCell } = goalCells(grid, goal);
     const me = { x: o.self.x, y: o.self.y };
@@ -732,20 +885,45 @@ export class NavigatorPlayer implements Policy {
       return {};
     }
     if (!cells.length) {
-      this.status = "unreachable";
-      this.detail = `(${goal.x}, ${goal.y}) is blocked on your map and has no open tile beside it`;
+      this.fail(o, grid, `(${goal.x}, ${goal.y}) is blocked on your map and has no open tile beside it`);
       return {};
     }
     if (this.replans > NAV.maxReplans) {
-      this.status = "unreachable";
-      this.detail = `your moves toward (${goal.x}, ${goal.y}) kept stopping short (${this.replans} times)`;
+      this.fail(o, grid, `your moves toward (${goal.x}, ${goal.y}) kept stopping short (${this.replans} times)`);
       return {};
+    }
+    // Going round in circles: the same tile entered again and again while the
+    // best path never got shorter. Once, avoid the loop's tiles and try
+    // another way (bounded local recovery); then give up with the reason.
+    // Counting tile entries (not decisions) means lining up inside a tile, or
+    // the game sliding the hero along an edge, is never counted as a loop.
+    const cellKey = key(here.x, here.y);
+    if (cellKey !== this.walk.last) {
+      this.walk.entries.set(cellKey, (this.walk.entries.get(cellKey) ?? 0) + 1);
+      this.walk.last = cellKey;
+    }
+    const loop = [...this.walk.entries].filter(([, n]) => n >= 2).map(([k]) => k);
+    if ((this.walk.entries.get(cellKey) ?? 0) >= NAV.cycleEntries) {
+      const where = loop.slice(0, 4).map((k) => `(${k.replace(",", ", ")})`).join(", ");
+      if (this.walk.recoveries >= NAV.cycleRecoveries) {
+        this.fail(o, grid, `your walk toward (${goal.x}, ${goal.y}) kept going back and forth through ${where} without getting closer`);
+        return {};
+      }
+      this.walk.recoveries++;
+      for (const k of loop) this.stuck.set(k, o.tick);
+      this.walk.entries = new Map([[cellKey, 1]]);
+      this.notices.push(`your walk toward (${goal.x}, ${goal.y}) was going back and forth through ${where}; trying another way`);
+      return this.plan(o);
     }
     const found = aStar(grid, here, cells);
     if (!found) {
-      this.status = "unreachable";
-      this.detail = `no path to (${goal.x}, ${goal.y}) on your map: tiles you have seen block every way`;
+      this.fail(o, grid, `no path to (${goal.x}, ${goal.y}) on your map: tiles you have seen block every way`);
       return {};
+    }
+    if (found.cost < this.walk.best - 0.3) {
+      // Real progress: earlier visits are not a loop.
+      this.walk.best = found.cost;
+      this.walk.entries = new Map([[cellKey, 1]]);
     }
     // Progress is judged against the previous plan, so a path that grew
     // because new walls came into view is not counted against the hero.
@@ -753,8 +931,7 @@ export class NavigatorPlayer implements Policy {
     this.lastCost = found.cost;
     if (progressed) this.noProgress = 0;
     else if (++this.noProgress > NAV.noProgressMoves) {
-      this.status = "unreachable";
-      this.detail = `you did not get closer to (${goal.x}, ${goal.y}) in ${NAV.noProgressMoves} moves`;
+      this.fail(o, grid, `you did not get closer to (${goal.x}, ${goal.y}) in ${NAV.noProgressMoves} moves`);
       return {};
     }
     const unknownCells = found.path.filter((c) => grid.unknown(c.x, c.y)).length;
@@ -777,6 +954,7 @@ export class NavigatorPlayer implements Policy {
     if (input.batch) this.remember(input.batch);
     if (input.batch) this.heroMemory.recordTurn(input.batch, this.lastObservation);
     this.heroMemory.observe(o);
+    this.observeBodies(o);
     this.afterControllerMove(input.batch, o);
     this.lastObservation = o;
     // Events since this hero's previous decision, then remember what it has now seen.
@@ -930,7 +1108,7 @@ export class NavigatorPlayer implements Policy {
     if (!seen && Math.hypot(it.last.x - o.self.x, it.last.y - o.self.y) <= NAV.catchLostTiles)
       return { ended: `you reached where you last saw ${it.target} (${it.last.x}, ${it.last.y}) and it is not on your screen` };
     if (!can("move")) return { ended: "you cannot move now" };
-    const grid = buildGrid(this.heroMemory, o, this.stuck);
+    const grid = this.grid(o);
     const target = { x: it.last.x, y: it.last.y };
     const { cells, onCell } = goalCells(grid, target);
     const here = { x: Math.floor(o.self.x), y: Math.floor(o.self.y) };
@@ -954,6 +1132,7 @@ export class NavigatorPlayer implements Policy {
         ? { moves: this.controllerMoves, ticks: this.walkedTicks, from: { x: this.walkedFrom.x, y: this.walkedFrom.y }, to: { x: o.self.x, y: o.self.y }, since_tick: this.walkedFrom.tick }
         : null,
       ...(this.notices.length ? { notices: this.notices } : {}),
+      ...(this.blockedGoals.size ? { unreachable_goals: this.blockedGoalsView(o) } : {}),
       intent: this.intent ? describeIntent(this.intent) : null,
       ...(input.legal.some((l) => l.type === "ability" && l.params?.ability?.kind === "enum" && l.params.ability.values.includes("black_hole"))
         ? { aim_preview: aimPreview(this.heroMemory, o) }

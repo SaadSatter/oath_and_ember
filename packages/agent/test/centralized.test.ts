@@ -136,8 +136,10 @@ describe("model-centralized: reply, schema and prompt", () => {
     expect((p.sieg as CentralizedController).promptHash).toBe(createHash("sha256").update((p.sieg as CentralizedController).systemText()).digest("hex"));
     expect(() => validatePlan({ player: "model-centralized", situations: ["S2-local"], seeds: [0], model: setup })).not.toThrow();
     expect(() => validatePlan({ player: "model-centralized", situations: ["S4"], seeds: [100], final: true, model: setup })).toThrow(/restricted to S1-S3 tuning/);
-    // The navigator: same id, same prompt section, still its own kind.
-    expect(NAV_ID).toBe("1f2e87d3");
+    // The navigator: its own kind, same prompt section. Its id changed from
+    // 1f2e87d3 to 5a8c202e with the owner-requested go_to oscillation fix
+    // (2026-11-06, docs/midterm/COW_PASSAGE_FIXES.md); pin the new one.
+    expect(NAV_ID).toBe("5a8c202e");
     expect(createHash("sha256").update(NAVIGATOR_SECTION).digest("hex").slice(0, 8)).toBe(createHash("sha256").update(NAVIGATOR_SECTION).digest("hex").slice(0, 8));
     expect(policyKind(policiesFor("model-navigator", budget, setup, "S2-local"))).toBe("model-navigator");
     expect(Object.getPrototypeOf(p.sieg)).not.toBe(NavigatorPlayer.prototype);
