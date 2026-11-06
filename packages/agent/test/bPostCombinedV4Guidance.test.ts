@@ -78,12 +78,14 @@ describe("B guidance candidate b-post-combined-v4 (supplementary)", () => {
     expect(planner(RETURN, t).maxBatch).toBe(planner(RETURN).maxBatch);
   });
 
-  it("stays locked for paid runs, only on the two B scenarios, never final", () => {
+  it("is owner-approved for exactly this text, only on the two B scenarios, never final", () => {
     const g = guidance(ID);
-    expect(g.status).toBe("proposed");
-    expect(guidanceApproved(g)).toBe(false);
+    expect(g.status).toBe("approved");
+    expect(g.approvedSha256).toBe("1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34");
+    expect(guidanceApproved(g)).toBe(true);
+    expect(guidanceApproved({ ...g, text: g.text + " " })).toBe(false);
     expect(g.situations).toEqual(["griffin-unprepared-v1", RETURN]);
-    expect(() => validatePlan({ player: "model-centralized", situations: [RETURN], seeds: [0], model: { ...paidLike, guidance: ID } })).toThrow(/proposed, not approved/);
+    expect(() => validatePlan({ player: "model-centralized", situations: [RETURN], seeds: [0], model: { ...paidLike, guidance: ID } })).not.toThrow();
     expect(() => validatePlan({ player: "model-centralized", situations: [RETURN], seeds: [0], model: { ...mock, guidance: ID } })).not.toThrow();
     expect(() => validatePlan({ player: "model-centralized", situations: ["S2-local"], seeds: [0], model: { ...mock, guidance: ID } })).toThrow(/limited to/);
     expect(() => validatePlan({ player: "model-centralized", situations: [RETURN], seeds: [0], final: true, model: { ...mock, guidance: ID } })).toThrow();

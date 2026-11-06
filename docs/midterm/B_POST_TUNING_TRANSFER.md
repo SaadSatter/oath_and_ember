@@ -1,6 +1,6 @@
 # Situation B post-tuned candidate: `b-post-a-transfer-v1`
 
-Prepared 2026-11-06 by the Claude Code implementation agent at the owner's request. No paid call, no push, no merge. **Status: v1 approved by the owner (hash `60a0a013…`) and run once as Pilot-32 on the return scenario: `knocked_out` at 47.5 game-s ([record](evaluation-abc/B-posttuned-pilot32.json)). r8 pre-declared that run as B/post-tuned/1; its results row is not yet filled (owner). v2, v3 and v4 are proposed and locked (§9–§13); v4 is the supplementary candidate (§12).**
+Prepared 2026-11-06 by the Claude Code implementation agent at the owner's request. No paid call, no push, no merge. **Status: v1 approved by the owner (hash `60a0a013…`) and run once as Pilot-32 on the return scenario: `knocked_out` at 47.5 game-s ([record](evaluation-abc/B-posttuned-pilot32.json)). r8 pre-declared that run as B/post-tuned/1; its results row is not yet filled (owner). v2 and v3 are proposed and locked. v4 is **approved by the owner** ("Unlock V4", hash `12874542…`) as the supplementary B trial (§12–§14).**
 
 ## What the owner asked for
 
@@ -375,4 +375,10 @@ Report, verbatim: [agent-evidence/reviews/2026-11-06-b-post-combined-v4-rules-re
 | 7 Stale status line | Low | Fixed |
 | 8 Unlisted differences and n=1 | Info | Noted: `gitHash`, ledger entry and guidance metadata differ. v4's block is about 3,219 characters against v1's 2,537, so more input tokens per call and the token/$0.75 limits come slightly sooner. The mock used `--no-viewer`; the paid command keeps the viewer and recording on, as Pilot-32 did. One run per prompt with a non-deterministic model is not a controlled effect estimate |
 | 9 Locked | Info | — |
+
+## 14. v4 unlocked (owner, 2026-11-06)
+
+The owner approved `b-post-combined-v4` for paid runs ("Unlock V4"). The text is unchanged (`1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34`); in code it now has `status: "approved"` and that `approvedSha256`. Approval covers both B scenarios, as listed. It is approved **as written**: the review-round-3 findings 1 and 2 (an overdue hero given no order makes the whole reply refused; "plan" vs "intention") are accepted risks, not fixed. A run that ends in `error` from three refused replies is reported as that, not retried.
+
+Classification is unchanged: Pilot-32 is B/post-tuned/1 (r8). A v4 run is a supplementary B tuning trial, reported beside it. Declaration r8 and its results files were not modified. No paid run has been made by the agent.
 
