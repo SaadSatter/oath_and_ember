@@ -1,0 +1,69 @@
+{
+  "runId": "p28-fix-smoke-2",
+  "scenario": "S2-local",
+  "seed": 0,
+  "player": "model-centralized",
+  "model": null,
+  "effort": null,
+  "gateway": "mock:random-legal@0",
+  "paid": false,
+  "speed": 1,
+  "gitHash": "678b86c+dirty",
+  "viewerUrl": "http://127.0.0.1:52197/watch",
+  "passive": true,
+  "shutdown": {
+    "activeStage": null,
+    "stages": [
+      {
+        "stage": "context.close",
+        "elapsedMs": 150,
+        "status": "completed"
+      },
+      {
+        "stage": "video.saveAs",
+        "elapsedMs": 259,
+        "status": "completed"
+      },
+      {
+        "stage": "video.delete",
+        "elapsedMs": 1,
+        "status": "completed"
+      },
+      {
+        "stage": "browser.close",
+        "elapsedMs": 73,
+        "status": "completed"
+      }
+    ],
+    "elapsedMs": 484,
+    "saved": true,
+    "timedOut": false,
+    "timeoutStage": null,
+    "activeStageElapsedMs": 0,
+    "cleanup": "completed",
+    "forcedCleanup": []
+  },
+  "status": "saved",
+  "path": "/tmp/p28-fix-smoke-2/recording.webm",
+  "relativePath": "../../../../../tmp/p28-fix-smoke-2/recording.webm",
+  "bytes": 2579459,
+  "resolution": "1280x720",
+  "browser": "chromium (GPU)",
+  "readyConfirmed": true,
+  "finalConfirmed": true,
+  "startedAt": "2026-11-06T03:28:35.147Z",
+  "readyAt": "2026-11-06T03:28:44.977Z",
+  "stoppedAt": "2026-11-06T03:29:05.757Z",
+  "wallSeconds": 30.6,
+  "completion": "interrupted",
+  "episode": {
+    "status": "terminated",
+    "reason": "manual_stop",
+    "success": false,
+    "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+    "endHash": "ec313caa3e7d4d2c897a500de2d8f87701f284d67e2fa3c999b733d9fbcdf79e",
+    "trace": "/tmp/p28-fix-smoke-2/S2-local-seed0/trace.jsonl"
+  },
+  "error": null,
+  "warnings": []
+}
