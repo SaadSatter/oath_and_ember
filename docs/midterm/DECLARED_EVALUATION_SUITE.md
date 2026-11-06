@@ -1,6 +1,6 @@
 # Declared evaluation suite — Oath and Ember A/B/C
 
-**Declaration:** `oath-ember-abc-2026-11-06-r1`, 2026-11-06, at the owner's
+**Declaration:** `oath-ember-abc-2026-11-06-r2`, 2026-11-06, at the owner's
 request against the supplied midterm guidelines. Machine-readable specification:
 [evaluation-abc/declaration.json](evaluation-abc/declaration.json).
 **This declares the experimental design; it does not claim that B/C runtime
@@ -14,7 +14,7 @@ in puzzle/encounter and relevant starting inventory, not unused seed values.
 
 | Label / logical ID | Initial state | Success | Status |
 | --- | --- | --- | --- |
-| A — Hedge Maze / existing `S2-local` | Frozen v2 seed 0, tick 405, both heroes at maze entrance | Authoritative shared `enchanted_shears` count > 0 | Implemented/frozen; Pilot-30 historical pre-tuned result available |
+| A — Hedge Maze / existing `S2-local` | Frozen v2 seed 0, tick 405, both heroes at maze entrance | Authoritative shared `enchanted_shears` count > 0 | Implemented/frozen; Pilot-30 historical post-tuned result available |
 | B — Griffin Trial, Unprepared / `griffin-unprepared-v1` | Fresh 640-HP Griffin enclosure, both heroes grounded with normal abilities; no Mirror, Shears or wig | Griffin HP == 0 AND shared `griffin_wig` count > 0; neither hero knocked out | Design declared; legal prefix/hash/runtime registration pending |
 | C — Griffin Trial, Prepared / `griffin-prepared-v1` | Same encounter and matched hero conditions as closely as legal histories permit; Mirror=1, Shears=1, wig=0 | Same strict predicate as B | Design declared; checkpoint pending; reserved from model-outcome tuning |
 
@@ -61,14 +61,15 @@ certified unmerged wig-return checkpoint. New logical IDs are not yet CLI IDs.
 
 ## Players and information
 
-- **Pre-tuned:** existing `model-centralized`, `gpt-6-luna` medium, batch 4,
-  game/controller source `040685c`, the public manual and normal case objective;
-  no explicit situation-specific solution prompt. Pre-tuned does not mean no
-  earlier controller development. Pilot-30 is development-informed.
-- **Post-tuned:** same model/controller/interface/limits, with documented prompt
-  guidance, a distinct guidance/prompt/policy hash and visible prompt diff.
-  Guidance is not weight fine-tuning. No controller change may be hidden inside
-  the pre/post contrast. Guidance text/hash must be sealed before these trials.
+- **Pre-tuned:** intended model comparator without situation-specific tuning.
+  No A run is registered here. The pre-tuned snapshot and tuning provenance
+  need documentation; Pilot-30 must not be used as this condition.
+- **Post-tuned:** Pilot-30 is owner-confirmed post-tuned, with observed source
+  `040685c`, recorded model `gpt-6-luna` medium, batch 4 and preserved prompt/
+  policy hashes. The exact tuning intervention/diff has not been independently
+  established. Do not infer a specific solution prompt or weight fine-tuning.
+  Document and freeze that intervention before calling a new run a matched
+  repeat. A pure prompt-only contrast cannot yet be claimed.
 - **Cheap baseline:** select the existing, unchanged **`baseline-quest` at
   `040685c`**, with implementation file SHA-256 values in the declaration JSON.
   It is deterministic, uses no model/API and costs $0 in provider charges.
@@ -92,12 +93,14 @@ are seen. Any baseline change needs a new declared revision and retesting.
 
 ## Trial allocation and C holdout
 
+**Classification correction:** revision 2 moves Pilot-30 from the mistaken pre-tuned cell to post-tuned. Revision 1 and original misclassified metadata remain archived; raw run evidence is untouched.
+
 Declare **two repetitions per condition per situation**: 12 model episodes and
 six free baseline episodes. This exceeds the written minimum of two live trials
 per situation while also covering the owner's pre/post conditions. Pre/post
 are different policies, not two repetitions of one policy.
 
-Pilot-30 is allocated once as A/pre-tuned/1 **historical completed pilot**.
+Pilot-30 is allocated once as A/post-tuned/1 **historical completed pilot**.
 Its original registration, pilot ledger stage, hashes and status remain unchanged;
 it is not retroactively a preregistered final run. The other 17 rows are unrun
 (11 model, six baseline). See [declared-results.json](evaluation-abc/declared-results.json).

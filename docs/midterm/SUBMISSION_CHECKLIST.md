@@ -2,7 +2,7 @@
 
 ## Current status — 2026-11-06 declaration
 
-[Declared suite](DECLARED_EVALUATION_SUITE.md), `oath-ember-abc-2026-11-06-r1`:
+[Declared suite](DECLARED_EVALUATION_SUITE.md), `oath-ember-abc-2026-11-06-r2`:
 A Hedge Maze; B Griffin Unprepared; C Griffin Prepared. The owner supplied the
 midterm guidelines; declaration/documentation is authorized, paid execution is not.
 
@@ -11,7 +11,7 @@ midterm guidelines; declaration/documentation is authorized, paid execution is n
 | Declared three distinct situations/tasks | **Declared design complete**; B/C runtime not implemented/certified. A was already a tuning case, disclosed. |
 | EVALUATION.md with suite, comparison, evidence, CI and limitations | Written in `midterms/saadsatter/EVALUATION.md`; original report archived byte-for-byte. Not a completed experiment or personal reflection. |
 | Pre/post and cheap baseline conditions | Defined; existing unchanged baseline-quest selected; post-guidance hashes pending. |
-| Two repeated live trials per situation | Allocation is two per condition; 12 model + six baseline total. Only historical Pilot-30 A/pre/1 observed; remaining 17 unrun. |
+| Two repeated live trials per situation | Allocation is two per condition; 12 model + six baseline total. Only historical Pilot-30 A/post/1 observed; remaining 17 unrun. |
 | Legal frozen B/C starts | Pending approved certification, exact hero/encounter matching, hashes and preserved history diff; no fixture injection. |
 | Strict defeat + wig / survival scoring | Declared; new evaluator/registration pending. Peaceful reward alone fails; automatic respawn requires knockout tracking. |
 | C holdout | Reserved from model-outcome tuning. Seal both conditions before C; no C-specific walkthrough or outcome adaptation. No new C model result exists. |

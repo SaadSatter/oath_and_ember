@@ -1,5 +1,5 @@
 {
-  "id": "oath-ember-abc-2026-11-06-r1",
+  "id": "oath-ember-abc-2026-11-06-r2",
   "declaredOn": "2026-11-06",
   "status": "declared-design; B/C runtime checkpoints and paid execution pending",
   "guidelines": {
@@ -7,7 +7,7 @@
     "sha256": "a1040a5425d554e2451837088aba1fb1caad4f8058319dd443eed8a53ccb4c76"
   },
   "scope": "Three bounded tasks within the Bald Goddess quest: Hedge Maze and two Griffin inventory conditions",
-  "gamePolicySourceCommit": "040685c",
+  "gamePolicySourceCommit": "040685c (observed Pilot-30 post-tuned snapshot; not an established pre-tuned snapshot)",
   "designAmendments": "Require a new declaration revision; preserve prior results and frozen A",
   "baseline": {
     "kind": "baseline-quest",
@@ -29,11 +29,14 @@
     "effort": "medium",
     "maxBatch": 4,
     "manualHash": "4b091a6630dd56f236f89f8e2213a6bb7cad4a31d4851d1883f95867d92bfa86",
-    "preTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)\u00b7batch4\u00b7tutorial-2ec2f251\u00b7briefing-a97d9268",
-    "preTunedPromptHashA": "0616c47baf03f2860f75a4a0867221998b2439f51b55fde33c56111ec8240c44",
     "postGuidanceHash": null,
-    "postStatus": "Must freeze documented A/B-derived guidance before use and before any C outcome",
-    "centralizedInformation": "one planner sees both permitted hero observations; no repository/evaluator/hidden state"
+    "postStatus": "Pilot-30 is owner-classified post-tuned; actual tuning intervention/diff must be documented before claiming a matched repeat or prompt-only contrast",
+    "centralizedInformation": "one planner sees both permitted hero observations; no repository/evaluator/hidden state",
+    "observedPostTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)\u00b7batch4\u00b7tutorial-2ec2f251\u00b7briefing-a97d9268",
+    "observedPostTunedPromptHashA": "0616c47baf03f2860f75a4a0867221998b2439f51b55fde33c56111ec8240c44",
+    "preTunedSnapshotCommit": null,
+    "preTunedStatus": "No registered A pre-tuned completion; comparator snapshot and provenance must be documented before trials",
+    "tuningMechanism": "not independently established; no fine-tuning or explicit solution-prompt claim inferred"
   },
   "conditions": [
     "pre-tuned",
@@ -107,12 +110,12 @@
   },
   "strictDefeatDecision": "Peaceful grooming/wig reward with positive Griffin HP fails B/C. No game mechanic change; broader success would require an explicit declaration amendment.",
   "trialAllocation": {
-    "A/pre-tuned/1": "Pilot-30 historical completed pilot reused once, original registration/status unchanged",
     "allOtherCells": "unrun",
     "freshModelRunsRemaining": 11,
     "freshBaselineRunsRemaining": 6,
     "newModelSpendCeilingUsd": 8.25,
-    "paidAuthorization": false
+    "paidAuthorization": false,
+    "A/post-tuned/1": "Pilot-30 historical completed pilot reused once, condition metadata corrected, original run status/evidence unchanged"
   },
   "holdoutOrder": [
     "Complete A/B tuning and freeze all policy/manual/guidance hashes",
@@ -125,5 +128,7 @@
   ],
   "memoryRequirement": "Partial observation: clean bounded-memory versus observation-only comparison still required/pending; pre/post guidance is not a memory ablation",
   "implementationBoundary": "Declaration and documentation only; no new scenarios, policy change, model calls, merge, push or paid-run approval",
-  "declarationSha256": "d58c9c77124bf13a64304edd3c0d267d041d84dee44b3ba692a3c6a44519ed18"
+  "supersedes": "oath-ember-abc-2026-11-06-r1",
+  "correction": "Owner confirms Pilot-30 is post-tuned; historical allocation moves from A/pre/1 to A/post/1. No case design or original evidence change.",
+  "declarationSha256": "0f2c2a9a8da9e7198b776c7b8c7abd63c5c9d1a493a308042732933711bba403"
 }

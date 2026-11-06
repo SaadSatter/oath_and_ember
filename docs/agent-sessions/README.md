@@ -160,3 +160,5 @@ Same Codex session, separate documentation worktree: [preservation recheck](../m
 ## S47 supplement — declared A/B/C design and course EVALUATION
 
 Same-session documentation work: [declared suite](../midterm/DECLARED_EVALUATION_SUITE.md), [declaration audit](../midterm/agent-evidence/skill-runs/2026-11-06-suite-declaration.md). Course EVALUATION.md updated; original report archived unchanged. Runtime B/C and new experiments remain pending, no independent review or paid run claimed.
+
+Pilot-30 classification correction in S47: owner confirms post-tuned; earlier pre-tuned labels in historical records are superseded by declaration r2. Original run evidence remains unchanged.

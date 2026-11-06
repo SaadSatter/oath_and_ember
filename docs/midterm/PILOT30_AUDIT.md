@@ -1,14 +1,14 @@
-# Pilot-30 evidence audit: Situation A, pre-tuned
+# Pilot-30 evidence audit: Situation A, post-tuned (owner correction)
 
-Pilot-30 is the first model-driven episode that completed the Hedge Maze. This audit checks its evidence against the files and registers it as Situation A's **pre-tuned** model result. Done by the Claude Code implementation agent on 2026-11-06 at the owner's request. No paid call, no new model episode, and no change to gameplay, scenarios, policies, pins or the original files.
+Pilot-30 is the first model-driven episode that completed the Hedge Maze. This audit checks its evidence against the files and registers it as Situation A's **post-tuned** model result. Done by the Claude Code implementation agent on 2026-11-06 at the owner's request. No paid call, no new model episode, and no change to gameplay, scenarios, policies, pins or the original files.
 
 - Evidence (committed, byte-for-byte): [`midterms/saadsatter/evidence/traces/pilot-30-model-centralized-S2-local-seed0/`](../../midterms/saadsatter/evidence/traces/pilot-30-model-centralized-S2-local-seed0/README.md)
 - Original run folder (local, gitignored, unchanged): `evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T08-17-52-847Z/`
-- Evaluation record: [`evaluation-abc/A-pretuned-pilot30.json`](evaluation-abc/A-pretuned-pilot30.json). Matrix: [EVALUATION_ABC_MATRIX.md](EVALUATION_ABC_MATRIX.md)
+- Evaluation record: [`evaluation-abc/A-posttuned-pilot30.json`](evaluation-abc/A-posttuned-pilot30.json). Matrix: [EVALUATION_ABC_MATRIX.md](EVALUATION_ABC_MATRIX.md)
 
 ## 1. Verdict
 
-**Verified.** Every reported number matches the authoritative files, the trace's hash chain holds, and an offline replay of the recorded actions through the real engine at `040685c` reproduces every step result and the end hash. Pilot-30 can be cited as **Situation A's pre-tuned model result: one successful trial**, with the caveats in section 5. It is one trial, not the two the guidelines ask for per situation.
+**Verified.** Every reported number matches the authoritative files, the trace's hash chain holds, and an offline replay of the recorded actions through the real engine at `040685c` reproduces every step result and the end hash. Pilot-30 can be cited as **Situation A's post-tuned model result: one successful trial**, with the caveats in section 5. It is one trial, not the two the guidelines ask for per situation.
 
 ## 2. Reported values against the files
 
@@ -69,12 +69,22 @@ Pilot-30 is the first model-driven episode that completed the Hedge Maze. This a
 8. **The centralized player is not two independent agents.** One planner sees both heroes' screens and nothing else. This is the owner-approved departure in [MODEL_CENTRALIZED.md](MODEL_CENTRALIZED.md), and the result must be reported under that player kind.
 9. **Not held out.** Situation A was used for development across many pilots (9–30), so this is a tuning-case result.
 
-## 6. What "pre-tuned" means here
+## 6. Corrected tuning classification
 
-**Pre-tuned means before explicit puzzle-solution prompt tuning.** The prompts Pilot-30 received contain no Hedge Maze solution: the centralized system prompt holds only general interface rules (its source comment states "no game content, place, coordinate, route or puzzle step", and tests check this), plus the public manual, the tutorial `2ec2f251` and the S2-local briefing `a97d9268`, which names the objective but no solution. The policy id has no `guided` component; the walkthrough used by `model-guided` was not included.
+**Owner correction (2026-11-06): Pilot-30 is a post-tuned model-driven
+completion.** The previous pre-tuned classification and the inference that it
+was before solution tuning are withdrawn. A recorded prompt/policy hash or the
+absence of a `guided` suffix does not by itself establish tuning history.
 
-It does **not** mean the player was built without prior pilots. The centralized player and the navigator controller it reuses were developed and debugged over earlier Situation A pilots (including Pilots 28 and 29 on this player), and general controller tools came from that work: the `catch` intention, the Black Hole aim preview, and the rules for retrying a way after something moves (`COW_PASSAGE_FIXES.md`). Those tools contain no places, routes or puzzle steps, but they were shaped by failures in this maze. Pilot-30 is therefore an **unguided, development-informed** result, not a naive first attempt.
+The trace, metrics, model/policy/prompt/config identifiers and original evidence
+remain unchanged. The precise tuning intervention and before/after prompt or
+controller diff have not been independently documented in this correction;
+no explicit walkthrough, weight fine-tuning or other mechanism is invented.
+The corrected active record is `evaluation-abc/A-posttuned-pilot30.json`.
+The old condition metadata is retained under `evaluation-abc/history/`, and
+the former path is a supersession pointer, not an additional trial.
 
+> Historical note for sections 7–8: they described the earlier mistaken allocation when written. The owner correction in section 6 and declaration revision 2 supersede any pre-tuned/pre-solution-tuning claims below; the preservation measurements still stand.
 
 ## 7. Preservation recheck and revised evaluation planning (Codex, 2026-11-06)
 
@@ -95,7 +105,7 @@ worktree; it did not modify the active evaluation checkout or any original run.
   this follow-up. The original replay result remains documented above.
 - The registration already exists and is complete as a **single completed
   pre-solution-prompt-tuning pilot**; no duplicate record or second trial is
-  fabricated. `evaluation-abc/A-pretuned-pilot30.json` is unchanged, including
+  fabricated. `evaluation-abc/A-posttuned-pilot30.json` is unchanged, including
   its historical suite/schema hash, pilot status, policy identity and caveats.
   Prompt/config hashes, provider billing and ledger were not independently
   recomputed in this follow-up. Whether the pilot counts toward final trial
@@ -115,3 +125,8 @@ scenario, hashes and Pilot-30 evidence remain unchanged.
 ## 8. Declared suite revision (2026-11-06)
 
 The owner subsequently requested formal declaration against the pasted midterm guidelines. [Declared A/B/C r1](DECLARED_EVALUATION_SUITE.md) now selects unchanged baseline-quest, strict Griffin defeat + wig/no-knockout scoring, and two repetitions per condition. Pilot-30 is allocated once as historical A/pre/1, without changing its original registration, pilot status, suite/config hashes, evidence or the fact it predates this declaration. Runtime B/C checkpoint certification, prompt sealing, memory comparison and new evaluation remain pending. Current course report: `midterms/saadsatter/EVALUATION.md`; the previous report is archived byte-for-byte.
+
+
+## 9. Active allocation after owner correction
+
+Pilot-30 occupies **A/post-tuned/1**, historical completed pilot. A/pre-tuned has no registered trial. The 18-row design still has one observed and 17 unrun rows. Declaration revision 2 archives revision 1; run files, original video, scenario/policy/config hashes, outcome and metrics are unchanged. Exact tuning provenance remains to be documented before matched pre/post or repeat claims.

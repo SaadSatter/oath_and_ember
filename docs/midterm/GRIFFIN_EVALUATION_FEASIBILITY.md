@@ -181,7 +181,7 @@ not justify changing mechanics or cloning an altered world snapshot.
 All three tasks plan (1) pre-tuned model, no explicit task-specific solution
 block; (2) post-tuned model with documented guidance; (3) cheap baseline TBD.
 Pre/post means prompting, not weight fine-tuning. Preserve Pilot-30 as the
-single successful A pre-tuned result, before explicit solution prompting but
+single successful A post-tuned result, before explicit solution prompting but
 after substantial controller development. Other cells are unrun.
 
 For C's proposed holdout, **freeze both pre/post policies before any C model
@@ -209,7 +209,7 @@ is still recorded as pending, not retroactively changed.
 
 The owner authorized formal design declaration: strict defeat + wig/no-knockout,
 unchanged baseline-quest and two repetitions per condition are selected in
-[declaration r1](DECLARED_EVALUATION_SUITE.md). This is no longer merely a choice
+[declaration r2](DECLARED_EVALUATION_SUITE.md). This is no longer merely a choice
 among proposed suite rows. Runtime B/C checkpoints, matching certification,
 survival/boundary enforcement, exact prompt seals, paid/final registration and
 all new runs still require implementation/certification approval. A broader

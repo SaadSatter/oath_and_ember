@@ -13,7 +13,7 @@ No new paid run is authorized by these documents.
 
 | Deliverable | Where / status |
 | --- | --- |
-| Current declared suite and comparison | [EVALUATION.md](EVALUATION.md); only A/pre/1 has an observed result |
+| Current declared suite and comparison | [EVALUATION.md](EVALUATION.md); only A/post/1 has an observed result |
 | Declaration and machine records | `docs/midterm/DECLARED_EVALUATION_SUITE.md`; `docs/midterm/evaluation-abc/declaration.json` and `declared-results.json` (included after course packaging) |
 | Agent-team log | [AGENT-TEAM.md](AGENT-TEAM.md) — owner-authored completion still required |
 | Rules/source map | [RULE_SOURCE_MAP.md](RULE_SOURCE_MAP.md) |
@@ -27,8 +27,8 @@ No new paid run is authorized by these documents.
 
 **A — Hedge Maze:** frozen S2-local v2 seed 0. Obtain Enchanted Shears through
 normal play. Pilot-30 succeeded in 89.5 game seconds, 167 model calls and an
-estimated $0.443258. It is a preserved, development-informed pre-solution-prompt
-pilot, not a historically preregistered final run.
+estimated $0.443258. It is a preserved, development-informed post-tuned
+model-driven completion, not a historically preregistered final run.
 
 **B — Griffin Trial, Unprepared:** start at a fresh encounter without the Mirror,
 Shears or wig. Defeat the Griffin and acquire the wig; no hero knockout and no

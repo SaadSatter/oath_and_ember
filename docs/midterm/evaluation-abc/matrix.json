@@ -29,17 +29,18 @@
       "heldOut": false,
       "cells": {
         "pre-tuned": {
+          "status": "pending",
+          "record": null,
+          "trials": 0
+        },
+        "post-tuned": {
           "status": "success",
           "episodes": [
             "Pilot-30"
           ],
           "trials": 1,
-          "record": "docs/midterm/evaluation-abc/A-pretuned-pilot30.json"
-        },
-        "post-tuned": {
-          "status": "pending",
-          "record": null,
-          "proposal": "docs/midterm/SITUATION_A_POST_TUNING_PROPOSAL.md"
+          "record": "docs/midterm/evaluation-abc/A-posttuned-pilot30.json",
+          "classification": "owner-confirmed post-tuned; tuning diff pending documentation"
         },
         "cheap-baseline": {
           "status": "pending",
@@ -128,10 +129,11 @@
     "status": "declared allocation, not paid authorization",
     "modelEpisodes": 12,
     "baselineEpisodes": 6,
-    "pilot30Allocation": "A pre-tuned run 1, historical completed pilot; original record unchanged",
+    "pilot30Allocation": "A post-tuned run 1, historical completed pilot; original run evidence unchanged",
     "remainingNewModelEpisodes": 11,
     "remainingNewBaselineEpisodes": 6
   },
   "baselineImplementation": "baseline-quest at 040685c, existing unchanged solution-aware free comparator",
-  "declaration": "docs/midterm/evaluation-abc/declaration.json"
+  "declaration": "docs/midterm/evaluation-abc/declaration.json",
+  "declarationRevision": "oath-ember-abc-2026-11-06-r2"
 }

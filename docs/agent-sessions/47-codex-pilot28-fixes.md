@@ -5,7 +5,7 @@
 | Agent | Codex (desktop app); model id(s) recorded in the transcript: `gpt-6.1-sol` |
 | Role | Codex implementation agent under AGENTS.md: Pilot-28 diagnosis and owner-approved centralized progress, observation-derived aim and evidence fixes; same-session game-rules-audit checkpoint and session-evidence, not independent review. |
 | Session ID | `01a1aed2-3232-7011-bb41-5fccdea13a5c` |
-| Window (UTC) | 2026-11-06 03:06 → 2026-11-06 18:15 |
+| Window (UTC) | 2026-11-06 03:06 → 2026-11-06 18:29 |
 | Session URL | None. Local session; no shareable URL was created. |
 | Repository | `https://github.com/SaadSatter/oath_and_ember` |
 | Transcript | Local only, not committed: `~/.codex/sessions/2026/11/05/rollout-2026-11-05T22-06-13-01a1aed2-3232-7011-bb41-5fccdea13a5c.jsonl` |
@@ -23,6 +23,7 @@
 7. 2026-11-06 08:29 — Revise the proposed A/B/C evaluation suite so Situation C is "Wig Already Obtained." Keep Situations A and B unchanged. For C: - Both heroes begin inside the Hedge Maze. - The shared inventory already contains the completed Divine Wig. - The intended objective is to return to the goddess, offer the wig, and reach the actual `chapter0.complete` event. - The model must receive the normal observations, inventory and jou … (1751 characters; full text in the local transcript)
 8. 2026-11-06 17:56 — Update the evaluation planning section of the Pilot-30 preservation task. We have revised the final three situations: **Situation A — Hedge Maze** - S2-local, seed 0. - Objective: Obtain Enchanted Shears. - Pilot-30 is the successful pre-solution-tuning model run. - Preserve all original evidence. **Situation B — Griffin Trial, Unprepared** - Heroes start at the Griffin enclosure. - They do not have the Mirror or Enc … (2378 characters; full text in the local transcript)
 9. 2026-11-06 18:06 — [attachments: "TL;DR Build a small, complete game and a model-driven agent that plays it, then…"] Make these into the declared suite given the midterm guidelines and make a evaluation md or anything else required.
+10. 2026-11-06 18:26 — Actually this is a post-tuned model driven completion
 
 <!-- narrative:start -->
 ## What was done
@@ -67,6 +68,9 @@ Sources: supplied guideline attachment (SHA `a1040a54…c76`), repository files 
 
 - Declaration packaging dry-run: staged tree selects 1327 files, required current/historical report and declaration/evidence paths included, exactly one course workflow and no destination written. Broad scan 190 text files / one unchanged historical fake-canary match; excluding only that file, 189 / zero findings. No runtime/paid test is implied.
 
+
+Owner correction, 2026-11-06: Pilot-30 is post-tuned. Declaration r2 and the active A/post-tuned/1 registration correct the earlier label; the original metadata is archived. Exact tuning intervention is not independently established. JSON allocation/hash checks and unchanged row/evidence checks passed; no gameplay tests or episodes were needed for this metadata-only change. Earlier narrative classification claims are historical and superseded. Broad secret scan found only the previously documented historical canary in the unchanged 2026-10-27 recording report; scanning all other session/midterm files returned zero findings.
+
 <!-- narrative:end -->
 
 ## Mechanically extracted record
@@ -88,6 +92,7 @@ Commits whose author time falls inside this window (any branch). A time match is
 
 | Commit | Author time (UTC) | Subject | Co-author trailer |
 | --- | --- | --- | --- |
+| `b2b4297` | 2026-11-06 18:19 | Declare A/B/C evaluation design and prepare current course report | — |
 | `591b133` | 2026-11-06 18:04 | Update Pilot-30 planning with proposed unprepared and prepared Griffin trials | — |
 | `0a89094` | 2026-11-06 17:22 | Link Pilot-30's live video from its GitHub release | Claude Opus 5.5 <noreply@anthropic.com> |
 | `ba88d2a` | 2026-11-06 16:58 | Record session 48: Pilot-30 audit and Situation A pre-tuned registration | Claude Opus 5.5 <noreply@anthropic.com> |

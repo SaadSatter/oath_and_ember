@@ -1,6 +1,6 @@
 # Evaluation — declared Hedge Maze and Griffin suite
 
-**Oath and Ember · `saadsatter` · declaration `oath-ember-abc-2026-11-06-r1`.**
+**Oath and Ember · `saadsatter` · declaration `oath-ember-abc-2026-11-06-r2`.**
 This report declares the three-case experiment and reports the evidence available
 so far. **It is not a completed three-case comparison.** A is implemented/frozen;
 B/C are declared designs awaiting legal checkpoint certification and integration.
@@ -10,7 +10,7 @@ No new model or baseline episode was run to write this report.
 
 | Situation | Initial condition | Authoritative success | Status |
 | --- | --- | --- | --- |
-| **A — Hedge Maze** | Existing S2-local v2, seed 0; both heroes at maze entrance | Enchanted Shears in shared inventory | Frozen; Pilot-30 pre-tuned success preserved |
+| **A — Hedge Maze** | Existing S2-local v2, seed 0; both heroes at maze entrance | Enchanted Shears in shared inventory | Frozen; Pilot-30 post-tuned success preserved |
 | **B — Griffin Trial, Unprepared** | Fresh enclosure, normal hero abilities; no Mirror/Shears/wig | Griffin HP zero AND wig acquired, with no hero knockout | Declared; checkpoint/runtime not implemented |
 | **C — Griffin Trial, Prepared** | Same encounter/hero conditions as closely as legal histories allow; Mirror + Shears, no wig | Same strict condition as B | Declared; proposed model-outcome holdout; checkpoint pending |
 
@@ -39,16 +39,14 @@ Their hashes remain null until approved legal reset certification.
 
 Each case has **pre-tuned model**, **post-tuned model** and **cheap baseline**
 conditions, with **two repetitions per cell**: 12 model and six baseline episodes.
-Pilot-30 is allocated once as historical A/pre/1; the other 17 rows remain unrun.
+Pilot-30 is allocated once as historical A/post/1; the other 17 rows remain unrun.
 This reuse does not retroactively make Pilot-30 a preregistered final trial.
 
 - Model: `model-centralized`, `gpt-6-luna` medium, batch 4, game/controller
-  snapshot `040685c`. One planner sees both permitted hero observations and
+  observed post-tuned snapshot `040685c`. One planner sees both permitted hero observations and
   directs two legal controllers; it is not two independent LLM agents.
-- Pre-tuned: public manual and normal task objective, without an explicit
-  situation-specific solution block. Earlier controller development is disclosed.
-- Post-tuned: same game/model/controller and limits, with a documented, hashed
-  guidance block. Guidance text and hashes still require freezing before use.
+- Pre-tuned: intended comparator without situation-specific tuning; no A trial is registered in this condition. Its actual snapshot/provenance must be documented.
+- Post-tuned: Pilot-30 is the owner-confirmed completion. Its preserved policy/prompt/config hashes identify the observed run, but the exact tuning intervention and before/after diff are not yet independently documented. Do not infer a particular guidance block or weight fine-tuning.
 - Cheap comparator: existing unchanged `baseline-quest` at `040685c`, free of
   model/API calls. It has hand-coded solution knowledge and independent hero
   scripts/messages: an information and architecture asymmetry, not an uninformed
@@ -63,14 +61,14 @@ the declared baseline trials and has not been silently registered in their place
 
 | Situation | Pre-tuned model | Post-tuned model | Cheap baseline |
 | --- | --- | --- | --- |
-| A | **1 success / 1 observed trial**, one historical pilot; second repetition unrun | 0/2 run | 0/2 declared trials run; historical free success exists |
+| A | 0/2 run | **1 success / 1 observed trial**, historical post-tuned pilot; second repetition unrun | 0/2 declared trials run; historical free success exists |
 | B | 0/2 run | 0/2 run | 0/2 run |
 | C | 0/2 run | 0/2 run | 0/2 run |
 
 “0/2 run” means no outcomes, not two failures or a 0% success rate. Do not combine
 unequal tasks or earlier versions into an aggregate improvement claim.
 
-### Pilot-30 — preserved A/pre-tuned evidence
+### Pilot-30 — preserved A/post-tuned evidence
 
 | Field | Recorded/verified value |
 | --- | --- |
@@ -93,12 +91,14 @@ hashes; its 3,823-line trace chain verifies and totals match the unchanged
 registration. The local video SHA also matches. Prior audit records the legal
 replay, complete video decode and terminal overlay; those checks were not rerun
 for this declaration. Full policy/prompt/config/manual hashes and caveats are
-in `docs/midterm/PILOT30_AUDIT.md` and `evaluation-abc/A-pretuned-pilot30.json`.
+in `docs/midterm/PILOT30_AUDIT.md` and `evaluation-abc/A-posttuned-pilot30.json`.
 The registration's original suite hash and pilot status are retained.
 
 The runner's price source was dated 2026-10-28 with a 1.1 uplift; this is an
 estimate, not the provider's actual bill. Prices must be checked again before
 new paid calls. No current provider pricing or account balance is asserted here.
+
+The owner corrected the earlier pre-tuned classification: Pilot-30 is **post-tuned**. The old metadata is archived, not counted as another trial. Preserved prompt hashes alone do not establish what tuning occurred. Until the tuning diff and pre-tuned snapshot are documented, a prompt-only or matched-repeat claim is unsupported.
 
 ## Fairness, holdout and history
 
