@@ -293,6 +293,9 @@ function griffinLabel(g: GriffinState, mode: LabelMode) {
   return `GRIFFIN ${g.hp}/${GRIFFIN_MAX_HP} · ${g.phase.replaceAll("_", " ")}`;
 }
 
+/** GriffinView: `beamStart.setVisible(length > 20)`, the shortest beam sprite drawn. */
+export const BEAM_MIN_DRAWN_PX = 20;
+
 /**
  * The Griffin's attack warnings as GriffinView draws them on every screen in
  * the enclosure (Situation B, 2026-11-06: the phase text alone did not say
@@ -300,7 +303,10 @@ function griffinLabel(g: GriffinState, mode: LabelMode) {
  *   - BEAM CHARGE: a thin red line from its mouth to where the beam will stop
  *     (the same griffinBeamEnd the client draws, so walls, pillars and bodies
  *     cut it short exactly as on screen);
- *   - BEAM: the lightning beam itself, to its drawn end;
+ *   - BEAM: the lightning beam itself, to its drawn end. GriffinView hides
+ *     every beam sprite while the beam is BEAM_MIN_DRAWN_PX or shorter, so no
+ *     entry is listed then (the warning line has no such rule: it is drawn at
+ *     any length);
  *   - HEADBUTT CHARGE: an orange line from the Griffin to a circle on the spot
  *     it charges toward.
  * Each is listed at its far end when that is on this hero's screen, otherwise
@@ -318,6 +324,7 @@ function griffinTelegraphs(w: World, view: Rect): Prop[] {
       g.phase === "BEAM_CHARGE"
         ? { from: griffinMouth(g), to, name: "griffin beam warning line", drawn: "thin red line from the griffin's mouth", end: "ending here" }
         : { from: griffinMouth(g), to, name: "griffin beam", drawn: "lightning beam from the griffin's mouth", end: "ending here" };
+    if (g.phase === "BEAM" && Math.hypot(to.x - line.from.x, to.y - line.from.y) <= BEAM_MIN_DRAWN_PX) return [];
   } else if (g.phase === "HEADBUTT_CHARGE")
     line = { from: g, to: { x: g.aimX, y: g.aimY }, name: "griffin charge mark", drawn: "orange line from the griffin", end: "to a circle here" };
   if (!line) return [];

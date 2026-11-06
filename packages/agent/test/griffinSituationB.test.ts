@@ -28,6 +28,7 @@ import { guidance, guidanceBlock, SITUATION_GUIDANCE } from "../src/policies/sit
 import { ModelBudget, MeteredGateway } from "../src/budget.js";
 import { tutorialBlock } from "../src/playerKnowledge.js";
 import { briefingBlock } from "../src/policies/llm.js";
+import { BEAM_MIN_DRAWN_PX } from "../src/perception.js";
 import { createHash } from "node:crypto";
 import type { GameAction, PlayerId } from "../src/types.js";
 
@@ -241,7 +242,10 @@ describe("Situation B observations: the Griffin's drawn attack warnings", { time
       const g = griffinState(world(env).puzzles)!;
       const effects = c.visible.filter((v) => v.kind === "effect" && v.name.startsWith("griffin"));
       const view = griffinOnScreen(c);
-      if (g.phase === "BEAM_CHARGE" || g.phase === "BEAM") {
+      const beamEnd = g.phase === "BEAM" ? (g.beam ?? griffinBeamEnd(g, [...griffinBounds, ...griffinWalls(world(env).puzzles)], Object.values(world(env).players))) : undefined;
+      const undrawnBeam = !!beamEnd && Math.hypot(beamEnd.x - griffinMouth(g).x, beamEnd.y - griffinMouth(g).y) <= BEAM_MIN_DRAWN_PX;
+      if (undrawnBeam) expect(effects).toEqual([]);
+      else if (g.phase === "BEAM_CHARGE" || g.phase === "BEAM") {
         if (view) {
           expect(effects).toHaveLength(1);
           const e = effects[0];
@@ -392,6 +396,33 @@ describe("Situation B review fixes: warning observations", { timeout: 60_000 }, 
     Object.assign(g, { phase: "BEAM_CHARGE", facing: -Math.PI / 2, aimX: 640, aimY: 0 }); // fixture: at the nest, aiming north
     expect(await effects(env, "sieg")).toEqual([]);
     expect(await effects(env, "coco")).toEqual([]);
+  });
+  it("a beam of 20 px or less is not listed, because the game draws none of it; the warning line is listed at any length", async () => {
+    const env = environmentFor(ID);
+    await env.reset(0);
+    const g = griffinState(world(env).puzzles)!;
+    Object.assign(g, { phase: "BEAM", x: 640, y: 900, facing: 0 }); // fixture: firing east, on Coco's screen
+    const m = griffinMouth(g); // after the phase: the mouth is higher while airborne
+    g.beam = { x: m.x + BEAM_MIN_DRAWN_PX, y: m.y, contactId: "range", impactClock: g.clock }; // fixture: 20 px beam
+    expect(await effects(env, "coco")).toEqual([]);
+    expect(await effects(env, "sieg")).toEqual([]);
+    g.beam = { x: m.x + BEAM_MIN_DRAWN_PX + 1, y: m.y, contactId: "range", impactClock: g.clock }; // fixture: 21 px, the start sprite is drawn
+    const [e] = await effects(env, "coco");
+    expect(e.name).toBe("griffin beam");
+    expect(Math.abs(e.x - (m.x + 21) / 32)).toBeLessThan(0.02); // positions are given to two decimals
+    expect(Math.abs(e.y - m.y / 32)).toBeLessThan(0.02);
+    // BEAM CHARGE's red line is drawn with lineBetween at any length (GriffinView), so a short one stays listed.
+    // Fixture: Coco stands just past the mouth, so the drawn warning line is only a few px long.
+    Object.assign(g, { phase: "BEAM_CHARGE", beam: undefined });
+    const mc = griffinMouth(g);
+    const coco = Object.values(world(env).players).find((p) => p.role === "EMBER")!;
+    Object.assign(coco, { x: mc.x + 21 + 8, y: mc.y }); // fixture: her 42 px body starts 8 px past the mouth
+    const end = griffinBeamEnd(g, [...griffinBounds, ...griffinWalls(world(env).puzzles)], Object.values(world(env).players));
+    const [w] = await effects(env, "coco");
+    expect(w).toMatchObject({ name: "griffin beam warning line" });
+    expect(Math.hypot(end.x - mc.x, end.y - mc.y)).toBeLessThanOrEqual(BEAM_MIN_DRAWN_PX);
+    expect(Math.abs(w.x - end.x / 32)).toBeLessThan(0.02);
+    expect(Math.abs(w.y - end.y / 32)).toBeLessThan(0.02);
   });
   it("no warning once the Griffin is defeated or its wig is claimed", async () => {
     const env = environmentFor(ID);
