@@ -1,0 +1,1516 @@
+{
+ "sieg": {
+  "observation": {
+   "player": "sieg",
+   "hero": "Sieg",
+   "tick": 439,
+   "seconds": 7.3,
+   "area": {
+    "name": "Griffin Enclosure",
+    "widthTiles": 40,
+    "heightTiles": 36
+   },
+   "self": {
+    "x": 18.5,
+    "y": 33,
+    "facing": "e",
+    "hp": 100,
+    "maxHp": 100,
+    "status": []
+   },
+   "abilities": [
+    {
+     "key": "J",
+     "name": "Sword",
+     "state": "ready"
+    },
+    {
+     "key": "K",
+     "name": "Guard",
+     "state": "hold"
+    },
+    {
+     "key": "1",
+     "name": "Push",
+     "state": "hold"
+    },
+    {
+     "key": "2",
+     "name": "Super Speed",
+     "state": "ready"
+    }
+   ],
+   "screen": {
+    "originX": 8,
+    "originY": 24,
+    "rows": [
+     "....................",
+     "....................",
+     "...##..............#",
+     "...##..............#",
+     "....................",
+     "....................",
+     "....................",
+     "....................",
+     "....................",
+     "..........@..P......",
+     "............>.......",
+     "####################"
+    ]
+   },
+   "visible": [
+    {
+     "ref": "partner-1",
+     "kind": "partner",
+     "name": "Coco",
+     "x": 21.5,
+     "y": 33,
+     "distance": 3,
+     "direction": "e",
+     "details": "health bar full"
+    },
+    {
+     "ref": "object-1",
+     "kind": "object",
+     "name": "stone pillar",
+     "x": 12,
+     "y": 27,
+     "distance": 8.8,
+     "direction": "nw",
+     "details": "standing"
+    },
+    {
+     "ref": "object-2",
+     "kind": "object",
+     "name": "stone pillar",
+     "x": 28,
+     "y": 27,
+     "distance": 11.2,
+     "direction": "ne",
+     "details": "standing"
+    },
+    {
+     "ref": "exit-1",
+     "kind": "exit",
+     "name": "E · RETURN",
+     "x": 20,
+     "y": 34,
+     "distance": 1.8,
+     "direction": "se"
+    }
+   ],
+   "dialogue": null,
+   "journal": {
+    "current": {
+     "quest": "Chapter 0 · The Forgotten Shrine",
+     "step": "Recover the Divine Wig",
+     "done": [
+      "Find the Forgotten Shrine",
+      "Pass the Three Trials",
+      "Speak to the Guardian Goddess"
+     ]
+    },
+    "completed": [
+     "Prologue · A Promise Kept",
+     "Chapter 0 · The Forgotten Oath"
+    ]
+   },
+   "inventory": {
+    "items": [
+     {
+      "id": "moonleaf",
+      "name": "Moonleaf Herbs",
+      "count": 1,
+      "description": "A fresh bundle from Brynn's Apothecary. Paid for, for once."
+     },
+     {
+      "id": "crystal_vial",
+      "name": "Crystal Vial",
+      "count": 2,
+      "description": "Clear and empty. Papa is working on something."
+     },
+     {
+      "id": "candlewick",
+      "name": "Candlewick",
+      "count": 1,
+      "description": "A coil of cotton wick from the general store."
+     },
+     {
+      "id": "fresh_bread",
+      "name": "Fresh Bread",
+      "count": 1,
+      "description": "Alden's usual loaf from the village bakery. Still warm."
+     },
+     {
+      "id": "honey_pastry",
+      "name": "Honey Pastry",
+      "count": 1,
+      "description": "A very important magical ingredient. For happiness."
+     },
+     {
+      "id": "alden_journal",
+      "name": "Alden's Journal",
+      "count": 1,
+      "description": "\"If the Ember has been found, the others will not remain hidden for long. I can only hope the old guardian remembers what she promised.\""
+     },
+     {
+      "id": "strange_cloth",
+      "name": "Strange Cloth",
+      "count": 1,
+      "description": "A scrap of cloth with a symbol neither of them knows. Papa kept it with Coco's things from when she was little."
+     },
+     {
+      "id": "star_drawing",
+      "name": "Drawing of Seven Stars",
+      "count": 1,
+      "description": "Seven stars drawn in a ring around a dark circle."
+     }
+    ]
+   },
+   "discovered": {
+    "areas": [
+     "Griffin Enclosure"
+    ],
+    "exploredRows": [
+     "??????????",
+     "??????????",
+     "??????????",
+     "??????????",
+     "??????????",
+     "??????????",
+     "??......??",
+     "??......??",
+     "??..@...??"
+    ]
+   },
+   "dialogueLog": [],
+   "feedback": [],
+   "messages": []
+  },
+  "legal_actions": [
+   {
+    "type": "move",
+    "description": "Walk in a direction for some ticks (60 ticks = 1 s).",
+    "params": {
+     "direction": {
+      "kind": "enum",
+      "values": [
+       "n",
+       "ne",
+       "e",
+       "se",
+       "s",
+       "sw",
+       "w",
+       "nw"
+      ]
+     },
+     "ticks": {
+      "kind": "int",
+      "min": 1,
+      "max": 60
+     }
+    }
+   },
+   {
+    "type": "attack",
+    "description": "Press J: sword swing (optionally turning to a direction first).",
+    "params": {
+     "direction": {
+      "kind": "enum",
+      "values": [
+       "n",
+       "ne",
+       "e",
+       "se",
+       "s",
+       "sw",
+       "w",
+       "nw"
+      ],
+      "optional": true
+     }
+    }
+   },
+   {
+    "type": "defend",
+    "description": "Hold K (Guard) for some ticks.",
+    "params": {
+     "ticks": {
+      "kind": "int",
+      "min": 1,
+      "max": 60
+     }
+    }
+   },
+   {
+    "type": "ability",
+    "description": "Use an ability: push (hold 1 while walking into something), super_speed (2).",
+    "params": {
+     "ability": {
+      "kind": "enum",
+      "values": [
+       "push",
+       "super_speed"
+      ]
+     },
+     "direction": {
+      "kind": "enum",
+      "values": [
+       "n",
+       "ne",
+       "e",
+       "se",
+       "s",
+       "sw",
+       "w",
+       "nw"
+      ],
+      "optional": true
+     },
+     "ticks": {
+      "kind": "int",
+      "min": 1,
+      "max": 60,
+      "optional": true
+     }
+    }
+   },
+   {
+    "type": "interact",
+    "description": "Press E: use the nearby object, travel marker, or pick something up."
+   },
+   {
+    "type": "wait",
+    "description": "Do nothing for some ticks.",
+    "params": {
+     "ticks": {
+      "kind": "int",
+      "min": 1,
+      "max": 60
+     }
+    }
+   },
+   {
+    "type": "message",
+    "description": "Say something to your partner (max 200 characters; 64 left).",
+    "params": {
+     "text": {
+      "kind": "text",
+      "maxLength": 200
+     }
+    }
+   }
+  ]
+ },
+ "coco": {
+  "observation": {
+   "player": "coco",
+   "hero": "Coco",
+   "tick": 439,
+   "seconds": 7.3,
+   "area": {
+    "name": "Griffin Enclosure",
+    "widthTiles": 40,
+    "heightTiles": 36
+   },
+   "self": {
+    "x": 21.5,
+    "y": 33,
+    "facing": "n",
+    "hp": 100,
+    "maxHp": 100,
+    "status": []
+   },
+   "abilities": [
+    {
+     "key": "J",
+     "name": "Fireball",
+     "state": "ready"
+    },
+    {
+     "key": "K",
+     "name": "Ward",
+     "state": "hold"
+    },
+    {
+     "key": "1",
+     "name": "Slow Time",
+     "state": "ready"
+    },
+    {
+     "key": "2",
+     "name": "Flight",
+     "state": "ready"
+    },
+    {
+     "key": "3",
+     "name": "Black Hole",
+     "state": "ready"
+    }
+   ],
+   "screen": {
+    "originX": 11,
+    "originY": 24,
+    "rows": [
+     "....................",
+     "....................",
+     "##..............##..",
+     "##..............##..",
+     "....................",
+     "....................",
+     "....................",
+     "....................",
+     "....................",
+     ".......P..@.........",
+     ".........>..........",
+     "####################"
+    ]
+   },
+   "visible": [
+    {
+     "ref": "partner-1",
+     "kind": "partner",
+     "name": "Sieg",
+     "x": 18.5,
+     "y": 33,
+     "distance": 3,
+     "direction": "w",
+     "details": "health bar full"
+    },
+    {
+     "ref": "object-1",
+     "kind": "object",
+     "name": "stone pillar",
+     "x": 12,
+     "y": 27,
+     "distance": 11.2,
+     "direction": "nw",
+     "details": "standing"
+    },
+    {
+     "ref": "object-2",
+     "kind": "object",
+     "name": "stone pillar",
+     "x": 28,
+     "y": 27,
+     "distance": 8.8,
+     "direction": "ne",
+     "details": "standing"
+    },
+    {
+     "ref": "exit-1",
+     "kind": "exit",
+     "name": "E · RETURN",
+     "x": 20,
+     "y": 34,
+     "distance": 1.8,
+     "direction": "sw"
+    }
+   ],
+   "dialogue": null,
+   "journal": {
+    "current": {
+     "quest": "Chapter 0 · The Forgotten Shrine",
+     "step": "Recover the Divine Wig",
+     "done": [
+      "Find the Forgotten Shrine",
+      "Pass the Three Trials",
+      "Speak to the Guardian Goddess"
+     ]
+    },
+    "completed": [
+     "Prologue · A Promise Kept",
+     "Chapter 0 · The Forgotten Oath"
+    ]
+   },
+   "inventory": {
+    "items": [
+     {
+      "id": "moonleaf",
+      "name": "Moonleaf Herbs",
+      "count": 1,
+      "description": "A fresh bundle from Brynn's Apothecary. Paid for, for once."
+     },
+     {
+      "id": "crystal_vial",
+      "name": "Crystal Vial",
+      "count": 2,
+      "description": "Clear and empty. Papa is working on something."
+     },
+     {
+      "id": "candlewick",
+      "name": "Candlewick",
+      "count": 1,
+      "description": "A coil of cotton wick from the general store."
+     },
+     {
+      "id": "fresh_bread",
+      "name": "Fresh Bread",
+      "count": 1,
+      "description": "Alden's usual loaf from the village bakery. Still warm."
+     },
+     {
+      "id": "honey_pastry",
+      "name": "Honey Pastry",
+      "count": 1,
+      "description": "A very important magical ingredient. For happiness."
+     },
+     {
+      "id": "alden_journal",
+      "name": "Alden's Journal",
+      "count": 1,
+      "description": "\"If the Ember has been found, the others will not remain hidden for long. I can only hope the old guardian remembers what she promised.\""
+     },
+     {
+      "id": "strange_cloth",
+      "name": "Strange Cloth",
+      "count": 1,
+      "description": "A scrap of cloth with a symbol neither of them knows. Papa kept it with Coco's things from when she was little."
+     },
+     {
+      "id": "star_drawing",
+      "name": "Drawing of Seven Stars",
+      "count": 1,
+      "description": "Seven stars drawn in a ring around a dark circle."
+     }
+    ]
+   },
+   "discovered": {
+    "areas": [
+     "Griffin Enclosure"
+    ],
+    "exploredRows": [
+     "??????????",
+     "??????????",
+     "??????????",
+     "??????????",
+     "??????????",
+     "??????????",
+     "??......??",
+     "??......??",
+     "??...@..??"
+    ]
+   },
+   "dialogueLog": [],
+   "feedback": [],
+   "messages": []
+  },
+  "legal_actions": [
+   {
+    "type": "move",
+    "description": "Walk in a direction for some ticks (60 ticks = 1 s).",
+    "params": {
+     "direction": {
+      "kind": "enum",
+      "values": [
+       "n",
+       "ne",
+       "e",
+       "se",
+       "s",
+       "sw",
+       "w",
+       "nw"
+      ]
+     },
+     "ticks": {
+      "kind": "int",
+      "min": 1,
+      "max": 60
+     }
+    }
+   },
+   {
+    "type": "attack",
+    "description": "Press J: cast a fireball (optionally turning to a direction first).",
+    "params": {
+     "direction": {
+      "kind": "enum",
+      "values": [
+       "n",
+       "ne",
+       "e",
+       "se",
+       "s",
+       "sw",
+       "w",
+       "nw"
+      ],
+      "optional": true
+     }
+    }
+   },
+   {
+    "type": "defend",
+    "description": "Hold K (Ward) for some ticks.",
+    "params": {
+     "ticks": {
+      "kind": "int",
+      "min": 1,
+      "max": 60
+     }
+    }
+   },
+   {
+    "type": "ability",
+    "description": "Use an ability: slow_time (1), flight (2), black_hole (3, fired in direction).",
+    "params": {
+     "ability": {
+      "kind": "enum",
+      "values": [
+       "slow_time",
+       "flight",
+       "black_hole"
+      ]
+     },
+     "direction": {
+      "kind": "enum",
+      "values": [
+       "n",
+       "ne",
+       "e",
+       "se",
+       "s",
+       "sw",
+       "w",
+       "nw"
+      ],
+      "optional": true
+     },
+     "ticks": {
+      "kind": "int",
+      "min": 1,
+      "max": 60,
+      "optional": true
+     }
+    }
+   },
+   {
+    "type": "interact",
+    "description": "Press E: use the nearby object, travel marker, or pick something up."
+   },
+   {
+    "type": "wait",
+    "description": "Do nothing for some ticks.",
+    "params": {
+     "ticks": {
+      "kind": "int",
+      "min": 1,
+      "max": 60
+     }
+    }
+   },
+   {
+    "type": "message",
+    "description": "Say something to your partner (max 200 characters; 64 left).",
+    "params": {
+     "text": {
+      "kind": "text",
+      "maxLength": 200
+     }
+    }
+   }
+  ]
+ },
+ "prefixActions": {
+  "sieg": [
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "advance_dialogue"
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   },
+   {
+    "type": "move",
+    "direction": "w",
+    "ticks": 29
+   },
+   {
+    "type": "move",
+    "direction": "n",
+    "ticks": 4
+   },
+   {
+    "type": "move",
+    "direction": "n",
+    "ticks": 60
+   },
+   {
+    "type": "move",
+    "direction": "n",
+    "ticks": 11
+   },
+   {
+    "type": "move",
+    "direction": "n",
+    "ticks": 10
+   },
+   {
+    "type": "move",
+    "direction": "n",
+    "ticks": 11
+   },
+   {
+    "type": "move",
+    "direction": "nw",
+    "ticks": 10
+   },
+   {
+    "type": "move",
+    "direction": "ne",
+    "ticks": 60
+   },
+   {
+    "type": "move",
+    "direction": "n",
+    "ticks": 16
+   },
+   {
+    "type": "move",
+    "direction": "e",
+    "ticks": 6
+   },
+   {
+    "type": "interact"
+   }
+  ],
+  "coco": [
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 5
+   },
+   {
+    "type": "wait",
+    "ticks": 29
+   },
+   {
+    "type": "wait",
+    "ticks": 4
+   },
+   {
+    "type": "wait",
+    "ticks": 60
+   },
+   {
+    "type": "wait",
+    "ticks": 11
+   },
+   {
+    "type": "wait",
+    "ticks": 10
+   },
+   {
+    "type": "wait",
+    "ticks": 11
+   },
+   {
+    "type": "wait",
+    "ticks": 10
+   },
+   {
+    "type": "wait",
+    "ticks": 60
+   },
+   {
+    "type": "wait",
+    "ticks": 16
+   },
+   {
+    "type": "wait",
+    "ticks": 6
+   },
+   {
+    "type": "wait",
+    "ticks": 1
+   }
+  ]
+ }
+}

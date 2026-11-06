@@ -33,7 +33,7 @@ import type { MeteredGateway } from "../budget.js";
 import { MAX_BATCH } from "../batch.js";
 import type { HeroMemory } from "../heroMemory.js";
 import { tutorialBlock, tutorialId, taskId } from "../playerKnowledge.js";
-import { briefingBlock, briefingId, describeTurn, replySchema, TASK } from "./llm.js";
+import { briefingBlock, briefingId, describeTurn, guidanceBlock, guidanceId, replySchema, TASK } from "./llm.js";
 import type { Decision, Policy } from "./policy.js";
 import { describeIntent, detectEvents, NAV, NAV_ID, NavigatorPlayer, parseNavigatorReply, snapshot, type NavStatus } from "./navigator.js";
 
@@ -386,15 +386,17 @@ export class CentralPlanner {
     readonly briefing?: string,
     readonly tutorial?: string,
     readonly task: string = TASK,
+    /** Post-tuned condition only (situationGuidance.ts); absent, the prompt is the generic policy's, byte for byte. */
+    readonly guidance?: string,
   ) {
     if (!Number.isInteger(maxBatch) || maxBatch < 1 || maxBatch > MAX_BATCH) throw Error(`maxBatch must be an integer from 1 to ${MAX_BATCH}.`);
     if (gateways.sieg === gateways.coco || gateways.sieg.player !== "sieg" || gateways.coco.player !== "coco") throw Error("The planner needs one metered gateway per hero.");
     if (gateways.sieg.budget !== gateways.coco.budget) throw Error("Both heroes' gateways must share the episode budget.");
-    this.system = centralSystemPrompt(manual, maxBatch, task) + (tutorial ? tutorialBlock(tutorial) : "") + (briefing ? briefingBlock(briefing) : "");
+    this.system = centralSystemPrompt(manual, maxBatch, task) + (tutorial ? tutorialBlock(tutorial) : "") + (briefing ? briefingBlock(briefing) : "") + (guidance ? guidanceBlock(guidance) : "");
     this.promptHash = createHash("sha256").update(this.system).digest("hex");
     this.schema = centralSchema(maxBatch);
     const label = gateways.sieg.label;
-    const name = `centralized-${CENTRAL_ID}(${label})${maxBatch > 1 ? `·batch${maxBatch}` : ""}${tutorial ? `·tutorial-${tutorialId(tutorial)}` : ""}${briefing ? `·briefing-${briefingId(briefing)}` : ""}${task !== TASK ? `·task-${taskId(task)}` : ""}`;
+    const name = `centralized-${CENTRAL_ID}(${label})${maxBatch > 1 ? `·batch${maxBatch}` : ""}${tutorial ? `·tutorial-${tutorialId(tutorial)}` : ""}${briefing ? `·briefing-${briefingId(briefing)}` : ""}${task !== TASK ? `·task-${taskId(task)}` : ""}${guidance ? `·guidance-${guidanceId(guidance)}` : ""}`;
     this.controllers = {
       sieg: new CentralizedController("Sieg", this, name, manual),
       coco: new CentralizedController("Coco", this, name, manual),
@@ -963,8 +965,8 @@ export class CentralizedController extends NavigatorPlayer {
 }
 
 /** Both heroes' policies for one episode, sharing one planner. */
-export function centralizedPolicies(manual: string, gateways: Record<PlayerId, MeteredGateway>, maxBatch?: number, briefing?: string, tutorial?: string, task?: string): Record<PlayerId, Policy> {
-  const planner = new CentralPlanner(manual, gateways, maxBatch, briefing, tutorial, task);
+export function centralizedPolicies(manual: string, gateways: Record<PlayerId, MeteredGateway>, maxBatch?: number, briefing?: string, tutorial?: string, task?: string, guidance?: string): Record<PlayerId, Policy> {
+  const planner = new CentralPlanner(manual, gateways, maxBatch, briefing, tutorial, task, guidance);
   return { sieg: planner.controllers.sieg, coco: planner.controllers.coco };
 }
 

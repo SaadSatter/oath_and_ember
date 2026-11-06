@@ -25,7 +25,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { createHash } from "node:crypto";
-import { environmentFor, HISTORICAL_SITUATIONS, SITUATIONS, type SituationId } from "../../packages/agent/src/suite.js";
+import { ABC_SITUATIONS, environmentFor, HISTORICAL_SITUATIONS, SITUATIONS, type SituationId } from "../../packages/agent/src/suite.js";
 import { verifyTrace, type TraceLine } from "../../packages/agent/src/trace.js";
 import { startViewer, type Viewer } from "../../packages/agent/src/liveViewer.js";
 import { RECORDING_META, startRecorder, type Recorder } from "../../packages/agent/src/recorder.js";
@@ -61,14 +61,15 @@ const terminal = terminalLine?.data as { reason: string; hash: string } | undefi
 // end (Ctrl-C, wall clock, budget, error) came from outside the game: the
 // replay stops at the same tick, for the same reason, and the terminal hash
 // must still match.
-const externalStop = terminal && !["success", "tick_limit"].includes(terminal.reason) ? { tick: terminalLine!.tick, reason: terminal.reason } : null;
+// knocked_out and left_area (Griffin Trials) are decided by the game too.
+const externalStop = terminal && !["success", "tick_limit", "knocked_out", "left_area"].includes(terminal.reason) ? { tick: terminalLine!.tick, reason: terminal.reason } : null;
 const outcome = lines.find((l) => l.type === "outcome")?.data as { outcome: { ticks: number; status: string } } | undefined;
 const ledgerEntry = (lines.find((l) => l.type === "ledger_reservation")?.data as { entry?: string } | undefined)?.entry ?? null;
 const summaryPath = join(dirname(resolve(tracePath)), "summary.json");
 const summary = existsSync(summaryPath) ? (JSON.parse(readFileSync(summaryPath, "utf8")) as { situation?: string; player?: string; gitHash?: string }) : {};
 // Episode ids are `<preset>-<seed>-<hash8>`; the scenario comes from the summary.
 const scenario = summary.situation as SituationId | undefined;
-const known = [...SITUATIONS, ...HISTORICAL_SITUATIONS];
+const known = [...SITUATIONS, ...HISTORICAL_SITUATIONS, ...ABC_SITUATIONS];
 if (!scenario || !known.some((s) => s.id === scenario)) fail(`cannot tell the scenario (summary.json situation: ${String(scenario)}).`);
 // Held-out scenarios and final seeds are never replayed here.
 if (scenario === "S4" || scenario === "F") fail(`${scenario} is held out; not replayed.`);

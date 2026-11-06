@@ -34,7 +34,7 @@ import { createHash } from "node:crypto";
 import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, unlinkSync, writeSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { evalStateDir, repoInfo, type RepoInfo } from "./repo.js";
-import { HISTORICAL_SITUATIONS, SEEDS, SITUATIONS, type SituationId } from "./suite.js";
+import { ABC_SITUATIONS, HISTORICAL_SITUATIONS, SEEDS, SITUATIONS, type SituationId } from "./suite.js";
 
 import { PLAYER_KINDS, type PlayerKind } from "./playerKinds.js";
 
@@ -314,7 +314,7 @@ export function needsFinalGrant(scenario: { situation: SituationId | null; prefi
 // Built on first use: suite.ts and this module import each other.
 let presetMap: Record<string, SituationId> | undefined;
 const presetToSituation = (preset: string): SituationId | null =>
-  (presetMap ??= Object.fromEntries([...SITUATIONS, ...HISTORICAL_SITUATIONS].map((s) => [s.preset, s.id])))[preset] ?? null;
+  (presetMap ??= Object.fromEntries([...SITUATIONS, ...HISTORICAL_SITUATIONS, ...ABC_SITUATIONS].map((s) => [s.preset, s.id])))[preset] ?? null;
 
 export type Admission =
   | { kind: "open" }

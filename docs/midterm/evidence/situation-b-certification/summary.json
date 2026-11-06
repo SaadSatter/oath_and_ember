@@ -1,0 +1,210 @@
+{
+  "kind": "offline certification of Situation B; not a model result and not a declared trial",
+  "situation": "griffin-unprepared-v1",
+  "label": "B",
+  "definitionHash": "bbbbc43532324b80179ab8fdf122fe7f6d10446a52d9ac752a0efdeae7671374",
+  "gameVersion": "96fd952",
+  "node": "v26.9.0",
+  "start": {
+    "seed": 0,
+    "tick": 439,
+    "startHash": "1a270d7b5e456d1be0e3250d37baae26a77b5ca3099b18433a9c8e5a25fb0051",
+    "seed1StartHash": "7bfeb7f7b2e9e14c16a180481d2f4351e6d96d17aea94dda520dae3acae20bb1",
+    "prefix": "opening scene, normal north travel to Griffin Enclosure (before arrival dialogue)",
+    "prefixActionsSha256": "2f6bc21934769a657c224cfad63019f555c4a37802bd226842740ee4948420b6",
+    "prefixActions": {
+      "sieg": 171,
+      "coco": 56
+    }
+  },
+  "witness": {
+    "controller": "packages/agent/src/route/griffinWitness.ts (scripted, solution-aware certification controller; not a baseline; never shown to a model)",
+    "outcome": {
+      "status": "success",
+      "reason": "success",
+      "episode": "griffin-unprepared-v1-0-1a270d7b",
+      "ticks": 3929,
+      "seconds": 65.5,
+      "decisions": {
+        "sieg": 575,
+        "coco": 585
+      },
+      "invalidActions": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "modelCalls": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "failedModelCalls": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "unknownUsageCalls": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "tokens": {
+        "sieg": {
+          "input": 0,
+          "output": 0
+        },
+        "coco": {
+          "input": 0,
+          "output": 0
+        }
+      },
+      "spendUsd": {
+        "known": 0,
+        "charged": 0
+      },
+      "limits": {
+        "maxTicks": 18000,
+        "maxDecisionsPerPlayer": 1600,
+        "maxModelCallsPerPlayer": 400,
+        "maxTokensPerPlayer": 4000000
+      }
+    },
+    "knockouts": 0,
+    "endHash": "f15f9a6e08c5b2aa41b79f4b25c29871ef01241ffe90b7c2170e70f96b3373b6",
+    "actionsSha256": "17145c6e2c2059f3d2cd24778ebe2fbbdb198c411703b4af175409b70450ca01",
+    "wallSeconds": 0.506,
+    "milestones": [
+      {
+        "tick": 460,
+        "milestone": "griffin-banter"
+      },
+      {
+        "tick": 769,
+        "milestone": "griffin:awake"
+      },
+      {
+        "tick": 1869,
+        "milestone": "griffin:hp<=480"
+      },
+      {
+        "tick": 2845,
+        "milestone": "griffin:hp<=320"
+      },
+      {
+        "tick": 3539,
+        "milestone": "griffin:hp<=160"
+      },
+      {
+        "tick": 4273,
+        "milestone": "griffin:hp-zero"
+      },
+      {
+        "tick": 4368,
+        "milestone": "holding:griffin_wig"
+      },
+      {
+        "tick": 4368,
+        "milestone": "claimed:griffin-nest"
+      },
+      {
+        "tick": 4368,
+        "milestone": "griffin:wig-claimed"
+      }
+    ],
+    "log": [
+      {
+        "tick": 1106,
+        "note": "griffin seen: GRIFFIN 640/640 · FLY"
+      },
+      {
+        "tick": 1533,
+        "note": "griffin 560 HP"
+      },
+      {
+        "tick": 1874,
+        "note": "griffin 480 HP"
+      },
+      {
+        "tick": 2239,
+        "note": "griffin 400 HP"
+      },
+      {
+        "tick": 2850,
+        "note": "griffin 320 HP"
+      },
+      {
+        "tick": 3231,
+        "note": "griffin 240 HP"
+      },
+      {
+        "tick": 3540,
+        "note": "griffin 160 HP"
+      },
+      {
+        "tick": 3901,
+        "note": "griffin 80 HP"
+      },
+      {
+        "tick": 4274,
+        "note": "griffin 0 HP"
+      },
+      {
+        "tick": 4274,
+        "note": "Coco casts Flight"
+      },
+      {
+        "tick": 4368,
+        "note": "Coco presses E at the nest"
+      },
+      {
+        "tick": 4368,
+        "note": "outcome success success"
+      }
+    ],
+    "traceSha256": "0faf4d528bdc84f4d6b6d511ca4da61e8754614399a3c58f955c936ab05435c2",
+    "traceLines": 2330
+  },
+  "baseline": {
+    "player": "baseline-quest",
+    "status": "terminated",
+    "reason": "knocked_out",
+    "gameTicks": 636,
+    "gameSeconds": 10.6,
+    "decisions": {
+      "sieg": 38,
+      "coco": 61
+    },
+    "invalidActions": {
+      "sieg": 0,
+      "coco": 0
+    },
+    "startHash": "1a270d7b5e456d1be0e3250d37baae26a77b5ca3099b18433a9c8e5a25fb0051",
+    "endHash": "b6e239cd058fd454f045cd8e2a207a67753ace82ee8f6b2d2fd66af4adf28377",
+    "log": {
+      "sieg": [
+        {
+          "tick": 439,
+          "note": "entered Griffin Enclosure"
+        }
+      ],
+      "coco": [
+        {
+          "tick": 439,
+          "note": "entered Griffin Enclosure"
+        }
+      ]
+    }
+  },
+  "guidance": {
+    "id": "griffin-b-post-v1",
+    "status": "proposed",
+    "sha256": "1c06284031aff876ca9fcf9d594bac6297b9bb636f18347266b9988cafbf3d36",
+    "situations": [
+      "griffin-unprepared-v1"
+    ]
+  },
+  "files": {
+    "witness-trace.jsonl.gz": "hash-chained evaluator trace of the witness episode (gzip)",
+    "witness-actions.json": "every action each hero submitted during the witness episode",
+    "initial-observations.json": "both heroes' observation and legal actions at reset, and the prefix's actions",
+    "baseline-quest-summary.json": "the unchanged baseline's summary at seed 0",
+    "baseline-quest-trace.jsonl.gz": "its trace (gzip)"
+  }
+}

@@ -24,9 +24,13 @@ import {
   mazeCowRect,
 } from "../../shared/src/hedgeMaze.js";
 import {
+  griffinBeamEnd,
+  griffinBounds,
+  griffinMouth,
   griffinNest,
   griffinPillars,
   griffinState,
+  griffinWalls,
   GRIFFIN_MAX_HP,
   type GriffinState,
 } from "../../shared/src/griffin.js";
@@ -287,6 +291,63 @@ function griffinLabel(g: GriffinState, mode: LabelMode) {
           : "CHECKING THAT MAGNIFICENT HAIR";
   if (g.hp <= 0) return label(mode, "DEFEATED · E at nest for wig", "defeated");
   return `GRIFFIN ${g.hp}/${GRIFFIN_MAX_HP} · ${g.phase.replaceAll("_", " ")}`;
+}
+
+/**
+ * The Griffin's attack warnings as GriffinView draws them on every screen in
+ * the enclosure (Situation B, 2026-11-06: the phase text alone did not say
+ * where an attack was aimed). Only what is drawn, at the drawn positions:
+ *   - BEAM CHARGE: a thin red line from its mouth to where the beam will stop
+ *     (the same griffinBeamEnd the client draws, so walls, pillars and bodies
+ *     cut it short exactly as on screen);
+ *   - BEAM: the lightning beam itself, to its drawn end;
+ *   - HEADBUTT CHARGE: an orange line from the Griffin to a circle on the spot
+ *     it charges toward.
+ * Each is listed at its far end when that is on this hero's screen, otherwise
+ * where the drawn line leaves the screen; a line that never crosses the
+ * screen is not listed. The details give the direction the line runs from
+ * the Griffin. Damage, timers and whom it aims at are not drawn and not given.
+ */
+function griffinTelegraphs(w: World, view: Rect): Prop[] {
+  const g = griffinState(w.puzzles);
+  if (!g || g.groomingStage === "DONE" || g.hp <= 0 || g.wigClaimed) return [];
+  let line: { from: { x: number; y: number }; to: { x: number; y: number }; name: string; drawn: string; end: string } | undefined;
+  if (g.phase === "BEAM_CHARGE" || g.phase === "BEAM") {
+    const to = (g.phase === "BEAM" ? g.beam : undefined) ?? griffinBeamEnd(g, [...griffinBounds, ...griffinWalls(w.puzzles)], Object.values(w.players));
+    line =
+      g.phase === "BEAM_CHARGE"
+        ? { from: griffinMouth(g), to, name: "griffin beam warning line", drawn: "thin red line from the griffin's mouth", end: "ending here" }
+        : { from: griffinMouth(g), to, name: "griffin beam", drawn: "lightning beam from the griffin's mouth", end: "ending here" };
+  } else if (g.phase === "HEADBUTT_CHARGE")
+    line = { from: g, to: { x: g.aimX, y: g.aimY }, name: "griffin charge mark", drawn: "orange line from the griffin", end: "to a circle here" };
+  if (!line) return [];
+  const shown = clipToRect(line.from, line.to, view);
+  if (!shown) return [];
+  const onScreen = shown.x === line.to.x && shown.y === line.to.y;
+  const heading = directionOf(Math.atan2(line.to.y - line.from.y, line.to.x - line.from.x));
+  return [{ kind: "effect", name: line.name, x: shown.x, y: shown.y, details: `${line.drawn}, running ${heading}, ${onScreen ? line.end : "continuing off your screen here"}` }];
+}
+
+/**
+ * The visible part of a segment within a rectangle (Liang-Barsky): the point
+ * farthest along it from `a` that is still inside, or null if none is.
+ */
+function clipToRect(a: { x: number; y: number }, b: { x: number; y: number }, r: Rect): { x: number; y: number } | null {
+  const dx = b.x - a.x,
+    dy = b.y - a.y;
+  let t0 = 0,
+    t1 = 1;
+  for (const [p, q] of [[-dx, a.x - r.x], [dx, r.x + r.w - a.x], [-dy, a.y - r.y], [dy, r.y + r.h - a.y]]) {
+    if (p === 0) {
+      if (q < 0) return null;
+      continue;
+    }
+    const t = q / p;
+    if (p < 0) t0 = Math.max(t0, t);
+    else t1 = Math.min(t1, t);
+    if (t0 > t1) return null;
+  }
+  return t1 >= 1 ? { x: b.x, y: b.y } : { x: a.x + dx * t1, y: a.y + dy * t1 };
 }
 
 /** The Hedge Maze's two caption texts (HedgeMazeView.label); labels since pilot-9. */
@@ -680,6 +741,7 @@ export function perceive(
     });
   }
   for (const p of sceneProps(w, scene, options.labels)) add(p);
+  if (scene === "GRIFFIN_ENCLOSURE") for (const p of griffinTelegraphs(w, view)) add(p);
   for (const p of prologueProps(w, scene, me, options.labels)) add(p);
 
   // The screen as a tile grid.

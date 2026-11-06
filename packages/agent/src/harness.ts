@@ -25,6 +25,7 @@ import { GUIDED_SITUATIONS, GUIDES, GuidedPlayer } from "./policies/guided.js";
 import { LLMPlayer } from "./policies/llm.js";
 import { NavigatorPlayer } from "./policies/navigator.js";
 import { centralizedPolicies } from "./policies/centralized.js";
+import { guidance, guidanceApproved, guidanceHash } from "./policies/situationGuidance.js";
 import { ExplorationBaseline } from "./policies/baseline.js";
 import { QuestBaseline } from "./policies/questBaseline.js";
 import type { Policy } from "./policies/policy.js";
@@ -36,6 +37,7 @@ import { PLAYER_KINDS, type PlayerKind } from "./playerKinds.js";
 import { canonicalJson } from "./situationA.js";
 import { mazeEvaluationLabel } from "./hedgeMazeSituations.js";
 import { prologueEvaluationLabel } from "./prologueSituation.js";
+import { griffinEvaluationLabel } from "./griffinSituations.js";
 
 export { PLAYER_KINDS, type PlayerKind };
 export const isModel = (p: PlayerKind) => p === "model-history" || p === "model-obs-only" || p === "model-guided" || p === "model-memory" || p === "model-navigator" || p === "model-centralized";
@@ -49,22 +51,26 @@ export const EPISODE_CAP_USD: Record<SituationId, number> = {
   "S2-B": 1.25, "S2-C": 1.25,
   // P1 Into the Forest: the owner's cap (2026-11-03).
   P1: 0.6,
+  // Situation B, Griffin Trial (Unprepared): the declared A/B/C run cap (DECLARED_EVALUATION_SUITE.md).
+  "griffin-unprepared-v1": 0.75,
 };
 /**
  * Wall-clock ceilings (seconds) a run may lower but never raise (review finding
  * F6, 2026-11-03). P1 only; other scenarios keep their behaviour.
  */
 export const WALL_CLOCK_CEILING_S: Partial<Record<SituationId, number>> = { P1: 3600 };
+/** A/B/C declaration cases: the declared 3,600 s model bound (Situation B review finding 7, 2026-11-06). */
+export const ABC_WALL_CLOCK_CEILING_S: Partial<Record<SituationId, number>> = { "griffin-unprepared-v1": 3600 };
 /** Refuses a wall-clock override above a scenario's ceiling. */
 export function checkWallSeconds(o: Pick<SuiteRunOptions, "situations" | "wallSeconds">) {
   if (o.wallSeconds === undefined) return;
   for (const id of o.situations) {
-    const ceiling = WALL_CLOCK_CEILING_S[id];
+    const ceiling = WALL_CLOCK_CEILING_S[id] ?? ABC_WALL_CLOCK_CEILING_S[id];
     if (ceiling !== undefined && o.wallSeconds > ceiling)
       throw Error(`${id}'s wall-clock limit is ${ceiling} s; a run may lower it, never raise it (got ${o.wallSeconds} s).`);
   }
 }
-export const OBS_ONLY_SITUATIONS: readonly SituationId[] = ["S1", "S2", "S3", "S2-local", "S3-local", "S2-v1", "S3-v1", "S2-local-v1", "S3-local-v1", "S2-B", "S2-C", "P1"];
+export const OBS_ONLY_SITUATIONS: readonly SituationId[] = ["S1", "S2", "S3", "S2-local", "S3-local", "S2-v1", "S3-v1", "S2-local-v1", "S3-local-v1", "S2-B", "S2-C", "P1", "griffin-unprepared-v1"];
 
 export interface ModelSetup {
   /** A provider adapter for paid runs; a fake in tests. */
@@ -76,6 +82,12 @@ export interface ModelSetup {
   stage: string;
   priceSource: string;
   maxBatch?: number;
+  /**
+   * Post-tuned condition: the id of a situationGuidance.ts entry, sent to the
+   * model-centralized planner as its own block. Absent for the pre-tuned
+   * condition. A "proposed" entry runs with the mock gateway only.
+   */
+  guidance?: string;
 }
 
 export interface SuiteRunOptions {
@@ -227,6 +239,8 @@ export interface EpisodeSummary {
   evaluation?: { label: string; definitionHash: string } | null;
   /** SHA-256 of each hero's system prompt (model players), or null for scripted players. Added 2026-10-29. */
   promptHashes?: Record<PlayerId, string | null>;
+  /** Post-tuned condition only: the guidance block given to the planner (situationGuidance.ts). */
+  guidance?: ReturnType<typeof guidanceRecord>;
   /**
    * SHA-256 of the run configuration (runConfigHash): scenario, label, player,
    * policies, prompts, gateway, batch size, manual and every limit. The game
@@ -249,6 +263,12 @@ export function runConfigHash(c: {
   maxBatch: number | null; manualHash: string | null; limits: unknown; modelLimits: unknown; wallLimitSeconds: number; episodeCapUsd: number | null;
 }) {
   return createHash("sha256").update(canonicalJson(c)).digest("hex");
+}
+
+/** What a summary and manifest record about a post-tuned guidance block. */
+export function guidanceRecord(id: string) {
+  const g = guidance(id);
+  return { id: g.id, status: g.status, sha256: guidanceHash(g.text), situations: [...g.situations] };
 }
 
 /** Check a planned run against the suite's rules before anything starts. */
@@ -285,6 +305,15 @@ export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | 
     const outside = o.situations.filter((id) => !OBS_ONLY_SITUATIONS.includes(id));
     if (outside.length) throw Error(`model-obs-only runs on S1-S3 only, including approved local variants (got ${outside.join(", ")}).`);
   }
+  if (o.model?.guidance !== undefined) {
+    const g = guidance(o.model.guidance);
+    if (o.player !== "model-centralized") throw Error("Post-tuned guidance is implemented for model-centralized only.");
+    if (o.final) throw Error("Post-tuned guidance is not approved for final runs.");
+    const outside = o.situations.filter((id) => !g.situations.includes(id));
+    if (outside.length) throw Error(`Guidance ${g.id} is limited to ${g.situations.join(", ")} (got ${outside.join(", ")}).`);
+    if (!guidanceApproved(g) && !(o.model.gateway?.label ?? "").startsWith("mock:"))
+      throw Error(`Guidance ${g.id} is ${g.status}, not approved for this exact text: it runs only with the mock gateway until the owner approves it.`);
+  }
   if (isModel(o.player)) {
     if (!o.model) throw Error(`${o.player} needs a model setup (gateway, manual, ledger, stage).`);
     const stages = o.final ? ["final", "contingency"] : ["pilot", "contingency"];
@@ -314,7 +343,7 @@ export function policiesFor(player: PlayerKind, budget: ModelBudget | undefined,
     }
     case "model-centralized":
       // One shared planner; each hero keeps its own metered gateway (calls are charged to a hero that asked).
-      return centralizedPolicies(model!.manual, { sieg: new MeteredGateway(model!.gateway, budget!, "sieg"), coco: new MeteredGateway(model!.gateway, budget!, "coco") }, model!.maxBatch, briefing, tutorial, task);
+      return centralizedPolicies(model!.manual, { sieg: new MeteredGateway(model!.gateway, budget!, "sieg"), coco: new MeteredGateway(model!.gateway, budget!, "coco") }, model!.maxBatch, briefing, tutorial, task, model!.guidance !== undefined ? guidance(model!.guidance).text : undefined);
     case "model-history":
     case "model-obs-only":
     case "model-memory": {
@@ -370,7 +399,9 @@ export async function runSuite(o: SuiteRunOptions): Promise<EpisodeSummary[]> {
     player: o.player, situations: o.situations, seeds: o.seeds, final: !!o.final, gitHash: o.gitHash,
     wallSeconds: o.wallSeconds ?? (o.model ? 3600 : 600),
     model: o.model ? { gateway: o.model.gateway.label, stage: o.model.stage, priceSource: o.model.priceSource,
-      maxBatch: o.model.maxBatch ?? 4, manualHash: createHash("sha256").update(o.model.manual).digest("hex") } : null,
+      maxBatch: o.model.maxBatch ?? 4, manualHash: createHash("sha256").update(o.model.manual).digest("hex"),
+      // Added 2026-11-06 for the post-tuned condition; absent (as before) when no guidance is used.
+      ...(o.model.guidance !== undefined ? { guidance: guidanceRecord(o.model.guidance) } : {}) } : null,
     ...(o.episodeCapUsd !== undefined ? { episodeCapUsd: o.episodeCapUsd } : {}),
     launch: o.launch ?? DEFAULT_LAUNCH,
   };
@@ -470,7 +501,7 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
   const sum = (f: (r: CallRecord) => number) => records.reduce((a, r) => a + f(r), 0);
   const per = <T>(f: (id: PlayerId) => T) => ({ sieg: f("sieg"), coco: f("coco") });
   const def = situation(id);
-  const evaluation = mazeEvaluationLabel(id) ?? prologueEvaluationLabel(id);
+  const evaluation = mazeEvaluationLabel(id) ?? prologueEvaluationLabel(id) ?? griffinEvaluationLabel(id);
   const promptHashes = per((p) => (policies[p] as { promptHash?: string }).promptHash ?? null);
   const configHash = runConfigHash({
     situation: id, preset: def.preset, suiteRevision: SUITE_REVISION, evaluation, player: o.player,
@@ -539,6 +570,8 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
     evaluation,
     promptHashes,
     configHash,
+    // Post-tuned condition only (2026-11-06): which guidance block the planner received.
+    ...(model?.guidance !== undefined ? { guidance: guidanceRecord(model.guidance) } : {}),
     ...(o.player === "baseline-quest" ? { baselineLog: per((p) => (policies[p] as QuestBaseline).log) } : {}),
     trace: tracePath,
   };

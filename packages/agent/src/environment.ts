@@ -37,6 +37,7 @@ import { maps } from "../../shared/src/maps.js";
 import { mirrorPondState } from "../../shared/src/mirrorPond.js";
 import {
   episodes,
+  griffinMilestones,
   milestones,
   prologueMilestones,
   stateHash,
@@ -645,7 +646,7 @@ export class AgentEnvironment implements GameInterface {
       if (interrupted || r.index >= r.frames.length) finished.push(this.finish(s, interrupted));
     }
     // Judge the tick before answering, so a final step reports done.
-    this.checkEnd();
+    this.checkEnd({ knockedOut: this.knockedOut.size > 0 });
     for (const resolve of finished) resolve();
   }
 
@@ -754,7 +755,8 @@ export class AgentEnvironment implements GameInterface {
     }
   }
 
-  private checkEnd() {
+  /** `tick`: set when called after a simulation tick (instant actions run no tick, so nobody can be knocked out). */
+  private checkEnd(tick: { knockedOut: boolean } = { knockedOut: false }) {
     if (this.reason) return;
     const w = this.room.state;
     const now = this.progress(w);
@@ -762,7 +764,10 @@ export class AgentEnvironment implements GameInterface {
     this.lastMilestones = new Set(now);
     // A scenario prefix only reaches the start state: no success or limits yet.
     if (this.inPrefix) return;
-    if (episodes[this.preset].success(w)) this.stop("success");
+    // Declared failure rules (Griffin trials) come first: a knockout in the same tick as success still fails.
+    const failed = episodes[this.preset].failure?.(w, tick);
+    if (failed) this.stop(failed);
+    else if (episodes[this.preset].success(w)) this.stop("success");
     else if (w.serverTick - this.startTick >= this.limits.maxTicks) this.stop("tick_limit");
   }
 
@@ -818,6 +823,9 @@ export class AgentEnvironment implements GameInterface {
 
   /** Evaluator progress markers; P1 adds its Prologue markers (other episodes unchanged). */
   private progress(w: World) {
-    return this.preset === "P1" || this.preset === "P1-v2" || this.preset === "P1-v3" ? [...milestones(w), ...prologueMilestones(w)] : milestones(w);
+    if (this.preset === "P1" || this.preset === "P1-v2" || this.preset === "P1-v3") return [...milestones(w), ...prologueMilestones(w)];
+    // Griffin trials add evaluator-only Griffin markers; other episodes are unchanged.
+    if (this.preset === "griffin-unprepared-v1") return [...milestones(w), ...griffinMilestones(w)];
+    return milestones(w);
   }
 }

@@ -8,6 +8,8 @@ import { shrineComplete } from "../../shared/src/shrine.js";
 import type { EpisodeLimits } from "./types.js";
 import type { StoryCheckpointId } from "../../shared/src/storyCheckpoints.js";
 import { stageReached } from "../../shared/src/prologue.js";
+import { GRIFFIN_MAX_HP, griffinState } from "../../shared/src/griffin.js";
+import type { TerminationReason } from "./types.js";
 
 /**
  * "S2", "S3", "S2-local" and "S3-local" are the revision 1 definitions, kept
@@ -16,7 +18,8 @@ import { stageReached } from "../../shared/src/prologue.js";
  */
 export type EpisodePreset =
   | "S2-local" | "S3-local" | "full" | "milestone" | "S1" | "S2" | "S3" | "S4"
-  | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "S2-B" | "S2-C" | "P1" | "P1-v2" | "P1-v3";
+  | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "S2-B" | "S2-C" | "P1" | "P1-v2" | "P1-v3"
+  | "griffin-unprepared-v1";
 
 export interface EpisodeDefinition {
   preset: EpisodePreset;
@@ -29,6 +32,13 @@ export interface EpisodeDefinition {
    * P1 starts at "prologue", the game's own opening (2026-11-03).
    */
   checkpoint?: StoryCheckpointId;
+  /**
+   * Evaluator failure rules checked every tick before success (Griffin trials
+   * only). `knockedOut` is true when a hero's health ran out during that tick
+   * (the game itself respawns the hero at full health; environment.ts sees it
+   * through the original damage call). Returns a terminal reason, or nothing.
+   */
+  failure?: (w: World, tick: { knockedOut: boolean }) => TerminationReason | undefined;
 }
 
 const has = (w: World, flag: string) => !!w.story?.flags.includes(flag);
@@ -40,7 +50,7 @@ const QUEST_AREAS = new Set(["MIRROR_POND", "HEDGE_MAZE", "GRIFFIN_ENCLOSURE"]);
 const holding = (w: World, item: string) => ((w.inventory?.counts as Record<string, number> | undefined)?.[item] ?? 0) > 0;
 
 /** Owner-approved episode definitions and limits (2026-10-23). */
-const coreEpisodes: Record<Exclude<EpisodePreset, "S2-local" | "S3-local" | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "S2-B" | "S2-C" | "P1" | "P1-v2" | "P1-v3">, EpisodeDefinition> = {
+const coreEpisodes: Record<Exclude<EpisodePreset, "S2-local" | "S3-local" | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "S2-B" | "S2-C" | "P1" | "P1-v2" | "P1-v3" | "griffin-unprepared-v1">, EpisodeDefinition> = {
   full: {
     preset: "full",
     goal: "Bald Goddess quest: from the goddess checkpoint to chapter0.complete.",
@@ -112,6 +122,39 @@ export const P1_EPISODE: EpisodeDefinition = {
   checkpoint: "prologue",
 };
 
+/**
+ * Griffin Trial success (declaration oath-ember-abc-2026-11-06, Situations B/C):
+ * the authoritative Griffin HP is 0 AND the shared backpack holds the
+ * Magnificent Griffin Wig. Entering the enclosure, damaging the Griffin, the
+ * DEFEATED phase alone, or the broad puzzles.griffin.complete flag (set on the
+ * peaceful route too) are each insufficient.
+ */
+export const griffinDefeatedAndWig = (w: World) => griffinState(w.puzzles)?.hp === 0 && holding(w, "griffin_wig");
+
+/**
+ * Griffin Trial failures (declared survival and boundary rules). A knockout
+ * fails at once: the game restores the hero to full health at the spawn, so a
+ * positive final HP would not show it. Any hero outside the enclosure fails.
+ */
+export function griffinTrialFailure(w: World, tick: { knockedOut: boolean }): TerminationReason | undefined {
+  if (tick.knockedOut) return "knocked_out";
+  if (Object.values(w.players).some((p) => p.role && (p.sceneId ?? w.sceneId) !== "GRIFFIN_ENCLOSURE")) return "left_area";
+  return undefined;
+}
+
+/**
+ * B — Griffin Trial, Unprepared (docs/midterm/SITUATION_B_GRIFFIN.md). Limits
+ * are the declared A/B/C run bounds (DECLARED_EVALUATION_SUITE.md "Limits and
+ * reporting"), the same as S2-A's game-time, decision, call and token limits.
+ */
+export const GRIFFIN_UNPREPARED_EPISODE: EpisodeDefinition = {
+  preset: "griffin-unprepared-v1",
+  goal: "Griffin Trial, Unprepared (B): from the Griffin Enclosure entrance without the Vanity Mirror or Enchanted Shears, reduce the Griffin to 0 HP and obtain the Magnificent Griffin Wig; neither hero knocked out, both stay in the enclosure.",
+  limits: { maxTicks: 300 * 60, maxDecisionsPerPlayer: 1_600, maxModelCallsPerPlayer: 400, maxTokensPerPlayer: 4_000_000 },
+  success: griffinDefeatedAndWig,
+  failure: griffinTrialFailure,
+};
+
 /** Additive variants reuse exactly the parent's predicate and limits. */
 export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
   ...coreEpisodes,
@@ -132,7 +175,26 @@ export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
   "P1-v2": { ...P1_EPISODE, preset: "P1-v2", goal: "P1 Into the Forest (revision 2): from the Prologue's opening, reach the Mossling Woods (story stage WOODS)." },
   // P1 revision 3 (2026-11-03): the fence opening's listing renamed by the owner; otherwise as revision 2.
   "P1-v3": { ...P1_EPISODE, preset: "P1-v3", goal: "P1 Into the Forest (revision 3): from the Prologue's opening, reach the Mossling Woods (story stage WOODS)." },
+  "griffin-unprepared-v1": GRIFFIN_UNPREPARED_EPISODE,
 };
+
+/**
+ * Griffin Trial progress markers (evaluator-only, recorded in B/C traces). HP
+ * thresholds are reported in quarters so a trace shows how far a failed fight got.
+ */
+export function griffinMilestones(w: World): string[] {
+  const g = griffinState(w.puzzles);
+  if (!g) return [];
+  const out: string[] = [];
+  if (g.phase !== "NEST") out.push("griffin:awake");
+  for (const q of [0.75, 0.5, 0.25]) if (g.hp <= GRIFFIN_MAX_HP * q) out.push(`griffin:hp<=${GRIFFIN_MAX_HP * q}`);
+  if (g.hp === 0) out.push("griffin:hp-zero");
+  if (g.pillars.some(Boolean)) out.push(`griffin:pillars-broken-${g.pillars.filter(Boolean).length}`);
+  if (g.mirrorDelivered) out.push("griffin:mirror-delivered");
+  if (g.phase === "GROOMING") out.push("griffin:grooming");
+  if (g.wigClaimed) out.push("griffin:wig-claimed");
+  return out;
+}
 
 /** Private progress markers recorded in traces (never shown to players). */
 export function milestones(w: World): string[] {

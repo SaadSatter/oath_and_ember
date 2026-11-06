@@ -164,3 +164,7 @@ Same-session documentation work: [declared suite](../midterm/DECLARED_EVALUATION
 Pilot-30 classification correction in S47: owner confirms post-tuned; earlier pre-tuned labels in historical records are superseded by declaration r2. Original run evidence remains unchanged.
 
 Pilot-28 is now owner-designated historical **A/pre-tuned/1**, manual-stop failure at the cow. Declaration r3 and `docs/midterm/evaluation-abc/A-pretuned-pilot28.json` record 125.267 game seconds (owner recalled approximately 128), 900.8 wall seconds; Pilot-30 remains post-tuned. Two observed historical rows /16 unrun. This supersedes earlier no-pre-tuned-trial statements. No new episode, raw evidence change or paid call.
+
+## 2026-11-06 Situation B, Griffin Trial (Unprepared)
+
+[S49 — Situation B implementation, offline certification and review round 1](49-claude-situation-b-griffin.md), session `959362b9-aa98-47dd-bedd-265c37862f01`: Claude Code implementation agent, on branch `midterm/griffin-situation-b`. `game-rules-audit` (griffin) and `session-evidence` invoked by name in this session; the audit is an implementer audit, not independent review. The `rules-reviewer` subagent (read-only, not instructed to approve) was launched from this session; its report is committed verbatim in `docs/midterm/agent-evidence/reviews/2026-11-06-situation-b-rules-review.md`. No paid call or model episode.
