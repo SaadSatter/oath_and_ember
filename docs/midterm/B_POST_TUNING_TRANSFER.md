@@ -1,6 +1,6 @@
 # Situation B post-tuned candidate: `b-post-a-transfer-v1`
 
-Prepared 2026-11-06 by the Claude Code implementation agent at the owner's request. No paid call, no push, no merge. **Status: frozen by hash; conditionally approved by the owner (text unchanged); still `proposed` in code, so paid runs refuse it. The paid run is not authorized.**
+Prepared 2026-11-06 by the Claude Code implementation agent at the owner's request. No paid call, no push, no merge. **Status: approved by the owner (text unchanged, hash `60a0a013…`), for `griffin-unprepared-v1` and `griffin-unprepared-return-v1`. Declaration r8: the B post-tuned run is on the return scenario (§8). Not yet run.**
 
 ## What the owner asked for
 
@@ -146,3 +146,39 @@ Report, verbatim: [agent-evidence/reviews/2026-11-06-b-post-transfer-rules-revie
 | 8 Longer prompt uses tokens and spend sooner | Info | Recorded in §4 |
 | 9, 10 | Info | No change |
 | Missing coverage | | Added: pre/post planner field and policy-name equality, the code-file pins, the old-draft hash. Not added: an automated `live.ts` test that a paid `--guidance` run is refused before credentials are read. The free preflight below checks this by hand |
+
+## 8. Approval and the return scenario (owner decisions, 2026-11-06, third round)
+
+| Item | Decision |
+| --- | --- |
+| Guidance | Approved, text unchanged. In code: `status: "approved"`, `approvedSha256: 60a0a013…5263`; allowed on `griffin-unprepared-v1` and `griffin-unprepared-return-v1` |
+| Scenario | The post-tuned run uses `griffin-unprepared-return-v1` and counts as **B/post-tuned/1** (declaration r8; r7 superseded, archived) |
+
+Code changes for this (no gameplay change): `model-centralized` is allowed on `griffin-unprepared-return-v1` (`OBS_ONLY_SITUATIONS`, `harness.ts`), and that scenario gets the same 3,600 s wall-clock ceiling as v1 (`ABC_WALL_CLOCK_CEILING_S`).
+
+**This is no longer the comparison set out in §1–§5.** The return scenario differs from Pilot-31's in:
+- start (tick 540, `45b1a6aa…`);
+- success (wig + goddess offering + `chapter0.complete`);
+- prompt framing: its own task line, with no tutorial and no briefing. Its generic prompt is `7fbaaec7…`, and with the guidance it is **`17b89312d88c9da0f81bdea5344c58f149a046b9a86873d166821a74f4be96a6`**;
+- observations: the straw-nest entry is listed. The parity fix applies to v1 only.
+
+So B pre/post is not prompt-only, and the §3 "unchanged" table holds for v1 only. Policy id on this scenario: `centralized-f0592888(openai:gpt-6-luna@medium)·batch4·task-cdbee612·guidance-60a0a013`. This scenario's run summary has no `evaluation` label (v1 records label `B`); the declaration and results files record the cell instead.
+
+Free headless mock check of the launch path (`--gateway mock --no-viewer`, scratch output and ledger): start `45b1a6aa…`, guidance recorded as `approved`, prompt `17b89312…` for both heroes, cap $0.75, wall limit 3,600 s. The random mock was knocked out at 131.6 game-s, $0. The recorded (viewer + video) preflight was stopped by the owner before it finished, so there is no result for it.
+
+Run command (from the evaluation checkout, on a clean committed tree):
+
+```sh
+npm run eval:live -- --scenario griffin-unprepared-return-v1 --seed 0 --player model-centralized --guidance b-post-a-transfer-v1 --gateway openai --model gpt-6-luna --effort medium --max-spend-usd 0.75 --paid
+```
+
+### Final checks (after approval and r8, this session)
+
+| Check | Result |
+| --- | --- |
+| `npm run typecheck` | pass |
+| `npm test` | 1,319 of 1,320 pass. The one failure is the known `s2Shutdown.test.ts` recorder test (also failing on `3ba50e6`); unrelated, not fixed |
+| `npm run build` | pass (existing large-chunk warning) |
+| Griffin/B tests (guidance, parity, Situation B, heuristic, live Griffin, prologue) | 75 of 75 pass |
+| Secret scan, `docs/agent-sessions` + `docs/midterm` | 263 files; 1 finding, the known fake canary key in `skill-runs/2026-10-27-recording.md` (unchanged, excluded as in earlier records); 0 elsewhere |
+

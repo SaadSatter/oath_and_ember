@@ -1,6 +1,6 @@
 {
-  "about": "Integrated nine-cell plan (one primary repetition per condition); A/B heuristic second repetitions are supplementary evidence, not additional planned cells. Prior route baseline and all original evidence preserved. Revision r7 (2026-11-06): B is griffin-unprepared-v1 for the pre/post comparison; r6 rows are archived in history/r6/.",
-  "declaration": "oath-ember-abc-2026-11-06-r7-b-enclosure",
+  "about": "Integrated nine-cell plan (one primary repetition per condition); A/B heuristic second repetitions are supplementary evidence, not additional planned cells. Prior route baseline and all original evidence preserved. Revision r7 (2026-11-06): B is griffin-unprepared-v1 for the pre/post comparison; r6 rows are archived in history/r6/. Revision r8 (2026-11-06): B is griffin-unprepared-return-v1 again; B post-tuned runs there; r7 rows archived in history/r7/.",
+  "declaration": "oath-ember-abc-2026-11-06-r8-b-return",
   "rows": [
     {
       "situation": "A",
@@ -187,7 +187,7 @@
       "seed": 0,
       "scenarioHash": "bbbbc43532324b80179ab8fdf122fe7f6d10446a52d9ac752a0efdeae7671374",
       "startHash": "1a270d7b5e456d1be0e3250d37baae26a77b5ca3099b18433a9c8e5a25fb0051",
-      "declarationId": "oath-ember-abc-2026-11-06-r7-b-enclosure",
+      "declarationId": "oath-ember-abc-2026-11-06-r8-b-return",
       "status": "completed",
       "success": false,
       "gameSeconds": 50.1,
@@ -209,7 +209,7 @@
       "configHash": "1228fa1afe0551641f9d2c401c696029370500f7de3eb87493d35ad18252c8ef",
       "sourceCommit": "6df4bc0",
       "plannedPlayerType": "model-centralized",
-      "declarationHash": "b39116b3495dcdebd3eb2f84e1815fb6c7865b3bb7f021d92f32c106144bc442",
+      "declarationHash": "14525a1229a2c719c3064452e91e22245942821430cd222bc73642470c3fe8b2",
       "decisions": {
         "sieg": 146,
         "coco": 141
@@ -235,10 +235,10 @@
       "recordingSha256": "5e7c3588da34b7f588f79353b55471b37a06cc7b087acf24d64c0886471f7c0a",
       "endHash": "c5f341f52ddabff9eed92df87ad4b1db87a21208ae6d148f273e0cf67a309a61",
       "historicalSuiteHash": null,
-      "scenarioNote": "Run on griffin-unprepared-v1, which r7 declares as B. Under r6 it was counted against the return scenario by owner decision; r7 removes that mismatch. Start, objective and briefing are the ones it ran with.",
+      "scenarioNote": "Run on griffin-unprepared-v1. Under r8 B is griffin-unprepared-return-v1, so this row is on a different scenario from B post-tuned and the B baseline (owner decision 2026-11-06). Counted as B/pre-tuned/1 because its knockout fails both predicates. Start, briefing, tutorial, observations and success predicate differ; see B-pretuned-pilot31.json.",
       "evidenceSource": "midterms/saadsatter/evidence/traces/pilot-31-model-centralized-griffin-unprepared-v1-seed0/; docs/midterm/evaluation-abc/B-pretuned-pilot31.json",
       "timingNote": "3,007 ticks = 50.1 game-s (summary.json). Offline replay at 6df4bc0 matches all 284 step results and the end hash.",
-      "r6DeclaredScenario": {
+      "declaredScenario": {
         "id": "griffin-unprepared-return-v1",
         "definitionHash": "b224f75d2ec71ad61082fe0cba4617057b73cd9feb5173c52f7f32dcd86ed6f1",
         "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8"
@@ -248,11 +248,11 @@
       "situation": "B",
       "condition": "post-tuned",
       "runNumber": 1,
-      "scenarioId": "griffin-unprepared-v1",
+      "scenarioId": "griffin-unprepared-return-v1",
       "seed": 0,
-      "scenarioHash": "bbbbc43532324b80179ab8fdf122fe7f6d10446a52d9ac752a0efdeae7671374",
-      "startHash": "1a270d7b5e456d1be0e3250d37baae26a77b5ca3099b18433a9c8e5a25fb0051",
-      "declarationId": "oath-ember-abc-2026-11-06-r7-b-enclosure",
+      "scenarioHash": "b224f75d2ec71ad61082fe0cba4617057b73cd9feb5173c52f7f32dcd86ed6f1",
+      "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
+      "declarationId": "oath-ember-abc-2026-11-06-r8-b-return",
       "status": "not-run",
       "success": null,
       "gameSeconds": null,
@@ -266,12 +266,12 @@
       "confirmedSubgoals": [],
       "tracePath": null,
       "recordingPath": null,
-      "policyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-5fa93722·guidance-60a0a013",
-      "promptHash": "54605c1b010826448627189d92fc8dfedc9f853b14d45fe5ad21260ce21e5627",
+      "policyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·task-cdbee612·guidance-60a0a013",
+      "promptHash": "17b89312d88c9da0f81bdea5344c58f149a046b9a86873d166821a74f4be96a6",
       "configHash": null,
       "sourceCommit": null,
       "plannedPlayerType": "model-centralized",
-      "declarationHash": "b39116b3495dcdebd3eb2f84e1815fb6c7865b3bb7f021d92f32c106144bc442",
+      "declarationHash": "14525a1229a2c719c3064452e91e22245942821430cd222bc73642470c3fe8b2",
       "decisions": null,
       "failedModelCalls": null,
       "timedOutModelCalls": null,
@@ -289,11 +289,12 @@
       "costNote": null,
       "manualHash": "4b091a6630dd56f236f89f8e2213a6bb7cad4a31d4851d1883f95867d92bfa86",
       "guidanceHash": "60a0a01357e68e2f44f0ecd9d0d0ebb41bfaab04c5c3ec78cae62c760c265263",
-      "guidanceStatus": "b-post-a-transfer-v1: frozen, conditionally approved; paid run not yet authorized",
+      "guidanceStatus": "b-post-a-transfer-v1: owner-approved (60a0a013); paid run not yet executed",
       "traceSha256": null,
       "recordingSha256": null,
       "endHash": null,
-      "historicalSuiteHash": null
+      "historicalSuiteHash": null,
+      "scenarioNote": "Different scenario from B pre-tuned (Pilot-31 on griffin-unprepared-v1); not a prompt-only contrast."
     },
     {
       "situation": "B",
@@ -303,7 +304,7 @@
       "seed": 0,
       "scenarioHash": "b224f75d2ec71ad61082fe0cba4617057b73cd9feb5173c52f7f32dcd86ed6f1",
       "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
-      "declarationId": "oath-ember-abc-2026-11-06-r6-eval-integration",
+      "declarationId": "oath-ember-abc-2026-11-06-r8-b-return",
       "status": "success",
       "success": true,
       "gameSeconds": 89.8,
@@ -328,7 +329,7 @@
       "configHash": "f3eaa101e946fe466243302ca9f617f65596f573cc3c20845ff8b189ee9da6b1",
       "sourceCommit": "fbc3627",
       "plannedPlayerType": "baseline-griffin-heuristic",
-      "declarationHash": "daa59f016ca39fd75852186db1af8b48face2c4e49c51d18d94957600d8423ec",
+      "declarationHash": "14525a1229a2c719c3064452e91e22245942821430cd222bc73642470c3fe8b2",
       "decisions": {
         "sieg": 481,
         "coco": 646
@@ -355,8 +356,7 @@
       "endHash": "a454145029bba5ad3a669aca2852a4db768536a943946be6720f43435d51275c",
       "historicalSuiteHash": null,
       "plannedPolicyId": "baseline-griffin-heuristic-v1",
-      "supplementaryDeterministicRun": "docs/midterm/evidence/griffin-heuristic-v1/run-2/summary.json",
-      "scenarioNote": "Recorded on griffin-unprepared-return-v1 under r6 and kept unchanged. r7's B model rows use griffin-unprepared-v1, so this row is on a different scenario; a v1 baseline cell needs owner allocation."
+      "supplementaryDeterministicRun": "docs/midterm/evidence/griffin-heuristic-v1/run-2/summary.json"
     },
     {
       "situation": "C",

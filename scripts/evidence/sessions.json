@@ -127,7 +127,7 @@
     "01a16225"
    ],
    "role": "Implementation agent (`AGENTS.md`); orchestrator of subagents 18, 19 and 21",
-   "title": "Player manual, design rationale D1\u2013D11, midterm architecture, superseded Codex evaluation (PR #5)"
+   "title": "Player manual, design rationale D1–D11, midterm architecture, superseded Codex evaluation (PR #5)"
   },
   {
    "number": 15,
@@ -442,6 +442,16 @@
    "role": "Claude Code implementation agent under CLAUDE.md: Situation B (Griffin Trial, Unprepared) scenario, strict predicate and failure rules, Griffin warning observations, post-tuned guidance mechanism, offline certification witness; game-rules-audit (griffin) and session-evidence invoked by name in the same session (implementer audit, not independent review). The rules-reviewer subagent was launched by this session, read-only and not instructed to approve; its findings are committed verbatim.",
    "title": "Situation B: Griffin Trial (Unprepared) implementation, offline certification and review round 1",
    "note": "Owner pasted a brief written for Codex and asked Claude to implement it, then a review brief. Work in a separate worktree (oath_and_ember-griffin-b, branch midterm/griffin-situation-b off 5388b23) because another session was editing oath_and_ember-eval. No paid call, model episode, push or merge. Guidance griffin-b-post-v1 left proposed. Commits 6deaef3, 96fd952, 0ca9a5f, 3f9f11e, 6e26f76 and this record's commit."
+  },
+  {
+   "number": 50,
+   "slug": "claude-b-post-tuning",
+   "ids": [
+    "3a986109"
+   ],
+   "role": "Claude Code implementation agent under CLAUDE.md: Situation B post-tuned prompt-only guidance (b-post-a-transfer-v1) from the Situation A heuristic baseline, owner-approved observation parity for griffin-unprepared-v1, declaration r7 and the paid-run preflight; session-evidence invoked by name in this session. The rules-reviewer subagent was launched by this session in a separate invocation at the owner's request, read-only and not instructed to approve; its findings are committed verbatim.",
+   "title": "Situation B post-tuning: A-derived guidance, observation parity, declaration r7 and preflight",
+   "note": "Guidance written after Pilot-31 (B pre-tuned) was run and its trace read: the B pre/post contrast is tuning on B, not a transfer test. No paid call, no push, no merge. Commits 6276656, 732c998, ec135fe and this record's commit."
   }
  ]
 }

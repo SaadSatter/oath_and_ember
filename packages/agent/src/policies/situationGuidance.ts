@@ -46,7 +46,7 @@ const GRIFFIN_B_POST_V1 = [
 ].join("\n");
 
 /**
- * PROPOSED, NOT APPROVED (2026-11-06). General play heuristics taken from the
+ * APPROVED by the owner (2026-11-06), text unchanged since 6276656. General play heuristics taken from the
  * Situation A heuristic baseline (baseline-maze-heuristic-v2, mazeHeuristic.ts),
  * restated as advice for the planner. It names no particular place, enemy,
  * attack, item, ability, coordinate or sequence (it does use the generic words
@@ -77,8 +77,10 @@ const B_POST_A_TRANSFER_V1 = [
 export const SITUATION_GUIDANCE: Readonly<Record<string, SituationGuidance>> = Object.freeze({
   "b-post-a-transfer-v1": Object.freeze({
     id: "b-post-a-transfer-v1",
-    situations: Object.freeze(["griffin-unprepared-v1"] as SituationId[]),
-    status: "proposed",
+    // Owner approval 2026-11-06: this exact text, on both B scenarios (declaration r8 runs it on the return scenario).
+    situations: Object.freeze(["griffin-unprepared-v1", "griffin-unprepared-return-v1"] as SituationId[]),
+    status: "approved",
+    approvedSha256: "60a0a01357e68e2f44f0ecd9d0d0ebb41bfaab04c5c3ec78cae62c760c265263",
     provenance: "Drafted by the Claude Code implementation agent from the Situation A heuristic baseline (baseline-maze-heuristic-v2) after Pilot-31 was run and read; pending owner review.",
     text: B_POST_A_TRANSFER_V1,
   }),

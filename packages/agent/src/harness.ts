@@ -63,7 +63,7 @@ export const EPISODE_CAP_USD: Record<SituationId, number> = {
  */
 export const WALL_CLOCK_CEILING_S: Partial<Record<SituationId, number>> = { P1: 3600 };
 /** A/B/C declaration cases: the declared 3,600 s model bound (Situation B review finding 7, 2026-11-06). */
-export const ABC_WALL_CLOCK_CEILING_S: Partial<Record<SituationId, number>> = { "griffin-unprepared-v1": 3600 };
+export const ABC_WALL_CLOCK_CEILING_S: Partial<Record<SituationId, number>> = { "griffin-unprepared-v1": 3600, "griffin-unprepared-return-v1": 3600 };
 /** Refuses a wall-clock override above a scenario's ceiling. */
 export function checkWallSeconds(o: Pick<SuiteRunOptions, "situations" | "wallSeconds">) {
   if (o.wallSeconds === undefined) return;
@@ -73,7 +73,9 @@ export function checkWallSeconds(o: Pick<SuiteRunOptions, "situations" | "wallSe
       throw Error(`${id}'s wall-clock limit is ${ceiling} s; a run may lower it, never raise it (got ${o.wallSeconds} s).`);
   }
 }
-export const OBS_ONLY_SITUATIONS: readonly SituationId[] = ["S1", "S2", "S3", "S2-local", "S3-local", "S2-v1", "S3-v1", "S2-local-v1", "S3-local-v1", "S2-B", "S2-C", "P1", "griffin-unprepared-v1"];
+export const OBS_ONLY_SITUATIONS: readonly SituationId[] = ["S1", "S2", "S3", "S2-local", "S3-local", "S2-v1", "S3-v1", "S2-local-v1", "S3-local-v1", "S2-B", "S2-C", "P1", "griffin-unprepared-v1",
+  // Owner decision 2026-11-06 (declaration r8): the B post-tuned run uses the return scenario.
+  "griffin-unprepared-return-v1"];
 
 export interface ModelSetup {
   /** A provider adapter for paid runs; a fake in tests. */

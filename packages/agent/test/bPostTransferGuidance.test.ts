@@ -16,6 +16,7 @@ import { MockGateway } from "../src/policies/mockGateway.js";
 
 const ID = "b-post-a-transfer-v1";
 const B = "griffin-unprepared-v1" as const;
+const RETURN = "griffin-unprepared-return-v1" as const;
 const root = fileURLToPath(new URL("../../..", import.meta.url));
 const manual = readFileSync(join(root, "manual/Oath_and_Ember_Player_Manual.md"), "utf8");
 const gateways = () => {
@@ -75,17 +76,36 @@ describe("B post-tuned guidance b-post-a-transfer-v1", () => {
     expect(guidanceHash(guidance("griffin-b-post-v1").text)).toBe("1c06284031aff876ca9fcf9d594bac6297b9bb636f18347266b9988cafbf3d36");
   });
 
-  it("is limited to the pre-tuned run's scenario and stays locked for paid runs until the owner approves its hash", () => {
+  it("is owner-approved for exactly this text, on the two B scenarios only", () => {
     const g = SITUATION_GUIDANCE[ID];
-    expect(g.situations).toEqual([B]);
-    expect(g.status).toBe("proposed");
-    expect(guidanceApproved(g)).toBe(false);
+    expect(g.situations).toEqual([B, RETURN]);
+    expect(g.status).toBe("approved");
+    expect(g.approvedSha256).toBe("60a0a01357e68e2f44f0ecd9d0d0ebb41bfaab04c5c3ec78cae62c760c265263");
+    expect(guidanceApproved(g)).toBe(true);
+    // Editing even one character re-locks it for paid runs.
+    expect(guidanceApproved({ ...g, text: g.text + " " })).toBe(false);
     const mock = { gateway: new MockGateway(0, 0), stage: "pilot" } as unknown as ModelSetup;
     const paidLike = { gateway: { label: "openai:gpt-6-luna@medium" }, stage: "pilot" } as unknown as ModelSetup;
-    expect(() => validatePlan({ player: "model-centralized", situations: [B], seeds: [0], model: { ...mock, guidance: ID } })).not.toThrow();
-    expect(() => validatePlan({ player: "model-centralized", situations: [B], seeds: [0], model: { ...paidLike, guidance: ID } })).toThrow(/proposed, not approved/);
+    for (const id of [B, RETURN]) {
+      expect(() => validatePlan({ player: "model-centralized", situations: [id], seeds: [0], model: { ...mock, guidance: ID } })).not.toThrow();
+      expect(() => validatePlan({ player: "model-centralized", situations: [id], seeds: [0], model: { ...paidLike, guidance: ID } })).not.toThrow();
+    }
     expect(() => validatePlan({ player: "model-centralized", situations: ["S2-local"], seeds: [0], model: { ...mock, guidance: ID } })).toThrow(/limited to/);
-    expect(() => validatePlan({ player: "model-centralized", situations: ["griffin-unprepared-return-v1"], seeds: [0], model: { ...mock, guidance: ID } })).toThrow(/limited to|restricted to/);
+    expect(() => validatePlan({ player: "model-centralized", situations: [RETURN], seeds: [0], final: true, model: { ...paidLike, guidance: ID } })).toThrow();
+    expect(() => validatePlan({ player: "model-memory", situations: [RETURN], seeds: [0], model: { ...mock, guidance: ID } })).toThrow();
+  });
+
+  it("on the return scenario (declaration r8), the post-tuned prompt is that scenario's generic prompt plus the same block", () => {
+    const r = situation(RETURN);
+    // The return scenario has its own task line and no tutorial or briefing (unlike griffin-unprepared-v1).
+    expect(r.briefing).toBeUndefined();
+    expect(r.tutorial).toBeUndefined();
+    const pre = new CentralPlanner(manual, gateways(), 4, r.briefing, r.tutorial, r.task);
+    const post = new CentralPlanner(manual, gateways(), 4, r.briefing, r.tutorial, r.task, guidance(ID).text);
+    expect(post.system).toBe(pre.system + guidanceBlock(guidance(ID).text));
+    expect(pre.promptHash).toBe("7fbaaec753d7315e998caf82c3aafe74f5e1b6289d48a320db148bfa28fcb2e0");
+    expect(post.promptHash).toBe("17b89312d88c9da0f81bdea5344c58f149a046b9a86873d166821a74f4be96a6");
+    expect(centralizedPolicies(manual, gateways(), 4, r.briefing, r.tutorial, r.task, guidance(ID).text).sieg.name).toMatch(/^centralized-f0592888\(.+\)·batch4·task-cdbee612·guidance-60a0a013$/);
   });
 
   // A smoke check only (review finding 7): it cannot catch a mechanic described in generic words.

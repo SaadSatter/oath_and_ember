@@ -1,6 +1,6 @@
 # Declared evaluation suite — Oath and Ember A/B/C
 
-**Declaration:** `oath-ember-abc-2026-11-06-r7-b-enclosure` (supersedes r6; r6 archived byte for byte in [evaluation-abc/history/r6/](evaluation-abc/history/r6/)), 2026-11-06, at the owner's
+**Declaration:** `oath-ember-abc-2026-11-06-r8-b-return` (supersedes r7 and r6; both archived byte for byte in [evaluation-abc/history/](evaluation-abc/history/)), 2026-11-06, at the owner's
 request against the supplied midterm guidelines. Machine-readable specification:
 [evaluation-abc/declaration.json](evaluation-abc/declaration.json).
 **This declares the experimental design; it does not claim that B/C runtime
@@ -15,10 +15,10 @@ in puzzle/encounter and relevant starting inventory, not unused seed values.
 | Label / logical ID | Initial state | Success | Status |
 | --- | --- | --- | --- |
 | A — Hedge Maze / existing `S2-local` | Frozen v2 seed 0, tick 405, both heroes at maze entrance | Authoritative shared `enchanted_shears` count > 0 | Implemented/frozen; Pilot-30 historical post-tuned result available |
-| B — Griffin Trial, Unprepared / `griffin-unprepared-v1` (r7) | Griffin Enclosure entrance after the opening and ordinary north travel, tick 439, start `1a270d7b…0051`; fresh 640-HP Griffin; no Mirror, Shears or wig | Griffin HP == 0 AND `griffin_wig` in the shared backpack; neither hero knocked out; both stay in the enclosure | Certified checkpoint; Pilot-31 pre-tuned failure; post-tuned prepared, not run; v1 baseline cell pending allocation |
+| B — Griffin Trial, Unprepared — Goddess Return / `griffin-unprepared-return-v1` (r8) | Fresh 640-HP Griffin enclosure, both heroes grounded with normal abilities; no Mirror, Shears or wig; tick 540, start `45b1a6aa…` | Griffin HP == 0 AND wig acquired AND `chapter0.complete`; neither hero knocked out | Baseline 2/2 successes; post-tuned approved and prepared, not run; pre-tuned (Pilot-31) ran on `griffin-unprepared-v1`, a different scenario |
 | C — Griffin Trial, Prepared / `griffin-prepared-v1` | Same encounter and matched hero conditions as closely as legal histories permit; Mirror=1, Shears=1, wig=0 | Griffin HP == 0 AND wig acquired; no knockout (no return required) | Design declared; checkpoint pending; reserved from model-outcome tuning |
 
-(r6 text, superseded for B by r7 below:) B requires goddess delivery and Chapter 0 completion; C ends at wig acquisition and retains its enclosure boundary. Both prohibit knockout. B's evaluator is implemented; C still needs certification. No gameplay rule is changed. A's original rules, travel allowance and limits stay intact.
+B requires goddess delivery and Chapter 0 completion; C ends at wig acquisition and retains its enclosure boundary. Both prohibit knockout. B's evaluator is implemented; C still needs certification. No gameplay rule is changed. A's original rules, travel allowance and limits stay intact.
 
 **Strict defeat is intentional in this declaration.** The prepared tools enable
 peaceful grooming, but a peaceful wig with positive Griffin HP does not pass.
@@ -215,3 +215,14 @@ Owner decision, recorded by the implementation agent. `griffin-unprepared-v1`, s
 - **Disclosure:** r7 was made after Pilot-31's outcome was known, and the post-tuned guidance was written after reading Pilot-31. The B pre/post contrast is tuning on B, not an independent transfer test.
 
 Declaration SHA-256 (sorted compact JSON without the field): `b39116b3495dcdebd3eb2f84e1815fb6c7865b3bb7f021d92f32c106144bc442`.
+
+## Revision r8 (2026-11-06): B is the return scenario again
+
+Owner decision, recorded by the implementation agent. The B post-tuned run uses `griffin-unprepared-return-v1` and counts as **B/post-tuned/1**. B is again the return scenario, as in r6, and r7's choice of `griffin-unprepared-v1` (section above) is superseded. The r7 text stays above for the record.
+
+- **Consequence: B pre and post are on different scenarios.** Pilot-31 (pre-tuned) ran on `griffin-unprepared-v1`. The two differ in start (tick 439 vs 540), success (wig vs wig + goddess offering + `chapter0.complete`), prompt framing (v1 tutorial + briefing vs the return task line with no tutorial or briefing) and observations (the return scenario lists the straw nest). The B pre/post difference is **not** a prompt-only contrast and must not be reported as a controlled prompt effect. Pilot-31's knockout fails both predicates, so it is a failure either way.
+- **Baseline:** `baseline-griffin-heuristic-v1` (2/2 successes) is on the return scenario, the same as B post-tuned.
+- **Post-tuned:** guidance `b-post-a-transfer-v1`, owner-approved (text `60a0a013…5263`), prompt on this scenario `17b89312d88c9da0f81bdea5344c58f149a046b9a86873d166821a74f4be96a6`. One run.
+- **Disclosure:** post hoc (after Pilot-31), and the guidance was written after reading Pilot-31: tuning on B.
+
+Declaration SHA-256 (sorted compact JSON without the field): `14525a1229a2c719c3064452e91e22245942821430cd222bc73642470c3fe8b2`.

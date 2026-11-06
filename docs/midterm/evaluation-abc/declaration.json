@@ -1,12 +1,12 @@
 {
-  "id": "oath-ember-abc-2026-11-06-r7-b-enclosure",
+  "id": "oath-ember-abc-2026-11-06-r8-b-return",
   "declaredOn": "2026-11-06",
   "status": "declared-design; B/C runtime checkpoints and paid execution pending",
   "guidelines": {
     "source": "owner-pasted midterm guidelines",
     "sha256": "a1040a5425d554e2451837088aba1fb1caad4f8058319dd443eed8a53ccb4c76"
   },
-  "scope": "A Hedge Maze; B unprepared Griffin combat and wig acquisition in the enclosure (griffin-unprepared-v1); C prepared Griffin wig acquisition. Different bounded success predicates explicitly declared.",
+  "scope": "A Hedge Maze; B unprepared Griffin combat plus goddess return; C prepared Griffin wig acquisition. Different bounded success predicates explicitly declared.",
   "gamePolicySourceCommit": "040685c (observed Pilot-30 post-tuned snapshot; not an established pre-tuned snapshot)",
   "designAmendments": "Require a new declaration revision; preserve prior results and frozen A",
   "baseline": {
@@ -62,9 +62,12 @@
     "postGuidanceB": {
       "id": "b-post-a-transfer-v1",
       "textSha256": "60a0a01357e68e2f44f0ecd9d0d0ebb41bfaab04c5c3ec78cae62c760c265263",
-      "promptSha256": "54605c1b010826448627189d92fc8dfedc9f853b14d45fe5ad21260ce21e5627",
-      "status": "conditionally approved by owner; proposed in code until final authorization",
-      "record": "docs/midterm/B_POST_TUNING_TRANSFER.md"
+      "status": "approved by owner 2026-11-06 for griffin-unprepared-v1 and griffin-unprepared-return-v1 (approvedSha256 in code)",
+      "record": "docs/midterm/B_POST_TUNING_TRANSFER.md",
+      "promptSha256ByScenario": {
+        "griffin-unprepared-v1": "54605c1b010826448627189d92fc8dfedc9f853b14d45fe5ad21260ce21e5627",
+        "griffin-unprepared-return-v1": "17b89312d88c9da0f81bdea5344c58f149a046b9a86873d166821a74f4be96a6"
+      }
     }
   },
   "conditions": [
@@ -100,29 +103,27 @@
       "history": "Development-informed; Pilot-30 predates this declaration, not retrospectively preregistered"
     },
     "B": {
-      "name": "Griffin Trial, Unprepared",
-      "id": "griffin-unprepared-v1",
+      "name": "Griffin Trial, Unprepared — Goddess Return",
+      "id": "griffin-unprepared-return-v1",
       "seed": 0,
-      "definitionHash": "bbbbc43532324b80179ab8fdf122fe7f6d10446a52d9ac752a0efdeae7671374",
-      "startHash": "1a270d7b5e456d1be0e3250d37baae26a77b5ca3099b18433a9c8e5a25fb0051",
-      "startTick": 439,
-      "runtimeCheckpoint": "implemented and certified (docs/midterm/SITUATION_B_GRIFFIN.md); ordinary legal prefix; unchanged since Pilot-31",
-      "objective": "Defeat the Griffin (its HP reaches 0) and obtain the Magnificent Griffin Wig into the shared backpack through normal gameplay, with neither hero knocked out and both staying in the Griffin Enclosure.",
+      "definitionHash": "b224f75d2ec71ad61082fe0cba4617057b73cd9feb5173c52f7f32dcd86ed6f1",
+      "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
+      "runtimeCheckpoint": "implemented; ordinary legal prefix, reset hash pinned in tests",
+      "objective": "Defeat Griffin, acquire Divine Wig, return it to goddess and reach chapter0.complete; no knockout",
       "inventory": {
         "vanity_mirror": 0,
         "enchanted_shears": 0,
         "griffin_wig": 0
       },
-      "start": "goddess checkpoint, scripted opening and ordinary north travel to the Griffin Enclosure, before the arrival dialogue",
-      "success": "Authoritative Griffin HP == 0 AND shared inventory griffin_wig count > 0 (evaluator griffinDefeatedAndWig).",
-      "failureBoundary": "knocked_out: a hero's health ran out during any tick. left_area: any hero outside GRIFFIN_ENCLOSURE. Both are checked before success on every tick.",
+      "start": "ordinary goddess opening, walk around statue and north travel; arrival dialogue completed",
+      "success": "authoritative Griffin hp <= 0 AND wigClaimed AND story.flags contains chapter0.complete",
+      "failureBoundary": "Any authoritative knockout. Normal return travel is required; possession or shrine entry alone is not success.",
       "heldOut": false,
-      "observationContract": "Pilot-31's: the straw-nest entry added in 4c9cf9f is omitted for this scenario only (owner decision 2026-11-06; parity test packages/agent/test/griffinObservationParity.test.ts)",
-      "replaces": {
-        "id": "griffin-unprepared-return-v1",
-        "definitionHash": "b224f75d2ec71ad61082fe0cba4617057b73cd9feb5173c52f7f32dcd86ed6f1",
-        "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
-        "status": "r6's declared B; kept unchanged as a separate scenario. Its baseline results stay recorded, not deleted or relabelled."
+      "preTunedRunScenario": {
+        "id": "griffin-unprepared-v1",
+        "definitionHash": "bbbbc43532324b80179ab8fdf122fe7f6d10446a52d9ac752a0efdeae7671374",
+        "startHash": "1a270d7b5e456d1be0e3250d37baae26a77b5ca3099b18433a9c8e5a25fb0051",
+        "note": "Pilot-31 (B pre-tuned) ran here, not on the return scenario."
       }
     },
     "C": {
@@ -167,7 +168,7 @@
   ],
   "memoryRequirement": "Partial observation: clean bounded-memory versus observation-only comparison still required/pending; pre/post guidance is not a memory ablation",
   "implementationBoundary": "Declaration and documentation only; no scenario, gameplay, policy or controller change; no model calls, merge, push or paid-run approval",
-  "supersedes": "oath-ember-abc-2026-11-06-r6-eval-integration",
+  "supersedes": "oath-ember-abc-2026-11-06-r7-b-enclosure",
   "correction": "Owner requested all baseline/return changes be available in oath_and_ember-eval. Preserve this checkout's one repetition per cell; imported second baseline runs are supplementary deterministic reproductions. Preserve reviewed griffin-unprepared-v1 as historical enclosure case beside active return variant.",
   "classificationNote": "A: pre-tuned Pilot-28 (678b86c, manual stop), post-tuned Pilot-30 (040685c, success), baseline baseline-quest (success). Pilot-29 (327c34a) is supplementary evidence of the intermediate tuning round. Whether a manually stopped run qualifies as the official pre-tuned attempt depends on the professor's rules.",
   "promptTuningRecord": "docs/midterm/A_PROMPT_TUNING.md",
@@ -181,5 +182,14 @@
     "openItem": "The B cheap-baseline cell's recorded runs are on griffin-unprepared-return-v1. A baseline run on griffin-unprepared-v1 needs owner allocation; until then the B baseline row is on a different scenario from the B model rows.",
     "history": "docs/midterm/evaluation-abc/history/r6/ holds r6's declaration, results, matrix and suite document byte for byte."
   },
-  "declarationSha256": "b39116b3495dcdebd3eb2f84e1815fb6c7865b3bb7f021d92f32c106144bc442"
+  "amendmentR8": {
+    "date": "2026-11-06",
+    "by": "owner decision, recorded by the implementation agent",
+    "decision": "The B post-tuned run uses griffin-unprepared-return-v1 and counts as B/post-tuned/1. B is again the return scenario, as in r6. r7's choice of griffin-unprepared-v1 is superseded.",
+    "consequence": "B pre-tuned (Pilot-31, griffin-unprepared-v1) and B post-tuned (griffin-unprepared-return-v1) are on different scenarios: different start (tick 439 vs 540), success predicate (wig vs wig + goddess offering + chapter0.complete), prompt framing (v1 tutorial + briefing vs return task line with no tutorial or briefing) and observations (the return scenario lists the straw nest). The pre/post difference is therefore not prompt-only and must not be reported as a controlled prompt effect. Pilot-31's knockout fails both predicates.",
+    "baseline": "The B cheap-baseline cell (baseline-griffin-heuristic-v1, 2/2 successes) is on the return scenario, the same as B post-tuned.",
+    "disclosure": "Post hoc: decided after Pilot-31's outcome. The guidance was written after reading Pilot-31: tuning on B.",
+    "history": "r6 and r7 archived byte for byte in docs/midterm/evaluation-abc/history/r6/ and history/r7/."
+  },
+  "declarationSha256": "14525a1229a2c719c3064452e91e22245942821430cd222bc73642470c3fe8b2"
 }
