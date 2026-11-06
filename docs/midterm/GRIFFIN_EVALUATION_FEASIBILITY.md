@@ -1,5 +1,7 @@
 # Griffin evaluation feasibility — basis for declared suite
 
+> **Revision 5 (2026-11-06):** the owner changed the allocation to one pre-tuned, one post-tuned and one baseline run per situation. Statements below about two trials per cell describe declaration r1. Current design: [DECLARED_EVALUATION_SUITE.md](DECLARED_EVALUATION_SUITE.md).
+
 2026-11-06. **Update:** [declared design r1](DECLARED_EVALUATION_SUITE.md) now retains strict defeat/no-knockout scoring, selects unchanged baseline-quest and allocates two repetitions per cell. Runtime checkpoints/certification remain unimplemented; earlier options below are feasibility discussion, not permission to change the declared goal. Documentation/source review only, based on preservation commit
 `0a89094`. **No new Griffin configuration was implemented, reset, replayed or
 run.** No gameplay, policy, frozen scenario, paid runner or Pilot-30 evidence

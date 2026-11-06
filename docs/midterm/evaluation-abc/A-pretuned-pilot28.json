@@ -1,12 +1,12 @@
 {
-  "about": "Owner-designated historical A/pre-tuned/1 (declaration r4). Values verified from the run's own summary.json and trace; supersedes the r3 record with null metrics, archived under history/. No raw evidence changed.",
+  "about": "Owner-designated historical A/pre-tuned (declaration r5). Values verified from the run's own summary.json and trace. Whether a manually stopped run qualifies as the official pre-tuned attempt depends on the professor's rules.",
   "row": {
     "scenarioId": "S2-local",
     "seed": 0,
     "scenarioHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab",
     "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
-    "declarationId": "oath-ember-abc-2026-11-06-r4",
-    "declarationHash": "fee13d3cc324188a50b289bad2b2e194f3bd404fb2cea0bf3ca470538ab9bd8d",
+    "declarationId": "oath-ember-abc-2026-11-06-r5",
+    "declarationHash": "f4c60aa77662775e284e3a391b82dff9c492aad045c8a9536334a25bd4ffc04a",
     "plannedPlayerType": "model-centralized",
     "manualHash": "4b091a6630dd56f236f89f8e2213a6bb7cad4a31d4851d1883f95867d92bfa86",
     "guidanceHash": null,
@@ -59,8 +59,8 @@
     "timingNote": "7,516 ticks = 125.3 game-s (summary.json). Offline replay at 5388b23 matches all 641 step results and the end hash."
   },
   "limitations": [
-    "Historical pilots run before the declaration; not preregistered final trials and not held out.",
-    "Pre- and post-tuned differ in the planner prompt (A_PROMPT_TUNING.md) and also in controller code; not a prompt-only controlled comparison.",
-    "Pilot-28 and Pilot-29 ran different prompt versions, so they are not repeats of one frozen policy."
+    "Historical pilot run before the declaration; not preregistered and not held out.",
+    "Manual stop by the owner, not an evaluation-defined terminal condition.",
+    "Pre- and post-tuned differ in the planner prompt (A_PROMPT_TUNING.md) and also in controller code; not a prompt-only controlled comparison."
   ]
 }

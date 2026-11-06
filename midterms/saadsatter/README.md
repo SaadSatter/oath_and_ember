@@ -7,8 +7,8 @@ playable from the goddess checkpoint to Chapter 0 completion.
 **Declared evaluation scope (2026-11-06):** three bounded tasks from that quest:
 A — Hedge Maze; B — Griffin Trial, Unprepared; C — Griffin Trial, Prepared.
 Each has pre-tuned model, post-tuned model and free scripted-baseline conditions,
-with two repetitions per cell. **Declaration is not completed evaluation:** A is
-frozen and has Pilot-30 evidence; new B/C checkpoints/integration are pending.
+with one run per cell. **Declaration is not completed evaluation:** A is
+complete (Pilot-28 pre-tuned, Pilot-30 post-tuned, baseline-quest); new B/C checkpoints/integration are pending.
 No new paid run is authorized by these documents.
 
 | Deliverable | Where / status |

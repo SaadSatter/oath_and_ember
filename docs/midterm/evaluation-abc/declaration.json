@@ -1,5 +1,5 @@
 {
-  "id": "oath-ember-abc-2026-11-06-r4",
+  "id": "oath-ember-abc-2026-11-06-r5",
   "declaredOn": "2026-11-06",
   "status": "declared-design; B/C runtime checkpoints and paid execution pending",
   "guidelines": {
@@ -43,7 +43,7 @@
     "post-tuned",
     "cheap-baseline"
   ],
-  "repetitionsPerCell": 2,
+  "repetitionsPerCell": 1,
   "limits": {
     "gameTicks": 18000,
     "gameSeconds": 300,
@@ -124,18 +124,16 @@
   },
   "holdoutOrder": [
     "Complete A/B tuning and freeze all policy/manual/guidance hashes",
-    "C pre-tuned 1",
-    "C post-tuned 1",
-    "C post-tuned 2",
-    "C pre-tuned 2",
-    "C baseline 1",
-    "C baseline 2"
+    "C pre-tuned",
+    "C post-tuned",
+    "C baseline"
   ],
   "memoryRequirement": "Partial observation: clean bounded-memory versus observation-only comparison still required/pending; pre/post guidance is not a memory ablation",
   "implementationBoundary": "Declaration and documentation only; no new scenarios, policy change, model calls, merge, push or paid-run approval",
-  "supersedes": "oath-ember-abc-2026-11-06-r3",
-  "correction": "r4: owner designates Pilot-29 as historical A/pre-tuned/2. Pilot-28 row filled from its own summary.json and trace (previously null). No case design, limit or original evidence change.",
-  "classificationNote": "Pre-tuned A: Pilot-28 (678b86c) and Pilot-29 (327c34a), both manual stops. Post-tuned A: Pilot-30 (040685c). The pre/post difference is documented as prompt tuning in docs/midterm/A_PROMPT_TUNING.md; the same commits also changed controller code, so it is not a prompt-only controlled comparison.",
+  "supersedes": "oath-ember-abc-2026-11-06-r4",
+  "correction": "r5 (owner decision 2026-11-06): one run per condition per situation (pre-tuned model, post-tuned model, deterministic baseline): six model runs and three baseline runs. Pilot-29 becomes supplementary tuning evidence, not a trial. A's baseline is run.",
+  "classificationNote": "A: pre-tuned Pilot-28 (678b86c, manual stop), post-tuned Pilot-30 (040685c, success), baseline baseline-quest (success). Pilot-29 (327c34a) is supplementary evidence of the intermediate tuning round. Whether a manually stopped run qualifies as the official pre-tuned attempt depends on the professor's rules.",
   "promptTuningRecord": "docs/midterm/A_PROMPT_TUNING.md",
-  "declarationSha256": "fee13d3cc324188a50b289bad2b2e194f3bd404fb2cea0bf3ca470538ab9bd8d"
+  "requirementInterpretation": "Owner's reading: 'two live trials each' = one pre-tuned and one post-tuned model run per situation, plus the baseline. Not yet confirmed by the professor.",
+  "declarationSha256": "f4c60aa77662775e284e3a391b82dff9c492aad045c8a9536334a25bd4ffc04a"
 }

@@ -1,6 +1,6 @@
 # Declared evaluation suite — Oath and Ember A/B/C
 
-**Declaration:** `oath-ember-abc-2026-11-06-r2`, 2026-11-06, at the owner's
+**Declaration:** `oath-ember-abc-2026-11-06-r5`, 2026-11-06, at the owner's
 request against the supplied midterm guidelines. Machine-readable specification:
 [evaluation-abc/declaration.json](evaluation-abc/declaration.json).
 **This declares the experimental design; it does not claim that B/C runtime
@@ -62,7 +62,7 @@ certified unmerged wig-return checkpoint. New logical IDs are not yet CLI IDs.
 ## Players and information
 
 - **Pre-tuned:** intended model comparator without situation-specific tuning.
-  Pilot-28 (`678b86c`) and Pilot-29 (`327c34a`) are registered as historical A/pre-tuned/1–2 by owner designation. Pilot-30 belongs to post-tuned.
+  Pilot-28 (`678b86c`) is the historical A pre-tuned run by owner designation; Pilot-29 (`327c34a`) is supplementary tuning evidence. Pilot-30 belongs to post-tuned.
 - **Post-tuned:** Pilot-30 is owner-confirmed post-tuned, with observed source
   `040685c`, recorded model `gpt-6-luna` medium, batch 4 and preserved prompt/
   policy hashes. The tuning was planner prompt rules added after each failed
@@ -94,15 +94,11 @@ are seen. Any baseline change needs a new declared revision and retesting.
 
 **Classification correction:** revision 2 moves Pilot-30 from the mistaken pre-tuned cell to post-tuned. Revision 1 and original misclassified metadata remain archived; raw run evidence is untouched.
 
-Declare **two repetitions per condition per situation**: 12 model episodes and
-six free baseline episodes. This exceeds the written minimum of two live trials
-per situation while also covering the owner's pre/post conditions. Pre/post
-are different policies, not two repetitions of one policy.
+Declare **one run per condition per situation** (revision 5, owner decision 2026-11-06): a pre-tuned model run, a post-tuned model run and one deterministic baseline run. That is six model runs and three baseline runs, so each situation has two live model trials. This is the owner's reading of "two live trials each"; the professor has not confirmed it. Pre and post are different policies, not two repetitions of one policy.
 
 Pilot-30 is allocated once as A/post-tuned/1 **historical completed pilot**.
 Its original registration, pilot ledger stage, hashes and status remain unchanged;
-it is not retroactively a preregistered final run. The other 16 rows are unrun
-(10 model, six baseline). See [declared-results.json](evaluation-abc/declared-results.json).
+it is not retroactively a preregistered final run. Revision 5 allocation: see the section at the end. See [declared-results.json](evaluation-abc/declared-results.json).
 A post-hoc declaration cannot establish that A was reserved before its earlier
 tuning; disclose this limitation rather than rewriting history.
 
@@ -115,7 +111,7 @@ A's maze guidance stays A-only. The ordinary shared manual and item descriptions
 remain available. Do not inspect a first C result and adapt the other condition.
 Any such adaptation contaminates the holdout and requires a new held-out case.
 
-Final C order: pre/1, post/1, post/2, pre/2, baseline/1, baseline/2. Do not replace
+Final C order: pre-tuned, post-tuned, baseline. Do not replace
 failures or pick the best trials. Log interrupted/aborted episodes, attempted
 calls, invalid actions, unusable replies, unknown usage and costs. Preregister
 A/B run order and all remaining hashes before execution as well.
@@ -127,7 +123,7 @@ and 4M tokens per hero, 30-second call timeout, three consecutive policy failure
 3600s model wall time / 600s baseline wall time, $0.75 model episode spend cap.
 A's frozen definition still permits its original $1.25 maximum; $0.75 is the
 experiment's lower run cap, matching Pilot-30. New B/C enforcement is pending.
-The maximum additional primary-model authorization would be 11 × $0.75 = $8.25;
+The maximum additional primary-model authorization would be 4 × $0.75 = $3.00 (B and C, one pre- and one post-tuned run each);
 this is a ceiling proposal, not a charge, available balance or paid approval.
 Prices/availability must be checked again before future paid calls.
 
@@ -161,6 +157,8 @@ in the Week 3 thread, and course PR/URL submission remain tracked in
 [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md). Declaration is complete;
 implementation, certification and the repeated experiment are not.
 
-## Historical pre-tuned registrations — Pilots 28 and 29 (declaration r4)
+## Revision 5 allocation (2026-11-06)
 
-The owner designates **Pilot-28** (`678b86c`) as A/pre-tuned/1 and **Pilot-29** (`327c34a`) as A/pre-tuned/2. Neither obtained the Enchanted Shears; the owner stopped both while the heroes were held up at the cow, at 125.3 and 54.6 game-s. Manual stops are not limit failures. Pilot-30 (`040685c`) remains A/post-tuned/1, a success in 89.5 game-s. The pre/post difference is the planner prompt tuning documented in [A_PROMPT_TUNING.md](A_PROMPT_TUNING.md); the same commits also changed controller code, so it is not a prompt-only controlled comparison. Pilots 28 and 29 ran different prompt versions. Revision 4 fills Pilot-28's metrics from its own `summary.json` and trace; r3 is kept under `evaluation-abc/history/`. Three historical outcomes are allocated; 15 of 18 rows remain unrun (9 model, six baseline).
+**Situation A is complete.** Pre-tuned: Pilot-28 (`678b86c`), stopped by the owner at 125.3 game-s while the cow still blocked the passage. Post-tuned: Pilot-30 (`040685c`), success in 89.5 game-s. Baseline: unchanged `baseline-quest`, success in 52.1 game-s (3,128 ticks, 395 decisions, 0 invalid actions, 6 messages, $0), end hash `6644f2ca…7f56`, run twice with identical actions and end hash ([record](evaluation-abc/A-baseline-quest.json)). **Pilot-29** (`327c34a`) is supplementary evidence of the intermediate tuning round, not a trial ([record](evaluation-abc/A-supplementary-pilot29.json)).
+
+Pilot-28 was stopped by hand, not by an evaluation-defined terminal condition; whether it qualifies as the official pre-tuned attempt depends on the professor's rules. The pre/post difference is the planner prompt tuning in [A_PROMPT_TUNING.md](A_PROMPT_TUNING.md); controller code changed in the same commits. Remaining: B and C, four model runs and two baseline runs. Revision 4 records are archived under `evaluation-abc/history/`.

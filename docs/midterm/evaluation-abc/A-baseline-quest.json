@@ -1,0 +1,69 @@
+{
+  "about": "Situation A cheap baseline (declaration r5): unchanged deterministic baseline-quest, run offline 2026-11-06 at af0f19e (player and game code identical to 040685c).",
+  "row": {
+    "situation": "A",
+    "condition": "cheap-baseline",
+    "runNumber": 1,
+    "scenarioId": "S2-local",
+    "seed": 0,
+    "scenarioHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab",
+    "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+    "declarationId": "oath-ember-abc-2026-11-06-r5",
+    "status": "completed",
+    "success": true,
+    "gameSeconds": 52.1,
+    "wallSeconds": 4.9,
+    "modelCalls": 0,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "costUsd": 0,
+    "invalidActions": 0,
+    "failureReason": null,
+    "confirmedSubgoals": [
+      "maze-banter",
+      "holding:hedge_gate_key",
+      "claimed:hedge-runner-key",
+      "holding:enchanted_shears",
+      "claimed:hedge-shears-chest"
+    ],
+    "tracePath": "midterms/saadsatter/evidence/traces/baseline-quest-A-cheap-baseline-S2-local-seed0/trace.jsonl",
+    "recordingPath": null,
+    "policyId": "baseline-quest(Sieg) / baseline-quest(Coco)",
+    "promptHash": null,
+    "configHash": "51b861b9ff20dd892f7cdddc7116bd6b769042a314deb905a0c70ef27465ca8b",
+    "sourceCommit": "af0f19e",
+    "plannedPlayerType": "baseline-quest",
+    "declarationHash": "f4c60aa77662775e284e3a391b82dff9c492aad045c8a9536334a25bd4ffc04a",
+    "decisions": {
+      "sieg": 231,
+      "coco": 164
+    },
+    "failedModelCalls": 0,
+    "timedOutModelCalls": 0,
+    "unknownUsageCalls": 0,
+    "unusableReplies": null,
+    "gameRefusalsNotCountedInvalid": null,
+    "latencyMs": {
+      "mean": null,
+      "max": null
+    },
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0,
+    "reasoningTokens": 0,
+    "priceSourceDate": null,
+    "costNote": "No model or API calls; $0 provider cost.",
+    "manualHash": null,
+    "guidanceHash": null,
+    "guidanceStatus": "solution-aware scripted baseline, unchanged",
+    "traceSha256": "5b872873c6e90cf5e0a0d39be316d959b882f2a957412ccc4cba232d93c27d27",
+    "recordingSha256": null,
+    "endHash": "6644f2cac04b945444c3ec609d59d798cd767ecad80405d49ce8cd26314c7f56",
+    "historicalSuiteHash": null,
+    "evidenceSource": "midterms/saadsatter/evidence/traces/baseline-quest-A-cheap-baseline-S2-local-seed0/",
+    "timingNote": "3128 ticks = 52.1 game-s; 4.9 s offline. A second run gave the same 395 actions and results and the same end hash."
+  },
+  "limitations": [
+    "Solution-aware scripted player with hand-coded quest knowledge; not an equal-information competitor.",
+    "Two independent per-hero scripts that message each other, while the model player is one planner seeing both screens."
+  ]
+}

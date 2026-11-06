@@ -1,22 +1,22 @@
 # Situation A: pre-tuned and post-tuned model play
 
-Declaration `oath-ember-abc-2026-11-06-r4`. Situation A is the Hedge Maze (frozen S2-local v2, seed 0, start hash `fdc49877…03ca`): obtain the Enchanted Shears. All three runs used the `model-centralized` player with OpenAI `gpt-6-luna` at medium effort. Records: [Pilot-28](evaluation-abc/A-pretuned-pilot28.json), [Pilot-29](evaluation-abc/A-pretuned-pilot29.json), [Pilot-30](evaluation-abc/A-posttuned-pilot30.json).
+Declaration `oath-ember-abc-2026-11-06-r5`. Situation A is the Hedge Maze (frozen S2-local v2, seed 0, start hash `fdc49877…03ca`): obtain the Enchanted Shears. All three runs used the `model-centralized` player with OpenAI `gpt-6-luna` at medium effort. Records: pre-tuned [Pilot-28](evaluation-abc/A-pretuned-pilot28.json), post-tuned [Pilot-30](evaluation-abc/A-posttuned-pilot30.json), supplementary [Pilot-29](evaluation-abc/A-supplementary-pilot29.json), baseline [`baseline-quest`](evaluation-abc/A-baseline-quest.json).
 
 ## Results
 
 | Condition | Run | Prompt version | Outcome | Game time | Wall time | Calls | Invalid actions | Est. cost |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Pre-tuned | Pilot-28 | before tuning | Stopped by the owner, stuck at the cow | 125.3 s | 900.8 s | 79 | 1 | $0.094339 |
-| Pre-tuned | Pilot-29 | round 1 only | Stopped by the owner, cow moved but never passed | 54.6 s | 1,193.6 s | 95 | 1 | $0.237263 |
+| Supplementary | Pilot-29 | round 1 only | Stopped by the owner, cow moved but never passed | 54.6 s | 1,193.6 s | 95 | 1 | $0.237263 |
 | Post-tuned | Pilot-30 | rounds 1 and 2 | **Success** | 89.5 s | 1,958.1 s | 167 | 2 | $0.443258 |
 
-Pre-tuned: 0 successes in 2 runs. Post-tuned: 1 success in 1 run. Both pre-tuned runs were stopped by hand. They are not limit failures: neither reached the 300 s game limit, so the table says what happened, not what would have happened. Costs are the runner's estimates from list prices dated 2026-10-28, not the provider's bill. Each pre-tuned cost includes one call cut off by the stop.
+Pre-tuned (Pilot-28): no success. Post-tuned (Pilot-30): success. Pilot-29 is supplementary: it shows the intermediate tuning round and is not a trial. The deterministic baseline `baseline-quest` succeeded in 52.1 game-s at $0. Pilots 28 and 29 were stopped by hand, not by a limit: neither reached the 300 s game limit, so the table says what happened, not what would have happened. Whether Pilot-28 qualifies as the official pre-tuned attempt depends on the professor's rules. Costs are the runner's estimates from list prices dated 2026-10-28, not the provider's bill. The Pilot-28 and Pilot-29 costs each include one call cut off by the stop.
 
 ## What the tuning was
 
 The tuning changed the planner's system prompt. Everything else the model received stayed the same in all three runs: the model and effort, the public manual (`4b091a66…`), the task text, the tutorial (`2ec2f251`), the S2-local briefing (`a97d9268`), batch size 4, the limits and the game. No rule names a place, coordinate, route or puzzle step. The model's weights did not change.
 
-Each round followed a pre-tuned run that failed on Situation A.
+Each round followed a run that failed on Situation A.
 
 **Round 1, after Pilot-28** (`730e8b1`). Pilot-28's planner left heroes waiting, recast spells with no effect, stored attempted casts as completed subgoals, and briefly pursued the journal's wig goal. Rules added:
 
@@ -42,8 +42,7 @@ The prompt text above is taken from the `centralSystemPrompt` source at `678b86c
 ## Limits of the comparison
 
 - Historical pilots, run before the suite was declared; not preregistered trials. Situation A is a development case, not held out.
-- Pilots 28 and 29 used different prompt versions, so they are two pre-tuned runs, not two repeats of one frozen policy.
-- One post-tuned run. The declared second post-tuned repetition is not run.
+- One pre-tuned and one post-tuned run (declaration r5); they are different policies, not repeats of one frozen policy.
 - No statistical claim: three runs show behaviour, not an effect size.
 
 ## Evidence

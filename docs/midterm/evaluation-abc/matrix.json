@@ -1,5 +1,5 @@
 {
-  "about": "Declared A/B/C design revision 1; B/C runtime certification and paid approval remain pending. Updated for declaration r4 (Pilot-29 added as A/pre-tuned/2).",
+  "about": "Declared A/B/C design, revision 5: one run per cell. A complete; B/C pending.",
   "labelsFrom": {
     "source": "owner revised three-situation instruction",
     "status": "declared design; B/C runtime hashes pending certification",
@@ -10,8 +10,8 @@
     "preservesHistoricalScenariosAndResults": true
   },
   "requirementInterpretation": {
-    "text": "Pre-tuned and post-tuned model play per situation, plus a cheap baseline",
-    "status": "Declared: two repetitions per cell, exceeding two live trials per situation; does not authorize paid execution"
+    "text": "One pre-tuned and one post-tuned model run per situation, plus a deterministic baseline",
+    "status": "owner decision (declaration r5); professor confirmation pending"
   },
   "conditions": [
     "pre-tuned",
@@ -29,17 +29,19 @@
       "heldOut": false,
       "cells": {
         "pre-tuned": {
-          "status": "no-success-2-manual-stops",
-          "record": "docs/midterm/evaluation-abc/A-pretuned-pilot28.json",
-          "trials": 2,
+          "status": "no-success-manual-stop",
+          "trials": 1,
           "episodes": [
-            "Pilot-28",
-            "Pilot-29"
+            "Pilot-28"
           ],
-          "records": [
-            "docs/midterm/evaluation-abc/A-pretuned-pilot28.json",
-            "docs/midterm/evaluation-abc/A-pretuned-pilot29.json"
-          ]
+          "record": "docs/midterm/evaluation-abc/A-pretuned-pilot28.json",
+          "supplementary": {
+            "episodes": [
+              "Pilot-29"
+            ],
+            "record": "docs/midterm/evaluation-abc/A-supplementary-pilot29.json",
+            "role": "intermediate tuning round, not a trial"
+          }
         },
         "post-tuned": {
           "status": "success",
@@ -51,10 +53,12 @@
           "classification": "owner-confirmed post-tuned; prompt tuning documented in docs/midterm/A_PROMPT_TUNING.md"
         },
         "cheap-baseline": {
-          "status": "pending",
-          "record": null,
-          "existingReference": "midterms/saadsatter/evidence/traces/baseline-quest-S2-local-seed0-v2/ (baseline-quest, offline, success; not registered)",
-          "implementation": "baseline-quest"
+          "status": "success",
+          "trials": 1,
+          "record": "docs/midterm/evaluation-abc/A-baseline-quest.json",
+          "implementation": "baseline-quest",
+          "gameSeconds": 52.1,
+          "endHash": "6644f2cac04b945444c3ec609d59d798cd767ecad80405d49ce8cd26314c7f56"
         }
       },
       "objective": "Obtain Enchanted Shears",

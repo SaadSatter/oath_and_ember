@@ -29,7 +29,7 @@
     ],
     "tracePath": "midterms/saadsatter/evidence/traces/pilot-30-model-centralized-S2-local-seed0/trace.jsonl",
     "recordingPath": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T08-17-52-847Z/recording.webm (local, not committed)",
-    "policyId": "centralized-f0592888(openai:gpt-6-luna@medium)\u00b7batch4\u00b7tutorial-2ec2f251\u00b7briefing-a97d9268",
+    "policyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-a97d9268",
     "scenarioHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab",
     "suiteHash": "8d6684bf33ac14a07867c4a4122744a4ab398e2031536014949b7702d20c7599",
     "seed": 0,
