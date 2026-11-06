@@ -131,3 +131,13 @@ npm run eval:live -- --scenario S2-local --seed 0 --player model-navigator \
 ```
 
 Same model, effort and cap as run 1. Pilot stage left: $5.34. Keep the machine on AC power with the lid open; the launcher now holds a sleep assertion, but closing a laptop lid still sleeps it. Check `live.json` `host.suspendedSeconds` afterwards. Expect fewer calls per game-second than run 1's 4.2 if the model uses `wait_until` and `fight`; that is not guaranteed and is what the run measures.
+
+## 7. Wolf clue fix and `catch` (2026-11-05)
+
+Owner request: the wolf is caught, never defeated; Sieg approaches it and presses E to get the gate key.
+
+- **Clue.** The maze's wolf sign moved from the top lane (25, 2.3) to the hedge south-east of the key gate (44, 17.2), and now reads "KEY GATE · The forest wolf carries its key. · Sieg: catch the wolf · E to take it · Slow Time + Super Speed to chase" (`HedgeMazeView.ts`; agent copy `MAZE_WOLF_SIGN` in `perception.ts`, now a label with no grid mark). No game rule changed.
+- **`catch`** `{"target": name on screen, "seconds" ≤ 30}`: ordinary short moves toward the target while it is on screen, toward where it was last seen when it is not; an ordinary E when it is within 2.5 tiles and the backpack panel shows a nearby target. Ends when an E press changes the backpack, on reaching the last-seen spot without seeing it, with no path, or at the deadline. News about the chased thing itself does not interrupt it; everything else does. It never attacks, uses abilities or items, or messages. The prompt names no game thing.
+- **`fight`** attacks only enemies; naming a creature (the wolf) ends it at once with "is a creature, not an enemy".
+- **Tests** (`wolfCatch.test.ts`, 13): clue text and place match the client and cover no floor; real-play discoverability on S2-local (sign, wolf, panel E prompt; no off-screen wolf position); catch unit tests; REAL PLAY on S2-C seed 0, where a fixture-driven Sieg takes the key with one E and no attack.
+- **Effect on frozen values.** None of the pinned hashes moved (the sign is not authoritative state): S2-A/S2-B/S2-C definitions and start hashes, the baseline's actions, per-action state hashes and end hash `6644f2ca…7f56`. What players observe in the maze did change (120 of the baseline's 395 observations differ, only in the sign entry), so model runs before this fix, including paid run 1, saw the old sign. The navigator's id is now `1f2e87d3`.

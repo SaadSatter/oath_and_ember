@@ -293,6 +293,14 @@ function griffinLabel(g: GriffinState, mode: LabelMode) {
 export const MAZE_COW_CAPTION = "Harmless cow · too wide for the posts";
 export const MAZE_BAY_SIGN = "BLACK HOLE → grazing bay";
 export const MAZE_BAY_SIGN_SHORT = "grazing bay";
+/**
+ * The wolf clue as HedgeMazeView draws it (its lines joined by " · "), on the
+ * hedge south-east of the key gate (owner request 2026-11-05; it was at
+ * (25, 2.3) over the top lane, reading "Slow Time + Super Speed · Chase the
+ * fleeing key carrier · E to tag"). Painted text: a label with no grid mark.
+ */
+export const MAZE_WOLF_SIGN = "KEY GATE · The forest wolf carries its key. · Sieg: catch the wolf · E to take it · Slow Time + Super Speed to chase";
+export const MAZE_WOLF_SIGN_AT = { x: 44, y: 17.2 } as const;
 
 /** Scene props and labels the client's environment views draw. */
 function sceneProps(w: World, scene: SceneId, mode: LabelMode): Prop[] {
@@ -423,13 +431,7 @@ function sceneProps(w: World, scene: SceneId, mode: LabelMode): Prop[] {
         details: w.puzzles.hedgeGate?.complete ? "open" : "closed",
         mark: "o",
       },
-      {
-        kind: "object",
-        name: label(mode, "Slow Time + Super Speed · Chase the fleeing key carrier · E to tag", "maze sign"),
-        x: 25 * TILE,
-        y: 2.3 * TILE,
-        mark: "o",
-      },
+      { kind: "label", name: label(mode, MAZE_WOLF_SIGN, "maze sign"), x: MAZE_WOLF_SIGN_AT.x * TILE, y: MAZE_WOLF_SIGN_AT.y * TILE },
       { kind: "exit", name: "E · RETURN", ...maps.HEDGE_MAZE.points.back, mark: ">" },
     );
   }

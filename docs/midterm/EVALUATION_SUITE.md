@@ -218,3 +218,7 @@ Owner request: agents struggled to see that the Hedge Maze cow cannot be pulled 
 - **Historical runs.** Version 1 traces (S2-A live baseline, pilots 11–15, the P1 live trial) were played on the earlier game. They replay step for step only at `96625b5`; their tests now check integrity and their recorded start instead. Results before and after this change are reported separately.
 - **Wolf laps (`3ca9792`, same day).** Once a hero enters the wolf's loop, the wolf runs laps of it and turns back only when a hero blocks the way. Folded into S2-A/S2-B/S2-C version 2 before any run used them. Scripted outcomes unchanged; the chase takes longer (S2-A baseline 2,974 → 3,128 ticks; route 12,396 → 12,635; S4 start tick 9,963 → 10,202). S2-C's start and baseline and P1 are unchanged.
 - **Not done.** No new live (paced, recorded) baseline run and no model run. The new reference traces are offline scripted runs generated on a worktree with uncommitted work in progress.
+
+## 2026-11-05 change log: Hedge Maze wolf clue fix
+
+Owner request, applied as a fix (no new situation version). The wolf clue moved beside the key gate and now says the wolf carries the key and Sieg catches it with E. No rule, start state, success predicate, limit or prompt changed; every pinned hash and the baseline reference are unchanged (tested). Hedge Maze observations differ only in the sign entry, so model runs before this fix saw the old sign. Details: [MODEL_NAVIGATOR.md §7](MODEL_NAVIGATOR.md#7-wolf-clue-fix-and-catch-2026-11-05).

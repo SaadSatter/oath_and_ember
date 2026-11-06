@@ -227,10 +227,12 @@ export class HedgeMazeView {
         "Enchanted Shears",
       );
       this.label("E · Shears chest", 44 * 32, 7.2 * 32);
+      // The wolf clue, on the hedge south-east of the gate: over no floor,
+      // clear of the wolf's loop and of the "E · key gate" label.
       this.label(
-        "Slow Time + Super Speed\nChase the fleeing key carrier · E to tag",
-        25 * 32,
-        2.3 * 32,
+        "KEY GATE\nThe forest wolf carries its key.\nSieg: catch the wolf · E to take it\nSlow Time + Super Speed to chase",
+        44 * 32,
+        17.2 * 32,
         "#ffdb77",
       );
       this.key = this.image("maze:key", state.runner.x, state.runner.y - 48)

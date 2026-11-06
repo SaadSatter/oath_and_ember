@@ -74,6 +74,14 @@ export const NAV = Object.freeze({
   fightHpLoss: 0.25,
   /** "X moved" feedback lines for the same thing within this many ticks are one movement. */
   motionQuietTicks: 60,
+  /** Longest catch intention (game seconds). */
+  maxCatchSeconds: 30,
+  /** E is pressed when the chased thing is this close (tiles) and the backpack panel shows a nearby target. */
+  catchReachTiles: 2.5,
+  /** Longest single move while chasing (ticks), so the chase re-aims often. */
+  catchMoveTicks: 8,
+  /** Lost from sight: the chase ends once the hero is this close (tiles) to where it was last seen. */
+  catchLostTiles: 1,
 });
 export const NAV_ID = createHash("sha256").update(JSON.stringify(NAV)).digest("hex").slice(0, 8);
 
@@ -96,7 +104,11 @@ Walking helper (the "go_to" field):
 Waiting ("wait_until") and fighting ("fight"):
 - "wait_until": {"seconds": <1-${NAV.maxWaitSeconds}>, "watch": "<name of something on your screen>"} waits with ordinary wait actions until something happens or the seconds run out, without asking you again in between. You are asked again when anything listed above happens (a partner message with new text, damage, dialogue, a backpack or journal change, something new, an enemy close, a new feedback line), when the thing you watch moves or leaves your screen, or when the time is up. "watch" is optional.
 - "fight": {"target": "<enemy name on your screen>", "seconds": <1-${NAV.maxFightSeconds}>} attacks that enemy with ordinary moves and J presses (closing in or lining up as your hero needs) until it is gone from your screen, you have lost a quarter of your maximum HP since the fight began, something else happens, or the seconds run out. Hits you take below that share do not interrupt it.
-- go_to, wait_until and fight are alternatives: sending one replaces the others. Your "actions" run first.
+- "fight" only attacks things listed as enemies. It never attacks a creature or an object; naming one ends the fight at once.
+
+Catching ("catch"):
+- "catch": {"target": "<name of something on your screen>", "seconds": <1-${NAV.maxCatchSeconds}>} chases that thing with ordinary moves, re-aiming at it each time it is on your screen and heading for where you last saw it when it is not. When it is close to you and your backpack panel shows a nearby target, it presses E (an ordinary interact; the game decides what happens). You are asked again when anything listed above happens, apart from news about the thing you are chasing itself; the catch carries on after your reply unless you send another intention or "stop_navigation": true. It ends when an E press changes your backpack, when you reach the place you last saw the thing without seeing it again, when no path leads there on your map, or when the seconds run out. It never attacks, uses abilities or items, or sends messages.
+- go_to, wait_until, fight and catch are alternatives: sending one replaces the others. Your "actions" run first.
 
 Aiming the Black Hole (navigation.aim_preview, listed while the ability is available):
 - For each of the eight directions it shows where the spell would stop by the rules in the manual (it flies up to 6 tiles and stops at the first blocked tile, enemy or creature body on your map), and which things your screen shows within 3 tiles of that point, with the direction each would be pulled. It is worked out from your own map and screen, to within about half a tile; tiles you never saw count as open. Whether and where to use it is your choice.
@@ -116,12 +128,13 @@ export function navigatorSchema(maxBatch: number = MAX_BATCH): Record<string, un
       stop_navigation: { type: "boolean" },
       wait_until: { type: "object", properties: { seconds: { type: "number" }, watch: { type: "string" } }, required: ["seconds"], additionalProperties: false },
       fight: { type: "object", properties: { target: { type: "string" }, seconds: { type: "number" } }, required: ["target", "seconds"], additionalProperties: false },
+      catch: { type: "object", properties: { target: { type: "string" }, seconds: { type: "number" } }, required: ["target", "seconds"], additionalProperties: false },
     },
   };
 }
 
 export type NavReply =
-  | { ok: true; notes?: string; actions: GameAction[]; dropped: GameAction[]; recovered?: string; goTo?: { x: number; y: number }; stop: boolean; waitUntil?: { seconds: number; watch?: string }; fight?: { target: string; seconds: number } }
+  | { ok: true; notes?: string; actions: GameAction[]; dropped: GameAction[]; recovered?: string; goTo?: { x: number; y: number }; stop: boolean; waitUntil?: { seconds: number; watch?: string }; fight?: { target: string; seconds: number }; catch?: { target: string; seconds: number } }
   | { ok: false; reason: string };
 
 /**
@@ -141,7 +154,7 @@ export function parseNavigatorReply(text: string, maxBatch: number = MAX_BATCH):
     const p = parseReply(text, maxBatch);
     return p.ok ? { ...p, stop: false } : p;
   }
-  const { go_to: goRaw, stop_navigation: stopRaw, wait_until: waitRaw, fight: fightRaw, ...rest } = obj;
+  const { go_to: goRaw, stop_navigation: stopRaw, wait_until: waitRaw, fight: fightRaw, catch: catchRaw, ...rest } = obj;
   let waitUntil: { seconds: number; watch?: string } | undefined;
   if (waitRaw !== undefined && waitRaw !== null) {
     const w = waitRaw as Record<string, unknown>;
@@ -156,6 +169,13 @@ export function parseNavigatorReply(text: string, maxBatch: number = MAX_BATCH):
       return { ok: false, reason: '"fight" must be {"target": enemy name, "seconds": number}.' };
     fight = { target: f.target.trim(), seconds: Math.min(NAV.maxFightSeconds, f.seconds) };
   }
+  let chase: { target: string; seconds: number } | undefined;
+  if (catchRaw !== undefined && catchRaw !== null) {
+    const c = catchRaw as Record<string, unknown>;
+    if (typeof c !== "object" || typeof c.target !== "string" || !c.target.trim() || typeof c.seconds !== "number" || !(c.seconds > 0) || Object.keys(c).some((k) => k !== "target" && k !== "seconds"))
+      return { ok: false, reason: '"catch" must be {"target": name on your screen, "seconds": number}.' };
+    chase = { target: c.target.trim(), seconds: Math.min(NAV.maxCatchSeconds, c.seconds) };
+  }
   let goTo: { x: number; y: number } | undefined;
   if (goRaw !== undefined && goRaw !== null) {
     const g = goRaw as Record<string, unknown>;
@@ -166,14 +186,14 @@ export function parseNavigatorReply(text: string, maxBatch: number = MAX_BATCH):
   if (stopRaw !== undefined && stopRaw !== null && typeof stopRaw !== "boolean") return { ok: false, reason: '"stop_navigation" must be true or false.' };
   const stop = stopRaw === true;
   if (goTo && stop) return { ok: false, reason: 'The reply had both "go_to" and "stop_navigation": true.' };
-  if ([goTo, waitUntil, fight].filter(Boolean).length > 1) return { ok: false, reason: 'Send only one of "go_to", "wait_until" and "fight".' };
-  const extra = { ...(goTo ? { goTo } : {}), ...(waitUntil ? { waitUntil } : {}), ...(fight ? { fight } : {}) };
+  if ([goTo, waitUntil, fight, chase].filter(Boolean).length > 1) return { ok: false, reason: 'Send only one of "go_to", "wait_until", "fight" and "catch".' };
+  const extra = { ...(goTo ? { goTo } : {}), ...(waitUntil ? { waitUntil } : {}), ...(fight ? { fight } : {}), ...(chase ? { catch: chase } : {}) };
   const list = rest.actions ?? (rest.action !== undefined ? [rest.action] : undefined);
   if (Array.isArray(list) && list.length === 0 && !("action" in rest)) {
     const unknown = Object.keys(rest).find((k) => !["notes", "actions"].includes(k));
     if (unknown) return { ok: false, reason: `The reply had an unexpected field "${unknown}".` };
     if (rest.notes !== undefined && rest.notes !== null && typeof rest.notes !== "string") return { ok: false, reason: '"notes" must be text.' };
-    if (!goTo && !stop && !waitUntil && !fight) return { ok: false, reason: 'The reply had no actions and no "go_to", "wait_until" or "fight".' };
+    if (!goTo && !stop && !waitUntil && !fight && !chase) return { ok: false, reason: 'The reply had no actions and no "go_to", "wait_until", "fight" or "catch".' };
     return { ok: true, ...(typeof rest.notes === "string" ? { notes: rest.notes } : {}), actions: [], dropped: [], ...extra, stop };
   }
   if (rest.notes === null) delete rest.notes;
@@ -537,7 +557,9 @@ type NavStatus = "none" | "walking" | "arrived" | "unreachable";
 /** A waiting or fighting intention the model chose (go_to is the walking one). */
 type Intent =
   | { kind: "wait"; untilTick: number; watch?: { name: string; x?: number; y?: number }; startTick: number }
-  | { kind: "fight"; target: string; untilTick: number; startHp: number; maxHp: number; startTick: number };
+  | { kind: "fight"; target: string; untilTick: number; startHp: number; maxHp: number; startTick: number }
+  /** Chase a named thing; `last` is where this hero's screen last showed it. */
+  | { kind: "catch"; target: string; untilTick: number; startTick: number; last?: { x: number; y: number; tick: number }; presses: number };
 
 /** One decision's controller record, for the evaluator trace (policy_note). */
 export interface NavNote {
@@ -763,6 +785,11 @@ export class NavigatorPlayer implements Policy {
     if (input.batch?.replyProblem) events.push("your last reply could not be used");
     if (input.batch?.steps.some((s) => s.status !== "executed")) events.push("an action of yours was refused");
     this.pending.push(...this.filterEvents(events, o));
+    // A catch whose E press changed the backpack has done its job.
+    if (this.intent?.kind === "catch" && this.intent.presses > 0 && events.includes("your backpack changed")) {
+      this.pending.push(`your catch ended: after your E press your backpack changed`);
+      this.intent = null;
+    }
 
     // A waiting or fighting intention: carry it on while nothing else happened.
     if (this.intent && !this.pending.length) {
@@ -825,6 +852,17 @@ export class NavigatorPlayer implements Policy {
         out.push(`${name} stopped moving, last reported at (${mv.to})`);
         this.motion.delete(name);
       }
+    const chase = this.intent?.kind === "catch" ? this.intent : undefined;
+    if (chase) {
+      const t = chase.target.toLowerCase();
+      return out.filter(
+        (e) =>
+          !e.toLowerCase().startsWith(`new on your screen: ${t} (`) &&
+          !e.toLowerCase().startsWith(`${t} started moving`) &&
+          !e.toLowerCase().startsWith(`${t} stopped moving`) &&
+          e !== "a new action is available: use_item",
+      );
+    }
     const fight = this.intent?.kind === "fight" ? this.intent : undefined;
     if (!fight) return out;
     const lost = fight.startHp - o.self.hp;
@@ -841,7 +879,8 @@ export class NavigatorPlayer implements Policy {
   private intentStep(o: Observation, legal: ActionSpec[]): { action?: GameAction; ended?: string } {
     const it = this.intent!;
     const can = (t: string) => legal.some((l) => l.type === t);
-    if (o.tick >= it.untilTick) return { ended: `your ${it.kind === "wait" ? "wait_until" : "fight"} time ran out` };
+    if (o.tick >= it.untilTick) return { ended: `your ${it.kind === "wait" ? "wait_until" : it.kind} time ran out` };
+    if (it.kind === "catch") return this.catchStep(it, o, can);
     if (it.kind === "wait") {
       if (it.watch) {
         const seen = o.visible.filter((v) => v.name === it.watch!.name);
@@ -860,10 +899,44 @@ export class NavigatorPlayer implements Policy {
       return { action: { type: "wait", ticks: Math.max(1, Math.min(NAV.waitChunkTicks, it.untilTick - o.tick)) } };
     }
     const act = planFightTarget(o, it.target);
-    if (!act) return { ended: `${it.target} is not on your screen any more (defeated or out of sight)` };
+    if (!act) {
+      // fight attacks enemies only: a creature or object of that name is never engaged.
+      const other = o.visible.find((v) => v.name === it.target && v.kind !== "enemy");
+      if (other) return { ended: `${it.target} is a ${other.kind}, not an enemy; fight attacks only enemies and did not touch it` };
+      return { ended: `${it.target} is not on your screen any more (defeated or out of sight)` };
+    }
     if (act.type === "attack" && o.abilities.find((a) => a.key === "J")?.state !== "ready") return can("wait") ? { action: { type: "wait", ticks: 6 } } : { ended: "you cannot wait for your attack to recover now" };
     if (!can(act.type)) return { ended: `you cannot ${act.type} now` };
     return { action: act };
+  }
+
+  /**
+   * One ordinary action for a catch: press E when the chased thing is close
+   * and the backpack panel shows a nearby target; otherwise a short move
+   * toward where this hero's screen shows it, or last showed it.
+   */
+  private catchStep(it: Extract<Intent, { kind: "catch" }>, o: Observation, can: (t: string) => boolean): { action?: GameAction; ended?: string } {
+    const seen = o.visible
+      .filter((v) => v.name === it.target && v.kind !== "partner")
+      .sort((a, b) => a.distance - b.distance)[0];
+    if (seen) it.last = { x: seen.x, y: seen.y, tick: o.tick };
+    if (!it.last) return { ended: `"${it.target}", which you asked to catch, is not on your screen` };
+    if (seen && seen.distance <= NAV.catchReachTiles && o.inventory.nearbyTarget && can("interact")) {
+      it.presses++;
+      return { action: { type: "interact" } };
+    }
+    if (!seen && Math.hypot(it.last.x - o.self.x, it.last.y - o.self.y) <= NAV.catchLostTiles)
+      return { ended: `you reached where you last saw ${it.target} (${it.last.x}, ${it.last.y}) and it is not on your screen` };
+    if (!can("move")) return { ended: "you cannot move now" };
+    const grid = buildGrid(this.heroMemory, o, this.stuck);
+    const target = { x: it.last.x, y: it.last.y };
+    const { cells, onCell } = goalCells(grid, target);
+    const here = { x: Math.floor(o.self.x), y: Math.floor(o.self.y) };
+    const found = cells.length ? aStar(grid, here, cells) : null;
+    if (!found) return { ended: `no path on your map to where ${it.target} was ${seen ? "" : "last "}seen (${it.last.x}, ${it.last.y})` };
+    const move = nextMove(o.self, found.path, target, onCell, this.speedFor(o));
+    this.lastControllerMove = { direction: move.direction };
+    return { action: { type: "move", direction: move.direction, ticks: Math.min(move.ticks, NAV.catchMoveTicks) } };
   }
 
   private async askModel(input: Parameters<Policy["decide"]>[0]): Promise<Decision> {
@@ -920,6 +993,9 @@ export class NavigatorPlayer implements Policy {
     } else if (parsed.fight) {
       this.setGoal(null, o);
       this.intent = { kind: "fight", target: parsed.fight.target, untilTick: o.tick + Math.round(parsed.fight.seconds * 60), startHp: o.self.hp, maxHp: o.self.maxHp, startTick: o.tick };
+    } else if (parsed.catch) {
+      this.setGoal(null, o);
+      this.intent = { kind: "catch", target: parsed.catch.target, untilTick: o.tick + Math.round(parsed.catch.seconds * 60), startTick: o.tick, presses: 0 };
     } else if (parsed.stop) {
       this.setGoal(null, o);
       this.intent = null;
@@ -948,7 +1024,7 @@ export class NavigatorPlayer implements Policy {
         return { action: step.action, usage, raw, note: note as unknown as Record<string, unknown> };
       }
       this.intent = null;
-      return { replyProblem: `Your ${parsed.fight ? "fight" : "wait_until"} ended at once: ${step.ended}. Nothing was done; choose an action or another intention.`, usage, raw, note: note as unknown as Record<string, unknown> };
+      return { replyProblem: `Your ${parsed.fight ? "fight" : parsed.catch ? "catch" : "wait_until"} ended at once: ${step.ended}. Nothing was done; choose an action or another intention.`, usage, raw, note: note as unknown as Record<string, unknown> };
     }
     // Only a goal: take the first walking step now, without another call.
     if (this.goal) {
@@ -975,9 +1051,9 @@ export class NavigatorPlayer implements Policy {
 }
 
 function describeIntent(it: Intent) {
-  return it.kind === "wait"
-    ? { kind: "wait_until", until_tick: it.untilTick, ...(it.watch ? { watch: it.watch.name } : {}) }
-    : { kind: "fight", target: it.target, until_tick: it.untilTick, hp_at_start: it.startHp };
+  if (it.kind === "wait") return { kind: "wait_until", until_tick: it.untilTick, ...(it.watch ? { watch: it.watch.name } : {}) };
+  if (it.kind === "catch") return { kind: "catch", target: it.target, until_tick: it.untilTick, ...(it.last ? { last_seen: it.last } : {}), e_presses: it.presses };
+  return { kind: "fight", target: it.target, until_tick: it.untilTick, hp_at_start: it.startHp };
 }
 
 const statusKey = (o: Observation) => o.self.status.filter((s) => s.startsWith("super speed") || s === "time is slowed" || s.startsWith("flying")).map((s) => s.replace(/ \(.*\)$/, "")).join("|");
