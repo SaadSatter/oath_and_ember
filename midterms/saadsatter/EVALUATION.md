@@ -69,7 +69,20 @@ npm run eval:live -- --scenario S2-local --seed 0 --player baseline-maze-heurist
 npm run eval:live -- --scenario griffin-unprepared-return-v1 --seed 0 --player baseline-griffin-heuristic
 ```
 
-The live viewer records at normal speed by default. Its printed output folder contains `recording.webm` and `recording.json`. Archived heuristic trials were accelerated offline and have no video; these commands start new free baseline runs. Pilot-30 has a separate saved model-run recording. No new recording is claimed by the no-viewer integration smoke tests.
+The live viewer records at normal speed by default. Its printed output folder contains `recording.webm` and `recording.json`. Archived heuristic trials were accelerated offline and have no video; these commands start new free baseline runs. Pilot-30 has a separate saved model-run recording. No new recording is claimed by the no-viewer integration smoke tests; the later owner-recorded videos are linked below.
+
+## Recorded baseline videos (owner runs, November 6)
+
+These are new live recordings at configured speed **1**, from clean commit `4c9cf9f`. Both runs succeeded with zero model calls, zero invalid actions and $0 API cost; their end hashes match the archived deterministic baseline results.
+
+| Baseline | Video | Recording metadata | Outcome | Game time | Episode wall time |
+| --- | --- | --- | --- | --- | --- |
+| A — Hedge Maze | [Watch recording](../../evaluation-runs/live/S2-local-seed0-baseline-maze-heuristic-2026-11-06T20-12-22-947Z/recording.webm) | [Metadata](../../evaluation-runs/live/S2-local-seed0-baseline-maze-heuristic-2026-11-06T20-12-22-947Z/recording.json) · [Summary](../../evaluation-runs/live/S2-local-seed0-baseline-maze-heuristic-2026-11-06T20-12-22-947Z/S2-local-seed0/summary.json) | Success | 31.5 s | 103.8 s |
+| B — Griffin and goddess return | [Watch recording](../../evaluation-runs/live/griffin-unprepared-return-v1-seed0-baseline-griffin-heuristic-2026-11-06T20-15-12-709Z/recording.webm) | [Metadata](../../evaluation-runs/live/griffin-unprepared-return-v1-seed0-baseline-griffin-heuristic-2026-11-06T20-15-12-709Z/recording.json) · [Summary](../../evaluation-runs/live/griffin-unprepared-return-v1-seed0-baseline-griffin-heuristic-2026-11-06T20-15-12-709Z/griffin-unprepared-return-v1-seed0/summary.json) | Success | 89.8 s | 236.2 s |
+
+Videos are local files in `evaluation-runs/live/`, excluded from Git; the links work in this evaluation checkout. They are not yet public submission links. [Preserved metadata and SHA-256 manifest](../../docs/midterm/evidence/baseline-live-recordings/manifest.json) identifies the original files without changing them. The recorder reports successful save, readiness and final confirmation with no warnings; those metadata fields are not an independent visual verification of the terminal frame. File hashes/byte counts and summary outcomes were checked; full decode was not performed for this linking update.
+
+Episode wall time differs from game time and from recording-session wall time; recording startup/finalization is not model latency. These recordings supplement the declared primary trials rather than replacing historical measurements.
 
 ## Verification and limitations
 

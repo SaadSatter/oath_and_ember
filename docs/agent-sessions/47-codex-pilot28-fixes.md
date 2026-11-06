@@ -90,6 +90,8 @@ Owner subsequently designated Pilot-28 as pre-tuned. Registered historical A/pre
 
 Owner-requested integration into oath_and_ember-eval: both deterministic heuristic players, separate Griffin return scenario, live launcher support and byte-identical source evidence are now in this checkout. Native reviewed griffin-unprepared-v1 definition/preparation and native nine-cell plan preserved. 78/78 targeted tests, typecheck and build pass; A live CLI reproduces success/end hash 1287b39e…, B CLI regression reproduces a4541450…. Four primary cells observed/five unrun; second baseline runs supplementary. No paid calls, push, merge or gameplay change. Evidence: docs/midterm/evidence/eval-baseline-integration/verification.json. Same-session audit is not independent review.
 
+Owner recorded live A/B heuristic runs at clean 4c9cf9f. Linked both original local recording.webm/recording.json/summary files in course EVALUATION.md and preserved metadata plus SHA256 manifest at docs/midterm/evidence/baseline-live-recordings/. Both saved, speed 1, successful, 31.5/89.8 game-s, zero model calls and invalid actions. Video bytes/hashes and recorded outcomes checked; no full decode or independent terminal-frame inspection claimed. Videos were neither modified, committed nor uploaded. Changed artifact/doc secret scan: 6 files, 0 findings. No new gameplay or paid run.
+
 <!-- narrative:end -->
 
 ## Mechanically extracted record
