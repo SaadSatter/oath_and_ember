@@ -1,0 +1,22 @@
+{
+  "launcher": "scripts/midterm/live.ts",
+  "scenario": "S2-local",
+  "seed": 0,
+  "player": "model-navigator",
+  "gateway": "openai:gpt-6-luna@medium",
+  "paid": true,
+  "episodeCapUsd": 0.75,
+  "speed": 1,
+  "viewer": true,
+  "viewsIssued": 4,
+  "gitHash": "5a9a6ab",
+  "interrupted": false,
+  "error": null,
+  "ledger": {
+    "path": "<main checkout>/.git/oath-eval/spend-ledger.json",
+    "remainingAfter": {
+      "pilot": 5.338072,
+      "total": 22.335151
+    }
+  }
+}

@@ -82,3 +82,52 @@ npm run eval:live -- --scenario S2-local --seed 0 --player model-navigator \
 - **Cap:** $0.75 for the episode (suite cap $1.25). Ledger before the run: $2.40 of $25 spent, all pilot; $5.60 of the $8 pilot stage left; nothing held.
 - **Estimate:** about 10,500 input tokens per call (pilot-13's 9,944 plus the navigator section and block), about $0.0009 per call. Calls: 90 (ideal route) to 300 (expected, with mistakes); 800 is the hard limit. Cost $0.08–$0.30 expected, at most the cap. Wall time at 6–8 s per call: 10–40 minutes; the 3,600 s wall limit ends a run near 450–600 calls.
 - **Risks:** the model may still not solve the maze (none of the unaided players has); events in combat-heavy stretches may cause bursts of calls; the helper can be slowed by narrow gaps; `wall_clock_limit` would be a latency result, not a game failure; the 2026-11-04 Anthropic key was invalid. A replay of the video, if needed, must be labelled as a replay.
+
+## 6. Paid run 1 review and fixes (2026-11-05)
+
+Run: `midterms/saadsatter/evidence/traces/navigator-paid-1-S2-local-seed0/` (owner-launched, `gpt-6-luna` medium, $0.75 cap). Ended `error` at 62.4 s after 236 calls; $0.264 charged. No paid call was made in this review.
+
+### Long timeouts: host sleep, not the timeout code
+
+- All 10 timeouts overlap macOS sleep intervals from `pmset -g log` (idle sleep at 18:38:38, then maintenance sleeps). The calls longer than 30 s (660, 514, 122, 80, 66 and 32 s) each contained 27–655 s of host sleep; the 30 s ones overlapped dark-wake periods with the network down. The last three, Coco's at 19:11–19:23, ended the episode under the existing three-consecutive-failures rule.
+- Not retries: the OpenAI gateway and the Anthropic SDK make one request per call (retries off), and each attempt is counted. Not a cancellation failure: the trace shows each long call ended within seconds of the host waking, which is when the 30 s timer could first run.
+- Accounting was correct: each timeout was charged its full reservation (unknown usage), $0.0837 of the $0.264.
+- **Fix.** `packages/agent/src/keepAwake.ts`: the live launcher and `evaluate.ts` hold `caffeinate -i -s -w <pid>` for the run (verified with `pmset -g assertions`), and a `SuspendMonitor` records any wall-clock gap over 5 s as a host suspension. Both go into `live.json` (`host`) and are printed. The timeout code is unchanged.
+- **Tests** (`hostSuspend.test.ts`): a transport that ignores its abort signal still fails at the deadline, is charged its reservation once, and a late reply changes nothing; three stalled calls take about three deadlines; caffeinate is started for the process and stopped; a 657 s clock jump is recorded as a suspension. Earlier tests already covered hung calls (`budget.test.ts`, `openai.test.ts`).
+
+### Model-call breakdown (`audit.json`)
+
+| Reason included in the call (226 answered calls) | Calls |
+| --- | --- |
+| no walking goal (nothing to carry on) | 172 (130 with no other reason) |
+| new partner message | 42 |
+| arrived at walking goal | 23 |
+| new thing on screen | 10 |
+| something moved (game feedback) | 9 |
+| dialogue line | 8 |
+| enemy close | 8 |
+| other feedback, refused action, damage, new action, move not taken, unreachable | 26 |
+
+Replies: 54 set a goal, 66 only waited (Sieg 45), 45 attacked or guarded, 29 moved by hand, 19 only messaged (and waited), 4 cast Black Hole. Waiting: 66 calls in 26 runs. Communication: 50 messages sent (Sieg 30, Coco 20), 42 calls caused by partner messages.
+
+### Fixes for calls and play
+
+- **`wait_until`** `{"seconds" ≤ 30, "watch"?: name}`: ordinary 30-tick waits, no model calls, until any event the walker already wakes for (new message text, damage, dialogue, backpack/journal, new thing, close enemy, feedback), the watched thing moving 0.5 tiles or leaving the screen, or the deadline. Up to 40 of the run's 66 wait-only calls fall in runs that one `wait_until` could cover.
+- **`fight`** `{"target": enemy name, "seconds" ≤ 15}`: the existing observation-only combat rules (`planFightTarget`, a new function beside the scripted players' unchanged `planFight`) against that enemy, waiting out J recovery; ends when the target leaves the screen, the hero has lost 25% of max HP since the fight began, any other event, or the deadline. Smaller hits do not interrupt it. Up to 29 of the 45 combat calls fall in runs one `fight` could cover (an upper bound).
+- **Edge-triggered movement lines.** A run of the game's "The X moved …" lines is one "started moving" event and one "stopped moving, last reported at (…)" event. In this run it would have removed 1 of 9 such calls (the others had other reasons too), but while waiting it removes every repeat. The "line had already moved on" notice is now routine. Damage, new enemies, blocked moves and journal changes still interrupt.
+- **Black Hole aim preview** (`navigation.aim_preview`, only while the ability is in `legal_actions`): for each of the 8 directions, where it would stop by the manual's rules (up to 6 tiles, first blocked tile, enemy or creature body on the hero's own map) and what lies within its 3-tile pull, with the straight pull direction. It names no target or place, and the model still decides. Tested against all five casts of this run: each predicted stop is within 0.5 tiles of the vortex the heroes saw. For the cast that parked the cow, the preview shows the cow within the pull. The game's sideways-only cow movement is a puzzle reaction the preview does not claim to know.
+
+The cow finding matters more than aiming: the third cast parked the cow and Coco then walked past it, but both heroes kept saying it blocked the way. The new "cow stopped moving" event and `wait_until` with `watch` make that result visible to a waiting hero. Whether the model then reads the opening correctly is for the next run to show.
+
+### Verification
+
+`npm run typecheck` passed; `npm run build` passed; `npm test` 1,192 of 1,193 (the known `s2Shutdown` recorder failure). Baseline: `baseline-quest` S2-local seed 0 headless, success, 395 decisions, end hash `6644f2ca…` (unchanged). A mock navigator run through the launcher completed with no errors.
+
+### Recommended next paid run (needs the owner's approval)
+
+```sh
+npm run eval:live -- --scenario S2-local --seed 0 --player model-navigator \
+  --gateway openai --model gpt-6-luna --effort medium --max-spend-usd 0.75 --paid --no-open
+```
+
+Same model, effort and cap as run 1. Pilot stage left: $5.34. Keep the machine on AC power with the lid open; the launcher now holds a sleep assertion, but closing a laptop lid still sleeps it. Check `live.json` `host.suspendedSeconds` afterwards. Expect fewer calls per game-second than run 1's 4.2 if the model uses `wait_until` and `fight`; that is not guaranteed and is what the run measures.

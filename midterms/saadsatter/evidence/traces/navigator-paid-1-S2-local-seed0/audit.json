@@ -1,0 +1,104 @@
+{
+  "trace": "traces/navigator-paid-1-S2-local-seed0/trace.jsonl",
+  "modelCalls": {
+    "total": 236,
+    "byHero": {
+      "coco": 106,
+      "sieg": 130
+    },
+    "byStatus": {
+      "ok": 226,
+      "timeout": 10
+    }
+  },
+  "callsWithAnswer": 226,
+  "callsContainingReason": {
+    "no walking goal (nothing to carry on)": 172,
+    "new partner message": 42,
+    "arrived at walking goal": 23,
+    "new thing on screen": 10,
+    "something moved (game feedback)": 9,
+    "dialogue line": 8,
+    "enemy close": 8,
+    "other new feedback line": 6,
+    "action refused / reply unusable": 5,
+    "damage": 5,
+    "new action available": 4,
+    "walking move not taken": 2,
+    "walking goal unreachable": 2
+  },
+  "callsByExactReasonSet": {
+    "no walking goal (nothing to carry on)": 130,
+    "new partner message + no walking goal (nothing to carry on)": 24,
+    "arrived at walking goal": 16,
+    "new partner message": 9,
+    "no walking goal (nothing to carry on) + something moved (game feedback)": 5,
+    "new thing on screen + no walking goal (nothing to carry on)": 3,
+    "dialogue line": 3,
+    "action refused / reply unusable + dialogue line + other new feedback line": 3,
+    "new thing on screen": 3,
+    "damage + no walking goal (nothing to carry on)": 3,
+    "dialogue line + new action available + walking move not taken": 2,
+    "arrived at walking goal + enemy close": 2,
+    "walking goal unreachable": 2,
+    "arrived at walking goal + new partner message": 2,
+    "enemy close + no walking goal (nothing to carry on)": 2
+  },
+  "replyKinds": {
+    "both": {
+      "message+move": 7,
+      "go_to": 54,
+      "advance_dialogue": 1,
+      "combat": 45,
+      "ability": 4,
+      "manual moves": 29,
+      "wait only": 66,
+      "message (+wait)": 19,
+      "message+move+wait": 1
+    },
+    "sieg": {
+      "go_to": 27,
+      "combat": 17,
+      "manual moves": 15,
+      "message+move": 4,
+      "wait only": 45,
+      "message (+wait)": 17
+    },
+    "coco": {
+      "message+move": 3,
+      "go_to": 27,
+      "advance_dialogue": 1,
+      "combat": 28,
+      "ability": 4,
+      "manual moves": 14,
+      "wait only": 21,
+      "message (+wait)": 2,
+      "message+move+wait": 1
+    }
+  },
+  "waiting": {
+    "replies": 66,
+    "runs": 26,
+    "callsAnIntentionCouldSave": 40,
+    "note": "replies that only waited; one wait_until per run could replace the rest"
+  },
+  "combat": {
+    "replies": 45,
+    "runs": 16,
+    "callsAnIntentionCouldSave": 29,
+    "note": "replies with attack/defend; one fight per run could replace the rest (upper bound: a run may switch targets)"
+  },
+  "communication": {
+    "messagesSent": 50,
+    "byHero": {
+      "coco": 20,
+      "sieg": 30
+    },
+    "callsTriggeredByPartnerMessage": 42,
+    "repliesThatOnlyMessagedOrWaited": 19
+  },
+  "movementLines": {
+    "callsTriggered": 9,
+    "callsKeptWhenEdgeTriggered": 8
+  }
+}
