@@ -220,7 +220,8 @@ export async function runGriffinWitness(seed = 0, tracePath?: string): Promise<W
     outcome,
     endHash: env.evaluatorReport().stateHash,
     milestones: trace.lines.filter((l) => l.type === "milestone").map((l) => ({ tick: l.tick, milestone: (l.data as { milestone: string }).milestone })),
-    knockouts: trace.lines.filter((l) => l.type === "result" && JSON.stringify(l.data).includes("Your health ran out")).length,
+    // A knockout that ends the episode is reported by the terminal reason, not by a result line (audit finding 4).
+    knockouts: Math.max(trace.lines.filter((l) => l.type === "result" && JSON.stringify(l.data).includes("Your health ran out")).length, outcome.reason === "knocked_out" ? 1 : 0),
     log,
     trace,
     wallSeconds: (Date.now() - started) / 1000,

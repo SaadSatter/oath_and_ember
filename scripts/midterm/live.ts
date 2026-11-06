@@ -32,7 +32,7 @@ import { finishViewerAfterGrace, SignalCounter } from "../../packages/agent/src/
 import { providerConfig } from "../../packages/agent/src/policies/providers.js";
 import type { Gateway } from "../../packages/agent/src/budget.js";
 import { MockGateway } from "../../packages/agent/src/policies/mockGateway.js";
-import { guidance } from "../../packages/agent/src/policies/situationGuidance.js";
+import { guidance, guidanceApproved } from "../../packages/agent/src/policies/situationGuidance.js";
 import { canonicalLedgerPath, repoInfo, unmeteredWorktrees } from "../../packages/agent/src/repo.js";
 import { ABC_SITUATIONS, HISTORICAL_SITUATIONS, SEEDS, SITUATIONS, situation, type SituationId } from "../../packages/agent/src/suite.js";
 import type { TraceLine } from "../../packages/agent/src/trace.js";
@@ -221,7 +221,7 @@ if (isModel) {
     let g: ReturnType<typeof guidance>;
     try { g = guidance(guidanceId); } catch (e) { fail((e as Error).message); }
     if (!g.situations.includes(scenario)) fail(`guidance ${g.id} is limited to ${g.situations.join(", ")}.`);
-    if (paid && g.status !== "approved") fail(`guidance ${g.id} is ${g.status}, not approved by the owner: paid runs refuse it. Use --gateway mock to exercise it.`);
+    if (paid && !guidanceApproved(g)) fail(`guidance ${g.id} is ${g.status}, not approved by the owner: paid runs refuse it. Use --gateway mock to exercise it.`);
   }
   if (paid) {
     let config: ReturnType<typeof providerConfig>;

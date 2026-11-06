@@ -321,3 +321,104 @@ describe("Situation B players: same interface, recorded conditions", { timeout: 
     expect(post.promptHashes?.sieg).not.toBe(pre.promptHashes?.sieg);
   });
 });
+
+// ── Review round 1 (rules-reviewer findings 4-7, 2026-11-06) ────────────────
+
+describe("Situation B review fixes: terminal ordering at the environment level", { timeout: 60_000 }, () => {
+  // Labelled unit fixture: the world is edited only to put success and a lethal hit in one tick.
+  const lethalIn = (env: () => AgentEnvironment) => (room: GameRoom) => {
+    room.tick();
+    const coco = Object.values(room.state.players).find((p) => p.role === "EMBER")!;
+    if ((room.state.puzzles.griffin?.griffin?.hp ?? 1) === 0) room.damage(coco, 1_000);
+    void env;
+  };
+  it("a knockout in the same tick as success ends the trial as knocked_out", async () => {
+    let e!: AgentEnvironment;
+    e = environmentFor(ID, { tick: lethalIn(() => e) });
+    await e.reset(0);
+    const w = world(e);
+    griffinState(w.puzzles)!.hp = 0; // fixture
+    w.inventory!.counts.griffin_wig = 1; // fixture
+    await new Director({ env: e }).both({ type: "defend", ticks: 2 }, { type: "defend", ticks: 2 });
+    expect(await e.outcome()).toMatchObject({ status: "terminated", reason: "knocked_out" });
+  });
+  it("without the lethal hit the same fixture is a success (the ordering, not the fixture, decides)", async () => {
+    const e = environmentFor(ID);
+    await e.reset(0);
+    const w = world(e);
+    griffinState(w.puzzles)!.hp = 0; // fixture
+    w.inventory!.counts.griffin_wig = 1; // fixture
+    await new Director({ env: e }).both({ type: "defend", ticks: 2 }, { type: "defend", ticks: 2 });
+    expect(await e.outcome()).toMatchObject({ status: "success", reason: "success" });
+  });
+  it("a knockout during the prefix is not judged, and a lethal hit outside Griffin trials ends nothing", async () => {
+    let hits = 0;
+    const e = environmentFor(ID, { tick: (room) => { room.tick(); if (room.state.serverTick === 100 && !hits++) room.damage(Object.values(room.state.players).find((p) => p.role === "EMBER")!, 1_000); } });
+    const r = await e.reset(0);
+    expect(hits).toBe(1);
+    expect(r.startHash).not.toBe(B.start.hashes[0]); // the respawn moved Coco: a different, but valid, start
+    expect((await e.outcome()).status).toBe("ongoing");
+    expect(episodes["S2-local-v2"].failure).toBeUndefined();
+    let a = 0;
+    const s2 = environmentFor("S2-local", { tick: (room) => { room.tick(); if (room.state.serverTick === 500 && !a++) room.damage(Object.values(room.state.players).find((p) => p.role === "EMBER")!, 1_000); } });
+    await s2.reset(0);
+    const d = new Director({ env: s2 });
+    for (let i = 0; i < 20 && a === 0; i++) {
+      if ((await s2.observe("sieg")).dialogue) { await d.dialogue(); continue; }
+      await d.both({ type: "wait", ticks: 10 }, { type: "wait", ticks: 10 });
+    }
+    expect(a).toBe(1);
+    expect((await s2.outcome()).status).toBe("ongoing");
+  });
+});
+
+describe("Situation B review fixes: warning observations", { timeout: 60_000 }, () => {
+  // Labelled unit fixtures: the Griffin's pose is set only to check what perception lists for it.
+  const effects = async (env: AgentEnvironment, id: PlayerId) => (await env.observe(id)).visible.filter((v) => v.kind === "effect" && v.name.startsWith("griffin"));
+  it("HEADBUTT CHARGE: one charge mark at the aim point while it is on screen", async () => {
+    const env = environmentFor(ID);
+    await env.reset(0);
+    const g = griffinState(world(env).puzzles)!;
+    Object.assign(g, { phase: "HEADBUTT_CHARGE", x: 640, y: 900, aimX: 680, aimY: 1000, grounded: 5 }); // fixture
+    const [e] = await effects(env, "coco");
+    expect(e).toMatchObject({ name: "griffin charge mark", x: 680 / 32, y: 1000 / 32 });
+    expect(e.details).toMatch(/to a circle here$/);
+    expect(e.details).not.toMatch(/\d/);
+  });
+  it("a warning line entirely off a hero's screen is not listed for that hero", async () => {
+    const env = environmentFor(ID);
+    await env.reset(0);
+    const g = griffinState(world(env).puzzles)!;
+    Object.assign(g, { phase: "BEAM_CHARGE", facing: -Math.PI / 2, aimX: 640, aimY: 0 }); // fixture: at the nest, aiming north
+    expect(await effects(env, "sieg")).toEqual([]);
+    expect(await effects(env, "coco")).toEqual([]);
+  });
+  it("no warning once the Griffin is defeated or its wig is claimed", async () => {
+    const env = environmentFor(ID);
+    await env.reset(0);
+    const g = griffinState(world(env).puzzles)!;
+    Object.assign(g, { phase: "HEADBUTT_CHARGE", x: 640, y: 900, aimX: 680, aimY: 1000 }); // fixture
+    expect(await effects(env, "coco")).toHaveLength(1);
+    g.hp = 0;
+    expect(await effects(env, "coco")).toEqual([]);
+    g.hp = 100;
+    g.wigClaimed = true;
+    expect(await effects(env, "coco")).toEqual([]);
+  });
+});
+
+describe("Situation B review fixes: runner gates", () => {
+  it("guidance counts as approved only with status approved and the exact approved text's hash", async () => {
+    const { guidanceApproved } = await import("../src/policies/situationGuidance.js");
+    const g = guidance("griffin-b-post-v1");
+    expect(guidanceApproved(g)).toBe(false); // proposed
+    expect(guidanceApproved({ ...g, status: "approved" })).toBe(false); // no pinned hash
+    expect(guidanceApproved({ ...g, status: "approved", approvedSha256: sha(g.text) })).toBe(true);
+    expect(guidanceApproved({ ...g, status: "approved", approvedSha256: sha(g.text), text: g.text + " edited" })).toBe(false); // edited after approval
+  });
+  it("a wall-clock override above the declared 3,600 s is refused", async () => {
+    const { checkWallSeconds } = await import("../src/harness.js");
+    expect(() => checkWallSeconds({ situations: [ID], wallSeconds: 3_601 })).toThrow(/3600 s/);
+    expect(() => checkWallSeconds({ situations: [ID], wallSeconds: 1_800 })).not.toThrow();
+  });
+});

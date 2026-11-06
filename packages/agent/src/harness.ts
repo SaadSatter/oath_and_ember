@@ -25,7 +25,7 @@ import { GUIDED_SITUATIONS, GUIDES, GuidedPlayer } from "./policies/guided.js";
 import { LLMPlayer } from "./policies/llm.js";
 import { NavigatorPlayer } from "./policies/navigator.js";
 import { centralizedPolicies } from "./policies/centralized.js";
-import { guidance, guidanceHash } from "./policies/situationGuidance.js";
+import { guidance, guidanceApproved, guidanceHash } from "./policies/situationGuidance.js";
 import { ExplorationBaseline } from "./policies/baseline.js";
 import { QuestBaseline } from "./policies/questBaseline.js";
 import type { Policy } from "./policies/policy.js";
@@ -59,11 +59,13 @@ export const EPISODE_CAP_USD: Record<SituationId, number> = {
  * F6, 2026-11-03). P1 only; other scenarios keep their behaviour.
  */
 export const WALL_CLOCK_CEILING_S: Partial<Record<SituationId, number>> = { P1: 3600 };
+/** A/B/C declaration cases: the declared 3,600 s model bound (Situation B review finding 7, 2026-11-06). */
+export const ABC_WALL_CLOCK_CEILING_S: Partial<Record<SituationId, number>> = { "griffin-unprepared-v1": 3600 };
 /** Refuses a wall-clock override above a scenario's ceiling. */
 export function checkWallSeconds(o: Pick<SuiteRunOptions, "situations" | "wallSeconds">) {
   if (o.wallSeconds === undefined) return;
   for (const id of o.situations) {
-    const ceiling = WALL_CLOCK_CEILING_S[id];
+    const ceiling = WALL_CLOCK_CEILING_S[id] ?? ABC_WALL_CLOCK_CEILING_S[id];
     if (ceiling !== undefined && o.wallSeconds > ceiling)
       throw Error(`${id}'s wall-clock limit is ${ceiling} s; a run may lower it, never raise it (got ${o.wallSeconds} s).`);
   }
@@ -309,8 +311,8 @@ export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | 
     if (o.final) throw Error("Post-tuned guidance is not approved for final runs.");
     const outside = o.situations.filter((id) => !g.situations.includes(id));
     if (outside.length) throw Error(`Guidance ${g.id} is limited to ${g.situations.join(", ")} (got ${outside.join(", ")}).`);
-    if (g.status !== "approved" && !(o.model.gateway?.label ?? "").startsWith("mock:"))
-      throw Error(`Guidance ${g.id} is ${g.status}, not approved: it runs only with the mock gateway until the owner approves its text.`);
+    if (!guidanceApproved(g) && !(o.model.gateway?.label ?? "").startsWith("mock:"))
+      throw Error(`Guidance ${g.id} is ${g.status}, not approved for this exact text: it runs only with the mock gateway until the owner approves it.`);
   }
   if (isModel(o.player)) {
     if (!o.model) throw Error(`${o.player} needs a model setup (gateway, manual, ledger, stage).`);

@@ -18,6 +18,12 @@ export interface SituationGuidance {
   /** The only situations this guidance may be used on. */
   situations: readonly SituationId[];
   status: "proposed" | "approved";
+  /**
+   * SHA-256 of the exact text the owner approved (review finding 4). A paid run
+   * needs status "approved" AND this hash equal to the text's hash, so editing
+   * an approved text re-locks it.
+   */
+  approvedSha256?: string;
   /** Who wrote it and from what (disclosed in results). */
   provenance: string;
   text: string;
@@ -56,5 +62,10 @@ export function guidance(id: string): SituationGuidance {
 }
 
 export { guidanceBlock, guidanceId } from "./llm.js";
+
+/** Approved for paid runs: status approved and the text unchanged since approval. */
+export function guidanceApproved(g: SituationGuidance): boolean {
+  return g.status === "approved" && g.approvedSha256 === guidanceHash(g.text);
+}
 
 export const guidanceHash = (text: string) => createHash("sha256").update(text).digest("hex");
