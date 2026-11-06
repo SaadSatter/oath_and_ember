@@ -422,6 +422,16 @@
    "role": "Codex implementation agent under AGENTS.md: Pilot-28 diagnosis and owner-approved centralized progress, observation-derived aim and evidence fixes; same-session game-rules-audit checkpoint and session-evidence, not independent review.",
    "title": "Pilot-28 diagnosis, cumulative progress watchdog, pull obstruction preview and verified subgoals",
    "note": "No paid calls, held-out execution, frozen scenario or pin changes, push or merge. Local commit authorized by the owner after offline verification. The referenced pilot-28 diagnosis originated in the older chat checkout and is copied unchanged into this worktree. Session numbers 45 and 46 already exist in related project worktrees; 47 avoids a numbering collision."
+  },
+  {
+   "number": 48,
+   "slug": "claude-pilot30-situation-a",
+   "ids": [
+    "13d00d43"
+   ],
+   "role": "Claude Code implementation agent under CLAUDE.md: evidence preservation, verification and reporting for Pilot-30 (Situation A pre-tuned); session-evidence invoked by name; not independent review.",
+   "title": "Pilot-30 evidence audit, Situation A pre-tuned registration, A/B/C matrix and post-tuning proposal",
+   "note": "No paid calls, model episodes, gameplay, scenario, policy or pin changes. The original run folder was not modified. The owner asked for the commits to be pushed."
   }
  ]
 }

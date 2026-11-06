@@ -148,3 +148,7 @@ Totals: Claude Code session 20, Codex permission check 15, Codex subagent 5, Cod
 ## 2026-11-05 Pilot-28 follow-up
 
 [S47 — Pilot-28 diagnosis and fixes](47-codex-pilot28-fixes.md), session `01a1aed2-3232-7011-bb41-5fccdea13a5c`: same session as the read-only diagnosis, subsequently authorized to implement and commit locally. No independent review or paid evaluation is claimed.
+
+## 2026-11-06 Pilot-30 registration
+
+[S48 — Pilot-30 evidence audit and Situation A pre-tuned registration](48-claude-pilot30-situation-a.md), session `13d00d43-3fa6-48e9-a7b0-009f310f5e14`: Claude Code implementation agent; evidence preservation, verification and reporting only. `session-evidence` invoked by name. No independent review or paid evaluation is claimed.
