@@ -1,0 +1,81 @@
+{
+  "about": "Pilot-32 record. Written 2026-11-06 by the Claude Code implementation agent.",
+  "episode": "Pilot-32",
+  "situation": "B",
+  "condition": "post-tuned",
+  "classification": "Pre-declared by declaration r8 as B/post-tuned/1 (owner decision). declared-results.json not yet updated: awaiting the owner.",
+  "scenario": {
+    "id": "griffin-unprepared-return-v1",
+    "definitionHash": "b224f75d2ec71ad61082fe0cba4617057b73cd9feb5173c52f7f32dcd86ed6f1",
+    "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
+    "startTick": 540
+  },
+  "differsFromPilot31": [
+    "scenario: griffin-unprepared-return-v1 vs griffin-unprepared-v1",
+    "start state and tick (540 vs 439)",
+    "success predicate: adds goddess offering and chapter0.complete",
+    "prompt framing: return task line, no tutorial or briefing, vs v1 tutorial + briefing",
+    "observations: straw-nest entry listed (suppressed on v1 only)",
+    "guidance: b-post-a-transfer-v1 vs none"
+  ],
+  "launch": {
+    "sourceCommit": "2791bce",
+    "launchedBy": "owner",
+    "ledgerEntry": "pilot-32",
+    "episodeCapUsd": 0.75,
+    "wallLimitSeconds": 3600
+  },
+  "policy": {
+    "policyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·task-cdbee612·guidance-60a0a013",
+    "promptHash": "17b89312d88c9da0f81bdea5344c58f149a046b9a86873d166821a74f4be96a6",
+    "configHash": "a7dce1a5ef01e5797031ab54d430f97c36707b043ce23251af06d6aef095d00a",
+    "guidance": {
+      "id": "b-post-a-transfer-v1",
+      "sha256": "60a0a01357e68e2f44f0ecd9d0d0ebb41bfaab04c5c3ec78cae62c760c265263",
+      "status": "approved"
+    }
+  },
+  "outcome": {
+    "reason": "knocked_out",
+    "success": false,
+    "griffinLabelLastSeen": "GRIFFIN 104/640 · FLY",
+    "heroHpLastSeen": {
+      "sieg": 22,
+      "coco": 14
+    },
+    "gameTicks": 2849,
+    "gameSeconds": 47.5,
+    "wallSeconds": 1048.5,
+    "endHash": "23b7b4600ce66cf0d7b464730e0b08787bcdc7433283acd32f99b1358be1538f"
+  },
+  "metrics": {
+    "decisions": {
+      "sieg": 112,
+      "coco": 141
+    },
+    "invalidActions": {
+      "sieg": 0,
+      "coco": 1
+    },
+    "messages": 0,
+    "modelCalls": 98,
+    "failedModelCalls": 0,
+    "unusableReplies": 4,
+    "latencyMs": {
+      "mean": 10085,
+      "max": 18231
+    },
+    "tokens": {
+      "input": 1641372,
+      "output": 103909,
+      "cacheRead": 607317,
+      "cacheWrite": 1033761
+    },
+    "costUsd": 0.206005
+  },
+  "evidence": {
+    "folder": "midterms/saadsatter/evidence/traces/pilot-32-model-centralized-griffin-unprepared-return-v1-seed0/",
+    "traceSha256": "a7dc9388a7b50c84a149d5b3cc750e0a558881acfb3ac306ca34da12ae5319b2",
+    "recordingSha256": "9de93e04c13c2017424b0e8f6321399093bc307ff741fc9070586080fc9f7861"
+  }
+}
