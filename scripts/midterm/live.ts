@@ -19,6 +19,7 @@
 // canonical one for paid runs. Mock runs never touch the canonical ledger and
 // make no network request.
 
+import { keepAwake, SuspendMonitor } from "../../packages/agent/src/keepAwake.js";
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { basename, join, relative, resolve } from "node:path";
@@ -392,6 +393,11 @@ function episodeInfo() {
 const situ = situation(scenario);
 console.log(`Running ${scenario} (${situ.title}), seed ${seed}, player ${player}${isModel ? `, gateway ${model!.gateway.label}` : ""}${paid ? `, cap $${episodeCapUsd}` : ""}. Output: ${relative(repo.root, out)}`);
 phase = "running";
+// Keep the host awake and record any suspension (keepAwake.ts: the
+// 2026-11-05 paid run's timeouts were all host sleep).
+const awake = keepAwake();
+if (awake.mode !== "caffeinate") console.log(`Sleep prevention: ${awake.mode}${awake.detail ? ` (${awake.detail})` : ""}. Keep the machine awake during the run.`);
+const suspend = new SuspendMonitor((s) => console.error(`HOST SUSPENDED for ${s.seconds} s (${s.from} → ${s.to}): model calls in flight will time out; this is not model latency.`)).start();
 try {
   summaries = await runSuite({
     player,
@@ -412,12 +418,15 @@ try {
   error = e as Error;
 } finally {
   phase = "finished";
+  suspend.stop();
+  awake.stop();
   const remaining = ledger && paid ? { pilot: ledger.remaining("pilot"), total: ledger.remaining() } : null;
   ledger?.close();
   writeFileSync(join(out, "live.json"), JSON.stringify({
     launcher: "scripts/midterm/live.ts", scenario, seed, player, gateway: model?.gateway.label ?? null, paid,
     episodeCapUsd: episodeCapUsd ?? null, speed: paced ? speed : null, viewer: viewerOn, viewsIssued: viewer?.viewsIssued ?? 0,
     gitHash: version, interrupted: controller.signal.aborted, error: error?.message ?? null,
+    host: { sleepPrevention: awake.mode, ...(awake.detail ? { sleepPreventionDetail: awake.detail } : {}), suspensions: suspend.suspensions, suspendedSeconds: suspend.totalSeconds() },
     ledger: paid ? { path: canonicalLedgerPath(repo), remainingAfter: remaining } : model ? { path: join(out, "mock-ledger.json"), scratch: true } : null,
   }, null, 2));
   // The credential must not appear in anything this run wrote.

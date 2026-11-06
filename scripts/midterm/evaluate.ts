@@ -13,6 +13,7 @@
 // Every paid episode is reserved in the one shared spend ledger, in the git
 // common directory (packages/agent/src/repo.ts), before it starts.
 
+import { keepAwake, SuspendMonitor } from "../../packages/agent/src/keepAwake.js";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { aggregate, runSuite, smokeCall, validatePlan, type ModelSetup, type PlayerKind } from "../../packages/agent/src/harness.js";
@@ -117,6 +118,10 @@ if (player === "model-history" || player === "model-obs-only" || player === "mod
   model = { gateway, manual: manual(), ledger, stage, priceSource: source, maxBatch: Number(arg("--max-batch", "4")) };
 }
 
+// Keep the host awake and report any suspension (packages/agent/src/keepAwake.ts).
+const awake = keepAwake();
+const suspend = new SuspendMonitor((s) => console.error(`HOST SUSPENDED for ${s.seconds} s (${s.from} → ${s.to}): calls in flight will time out; this is not model latency.`)).start();
+if (awake.mode !== "caffeinate") console.log(`Sleep prevention: ${awake.mode}. Keep the machine awake during the run.`);
 try {
   const summaries = await runSuite({
     player,
@@ -137,6 +142,9 @@ try {
   console.table(aggregate(summaries));
   if (ledger) console.log(`ledger: ${ledger.remaining(model!.stage).toFixed(4)} left in ${model!.stage}; ${ledger.remaining().toFixed(4)} left in total`);
   console.log(`output: ${out}`);
+  if (suspend.suspensions.length) console.log(`host suspended ${suspend.suspensions.length} time(s), ${suspend.totalSeconds()} s in total`);
 } finally {
+  suspend.stop();
+  awake.stop();
   ledger?.close();
 }
