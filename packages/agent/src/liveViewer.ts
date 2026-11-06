@@ -151,3 +151,13 @@ export async function startViewer(o: { root: string; port: number; speed: number
     },
   };
 }
+
+/** Trace outcomes use elapsed episode ticks; ordinary events use world ticks. */
+export function viewerGameSeconds(line: { type: string; tick: number; data: unknown }, startTick: number): number {
+  if (line.type === "outcome") {
+    const data = line.data as { outcome?: { seconds?: number } } | null;
+    const seconds = data?.outcome?.seconds;
+    return Math.max(0, typeof seconds === "number" && Number.isFinite(seconds) ? seconds : line.tick / 60);
+  }
+  return Math.max(0, (line.tick - startTick) / 60);
+}

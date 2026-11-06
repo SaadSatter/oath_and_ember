@@ -1,0 +1,19 @@
+{
+  "video": "/tmp/p28-fix-smoke-2/recording.webm",
+  "bytes": 2579459,
+  "ffmpeg": "/Users/saadsatter/Library/Caches/ms-playwright/ffmpeg-1011/ffmpeg-mac",
+  "fullDecodeExit": 0,
+  "decodeErrors": [],
+  "durationSeconds": 27.76,
+  "frames": [
+    {
+      "fraction": 0.9999,
+      "time": 27.66,
+      "distinctColors": 524,
+      "meanLuma": 38,
+      "content": true,
+      "png": "/tmp/p28-fix-smoke-2-video/frame-1000.png"
+    }
+  ],
+  "ok": true
+}

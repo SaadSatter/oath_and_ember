@@ -127,7 +127,7 @@
     "01a16225"
    ],
    "role": "Implementation agent (`AGENTS.md`); orchestrator of subagents 18, 19 and 21",
-   "title": "Player manual, design rationale D1–D11, midterm architecture, superseded Codex evaluation (PR #5)"
+   "title": "Player manual, design rationale D1\u2013D11, midterm architecture, superseded Codex evaluation (PR #5)"
   },
   {
    "number": 15,
@@ -412,6 +412,16 @@
    "role": "Implementation agent (Claude Code, AGENTS.md) on main, then on midterm/evaluation: owner-requested gameplay and story changes, and the owner-chosen re-pin of the frozen evaluation values. Invoked session-evidence for this record (following the skill file by hand; it is not loaded as a skill on main). No subagent and no independent review.",
    "title": "Cow posts, griffin HP and story lines; evaluation re-pinned as a new revision",
    "note": "No paid call, no model run, no live recording and no push. The S4 and final-seed start hashes were recomputed under the existing reset-only route-development access, as checkpointFreeze.test.ts already does. The commit ab70771 also contains another session's earlier uncommitted work in progress (Hedge Maze situations B and C, the wolf glide, the maze navigation cache), committed at the owner's request."
+  },
+  {
+   "number": 47,
+   "slug": "codex-pilot28-fixes",
+   "ids": [
+    "01a1aed2"
+   ],
+   "role": "Codex implementation agent under AGENTS.md: Pilot-28 diagnosis and owner-approved centralized progress, observation-derived aim and evidence fixes; same-session game-rules-audit checkpoint and session-evidence, not independent review.",
+   "title": "Pilot-28 diagnosis, cumulative progress watchdog, pull obstruction preview and verified subgoals",
+   "note": "No paid calls, held-out execution, frozen scenario or pin changes, push or merge. Local commit authorized by the owner after offline verification. The referenced pilot-28 diagnosis originated in the older chat checkout and is copied unchanged into this worktree. Session numbers 45 and 46 already exist in related project worktrees; 47 avoids a numbering collision."
   }
  ]
 }

@@ -1,3 +1,4 @@
+import { viewerGameSeconds } from "../src/liveViewer.js";
 import { afterEach, describe, expect, it } from "vitest";
 import { mkdtempSync, writeFileSync, existsSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -101,4 +102,10 @@ describe("recording shutdown diagnostics", () => {
     expect(readFileSync(summary!.trace, "utf8")).toBe(before);
     verifyTrace(before.trim().split("\n").map((line) => JSON.parse(line)));
   });
+});
+
+it("keeps the recorded terminal clock consistent with the summary after a scenario prefix", () => {
+  expect(viewerGameSeconds({ type: "terminal", tick: 1319, data: {} }, 405)).toBeCloseTo(15.2333, 3);
+  expect(viewerGameSeconds({ type: "outcome", tick: 914, data: { outcome: { seconds: 15.2 } } }, 405)).toBe(15.2);
+  expect(viewerGameSeconds({ type: "outcome", tick: 914, data: {} }, 405)).toBeCloseTo(15.2333, 3);
 });

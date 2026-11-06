@@ -122,7 +122,7 @@ describe("model-centralized: reply, schema and prompt", () => {
   it("imports nothing that can see the engine, the route or the baselines", () => {
     const src = readFileSync("packages/agent/src/policies/centralized.ts", "utf8").replace(/^\s*\/\/.*$/gm, "").replace(/\/\*[\s\S]*?\*\//g, "");
     const imports = [...src.matchAll(/^import .* from "([^"]+)";$/gm)].map((m) => m[1]);
-    expect(imports.sort()).toEqual(["../batch.js", "../budget.js", "../heroMemory.js", "../playerKnowledge.js", "../types.js", "./llm.js", "./navigator.js", "./policy.js", "node:crypto"].sort());
+    expect(imports.sort()).toEqual(["../batch.js", "../budget.js", "../heroMemory.js", "../playerKnowledge.js", "../types.js", "./centralProgress.js", "./pullPreview.js", "./llm.js", "./navigator.js", "./policy.js", "node:crypto"].sort());
     expect(src).not.toMatch(/World|GameRoom|environment\.js|route\/|questKnowledge|questBaseline|guided|@oath\/shared|packages\/shared/);
   });
 
@@ -314,10 +314,10 @@ describe("model-centralized: shared memory from the heroes' own observations", (
     await coco.decide({ observation: obs({ hero: "Coco", x: 2.5, y: 2.5, tick: 60, hp: 70 }), legal: LEGAL, batch: done(dc.action!, 60) });
     expect(g.calls).toHaveLength(2);
     const u = g.calls[1].user;
-    expect(u.plan_memory).toMatchObject({ plan: "find the runner", subgoals_done: ["entered"], known_obstacles: ["wall north"] });
+    expect(u.plan_memory).toMatchObject({ plan: "find the runner", subgoals_done: [], known_obstacles: ["wall north"] });
     expect(u.shared.seen_earlier).toContainEqual(expect.objectContaining({ name: "RUNNER", kind: "creature", x: 9, y: 2.5, details: "carrying a token", seen_by: "Coco", seen_at_tick: 0 }));
     // Lists the planner left out stay as they were; the plan text was replaced.
-    expect(planner.planMemory()).toEqual({ plan: "find the runner (still)", subgoalsDone: ["entered"], knownObstacles: ["wall north"] });
+    expect(planner.planMemory()).toEqual({ plan: "find the runner (still)", subgoalsDone: [], knownObstacles: ["wall north"] });
     expect(u.plan_memory.recent_events.map((e: { event: string }) => e.event)).toContain("this hero has no intention");
   });
 
@@ -495,7 +495,11 @@ describe("REAL PLAY on S2-C seed 0: the planner sends Sieg to catch the wolf; an
     const policies = policiesFor("model-centralized", budget, setup(g), "S2-C");
     let room: { state: { inventory?: { counts: Record<string, number>; claimed: string[] } } } | undefined;
     const trace = new TraceWriter();
-    const env = environmentFor("S2-C", { trace: (e) => trace.write(e), limits: { maxDecisionsPerPlayer: 500 }, room: (r) => { room = r as never; } });
+    const env = environmentFor("S2-C", { trace: (e) => {
+      trace.write(e);
+      // This fixture tests capture, not indefinite holding after capture.
+      if (e.type === "result" && (e.data as { feedback?: string[] }).feedback?.some(f => /Collected Hedge Gate Key/.test(f))) queueMicrotask(() => env.stop("manual_stop"));
+    }, limits: { maxDecisionsPerPlayer: 500 }, room: (r) => { room = r as never; } });
     await runEpisode(env, policies, trace, { seed: 0, wallClockMs: 110_000, budget });
     const lines = trace.lines as Line[];
     const steps = lines.filter((l) => l.type === "step" && l.player === "sieg").map((l) => l.data as { action: GameAction; result: { feedback: string[] } });

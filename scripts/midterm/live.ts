@@ -25,7 +25,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSy
 import { basename, join, relative, resolve } from "node:path";
 import { aggregate, EPISODE_CAP_USD, episodeCap, PLAYER_KINDS, runSuite, validatePlan, type EpisodeSummary, type ModelSetup, type PlayerKind } from "../../packages/agent/src/harness.js";
 import { APPROVED_LEDGER, SpendLedger } from "../../packages/agent/src/ledger.js";
-import { startViewer, type Viewer } from "../../packages/agent/src/liveViewer.js";
+import { viewerGameSeconds, startViewer, type Viewer } from "../../packages/agent/src/liveViewer.js";
 import { RECORDING_META, startRecorder, type Recorder, type RecordingResult } from "../../packages/agent/src/recorder.js";
 import { filesContaining } from "../../packages/agent/src/secretScan.js";
 import { finishViewerAfterGrace, SignalCounter } from "../../packages/agent/src/shutdown.js";
@@ -372,7 +372,7 @@ function onTrace(l: TraceLine) {
       if (s) s.outcome = d.reason;
       break;
   }
-  if (s) s.gameSeconds = Math.max(0, (l.tick - startTick) / 60);
+  if (s) s.gameSeconds = viewerGameSeconds(l, startTick);
 }
 
 // ── Run ──────────────────────────────────────────────────────────────────────
@@ -466,7 +466,7 @@ if (viewer && !error && lingerSeconds > 0 && !controller.signal.aborted)
 if (recorder) {
   const stoppedByUser = controller.signal.aborted;
   // Every wait inside stop() is bounded (recorder.ts); a second Ctrl-C exits at once.
-  const r = await recorder.stop({ finalTimeoutMs: stoppedByUser ? 3000 : 15_000, holdMs: stoppedByUser || error ? 0 : 3000, closeTimeoutMs: stoppedByUser ? 60_000 : 120_000, signal: linger.signal });
+  const r = await recorder.stop({ finalTimeoutMs: stoppedByUser ? 3000 : 15_000, holdMs: error ? 0 : 3000, closeTimeoutMs: stoppedByUser ? 60_000 : 120_000, signal: linger.signal });
   recordingMeta!(r);
   recordingFinal = true;
   if (r.status === "saved") console.log(`Video:   ${r.path} (${r.size.width}×${r.size.height}, ${r.wallSeconds} s${r.readyConfirmed ? "" : ", start not confirmed"}${r.finalConfirmed ? "" : ", end not confirmed"})`);

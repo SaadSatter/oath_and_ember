@@ -143,3 +143,8 @@ Sessions after 2026-10-26 (this evidence work onward) are added here as they are
 | 49 | claude | `83ac1132-fb79-427f-8be5-499c4f385687` | 2026-10-27 04:58 | claude-opus-5-5 | Claude Code session | [27](27-claude-skill-session-evidence-second.md) |
 
 Totals: Claude Code session 20, Codex permission check 15, Codex subagent 5, Codex work session 9
+
+
+## 2026-11-05 Pilot-28 follow-up
+
+[S47 — Pilot-28 diagnosis and fixes](47-codex-pilot28-fixes.md), session `01a1aed2-3232-7011-bb41-5fccdea13a5c`: same session as the read-only diagnosis, subsequently authorized to implement and commit locally. No independent review or paid evaluation is claimed.

@@ -25,6 +25,8 @@
 // files, puzzle state, routes, baselines or walkthroughs; this module imports
 // only types, the navigator, the hero memory and the prompt helpers.
 
+import { CentralProgress, PROGRESS } from "./centralProgress.js";
+import { pullPreview, PULL_PREVIEW } from "./pullPreview.js";
 import { createHash } from "node:crypto";
 import type { ActionSpec, GameAction, Observation, PlayerId, VisibleThing } from "../types.js";
 import type { MeteredGateway } from "../budget.js";
@@ -33,7 +35,7 @@ import type { HeroMemory } from "../heroMemory.js";
 import { tutorialBlock, tutorialId, taskId } from "../playerKnowledge.js";
 import { briefingBlock, briefingId, describeTurn, replySchema, TASK } from "./llm.js";
 import type { Decision, Policy } from "./policy.js";
-import { aimPreview, describeIntent, detectEvents, NAV, NAV_ID, NavigatorPlayer, parseNavigatorReply, snapshot, type NavStatus } from "./navigator.js";
+import { describeIntent, detectEvents, NAV, NAV_ID, NavigatorPlayer, parseNavigatorReply, snapshot, type NavStatus } from "./navigator.js";
 
 /** Planner bounds. Changing any of them changes the player (its name carries CENTRAL_ID). */
 export const CENTRAL = Object.freeze({
@@ -64,7 +66,7 @@ export const CENTRAL = Object.freeze({
   dialogueShown: 4,
   verifiedShown: 8,
 });
-export const CENTRAL_ID = createHash("sha256").update(JSON.stringify({ CENTRAL, NAV_ID })).digest("hex").slice(0, 8);
+export const CENTRAL_ID = createHash("sha256").update(JSON.stringify({ CENTRAL, NAV_ID, PROGRESS, PULL_PREVIEW })).digest("hex").slice(0, 8);
 
 const HEROES = { sieg: "Sieg", coco: "Coco" } as const;
 const PIDS: readonly PlayerId[] = ["sieg", "coco"];
@@ -88,8 +90,14 @@ What you receive when you are asked (one JSON object):
 - heroes.sieg and heroes.coco: each hero's own state as of its latest decision (observed_at_tick): area, position, health, abilities, status, screen, visible things, dialogue, recent feedback, what happened to its last actions, its current intention, and the actions legal for it right now. One hero may be partway through an action while the other asks.
 
 Reply with ONE JSON object and nothing else:
-{"plan": "<your plan, max ${CENTRAL.planChars} characters>", "subgoals_done": ["<short line>", ...], "known_obstacles": ["<short line>", ...], "orders": [{"hero": "sieg" or "coco", "actions": [...0 to ${maxBatch} actions...], and at most one intention: "go_to", "wait_until", "fight", "catch" or "hold": true}]}
-- "plan" replaces your plan. "subgoals_done" and "known_obstacles" replace those lists when you send them and stay as they were when you leave them out (at most ${CENTRAL.subgoalsKept} and ${CENTRAL.obstaclesKept} lines are kept).
+{"plan": "<your plan, max ${CENTRAL.planChars} characters>", "subgoals_done": ["<observed evidence ID>", ...], "known_obstacles": ["<short line>", ...], "orders": [{"hero": "sieg" or "coco", "actions": [...0 to ${maxBatch} actions...], and at most one intention: "go_to", "wait_until", "fight", "catch" or "hold": true}]}
+- observed_evidence contains controller-verified facts with stable IDs. "subgoals_done" must contain only IDs of completion-eligible facts from observed_evidence. Free-text claims, attempted casts and accepted inputs are not completed subgoals; unsupported claims are discarded. The saved completed text is the evidence fact itself, never a stronger inferred puzzle outcome.
+- progress separates actions attempted, input accepted, execution confirmed, observable effects, and completed subgoals. An accepted action without an observed effect is not a successful experiment. If no relevant effect follows, change position, aim or assignment. Do not repeat equivalent ineffective presses indefinitely.
+- The inactivity watchdog counts game time since verified progress across all renewed waits/holds and planner calls. After ${CENTRAL.holdSeconds} seconds, reconsider each overdue hero: give changed active work, or one specific observed cooldown/ongoing-effect condition with a deadline. Repeating an identical passive plan cannot bypass it. Give the other hero productive work while one waits.
+- wait_until may include "ability": "<exact observed ability name>" to end when its visible state becomes ready. Its seconds remain a deadline, not an assertion about a hidden timer. Include the cast and its follow-up wait in one order when appropriate.
+- A Black Hole pulls toward its predicted landing point, not its firing direction. near_pull_boundary is uncertain, not a confirmed hit. Check obstructing_heroes and move those bodies clear of the possible pull path.
+- evaluation_objective remains the task and episode briefing even when the broader journal has a different objective. Keep them separate in every plan.
+- "plan" replaces your plan. "known_obstacles" replaces that list when sent. Verified subgoals persist and new evidence IDs append to them (at most ${CENTRAL.subgoalsKept} and ${CENTRAL.obstaclesKept} lines are kept).
 - An order for a hero replaces that hero's intention and runs its "actions" first, in order, then the intention. A hero you give no order keeps its current intention. Give each hero at most one order. "orders" may be empty when both should carry on.
 - Each action must be one of that hero's legal_actions, e.g. {"type":"move","direction":"n","ticks":30} or {"type":"interact"} or {"type":"ability","ability":"..."}. A batch of actions stops as soon as anything happens (an invalid action, damage, a new place, dialogue, any feedback, a backpack or journal change); the rest are skipped and did not happen.
 - A hero with no intention and no actions holds: it waits with ordinary waits until something happens, at most ${CENTRAL.holdSeconds} seconds of game time, and then you are asked about it again. "hold": true asks for that explicitly.
@@ -137,7 +145,7 @@ export function centralSchema(maxBatch: number = MAX_BATCH): Record<string, unkn
             hero: { type: "string", enum: ["sieg", "coco"] },
             actions: { type: "array", items: action },
             go_to: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"], additionalProperties: false },
-            wait_until: { type: "object", properties: { seconds: { type: "number" }, watch: { type: "string" } }, required: ["seconds"], additionalProperties: false },
+            wait_until: { type: "object", properties: { seconds: { type: "number" }, watch: { type: "string" }, ability: { type: "string" } }, required: ["seconds"], additionalProperties: false },
             fight: { type: "object", properties: { target: { type: "string" }, seconds: { type: "number" } }, required: ["target", "seconds"], additionalProperties: false },
             catch: { type: "object", properties: { target: { type: "string" }, seconds: { type: "number" } }, required: ["target", "seconds"], additionalProperties: false },
             hold: { type: "boolean" },
@@ -158,10 +166,19 @@ export interface Order {
   actions: GameAction[];
   dropped: GameAction[];
   goTo?: { x: number; y: number };
-  waitUntil?: { seconds: number; watch?: string };
+  waitUntil?: { seconds: number; watch?: string; ability?: string };
   fight?: { target: string; seconds: number };
   catch?: { target: string; seconds: number };
   hold: boolean;
+}
+/** Equivalent assignments ignore wording, durations and sub-cell coordinate jitter. */
+function assignmentKey(order: Order) {
+  return JSON.stringify({
+    actions: order.actions.map(a=>Object.fromEntries(Object.entries(a).filter(([k])=>k!=="ticks"))),
+    goTo: order.goTo ? {x:Math.round(order.goTo.x*4)/4,y:Math.round(order.goTo.y*4)/4} : undefined,
+    waitUntil: order.waitUntil ? {watch:order.waitUntil.watch,ability:order.waitUntil.ability} : undefined,
+    fight: order.fight?.target.toLowerCase(), catch: order.catch?.target.toLowerCase(), hold: order.hold,
+  });
 }
 export type CentralReply =
   | { ok: true; plan: string; subgoalsDone?: string[]; knownObstacles?: string[]; orders: Order[]; notices: string[] }
@@ -223,6 +240,11 @@ export function parseCentralReply(text: string, maxBatch: number = MAX_BATCH): C
       // Nothing for this hero (perhaps only a message): it keeps its intention.
       continue;
     }
+    const wait = isObj(o.wait_until) ? o.wait_until : undefined;
+    const ability = wait?.ability;
+    if (ability !== undefined && ability !== null && (typeof ability !== "string" || !ability.trim())) return { ok: false, reason: 'wait_until.ability must be an observed ability name.' };
+    if (wait && Object.keys(wait).some(k => !["seconds", "watch", "ability"].includes(k))) return { ok: false, reason: 'Unexpected wait_until field.' };
+    if (wait) o.wait_until = Object.fromEntries(Object.entries(wait).filter(([k,v])=>k!=="ability" && v!==null));
     const nav = parseNavigatorReply(JSON.stringify({ actions: kept, ...Object.fromEntries(intentions.map((k) => [k, o[k]])), ...(hold ? { stop_navigation: true } : {}) }), maxBatch);
     if (!nav.ok) return { ok: false, reason: `Order ${i + 1} (${HEROES[hero]}): ${nav.reason}` };
     orders.push({
@@ -230,7 +252,7 @@ export function parseCentralReply(text: string, maxBatch: number = MAX_BATCH): C
       actions: nav.actions,
       dropped: nav.dropped,
       ...(nav.goTo ? { goTo: nav.goTo } : {}),
-      ...(nav.waitUntil ? { waitUntil: nav.waitUntil } : {}),
+      ...(nav.waitUntil ? { waitUntil: { ...nav.waitUntil, ...(typeof ability === "string" ? { ability: ability.trim() } : {}) } } : {}),
       ...(nav.fight ? { fight: nav.fight } : {}),
       ...(nav.catch ? { catch: nav.catch } : {}),
       hold,
@@ -340,7 +362,8 @@ export class CentralPlanner {
   readonly promptHash: string;
   private readonly schema: Record<string, unknown>;
   readonly controllers: Record<PlayerId, CentralizedController>;
-  /** The persistent plan memory, exactly as the model last wrote it. */
+  /** Mutable planner text plus independently verified completion facts. */
+  readonly progress = new CentralProgress();
   private memory = { plan: "", subgoalsDone: [] as string[], knownObstacles: [] as string[] };
   private readonly sightings = new Map<string, Sighting>();
   private events: { tick: number; hero: "Sieg" | "Coco"; text: string }[] = [];
@@ -348,6 +371,7 @@ export class CentralPlanner {
   private gathering?: Round;
   private inFlight?: Promise<RoundResult>;
   private planCount = 0;
+  private recoveryRefusals = 0;
   /** Every planning call, for traces, tests and the call-count comparison. */
   readonly calls: PlannerCallRecord[] = [];
 
@@ -464,6 +488,9 @@ export class CentralPlanner {
 
   /** One planning call for the heroes in `members`. */
   private async run(members: Map<PlayerId, Parameters<Policy["decide"]>[0]>): Promise<RoundResult> {
+    // A noncompliant planner must not burn the entire paid budget while
+    // game time is frozen. The runner already handles bounded policy errors.
+    if (this.recoveryRefusals >= 3) throw Error("Centralized planner stalled: three recovery replies failed to change ineffective assignments. No further model call was dispatched.");
     const ids = PIDS.filter((p) => members.has(p));
     const budget = this.gateways.sieg.budget;
     // The call is charged to a hero that asked: the one with fewer calls so far.
@@ -497,14 +524,24 @@ export class CentralPlanner {
       record.problem = parsed.reason;
       return { ...base, problem: parsed.reason, orders: [], notices: [] };
     }
+    // Validate recovery orders before applying any part of a shared plan.
+    const recovery = this.validateAssignments(parsed.orders, false);
+    if (recovery) { this.recoveryRefusals++; record.problem = recovery; return { ...base, problem: recovery, orders: [], notices: [] }; }
+    this.recoveryRefusals = 0;
+    this.validateAssignments(parsed.orders, true);
     this.memory.plan = parsed.plan;
-    if (parsed.subgoalsDone) this.memory.subgoalsDone = parsed.subgoalsDone;
+    const verified = this.progress.complete(parsed.subgoalsDone ?? []);
+    this.memory.subgoalsDone = verified.completed.map(e => e.text);
+    if (verified.refused.length) parsed.notices.push(`Unverified completion claims were not recorded: ${verified.refused.join("; ")}. Select only completion-eligible observed evidence IDs.`);
     if (parsed.knownObstacles) this.memory.knownObstacles = parsed.knownObstacles;
     this.notices = [...parsed.notices];
     for (const order of parsed.orders) {
       const c = this.controllers[order.hero];
       const o = members.get(order.hero)?.observation ?? c.latest()?.o;
-      if (o) c.applyOrder(order, o);
+      if (o) {
+        this.progress.assignment(order.hero, assignmentKey(order));
+        c.applyOrder(order, o);
+      }
     }
     // A hero left with nothing to do holds until something happens.
     for (const p of PIDS) {
@@ -513,6 +550,34 @@ export class CentralPlanner {
     }
     record.orders = parsed.orders.map((o) => o.hero);
     return { ...base, orders: parsed.orders, notices: parsed.notices };
+  }
+
+  private validateAssignments(orders: Order[], commit: boolean): string | undefined {
+    for (const pid of PIDS) {
+      const c=this.controllers[pid], latest=c.latest(); if (!latest) continue;
+      const o=latest.o, order=orders.find(order=>order.hero===pid);
+      if (order) {
+        for (const action of order.actions) if (this.progress.repeated(pid,action,o)) return `${c.hero}: repeated accepted action at the same position and aim has no confirmed relevant effect. Change position, aim or assignment before retrying.`;
+        const pairedCast = order.actions.some(a=>a.type==="ability" && a.ability.replace(/_/g," ").toLowerCase()===order.waitUntil?.ability?.toLowerCase());
+        if (order.waitUntil?.ability && !o.abilities.some(a=>a.name===order.waitUntil!.ability && ((a.state!=="ready" && a.state!=="hold") || pairedCast))) return `${c.hero}: cooldown wait must name an observed ability that is not ready.`;
+      }
+      if (!this.progress.due(pid,o.tick)) continue;
+      const view=this.progress.view(pid,o.tick);
+      const prefix=`${c.hero}: ${view.idle_seconds.toFixed(1)} game seconds without verified progress. Reconsider assignments and known obstacles.`;
+      const active=order && (order.goTo || order.fight || order.catch || order.actions.some(a=>!["wait","defend"].includes(a.type)));
+      if (active) {
+        const signature=assignmentKey(order);
+        if (this.progress.assignmentCount(pid,signature)>=2) return `${prefix} This equivalent active assignment has already been repeated without progress; change the approach.`;
+        continue;
+      }
+      const w=order?.waitUntil;
+      const target=w?.watch ? o.visible.find(v=>v.name===w.watch && (v.kind==="creature"||v.kind==="projectile"||v.kind==="effect"||v.kind==="enemy"||v.kind==="partner")) : undefined;
+      const ability=w?.ability ? o.abilities.find(a=>a.name===w.ability && a.state!=="ready" && a.state!=="hold") : undefined;
+      const lastActivation=this.progress.view(pid,o.tick).attempted_actions.filter(a=>a.action.type==="ability" && a.action.ability?.replace(/_/g," ").toLowerCase()===ability?.name.toLowerCase()).at(-1)?.tick ?? 0;
+      const condition=ability ? `cooldown:${ability.name}:${lastActivation}` : target ? `watch:${target.kind}:${target.name}` : undefined;
+      if (w && condition && this.progress.permit(pid,o.tick,condition,w.seconds,commit)) continue;
+      return `${prefix} A renewed hold, empty order or equivalent passive plan cannot satisfy the watchdog. Give changed active work or a specific observed cooldown/ongoing-effect condition and bounded deadline.`;
+    }
   }
 
   /** The planner's one user message: shared knowledge once, then each hero's own state. */
@@ -532,10 +597,14 @@ export class CentralPlanner {
       .slice(0, CENTRAL.sightingsKept)
       .map((s) => ({ kind: s.kind, name: s.name, area: s.area, x: s.x, y: s.y, ...(s.details ? { details: s.details } : {}), seen_by: s.seenBy, seen_at_tick: s.tick }));
     const msg = {
+      evaluation_objective: { primary: this.briefing ?? this.task, task: this.task, episode_briefing: this.briefing ?? null, instruction: "This is the evaluation objective. The journal is broader in-game context, not a replacement objective." },
+      observed_evidence: this.progress.facts(),
+      progress: Object.fromEntries(PIDS.map(p=>[p,this.progress.view(p,this.controllers[p].latest()?.o.tick??0)])),
       why_you_are_asked: Object.fromEntries(PIDS.map((p) => [p, reasons[p] ?? []])),
       plan_memory: {
         plan: this.memory.plan,
         subgoals_done: this.memory.subgoalsDone,
+        completed_subgoal_evidence: this.progress.complete([]).completed,
         known_obstacles: this.memory.knownObstacles,
         recent_events: this.events.map((e) => ({ tick: e.tick, hero: e.hero, event: e.text })),
       },
@@ -572,6 +641,7 @@ export class CentralizedController extends NavigatorPlayer {
   private holding = false;
   private hpAtPlan = Infinity;
   private pausedSince?: number;
+  private waitAbility?: string;
   private input?: Parameters<Policy["decide"]>[0];
 
   constructor(hero: "Sieg" | "Coco", readonly planner: CentralPlanner, name: string, manual: string) {
@@ -625,6 +695,7 @@ export class CentralizedController extends NavigatorPlayer {
   /** Replace this hero's intention with the planner's order. */
   applyOrder(order: Order, o: Observation) {
     this.queued = [...order.actions];
+    this.waitAbility = order.waitUntil?.ability;
     this.holding = false;
     if (order.goTo) {
       this.setGoal(order.goTo, o);
@@ -727,6 +798,7 @@ export class CentralizedController extends NavigatorPlayer {
 
   private noteState() {
     return {
+      progress: this.planner.progress.view(this.pid,this.input?.observation.tick??0),
       goal: this.goal ? { ...this.goal } : null,
       status: this.status,
       ...(this.intent ? { intent: this.holding ? { kind: "hold", until_tick: this.intent.untilTick } : describeIntent(this.intent) } : {}),
@@ -746,6 +818,11 @@ export class CentralizedController extends NavigatorPlayer {
     });
   }
 
+  protected override intentStep(o: Observation, legal: ActionSpec[]) {
+    if (this.intent?.kind === "wait" && this.waitAbility && o.abilities.find(a=>a.name===this.waitAbility)?.state==="ready") return { ended: `${this.waitAbility} is now ready; the cooldown wait ended` };
+    return super.intentStep(o,legal);
+  }
+
   /** The hero's own state as the planner sees it. */
   plannerView() {
     const input = this.input;
@@ -761,6 +838,7 @@ export class CentralizedController extends NavigatorPlayer {
         : null;
     const blackHole = input.legal.some((l) => l.type === "ability" && l.params?.ability?.kind === "enum" && l.params.ability.values.includes("black_hole"));
     return {
+      progress: this.planner.progress.view(this.pid,o.tick),
       observed_at_tick: o.tick,
       area: o.area.name,
       self: o.self,
@@ -781,13 +859,14 @@ export class CentralizedController extends NavigatorPlayer {
       repeated_without_new_result: mem.repeated_without_new_result,
       verified_events: mem.verified_events.filter((e) => e.superseded_by === undefined).slice(-CENTRAL.verifiedShown),
       legal_actions: input.legal.filter((l) => l.type !== "message"),
-      ...(blackHole ? { navigation: { aim_preview: aimPreview(this.heroMemory, o) } } : {}),
+      ...(blackHole ? { navigation: { aim_preview: pullPreview(this.heroMemory, o) } } : {}),
     };
   }
 
   override async decide(input: Parameters<Policy["decide"]>[0]): Promise<Decision> {
     const o = input.observation;
     // The navigator's own bookkeeping, unchanged: memory, results, the last walking move.
+    this.planner.progress.observe(o, input.batch);
     if (input.batch) this.remember(input.batch);
     if (input.batch) this.heroMemory.recordTurn(input.batch, this.lastObservation);
     this.heroMemory.observe(o);
@@ -806,6 +885,14 @@ export class CentralizedController extends NavigatorPlayer {
     if (this.intent?.kind === "catch" && this.intent.presses > 0 && events.includes("your backpack changed")) {
       reasons.push("your catch ended: after your E press your backpack changed");
       this.intent = null;
+    }
+
+    // This deadline is tied to observed progress, never to a planning call or
+    // renewed intention. It also fires during repeated active experiments.
+    if (this.planner.progress.interrupt(this.pid,o.tick)) {
+      const elapsed=this.planner.progress.view(this.pid,o.tick).idle_seconds;
+      reasons.push(`inactivity watchdog: ${elapsed.toFixed(1)} game seconds without verified progress; hold ran out or repeated assignments made no progress. Reconsider obstacles and provide follow-through.`);
+      this.intent=null; this.setGoal(null,o); this.queued=[]; this.fresh=false; this.holding=false;
     }
 
     // An order made while this hero was busy: start it, unless something urgent happened since.
