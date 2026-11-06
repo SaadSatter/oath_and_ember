@@ -1,5 +1,7 @@
 # Evaluation suite (declared before tuning)
 
+> Current evaluation design: [declared A/B/C r1](DECLARED_EVALUATION_SUITE.md), 2026-11-06. A is the existing frozen maze; B/C are declared Griffin designs awaiting runtime certification/registration. This file preserves the historical executable registry and freeze history; its S2-B/S2-C/S4/F identities are not renamed or silently reused.
+
 **Status: frozen, provisional.**
 - The owner approved this suite on 2026-10-27, pending the professor's confirmation. **The professor has not confirmed it.** Do not describe it as professor-approved until that confirmation is recorded in the change log below.
 - The commit that adds this file is the freeze point. No prompt has been tuned and no scenario-specific baseline heuristic has been written before it.

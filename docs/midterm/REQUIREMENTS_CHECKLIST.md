@@ -1,5 +1,7 @@
 # Requirements checklist
 
+> Current declaration/status (2026-11-06): [A/B/C design](DECLARED_EVALUATION_SUITE.md), [submission checklist](SUBMISSION_CHECKLIST.md), and `midterms/saadsatter/EVALUATION.md`. Historical status rows below are dated evidence, not a claim that the new B/C runtime or full evaluation is complete.
+
 Maps every rubric check in `docs/midterm/MIDTERM_GUIDELINES.md` to its deliverable, its verification and its status. The statuses are:
 
 - **done**: the evidence exists and is linked;

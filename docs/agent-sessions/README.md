@@ -156,3 +156,7 @@ Totals: Claude Code session 20, Codex permission check 15, Codex subagent 5, Cod
 ## S47 supplement — Pilot-30 preservation recheck and Griffin planning
 
 Same Codex session, separate documentation worktree: [preservation recheck](../midterm/PILOT30_AUDIT.md#7-preservation-recheck-and-revised-evaluation-planning-codex-2026-11-06), [Griffin feasibility proposal](../midterm/GRIFFIN_EVALUATION_FEASIBILITY.md). Claude S48's original audit/registration remains intact. No new Griffin run, model tuning or independent review.
+
+## S47 supplement — declared A/B/C design and course EVALUATION
+
+Same-session documentation work: [declared suite](../midterm/DECLARED_EVALUATION_SUITE.md), [declaration audit](../midterm/agent-evidence/skill-runs/2026-11-06-suite-declaration.md). Course EVALUATION.md updated; original report archived unchanged. Runtime B/C and new experiments remain pending, no independent review or paid run claimed.

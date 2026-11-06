@@ -1,4 +1,36 @@
-# Submission readiness checklist (Hedge Maze scope)
+# Submission readiness checklist — declared A/B/C suite
+
+## Current status — 2026-11-06 declaration
+
+[Declared suite](DECLARED_EVALUATION_SUITE.md), `oath-ember-abc-2026-11-06-r1`:
+A Hedge Maze; B Griffin Unprepared; C Griffin Prepared. The owner supplied the
+midterm guidelines; declaration/documentation is authorized, paid execution is not.
+
+| Required item | Current status / remaining work |
+| --- | --- |
+| Declared three distinct situations/tasks | **Declared design complete**; B/C runtime not implemented/certified. A was already a tuning case, disclosed. |
+| EVALUATION.md with suite, comparison, evidence, CI and limitations | Written in `midterms/saadsatter/EVALUATION.md`; original report archived byte-for-byte. Not a completed experiment or personal reflection. |
+| Pre/post and cheap baseline conditions | Defined; existing unchanged baseline-quest selected; post-guidance hashes pending. |
+| Two repeated live trials per situation | Allocation is two per condition; 12 model + six baseline total. Only historical Pilot-30 A/pre/1 observed; remaining 17 unrun. |
+| Legal frozen B/C starts | Pending approved certification, exact hero/encounter matching, hashes and preserved history diff; no fixture injection. |
+| Strict defeat + wig / survival scoring | Declared; new evaluator/registration pending. Peaceful reward alone fails; automatic respawn requires knockout tracking. |
+| C holdout | Reserved from model-outcome tuning. Seal both conditions before C; no C-specific walkthrough or outcome adaptation. No new C model result exists. |
+| Five-operation information boundary | Existing adapter; new B/C integration requires tests and independent review. No gameplay/policy change in this declaration. |
+| Memory vs observation-only comparison | Pending matched design/results; pre/post guidance is not a memory ablation. |
+| Latest green deterministic CI | Pending. Prior documented local result 1263/1264, known s2Shutdown failure; typecheck/build passed. Do not claim this commit has new green CI. |
+| Human observed playtest | Pending verified anonymous notes in PEER_NOTES.md, or owner explanation of omission. Someone else plays without help. |
+| Student-authored log/reflection | Owner must complete AGENT-TEAM.md and personal limitations using genuine decisions/playtest observations; no agent-authored first-person substitute. |
+| 3–5 minute agent recording | Pending final short video/link; full Pilot-30 live video preserved (~32.7min). Label excerpts/edits and retain original. Link from README and course PR. |
+| README / Week 3 scope update | README updated; owner must post revision in Week 3 thread (not done by agent). |
+| Course folder / one workflow / clean clone | Existing packaging script and course workflow template; rehearse final committed package and dependencies before submission. No course checkout overwritten. |
+| Course PR and CourseWorks | Pending owner-approved push/PR, links to README/EVALUATION/log/playtest/video, PR URL on CourseWorks by Nov 7 11:59pm per supplied brief. No merge required; no force-push after deadline. |
+| Later peer review | Three assigned recording notes in Week 3 replies before Nov 16; separate from pre-submission observed playtest. |
+
+The rows below preserve the earlier checklist and its dates; their old
+Hedge-Maze-only suite, budgets and pending baseline choices do not override the
+current declaration. Old frozen runtime scenarios and original evidence remain intact.
+
+## Historical checklist (2026-10-29 onward)
 
 Prepared on 2026-10-29 by the Claude Code implementation agent, after the owner directed that the Hedge Maze (S2-local) be the primary evaluated episode. Statuses:
 - **complete**: evidence exists and was checked in this session;

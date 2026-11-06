@@ -1,48 +1,61 @@
-# Oath and Ember: two AI players in the Hedge Maze
+# Oath and Ember — declared A/B/C evaluation
 
-GitHub login: `saadsatter`. Project: **Oath and Ember**, an original cooperative two-character fantasy action-adventure.
+GitHub login: `saadsatter`. **Oath and Ember** is an original cooperative
+two-character fantasy action-adventure. The implemented Bald Goddess quest is
+playable from the goddess checkpoint to Chapter 0 completion.
 
-- **Implemented game:** the Bald Goddess quest, with several areas and puzzles (the shrine, Mirror Pond, the Hedge Maze, the Griffin Enclosure and the finale), playable from the goddess checkpoint to `chapter0.complete`.
-- **Primary evaluated episode:** **S2-local, the Hedge Maze**: from the maze entrance, the two heroes must get the Enchanted Shears into the shared backpack. Sieg and Coco are each controlled by an independent player.
-- **Evaluation question:** how do a scripted policy, walkthrough-guided LLM agents and unaided memory-based LLM agents differ in their ability to coordinate and complete a bounded cooperative puzzle?
-- **Main results (tuning stage, seed 0):** the scripted reference completes it reproducibly (49.8 game-seconds, 0 invalid actions, identical across four runs). The walkthrough-guided LLM pair completed it in both trials (38.6 s and 44.0 s). The unaided memory-based LLM pair did not complete either trial: one reached the key gate, and the other was interrupted at the cow. The three policies do not have equal information; see [EVALUATION.md](EVALUATION.md).
+**Declared evaluation scope (2026-11-06):** three bounded tasks from that quest:
+A — Hedge Maze; B — Griffin Trial, Unprepared; C — Griffin Trial, Prepared.
+Each has pre-tuned model, post-tuned model and free scripted-baseline conditions,
+with two repetitions per cell. **Declaration is not completed evaluation:** A is
+frozen and has Pilot-30 evidence; new B/C checkpoints/integration are pending.
+No new paid run is authorized by these documents.
 
-| Deliverable | Where |
+| Deliverable | Where / status |
 | --- | --- |
-| Evaluation report | [EVALUATION.md](EVALUATION.md) |
-| Agent team log | [AGENT-TEAM.md](AGENT-TEAM.md) |
-| Rule and source map | [RULE_SOURCE_MAP.md](RULE_SOURCE_MAP.md) |
-| Peer playtest notes | [PEER_NOTES.md](PEER_NOTES.md) |
-| Recording | [pilot-11 replay video](https://github.com/SaadSatter/oath_and_ember/blob/midterm/evaluation/docs/midterm/evidence/pilot-11-model-guided/replay.webm): a trace-verified **replay**, not a live capture, of the walkthrough-guided LLM pair (`model-guided`: an LLM with a written Hedge Maze walkthrough in its prompt) succeeding (see [its notes](docs/midterm/evidence/pilot-11-model-guided/README.md)). It shows execution of a supplied solution, not unaided play. Which recording to submit is still the owner's choice; the other videos and their delivery status are in [evidence/README.md](evidence/README.md#recordings-and-delivery) |
-| Hedge Maze evidence | [evidence/](evidence/README.md): traces, summaries and a SHA-256 manifest for every run in the comparison |
-| CI | `.github/workflows/midterm-saadsatter.yml` running [scripts/midterm/ci-checks.sh](scripts/midterm/ci-checks.sh) |
-| The game's own README | [GAME_README.md](GAME_README.md) |
+| Current declared suite and comparison | [EVALUATION.md](EVALUATION.md); only A/pre/1 has an observed result |
+| Declaration and machine records | `docs/midterm/DECLARED_EVALUATION_SUITE.md`; `docs/midterm/evaluation-abc/declaration.json` and `declared-results.json` (included after course packaging) |
+| Agent-team log | [AGENT-TEAM.md](AGENT-TEAM.md) — owner-authored completion still required |
+| Rules/source map | [RULE_SOURCE_MAP.md](RULE_SOURCE_MAP.md) |
+| Human playtest notes | [PEER_NOTES.md](PEER_NOTES.md) — scaffold, not completed evidence |
+| Full live model recording | [Pilot-30 evidence/video](evidence/traces/pilot-30-model-centralized-S2-local-seed0/README.md); about 32.7 minutes, not yet the required 3–5 minute submission video |
+| Preserved historical evaluation | [EVALUATION_HISTORY_BEFORE_ABC_DECLARATION.md](EVALUATION_HISTORY_BEFORE_ABC_DECLARATION.md) — older versions/results, not pooled with current suite |
+| CI | Source template `ci/midterm-saadsatter.yml`; packaged to course `.github/workflows/midterm-saadsatter.yml`. Latest-green CI still pending |
+| Game's own README | [GAME_README.md](GAME_README.md) (created during packaging) |
 
 ## Scope
 
-**The evaluated episode.** The agent evaluation centres on S2-local, the Hedge Maze ([EVALUATION.md](EVALUATION.md#the-hedge-maze-episode)). It starts with both heroes entering the maze by ordinary play and succeeds when the Enchanted Shears are in the shared backpack, within 300 game-seconds and per-hero step, call, token and spend limits. It tests navigation and combat, each hero's abilities, environmental puzzles, in-game messaging between the two players, and shared quest progress. Mirror Pond and the Griffin remain implemented and appear only as exploratory runs. Narrowing the evaluation to one puzzle leaves the course's suite requirements (three situations, held-out cases) unmet; [EVALUATION.md](EVALUATION.md#rubric-gaps-and-scope-risks) lists the gaps.
+**A — Hedge Maze:** frozen S2-local v2 seed 0. Obtain Enchanted Shears through
+normal play. Pilot-30 succeeded in 89.5 game seconds, 167 model calls and an
+estimated $0.443258. It is a preserved, development-informed pre-solution-prompt
+pilot, not a historically preregistered final run.
 
-**A second, different situation: P1 "Into the Forest" (frozen 2026-11-03).** A directed narrative and navigation episode from the Prologue's own opening, with no puzzle and no combat: Sieg visits Alden's shop, the two set off, take the forest road, find the merchants' tipped cart, and follow its tracks. It succeeds when the game moves the story into the Mossling Woods, within 180 game-seconds, 250 model calls per hero and $0.60 per episode. **Limitation: success does not require Coco.** Sieg alone can complete it, so it does not test cooperation. P1 is frozen and excluded from prompt tuning, but it is not held out from development knowledge, and it does not by itself meet the three-situation requirement. Record: [PROLOGUE_SITUATION.md](docs/midterm/PROLOGUE_SITUATION.md).
+**B — Griffin Trial, Unprepared:** start at a fresh encounter without the Mirror,
+Shears or wig. Defeat the Griffin and acquire the wig; no hero knockout and no
+leaving the enclosure before success.
 
-**The game around it.** The full Bald Goddess quest starts at the title screen's "The Bald Goddess" chapter start: story stage `GODDESS`, both heroes arriving at the Goddess Shrine. It ends when the story records `chapter0.complete` and players see "CHAPTER 0 COMPLETE".
-- In between: the shrine hub, Mirror Pond (the Vanity Mirror), the Hedge Maze (the Enchanted Shears), the Griffin Enclosure (the wig), the offering and the finale.
-- Everything is played with the real game rules on the authoritative server.
+**C — Griffin Trial, Prepared:** near-matched encounter/hero conditions, but the
+shared bag contains the Mirror and Shears. Same strict combat-defeat plus wig
+objective. C is reserved from model-outcome tuning; post-tuned C transfers only
+guidance frozen from A/B, with no C-specific walkthrough. The tools' peaceful
+reward path does not satisfy strict defeat; see [EVALUATION.md](EVALUATION.md).
 
-**Excluded:**
-- the prologue after the Mossling Woods (its tutorial, the ambush and the evening at home), the village and the earlier Chapter 0 parts before the shrine (the Prologue's opening is evaluated only as P1);
-- the legacy airship and boss;
-- anything after Chapter 0;
-- persistence and online matchmaking.
+The selected model player is **one centralized planner for both heroes**, with
+only their normal observations and legal controls. The cheap comparator is the
+existing solution-aware `baseline-quest`; this asymmetry and its expected strict
+Griffin failures are disclosed. Legal B/C preparation must preserve all world
+consequences, not manufacture inventory-only fixture states. The final hashes
+and exact matching remain unverified until approved certification.
 
-The game itself is larger. The Bald Goddess quest is a bounded slice of it; outside the quest, only the Prologue's opening (P1) is evaluated.
+The full game also includes the shrine hub, Mirror Pond, prologue and finale.
+Those remain playable context or historical supplementary evaluations, not
+additional current suite cases. No airship/legacy-boss, persistence or online
+matchmaking expansion is part of this scope. The five-operation adapter drives
+the authoritative server without changing the game's rules.
 
-**What was adapted for the AI players.** The game was not changed to suit them. A headless interface (`packages/agent/`) drives a real `GameRoom` through five operations: `reset`, `observe`, `legal_actions`, `step` and `outcome`.
-- Each hero's observation is built from what that player's screen, dialogue, journal, backpack and HUD show, plus the public [player manual](manual/Oath_and_Ember_Player_Manual.md).
-- The HUD's goal lines are hidden from every player.
-- Game time runs in lockstep, only while both heroes have an action running, so model latency never changes the game.
-- Server changes for evaluation (a deterministic clock and ids, a manual driver, view-only browser sessions) are optional and off in normal play: [SERVER_CHANGES.md](docs/midterm/SERVER_CHANGES.md).
-
-**Original game.** Oath and Ember's world, heroes, story and puzzle arrangements are original. The Legend of Zelda inspired its exploration and puzzle structure; It Takes Two inspired making two different hero roles equally necessary. No specific level, rule or asset was copied from either. Design decisions and their alternatives are recorded in [GAME_DESIGN_RATIONALE.md](docs/GAME_DESIGN_RATIONALE.md) (D1–D11).
+The owner must post this scope revision in the Week 3 discussion thread and
+finish the human playtest/reflection and course PR requirements. Those external
+or personally authored steps have not been performed by this agent.
 
 ## Setup
 
@@ -84,47 +97,24 @@ The script runs every test except the ones that build or play the held-out scena
 
 ## Evaluate
 
-Free, offline commands (no model, no key):
+Read [EVALUATION.md](EVALUATION.md) before running anything. B/C logical IDs in
+the declaration are **not yet registered runner scenarios**. No command below
+starts a paid model.
 
 ```sh
 cd midterms/saadsatter
-
-# The scripted reference baseline on the Hedge Maze (expect success, 2,990 ticks, end hash bf31311f…)
+# Existing free reference on frozen A; creates a new run, does not overwrite Pilot-30.
 node --import tsx scripts/midterm/evaluate.ts --player baseline-quest --situations S2-local --seeds 0
-
-# Situation A (S2-A, the frozen Hedge Maze): definition, resets, planned runs, baseline on seeds 0 and 1
-node --import tsx scripts/midterm/situation-a.ts --baseline
-
-# P1 "Into the Forest" (the Prologue): definition, resets, planned runs, baseline on seeds 0 and 1 (expect success, 1,058 ticks)
-node --import tsx scripts/midterm/prologue-situation.ts --baseline
-
-# All three Hedge Maze situations (S2-A full, S2-B cow puzzle, S2-C wolf and key): resets and the baseline on each
-node --import tsx scripts/midterm/hedge-maze-situations.ts --baseline
-
-# Check the packaged Hedge Maze evidence against its manifest and summaries
-python3 -I scripts/midterm/collect_evidence.py --verify
-
-# Scripted quest-aware baseline and exploration baseline on the tuning scenarios, seeds 0 and 1
-node --import tsx scripts/midterm/evaluate.ts --player baseline-quest --situations S1,S2,S3 --seeds tuning
-node --import tsx scripts/midterm/evaluate.ts --player baseline-explore --situations S1,S2,S3 --seeds tuning
-
-# Both model players end to end with a scripted fake model (free; tests the application, not a model)
-npm run eval:live -- --scenario S2-local --seed 0 --player model-memory --gateway mock --no-viewer
-
-# Watch the baseline play in a browser viewer (opens http://localhost:3030/watch)
-npm run eval:live -- --scenario S2-local --seed 0 --player baseline-quest
 ```
 
-Each run writes a hash-chained trace, a summary and results to `evaluation-runs/` and prints where.
-
-**Paid model runs** spend real money and need the owner's key and ledger. They are documented in [LIVE_RUN.md](docs/midterm/LIVE_RUN.md) and [MODEL_BUDGET.md](docs/midterm/MODEL_BUDGET.md). The pilot command, for example:
-
-```sh
-npm run eval:live -- --scenario S2-local --seed 0 --player model-memory \
-  --gateway openai --model gpt-6-luna --effort medium --max-spend-usd 0.60 --paid --no-viewer
-```
-
-It refuses to run without `--paid`, an approved model, a key in `OPENAI_API_KEY` and an initialized spend ledger. Held-out scenarios (S4, F) and final seeds need a recorded owner approval for the exact commit (`scripts/midterm/final-approve.ts`).
+At the current gameplay snapshot, the A reference succeeds in 3,128 ticks /
+52.1 game seconds with pinned end hash `6644f2ca…f56`. That historical reference
+is not silently counted as a new declared baseline trial. New scenario
+registration/certification, post-tuned prompt freeze and any paid evaluation
+require separate approval. Full evidence and model settings are linked from
+[EVALUATION.md](EVALUATION.md). The exact source/asset packaging procedure is
+`scripts/midterm/package_submission.py`; use a committed revision and rehearse
+in a separate course checkout, never overwrite another project's folder.
 
 ## Sources and terms
 

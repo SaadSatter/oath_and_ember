@@ -1,6 +1,6 @@
-# Griffin evaluation feasibility — proposal for approval
+# Griffin evaluation feasibility — basis for declared suite
 
-2026-11-06. Documentation/source review only, based on preservation commit
+2026-11-06. **Update:** [declared design r1](DECLARED_EVALUATION_SUITE.md) now retains strict defeat/no-knockout scoring, selects unchanged baseline-quest and allocates two repetitions per cell. Runtime checkpoints/certification remain unimplemented; earlier options below are feasibility discussion, not permission to change the declared goal. Documentation/source review only, based on preservation commit
 `0a89094`. **No new Griffin configuration was implemented, reset, replayed or
 run.** No gameplay, policy, frozen scenario, paid runner or Pilot-30 evidence
 was changed. Pilot-30 preservation/re-registration recheck was completed first
@@ -105,12 +105,10 @@ normally; both tools need not materially aid that fight. Offering the Mirror
 first may commit the episode to a non-combat reward path that cannot satisfy
 strict defeat. Do not silently call that a combat success.
 
-**Approval decision before freezing:** retain strict `griffin.hp == 0 AND
-wig acquired AND no knockout` in B/C (the task currently requested), or explicitly
-approve a broader “resolve encounter and obtain wig” goal allowing the peaceful
+**Declared decision:** retain strict `griffin.hp == 0 AND
+wig acquired AND no knockout` in B/C (the task currently requested), rather than silently adopting a broader “resolve encounter and obtain wig” goal allowing the peaceful
 prepared route. The latter better tests the item advantage, but is a different
-success definition and is not adopted here. If strict defeat remains, explain
-why a legitimate game's peaceful reward does not pass this evaluation.
+success definition and is not adopted here. Under this declaration, explain why the game's peaceful reward does not pass the strict evaluation.
 
 ## 4. Five-operation adapter and current centralized player
 
@@ -147,8 +145,7 @@ Neither script attacks the Griffin or chooses a combat strategy.
 | C: prepared, strict defeat + wig | Takes the peaceful grooming route, obtains wig and returns; HP-zero defeat condition is not met. Would fail strict scoring despite obtaining the reward. |
 | C, if goal explicitly changed to wig acquisition only | Existing peaceful script is suitable in principle; exact new C reset/limits/survival compatibility remains unverified. |
 
-No baseline was modified or run. “Cheap baseline” remains **implementation to
-be confirmed**. Do not register old full-quest/maze baselines as these cells.
+No baseline was modified or run. Declaration r1 selects the existing unchanged **baseline-quest** comparator. Do not register old full-quest/maze baselines as these cells.
 If using `baseline-quest`, label its hand-coded solution knowledge and score its
 failures honestly. A different low-cost observation-based combat policy would
 need separate approval and a frozen implementation; its success cannot be
@@ -203,18 +200,18 @@ identical across pre/post except the declared prompt block. If controller code
 changes after Pilot-30, disclose the confound instead of calling it a prompt-only
 comparison. Instructor trial-count confirmation remains needed: written course
 rules require two live trials per situation, while the owner additionally asks
-for pre/post/baseline cells. Recommend two trials per cell (12 model episodes
-plus six cheap baseline episodes), subject to approval; one pre + one post is
+for pre/post/baseline cells. Declaration r1 selects two trials per cell (12 model episodes
+plus six cheap baseline episodes), without authorizing execution; one pre + one post is
 not two repetitions of the same policy. Whether Pilot-30 counts toward A's quota
 is still recorded as pending, not retroactively changed.
 
-## Recommendation / approval boundary
+## Declaration / implementation boundary
 
-Proceed only with the completed Pilot-30 preservation and this planning update.
-Before implementing or running new B/C, approve the strict-defeat versus
-peaceful-resolution interpretation, the no-knockout and encounter-boundary
-rules (recommended: remain in enclosure, no tool acquisition on B), limits,
-near-matching tolerances, cheap baseline and trial counts. Then authorize
-separate offline checkpoint certification. New C model outcomes remain sealed
-until policies are frozen and final paid approval is given. No configuration,
-policy, scenario registration or paid evaluation is authorized by this proposal.
+The owner authorized formal design declaration: strict defeat + wig/no-knockout,
+unchanged baseline-quest and two repetitions per condition are selected in
+[declaration r1](DECLARED_EVALUATION_SUITE.md). This is no longer merely a choice
+among proposed suite rows. Runtime B/C checkpoints, matching certification,
+survival/boundary enforcement, exact prompt seals, paid/final registration and
+all new runs still require implementation/certification approval. A broader
+peaceful-resolution success rule or changed baseline would require an explicit
+new declaration revision. No C-specific tuning or walkthrough is authorized.

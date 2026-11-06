@@ -110,3 +110,8 @@ See [revised matrix](EVALUATION_ABC_MATRIX.md) and the separate
 [Griffin feasibility proposal](GRIFFIN_EVALUATION_FEASIBILITY.md). No new
 Griffin configuration was implemented, reset, replayed or run. Original A's
 scenario, hashes and Pilot-30 evidence remain unchanged.
+
+
+## 8. Declared suite revision (2026-11-06)
+
+The owner subsequently requested formal declaration against the pasted midterm guidelines. [Declared A/B/C r1](DECLARED_EVALUATION_SUITE.md) now selects unchanged baseline-quest, strict Griffin defeat + wig/no-knockout scoring, and two repetitions per condition. Pilot-30 is allocated once as historical A/pre/1, without changing its original registration, pilot status, suite/config hashes, evidence or the fact it predates this declaration. Runtime B/C checkpoint certification, prompt sealing, memory comparison and new evaluation remain pending. Current course report: `midterms/saadsatter/EVALUATION.md`; the previous report is archived byte-for-byte.

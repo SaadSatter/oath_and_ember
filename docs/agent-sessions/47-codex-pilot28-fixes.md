@@ -5,12 +5,12 @@
 | Agent | Codex (desktop app); model id(s) recorded in the transcript: `gpt-6.1-sol` |
 | Role | Codex implementation agent under AGENTS.md: Pilot-28 diagnosis and owner-approved centralized progress, observation-derived aim and evidence fixes; same-session game-rules-audit checkpoint and session-evidence, not independent review. |
 | Session ID | `01a1aed2-3232-7011-bb41-5fccdea13a5c` |
-| Window (UTC) | 2026-11-06 03:06 → 2026-11-06 18:03 |
+| Window (UTC) | 2026-11-06 03:06 → 2026-11-06 18:15 |
 | Session URL | None. Local session; no shareable URL was created. |
 | Repository | `https://github.com/SaadSatter/oath_and_ember` |
 | Transcript | Local only, not committed: `~/.codex/sessions/2026/11/05/rollout-2026-11-05T22-06-13-01a1aed2-3232-7011-bb41-5fccdea13a5c.jsonl` |
 
-> No paid calls, held-out execution, frozen scenario or pin changes, push or merge. Local commit authorized by the owner after offline verification. The referenced pilot-28 diagnosis originated in the older chat checkout and is copied unchanged into this worktree. Session numbers 45 and 46 already exist in related project worktrees; 47 avoids a numbering collision. Same chat later performed documentation-only Pilot-30 preservation recheck and revised Griffin B/C planning on isolated codex/pilot30-griffin-planning, based on 0a89094. No new Griffin configuration, replay, model outcome, policy or game change; Pilot-30 originals/registration unchanged. Same-session audit, not independent review.
+> No paid calls, held-out execution, frozen scenario or pin changes, push or merge. Local commit authorized by the owner after offline verification. The referenced pilot-28 diagnosis originated in the older chat checkout and is copied unchanged into this worktree. Session numbers 45 and 46 already exist in related project worktrees; 47 avoids a numbering collision. Same chat later performed documentation-only Pilot-30 preservation recheck and revised Griffin B/C planning on isolated codex/pilot30-griffin-planning, based on 0a89094. No new Griffin configuration, replay, model outcome, policy or game change; Pilot-30 originals/registration unchanged. Same-session audit, not independent review. Owner then requested formal declaration against pasted guidelines: documentation-only A/B/C design r1, course EVALUATION/README and readiness updates; previous report archived byte-identically, no new gameplay/model run. Existing baseline-quest selected, strict Griffin goals retained, two repetitions per condition allocated.
 
 ## Owner instructions (redacted)
 
@@ -22,6 +22,7 @@
 6. 2026-11-06 08:27 — How about we just start them in the hedge maze with the wig, because suppose they defeated the griffin on their own already which is possible as well so its the same hedge maze but a different starting condition
 7. 2026-11-06 08:29 — Revise the proposed A/B/C evaluation suite so Situation C is "Wig Already Obtained." Keep Situations A and B unchanged. For C: - Both heroes begin inside the Hedge Maze. - The shared inventory already contains the completed Divine Wig. - The intended objective is to return to the goddess, offer the wig, and reach the actual `chapter0.complete` event. - The model must receive the normal observations, inventory and jou … (1751 characters; full text in the local transcript)
 8. 2026-11-06 17:56 — Update the evaluation planning section of the Pilot-30 preservation task. We have revised the final three situations: **Situation A — Hedge Maze** - S2-local, seed 0. - Objective: Obtain Enchanted Shears. - Pilot-30 is the successful pre-solution-tuning model run. - Preserve all original evidence. **Situation B — Griffin Trial, Unprepared** - Heroes start at the Griffin enclosure. - They do not have the Mirror or Enc … (2378 characters; full text in the local transcript)
+9. 2026-11-06 18:06 — [attachments: "TL;DR Build a small, complete game and a model-driven agent that plays it, then…"] Make these into the declared suite given the midterm guidelines and make a evaluation md or anything else required.
 
 <!-- narrative:start -->
 ## What was done
@@ -51,6 +52,21 @@ Sources: extracted local transcript, file hashes/byte comparisons, trace verific
 
 - Griffin-planning final scan: scoped changed files zero findings; broad session/midterm scan 183 files / one unchanged historical fake-canary match, and 182 files / zero findings excluding only that historical file. No scanner rule or historical report altered.
 
+
+
+### Formal suite declaration and current course report (same session)
+
+Sources: supplied guideline attachment (SHA `a1040a54…c76`), repository files and documentation validation. Same session, not independent review; concurrent commits in the mechanical session window are not automatically attributed to this workstream.
+
+- Owner requested that the three revised tasks become the declared suite and that the required EVALUATION/reporting files be prepared. Created `oath-ember-abc-2026-11-06-r1`: frozen A Hedge Maze, declared B Griffin Unprepared and C Griffin Prepared. B/C implementation/reset hashes remain pending; no game/policy/evidence changes or runs authorized/performed.
+- Retained strict Griffin defeat + wig/no-knockout and enclosure boundary, selected existing unchanged free baseline-quest at 040685c with implementation source SHAs, and allocated two repetitions per condition per situation (18 rows). Pilot-30 is reused once as historical A/pre/1; 17 rows unrun. Original pilot registration/status/trace remains byte-identical; no retroactive preregistration claim.
+- Wrote current course EVALUATION.md with suite, current comparison, preserved evidence/video, limits/config/costs, prior CI evidence and factual limitations. Archived previous report byte-for-byte as EVALUATION_HISTORY_BEFORE_ABC_DECLARATION.md; updated README scope, matrix, declaration/results JSON and checklist. Student-authored log and human playtest scaffold untouched.
+- C remains reserved from model-outcome tuning, including the post condition: A/B-derived guidance only, frozen before C outcomes, no prepared walkthrough. Report discloses peaceful tool reward is not strict defeat, baseline asymmetry/expected failure, partial-observation memory comparison pending, known prior CI failure, short-video/playtest/reflection and course hand-in tasks still missing.
+- Validation: canonical declaration SHA matches; 18 unique rows / two per case-condition / one historical and 17 unrun; archive identical to Git base; A definition preserved and B/C hashes null. No apps/packages/paid scripts/original evidence/A registration diff; no runtime build/test/model/held-out run. Scoped new docs scan zero findings. Package manifest/readiness verification reported with final checks.
+- Invoked game-rules-audit and session-evidence, same-session checkpoint only. [Declaration](../midterm/DECLARED_EVALUATION_SUITE.md), [audit](../midterm/agent-evidence/skill-runs/2026-11-06-suite-declaration.md), current course report `midterms/saadsatter/EVALUATION.md`. No personal reflection, playtest, independent review, paid approval, push, merge or external posting fabricated.
+
+- Declaration packaging dry-run: staged tree selects 1327 files, required current/historical report and declaration/evidence paths included, exactly one course workflow and no destination written. Broad scan 190 text files / one unchanged historical fake-canary match; excluding only that file, 189 / zero findings. No runtime/paid test is implied.
+
 <!-- narrative:end -->
 
 ## Mechanically extracted record
@@ -72,6 +88,7 @@ Commits whose author time falls inside this window (any branch). A time match is
 
 | Commit | Author time (UTC) | Subject | Co-author trailer |
 | --- | --- | --- | --- |
+| `591b133` | 2026-11-06 18:04 | Update Pilot-30 planning with proposed unprepared and prepared Griffin trials | — |
 | `0a89094` | 2026-11-06 17:22 | Link Pilot-30's live video from its GitHub release | Claude Opus 5.5 <noreply@anthropic.com> |
 | `ba88d2a` | 2026-11-06 16:58 | Record session 48: Pilot-30 audit and Situation A pre-tuned registration | Claude Opus 5.5 <noreply@anthropic.com> |
 | `de29af1` | 2026-11-06 16:57 | Propose a controlled Situation A post-tuned comparison (not implemented) | Claude Opus 5.5 <noreply@anthropic.com> |

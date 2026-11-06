@@ -1,8 +1,8 @@
 {
-  "about": "Owner-revised A/B/C planning, 2026-11-06. Griffin proposals only; no new configuration implemented or run.",
+  "about": "Declared A/B/C design revision 1; B/C runtime certification and paid approval remain pending.",
   "labelsFrom": {
     "source": "owner revised three-situation instruction",
-    "status": "planning only; B/C identities, hashes and limits pending certification and approval",
+    "status": "declared design; B/C runtime hashes pending certification",
     "supersedesPlanningRows": [
       "Partial Hedge Maze",
       "Wig Already Obtained"
@@ -11,7 +11,7 @@
   },
   "requirementInterpretation": {
     "text": "Pre-tuned and post-tuned model play per situation, plus a cheap baseline",
-    "status": "Owner-requested conditions; instructor confirmation of repetitions per cell remains pending"
+    "status": "Declared: two repetitions per cell, exceeding two live trials per situation; does not authorize paid execution"
   },
   "conditions": [
     "pre-tuned",
@@ -44,29 +44,29 @@
         "cheap-baseline": {
           "status": "pending",
           "record": null,
-          "existingReference": "midterms/saadsatter/evidence/traces/baseline-quest-S2-local-seed0-v2/ (baseline-quest, offline, success; not registered)"
+          "existingReference": "midterms/saadsatter/evidence/traces/baseline-quest-S2-local-seed0-v2/ (baseline-quest, offline, success; not registered)",
+          "implementation": "baseline-quest"
         }
       },
-      "objective": "Obtain Enchanted Shears"
+      "objective": "Obtain Enchanted Shears",
+      "declared": true
     },
     "B": {
       "name": "Griffin Trial, Unprepared",
       "source": null,
-      "proposedId": "griffin-unprepared-v1",
       "scenarioHash": null,
       "startHash": null,
       "seed": null,
       "frozen": false,
       "heldOut": false,
-      "heldOutStatus": "proposed tuning/development case",
+      "heldOutStatus": "declared development case; checkpoint pending",
       "objective": "Defeat Griffin and obtain Divine Wig through normal gameplay; both heroes survive",
-      "successPredicateProposal": "griffin HP == 0 AND shared griffin_wig count > 0; no knockout during episode",
       "inventory": {
         "vanity_mirror": 0,
         "enchanted_shears": 0,
         "griffin_wig": 0
       },
-      "approvalIssue": "Peaceful grooming awards wig without HP-zero defeat; strict goal retained pending owner decision",
+      "approvalIssue": "Strict defeat retained in declaration r1; peaceful reward with positive HP does not pass",
       "cells": {
         "pre-tuned": {
           "status": "pending",
@@ -78,28 +78,30 @@
         },
         "cheap-baseline": {
           "status": "pending",
-          "record": null
+          "record": null,
+          "implementation": "baseline-quest"
         }
-      }
+      },
+      "declared": true,
+      "id": "griffin-unprepared-v1",
+      "successPredicate": "griffin HP == 0 AND shared griffin_wig count > 0; no knockout during episode"
     },
     "C": {
       "name": "Griffin Trial, Prepared",
       "source": null,
-      "proposedId": "griffin-prepared-v1",
       "scenarioHash": null,
       "startHash": null,
       "seed": null,
       "frozen": false,
       "heldOut": true,
-      "heldOutStatus": "proposed model-outcome holdout",
+      "heldOutStatus": "reserved from model-outcome tuning; checkpoint pending",
       "objective": "Defeat Griffin and obtain Divine Wig through normal gameplay; both heroes survive",
-      "successPredicateProposal": "griffin HP == 0 AND shared griffin_wig count > 0; no knockout during episode",
       "inventory": {
         "vanity_mirror": 1,
         "enchanted_shears": 1,
         "griffin_wig": 0
       },
-      "approvalIssue": "Peaceful grooming awards wig without HP-zero defeat; strict goal retained pending owner decision",
+      "approvalIssue": "Strict defeat retained in declaration r1; peaceful reward with positive HP does not pass",
       "cells": {
         "pre-tuned": {
           "status": "pending",
@@ -111,18 +113,25 @@
         },
         "cheap-baseline": {
           "status": "pending",
-          "record": null
+          "record": null,
+          "implementation": "baseline-quest"
         }
       },
-      "postTunedConstraint": "Transfer of frozen A/B-developed guidance only; no C-specific walkthrough or tuning on C model outcomes"
+      "postTunedConstraint": "Transfer of frozen A/B-developed guidance only; no C-specific walkthrough or tuning on C model outcomes",
+      "declared": true,
+      "id": "griffin-prepared-v1",
+      "successPredicate": "griffin HP == 0 AND shared griffin_wig count > 0; no knockout during episode"
     }
   },
   "trialPlan": {
-    "recommendedPerCell": 2,
-    "approvalStatus": "pending",
-    "modelEpisodesIfApproved": 12,
-    "baselineEpisodesIfApproved": 6,
-    "pilot30QuotaDecision": "pending"
+    "perCell": 2,
+    "status": "declared allocation, not paid authorization",
+    "modelEpisodes": 12,
+    "baselineEpisodes": 6,
+    "pilot30Allocation": "A pre-tuned run 1, historical completed pilot; original record unchanged",
+    "remainingNewModelEpisodes": 11,
+    "remainingNewBaselineEpisodes": 6
   },
-  "baselineImplementation": "to be confirmed; existing quest baseline source predicts failure under both strict Griffin goals, not newly run"
+  "baselineImplementation": "baseline-quest at 040685c, existing unchanged solution-aware free comparator",
+  "declaration": "docs/midterm/evaluation-abc/declaration.json"
 }
