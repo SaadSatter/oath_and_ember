@@ -2,6 +2,7 @@
 // Offline: pins text and prompts, checks it is appended only, stays locked for
 // paid runs, and leaves v1 and v2 unchanged. Wording checks are smoke checks;
 // the independent review is the real check for leakage.
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -66,5 +67,33 @@ describe("B guidance candidate b-post-combined-v3", () => {
     expect(t).not.toMatch(/message|teammate|you are controlling a character/i);
     expect(t).not.toMatch(/\b(griffin|nest|wig|beam|headbutt|mirror|shears|fireball|sword|black hole|flight|ward|guard|slow time|super speed|pillar|goddess)\b/i);
     expect(t).not.toMatch(/\(\s*\d+\s*,\s*\d+\s*\)|\bx\s*[:=]\s*\d|\by\s*[:=]\s*\d/);
+  });
+
+  // Review round 2 (rules-reviewer on 94673c0), missing coverage.
+  it("is limited to the two B scenarios and never runs final", () => {
+    expect(guidance(ID).situations).toEqual(["griffin-unprepared-v1", "griffin-unprepared-return-v1"]);
+    const mock = { gateway: new MockGateway(0, 0), stage: "pilot" } as unknown as ModelSetup;
+    expect(() => validatePlan({ player: "model-centralized", situations: ["S2-local"], seeds: [0], model: { ...mock, guidance: ID } })).toThrow(/limited to/);
+    expect(() => validatePlan({ player: "model-centralized", situations: ["griffin-unprepared-return-v1"], seeds: [0], final: true, model: { ...mock, guidance: ID } })).toThrow();
+    expect(guidanceHash(guidance("griffin-b-post-v1").text)).toBe("1c06284031aff876ca9fcf9d594bac6297b9bb636f18347266b9988cafbf3d36");
+  });
+
+  it("scenario, observation and evaluator code is byte-identical to Pilot-32's commit 2791bce", () => {
+    const at2791bce: Record<string, string> = {
+      "packages/agent/src/perception.ts": "38cb8a2bd02d022dba502ab9394228a235966105198e8ee3b4cf00ad07535c9e",
+      "packages/agent/src/environment.ts": "bb4849d3e8dae752329469965deaf6b30c19f4f594dc96b126846ec149f19756",
+      "packages/agent/src/evaluator.ts": "f65ca3d9f4183de1065398fcdac969fed5eefee943fdc3374fbc758f0350cdd1",
+      "packages/agent/src/suite.ts": "c9a03db108ccaadf3d6c97477ccf978a3cb2f9ba0115e0bed829fe0e1a57ec6b",
+      "packages/agent/src/harness.ts": "cb23592777259f7e4408fd88000ab7a825123835e074945a1dddda426b14bbb8",
+    };
+    for (const [f, h] of Object.entries(at2791bce)) expect(createHash("sha256").update(readFileSync(join(root, f))).digest("hex"), f).toBe(h);
+    // The return scenario's generic prompt, as Pilot-32 had it before its v1 block.
+    expect(planner("griffin-unprepared-return-v1").promptHash).toBe("7fbaaec753d7315e998caf82c3aafe74f5e1b6289d48a320db148bfa28fcb2e0");
+  });
+
+  // Finding 5: "charging attack" in step 1 matches the Griffin's CHARGE phase labels. Recorded
+  // as an open exemption for the owner, not hidden: the word is present.
+  it("records the 'charging' wording exemption openly", () => {
+    expect(guidance(ID).text).toMatch(/charging attack/);
   });
 });

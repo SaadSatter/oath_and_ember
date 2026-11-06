@@ -1,6 +1,6 @@
 # Situation B post-tuned candidate: `b-post-a-transfer-v1`
 
-Prepared 2026-11-06 by the Claude Code implementation agent at the owner's request. No paid call, no push, no merge. **Status: approved by the owner (text unchanged, hash `60a0a013…`), for `griffin-unprepared-v1` and `griffin-unprepared-return-v1`. Declaration r8: the B post-tuned run is on the return scenario (§8). Not yet run.**
+Prepared 2026-11-06 by the Claude Code implementation agent at the owner's request. No paid call, no push, no merge. **Status: v1 approved by the owner (hash `60a0a013…`) and run once as Pilot-32 on the return scenario: `knocked_out` at 47.5 game-s ([record](evaluation-abc/B-posttuned-pilot32.json)). r8 pre-declared that run as B/post-tuned/1; its results row is not yet filled (owner). v2 and v3 are proposed and locked (§9–§11).**
 
 ## What the owner asked for
 
@@ -197,7 +197,7 @@ Disclosure: written by the owner after Pilot-31 was known. Several lines answer 
 
 ## 10. Proposed combined candidate `b-post-combined-v3` (2026-11-06)
 
-**Status: proposed, locked for paid runs, not approved. Declaration r8 still names v1; it is not changed until the review is complete and the owner approves the final text.**
+**Status: proposed, locked for paid runs, not approved.** r8 pre-declared the v1 run (Pilot-32) as B/post-tuned/1, and that run has happened. A v3 run cannot replace it without choosing a result by outcome. Before any v3 run the owner must record what a v3 run counts as: a supplementary trial, a new declared cell (in a new revision), or not counted (review round 2, finding 1).
 
 Owner direction: consolidate v1's spatial/search heuristics and v2's combat heuristics into one hierarchy (survive → find position → attack → verify → repeat/adjust → avoid idle time → coordinate/health → verify success). Address one centralized planner coordinating both heroes, with no messaging and nothing the base prompt already says. Drafted by the implementation agent to that outline. v1 (`60a0a013…`, approved) and v2 (`38adcbce…`, proposed) are unchanged.
 
@@ -240,14 +240,14 @@ You plan for Sieg and Coco together. At each reply, go through these steps in or
 
 | Instruction | v1 (A transfer) | v2 (owner combat) | v3 |
 | --- | --- | --- | --- |
-| Leave a warned danger area / defend before it lands | Yes (generic "effect about to cross") | Yes (priority 1) | Step 1 |
+| Leave a warned danger area / defend before it lands | Yes (generic "effect about to cross") | Yes (priority 1) | Step 1. **New in v3:** the examples "a marked line, area or charging attack" ("charging" matches the Griffin's CHARGE labels; finding 5) |
 | Shorter commitments near danger | — | Yes | Step 1 |
 | Blocking terrain and bodies; body clearance (connectivity) | Yes | — | Step 2 |
 | Seen-earlier things may have moved | Yes | — | Dropped: base prompt says `seen_earlier` "may have moved or gone" |
 | Systematic candidate attack positions (open, in reach, not at range edge, clear line, partner out of line, short) | Yes | Partly (check reach/direction/obstruction) | Step 2 |
 | Do not stand on the target | Yes (absolute) | Yes (when ineffective) | Step 2 (v2's conditional form) |
 | Attack only with a plausible chance to connect | — | Yes | Step 3 |
-| Verify damage from shown health; allow time to land | Partly | Yes | Step 4 (base already says accepted ≠ effect, so not restated) |
+| Verify damage from shown health; allow time to land | Partly | Yes | Step 4 (base already says accepted ≠ effect, so not restated). **New in v3:** "or label" |
 | Memory of tried/working positions and aims (`known_obstacles`) | Yes | Yes ("remember positions") | Step 5 |
 | Change one factor at a time; name a cause | Partly ("change one thing") | Yes | Step 5 |
 | Return to an effective position | — | Yes | Step 5 |
@@ -258,11 +258,14 @@ You plan for Sieg and Coco together. At each reply, go through these steps in or
 | Frontier search, notes on searched areas, backtracking | Yes | — | Step 6 |
 | Environment changes reset blocked results | Yes | — | Step 6 (short; the base prompt covers retrying after changes) |
 | Complementary orders; not both exposed | — | Yes | Step 7 (as one planner) |
-| Low-health hero takes the safer role | — (left out of v1) | Yes | Step 7 |
+| Low-health hero takes the safer role | — (left out of v1) | Partly ("reduce unnecessary exposure… consider both heroes' survival") | Step 7. **New in v3:** "let the healthier hero take the riskier task" |
 | Verify every success condition | — | Yes | Step 8 |
 | "You are controlling a character" / teammate framing | — | Yes (wrong for this player) | Removed: one planner for both heroes |
 | Coordinate through messages | — | Yes (wrong: no messages in this mode) | Removed |
 | "Do not produce lengthy explanations" | — | Yes | Removed: base prompt sets the JSON reply and plan length |
+| "Use only your current observations… do not assume hidden enemy mechanics" | — | Yes | Removed: the base prompt already limits the planner to what the screens show |
+| "Decision discipline" (threat, intended effect, confirming evidence, fallback) | — | Yes | Removed as a block; its parts are steps 1, 4 and 5 |
+| Overlap with the locked source-derived draft `griffin-b-post-v1` and the witness | — | — | **Yes, in generic words** (review round 2, finding 4): leave or defend a warned line (draft l.41), straight-line attack with the other hero out of the line (draft l.43), damage from the label (draft l.40), healthier hero takes the risk / not both exposed (draft l.42, l.44). No coordinates, aiming rule, shore position, nest step or flight-vs-sword fact. The header line's "not facts about any particular … enemy or solution" overstates its neutrality |
 
 ### Proposed run command (not authorized; refused while `proposed`)
 
@@ -271,4 +274,30 @@ npm run eval:live -- --scenario griffin-unprepared-return-v1 --seed 0 --player m
 ```
 
 Free mock validation of this path (`--gateway mock --no-viewer`, scratch output and ledger): start `45b1a6aa…`, guidance `b-post-combined-v3` (`proposed`, `c94a7bb5…`), prompt `42cfa29a…` for both heroes, cap $0.75, wall 3,600 s. The random mock ended with `error` at 103.5 game-s (the planner's stall guard on random replies, as in earlier mock rehearsals), $0.
+
+## 11. Review round 2 (rules-reviewer on `94673c0`)
+
+Report, verbatim: [agent-evidence/reviews/2026-11-06-b-post-combined-v3-rules-review.md](agent-evidence/reviews/2026-11-06-b-post-combined-v3-rules-review.md). **No hidden-state leak found; nothing outside the prompt changes; no unsupported actions or messaging.** The v3 text was **not** changed in response, because the owner asked to stop for approval; findings 2, 3, 8, 9 and 10 need a text revision (a new id and hash) if accepted.
+
+| Finding | Severity | Response |
+| --- | --- | --- |
+| 1 Which cell a v3 run would count in | High | **Owner decision.** §10 status reworded; r8 and the results files not changed. Pilot-32's row in `declared-results.json` and `trialAllocation` are still not updated (owner) |
+| 2 "Give each hero an order" contradicts "no order keeps its intention"; may trigger repeated-assignment refusals and a stall `error` | Medium | **Text change proposed** (owner): e.g. "give an order only to a hero whose situation calls for a change" |
+| 3 Health (step 7) comes after attacking (step 3) under "first step that applies" | Medium | **Text change proposed** (owner): make health a constraint on every step, or move it next to step 1 |
+| 4 v3 restates the old draft / witness structure in generic words | Medium | **Disclosed:** new coverage row in §10. Not a leak |
+| 5 "charging" dropped from the word list; v3 says "charging attack" | Medium | **Disclosed:** test now asserts the phrase is present as an open exemption. Keep or remove is the owner's call (text change) |
+| 6 Coverage table overstated v2 and missed new v3 wording | Medium | **Fixed:** rows marked "New in v3" |
+| 7 Non-planner code not pinned to Pilot-32 | Medium | **Fixed:** `perception.ts`, `environment.ts`, `evaluator.ts`, `suite.ts`, `harness.ts` pinned to their `2791bce` hashes (byte-identical, checked), plus the return scenario's generic prompt `7fbaaec7…`. Root `package.json`, lockfile, `tsconfig`, `apps/`, `packages/shared/` and `manual/` have no changes since `2791bce` (checked with `git diff --stat`) |
+| 8 Step 2: "not overlapping any body" vs "unless attacks from there visibly work" | Low | Text change proposed (owner): keep one form |
+| 9 Some base-prompt repetition | Low | Text change proposed (owner), or accept |
+| 10 `known_obstacles` used for working combinations; 10 × 160-char cap | Low | Disclosed; text change optional |
+| 11 Defend-only orders count as passive in the watchdog | Low | Disclosed here; shared with v1/v2; no code change |
+| 12 Docs said v1 post-tuned "not yet run" | Low | Fixed in this document's status line. The declaration still says so, pending finding 1 |
+| 13 Missing "removed" rows | Low | Fixed |
+| 14 Return scenario has no `B` label in summaries; definition still names the old draft | Info | As §8: the declaration and results files attach the cell |
+| 15 No unsupported actions | Info | — |
+| 16 Only the prompt changes; ~0.5k more characters than v1 | Info | Noted: more input tokens per call than v1, so the token and $0.75 limits come slightly sooner |
+| Missing coverage | | Added: scenario restriction, non-B and `final` refusals, old-draft hash, 2791bce pins. Still not automated: a `live.ts` test that a paid launch with a locked guidance is refused before credentials (checked by hand earlier this session) |
+
+**Prompt-only contrast.** A v3 run at the current commit would differ from Pilot-32 only in the guidance block (scenario, start, observations and code pinned identical). That is the only prompt-only pair available in B. Pilot-31 vs either run is not prompt-only.
 
