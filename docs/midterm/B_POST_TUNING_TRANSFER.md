@@ -1,6 +1,6 @@
 # Situation B post-tuned candidate: `b-post-a-transfer-v1`
 
-Prepared 2026-11-06 by the Claude Code implementation agent at the owner's request. No paid call, no push, no merge. **Status: v1 approved by the owner (hash `60a0a013…`) and run once as Pilot-32 on the return scenario: `knocked_out` at 47.5 game-s ([record](evaluation-abc/B-posttuned-pilot32.json)). r8 pre-declared that run as B/post-tuned/1; its results row is not yet filled (owner). v2 and v3 are proposed and locked (§9–§11).**
+Prepared 2026-11-06 by the Claude Code implementation agent at the owner's request. No paid call, no push, no merge. **Status: v1 approved by the owner (hash `60a0a013…`) and run once as Pilot-32 on the return scenario: `knocked_out` at 47.5 game-s ([record](evaluation-abc/B-posttuned-pilot32.json)). r8 pre-declared that run as B/post-tuned/1; its results row is not yet filled (owner). v2, v3 and v4 are proposed and locked (§9–§13); v4 is the supplementary candidate (§12).**
 
 ## What the owner asked for
 
@@ -315,7 +315,7 @@ Report, verbatim: [agent-evidence/reviews/2026-11-06-b-post-combined-v3-rules-re
 | 4 | Wording | "charging attack" replaced by "visible attack warning … (such as a marked line or area)" (finding 5). "recharges" in step 6 (ability readiness, the base prompt's own word) is unchanged |
 | 5 | Everything else | Steps 2–6 and 8 are v3's text, word for word |
 
-Not changed (not in the owner's list): step 2's two forms of the overlap rule (finding 8), base-prompt repetition (finding 9), `known_obstacles` use (finding 10).
+Not changed (not in the owner's list): step 2's two forms of the overlap rule (finding 8), base-prompt repetition (finding 9), `known_obstacles` use (finding 10). The overlap with the locked draft's structure (finding 4) still applies to v4 in generic words: dodge or defend a warned line/area, healthier hero takes the risk.
 
 ### Text (exact)
 
@@ -359,4 +359,20 @@ At each reply, check both heroes against these steps in order. Give a new order 
 ```sh
 npm run eval:live -- --scenario griffin-unprepared-return-v1 --seed 0 --player model-centralized --guidance b-post-combined-v4 --gateway openai --model gpt-6-luna --effort medium --max-spend-usd 0.75 --paid
 ```
+
+## 13. Review round 3 (rules-reviewer on `af81ccc`)
+
+Report, verbatim: [agent-evidence/reviews/2026-11-06-b-post-combined-v4-rules-review.md](agent-evidence/reviews/2026-11-06-b-post-combined-v4-rules-review.md). **No hidden-state leak, nothing outside the prompt changes, no unsupported actions or messaging. v1, v2, v3 and the draft are byte-identical.** Both v3 problems are resolved, but the reviewer found a new interaction (finding 1). The v4 text was not changed: the owner asked to stop for authorization.
+
+| Finding | Severity | Response |
+| --- | --- | --- |
+| 1 "Carries on without one" vs the watchdog: an overdue hero (about 30 game-s without verified progress) given no order makes the **whole** reply refused, and three refusals end the run as `error` | Medium | **Verified in code** (`centralized.ts:570–585`, `:499`). **Owner decision:** a text change (new id) adding an exception such as "unless its progress shows it must be reconsidered", or accept and disclose. Disclosed here |
+| 2 "current plan" vs the base prompt's per-hero "intention" | Medium | Owner decision (text change), e.g. "a hero whose intention is still running and still fits" |
+| 3 The supplementary rule and Pilot-32's outcome are not in the declaration or results files; the B/post-tuned/1 row still reads `not-run` | Medium | **Owner decision**, as the reviewer says. Not changed by the agent (owner: do not modify r8's official result). The row's pinned `policyId`, `promptHash` and `guidanceHash` (v1) would not match a v4 run |
+| 4 Overlap with the draft's dodge and healthier-hero structure remains | Low | Disclosed in §12's "Not changed" line |
+| 5 Small overlaps (steps 1/6/7; "short actions" vs `go_to`) | Low | Owner's call |
+| 6 Test gaps | Low | **Fixed:** the v1-scenario append check, `maxBatch`, the coordinate smoke check, and pins for `llm.ts`, `centralProgress.ts`, `navigate.ts`, `combat.ts`, `openai.ts`, `budget.ts`, `heroMemory.ts`, `runner.ts` and `scripts/midterm/live.ts` at their `2791bce` hashes (all byte-identical, checked). Not added: an automated paid-refusal `live.ts` test, or a unit test of the finding-1 refusal |
+| 7 Stale status line | Low | Fixed |
+| 8 Unlisted differences and n=1 | Info | Noted: `gitHash`, ledger entry and guidance metadata differ. v4's block is about 3,219 characters against v1's 2,537, so more input tokens per call and the token/$0.75 limits come slightly sooner. The mock used `--no-viewer`; the paid command keeps the viewer and recording on, as Pilot-32 did. One run per prompt with a non-deterministic model is not a controlled effect estimate |
+| 9 Locked | Info | — |
 

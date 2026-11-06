@@ -56,8 +56,26 @@ describe("B guidance candidate b-post-combined-v4 (supplementary)", () => {
       "packages/agent/src/policies/centralized.ts": "0a0dbc31f1d8f21fb529aa8e36469d3d131d06c9c436aceccf66316f9c1a7d49",
       "packages/agent/src/policies/navigator.ts": "400915ad2e7506f6f1b19db563d13c8e45a9b788a7751c19f46fe91fd7d70824",
       "packages/agent/src/actions.ts": "8f7bc65c8c031d1442e678ac7b9fb3074b5723e447a8d121fb81054f0013c856",
+      // Review round 3 (finding 6): the guidance block format, the watchdog and the rest of the run path.
+      "packages/agent/src/policies/llm.ts": "5a090839c86ce68a4c7840cfbd2d94f0fa3a9729dc81500d86b3c9f30281cf9b",
+      "packages/agent/src/policies/centralProgress.ts": "f46b4128907025dfd2eaac76faf759465c9792f23a26e449ea4a896f6eb0bc4b",
+      "packages/agent/src/policies/navigate.ts": "7e37dca33e772fe3c636d56fcf663dfa54eb15c623ea6a1b6f21fb575817ee60",
+      "packages/agent/src/policies/combat.ts": "44759b6d66c4ff1f8198f911c868843d774fdf762929ed9a499eaa2a84c2bf90",
+      "packages/agent/src/policies/openai.ts": "5bd213e2d3b94811e32250296032bb2a3aa1fcb32291c5129d5df8b4c967e808",
+      "packages/agent/src/budget.ts": "a5493a1b36588c3fc9081301543d41e33dfcbfe804679577d03c44d505180274",
+      "packages/agent/src/heroMemory.ts": "b9587154e8e269608381886c08d24e2c6f9ef4820cea5310dc28443547f2cfff",
+      "packages/agent/src/runner.ts": "29064a6958427bc20e290f6d3efd34cf405a71d9f2857520eb96c9dd4d3e0c83",
+      "scripts/midterm/live.ts": "3e29f3b845b1458b7133061bd9b107431eb7b7913e4c04b89a31ae9b62464e64",
     };
     for (const [f, h] of Object.entries(at2791bce)) expect(createHash("sha256").update(readFileSync(join(root, f))).digest("hex"), f).toBe(h);
+  });
+
+  it("on griffin-unprepared-v1 too, only one block is appended and the batch size is unchanged", () => {
+    const t = guidance(ID).text;
+    const base = planner("griffin-unprepared-v1"), post = planner("griffin-unprepared-v1", t);
+    expect(post.system).toBe(base.system + guidanceBlock(t));
+    expect(post.maxBatch).toBe(base.maxBatch);
+    expect(planner(RETURN, t).maxBatch).toBe(planner(RETURN).maxBatch);
   });
 
   it("stays locked for paid runs, only on the two B scenarios, never final", () => {
@@ -90,6 +108,7 @@ describe("B guidance candidate b-post-combined-v4 (supplementary)", () => {
     expect(t).toMatch(/visible attack warning/);
     expect(t).not.toMatch(/\bcharg/i); // "recharges" (ability readiness, as in the base prompt) is allowed
     expect(t).not.toMatch(/message|teammate|you are controlling a character/i);
+    expect(t).not.toMatch(/\(\s*\d+\s*,\s*\d+\s*\)|\bx\s*[:=]\s*\d|\by\s*[:=]\s*\d/);
     expect(t).not.toMatch(/\b(griffin|nest|wig|beam|headbutt|mirror|shears|fireball|sword|black hole|flight|ward|guard|slow time|super speed|pillar|goddess)\b/i);
   });
 });
