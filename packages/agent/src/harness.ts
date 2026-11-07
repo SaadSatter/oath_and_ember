@@ -295,7 +295,7 @@ export function guidanceRecord(id: string) {
 }
 
 /** Check a planned run against the suite's rules before anything starts. */
-export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | "seeds" | "final" | "model">) {
+export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | "seeds" | "final" | "model"> & Partial<Pick<SuiteRunOptions, "resume" | "episodeCapUsd">>) {
   if (!PLAYER_KINDS.includes(o.player)) throw Error(`Unknown player ${o.player}.`);
   if (new Set(o.situations).size !== o.situations.length || new Set(o.seeds).size !== o.seeds.length) throw Error("Duplicate scenarios or seeds are not allowed.");
   if (!o.situations.length || !o.seeds.length) throw Error("Name at least one scenario and one seed.");
@@ -337,6 +337,8 @@ export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | 
     if (o.player !== C_PAID_SCOPE.player || o.model.gateway.label !== `${C_PAID_SCOPE.gateway}:${C_PAID_SCOPE.model}@${C_PAID_SCOPE.effort}` || (o.model.maxBatch ?? 4) !== C_PAID_SCOPE.maxBatch)
       throw Error(`${SITUATION_C_ID} paid runs are authorized only for ${C_PAID_SCOPE.player} on ${C_PAID_SCOPE.gateway}:${C_PAID_SCOPE.model}@${C_PAID_SCOPE.effort}, batch ${C_PAID_SCOPE.maxBatch}.`);
   }
+  if (o.player === "baseline-showcase-route" && (o.situations.length !== 1 || o.situations[0] !== SHOWCASE_ID))
+    throw Error(`baseline-showcase-route is restricted to ${SHOWCASE_ID}; it is not an A/B/C baseline.`);
   // Showcase (excluded from A/B/C): its own baseline or model-centralized; paid runs locked until the owner approves.
   if (o.situations.includes(SHOWCASE_ID)) {
     if (o.final) throw Error(`${SHOWCASE_ID} is a demonstration and never a final run.`);
@@ -347,6 +349,8 @@ export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | 
       if (o.model.gateway.label !== `${SHOWCASE_PAID_SCOPE.gateway}:${SHOWCASE_PAID_SCOPE.model}@${SHOWCASE_PAID_SCOPE.effort}` || (o.model.maxBatch ?? 4) !== SHOWCASE_PAID_SCOPE.maxBatch || o.model.guidance !== SHOWCASE_PAID_SCOPE.guidance
         || o.seeds.length !== 1 || o.seeds[0] !== SHOWCASE_PAID_SCOPE.seed)
         throw Error(`${SHOWCASE_ID} paid runs are limited to ${SHOWCASE_PAID_SCOPE.gateway}:${SHOWCASE_PAID_SCOPE.model}@${SHOWCASE_PAID_SCOPE.effort}, batch ${SHOWCASE_PAID_SCOPE.maxBatch}, guidance ${SHOWCASE_PAID_SCOPE.guidance}, seed ${SHOWCASE_PAID_SCOPE.seed}.`);
+      if (o.resume) throw Error(`${SHOWCASE_ID} paid runs are one attempt only: resume and retry are refused.`);
+      if (o.episodeCapUsd !== undefined) episodeCap({ episodeCapUsd: o.episodeCapUsd }, SHOWCASE_ID);
     }
   }
   if (o.model?.guidance !== undefined) {
@@ -444,9 +448,6 @@ export function defaultWallSeconds(o: Pick<SuiteRunOptions, "model" | "situation
 
 export async function runSuite(o: SuiteRunOptions): Promise<EpisodeSummary[]> {
   validatePlan(o);
-  // Showcase: one paid attempt, no automatic retry (owner 2026-11-07; review finding 3).
-  if (o.resume && o.situations.includes(SHOWCASE_ID) && isModel(o.player) && !(o.model?.gateway.label ?? "").startsWith("mock:"))
-    throw Error(`${SHOWCASE_ID} paid runs are one attempt only: resume and retry are refused.`);
   requireFinalGrant(o);
   if (o.episodeCapUsd !== undefined) {
     if (!o.model) throw Error("An episode spend cap applies to model runs only.");

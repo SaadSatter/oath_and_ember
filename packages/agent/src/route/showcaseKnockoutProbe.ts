@@ -62,7 +62,7 @@ export interface KnockoutProbeRun {
   /** Player-facing observation and legal-action lines in the trace that mention the evaluator's showcase records (must be 0). */
   observationLinesMentioningShowcase: number;
 }
-interface Snapshot { tick: number; cocoHp: number; cocoScene: string | undefined; griffinHp: number | null; griffinPhase: string | null; backpack: Record<string, number>; storyFlags: number }
+interface Snapshot { tick: number; cocoHp: number; cocoScene: string | undefined; griffinHp: number | null; griffinPhase: string | null; backpack: Record<string, number>; storyFlags: string[]; claimed: string[]; mazeProgress: unknown }
 
 /** Runs the probe episode at `seed` and reports what happened around the knockout. */
 export async function runShowcaseKnockoutProbe(seed = 0, tracePath?: string): Promise<KnockoutProbeRun> {
@@ -72,7 +72,9 @@ export async function runShowcaseKnockoutProbe(seed = 0, tracePath?: string): Pr
   const snap = (): Snapshot => {
     const w = room.state, coco = (Object.values(w.players) as Player[]).find((p) => p.role === "EMBER")!, g = w.puzzles.griffin?.griffin;
     return { tick: w.serverTick, cocoHp: coco.hp, cocoScene: coco.sceneId ?? w.sceneId, griffinHp: g?.hp ?? null, griffinPhase: g?.phase ?? null,
-      backpack: Object.fromEntries((Object.entries(w.inventory?.counts ?? {}) as [string, number | undefined][]).filter(([, n]) => (n ?? 0) > 0)) as Record<string, number>, storyFlags: w.story?.flags.length ?? 0 };
+      backpack: Object.fromEntries((Object.entries(w.inventory?.counts ?? {}) as [string, number | undefined][]).filter(([, n]) => (n ?? 0) > 0)) as Record<string, number>, storyFlags: [...(w.story?.flags ?? [])], claimed: [...(w.inventory?.claimed ?? [])],
+      mazeProgress: { burned: w.puzzles.hedgeMaze?.maze?.burned, cowParked: w.puzzles.hedgeMaze?.maze?.cow.parked,
+        wolfCaught: w.puzzles.hedgeMaze?.maze?.runner.caught, gateComplete: w.puzzles.hedgeGate?.complete } };
   };
   const trace = new TraceWriter(tracePath);
   const env = environmentFor("showcase-maze-griffin-complete-v1", {

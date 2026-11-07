@@ -194,7 +194,11 @@ describe("knockout recovery under the game's own rules (certification probe, not
     expect(after.backpack).toEqual(before.backpack);
     expect(after.backpack.enchanted_shears).toBe(1);
     expect(after.griffinHp).toBe(before.griffinHp);
-    expect(after.storyFlags).toBe(before.storyFlags);
+    expect(after.storyFlags).toEqual(before.storyFlags);
+    expect(after.claimed).toEqual(before.claimed);
+    expect(after.mazeProgress).toEqual(before.mazeProgress);
+    expect(after.mazeProgress).toMatchObject({ burned: true, wolfCaught: true, gateComplete: true });
+    expect(after.claimed).toContain("hedge-shears-chest");
     // Not terminal: play went on and every later milestone was reached.
     expect(first.milestonesReachedAfter).toEqual(["showcase:2-griffin-defeated", "showcase:3-wig-acquired-after-defeat", "showcase:4-offering-accepted", "showcase:5-chapter0-complete"]);
     expect(r.outcome.reason).toBe("success");

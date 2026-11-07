@@ -345,7 +345,8 @@ describe("Situation C review round 1", () => {
     const paid = { gateway: { label: "openai:gpt-6-luna@medium" }, stage: "pilot" } as unknown as ModelSetup;
     for (const player of PLAYER_KINDS) {
       const plan = () => validatePlan({ player, situations: [ID], seeds: [0], ...(player.startsWith("model-") ? { model: paid } : {}) });
-      if (player === "model-centralized") expect(plan, player).not.toThrow();
+      if (player === "baseline-showcase-route") expect(plan, player).toThrow(/restricted to showcase/);
+      else if (player === "model-centralized") expect(plan, player).not.toThrow();
       else if (player.startsWith("model-")) expect(plan, player).toThrow();
       else if (player !== "baseline-quest" && player !== "baseline-explore") expect(plan, player).not.toThrow();
     }

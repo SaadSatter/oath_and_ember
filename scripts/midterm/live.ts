@@ -36,7 +36,7 @@ import { guidance, guidanceApproved } from "../../packages/agent/src/policies/si
 import { SITUATION_C_ID, SITUATION_C_PAID_APPROVED, C_PAID_SCOPE } from "../../packages/agent/src/griffinSituationC.js";
 import { canonicalLedgerPath, repoInfo, unmeteredWorktrees } from "../../packages/agent/src/repo.js";
 import { ABC_SITUATIONS, HISTORICAL_SITUATIONS, SEEDS, SHOWCASE_SITUATIONS, SITUATIONS, situation, type SituationId } from "../../packages/agent/src/suite.js";
-import { SHOWCASE_ID, SHOWCASE_PAID_APPROVED } from "../../packages/agent/src/showcase.js";
+import { SHOWCASE_ID, SHOWCASE_PAID_APPROVED, SHOWCASE_PAID_SCOPE } from "../../packages/agent/src/showcase.js";
 import type { TraceLine } from "../../packages/agent/src/trace.js";
 import { ask, credentialArgs, redactStreams, safeText } from "./tty.js";
 
@@ -238,6 +238,9 @@ if (isModel) {
     // Situation C (owner authorization 2026-11-06): only the authorized paid configuration, checked before any credential is read.
     if (scenario === SITUATION_C_ID && (player !== C_PAID_SCOPE.player || gatewayKind !== C_PAID_SCOPE.gateway || config.model !== C_PAID_SCOPE.model || config.effort !== C_PAID_SCOPE.effort || maxBatch !== C_PAID_SCOPE.maxBatch || seed !== C_PAID_SCOPE.seed || !(episodeCapUsd <= C_PAID_SCOPE.maxEpisodeCapUsd)))
       fail(`${SITUATION_C_ID} paid runs are authorized only for ${C_PAID_SCOPE.player} on ${C_PAID_SCOPE.gateway}:${C_PAID_SCOPE.model}@${C_PAID_SCOPE.effort}, batch ${C_PAID_SCOPE.maxBatch}, seed ${C_PAID_SCOPE.seed}, cap at most $${C_PAID_SCOPE.maxEpisodeCapUsd}.`);
+    // Showcase: exact owner scope, checked before any credential or ledger reservation.
+    if (scenario === SHOWCASE_ID && (player !== SHOWCASE_PAID_SCOPE.player || gatewayKind !== SHOWCASE_PAID_SCOPE.gateway || config.model !== SHOWCASE_PAID_SCOPE.model || config.effort !== SHOWCASE_PAID_SCOPE.effort || maxBatch !== SHOWCASE_PAID_SCOPE.maxBatch || seed !== SHOWCASE_PAID_SCOPE.seed || guidanceId !== SHOWCASE_PAID_SCOPE.guidance || !(episodeCapUsd <= SHOWCASE_PAID_SCOPE.maxEpisodeCapUsd)))
+      fail(`${SHOWCASE_ID} paid scope requires ${SHOWCASE_PAID_SCOPE.player}, ${SHOWCASE_PAID_SCOPE.gateway}:${SHOWCASE_PAID_SCOPE.model}@${SHOWCASE_PAID_SCOPE.effort}, batch ${SHOWCASE_PAID_SCOPE.maxBatch}, seed ${SHOWCASE_PAID_SCOPE.seed}, guidance ${SHOWCASE_PAID_SCOPE.guidance}, cap at most $${SHOWCASE_PAID_SCOPE.maxEpisodeCapUsd}.`);
     try {
       episodeCap({ episodeCapUsd }, scenario);
     } catch (e) {
