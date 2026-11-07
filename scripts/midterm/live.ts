@@ -33,6 +33,7 @@ import { providerConfig } from "../../packages/agent/src/policies/providers.js";
 import type { Gateway } from "../../packages/agent/src/budget.js";
 import { MockGateway } from "../../packages/agent/src/policies/mockGateway.js";
 import { guidance, guidanceApproved } from "../../packages/agent/src/policies/situationGuidance.js";
+import { SITUATION_C_ID, SITUATION_C_PAID_APPROVED } from "../../packages/agent/src/griffinSituationC.js";
 import { canonicalLedgerPath, repoInfo, unmeteredWorktrees } from "../../packages/agent/src/repo.js";
 import { ABC_SITUATIONS, HISTORICAL_SITUATIONS, SEEDS, SITUATIONS, situation, type SituationId } from "../../packages/agent/src/suite.js";
 import type { TraceLine } from "../../packages/agent/src/trace.js";
@@ -89,15 +90,15 @@ if (opts.has("--help")) {
   process.exit(0);
 }
 
-const requestedScenario = (get("--scenario") ?? fail("--scenario S1|S2|S3|S2-local|S3-local|S2-B|S2-C|griffin-unprepared-v1|griffin-unprepared-return-v1 is required.")).toUpperCase();
+const requestedScenario = (get("--scenario") ?? fail("--scenario S1|S2|S3|S2-local|S3-local|S2-B|S2-C|griffin-unprepared-v1|griffin-unprepared-return-v1|griffin-prepared-return-v1 is required.")).toUpperCase();
 const scenario = ([...SITUATIONS, ...HISTORICAL_SITUATIONS, ...ABC_SITUATIONS].find((s) => s.id.toUpperCase() === requestedScenario)?.id ?? requestedScenario) as SituationId;
 // Held-out scenarios are refused unconditionally here, whatever else is set (review H2).
 if (scenario === "S4" || scenario === "F") fail(`${scenario} is held out. The live launcher never runs S4 or F; the final evaluation needs separate owner approval through evaluate.ts.`);
 // Suite revision 2: S2 is Hedge Maze and S3 Mirror Pond. The revision 1
 // definitions (-v1 ids) stay runnable to reproduce historical results.
 // griffin-unprepared-v1: Situation B, Griffin Trial (Unprepared), docs/midterm/SITUATION_B_GRIFFIN.md.
-if (!["S1", "S2", "S3", "S2-local", "S3-local", "S2-B", "S2-C", "griffin-unprepared-v1", "griffin-unprepared-return-v1", ...HISTORICAL_SITUATIONS.map((s) => s.id)].includes(scenario))
-  fail(`unknown scenario ${scenario} (S1, S2, S3, S2-local, S3-local, S2-B, S2-C, griffin-unprepared-v1, griffin-unprepared-return-v1, or a historical ${HISTORICAL_SITUATIONS.map((s) => s.id).join(", ")}).`);
+if (!["S1", "S2", "S3", "S2-local", "S3-local", "S2-B", "S2-C", "griffin-unprepared-v1", "griffin-unprepared-return-v1", "griffin-prepared-return-v1", ...HISTORICAL_SITUATIONS.map((s) => s.id)].includes(scenario))
+  fail(`unknown scenario ${scenario} (S1, S2, S3, S2-local, S3-local, S2-B, S2-C, griffin-unprepared-v1, griffin-unprepared-return-v1, griffin-prepared-return-v1, or a historical ${HISTORICAL_SITUATIONS.map((s) => s.id).join(", ")}).`);
 const seed = Number(get("--seed", "0"));
 if (!SEEDS.tuning.includes(seed)) fail(`the live launcher uses the tuning seeds ${SEEDS.tuning.join(", ")} only.`);
 const player = get("--player", "model-history") as PlayerKind;
@@ -110,6 +111,8 @@ const paid = isModel && gatewayKind !== "mock";
 // Post-tuned condition (packages/agent/src/policies/situationGuidance.ts). Absent: the pre-tuned, generic prompt.
 const guidanceId = get("--guidance");
 if (guidanceId !== undefined && player !== "model-centralized") fail("--guidance applies to --player model-centralized only.");
+// Situation C (docs/midterm/SITUATION_C_PREPARED.md): paid runs refused until the owner approves its declaration.
+if (paid && scenario === SITUATION_C_ID && !SITUATION_C_PAID_APPROVED) fail(`${SITUATION_C_ID} is locked for paid model runs until the owner approves the Situation C declaration. Use --gateway mock.`);
 if (paid && !opts.has("--paid")) fail("this is a paid run. Pass --paid only after the owner has authorized it, or use --gateway mock.");
 if (!paid && opts.has("--paid")) fail("--paid is only for --gateway anthropic or openai.");
 if (!paid && (opts.has("--model") || opts.has("--effort") || opts.has("--max-spend-usd"))) fail("--model, --effort and --max-spend-usd apply to paid runs only.");

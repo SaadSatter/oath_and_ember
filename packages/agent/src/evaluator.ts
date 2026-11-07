@@ -19,7 +19,7 @@ import type { TerminationReason } from "./types.js";
 export type EpisodePreset =
   | "S2-local" | "S3-local" | "full" | "milestone" | "S1" | "S2" | "S3" | "S4"
   | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "S2-B" | "S2-C" | "P1" | "P1-v2" | "P1-v3"
-  | "griffin-unprepared-v1" | "griffin-unprepared-return-v1";
+  | "griffin-unprepared-v1" | "griffin-unprepared-return-v1" | "griffin-prepared-return-v1";
 
 export interface EpisodeDefinition {
   preset: EpisodePreset;
@@ -50,7 +50,7 @@ const QUEST_AREAS = new Set(["MIRROR_POND", "HEDGE_MAZE", "GRIFFIN_ENCLOSURE"]);
 const holding = (w: World, item: string) => ((w.inventory?.counts as Record<string, number> | undefined)?.[item] ?? 0) > 0;
 
 /** Owner-approved episode definitions and limits (2026-10-23). */
-const coreEpisodes: Record<Exclude<EpisodePreset, "S2-local" | "S3-local" | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "S2-B" | "S2-C" | "P1" | "P1-v2" | "P1-v3" | "griffin-unprepared-v1" | "griffin-unprepared-return-v1">, EpisodeDefinition> = {
+const coreEpisodes: Record<Exclude<EpisodePreset, "S2-local" | "S3-local" | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "S2-B" | "S2-C" | "P1" | "P1-v2" | "P1-v3" | "griffin-unprepared-v1" | "griffin-unprepared-return-v1" | "griffin-prepared-return-v1">, EpisodeDefinition> = {
   full: {
     preset: "full",
     goal: "Bald Goddess quest: from the goddess checkpoint to chapter0.complete.",
@@ -155,6 +155,22 @@ export const GRIFFIN_UNPREPARED_EPISODE: EpisodeDefinition = {
   failure: griffinTrialFailure,
 };
 
+/**
+ * C — Griffin Trial, Prepared, goddess return. The wig is consumed by the
+ * offering, so success reads the claim flag and the story flag, as B-return
+ * does. A peaceful (groomed) wig counts here by the owner's decision; Griffin
+ * defeat alone, wig possession alone or an offering without chapter0.complete
+ * do not.
+ */
+export const griffinWigReturned = (w: World) => !!griffinState(w.puzzles)?.wigClaimed && has(w, FINALE.complete);
+export const GRIFFIN_PREPARED_RETURN_EPISODE: EpisodeDefinition = {
+  preset: "griffin-prepared-return-v1",
+  goal: "Situation C: holding the Vanity Mirror and Enchanted Shears, obtain the Griffin's wig (by defeat or by the nest tools), return it to the goddess and reach chapter0.complete without a hero knockout.",
+  limits: { maxTicks: 18000, maxDecisionsPerPlayer: 1600, maxModelCallsPerPlayer: 400, maxTokensPerPlayer: 4000000 },
+  failure: (_w, tick) => (tick.knockedOut ? "knocked_out" : undefined),
+  success: griffinWigReturned,
+};
+
 /** Additive variants reuse exactly the parent's predicate and limits. */
 export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
   ...coreEpisodes,
@@ -176,6 +192,11 @@ export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
     failure: (_w, tick) => tick.knockedOut ? "knocked_out" : undefined,
     success: (w) => (w.puzzles.griffin?.griffin?.hp ?? 1) <= 0 && !!w.puzzles.griffin?.griffin?.wigClaimed && has(w, FINALE.complete),
   },
+  // Situation C, Griffin Trial Prepared, goddess return (owner decisions 2026-11-06,
+  // docs/midterm/SITUATION_C_PREPARED.md): B-return's limits and knockout rule.
+  // Success is the wig claimed by any normal route (Griffin HP does not matter),
+  // offered to the goddess, and chapter0.complete. Leaving the enclosure is allowed.
+  "griffin-prepared-return-v1": GRIFFIN_PREPARED_RETURN_EPISODE,
   P1: P1_EPISODE,
   // P1 revision 2 (2026-11-03, review fixes F1/F2/F4): the same start, success
   // predicate and limits; its own preset so episode ids differ from revision 1.

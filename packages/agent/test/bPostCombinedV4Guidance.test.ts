@@ -13,6 +13,7 @@ import { CentralPlanner, centralizedPolicies } from "../src/policies/centralized
 import { guidance, guidanceApproved, guidanceBlock, guidanceHash } from "../src/policies/situationGuidance.js";
 import { ModelBudget, MeteredGateway } from "../src/budget.js";
 import { MockGateway } from "../src/policies/mockGateway.js";
+import { expectRunPathPinned } from "./helpers/pinnedRunPath.js";
 
 const ID = "b-post-combined-v4";
 const RETURN = "griffin-unprepared-return-v1" as const;
@@ -67,7 +68,12 @@ describe("B guidance candidate b-post-combined-v4 (supplementary)", () => {
       "packages/agent/src/runner.ts": "29064a6958427bc20e290f6d3efd34cf405a71d9f2857520eb96c9dd4d3e0c83",
       "scripts/midterm/live.ts": "3e29f3b845b1458b7133061bd9b107431eb7b7913e4c04b89a31ae9b62464e64",
     };
-    for (const [f, h] of Object.entries(at2791bce)) expect(createHash("sha256").update(readFileSync(join(root, f))).digest("hex"), f).toBe(h);
+    // Re-pinned with the owner's approval (2026-11-06, Situation C): checked against git history,
+    // and in the working tree for every file C's registration did not touch.
+    expectRunPathPinned("2791bce", at2791bce);
+    // B at HEAD is unchanged: the return scenario's generic prompt (Pilot-32's base) and Pilot-33's prompt.
+    expect(planner(RETURN).promptHash).toBe("7fbaaec753d7315e998caf82c3aafe74f5e1b6289d48a320db148bfa28fcb2e0");
+    expect(planner(RETURN, t).promptHash).toBe("7ff08ba84c4ab14460d0f6707febdc19b8e417ced89d3127636ce7ed9f352144");
   });
 
   it("on griffin-unprepared-v1 too, only one block is appended and the batch size is unchanged", () => {
@@ -78,13 +84,13 @@ describe("B guidance candidate b-post-combined-v4 (supplementary)", () => {
     expect(planner(RETURN, t).maxBatch).toBe(planner(RETURN).maxBatch);
   });
 
-  it("is owner-approved for exactly this text, only on the two B scenarios, never final", () => {
+  it("is owner-approved for exactly this text, on the two B scenarios and (owner instruction 2026-11-06) C, never final", () => {
     const g = guidance(ID);
     expect(g.status).toBe("approved");
     expect(g.approvedSha256).toBe("1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34");
     expect(guidanceApproved(g)).toBe(true);
     expect(guidanceApproved({ ...g, text: g.text + " " })).toBe(false);
-    expect(g.situations).toEqual(["griffin-unprepared-v1", RETURN]);
+    expect(g.situations).toEqual(["griffin-unprepared-v1", RETURN, "griffin-prepared-return-v1"]);
     expect(() => validatePlan({ player: "model-centralized", situations: [RETURN], seeds: [0], model: { ...paidLike, guidance: ID } })).not.toThrow();
     expect(() => validatePlan({ player: "model-centralized", situations: [RETURN], seeds: [0], model: { ...mock, guidance: ID } })).not.toThrow();
     expect(() => validatePlan({ player: "model-centralized", situations: ["S2-local"], seeds: [0], model: { ...mock, guidance: ID } })).toThrow(/limited to/);

@@ -28,7 +28,7 @@ export const SUITE_REVISION = 2;
 
 export type CurrentSituationId = "S1" | "S2" | "S3" | "S4" | "F" | "S2-local" | "S3-local" | "S2-B" | "S2-C" | "P1";
 /** A/B/C declaration cases that are new scenarios (ABC_SITUATIONS). */
-export type AbcSituationId = "griffin-unprepared-v1" | "griffin-unprepared-return-v1";
+export type AbcSituationId = "griffin-unprepared-v1" | "griffin-unprepared-return-v1" | "griffin-prepared-return-v1";
 export type HistoricalSituationId = "S2-v1" | "S3-v1" | "S2-local-v1" | "S3-local-v1";
 export type SituationId = CurrentSituationId | HistoricalSituationId | AbcSituationId;
 
@@ -168,6 +168,37 @@ export const GRIFFIN_TRIAL_BRIEFING = [
   "Use your normal observations, actions and messages to your partner.",
 ].join(" ");
 
+/**
+ * B-return's start (griffin-unprepared-return-v1): the opening, a walk around
+ * the statue and ordinary north travel, arrival dialogue read. Shared by B and
+ * C unchanged, so C's start differs from B's only by its added items.
+ */
+async function unpreparedReturnEntry(env: AgentEnvironment) {
+  const d=new Director({env}); await opening(d);
+  // Evaluator preparation only: walk around the statue/partner through
+  // ordinary step(), preserving this legal history in the checkpoint.
+  for(const to of [{x:18.8,y:21.5},{x:24.5,y:21.5},{x:24.5,y:10.5}]) await d.go({sieg:{to,opts:{tolerance:0.5}}});
+  await travelFromShrine(d,"north","Griffin Enclosure");
+  for(const hero of ["sieg","coco"] as const) {
+    const o=await env.observe(hero);
+    if(o.area.name!=="Griffin Enclosure" || o.inventory.items.some(i=>i.count>0 && /^(vanity_mirror|enchanted_shears|griffin_wig)$/.test(i.id))) throw Error("Invalid unprepared Griffin checkpoint");
+  }
+}
+
+/**
+ * Situation C's episode briefing (owner chose "tutorial + new C briefing",
+ * 2026-11-06). DRAFT by the implementation agent, PENDING the owner's wording:
+ * the goal and the survival rule only. It does not mention the starting items
+ * (the players see them in their backpack), and names no route, nest use,
+ * attack pattern or position, nor whether the Griffin must be defeated.
+ */
+export const GRIFFIN_PREPARED_RETURN_BRIEFING = [
+  "Episode briefing (Griffin Trial, prepared), the same for both players: you start at the entrance of the Griffin Enclosure.",
+  "Your objective is to obtain the Griffin's wig, bring it back to the Bald Goddess at the shrine, offer it to her and see Chapter 0 through to its end.",
+  "Neither hero may be knocked out: if either hero's health runs out, the episode ends as a failure.",
+  "Use your normal observations, actions and messages to your partner.",
+].join(" ");
+
 const withMirrorAndShears: EnvironmentOptions["prefix"] = {
   name: "opening scene, Hedge Maze, Mirror Pond",
   run: async (env) => {
@@ -203,25 +234,31 @@ export const SITUATIONS: readonly Situation[] = Object.freeze([
  * Cases of the A/B/C declaration (oath-ember-abc-2026-11-06;
  * docs/midterm/DECLARED_EVALUATION_SUITE.md) that are new scenarios. Kept
  * apart from SITUATIONS so the frozen suite revision 2 list is unchanged. A
- * is the existing S2-local; C (griffin-prepared-v1) is not implemented yet.
+ * is the existing S2-local; C is griffin-prepared-return-v1 (declared r9 as
+ * griffin-prepared-v1; renamed by the owner, 2026-11-06).
  */
 export const ABC_SITUATIONS: readonly Situation[] = Object.freeze([
   // Situation B, Griffin Trial (Unprepared) (docs/midterm/SITUATION_B_GRIFFIN.md):
   // a development case under the declaration; C is the declared holdout.
   { id: "griffin-unprepared-v1", preset: "griffin-unprepared-v1", heldOut: false, title: "Griffin Trial — Unprepared (B)", start: "Griffin Enclosure entrance, after the opening and ordinary north travel; no Vanity Mirror or Enchanted Shears", prefix: griffinEntry, briefing: GRIFFIN_TRIAL_BRIEFING, tutorial: TUTORIAL_BRIEFING, revision: 2 },
   { id: "griffin-unprepared-return-v1", preset: "griffin-unprepared-return-v1", heldOut: false, title: "Griffin Trial Unprepared, return offering", start: "ordinary opening and north travel to Griffin enclosure, no Mirror or Shears", revision: 1,
-    prefix: { name: "opening and ordinary north travel to Griffin enclosure (unprepared)", run: async env => {
-      const d=new Director({env}); await opening(d);
-      // Evaluator preparation only: walk around the statue/partner through
-      // ordinary step(), preserving this legal history in the checkpoint.
-      for(const to of [{x:18.8,y:21.5},{x:24.5,y:21.5},{x:24.5,y:10.5}]) await d.go({sieg:{to,opts:{tolerance:0.5}}});
-      await travelFromShrine(d,"north","Griffin Enclosure");
-      for(const hero of ["sieg","coco"] as const) {
-        const o=await env.observe(hero);
-        if(o.area.name!=="Griffin Enclosure" || o.inventory.items.some(i=>i.count>0 && /^(vanity_mirror|enchanted_shears|griffin_wig)$/.test(i.id))) throw Error("Invalid unprepared Griffin checkpoint");
-      }
-    }},
+    prefix: { name: "opening and ordinary north travel to Griffin enclosure (unprepared)", run: (env) => unpreparedReturnEntry(env) },
     task: "Defeat the Griffin, obtain its Divine Wig, return it to the goddess and complete Chapter 0. Both heroes must avoid knockout.",
+  },
+  // Situation C, Griffin Trial Prepared, goddess return (owner decisions
+  // 2026-11-06; docs/midterm/SITUATION_C_PREPARED.md). Exactly B-return's
+  // ordinary prefix, then the owner-approved start fixture adds the Vanity
+  // Mirror and Enchanted Shears to the shared backpack: the only intended
+  // difference from B's start. No other state is written. Not run by any
+  // model until the owner approves the C declaration (SITUATION_C_PAID_APPROVED).
+  { id: "griffin-prepared-return-v1", preset: "griffin-prepared-return-v1", heldOut: false, title: "Griffin Trial Prepared, return offering (C)", start: "B-return's start (ordinary opening and north travel to the Griffin Enclosure), plus Vanity Mirror and Enchanted Shears added to the shared backpack", revision: 1,
+    prefix: { name: "B-return start, then Mirror and Shears added to the backpack (owner-approved start fixture)", run: async (env, setup) => {
+      await unpreparedReturnEntry(env);
+      if (!setup) throw Error("Situation C's start needs the environment's start fixture.");
+      setup.addItems({ vanity_mirror: 1, enchanted_shears: 1 });
+    }},
+    briefing: GRIFFIN_PREPARED_RETURN_BRIEFING,
+    tutorial: TUTORIAL_BRIEFING,
   },
 ]);
 

@@ -105,7 +105,9 @@ const B_POST_COMBINED_V4 = "Planner guidance for both heroes (general-purpose co
 export const SITUATION_GUIDANCE: Readonly<Record<string, SituationGuidance>> = Object.freeze({
   "b-post-combined-v4": Object.freeze({
     id: "b-post-combined-v4",
-    situations: Object.freeze(["griffin-unprepared-v1", "griffin-unprepared-return-v1"] as SituationId[]),
+    // Owner instruction 2026-11-06: C3 (post-tuned C) uses this exact frozen text as a B-to-C transfer.
+    // Text and approval hash unchanged; paid C runs stay locked by SITUATION_C_PAID_APPROVED.
+    situations: Object.freeze(["griffin-unprepared-v1", "griffin-unprepared-return-v1", "griffin-prepared-return-v1"] as SituationId[]),
     // Owner approval 2026-11-06 ("Unlock V4"): this exact text; supplementary B trial, not a replacement for Pilot-32.
     status: "approved",
     approvedSha256: "1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34",

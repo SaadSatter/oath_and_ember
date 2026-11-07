@@ -1,0 +1,103 @@
+{
+ "id": "griffin-prepared-return-v1",
+ "label": "C",
+ "name": "Griffin Trial, Prepared — Goddess Return",
+ "declaredAs": "griffin-prepared-v1 in declaration r9; renamed by the owner 2026-11-06",
+ "status": "implemented and checked offline; proposed in declaration r10 (not active); paid model runs locked",
+ "seed": 0,
+ "heldOut": true,
+ "startTick": 540,
+ "startHash": "28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7",
+ "seed1StartHash": "dc638ff166d36edfc777d36c24f155f77d013fcb72633b4becda330aa63ccab7",
+ "prefixActionsSha256": "1cf7940acb58e02d7509b7567c6e63457c48231b0424f9f77b6ae781d8fff81d",
+ "start": "B-return's ordinary prefix unchanged (goddess opening, walk around the statue, north travel, arrival dialogue read), then an owner-approved start fixture adds vanity_mirror 1 and enchanted_shears 1 to the shared backpack",
+ "startFixture": {
+  "approvedBy": "owner, 2026-11-06 (\"Inject items into B's start\")",
+  "writes": [
+   "inventory.counts.vanity_mirror = 1",
+   "inventory.counts.enchanted_shears = 1",
+   "inventory.revision += 1"
+  ],
+  "notWritten": "no hero position, HP, cooldown, story flag, claim, puzzle or Griffin field"
+ },
+ "parity": {
+  "bScenario": "griffin-unprepared-return-v1",
+  "bDefinitionSha256": "b224f75d2ec71ad61082fe0cba4617057b73cd9feb5173c52f7f32dcd86ed6f1",
+  "bStartHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
+  "worldDiff": {
+   "$.inventory.counts.enchanted_shears": [
+    null,
+    1
+   ],
+   "$.inventory.counts.vanity_mirror": [
+    null,
+    1
+   ],
+   "$.inventory.revision": [
+    14,
+    15
+   ]
+  },
+  "observationDiff": "inventory.items only (both heroes): the two tools listed with their in-game names and descriptions",
+  "legalActionsDiff": "none at the start"
+ },
+ "encounter": {
+  "hp": 640,
+  "phase": "NEST",
+  "pillars": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "mirrorDelivered": false,
+  "wigClaimed": false
+ },
+ "heroes": {
+  "sieg": {
+   "tile": [
+    18.5,
+    33
+   ],
+   "hp": 100
+  },
+  "coco": {
+   "tile": [
+    21.5,
+    33
+   ],
+   "hp": 100
+  },
+  "abilities": "the same as B-return at the same tick (all of B's states unchanged)"
+ },
+ "inventory": {
+  "vanity_mirror": 1,
+  "enchanted_shears": 1,
+  "griffin_wig": 0
+ },
+ "success": "authoritative griffin.wigClaimed AND story.flags contains chapter0.complete; Griffin HP is not part of the predicate",
+ "failure": "any authoritative knockout (including the game's immediate full-health respawn); leaving the Griffin Enclosure is allowed",
+ "limits": {
+  "gameTicks": 18000,
+  "decisionsPerHero": 1600,
+  "modelCallsPerHero": 400,
+  "tokensPerHero": 4000000,
+  "callTimeoutMs": 30000,
+  "consecutivePolicyFailures": 3,
+  "modelWallSeconds": 3600,
+  "baselineWallSeconds": 600,
+  "episodeSpendCapUsd": 0.75
+ },
+ "prompt": {
+  "tutorial": "TUTORIAL_BRIEFING (tutorial-2ec2f251), as Pilot-31",
+  "briefing": "GRIFFIN_PREPARED_RETURN_BRIEFING (briefing-63b9fbdc), draft wording pending the owner",
+  "preTunedPromptSha256": "a6fa78a05e368b6f128844eff22b4b891d4892a772a27fba9c6fac066fab079e",
+  "postTunedPromptSha256": "be19b8b5e9c350ecaf7ff7f4a478b3ca96bb1b3864d2527744823e2908548db8",
+  "postTunedGuidance": {
+   "id": "b-post-combined-v4",
+   "sha256": "1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34"
+  }
+ },
+ "checkpointMethod": "AgentEnvironment.reset: ordinary B-return prefix through step(), then StartFixture.addItems during reset only",
+ "definitionSha256": "9c91accdecc529a6284dff61306ea9ebbbb753db5c86a74888a360b987b2ea94"
+}

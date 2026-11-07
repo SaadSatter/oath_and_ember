@@ -60,6 +60,17 @@ import {
 /** Evaluator-side trace events. Contains privileged data; never give to players. */
 export type TraceEvent = { type: string; tick: number; player?: PlayerId; data: unknown };
 
+/**
+ * Evaluator start-state setup handed to a scenario prefix. Only Situation C
+ * (griffin-prepared-return-v1) uses it, by the owner's decision (2026-11-06),
+ * to add its declared starting items after the ordinary B-return prefix. It is
+ * never given to a policy and is gone once reset returns.
+ */
+export interface StartFixture {
+  /** Adds items to the shared backpack, as the inventory service does on a pickup. */
+  addItems(counts: Record<string, number>): void;
+}
+
 export interface EnvironmentOptions {
   preset?: EpisodePreset;
   /**
@@ -69,7 +80,7 @@ export interface EnvironmentOptions {
    * runs; afterwards decisions, invalid actions and each hero's memory are
    * cleared and the episode's game time starts from that tick.
    */
-  prefix?: { name: string; run: (env: AgentEnvironment) => Promise<void> };
+  prefix?: { name: string; run: (env: AgentEnvironment, setup?: StartFixture) => Promise<void> };
   limits?: Partial<EpisodeLimits>;
   labels?: LabelMode;
   trace?: (event: TraceEvent) => void;
@@ -321,7 +332,26 @@ export class AgentEnvironment implements GameInterface {
       // Reach the scenario's start by real play, through this interface.
       this.inPrefix = true;
       try {
-        await this.prefix.run(this);
+        const room = this.room;
+        let open = true;
+        const setup: StartFixture = {
+          addItems: (counts) => {
+            if (!open) throw Error("Start fixtures are only available during reset.");
+            const bag = room.state.inventory;
+            if (!bag) throw Error("This room has no shared backpack.");
+            for (const [id, n] of Object.entries(counts)) {
+              if (!Number.isSafeInteger(n) || n <= 0) throw Error(`Bad start item count ${id}=${n}.`);
+              const counts = bag.counts as Record<string, number>;
+              counts[id] = (counts[id] ?? 0) + n;
+            }
+            bag.revision++;
+          },
+        };
+        try {
+          await this.prefix.run(this, setup);
+        } finally {
+          open = false;
+        }
       } finally {
         this.inPrefix = false;
       }
@@ -825,6 +855,9 @@ export class AgentEnvironment implements GameInterface {
   /** Evaluator progress markers; P1 adds its Prologue markers (other episodes unchanged). */
   private progress(w: World) {
     if(this.preset === "griffin-unprepared-return-v1" && (w.puzzles.griffin?.griffin?.hp ?? 1) <= 0) return [...milestones(w), "griffin-defeated"];
+    // C records B-return's defeat marker plus the Griffin markers (grooming, tools, wig), evaluator-only.
+    if (this.preset === "griffin-prepared-return-v1")
+      return [...milestones(w), ...griffinMilestones(w), ...((w.puzzles.griffin?.griffin?.hp ?? 1) <= 0 ? ["griffin-defeated"] : [])];
     if (this.preset === "P1" || this.preset === "P1-v2" || this.preset === "P1-v3") return [...milestones(w), ...prologueMilestones(w)];
     // Griffin trials add evaluator-only Griffin markers; other episodes are unchanged.
     if (this.preset === "griffin-unprepared-v1") return [...milestones(w), ...griffinMilestones(w)];

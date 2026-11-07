@@ -1,0 +1,258 @@
+{
+ "id": "oath-ember-abc-2026-11-06-r10-c-proposed",
+ "declaredOn": "2026-11-06",
+ "status": "PROPOSED, NOT ACTIVE: awaiting owner review. r9 (oath-ember-abc-2026-11-06-r9-pilot33) remains the active declaration. C paid model runs are locked in code (SITUATION_C_PAID_APPROVED = false).",
+ "guidelines": {
+  "source": "owner-pasted midterm guidelines",
+  "sha256": "a1040a5425d554e2451837088aba1fb1caad4f8058319dd443eed8a53ccb4c76"
+ },
+ "scope": "A Hedge Maze; B unprepared Griffin combat plus goddess return; C prepared Griffin (Mirror + Shears held), wig by any normal route plus goddess return. Different bounded success predicates explicitly declared.",
+ "gamePolicySourceCommit": "040685c (observed Pilot-30 post-tuned snapshot; not an established pre-tuned snapshot)",
+ "designAmendments": "Require a new declaration revision; preserve prior results and frozen A",
+ "baseline": {
+  "kind": "baseline-quest",
+  "status": "selected existing implementation; no new policy code",
+  "sourceCommit": "040685c",
+  "sourceSha256": {
+   "packages/agent/src/policies/questBaseline.ts": "18133c48b19b880df76be42a36e221d8da6e3a347306226f07bb6cf3e3dce975",
+   "packages/agent/src/policies/questKnowledge.ts": "d7b5bc925d189249a5d3ffc269a7eb3319c35bead649156182631797b6c45d4e",
+   "packages/agent/src/policies/navigate.ts": "7e37dca33e772fe3c636d56fcf663dfa54eb15c623ea6a1b6f21fb575817ee60",
+   "packages/agent/src/policies/combat.ts": "44759b6d66c4ff1f8198f911c868843d774fdf762929ed9a499eaa2a84c2bf90"
+  },
+  "information": "solution-aware script; per-hero observations and messages; no model calls",
+  "costUsd": 0,
+  "expectedStrictGriffinResult": "failure forecast from source, not measured",
+  "situationOverrides": {
+   "A": {
+    "kind": "baseline-maze-heuristic",
+    "sourceSha256": "4523a6a554387f99013ea6c16649c909015a92bdbddd0178f145838598ea9086",
+    "source": "packages/agent/src/policies/mazeHeuristic.ts",
+    "reason": "Owner requested exploration beyond opened gate; v2 infers crossing direction from observed gate/wall/approach, prioritizes unvisited far-side space and retries ordinary interaction after closing range. Prior v1 outcomes retained in history/declared-results-r4.json; v2 repetitions pending.",
+    "information": "Independent per-hero observations, remembered observed map, public mechanics and clue labels; no full hidden map, route constants or model calls.",
+    "policyId": "baseline-maze-heuristic-v2",
+    "sourceCommit": null
+   },
+   "B": {
+    "kind": "baseline-griffin-heuristic",
+    "policyId": "baseline-griffin-heuristic-v1",
+    "source": "packages/agent/src/policies/griffinHeuristic.ts",
+    "sourceSha256": "a7c9ea786a8c57c374952d9425b7a4bc25553aa453913ae3f935fca330792edc",
+    "knowledge": "Generic combat and organic-target pulling; no special grounding instruction, fixed nest/return coordinates or source map. Uses observed nest, map and shared inventory/journal.",
+    "status": "owner-authorized B development; freeze before repetitions"
+   },
+   "C": {
+    "kind": "baseline-griffin-heuristic",
+    "policyId": "baseline-griffin-heuristic-v1",
+    "source": "packages/agent/src/policies/griffinHeuristic.ts",
+    "sourceSha256": "a7c9ea786a8c57c374952d9425b7a4bc25553aa453913ae3f935fca330792edc",
+    "reason": "Owner brief 2026-11-06: reuse a general observation-only baseline unchanged; replaces r9's fallback to the solution-aware baseline-quest for C. No C-specific branch.",
+    "knowledge": "Same as B: generic combat, organic pull, visible labels, remembered map/feedback, normal interactions. It interacts with the nest only after a visible defeat, so it never takes the peaceful route; it does not reason about the Mirror or Shears.",
+    "freeOfflineResult": "Unregistered preparation runs at the C commit: 3/3 success (seed 0 twice, seed 1), 89.8 game-s, 0 invalid actions, 0 model calls; see docs/midterm/evidence/situation-c-preparation/summary.json",
+    "status": "proposed for C2"
+   }
+  }
+ },
+ "model": {
+  "kind": "model-centralized",
+  "model": "gpt-6-luna",
+  "effort": "medium",
+  "maxBatch": 4,
+  "manualHash": "4b091a6630dd56f236f89f8e2213a6bb7cad4a31d4851d1883f95867d92bfa86",
+  "postGuidanceHash": {
+   "A": null,
+   "B": "60a0a01357e68e2f44f0ecd9d0d0ebb41bfaab04c5c3ec78cae62c760c265263"
+  },
+  "postStatus": "Pilot-30 is owner-classified post-tuned; actual tuning intervention/diff must be documented before claiming a matched repeat or prompt-only contrast",
+  "centralizedInformation": "one planner sees both permitted hero observations; no repository/evaluator/hidden state",
+  "observedPostTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-a97d9268",
+  "observedPostTunedPromptHashA": "0616c47baf03f2860f75a4a0867221998b2439f51b55fde33c56111ec8240c44",
+  "preTunedSnapshotCommit": "678b86c",
+  "preTunedStatus": "Pilot-28 owner-designated pre-tuned failure, stopped at cow; preserved diagnosis records 125.267 game seconds, not owner-recalled approximately 128 seconds. Planner/controller changes separate it from Pilot-30.",
+  "tuningMechanism": "not independently established; no fine-tuning or explicit solution-prompt claim inferred",
+  "postGuidanceB": {
+   "id": "b-post-combined-v4",
+   "status": "approved",
+   "sha256": "1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34",
+   "situations": [
+    "griffin-unprepared-v1",
+    "griffin-unprepared-return-v1"
+   ],
+   "policyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·task-cdbee612·guidance-12874542",
+   "promptHash": "7ff08ba84c4ab14460d0f6707febdc19b8e417ced89d3127636ce7ed9f352144",
+   "configHash": "f3949a6dbabea35e5053053f4a7e46ecc6f801c7698fcc78eaeb75f233d66cb3",
+   "sourceCommit": "1f0ca45",
+   "observedRun": "Pilot-33",
+   "priorObservedPostTunedRun": "Pilot-32: b-post-a-transfer-v1, knocked_out; preserved separately"
+  },
+  "postGuidanceC": {
+   "id": "b-post-combined-v4",
+   "sha256": "1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34",
+   "source": "Pilot-33's guidance (verified: recorded guidanceHash and the reproduced Pilot-33 prompt hash 7ff08ba8…)",
+   "textChanged": false,
+   "scopeChange": "griffin-prepared-return-v1 added to its allowed situations (owner instruction); approval hash unchanged",
+   "preTunedPromptSha256": "a6fa78a05e368b6f128844eff22b4b891d4892a772a27fba9c6fac066fab079e",
+   "postTunedPromptSha256": "be19b8b5e9c350ecaf7ff7f4a478b3ca96bb1b3864d2527744823e2908548db8",
+   "preTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-63b9fbdc",
+   "postTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-63b9fbdc·guidance-12874542",
+   "promptDifference": "C3 system prompt = C1 system prompt + v4 guidance block (nothing else)"
+  }
+ },
+ "conditions": [
+  "pre-tuned",
+  "post-tuned",
+  "cheap-baseline"
+ ],
+ "repetitionsPerCell": 1,
+ "limits": {
+  "gameTicks": 18000,
+  "gameSeconds": 300,
+  "decisionsPerHero": 1600,
+  "modelCallsPerHero": 400,
+  "tokensPerHero": 4000000,
+  "callTimeoutMs": 30000,
+  "consecutivePolicyFailureLimit": 3,
+  "runSpendCapUsd": 0.75,
+  "modelWallSeconds": 3600,
+  "baselineWallSeconds": 600,
+  "scope": "Experiment run limits; A frozen definition remains unchanged (its max spend cap is 1.25)"
+ },
+ "situations": {
+  "A": {
+   "name": "Hedge Maze",
+   "id": "S2-local",
+   "seed": 0,
+   "definitionHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab",
+   "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+   "runtimeCheckpoint": "existing-frozen-v2",
+   "objective": "Obtain Enchanted Shears",
+   "success": "authoritative shared enchanted_shears count > 0",
+   "heldOut": false,
+   "history": "Development-informed; Pilot-30 predates this declaration, not retrospectively preregistered"
+  },
+  "B": {
+   "name": "Griffin Trial, Unprepared — Goddess Return",
+   "id": "griffin-unprepared-return-v1",
+   "seed": 0,
+   "definitionHash": "b224f75d2ec71ad61082fe0cba4617057b73cd9feb5173c52f7f32dcd86ed6f1",
+   "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
+   "runtimeCheckpoint": "implemented; ordinary legal prefix, reset hash pinned in tests",
+   "objective": "Defeat Griffin, acquire Divine Wig, return it to goddess and reach chapter0.complete; no knockout",
+   "inventory": {
+    "vanity_mirror": 0,
+    "enchanted_shears": 0,
+    "griffin_wig": 0
+   },
+   "start": "ordinary goddess opening, walk around statue and north travel; arrival dialogue completed",
+   "success": "authoritative Griffin hp <= 0 AND wigClaimed AND story.flags contains chapter0.complete",
+   "failureBoundary": "Any authoritative knockout. Normal return travel is required; possession or shrine entry alone is not success.",
+   "heldOut": false,
+   "preTunedRunScenario": {
+    "id": "griffin-unprepared-v1",
+    "definitionHash": "bbbbc43532324b80179ab8fdf122fe7f6d10446a52d9ac752a0efdeae7671374",
+    "startHash": "1a270d7b5e456d1be0e3250d37baae26a77b5ca3099b18433a9c8e5a25fb0051",
+    "note": "Pilot-31 (B pre-tuned) ran here, not on the return scenario."
+   }
+  },
+  "C": {
+   "name": "Griffin Trial, Prepared — Goddess Return",
+   "id": "griffin-prepared-return-v1",
+   "renamedFrom": "griffin-prepared-v1 (r9); owner decision 2026-11-06",
+   "seed": 0,
+   "definitionHash": "9c91accdecc529a6284dff61306ea9ebbbb753db5c86a74888a360b987b2ea94",
+   "definitionFile": "docs/midterm/evaluation-abc/C-prepared-return-definition.json",
+   "codeDefinitionHash": "d563c6eb948063a6d4e0c854fa5eed3ef957b592530b67c806df71ca1ab3ba11",
+   "startHash": "28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7",
+   "startTick": 540,
+   "prefixActionsSha256": "1cf7940acb58e02d7509b7567c6e63457c48231b0424f9f77b6ae781d8fff81d",
+   "runtimeCheckpoint": "implemented; B-return's ordinary prefix + owner-approved inventory start fixture; reset hash pinned in tests",
+   "objective": "Obtain the Griffin's wig by any normal route, offer it to the goddess and reach chapter0.complete; no knockout",
+   "inventory": {
+    "vanity_mirror": 1,
+    "enchanted_shears": 1,
+    "griffin_wig": 0
+   },
+   "start": "B-return's start exactly, plus Vanity Mirror and Enchanted Shears added to the shared backpack (world diff: those two counts and the backpack revision)",
+   "success": "authoritative griffin.wigClaimed AND story.flags contains chapter0.complete (Griffin HP not required)",
+   "failureBoundary": "Any authoritative knockout. Leaving the enclosure is allowed (the return requires it).",
+   "prompt": "tutorial (Pilot-31's) + C briefing (draft, pending owner wording); no task line",
+   "heldOut": true,
+   "holdoutRule": "Both model conditions and the baseline are frozen before any C model outcome; C3 transfers only B-developed guidance (v4) unchanged; no C-specific hint. Enforced in code by the paid lock, not by Situation.heldOut (which would refuse the tuning-path launcher model-centralized needs)."
+  }
+ },
+ "strictDefeatDecision": "A and B unchanged. C (r10): by owner decision 2026-11-06, a peaceful (groomed) wig counts once it is offered and chapter0.complete is reached; Griffin defeat is not required. r9's strict-defeat rule for C is superseded.",
+ "trialAllocation": {
+  "allOtherCells": "A/B primary cells observed; C pre/post/baseline unrun (one each)",
+  "freshModelRunsRemaining": 2,
+  "freshBaselineRunsRemaining": 1,
+  "newModelSpendCeilingUsd": 1.5,
+  "paidAuthorization": false,
+  "A/post-tuned/1": "Pilot-30 historical completed pilot reused once, condition metadata corrected, original run status/evidence unchanged",
+  "A/pre-tuned/1": {
+   "episode": "Pilot-28",
+   "status": "historical manual-stop failure; owner allocated after outcome",
+   "record": "docs/midterm/evaluation-abc/A-pretuned-pilot28.json"
+  },
+  "B/post-tuned/1": {
+   "episode": "Pilot-33",
+   "source": "owner designation after outcome",
+   "status": "success",
+   "priorPostTunedAttempt": "Pilot-32 failed under earlier guidance, retained; neither repeated identical policy nor prompt-only controlled comparison"
+  },
+  "C": {
+   "C/pre-tuned/1": "C1, unrun",
+   "C/cheap-baseline/1": "C2, unrun (a fresh free run at the approved commit; preparation runs are not registered)",
+   "C/post-tuned/1": "C3, unrun"
+  }
+ },
+ "holdoutOrder": [
+  "Owner approves r10, the C briefing wording and the paid lock change",
+  "C pre-tuned (C1)",
+  "C post-tuned (C3)",
+  "C baseline (C2)"
+ ],
+ "memoryRequirement": "Partial observation: clean bounded-memory versus observation-only comparison still required/pending; pre/post guidance is not a memory ablation",
+ "implementationBoundary": "C scenario, evaluator preset, start fixture, paid lock, v4 scope and tests added; no gameplay, rule, observation-schema or B change; no paid calls, merge or push",
+ "supersedes": "oath-ember-abc-2026-11-06-r9-pilot33 (on approval only)",
+ "correction": "Owner designated Pilot-33 (b-post-combined-v4) as B/post-tuned/1 after observing success. R8 pinned b-post-a-transfer-v1; its Pilot-32 knockout failure and artifacts are retained. This is an after-outcome primary-result amendment, not preregistration of v4 or removal of a failed attempt.",
+ "classificationNote": "A: pre-tuned Pilot-28 (678b86c, manual stop), post-tuned Pilot-30 (040685c, success), baseline baseline-quest (success). Pilot-29 (327c34a) is supplementary evidence of the intermediate tuning round. Whether a manually stopped run qualifies as the official pre-tuned attempt depends on the professor's rules.",
+ "promptTuningRecord": "docs/midterm/A_PROMPT_TUNING.md",
+ "requirementInterpretation": "Owner's reading: 'two live trials each' = one pre-tuned and one post-tuned model run per situation, plus the baseline. Not yet confirmed by the professor.",
+ "amendmentR7": {
+  "date": "2026-11-06",
+  "by": "owner decision, recorded by the implementation agent",
+  "decision": "griffin-unprepared-v1, seed 0, is the official Situation B pre/post comparison, matching the scenario Pilot-31 (B pre-tuned) actually ran on. The scenario checkpoint, objective and gameplay are unchanged.",
+  "why": "Pilot-31 ran on griffin-unprepared-v1 while r6 had declared griffin-unprepared-return-v1. r7 makes the declaration match the run instead of counting a run on one scenario against another.",
+  "disclosure": "This amendment is post hoc: it was made after Pilot-31's outcome was known. The B post-tuned guidance was also written after reading Pilot-31 (docs/midterm/B_POST_TUNING_TRANSFER.md), so the B pre/post contrast is tuning on B.",
+  "openItem": "The B cheap-baseline cell's recorded runs are on griffin-unprepared-return-v1. A baseline run on griffin-unprepared-v1 needs owner allocation; until then the B baseline row is on a different scenario from the B model rows.",
+  "history": "docs/midterm/evaluation-abc/history/r6/ holds r6's declaration, results, matrix and suite document byte for byte."
+ },
+ "amendmentR8": {
+  "date": "2026-11-06",
+  "by": "owner decision, recorded by the implementation agent",
+  "decision": "The B post-tuned run uses griffin-unprepared-return-v1 and counts as B/post-tuned/1. B is again the return scenario, as in r6. r7's choice of griffin-unprepared-v1 is superseded.",
+  "consequence": "B pre-tuned (Pilot-31, griffin-unprepared-v1) and B post-tuned (griffin-unprepared-return-v1) are on different scenarios: different start (tick 439 vs 540), success predicate (wig vs wig + goddess offering + chapter0.complete), prompt framing (v1 tutorial + briefing vs return task line with no tutorial or briefing) and observations (the return scenario lists the straw nest). The pre/post difference is therefore not prompt-only and must not be reported as a controlled prompt effect. Pilot-31's knockout fails both predicates.",
+  "baseline": "The B cheap-baseline cell (baseline-griffin-heuristic-v1, 2/2 successes) is on the return scenario, the same as B post-tuned.",
+  "disclosure": "Post hoc: decided after Pilot-31's outcome. The guidance was written after reading Pilot-31: tuning on B.",
+  "history": "r6 and r7 archived byte for byte in docs/midterm/evaluation-abc/history/r6/ and history/r7/."
+ },
+ "amendmentR10": {
+  "date": "2026-11-06",
+  "by": "owner decisions, recorded by the implementation agent; proposed, not active",
+  "decisions": [
+   "C id griffin-prepared-return-v1 (was griffin-prepared-v1)",
+   "C start = B-return start + Mirror and Shears injected (r9 required legal acquisition and forbade injection)",
+   "C success = wig claimed by any route + offering + chapter0.complete; no knockout; leaving the enclosure allowed (r9: Griffin HP 0 + wig, enclosure boundary, no return)",
+   "C prompt = tutorial + new C briefing (draft) for both C1 and C3; C3 adds v4 unchanged",
+   "C2 = baseline-griffin-heuristic-v1 unchanged (r9 fell back to baseline-quest)",
+   "Existing B pin tests verify the 2791bce run path from git history (owner approved)"
+  ],
+  "consequences": [
+   "C and B-return now share start state (except the two items), limits, knockout rule and end point (chapter0.complete); they differ in the items, the Griffin-defeat requirement (B only) and the prompt framing (B-return: task line, no tutorial/briefing; C: tutorial + briefing). B vs C is therefore not an inventory-only contrast.",
+   "With the tools, the peaceful route is a legal shortcut in C, so C is expected to be easier than B; it tests whether players use the prepared items.",
+   "Maze and pond chests remain unclaimed and their banter flags unset in C's world (the items were injected); a player who detours there could collect duplicates. No player needs to.",
+   "C1 (pre-tuned) is not byte-identical to any earlier pre-tuned prompt: it uses Pilot-31's tutorial but a new C briefing."
+  ],
+  "disclosure": "Decided before any C model outcome. The unchanged baseline's C outcome is known from free preparation runs (3/3 success); no model policy was changed after it."
+ },
+ "declarationSha256": "6e38e3d6e34580959ff0c3e65d7d29fc16489ab4af8d076865eaaf800c02252b"
+}

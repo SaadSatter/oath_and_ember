@@ -13,6 +13,7 @@ import { CentralPlanner, centralizedPolicies } from "../src/policies/centralized
 import { guidance, guidanceApproved, guidanceBlock, guidanceHash } from "../src/policies/situationGuidance.js";
 import { ModelBudget, MeteredGateway } from "../src/budget.js";
 import { MockGateway } from "../src/policies/mockGateway.js";
+import { expectRunPathPinned } from "./helpers/pinnedRunPath.js";
 
 const ID = "b-post-combined-v3";
 type B = "griffin-unprepared-v1" | "griffin-unprepared-return-v1";
@@ -86,7 +87,8 @@ describe("B guidance candidate b-post-combined-v3", () => {
       "packages/agent/src/suite.ts": "c9a03db108ccaadf3d6c97477ccf978a3cb2f9ba0115e0bed829fe0e1a57ec6b",
       "packages/agent/src/harness.ts": "cb23592777259f7e4408fd88000ab7a825123835e074945a1dddda426b14bbb8",
     };
-    for (const [f, h] of Object.entries(at2791bce)) expect(createHash("sha256").update(readFileSync(join(root, f))).digest("hex"), f).toBe(h);
+    // Re-pinned with the owner's approval (2026-11-06, Situation C): see helpers/pinnedRunPath.ts.
+    expectRunPathPinned("2791bce", at2791bce);
     // The return scenario's generic prompt, as Pilot-32 had it before its v1 block.
     expect(planner("griffin-unprepared-return-v1").promptHash).toBe("7fbaaec753d7315e998caf82c3aafe74f5e1b6289d48a320db148bfa28fcb2e0");
   });
