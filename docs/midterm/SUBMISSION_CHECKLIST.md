@@ -18,7 +18,7 @@ midterm guidelines; declaration/documentation is authorized, paid execution is n
 | Five-operation information boundary | Existing adapter; new B/C integration requires tests and independent review. No gameplay/policy change in this declaration. |
 | Memory vs observation-only comparison | Pending matched design/results; pre/post guidance is not a memory ablation. |
 | Latest green deterministic CI | Pending. Prior documented local result 1263/1264, known s2Shutdown failure; typecheck/build passed. Do not claim this commit has new green CI. |
-| Human observed playtest | Pending verified anonymous notes in PEER_NOTES.md, or owner explanation of omission. Someone else plays without help. |
+| Human observed playtest | **Notes included** in `midterms/saadsatter/PEER_NOTES.md`: friends, 2 November, about 45 min. The professor allows a non-classmate playtester (owner-reported). Disclosed gap: the developer helped during play, so the 'without help' condition is not met; no retest of the revised build. |
 | Student-authored log/reflection | Owner must complete AGENT-TEAM.md and personal limitations using genuine decisions/playtest observations; no agent-authored first-person substitute. |
 | 3–5 minute agent recording | **Done:** Pilot-39 showcase replay, 4 min 7 s (https://github.com/SaadSatter/oath_and_ember/blob/midterm/evaluation/docs/midterm/evidence/pilot-39-showcase-replay/replay.webm). Earlier note: full Pilot-30 live video preserved (~32.7min). Label excerpts/edits and retain original. Link from README and course PR. |
 | Continuous showcase (excluded from A/B/C) | Pilot-39 **gameplay-complete** (offering accepted, 236.4 game-s); recorded `success: false`, `token_limit` during the finale dialogue, before `chapter0.complete`. Evidence preserved and replay-verified in `midterms/saadsatter/evidence/showcase/pilot-39-original/`. Reported in EVALUATION.md and README. **Submission video:** a 4-minute speed-1 trace replay (https://github.com/SaadSatter/oath_and_ember/blob/midterm/evaluation/docs/midterm/evidence/pilot-39-showcase-replay/replay.webm), labelled as a replay. The owner decided not to run v2. |
@@ -58,7 +58,7 @@ Rubric checks are those of [MIDTERM_GUIDELINES.md](MIDTERM_GUIDELINES.md). The e
 | Viewer final-clock mismatch (43.1 s shown, 49.8 s actual) | **pending: follow-up** | A separate fix to the viewer or recorder. Not changed here; `live.ts` was left alone as instructed |
 | Limitations paragraph in the owner's voice | **blocked: owner** | The facts are listed under EVALUATION.md "Limitations" |
 | AGENT-TEAM.md in the owner's voice | **blocked: owner** | The scaffold is unchanged by this work |
-| Peer playtest notes (received and given) | **blocked: partner** | Due November 6 |
+| Peer playtest notes (received and given) | **received: included** (friends' session; the professor allows a non-classmate playtester); **given: none in the repository** | Due November 6 |
 | Generated sprites' terms confirmed for publication | **blocked: owner** | README "Sources and terms" |
 | Fresh-clone rehearsal and CI at the submitted commit | **pending** | The last rehearsal was at `c65dbe2`, before this documentation commit |
 | Course PR opened and URL submitted on CourseWorks | **blocked: owner** | Not opened. No push or PR from this session |
