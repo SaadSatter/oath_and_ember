@@ -1,0 +1,286 @@
+{
+  "episodes": [
+    {
+      "situation": "showcase-maze-griffin-complete-v1",
+      "suiteRevision": 2,
+      "scenario": {
+        "preset": "showcase-maze-griffin-complete-v1",
+        "title": "Showcase: Goddess Shrine connected quest (demonstration, excluded from A/B/C)",
+        "goal": "Showcase (excluded from A/B/C): from the normal Goddess Shrine checkpoint, read the Goddess greeting and quest, enter the Hedge Maze through normal travel, obtain the Enchanted Shears, travel to the Griffin Enclosure, defeat the Griffin in combat, claim its wig, offer it to the goddess and reach chapter0.complete. Knockouts are recorded, not terminal.",
+        "revision": 3,
+        "tutorialId": "2ec2f251",
+        "briefing": true
+      },
+      "seed": 0,
+      "player": "model-centralized",
+      "policies": {
+        "sieg": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-6d6caa7b·task-76f8c7c9·guidance-ea5d75ba",
+        "coco": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-6d6caa7b·task-76f8c7c9·guidance-ea5d75ba"
+      },
+      "gateway": "openai:gpt-6-luna@medium",
+      "modelIds": [
+        "gpt-6-luna"
+      ],
+      "gitHash": "39a142b",
+      "startHash": "9d565ae90d161cc9e79979e0b9b66b1c5499d5a22e5292ba10ca271bda12cb50",
+      "startTick": 0,
+      "prefix": null,
+      "status": "terminated",
+      "reason": "token_limit",
+      "success": false,
+      "gameTicks": 14245,
+      "gameSeconds": 237.4,
+      "wallSeconds": 5931.3,
+      "decisions": {
+        "sieg": 680,
+        "coco": 751
+      },
+      "actions": {
+        "sieg": {
+          "move": 487,
+          "advance_dialogue": 38,
+          "wait": 124,
+          "attack": 10,
+          "defend": 3,
+          "ability": 2,
+          "interact": 16
+        },
+        "coco": {
+          "move": 500,
+          "interact": 16,
+          "wait": 104,
+          "advance_dialogue": 55,
+          "attack": 55,
+          "ability": 14,
+          "defend": 4,
+          "use_item": 3
+        }
+      },
+      "attempt": 1,
+      "endHash": "ba1e9a0bdaf37db12320ab06a2522698faf41ba8912913bb1d2b85e83e07adc9",
+      "limits": {
+        "maxTicks": 36000,
+        "maxDecisionsPerPlayer": 4000,
+        "maxModelCallsPerPlayer": 400,
+        "maxTokensPerPlayer": 8000000
+      },
+      "modelLimits": {
+        "maxModelCallsPerPlayer": 400,
+        "maxTokensPerPlayer": 8000000,
+        "maxSpendUsd": 2,
+        "callTimeoutMs": 30000
+      },
+      "invalidActions": {
+        "sieg": 0,
+        "coco": 2
+      },
+      "metrics": {
+        "sieg": {
+          "modelCalls": 247,
+          "modelDecisions": 223,
+          "parseFailures": 25,
+          "recoveredReplies": 0,
+          "proposedActions": 227,
+          "submittedActions": 680,
+          "executedActions": 679,
+          "staleSubmissions": 0,
+          "gameplayRejections": 1,
+          "skippedActions": 0
+        },
+        "coco": {
+          "modelCalls": 295,
+          "modelDecisions": 271,
+          "parseFailures": 25,
+          "recoveredReplies": 0,
+          "proposedActions": 280,
+          "submittedActions": 751,
+          "executedActions": 747,
+          "staleSubmissions": 0,
+          "gameplayRejections": 4,
+          "skippedActions": 0
+        }
+      },
+      "metricsVersion": 2,
+      "messages": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "batchStops": 0,
+      "modelCalls": {
+        "attempted": 542,
+        "failed": 0,
+        "timedOut": 0,
+        "unknownUsage": 0
+      },
+      "latencyMs": {
+        "mean": 9588,
+        "max": 23657
+      },
+      "tokens": {
+        "input": 14052220,
+        "output": 464453,
+        "cacheRead": 4991140,
+        "cacheWrite": 9059454
+      },
+      "spendUsd": {
+        "known": 1.556205,
+        "charged": 1.556205
+      },
+      "priceSource": "https://developers.openai.com/api/docs/models/gpt-6-luna (verified 2026-10-28); https://developers.openai.com/api/docs/pricing; https://developers.openai.com/api/docs/guides/prompt-caching",
+      "ledgerEntry": "pilot-39",
+      "episodeCapUsd": 2,
+      "wallLimitSeconds": 7200,
+      "launch": {
+        "launcher": "scripts/midterm/live.ts",
+        "speed": 1,
+        "viewer": true
+      },
+      "finalClaim": null,
+      "evaluation": {
+        "label": "SHOWCASE",
+        "definitionHash": "ec827f19555e5456d987f866c6f50414827f8875efd911859f351aeafe532831",
+        "officialEvaluation": false,
+        "disclosure": "Prompt-tuned continuous gameplay demonstration — excluded from official A/B/C evaluation results."
+      },
+      "promptHashes": {
+        "sieg": "0099a850c7219c31797e0802bc82c7a688c99512adc600fe4a4aa808b7087e8b",
+        "coco": "0099a850c7219c31797e0802bc82c7a688c99512adc600fe4a4aa808b7087e8b"
+      },
+      "configHash": "b23d7862a5622123493a140126bd6a7e87053e5464c6c666bad1af90eaead599",
+      "guidance": {
+        "id": "showcase-maze-griffin-v1",
+        "status": "approved",
+        "sha256": "ea5d75ba9b74a4c72ac60f0b2f35aaa8e991c5e767737a34fc14b871a355d320",
+        "situations": [
+          "showcase-maze-griffin-complete-v1"
+        ]
+      },
+      "showcaseReport": {
+        "descriptiveOnly": true,
+        "knockouts": 1,
+        "knockoutsByHero": {
+          "sieg": 0,
+          "coco": 1
+        },
+        "events": [
+          {
+            "hero": "coco",
+            "tick": 9870,
+            "gameSeconds": 164.5,
+            "area": "Griffin Enclosure",
+            "heroHpAfter": 100,
+            "griffinHp": 496,
+            "milestonesBefore": [
+              "showcase:0-goddess-quest-received",
+              "showcase:0-maze-entered",
+              "showcase:1-maze-complete",
+              "showcase:1b-returned-from-maze",
+              "showcase:1c-griffin-entered"
+            ],
+            "respawn": "game rule: full health at this area's starting point",
+            "milestonesReachedAfter": [
+              "showcase:2-griffin-defeated",
+              "showcase:3-wig-acquired-after-defeat",
+              "showcase:3b-returned-with-wig",
+              "showcase:4-offering-accepted"
+            ]
+          }
+        ],
+        "milestones": [
+          {
+            "milestone": "showcase:0-goddess-quest-received",
+            "tick": 108,
+            "gameSeconds": 1.8
+          },
+          {
+            "milestone": "showcase:0-maze-entered",
+            "tick": 281,
+            "gameSeconds": 4.68
+          },
+          {
+            "milestone": "showcase:1-maze-complete",
+            "tick": 8381,
+            "gameSeconds": 139.68
+          },
+          {
+            "milestone": "showcase:1b-returned-from-maze",
+            "tick": 8969,
+            "gameSeconds": 149.48
+          },
+          {
+            "milestone": "showcase:1c-griffin-entered",
+            "tick": 9235,
+            "gameSeconds": 153.92
+          },
+          {
+            "milestone": "showcase:2-griffin-defeated",
+            "tick": 12841,
+            "gameSeconds": 214.02
+          },
+          {
+            "milestone": "showcase:3-wig-acquired-after-defeat",
+            "tick": 14022,
+            "gameSeconds": 233.7
+          },
+          {
+            "milestone": "showcase:3b-returned-with-wig",
+            "tick": 14039,
+            "gameSeconds": 233.98
+          },
+          {
+            "milestone": "showcase:4-offering-accepted",
+            "tick": 14184,
+            "gameSeconds": 236.4
+          }
+        ],
+        "griffinDefeatedTick": 12841,
+        "reason": "token_limit"
+      }
+    }
+  ],
+  "aggregate": [
+    {
+      "situation": "showcase-maze-griffin-complete-v1",
+      "trials": 1,
+      "successes": 0,
+      "reasons": [
+        "token_limit"
+      ],
+      "meanGameSeconds": 237.4,
+      "meanWallSeconds": 5931.3,
+      "gameTicks": 14245,
+      "actions": 1431,
+      "failedModelCalls": 0,
+      "unknownUsageCalls": 0,
+      "tokens": {
+        "input": 14052220,
+        "output": 464453,
+        "cacheRead": 4991140,
+        "cacheWrite": 9059454
+      },
+      "knownUsd": 1.556205,
+      "meanDecisions": 1431,
+      "invalidActions": 2,
+      "messages": 0,
+      "modelCalls": 542,
+      "chargedUsd": 1.556205,
+      "startHashes": [
+        "9d565ae90d161cc9"
+      ],
+      "metrics": {
+        "modelCalls": 542,
+        "modelDecisions": 494,
+        "parseFailures": 50,
+        "recoveredReplies": 0,
+        "proposedActions": 507,
+        "submittedActions": 1431,
+        "executedActions": 1426,
+        "staleSubmissions": 0,
+        "gameplayRejections": 5,
+        "skippedActions": 0
+      },
+      "metricsEpisodes": 1
+    }
+  ],
+  "previousAttempts": []
+}

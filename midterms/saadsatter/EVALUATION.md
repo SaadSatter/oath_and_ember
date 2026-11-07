@@ -94,6 +94,25 @@ Videos are local files in `evaluation-runs/live/`, excluded from Git; the links 
 
 Episode wall time differs from game time and from recording-session wall time; recording startup/finalization is not model latency. These recordings supplement the declared primary trials rather than replacing historical measurements.
 
+## Continuous showcase — Pilot-39, gameplay-complete (excluded from A/B/C)
+
+A separate, prompt-tuned demonstration of the whole connected quest in one episode, from the normal Goddess Shrine checkpoint: opening quest, Hedge Maze, Griffin combat, wig, offering. One `model-centralized` planner on `gpt-6-luna` (medium effort, batch 4), seed 0, source `39a142b`, guidance `showcase-maze-griffin-v1`. It is **not** part of the declared A/B/C comparison and is not pooled with it.
+
+**Result: gameplay-complete; recorded `success: false`, terminal reason `token_limit`.** In 236.4 game-seconds the two AI players:
+
+- received the quest;
+- obtained the Enchanted Shears (139.7 s);
+- returned to the shrine and entered the Griffin Enclosure;
+- defeated the Griffin in combat (214.0 s);
+- claimed the wig (233.7 s);
+- returned, and had the offering accepted by the Goddess (236.4 s).
+
+61 ticks later, Coco's planner reached the owner-approved limit of 8,000,000 tokens per hero, during the finale dialogue. `chapter0.complete`, the scenario's declared success condition, was therefore not recorded. Only the finale dialogue remained. We report the run as gameplay-complete and do not relabel the raw result.
+
+542 model calls, 2 invalid actions, one knockout (Coco, recovered by the game's normal respawn). Estimated cost $1.556206. Every step was verified by an exact replay of the trace (1,428 step results). [Preserved evidence](evidence/showcase/pilot-39-original/README.md). [Live recording](../../evaluation-runs/live/showcase-maze-griffin-complete-v1-seed0-model-centralized-openai-2026-11-07T21-45-29-018Z/recording.webm): local only, 595 MB, about 99 minutes of wall time, because model latency is included.
+
+Context: earlier showcase attempts Pilot-37 (Griffin-trail detour) and Pilot-38 (cow puzzle) were manually stopped. This is one tuned run, not evidence of reliability. A later prompt revision (`showcase-maze-griffin-v2`) is documented in `docs/midterm/SHOWCASE_PROMPT_V2_PROPOSAL.md`.
+
 ## Pilot-33 — preserved Situation B post-tuned completion
 
 The owner designates Pilot-33 as **B/post-tuned/1**. It used `gpt-6-luna` medium, `model-centralized`, commit `1f0ca45`, approved guidance **`b-post-combined-v4`** (`1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34`). This is the return scenario, with the same checkpoint as the B heuristic baseline.

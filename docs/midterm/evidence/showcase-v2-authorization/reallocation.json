@@ -1,0 +1,35 @@
+{
+  "authorization": "Owner chose 'Move $2 from final' in Claude Code session e3e1a5e6 (2026-11-07): pilot $9->$11, final $15->$13, total $25 unchanged",
+  "beforeConfig": {
+    "totalCapUsd": 25,
+    "stages": {
+      "smoke": 0.1,
+      "pilot": 9,
+      "final": 15,
+      "contingency": 0.9
+    }
+  },
+  "afterConfig": {
+    "totalCapUsd": 25,
+    "stages": {
+      "smoke": 0.1,
+      "pilot": 11,
+      "final": 13,
+      "contingency": 0.9
+    }
+  },
+  "entryCount": 39,
+  "allEntriesPreservedSha256": "e6e5c372e04978bd1a33e727dbc51335a5f9a612c32db7bb58947a97f76b2bb7",
+  "ledgerIdentityPreserved": true,
+  "openReservations": 0,
+  "committedUsd": {
+    "total": 8.254131,
+    "pilot": 8.25121,
+    "final": 0
+  },
+  "pilotRemainingAfterUsd": 2.74879,
+  "beforeFileSha256": "2ca0f89b062c78088ddbcef007f78c8f0cf9f1dbf00c74016cf906b0a17b3ba2",
+  "afterFileSha256": "2f6c9accfe799e841da71c36fbbd3efb293ca79a28f8d5dd0446b348208da18e",
+  "newReservationMade": false,
+  "applied": true
+}

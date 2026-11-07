@@ -1,0 +1,3 @@
+Trace evaluation-runs/live/showcase-maze-griffin-complete-v1-seed0-model-centralized-openai-2026-11-07T21-45-29-018Z/showcase-maze-griffin-complete-v1-seed0/trace.jsonl (sha256 89942ff13b3cc1dc, chain verified, pilot-39)
+Scenario showcase-maze-griffin-complete-v1, seed 0; Sieg 680 actions, Coco 751 actions; recorded end: token_limit
+REPLAY MATCHES THE TRACE: start hash, 1428 step results, end (token_limit, ba1e9a0bdaf37db1) and 14245 ticks.

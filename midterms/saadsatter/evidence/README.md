@@ -22,6 +22,12 @@ This folder holds the evidence for the primary evaluated episode, **S2-local, th
 
 **Live** means the browser viewer recorded the episode while it was played. **Replay** means `scripts/midterm/replay-video.ts` re-ran the recorded actions through the real engine afterwards, with zero model calls, and checked every step against the trace (`matchesTrace: true`, and the manifest names the trace's SHA-256). A replay shows real model choices but is not a live capture, and is labelled as one wherever it is linked.
 
+## Continuous showcase (excluded from A/B/C)
+
+| Evidence | Policy | Result (authoritative `summary.json`) | Recording |
+| --- | --- | --- | --- |
+| [`showcase/pilot-39-original`](showcase/pilot-39-original/README.md) | `model-centralized` (one LLM planner, prompt-tuned showcase guidance) | **gameplay-complete**: maze, Griffin defeated, wig claimed, offering accepted at 236.4 game-s. Recorded `success: false` (`token_limit` during the finale dialogue; `chapter0.complete` not reached). Replay-verified | **live** capture, local only (595 MB) |
+
 ## Recordings and delivery
 
 Videos are **not committed** to this folder. They are generated, large (one is 95 MB), and the course asks for large generated files to stay out of the PR. Each video's SHA-256 is in the manifest, so a downloaded copy can be checked against it.

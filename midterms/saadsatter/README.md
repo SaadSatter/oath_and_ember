@@ -19,6 +19,7 @@ No new paid run is authorized by these documents.
 | Rules/source map | [RULE_SOURCE_MAP.md](RULE_SOURCE_MAP.md) |
 | Human playtest notes | [PEER_NOTES.md](PEER_NOTES.md) — scaffold, not completed evidence |
 | Full live model recording | [Pilot-30 evidence/video](evidence/traces/pilot-30-model-centralized-S2-local-seed0/README.md); about 32.7 minutes, not yet the required 3–5 minute submission video |
+| Continuous showcase (demonstration, excluded from A/B/C) | [Pilot-39](evidence/showcase/pilot-39-original/README.md): gameplay-complete in 236.4 game-s (maze, Griffin defeated, wig, offering accepted); recorded `success: false` because the token limit ended it during the finale dialogue, before `chapter0.complete`. See [EVALUATION.md](EVALUATION.md#continuous-showcase--pilot-39-gameplay-complete-excluded-from-abc) |
 | Preserved historical evaluation | [EVALUATION_HISTORY_BEFORE_ABC_DECLARATION.md](EVALUATION_HISTORY_BEFORE_ABC_DECLARATION.md) — older versions/results, not pooled with current suite |
 | CI | Source template `ci/midterm-saadsatter.yml`; packaged to course `.github/workflows/midterm-saadsatter.yml`. Latest-green CI still pending |
 | Game's own README | [GAME_README.md](GAME_README.md) (created during packaging) |

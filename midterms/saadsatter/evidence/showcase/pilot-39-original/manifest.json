@@ -1,0 +1,42 @@
+{
+  "README.md": {
+    "sha256": "699813b7b2c41f47a4d03f2e25993897e073b8641d35b249a686d38cb99fc3ca",
+    "bytes": 2714
+  },
+  "live.json": {
+    "sha256": "772a90fa65a1dfc8c6092ddc07c4ebabf75056072543415f662d1f9e24828a64",
+    "bytes": 1787
+  },
+  "original-files.json": {
+    "sha256": "f306f3a930c2d6dc6b5ecc899a9365975955961136a15fd41d7c139976ea08bf",
+    "bytes": 1424
+  },
+  "recording.json": {
+    "sha256": "c07c1dee59ef86fa1e0f3927089640dbf762788ddb408bad6c15e71545b7706c",
+    "bytes": 2319
+  },
+  "replay.txt": {
+    "sha256": "6d9a0382deb335f9818c4788f9e3966e87893eafa2aceb710741667cea70c62e",
+    "bytes": 445
+  },
+  "results.json": {
+    "sha256": "7fb43b11134e6e7bb7e1c98c69cde81829eeae1cfcde4cb8b3d6713985e968c3",
+    "bytes": 8696
+  },
+  "results.md": {
+    "sha256": "3890c676d969928dc2f71eb0ed3049a5b449c300c5f3f170add4d01d83cda5b1",
+    "bytes": 572
+  },
+  "run.json": {
+    "sha256": "de5dfb06d3322d391e944e519c13a6e4d2b56063792a24c434731cc39b5d9866",
+    "bytes": 977
+  },
+  "showcase-maze-griffin-complete-v1-seed0/summary.json": {
+    "sha256": "0bc1c1720108d0712a44e2e6acdfbb3a7e261007aac4d36871371a4f0372285c",
+    "bytes": 6868
+  },
+  "showcase-maze-griffin-complete-v1-seed0/trace.jsonl.gz": {
+    "sha256": "ec623cde7db4ea6e1986a68f7965aff61ba200acf4bef523ba410ac7371da91a",
+    "bytes": 1621973
+  }
+}

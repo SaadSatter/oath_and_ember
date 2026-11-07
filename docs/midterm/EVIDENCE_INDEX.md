@@ -422,3 +422,7 @@ Positioning proposal approved for one new owner-launched attempt at `a899acc`: [
 ## Showcase maze wandering and guidance v2
 
 [Diagnosis, v2 text, owner approval and sequencing](SHOWCASE_PROMPT_V2_PROPOSAL.md). Pilot-37 to Pilot-39 maze plans were dominated by health caution and phase boilerplate; the prompt was the only change since Pilot-30. Owner: health is inconsequential for the showcase. v2 guidance `364acf1a…` is the phase plan only (no v4). The briefing health sentence is removed (definition `e6136fa4…`). The full prompt is `3045e66d…`. $2 moved from final to pilot via `scripts/midterm/ledger-reallocate.ts`, to be applied after Pilot-39 settles. Outcome-informed showcase tuning, excluded from A/B/C. Same-session work; not an independent review.
+
+## Pilot-39 continuous showcase (gameplay-complete)
+
+[Preserved evidence and replay check](../../midterms/saadsatter/evidence/showcase/pilot-39-original/README.md). The offering was accepted at 236.4 game-s; `token_limit` (Coco, 8M tokens) ended the run 61 ticks later during the finale dialogue, so recorded `success: false` and no `chapter0.complete`. The owner reports it as gameplay-complete, without relabelling. $1.556206 settled. After it settled, `scripts/midterm/ledger-reallocate.ts --apply` moved $2 from final to pilot ([evidence](evidence/showcase-v2-authorization/reallocation.json)).

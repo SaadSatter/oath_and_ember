@@ -123,3 +123,7 @@ It takes the ledger's own exclusive lock, rewrites only `config`, checks that th
 - `--apply` migrates with all 39 entries preserved (pilot remaining $3.054996 in that rehearsal);
 - re-running refuses as already migrated;
 - the real ledger stays unchanged.
+
+### Migration applied
+
+Pilot-39 settled at $1.556206 (gameplay-complete; `token_limit` during the finale dialogue). The ledger had zero open reservations, and `ledger-reallocate.ts --apply` then migrated the stage split. All 39 entries were preserved, and pilot now has $2.74879 remaining. The canonical ledger opens under the new code split. [Evidence](evidence/showcase-v2-authorization/reallocation.json).
