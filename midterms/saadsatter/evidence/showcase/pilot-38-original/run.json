@@ -1,0 +1,34 @@
+{
+  "suiteRevision": 2,
+  "player": "model-centralized",
+  "situations": [
+    "showcase-maze-griffin-complete-v1"
+  ],
+  "seeds": [
+    0
+  ],
+  "final": false,
+  "gitHash": "ec46864",
+  "wallSeconds": 7200,
+  "model": {
+    "gateway": "openai:gpt-6-luna@medium",
+    "stage": "pilot",
+    "priceSource": "https://developers.openai.com/api/docs/models/gpt-6-luna (verified 2026-10-28); https://developers.openai.com/api/docs/pricing; https://developers.openai.com/api/docs/guides/prompt-caching",
+    "maxBatch": 4,
+    "manualHash": "4b091a6630dd56f236f89f8e2213a6bb7cad4a31d4851d1883f95867d92bfa86",
+    "guidance": {
+      "id": "showcase-maze-griffin-v1",
+      "status": "approved",
+      "sha256": "1bd73ba9714f78e1b4bdf23975ffff2f4ec6ff4fc4129d95a5e5394b0ccb18f2",
+      "situations": [
+        "showcase-maze-griffin-complete-v1"
+      ]
+    }
+  },
+  "episodeCapUsd": 2,
+  "launch": {
+    "launcher": "scripts/midterm/live.ts",
+    "speed": 1,
+    "viewer": true
+  }
+}

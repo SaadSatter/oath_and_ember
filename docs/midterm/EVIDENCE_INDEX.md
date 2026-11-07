@@ -412,3 +412,7 @@ Shrine-start revision 3 execution authorized by owner after bac3a5f, source `1b3
 [Current north-next prompt/budget handoff](SHOWCASE_NORTH_NEXT.md), [preserved partial Pilot-37](../../midterms/saadsatter/evidence/showcase/pilot-37-original/README.md). Outcome-informed showcase-only tuning; original run reached maze return then detoured south to Bridge Ruins, manual stop. New prompt explicitly selects north Griffin trail and excludes south Puzzle Map2. Pilot cap $9, contingency $0.90, total $25 by owner selection; paid run locked pending new exact-hash approval. No A/B/C changes.
 
 North-next prompt approved for one owner-launched attempt at `2ba618d`; [authorization checks](evidence/showcase-north-next-owner-authorization/). Prior pending-approval text is historical. No new model result yet.
+
+## Pilot-38 cow failure and positioning proposal
+
+[Diagnosis](SHOWCASE_COW_DIAGNOSIS.md), [original stopped run](../../midterms/saadsatter/evidence/showcase/pilot-38-original/README.md), [new proposed hashes](evidence/showcase-cow-diagnosis/). Wrong landing geometry and actions-before-walking order; no engine/controller change. Outcome-informed showcase proposal only, excluded from A/B/C. 17 targeted tests/typecheck pass; paid retry locked pending new approval.

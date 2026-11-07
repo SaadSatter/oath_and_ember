@@ -1,0 +1,26 @@
+{
+  "guidance.txt": {
+    "sha256": "ea5d75ba9b74a4c72ac60f0b2f35aaa8e991c5e767737a34fc14b871a355d320",
+    "bytes": 8036
+  },
+  "hashes.json": {
+    "sha256": "2d895f2b10472e21a97cdd75a160ead13629452baf6c1f998ec947f024966c7c",
+    "bytes": 2313
+  },
+  "isolation.json": {
+    "sha256": "eb82d61a4d520c54b191fe02caff7f6b31933a005f2757c97c1bb39ee0ba978c",
+    "bytes": 190
+  },
+  "planner-system-prompt.txt": {
+    "sha256": "0099a850c7219c31797e0802bc82c7a688c99512adc600fe4a4aa808b7087e8b",
+    "bytes": 40193
+  },
+  "tests.txt": {
+    "sha256": "5e80fffcf484533ba4c47436581cf22e1e3bec07bf82526cff34e42dee7ff268",
+    "bytes": 205
+  },
+  "typecheck.txt": {
+    "sha256": "8fa1cf5506304e8abac55868e7f1a136c9b1dde57a3981a382da4c21ea129a6f",
+    "bytes": 29
+  }
+}

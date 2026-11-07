@@ -1,21 +1,24 @@
-// Owner-authorized north-next showcase; no provider call in tests.
-import { describe, expect, it } from "vitest";
+// Showcase paid scope AFTER a future unlock (audit 2026-11-07, finding 4).
+// TEST-ONLY: the lock is mocked open here so the scope check behind it can be
+// exercised. The real SHOWCASE_PAID_APPROVED stays false (showcase.test.ts).
+import { describe, expect, it, vi } from "vitest";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { SpendLedger } from "../src/ledger.js";
 import { MockGateway } from "../src/policies/mockGateway.js";
+vi.mock("../src/showcase.js", async (orig) => ({ ...(await orig<typeof import("../src/showcase.js")>()), SHOWCASE_PAID_APPROVED: true }));
 const { validatePlan, defaultWallSeconds, runSuite } = await import("../src/harness.js");
 import type { ModelSetup } from "../src/harness.js";
 
 const ID = "showcase-maze-griffin-complete-v1" as const;
 const model = (over: Record<string, unknown> = {}) => ({ gateway: { label: "openai:gpt-6-luna@medium" }, stage: "pilot", maxBatch: 4, guidance: "showcase-maze-griffin-v1", ...over }) as unknown as ModelSetup;
 
-describe("owner-authorized north-next scope", () => {
+describe("showcase paid scope once unlocked (lock mocked open in this test only)", () => {
   it("admits only openai:gpt-6-luna@medium, batch 4, the showcase guidance and seed 0", () => {
-    // Only the approved exact scope passes.
-    expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: model() })).not.toThrow();
+    // The guidance itself is still "proposed", so even the exact scope is refused by the guidance check.
+    expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: model() })).toThrow(/not approved/);
     expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [1], model: model() })).toThrow(/seed 0/);
     expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: model({ gateway: { label: "openai:gpt-6-luna@high" } }) })).toThrow(/limited to/);
     expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: model({ maxBatch: 2 }) })).toThrow(/limited to/);
@@ -57,14 +60,14 @@ describe("owner-authorized north-next scope", () => {
     } finally { ledger.close(); rmSync(dir, { recursive: true, force: true }); }
   }, 60_000);
 
-  it("the exact live CLI validates but cannot dispatch without a credential", () => {
+  it("the real live CLI refuses paid execution while locked, before credentials or a provider", () => {
     const env = { ...process.env };
     delete env.OPENAI_API_KEY;
     delete env.ANTHROPIC_API_KEY;
     const result = spawnSync(process.execPath, ["--import", "tsx", "scripts/midterm/live.ts", "--scenario", ID, "--seed", "0", "--player", "model-centralized", "--guidance", "showcase-maze-griffin-v1", "--gateway", "openai", "--model", "gpt-6-luna", "--effort", "medium", "--max-spend-usd", "2.00", "--wall-seconds", "7200", "--paid"], { env, encoding: "utf8", timeout: 30_000 });
     expect(result.status).not.toBe(0);
-    expect(result.stderr).toMatch(/no OPENAI_API_KEY and no interactive terminal/);
-    expect(result.stderr).not.toMatch(/locked for paid|not approved|paid scope requires|insufficient/);
+    expect(result.stderr).toMatch(/locked for paid model runs/);
+    expect(result.stderr).not.toMatch(/API_KEY|credential|insufficient/);
   }, 35_000);
 
 });
