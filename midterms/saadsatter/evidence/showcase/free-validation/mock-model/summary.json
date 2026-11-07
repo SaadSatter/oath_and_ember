@@ -1,0 +1,155 @@
+{
+  "situation": "showcase-maze-griffin-complete-v1",
+  "suiteRevision": 2,
+  "scenario": {
+    "preset": "showcase-maze-griffin-complete-v1",
+    "title": "Showcase: Hedge Maze to Griffin to Goddess (demonstration, excluded from A/B/C)",
+    "goal": "Showcase (excluded from A/B/C): from the Hedge Maze entrance, obtain the Enchanted Shears, travel to the Griffin Enclosure, defeat the Griffin in combat, claim its wig, offer it to the goddess and reach chapter0.complete, with neither hero knocked out.",
+    "revision": 2,
+    "tutorialId": "2ec2f251",
+    "briefing": true
+  },
+  "seed": 0,
+  "player": "model-centralized",
+  "policies": {
+    "sieg": "centralized-f0592888(mock:random-legal@0)·batch4·tutorial-2ec2f251·briefing-a7116c6b·task-a3e1355f·guidance-c0f7382e",
+    "coco": "centralized-f0592888(mock:random-legal@0)·batch4·tutorial-2ec2f251·briefing-a7116c6b·task-a3e1355f·guidance-c0f7382e"
+  },
+  "gateway": "mock:random-legal@0",
+  "modelIds": [
+    "mock"
+  ],
+  "gitHash": "c30d2fb",
+  "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+  "startTick": 405,
+  "prefix": "opening scene, normal entry to Hedge Maze (before arrival dialogue)",
+  "status": "terminated",
+  "reason": "error",
+  "success": false,
+  "gameTicks": 14416,
+  "gameSeconds": 240.3,
+  "wallSeconds": 1.7,
+  "decisions": {
+    "sieg": 547,
+    "coco": 527
+  },
+  "actions": {
+    "sieg": {
+      "move": 83,
+      "wait": 445,
+      "attack": 8,
+      "interact": 5,
+      "defend": 5,
+      "ability": 1
+    },
+    "coco": {
+      "defend": 5,
+      "advance_dialogue": 5,
+      "wait": 422,
+      "ability": 9,
+      "move": 76,
+      "attack": 6,
+      "interact": 4
+    }
+  },
+  "attempt": 1,
+  "endHash": "2dc8b8b249c4715eb62a8cf440bdc1c27bcfd88549844fcd63c1af1c1edbffc0",
+  "limits": {
+    "maxTicks": 36000,
+    "maxDecisionsPerPlayer": 4000,
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 8000000
+  },
+  "modelLimits": {
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 8000000,
+    "maxSpendUsd": 2,
+    "callTimeoutMs": 30000
+  },
+  "invalidActions": {
+    "sieg": 0,
+    "coco": 3
+  },
+  "metrics": {
+    "sieg": {
+      "modelCalls": 66,
+      "modelDecisions": 50,
+      "parseFailures": 16,
+      "recoveredReplies": 0,
+      "proposedActions": 59,
+      "submittedActions": 547,
+      "executedActions": 547,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 2
+    },
+    "coco": {
+      "modelCalls": 42,
+      "modelDecisions": 35,
+      "parseFailures": 8,
+      "recoveredReplies": 0,
+      "proposedActions": 47,
+      "submittedActions": 527,
+      "executedActions": 524,
+      "staleSubmissions": 0,
+      "gameplayRejections": 3,
+      "skippedActions": 6
+    }
+  },
+  "metricsVersion": 2,
+  "messages": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "batchStops": 8,
+  "modelCalls": {
+    "attempted": 108,
+    "failed": 0,
+    "timedOut": 0,
+    "unknownUsage": 0
+  },
+  "latencyMs": {
+    "mean": 0,
+    "max": 0
+  },
+  "tokens": {
+    "input": 922483,
+    "output": 3210,
+    "cacheRead": 0,
+    "cacheWrite": 0
+  },
+  "spendUsd": {
+    "known": 0,
+    "charged": 0
+  },
+  "priceSource": "mock: no cost, no network",
+  "ledgerEntry": "pilot-1",
+  "episodeCapUsd": 2,
+  "wallLimitSeconds": 3600,
+  "launch": {
+    "launcher": "scripts/midterm/live.ts",
+    "speed": null,
+    "viewer": false
+  },
+  "finalClaim": null,
+  "evaluation": {
+    "label": "SHOWCASE",
+    "definitionHash": "23701f01086385d245a929640c58c1c596934a1ee21f0cddf885d2f911495d29",
+    "officialEvaluation": false,
+    "disclosure": "Prompt-tuned continuous gameplay demonstration — excluded from official A/B/C evaluation results."
+  },
+  "promptHashes": {
+    "sieg": "fecf10c70440a6e0c8f8283c774098d1150b3448add661be8d8b9ced17fdf753",
+    "coco": "fecf10c70440a6e0c8f8283c774098d1150b3448add661be8d8b9ced17fdf753"
+  },
+  "configHash": "69545ed596823ea3a36c202ef7ecaaf56f2f6c2a618cafb38cdc17595deb3f66",
+  "guidance": {
+    "id": "showcase-maze-griffin-v1",
+    "status": "proposed",
+    "sha256": "c0f7382e577a59b4a71d2141dad90b2037880a7dad55c1f01e34592c636a9c61",
+    "situations": [
+      "showcase-maze-griffin-complete-v1"
+    ]
+  },
+  "trace": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/showcase-mock-c30d2fb-seed0/showcase-maze-griffin-complete-v1-seed0/trace.jsonl"
+}

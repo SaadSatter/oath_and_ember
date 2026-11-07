@@ -390,3 +390,7 @@ Supports 2a/2c/3b/3c/3d/5a. [SITUATION_C_PREPARED.md](SITUATION_C_PREPARED.md): 
 
 Supports 4a/4b/4c/5a. C1 [Pilot-34](../../midterms/saadsatter/evidence/traces/pilot-34-model-centralized-griffin-prepared-return-v1-seed0/manifest.json) (success, peaceful, $0.586742); C3 [Pilot-35](../../midterms/saadsatter/evidence/traces/pilot-35-model-centralized-griffin-prepared-return-v1-seed0/manifest.json) (success, peaceful, $0.287029; outcome-informed C-specific tuning, r11); C2 [recorded baseline](../../midterms/saadsatter/evidence/traces/c2-approved-recorded-2026-11-06/manifest.json) (success, combat). The comparison table is in [EVALUATION.md](../../midterms/saadsatter/EVALUATION.md); the C rows are in [declared-results.json](evaluation-abc/declared-results.json). All three runs replay exactly.
 
+
+## Showcase: continuous Hedge Maze → Griffin → Goddess episode (excluded from A/B/C)
+
+Supports 5c (recording) only. **Prompt-tuned continuous gameplay demonstration — excluded from official A/B/C evaluation results.** [SHOWCASE_CONTINUOUS_EPISODE.md](SHOWCASE_CONTINUOUS_EPISODE.md): scenario `showcase-maze-griffin-complete-v1` (start = S2-A's `fdc49877…`), proposed guidance `showcase-maze-griffin-v1` (`c0f7382e…`), free validation at `c30d2fb` ([evidence](../../midterms/saadsatter/evidence/showcase/free-validation/README.md): scripted baseline success in 141.7 game-s, replay exact), replay pacing fix `6fc3102`. Paid run locked pending owner approval; no paid call made.

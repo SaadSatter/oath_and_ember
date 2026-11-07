@@ -1,0 +1,28 @@
+Showcase plan for both heroes (a demonstration of the whole remaining quest in one run). Work through these four phases in order. Decide which phase you are in only from what the screens, the area name, the shared backpack, the labels and the dialogue show, never from elapsed time or from an order having been accepted. Keep the current phase and the evidence for it in the plan.
+
+Phase 1, Hedge Maze: the two heroes cooperate to get through the maze and obtain the Enchanted Shears. Give Coco the environmental obstacles her fire, pull or flight can affect; give Sieg the enemies, gates and anything that must be chased, struck, pushed or reached quickly. When one hero clears a way, send the other through it. Phase 1 ends only when the shared backpack lists the Enchanted Shears.
+
+Phase 2, travel: leave the maze through its RETURN exit. At the Goddess Shrine, take the exit marked for the Griffin. Travel only through ordinary exits; do not visit other areas. Keep both heroes together and avoid needless damage on the way. Health carries over between areas.
+
+Phase 3, Griffin combat: defeat the Griffin in combat until its label shows it defeated. Coco attacks from range; Sieg protects himself, keeps clear of the beam line Coco is using, and strikes when the Griffin is in his reach. Both follow the combat guidance below. While the Griffin is alive, do not go to its nest or use any backpack item there: this demonstration requires the combat route. Keep both heroes alive; a knockout ends the episode.
+
+Phase 4, wig and Goddess: only after the Griffin's label shows it defeated, Coco claims the wig at its nest (only she can reach it, by flight). Confirm that the shared backpack lists the wig. Then return through the RETURN exit to the Goddess Shrine, offer the wig at the offering, and read and answer every following dialogue until the story shows that Chapter 0 is complete. Holding the wig is not the end.
+
+Planner guidance for both heroes (general-purpose combat and planning guidance, based on what the heroes' screens show):
+At each reply, check both heroes against these steps in order. Give a new order only to a hero whose current plan needs to change; a hero whose plan still fits its situation carries on without one.
+
+1. Protect both heroes first. Before any offensive order, check each hero's health and exposure. If a hero's screen shows a visible attack warning for that hero's position (such as a marked line or area), move that hero off it or have it defend before it lands. Do not keep a hero in a warned area to finish an attack. When a hero's health is low, give it a safer role and let the healthier hero take the riskier task, but keep it doing useful work rather than defending without a threat. While threats are close, prefer short actions over long walks or long waits.
+
+2. Find a reachable, effective attack position. Plan over the combined map: walls, water and the listed extents of enemies and creatures block movement, and a hero's body needs open ground around it. Consider a few open tiles from which the hero's attack can plausibly reach the target in a straight line, not at the edge of its range, not overlapping any body, and with the other hero out of that line. Prefer one that is safe and short to reach. Do not stay on top of the target unless attacks from there visibly work.
+
+3. Attack when there is a plausible chance to connect: the target is visible, in reach, in the right direction and not blocked. Otherwise move toward the chosen position instead of attacking.
+
+4. Verify damage from what is shown, such as the target's health or label, allowing a short time for a projectile or effect to arrive before judging.
+
+5. Repeat what works and adjust what does not. Keep in known_obstacles which position, direction and timing combinations showed damage and which showed none, and return to a position that worked when it is safe. When attacks keep showing no effect, name one likely cause (distance, direction, obstruction, timing or the target's state), change only that, and check again. If several changes fail, try a different attack or another part of the objective.
+
+6. Avoid unproductive time. Wait only for a specific expected change; defend only against a concrete, imminent threat. A hero that cannot attack usefully now (for example while its ability recharges) should reposition, get clear or scout. Do not move without a positioning purpose. When what the objective needs next is on neither screen, explore systematically: head for the nearest unvisited edge of the map ("?" next to seen open ground), note searched areas in the plan, and back off and go around when a way is blocked. When the world changes (a way opens, a body moves), drop earlier blocked results near it and test again.
+
+7. Coordinate both heroes. Give the two heroes complementary orders, and do not leave both exposed to the same visible threat; keep both heroes alive when the task requires it.
+
+8. Verify every required success condition from observations before treating the objective as done. Surviving, attacking or reaching one milestone is not the whole objective; follow the task to its end.

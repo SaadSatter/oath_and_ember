@@ -1,0 +1,145 @@
+{
+  "label": "Prompt-tuned continuous gameplay demonstration — excluded from official A/B/C evaluation results.",
+  "stage": "free validation only; no paid call",
+  "scenario": "showcase-maze-griffin-complete-v1",
+  "implementationCommit": "c30d2fb",
+  "replayPacingCommit": "6fc3102",
+  "files": [
+    {
+      "path": "baseline-live/live.json",
+      "bytes": 445,
+      "sha256": "956c10792de7a113a6bbb4c9cedb9d2fa641ae0e1d0b0bcb53eb55f25cac06ba"
+    },
+    {
+      "path": "baseline-live/recording.json",
+      "bytes": 2067,
+      "sha256": "a70423693fedd990693693425f7eb03e9c7c30b5786d5c40fa9446fbf8d12760"
+    },
+    {
+      "path": "baseline-live/replay-check.txt",
+      "bytes": 374,
+      "sha256": "f6d2406f233ff1fe128dd384817120a640b7cbf78695cc476c13fe341ab7ffc4"
+    },
+    {
+      "path": "baseline-live/results.json",
+      "bytes": 5318,
+      "sha256": "2290534ce9e633391a9e2c3c6d82728c63fe2cde68b2c316c9e6bf9de0ce5fbf"
+    },
+    {
+      "path": "baseline-live/results.md",
+      "bytes": 560,
+      "sha256": "99e8ef0e2e0349b7723b06c53dc306bc3cb3798aab8c210a9faffa3d270ba843"
+    },
+    {
+      "path": "baseline-live/run.json",
+      "bytes": 328,
+      "sha256": "464a6d19aa2e7b91408511821a400de710437b6acb4f7a167f88d0500397e6e0"
+    },
+    {
+      "path": "baseline-live/summary.json",
+      "bytes": 3868,
+      "sha256": "04668cdae1ef70ed4ea970a383114851a4fd866aabf67e529188e76c5ae458a2"
+    },
+    {
+      "path": "baseline-live/trace.jsonl.gz",
+      "bytes": 873604,
+      "sha256": "60d6a74dbe2785b62fef6c9b3c3192252e459755597af1871505a2c42ce7d04d"
+    },
+    {
+      "path": "baseline-live/video-check.json",
+      "bytes": 1933,
+      "sha256": "d79a2ea86c0eff375e97b7cb9d714b6b9973d73d93f390891510e6cc7a50ec44"
+    },
+    {
+      "path": "baseline-replay/recording.json",
+      "bytes": 1339,
+      "sha256": "1e5f0eb0b91ad2598d54eeab776d5ed5d8af6e13591782bb03280e3473b24d3c"
+    },
+    {
+      "path": "baseline-replay/video-check.json",
+      "bytes": 1302,
+      "sha256": "fb5cc61417ff6e70e125fa3b621422346d5f44a2e8677ac260383b29c0c77880"
+    },
+    {
+      "path": "full-test-result.txt",
+      "bytes": 192,
+      "sha256": "06af2822f1145aed804ece850195d29351dadff4981251be70faffea3d020f9e"
+    },
+    {
+      "path": "guidance-showcase-maze-griffin-v1.txt",
+      "bytes": 5142,
+      "sha256": "c0f7382e577a59b4a71d2141dad90b2037880a7dad55c1f01e34592c636a9c61"
+    },
+    {
+      "path": "mock-model/live.json",
+      "bytes": 632,
+      "sha256": "d8e3b096c8de918d0a66ce0a978cc7f71e19e0b8b92d76316e0a3f92b43ea4ca"
+    },
+    {
+      "path": "mock-model/replay-check.txt",
+      "bytes": 370,
+      "sha256": "b4fe5fff288d1f12da8ae2ed8d00fecb67f123b381f407b321d54124a3a7af9d"
+    },
+    {
+      "path": "mock-model/results.json",
+      "bytes": 5923,
+      "sha256": "166a5d59c3d6e2f66e4d85888701a09b86843e830fb9b8588c2784f75004848f"
+    },
+    {
+      "path": "mock-model/results.md",
+      "bytes": 564,
+      "sha256": "7108ce9604ec9233c394d8c0f8811564340853cca5ff91fc85e1092ffe7d27f6"
+    },
+    {
+      "path": "mock-model/run.json",
+      "bytes": 791,
+      "sha256": "d7b7b6d697937930331a1e4784eb961f8aa5b9e751f2381aab3c9f0feb7a2977"
+    },
+    {
+      "path": "mock-model/summary.json",
+      "bytes": 4405,
+      "sha256": "db8ba0540af0eb6f7a7c21f435ee473eef0577ffc004032adc4935f8171055d6"
+    },
+    {
+      "path": "mock-model/trace.jsonl.gz",
+      "bytes": 517652,
+      "sha256": "1339fede8c4cb4d47901cfe73b8e624eb5f6417c4134586fe7453e4afd4b7a1e"
+    },
+    {
+      "path": "planner-system-prompt.txt",
+      "bytes": 36968,
+      "sha256": "fecf10c70440a6e0c8f8283c774098d1150b3448add661be8d8b9ced17fdf753"
+    },
+    {
+      "path": "showcase-check.json",
+      "bytes": 2233,
+      "sha256": "5b7795846baba72dd67c4ce310c7f3307b28df43ec6d2591a4b0c5d9f1a6acc4"
+    }
+  ],
+  "uncompressedTraces": {
+    "baseline-live": {
+      "uncompressedSha256": "d9e9893280add7aa6d76cb32ff1b44881090163c01cb0a3a51c038bb5f008b51",
+      "bytes": 14702044
+    },
+    "mock-model": {
+      "uncompressedSha256": "2fa229b8842d0f1b6ce9613f4a7c752b9057d93a7468c455a415903cd51f4ea8",
+      "bytes": 10538728
+    }
+  },
+  "videos": [
+    {
+      "kind": "live viewer capture (free baseline, speed 1)",
+      "localPath": "evaluation-runs/live/showcase-free-baseline-c30d2fb-seed0/recording.webm",
+      "bytes": 26248789,
+      "sha256": "8babaf7f85516832b508406e4f2d97defdf64158710ca03dd6788cfffb25d691",
+      "committed": false
+    },
+    {
+      "kind": "verified trace replay, game-clock paced (free baseline, speed 1)",
+      "localPath": "evaluation-runs/live/showcase-free-baseline-seed0-replay-6fc3102/recording.webm",
+      "bytes": 19812646,
+      "sha256": "43339b66f459f821b907136b03f9768d7b47fbba16d4c6d198d5e85ae4df932a",
+      "committed": false
+    }
+  ]
+}

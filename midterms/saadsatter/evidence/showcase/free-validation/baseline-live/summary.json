@@ -1,0 +1,143 @@
+{
+  "situation": "showcase-maze-griffin-complete-v1",
+  "suiteRevision": 2,
+  "scenario": {
+    "preset": "showcase-maze-griffin-complete-v1",
+    "title": "Showcase: Hedge Maze to Griffin to Goddess (demonstration, excluded from A/B/C)",
+    "goal": "Showcase (excluded from A/B/C): from the Hedge Maze entrance, obtain the Enchanted Shears, travel to the Griffin Enclosure, defeat the Griffin in combat, claim its wig, offer it to the goddess and reach chapter0.complete, with neither hero knocked out.",
+    "revision": 2,
+    "tutorialId": null,
+    "briefing": false
+  },
+  "seed": 0,
+  "player": "baseline-showcase-route",
+  "policies": {
+    "sieg": "baseline-showcase-route-v1(maze-heuristic-v2+travel+griffin-heuristic-v1)",
+    "coco": "baseline-showcase-route-v1(maze-heuristic-v2+travel+griffin-heuristic-v1)"
+  },
+  "gateway": null,
+  "modelIds": [],
+  "gitHash": "c30d2fb",
+  "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+  "startTick": 405,
+  "prefix": "opening scene, normal entry to Hedge Maze (before arrival dialogue)",
+  "status": "success",
+  "reason": "success",
+  "success": true,
+  "gameTicks": 8500,
+  "gameSeconds": 141.7,
+  "wallSeconds": 205.1,
+  "decisions": {
+    "sieg": 962,
+    "coco": 1064
+  },
+  "actions": {
+    "sieg": {
+      "move": 457,
+      "advance_dialogue": 113,
+      "attack": 201,
+      "ability": 1,
+      "interact": 5,
+      "wait": 90,
+      "defend": 93,
+      "use_item": 1,
+      "choose_dialogue": 1
+    },
+    "coco": {
+      "attack": 148,
+      "advance_dialogue": 113,
+      "move": 683,
+      "ability": 6,
+      "wait": 111,
+      "interact": 2,
+      "choose_dialogue": 1
+    }
+  },
+  "attempt": 1,
+  "endHash": "2678c3a03c7d38e0ac1cd7e9088398d41b6e74d529fb8712e85782658ca30647",
+  "limits": {
+    "maxTicks": 36000,
+    "maxDecisionsPerPlayer": 4000,
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 8000000
+  },
+  "modelLimits": null,
+  "invalidActions": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "metrics": {
+    "sieg": {
+      "modelCalls": 0,
+      "modelDecisions": 0,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 0,
+      "submittedActions": 962,
+      "executedActions": 962,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 0
+    },
+    "coco": {
+      "modelCalls": 0,
+      "modelDecisions": 0,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 0,
+      "submittedActions": 1064,
+      "executedActions": 951,
+      "staleSubmissions": 112,
+      "gameplayRejections": 1,
+      "skippedActions": 0
+    }
+  },
+  "metricsVersion": 2,
+  "messages": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "batchStops": 0,
+  "modelCalls": {
+    "attempted": 0,
+    "failed": 0,
+    "timedOut": 0,
+    "unknownUsage": 0
+  },
+  "latencyMs": {
+    "mean": null,
+    "max": null
+  },
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0
+  },
+  "spendUsd": {
+    "known": 0,
+    "charged": 0
+  },
+  "priceSource": null,
+  "ledgerEntry": null,
+  "episodeCapUsd": null,
+  "wallLimitSeconds": 600,
+  "launch": {
+    "launcher": "scripts/midterm/live.ts",
+    "speed": 1,
+    "viewer": true
+  },
+  "finalClaim": null,
+  "evaluation": {
+    "label": "SHOWCASE",
+    "definitionHash": "23701f01086385d245a929640c58c1c596934a1ee21f0cddf885d2f911495d29",
+    "officialEvaluation": false,
+    "disclosure": "Prompt-tuned continuous gameplay demonstration — excluded from official A/B/C evaluation results."
+  },
+  "promptHashes": {
+    "sieg": null,
+    "coco": null
+  },
+  "configHash": "d03ff6b75507eadc76604b0d2672fef35beb7f27bedb08066587eeb8a74e0331",
+  "trace": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/showcase-free-baseline-c30d2fb-seed0/showcase-maze-griffin-complete-v1-seed0/trace.jsonl"
+}

@@ -1,0 +1,35 @@
+{
+  "video": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/showcase-free-baseline-seed0-replay-6fc3102/recording.webm",
+  "bytes": 19812646,
+  "ffmpeg": "/Users/saadsatter/Library/Caches/ms-playwright/ffmpeg-1011/ffmpeg-mac",
+  "fullDecodeExit": 0,
+  "decodeErrors": [],
+  "durationSeconds": 151.72,
+  "frames": [
+    {
+      "fraction": 0.25,
+      "time": 37.93,
+      "distinctColors": 488,
+      "meanLuma": 36,
+      "content": true,
+      "png": "/private/tmp/claude-501/-Users-saadsatter-Classes-AI-Pract-Building-Games-oath-and-ember-eval/9409e901-41c2-42f4-839f-2090bdeba517/scratchpad/r2/frame-0250.png"
+    },
+    {
+      "fraction": 0.75,
+      "time": 113.79,
+      "distinctColors": 545,
+      "meanLuma": 38,
+      "content": true,
+      "png": "/private/tmp/claude-501/-Users-saadsatter-Classes-AI-Pract-Building-Games-oath-and-ember-eval/9409e901-41c2-42f4-839f-2090bdeba517/scratchpad/r2/frame-0750.png"
+    },
+    {
+      "fraction": 0.995,
+      "time": 150.96,
+      "distinctColors": 496,
+      "meanLuma": 45,
+      "content": true,
+      "png": "/private/tmp/claude-501/-Users-saadsatter-Classes-AI-Pract-Building-Games-oath-and-ember-eval/9409e901-41c2-42f4-839f-2090bdeba517/scratchpad/r2/frame-0995.png"
+    }
+  ],
+  "ok": true
+}

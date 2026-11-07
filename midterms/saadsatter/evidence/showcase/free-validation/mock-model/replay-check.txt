@@ -1,0 +1,3 @@
+Trace evaluation-runs/live/showcase-mock-c30d2fb-seed0/showcase-maze-griffin-complete-v1-seed0/trace.jsonl (sha256 2fa229b8842d0f1b, chain verified, pilot-1)
+Scenario showcase-maze-griffin-complete-v1, seed 0; Sieg 547 actions, Coco 527 actions; recorded end: error
+REPLAY MATCHES THE TRACE: start hash, 1070 step results, end (error, 2dc8b8b249c4715e) and 14416 ticks.
