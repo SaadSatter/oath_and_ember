@@ -1,5 +1,7 @@
 # Situation C cheap baseline
 
+> **Classification (owner decision, 2026-11-06):** C-specific exploratory baseline, **excluded from the official evaluation**. It is tuned to C's literal item text ([rules-reviewer round 1](agent-evidence/reviews/2026-11-06-situation-c-rules-review.md), finding 1). The official C2 is the unchanged `baseline-griffin-heuristic-v1` ([SITUATION_C_PREPARED.md](SITUATION_C_PREPARED.md)). The implementation and history below are preserved unchanged.
+
 Prepared 2026-11-06. Player kind: `baseline-inventory-heuristic`; policy ID: `baseline-inventory-heuristic-v1`. Zero model calls. Implementation: [inventoryHeuristic.ts](../../packages/agent/src/policies/inventoryHeuristic.ts).
 
 This is a deterministic inventory-affordance overlay on the unchanged Situation B heuristic. Each hero has independent policy memory. Coco matches owned item names/descriptions against observed labels and nearby target names, approaches observed compatible objects, and tries different matching items. Item IDs are taken from inventory, not an answer table. Sieg retains the existing combat behavior. Normal dialogue, wig return and offering use the existing B fallback.

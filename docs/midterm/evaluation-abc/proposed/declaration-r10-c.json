@@ -1,7 +1,7 @@
 {
  "id": "oath-ember-abc-2026-11-06-r10-c-proposed",
  "declaredOn": "2026-11-06",
- "status": "PROPOSED, NOT ACTIVE: awaiting owner review. r9 (oath-ember-abc-2026-11-06-r9-pilot33) remains the active declaration. C paid model runs are locked in code (SITUATION_C_PAID_APPROVED = false).",
+ "status": "PROPOSED, NOT ACTIVE: owner-approved C design (2026-11-06), awaiting final authorization. r9 (oath-ember-abc-2026-11-06-r9-pilot33) remains the active declaration. C paid model runs are locked in code (SITUATION_C_PAID_APPROVED = false).",
  "guidelines": {
   "source": "owner-pasted midterm guidelines",
   "sha256": "a1040a5425d554e2451837088aba1fb1caad4f8058319dd443eed8a53ccb4c76"
@@ -47,18 +47,19 @@
     "sourceSha256": "a7c9ea786a8c57c374952d9425b7a4bc25553aa453913ae3f935fca330792edc",
     "reason": "Owner brief 2026-11-06: reuse a general observation-only baseline unchanged; replaces r9's fallback to the solution-aware baseline-quest for C. No C-specific branch.",
     "knowledge": "Same as B: generic combat, organic pull, visible labels, remembered map/feedback, normal interactions. It interacts with the nest only after a visible defeat, so it never takes the peaceful route; it does not reason about the Mirror or Shears.",
-    "freeOfflineResult": "Unregistered preparation runs at the C commit: 3/3 success (seed 0 twice, seed 1), 89.8 game-s, 0 invalid actions, 0 model calls; see docs/midterm/evidence/situation-c-preparation/summary.json",
-    "status": "proposed for C2",
-    "alternativeCandidate": {
+    "freeOfflineResult": "Unregistered preparation runs: 3/3 success (seed 0 twice, seed 1), 89.8 game-s, 0 invalid actions, 0 model calls, route defeat; docs/midterm/evidence/situation-c-preparation-r2/summary.json",
+    "status": "owner-approved for C2 (2026-11-06)",
+    "trajectoryNote": "Review round 1, finding 2: on C this baseline reproduces B-return's baseline trajectory (5389 ticks, 481/646 decisions): it fights, and the tools are dropped only by the post-defeat E at the nest. C2 therefore gives no information about the value of preparation.",
+    "routeDisclosure": "Wins through combat (Griffin defeated, then E at the nest); it does not demonstrate prepared-item use: the tools are dropped only by the post-defeat E (itemsDeliveredWhileGriffinAlive false, peacefulGroomingOccurred false).",
+    "excludedExploratoryBaseline": {
      "policyId": "baseline-inventory-heuristic-v1",
      "source": "packages/agent/src/policies/inventoryHeuristic.ts",
      "commit": "4f9695b",
      "author": "concurrent session (committed to this branch while r10 was prepared); proposal docs/midterm/evaluation-abc/proposed/baseline-inventory-v1.json",
      "difference": "Coco matches owned item names/descriptions to observed targets and delivers them, so it would try the peaceful route; its own document says it was developed with knowledge of the prepared inventory setup.",
-     "status": "not run on C by the implementation agent; owner chooses C2 between the two before any C run",
+     "status": "EXCLUDED from the official evaluation by the owner (2026-11-06): C-specific exploratory baseline. Implementation and history preserved.",
      "reviewFinding": "Review round 1, finding 1 (major if chosen): inventoryHeuristic.ts:14-34 and :121 strip exactly C's item-description flavour words and match the Shears text 'Keep it for the Griffin's nest', so it is tuned to C's literal item text. Choosing it as C2 would break the no-C-specific-baseline holdout rule unless it is reported as C-informed."
-    },
-    "trajectoryNote": "Review round 1, finding 2: on C this baseline reproduces B-return's baseline trajectory (5389 ticks, 481/646 decisions): it fights, and the tools are dropped only by the post-defeat E at the nest. C2 therefore gives no information about the value of preparation."
+    }
    }
   }
  },
@@ -100,12 +101,13 @@
    "source": "Pilot-33's guidance (verified: recorded guidanceHash and the reproduced Pilot-33 prompt hash 7ff08ba8…)",
    "textChanged": false,
    "scopeChange": "griffin-prepared-return-v1 added to its allowed situations (owner instruction); approval hash unchanged",
-   "preTunedPromptSha256": "a6fa78a05e368b6f128844eff22b4b891d4892a772a27fba9c6fac066fab079e",
-   "postTunedPromptSha256": "be19b8b5e9c350ecaf7ff7f4a478b3ca96bb1b3864d2527744823e2908548db8",
-   "preTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-63b9fbdc",
-   "postTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-63b9fbdc·guidance-12874542",
+   "preTunedPromptSha256": "6dc64411b2373596f925360334680211657c266a3fe5487b4f687868740e3701",
+   "postTunedPromptSha256": "a0c6939af45f82a10ef80dfcbcd2c40c60ca82f01d91a55f330d624292fb9323",
+   "preTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-1ba46753",
+   "postTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-1ba46753·guidance-12874542",
    "promptDifference": "C3 system prompt = C1 system prompt + v4 guidance block (nothing else)",
-   "transferCaveat": "Review round 1, finding 3: v4 is a combat plan tuned for B's defeat objective; in C, where defeat is optional, it may bias C3 toward fighting rather than using the items. C1 to C3 mixes general tuning transfer with that bias."
+   "transferCaveat": "Review round 1, finding 3: v4 is a combat plan tuned for B's defeat objective; in C, where defeat is optional, it may bias C3 toward fighting rather than using the items. C1 to C3 mixes general tuning transfer with that bias.",
+   "status": "approved in principle by the owner (2026-11-06)"
   }
  },
  "conditions": [
@@ -169,14 +171,14 @@
    "id": "griffin-prepared-return-v1",
    "renamedFrom": "griffin-prepared-v1 (r9); owner decision 2026-11-06",
    "seed": 0,
-   "definitionHash": "9c91accdecc529a6284dff61306ea9ebbbb753db5c86a74888a360b987b2ea94",
+   "definitionHash": "fbc5a96af3f409f65f85ea516af47b519a5b3bcd0fb29557adeb2ac1201ca027",
    "definitionFile": "docs/midterm/evaluation-abc/C-prepared-return-definition.json",
-   "codeDefinitionHash": "f68bf85b3bd571be186b04c46083040a179941d0d54fba3eab3f74523d197400",
+   "codeDefinitionHash": "048679a38eea4e15177af2990fac94c19b2cd4f0c40de33a92c559a57f22d4a4",
    "startHash": "28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7",
    "startTick": 540,
    "prefixActionsSha256": "1cf7940acb58e02d7509b7567c6e63457c48231b0424f9f77b6ae781d8fff81d",
    "runtimeCheckpoint": "implemented; B-return's ordinary prefix + owner-approved inventory start fixture; reset hash pinned in tests",
-   "objective": "Obtain the Griffin's wig by any normal route, offer it to the goddess and reach chapter0.complete; no knockout",
+   "objective": "Obtain the Magnificent Griffin Wig by any normal route, offer it to the Goddess and reach chapter0.complete; no knockout. Griffin defeat not required; a peaceful completion is valid (owner-approved 2026-11-06).",
    "inventory": {
     "vanity_mirror": 1,
     "enchanted_shears": 1,
@@ -184,13 +186,38 @@
    },
    "start": "B-return's start exactly, plus Vanity Mirror and Enchanted Shears added to the shared backpack (world diff: those two counts and the backpack revision)",
    "success": "authoritative griffin.wigClaimed AND story.flags contains chapter0.complete (Griffin HP not required)",
-   "failureBoundary": "Any authoritative knockout. Leaving the enclosure is allowed (the return requires it).",
-   "prompt": "tutorial (Pilot-31's) + C briefing (draft, pending owner wording); no task line",
+   "failureBoundary": "Any authoritative knockout, or an episode limit. Leaving the enclosure is allowed.",
+   "prompt": "tutorial (Pilot-31's) + the owner's neutral C briefing verbatim (briefing-1ba46753), identical for C1 and C3; no task line (generic TASK); no agent-facing 'prepared'",
    "heldOut": true,
-   "holdoutRule": "Both model conditions and the baseline are frozen before any C model outcome; C3 transfers only B-developed guidance (v4) unchanged; no C-specific hint. Enforced in code by the paid lock, not by Situation.heldOut (which would refuse the tuning-path launcher model-centralized needs)."
+   "holdoutRule": "Both model conditions and the baseline are frozen before any C model outcome; C3 transfers only B-developed guidance (v4) unchanged; no C-specific hint. Enforced in code by the paid lock, not by Situation.heldOut (which would refuse the tuning-path launcher model-centralized needs).",
+   "briefingText": "You and your companion are at the Griffin Enclosure. Your objective is to obtain the Magnificent Griffin Wig and bring it to the Goddess as an offering. Complete the offering without either hero being knocked out. You may use your available abilities, inventory, and ordinary interactions. Determine how to proceed from what you observe.",
+   "descriptiveMetrics": {
+    "field": "summary.situationCReport",
+    "items": [
+     "objectiveSuccess",
+     "terminalReason",
+     "griffinHpAtEnd",
+     "griffinPhaseAtEnd",
+     "griffinDefeated",
+     "mirrorDelivered",
+     "shearsDelivered",
+     "itemInteractionUsed",
+     "griffinHpAtFirstItemDelivery",
+     "itemsDeliveredWhileGriffinAlive",
+     "peacefulGroomingOccurred",
+     "toolsTakenByGriffin",
+     "wigAcquired",
+     "griffinHpAtWigClaim",
+     "wigRoute",
+     "offeringAccepted",
+     "chapter0Complete"
+    ],
+    "plus": "game time, wall time, decisions, calls, cost, invalid actions (ordinary summary fields)",
+    "rule": "Descriptive only, not success requirements. The official result is the one run per cell, whatever route it takes."
+   }
   }
  },
- "strictDefeatDecision": "A and B unchanged. C (r10): by owner decision 2026-11-06, a peaceful (groomed) wig counts once it is offered and chapter0.complete is reached; Griffin defeat is not required. r9's strict-defeat rule for C is superseded.",
+ "strictDefeatDecision": "A and B unchanged. C (owner-approved 2026-11-06): a peaceful (groomed) wig counts once offered and chapter0.complete is reached; Griffin defeat not required. r9's strict-defeat rule for C is superseded.",
  "trialAllocation": {
   "allOtherCells": "A/B primary cells observed; C pre/post/baseline unrun (one each)",
   "freshModelRunsRemaining": 2,
@@ -211,12 +238,13 @@
   },
   "C": {
    "C/pre-tuned/1": "C1, unrun",
-   "C/cheap-baseline/1": "C2, unrun (a fresh free run at the approved commit; preparation runs are not registered)",
-   "C/post-tuned/1": "C3, unrun"
+   "C/cheap-baseline/1": "C2, unrun (a fresh free run at the authorized commit; preparation runs are not registered)",
+   "C/post-tuned/1": "C3, unrun",
+   "selection": "One official run per cell; never selected or replaced by route or outcome."
   }
  },
  "holdoutOrder": [
-  "Owner approves r10, the C briefing wording and the paid lock change",
+  "Owner final authorization: activate r10 and set SITUATION_C_PAID_APPROVED in a reviewed commit",
   "C pre-tuned (C1)",
   "C post-tuned (C3)",
   "C baseline (C2)"
@@ -256,15 +284,19 @@
    "C prompt = tutorial + new C briefing (draft) for both C1 and C3; C3 adds v4 unchanged",
    "C2 = baseline-griffin-heuristic-v1 unchanged (r9 fell back to baseline-quest)",
    "Existing B pin tests verify the 2791bce run path from git history (owner approved)",
-   "OPEN: C2 policy, baseline-griffin-heuristic-v1 (unchanged B baseline, proposed here) or baseline-inventory-heuristic-v1 (4f9695b)"
+   "Owner approval 2026-11-06: C2 = baseline-griffin-heuristic-v1; baseline-inventory-heuristic-v1 excluded as C-specific exploratory",
+   "Owner approval 2026-11-06: scenario, injected start and success rule (wig + offering + chapter0.complete; peaceful valid)",
+   "Owner revision 2026-11-06: neutral briefing text (no 'prepared', tools, nest, grooming or peaceful solution), identical for C1/C3",
+   "Owner request 2026-11-06: descriptive route metrics in summaries (situationCReport), not success requirements"
   ],
   "consequences": [
    "C and B-return now share start state (except the two items), limits, knockout rule and end point (chapter0.complete); they differ in the items, the Griffin-defeat requirement (B only) and the prompt framing (B-return: task line, no tutorial/briefing; C: tutorial + briefing). B vs C is therefore not an inventory-only contrast.",
    "With the tools, the peaceful route is a legal shortcut in C, so C is expected to be easier than B; it tests whether players use the prepared items.",
    "Maze and pond chests remain unclaimed and their banter flags unset in C's world (the items were injected); a player who detours there could collect duplicates. No player needs to.",
-   "C1 (pre-tuned) is not byte-identical to any earlier pre-tuned prompt: it uses Pilot-31's tutorial but a new C briefing."
+   "C1 (pre-tuned) is not byte-identical to any earlier pre-tuned prompt: it uses Pilot-31's tutorial but the owner's new C briefing.",
+   "The briefing ends at the offering; success also needs chapter0.complete, reached through the game's dialogue scenes after the offering. The generic task line ('Complete the Goddess's quest together.') still applies."
   ],
   "disclosure": "Decided before any C model outcome. The unchanged baseline's C outcome is known from free preparation runs (3/3 success); no model policy was changed after it."
  },
- "declarationSha256": "c92c4fb2ff0aec1548266c64e974f81c14623fa95627d54a15ce3fdd3aced569"
+ "declarationSha256": "97525b3e3f68ebb4cbdff010f07eb5f0ebaddf0c38345f44df594e5879093ba8"
 }

@@ -186,18 +186,12 @@ async function unpreparedReturnEntry(env: AgentEnvironment) {
 }
 
 /**
- * Situation C's episode briefing (owner chose "tutorial + new C briefing",
- * 2026-11-06). DRAFT by the implementation agent, PENDING the owner's wording:
- * the goal and the survival rule only. It does not mention the starting items
- * (the players see them in their backpack), and names no route, nest use,
- * attack pattern or position, nor whether the Griffin must be defeated.
+ * Situation C's episode briefing: the owner's text (2026-11-06), verbatim.
+ * Neutral: it does not mention the Mirror, Shears, nest, grooming, a peaceful
+ * solution or the word "prepared". C1 and C3 receive it identically.
  */
-export const GRIFFIN_PREPARED_RETURN_BRIEFING = [
-  "Episode briefing (Griffin Trial, prepared), the same for both players: you start at the entrance of the Griffin Enclosure.",
-  "Your objective is to obtain the Griffin's wig, bring it back to the Bald Goddess at the shrine, offer it to her and see Chapter 0 through to its end.",
-  "Neither hero may be knocked out: if either hero's health runs out, the episode ends as a failure.",
-  "Use your normal observations, actions and messages to your partner.",
-].join(" ");
+export const GRIFFIN_PREPARED_RETURN_BRIEFING =
+  "You and your companion are at the Griffin Enclosure. Your objective is to obtain the Magnificent Griffin Wig and bring it to the Goddess as an offering. Complete the offering without either hero being knocked out. You may use your available abilities, inventory, and ordinary interactions. Determine how to proceed from what you observe.";
 
 const withMirrorAndShears: EnvironmentOptions["prefix"] = {
   name: "opening scene, Hedge Maze, Mirror Pond",

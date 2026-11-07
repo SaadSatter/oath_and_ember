@@ -9,5 +9,12 @@
   "scenarioExecutionCount": 0,
   "testsPassed": 29,
   "activeDeclarationAmended": false,
-  "note": "No scenario hash or result assigned. Scenario approval/freezing is separate concurrent work."
+  "note": "No scenario hash or result assigned. Scenario approval/freezing is separate concurrent work.",
+  "classification": {
+    "date": "2026-11-06",
+    "by": "owner decision, recorded by the implementation agent",
+    "status": "C-specific exploratory baseline; EXCLUDED from the official evaluation",
+    "reason": "Tuned to C's literal item text (rules-reviewer round 1, finding 1: inventoryHeuristic.ts:14-34, :121). Official C2 is the unchanged baseline-griffin-heuristic-v1.",
+    "preserved": "Implementation, tests and history unchanged."
+  }
 }

@@ -90,6 +90,8 @@ for (const [run, seed] of [[1, 0], [2, 0], [3, 1]] as const) {
   const [s] = await runSuite({ player: "baseline-griffin-heuristic", situations: [C.situation], seeds: [seed], outDir: join(scratch, `baseline-${run}`), gitHash: version });
   baselineRuns.push(s);
   console.log(`    run ${run} seed ${seed}: ${s.status} (${s.reason}) ${s.gameSeconds} game s, decisions ${JSON.stringify(s.decisions)}, invalid ${JSON.stringify(s.invalidActions)}, wall ${s.wallSeconds} s, end ${s.endHash.slice(0, 16)}`);
+  const r = s.situationCReport;
+  console.log(`      route ${r?.wigRoute}, Griffin HP at end ${r?.griffinHpAtEnd}, defeated ${r?.griffinDefeated}, peaceful grooming ${r?.peacefulGroomingOccurred}, items delivered ${r?.itemInteractionUsed} (while Griffin alive ${r?.itemsDeliveredWhileGriffinAlive}), offering ${r?.offeringAccepted}`);
 }
 check(baselineRuns[0].endHash === baselineRuns[1].endHash && baselineRuns[0].gameTicks === baselineRuns[1].gameTicks, "repeated seed-0 baseline runs are identical (end hash and ticks)");
 
@@ -144,7 +146,7 @@ if (arg("--evidence")) {
     kind: "free offline preparation checks for Situation C; baseline rows are unregistered until the owner approves the C declaration; mock prompt checks are not results",
     situation: C.situation, definitionHash: SITUATION_GRIFFIN_C_HASH, gameVersion: version, node: process.version,
     start: { seed: 0, tick: c.tick, startHash: c.hash, seed1StartHash: starts[`${C.situation}#1`].hash, prefixActionsSha256: c.prefix },
-    baseline: baselineRuns.map((s, i) => ({ run: i + 1, seed: s.seed, status: s.status, reason: s.reason, success: s.success, gameTicks: s.gameTicks, gameSeconds: s.gameSeconds, wallSeconds: s.wallSeconds, decisions: s.decisions, invalidActions: s.invalidActions, modelCalls: s.modelCalls, startHash: s.startHash, endHash: s.endHash, policies: s.policies,
+    baseline: baselineRuns.map((s, i) => ({ run: i + 1, seed: s.seed, status: s.status, reason: s.reason, success: s.success, gameTicks: s.gameTicks, gameSeconds: s.gameSeconds, wallSeconds: s.wallSeconds, decisions: s.decisions, invalidActions: s.invalidActions, modelCalls: s.modelCalls, startHash: s.startHash, endHash: s.endHash, policies: s.policies, situationCReport: s.situationCReport ?? null,
       traceSha256: sha(readFileSync(join(scratch, `baseline-${i + 1}`, `${C.situation}-seed${s.seed}`, "trace.jsonl"))) })),
     prompts, guidance: g, problems,
   };

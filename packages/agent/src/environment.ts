@@ -40,6 +40,7 @@ import {
   griffinMilestones,
   milestones,
   prologueMilestones,
+  situationCReport,
   stateHash,
   type EpisodePreset,
 } from "./evaluator.js";
@@ -262,6 +263,10 @@ export class AgentEnvironment implements GameInterface {
   private readonly limits: EpisodeLimits;
   private readonly labels: LabelMode;
   private lastMilestones = new Set<string>();
+  /** Situation C descriptive metrics: every evaluator milestone seen since the start, and Griffin HP when the wig was claimed. */
+  private seenMilestones = new Set<string>();
+  private wigClaimGriffinHp: number | null = null;
+  private itemDeliveryGriffinHp: number | null = null;
   private lastBag = "";
   private lastJournal = "";
   private lastWorld: WorldSnapshot = { hedgeBurned: null, cow: null };
@@ -370,6 +375,9 @@ export class AgentEnvironment implements GameInterface {
       this.startTick = this.room.state.serverTick;
       prefixInfo = { name: this.prefix.name, ticks: this.startTick };
     }
+    this.seenMilestones = new Set();
+    this.wigClaimGriffinHp = null;
+    this.itemDeliveryGriffinHp = null;
     const startHash = this.hash();
     this.episodeId = `${this.preset}-${seed}-${startHash.slice(0, 8)}`;
     this.lastMilestones = new Set(this.progress(this.room.state));
@@ -501,6 +509,12 @@ export class AgentEnvironment implements GameInterface {
     for (const s of Object.values(this.slots)) this.release(s, `Episode ended: ${reason}.`);
   }
   /** Evaluator-only progress report. Never pass this to a player. */
+  /** Situation C only: descriptive route metrics for the summary (evaluator.ts situationCReport); null elsewhere. */
+  situationCReport() {
+    if (this.preset !== "griffin-prepared-return-v1") return null;
+    return situationCReport(this.room.state, this.seenMilestones, this.wigClaimGriffinHp, this.itemDeliveryGriffinHp, this.reason);
+  }
+
   evaluatorReport() {
     return {
       milestones: this.progress(this.room.state),
@@ -802,6 +816,10 @@ export class AgentEnvironment implements GameInterface {
     this.lastMilestones = new Set(now);
     // A scenario prefix only reaches the start state: no success or limits yet.
     if (this.inPrefix) return;
+    for (const m of now) this.seenMilestones.add(m);
+    const g = w.puzzles.griffin?.griffin;
+    if (this.preset === "griffin-prepared-return-v1" && g?.wigClaimed && this.wigClaimGriffinHp === null) this.wigClaimGriffinHp = g.hp;
+    if (this.preset === "griffin-prepared-return-v1" && (g?.mirrorDelivered || g?.shearsDelivered) && this.itemDeliveryGriffinHp === null) this.itemDeliveryGriffinHp = g.hp;
     // Declared failure rules (Griffin trials) come first: a knockout in the same tick as success still fails.
     const failed = episodes[this.preset].failure?.(w, tick);
     if (failed) this.stop(failed);
@@ -863,8 +881,11 @@ export class AgentEnvironment implements GameInterface {
   private progress(w: World) {
     if(this.preset === "griffin-unprepared-return-v1" && (w.puzzles.griffin?.griffin?.hp ?? 1) <= 0) return [...milestones(w), "griffin-defeated"];
     // C records B-return's defeat marker plus the Griffin markers (grooming, tools, wig), evaluator-only.
-    if (this.preset === "griffin-prepared-return-v1")
-      return [...milestones(w), ...griffinMilestones(w), ...((w.puzzles.griffin?.griffin?.hp ?? 1) <= 0 ? ["griffin-defeated"] : [])];
+    if (this.preset === "griffin-prepared-return-v1") {
+      const g = w.puzzles.griffin?.griffin;
+      return [...milestones(w), ...griffinMilestones(w), ...((g?.hp ?? 1) <= 0 ? ["griffin-defeated"] : []),
+        ...(g?.shearsDelivered ? ["griffin:shears-delivered"] : []), ...(g?.toolsTaken ? ["griffin:tools-taken"] : [])];
+    }
     if (this.preset === "P1" || this.preset === "P1-v2" || this.preset === "P1-v3") return [...milestones(w), ...prologueMilestones(w)];
     // Griffin trials add evaluator-only Griffin markers; other episodes are unchanged.
     if (this.preset === "griffin-unprepared-v1") return [...milestones(w), ...griffinMilestones(w)];

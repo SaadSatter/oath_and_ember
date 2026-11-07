@@ -1,6 +1,6 @@
 # Situation C: Griffin Trial, Prepared, with Goddess Return
 
-Scenario `griffin-prepared-return-v1`. Prepared 2026-11-06 by the Claude Code implementation agent, following the owner's decisions recorded below. **Status:** implemented and checked offline. The declaration ([proposed r10](evaluation-abc/proposed/declaration-r10-c.json)) is **not active**: r9 remains the active declaration. Paid model runs on C are **locked in code** (`SITUATION_C_PAID_APPROVED = false` in `packages/agent/src/griffinSituationC.ts`). No paid call, push or merge has been made.
+Scenario `griffin-prepared-return-v1`. Prepared 2026-11-06 by the Claude Code implementation agent, following the owner's decisions recorded below. **Status:** design approved by the owner (round 2, 2026-11-06); implemented and checked offline. The declaration ([proposed r10](evaluation-abc/proposed/declaration-r10-c.json)) is **not active**: r9 remains the active declaration. Paid model runs on C are **locked in code** (`SITUATION_C_PAID_APPROVED = false` in `packages/agent/src/griffinSituationC.ts`). No paid call, push or merge has been made.
 
 ## Owner decisions (2026-11-06)
 
@@ -12,10 +12,12 @@ The implementation agent asked these questions before writing code, because the 
 | Scenario id | r9: `griffin-prepared-v1`; brief: `griffin-prepared-return-v1` | **`griffin-prepared-return-v1`** |
 | Success | r9 and the brief: Griffin HP 0 AND wig in the backpack; a peaceful wig must not count; no return | **Wig claimed by any normal route (Griffin HP does not matter) AND offered to the goddess AND `chapter0.complete`; no knockout** |
 | Enclosure boundary | r9 and the brief: leaving the enclosure fails | Removed: the return requires leaving |
-| Prompt for C1 and C3 | brief: C1 = the original untuned prompt; the Griffin Trial briefing contradicted the new objective | **Tutorial + a new C briefing** (draft wording below, pending the owner) |
+| Prompt for C1 and C3 | brief: C1 = the original untuned prompt; the Griffin Trial briefing contradicted the new objective | **Tutorial + a new C briefing**; round 2: the owner's neutral text, verbatim (below) |
 | Existing B pin tests | Two tests pin 17 run-path files to commit 2791bce | **Re-pin, keep history:** verify the 2791bce hashes from git history, and add B-equivalence pins at HEAD |
 
-C2 reuses the B baseline unchanged, as the brief asks. r9 had fallen back to the solution-aware `baseline-quest` for C. This choice is recorded in proposed r10 for the owner's review.
+C2 reuses the B baseline unchanged, as the brief asks. r9 had fallen back to the solution-aware `baseline-quest` for C.
+
+**Round 2 (owner, 2026-11-06):** C2 = `baseline-griffin-heuristic-v1`, approved. `baseline-inventory-heuristic-v1` is a C-specific exploratory baseline, excluded from the official evaluation (preserved). Scenario, injected start and success rule approved: a peaceful completion is valid. Briefing replaced by the owner's neutral text, with no agent-facing "prepared". C1/C3 prompt comparison approved in principle. Descriptive route metrics added (below). One official run per cell, never selected by route. r10 is not activated and the paid lock stays on.
 
 ## Start state
 
@@ -25,8 +27,8 @@ C2 reuses the B baseline unchanged, as the brief asks. r9 had fallen back to the
 | Start hash (seed 0) | `28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7` |
 | Start hash (seed 1; only the ids differ) | `dc638ff166d36edfc777d36c24f155f77d013fcb72633b4becda330aa63ccab7` |
 | Prefix actions SHA-256 | `1cf7940acb58e02d7509b7567c6e63457c48231b0424f9f77b6ae781d8fff81d` (200 Sieg + 60 Coco, identical to B-return's) |
-| Definition file | [C-prepared-return-definition.json](evaluation-abc/C-prepared-return-definition.json), `9c91accdecc529a6284dff61306ea9ebbbb753db5c86a74888a360b987b2ea94` |
-| Code definition hash | `SITUATION_GRIFFIN_C_HASH` = `f68bf85b3bd571be186b04c46083040a179941d0d54fba3eab3f74523d197400` |
+| Definition file | [C-prepared-return-definition.json](evaluation-abc/C-prepared-return-definition.json), `fbc5a96af3f409f65f85ea516af47b519a5b3bcd0fb29557adeb2ac1201ca027` |
+| Code definition hash | `SITUATION_GRIFFIN_C_HASH` = `048679a38eea4e15177af2990fac94c19b2cd4f0c40de33a92c559a57f22d4a4` |
 | Heroes | Sieg (18.5, 33) and Coco (21.5, 33), 100/100 HP, the same ability states as B-return |
 | Griffin | 640/640 HP, NEST at (640, 112) px, four pillars standing, no tool delivered, wig unclaimed |
 | Backpack | B-return's eight items + `vanity_mirror` 1 + `enchanted_shears` 1; `griffin_wig` 0 |
@@ -70,17 +72,19 @@ Verified in `apps/server/src/griffin.ts` and by tests (`packages/agent/test/grif
 
 | Cell | Player | Prompt / policy identity |
 | --- | --- | --- |
-| C1 pre-tuned | `model-centralized`, gpt-6-luna, medium effort, batch 4 | `centralized-f0592888(…)·batch4·tutorial-2ec2f251·briefing-63b9fbdc`, system prompt `a6fa78a05e368b6f128844eff22b4b891d4892a772a27fba9c6fac066fab079e`, no guidance |
-| C2 baseline | `baseline-griffin-heuristic-v1`, source `a7c9ea78…2edc`, unchanged | none (no prompt) |
-| C3 post-tuned | as C1 + `b-post-combined-v4` | `…·briefing-63b9fbdc·guidance-12874542`, system prompt `be19b8b5e9c350ecaf7ff7f4a478b3ca96bb1b3864d2527744823e2908548db8` = C1's prompt + v4's block |
+| C1 pre-tuned | `model-centralized`, gpt-6-luna, medium effort, batch 4 | `centralized-f0592888(…)·batch4·tutorial-2ec2f251·briefing-1ba46753`, system prompt `6dc64411b2373596f925360334680211657c266a3fe5487b4f687868740e3701`, no guidance |
+| C2 baseline | `baseline-griffin-heuristic-v1`, source `a7c9ea78…2edc`, unchanged (owner-approved) | none (no prompt) |
+| C3 post-tuned | as C1 + `b-post-combined-v4` | `…·briefing-1ba46753·guidance-12874542`, system prompt `a0c6939af45f82a10ef80dfcbcd2c40c60ca82f01d91a55f330d624292fb9323` = C1's prompt + v4's block (tested) |
 
 **Pilot-33's guidance, verified.** The recorded `guidanceHash` is `12874542…f1bdf34`, and the check script reproduces Pilot-33's recorded full prompt hash `7ff08ba8…2144` and Pilot-31's `cbabb78b…bb6a` at HEAD. The v4 text is unchanged and still owner-approved. The one change is that its allowed situations now include C, as the owner instructed. It contains no word about the Mirror, Shears, nest, grooming, wig or Griffin (tested).
 
-**C briefing (DRAFT, pending the owner's wording).** It sets out the goal and the survival rule only. It does not mention the items, the nest, any route, any attack pattern, or whether the Griffin must be defeated (tested):
+**C briefing (the owner's text, round 2, verbatim; identical for C1 and C3).** It contains no "prepared", Mirror, Shears, nest, grooming or peaceful-solution wording, and no defeat requirement (tested). The planner wraps it in its usual `=== Episode briefing ===` block; nothing else was adapted:
 
-> Episode briefing (Griffin Trial, prepared), the same for both players: you start at the entrance of the Griffin Enclosure. Your objective is to obtain the Griffin's wig, bring it back to the Bald Goddess at the shrine, offer it to her and see Chapter 0 through to its end. Neither hero may be knocked out: if either hero's health runs out, the episode ends as a failure. Use your normal observations, actions and messages to your partner.
+> You and your companion are at the Griffin Enclosure. Your objective is to obtain the Magnificent Griffin Wig and bring it to the Goddess as an offering. Complete the offering without either hero being knocked out. You may use your available abilities, inventory, and ordinary interactions. Determine how to proceed from what you observe.
 
-**Parity limits.** C1 and C3 differ only by the guidance block. C1 is not byte-identical to any earlier pre-tuned prompt: it reuses Pilot-31's tutorial but adds a new briefing. B-return (Pilot-33) used a task line with no tutorial or briefing, so C3 and Pilot-33 share the v4 block but not their framing. Do not report B to C as an inventory-only or prompt-only contrast.
+The briefing ends at the offering. Success also needs `chapter0.complete`, which the game reaches through the dialogue scenes that follow an accepted offering. The planner's generic task line, "Complete the Goddess's quest together.", is still present. Code identifiers such as `GRIFFIN_PREPARED_RETURN_BRIEFING`, the scenario id and the scenario title contain "prepared", but none of them reaches a player; a test checks that neither C prompt contains the word.
+
+**Parity limits.** C1 and C3 differ only by the guidance block. C1 is the original untuned planner prompt (`f0592888`, no guidance) with Pilot-31's tutorial and the owner's C briefing. It is not byte-identical to any earlier pre-tuned prompt, because the briefing is new. B-return (Pilot-33) used a task line with no tutorial or briefing, so C3 and Pilot-33 share the v4 block but not their framing. Do not report B to C as an inventory-only or prompt-only contrast.
 
 ## C2 baseline, free preparation runs (unregistered)
 
@@ -94,7 +98,25 @@ Verified in `apps/server/src/griffin.ts` and by tests (`packages/agent/test/grif
 
 These runs were made to certify the scenario. They are not the registered C2 cell, which should be a fresh free run at the approved commit. Identical deterministic repeats are not independent evidence.
 
-**Open choice for the owner:** while this work was in progress, a concurrent session committed `baseline-inventory-heuristic-v1` (`4f9695b`, [SITUATION_C_HEURISTIC_BASELINE.md](SITUATION_C_HEURISTIC_BASELINE.md)) as a C2 candidate. It delivers held items to matching observed targets, so it would try the peaceful route, and its own document says it was developed with knowledge of the prepared inventory setup. The implementation agent has not run it on C. Proposed r10 names the unchanged B baseline and lists the other as an alternative. One of them must be chosen before any C run.
+**The approved C2 wins through combat and does not demonstrate prepared-item use.** Its descriptive report shows: route `defeat`, Griffin HP 0, `itemsDeliveredWhileGriffinAlive` false and `peacefulGroomingOccurred` false. The tools are dropped only by the E at the nest after the defeat. On C it replays B-return's baseline trajectory exactly (5,389 ticks, 481/646 decisions), so it gives no information about the value of preparation.
+
+`baseline-inventory-heuristic-v1` (`4f9695b`, another session) is classified by the owner as a **C-specific exploratory baseline, excluded from the official evaluation**. Its code and history are preserved. It has not been run on C.
+
+## Descriptive route metrics (owner request, round 2)
+
+Every C summary carries `situationCReport`, read from authoritative state at the end plus the evaluator milestones seen during the episode (`evaluator.ts` `situationCReport`). **None of these is a success requirement**, and none is shown to a player:
+
+- `objectiveSuccess`, `terminalReason`
+- `griffinHpAtEnd`, `griffinPhaseAtEnd`, `griffinDefeated`
+- `mirrorDelivered`, `shearsDelivered`, `itemInteractionUsed`: any E at the nest drops held tools, so these are also true after a combat defeat
+- `griffinHpAtFirstItemDelivery`, `itemsDeliveredWhileGriffinAlive`: the prepared-item-use marker
+- `peacefulGroomingOccurred`, `toolsTakenByGriffin`: the peaceful-route markers
+- `wigAcquired`, `griffinHpAtWigClaim`, `wigRoute` (`defeat` / `peaceful` / `none`)
+- `offeringAccepted`, `chapter0Complete`
+
+Game time, wall time, decisions, calls, cost and invalid actions are ordinary summary fields. Both routes are tested: the baseline's combat win, and the fixture-positioned peaceful grooming.
+
+**Selection rule:** one official run per cell (C1, C2, C3), recorded whatever route it takes. A run is never chosen, replaced or repeated because of its route or outcome.
 
 ## Mock model episodes (launcher checks, not results)
 

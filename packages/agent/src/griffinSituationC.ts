@@ -10,7 +10,7 @@
 //   - Success: wig claimed by any normal route (Griffin HP does not matter),
 //     offered to the goddess, and chapter0.complete; no knockout. Leaving the
 //     enclosure is allowed (the return requires it).
-//   - Prompt: tutorial + a new C briefing (draft wording, pending the owner).
+//   - Prompt: tutorial + the owner's neutral C briefing (2026-11-06), identical for C1 and C3.
 //
 // Every pinned value is checked by packages/agent/test/griffinSituationC.test.ts
 // and scripts/midterm/situation-c.ts. A change is a new version and needs the
@@ -45,7 +45,7 @@ export const SITUATION_GRIFFIN_C = Object.freeze({
   declaredAs: "griffin-prepared-v1 (declaration r9); renamed by the owner 2026-11-06",
   name: "Griffin Trial, Prepared — Goddess Return",
   version: 1,
-  status: "implemented and checked offline; proposed declaration r10 not approved; paid runs locked",
+  status: "owner-approved design (2026-11-06); proposed declaration r10 not active; paid runs locked",
   /** The scenario the harness runs. */
   situation: SITUATION_C_ID as SituationId,
   preset: def.preset,
@@ -105,19 +105,19 @@ export const SITUATION_GRIFFIN_C = Object.freeze({
   prompts: Object.freeze({
     tutorialId: def.tutorial ? tutorialId(def.tutorial) : null,
     briefingId: def.briefing ? briefingId(def.briefing) : null,
-    briefingStatus: "draft wording by the implementation agent, pending the owner",
+    briefingStatus: "the owner's text (2026-11-06), verbatim",
     /** Pilot-31 (B pre-tuned) and Pilot-33 (B post-tuned) as recorded; reproduced by the check script. */
     pilot31PromptHash: "cbabb78b42b1227bafff0ef9e95b62ad5e03ba725691482e2e032384097bbb6a",
     pilot33PromptHash: "7ff08ba84c4ab14460d0f6707febdc19b8e417ced89d3127636ce7ed9f352144",
-    preTunedPromptHash: "a6fa78a05e368b6f128844eff22b4b891d4892a772a27fba9c6fac066fab079e",
-    postTunedPromptHash: "be19b8b5e9c350ecaf7ff7f4a478b3ca96bb1b3864d2527744823e2908548db8",
+    preTunedPromptHash: "6dc64411b2373596f925360334680211657c266a3fe5487b4f687868740e3701",
+    postTunedPromptHash: "a0c6939af45f82a10ef80dfcbcd2c40c60ca82f01d91a55f330d624292fb9323",
     guidanceId: "b-post-combined-v4",
     guidanceSha256: "1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34",
   }),
   conditions: Object.freeze({
-    preTuned: "C1: model-centralized, gpt-6-luna medium, batch 4; generic planner prompt + tutorial + C briefing; no guidance block",
+    preTuned: "C1: model-centralized, gpt-6-luna medium, batch 4; the original untuned planner prompt + tutorial + the owner's C briefing; no guidance block",
     postTuned: "C3: C1's prompt + the frozen b-post-combined-v4 block (Pilot-33's guidance, text unchanged); nothing C-specific",
-    baseline: "C2: baseline-griffin-heuristic-v1, unchanged source (B's baseline)",
+    baseline: "C2: baseline-griffin-heuristic-v1, unchanged source (B's baseline); owner-approved 2026-11-06. It wins by combat and does not demonstrate prepared-item use. baseline-inventory-heuristic-v1 is excluded (C-specific exploratory).",
   }),
 });
 

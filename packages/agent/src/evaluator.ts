@@ -171,6 +171,41 @@ export const GRIFFIN_PREPARED_RETURN_EPISODE: EpisodeDefinition = {
   success: griffinWigReturned,
 };
 
+/**
+ * Situation C descriptive metrics (owner request 2026-11-06), read from
+ * authoritative state at the end of an episode plus the evaluator milestones
+ * seen during it. Descriptive only: none of these is a success requirement,
+ * and none is shown to a player. Note that any plain E at the nest drops every
+ * held tool, so mirrorDelivered/shearsDelivered are also true after a combat
+ * defeat; itemsDeliveredWhileGriffinAlive and peacefulGroomingOccurred (the
+ * Griffin groomed while alive) are the prepared-item and peaceful-route markers.
+ */
+export function situationCReport(w: World, seen: ReadonlySet<string>, griffinHpAtWigClaim: number | null, griffinHpAtFirstItemDelivery: number | null, reason: TerminationReason | undefined) {
+  const g = griffinState(w.puzzles);
+  const wigClaimed = !!g?.wigClaimed;
+  return {
+    descriptiveOnly: true as const,
+    objectiveSuccess: reason === "success",
+    terminalReason: reason ?? null,
+    griffinHpAtEnd: g?.hp ?? null,
+    griffinPhaseAtEnd: g?.phase ?? null,
+    griffinDefeated: (g?.hp ?? 1) <= 0 || seen.has("griffin-defeated"),
+    mirrorDelivered: !!g?.mirrorDelivered,
+    shearsDelivered: !!g?.shearsDelivered,
+    itemInteractionUsed: !!g?.mirrorDelivered || !!g?.shearsDelivered,
+    /** Griffin HP when a tool was first delivered at the nest; 0 means after a defeat (a plain E drops held tools). */
+    griffinHpAtFirstItemDelivery,
+    itemsDeliveredWhileGriffinAlive: griffinHpAtFirstItemDelivery !== null && griffinHpAtFirstItemDelivery > 0,
+    peacefulGroomingOccurred: seen.has("griffin:grooming"),
+    toolsTakenByGriffin: !!g?.toolsTaken,
+    wigAcquired: wigClaimed,
+    griffinHpAtWigClaim,
+    wigRoute: !wigClaimed ? "none" : griffinHpAtWigClaim !== null && griffinHpAtWigClaim <= 0 ? "defeat" : "peaceful",
+    offeringAccepted: shrineComplete(w),
+    chapter0Complete: has(w, FINALE.complete),
+  };
+}
+
 /** Additive variants reuse exactly the parent's predicate and limits. */
 export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
   ...coreEpisodes,

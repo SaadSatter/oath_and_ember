@@ -3,7 +3,7 @@
  "label": "C",
  "name": "Griffin Trial, Prepared — Goddess Return",
  "declaredAs": "griffin-prepared-v1 in declaration r9; renamed by the owner 2026-11-06",
- "status": "implemented and checked offline; proposed in declaration r10 (not active); paid model runs locked",
+ "status": "owner-approved scenario and success rule (2026-11-06); proposed in declaration r10 (not active); paid model runs locked",
  "seed": 0,
  "heldOut": true,
  "startTick": 540,
@@ -90,14 +90,15 @@
  },
  "prompt": {
   "tutorial": "TUTORIAL_BRIEFING (tutorial-2ec2f251), as Pilot-31",
-  "briefing": "GRIFFIN_PREPARED_RETURN_BRIEFING (briefing-63b9fbdc), draft wording pending the owner",
-  "preTunedPromptSha256": "a6fa78a05e368b6f128844eff22b4b891d4892a772a27fba9c6fac066fab079e",
-  "postTunedPromptSha256": "be19b8b5e9c350ecaf7ff7f4a478b3ca96bb1b3864d2527744823e2908548db8",
+  "briefing": "the owner's neutral text, verbatim (briefing-1ba46753); identical for C1 and C3",
+  "preTunedPromptSha256": "6dc64411b2373596f925360334680211657c266a3fe5487b4f687868740e3701",
+  "postTunedPromptSha256": "a0c6939af45f82a10ef80dfcbcd2c40c60ca82f01d91a55f330d624292fb9323",
   "postTunedGuidance": {
    "id": "b-post-combined-v4",
    "sha256": "1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34"
   }
  },
  "checkpointMethod": "AgentEnvironment.reset: ordinary B-return prefix through step(), then StartFixture.addItems during reset only",
- "definitionSha256": "9c91accdecc529a6284dff61306ea9ebbbb753db5c86a74888a360b987b2ea94"
+ "descriptiveMetrics": "summary.situationCReport: objective success, Griffin HP at end and at wig claim, Griffin defeated, Mirror/Shears delivered, peaceful grooming occurred, tools taken, wig acquired and route, offering accepted, chapter0.complete. Descriptive only, not success requirements.",
+ "definitionSha256": "fbc5a96af3f409f65f85ea516af47b519a5b3bcd0fb29557adeb2ac1201ca027"
 }

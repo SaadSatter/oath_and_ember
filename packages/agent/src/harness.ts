@@ -34,7 +34,7 @@ import { QuestBaseline } from "./policies/questBaseline.js";
 import type { Policy } from "./policies/policy.js";
 import type { SpendLedger } from "./ledger.js";
 import type { GameOutcome, PlayerId } from "./types.js";
-import { episodes } from "./evaluator.js";
+import { episodes, type situationCReport } from "./evaluator.js";
 import { FinalAccessError, isGrant, type FinalGrant } from "./finalAccess.js";
 import { PLAYER_KINDS, type PlayerKind } from "./playerKinds.js";
 import { canonicalJson } from "./situationA.js";
@@ -258,6 +258,8 @@ export interface EpisodeSummary {
    * version is gitHash and the seed is seed, both recorded separately. Added 2026-10-29.
    */
   configHash?: string;
+  /** Situation C only: descriptive route metrics (evaluator.ts situationCReport). Added 2026-11-06. */
+  situationCReport?: ReturnType<typeof situationCReport>;
   /** Stage notes of a scripted baseline (its own log; never shown to the partner). */
   baselineLog?: Record<PlayerId, { tick: number; note: string }[]>;
   trace: string;
@@ -594,6 +596,8 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
     // Post-tuned condition only (2026-11-06): which guidance block the planner received.
     ...(model?.guidance !== undefined ? { guidance: guidanceRecord(model.guidance) } : {}),
     ...(o.player === "baseline-quest" ? { baselineLog: per((p) => (policies[p] as QuestBaseline).log) } : {}),
+    // Situation C only (owner request 2026-11-06): descriptive route metrics, not success requirements.
+    ...((r) => (r ? { situationCReport: r } : {}))(env.situationCReport()),
     trace: tracePath,
   };
   atomicJson(join(dir, "summary.json"), summary);

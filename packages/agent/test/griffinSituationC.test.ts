@@ -37,7 +37,7 @@ const both = (env: Awaited<ReturnType<typeof start>>["env"], sieg: Parameters<ty
 
 describe("Situation C definition", () => {
   it("pins its definition hash, B parity references and the paid lock", () => {
-    expect(SITUATION_GRIFFIN_C_HASH).toBe("f68bf85b3bd571be186b04c46083040a179941d0d54fba3eab3f74523d197400");
+    expect(SITUATION_GRIFFIN_C_HASH).toBe("048679a38eea4e15177af2990fac94c19b2cd4f0c40de33a92c559a57f22d4a4");
     expect(C.situation).toBe(ID);
     expect(situation(ID).heldOut).toBe(false); // holdout is enforced by the paid lock and the declaration, as for B
     expect(SITUATION_C_PAID_APPROVED).toBe(false);
@@ -53,9 +53,9 @@ describe("Situation C definition", () => {
     const s = situation(ID);
     expect(s.tutorial).toBe(situation("griffin-unprepared-v1").tutorial);
     expect(s.task).toBeUndefined();
-    expect(s.briefing).toMatch(/obtain the Griffin's wig/);
-    expect(s.briefing).toMatch(/knocked out/);
-    expect(s.briefing).not.toMatch(/mirror|shears|nest|groom|trim|pillar|beam|defeat|health to zero|fly|black hole|position/i);
+    // The owner's text (2026-11-06), verbatim.
+    expect(s.briefing).toBe("You and your companion are at the Griffin Enclosure. Your objective is to obtain the Magnificent Griffin Wig and bring it to the Goddess as an offering. Complete the offering without either hero being knocked out. You may use your available abilities, inventory, and ordinary interactions. Determine how to proceed from what you observe.");
+    expect(s.briefing).not.toMatch(/prepared|mirror|shears|nest|groom|trim|peace|pillar|beam|defeat|health to zero|fly|black hole|position/i);
   });
 
   it("extends only the scope of the frozen v4 guidance to C, with its text and approval unchanged", () => {
@@ -90,7 +90,7 @@ describe("Situation C definition file", () => {
       ? Object.fromEntries(Object.entries(v).sort(([a], [b]) => a.localeCompare(b)).map(([k, x]) => [k, canonical(x)])) : v;
     const text = JSON.stringify(canonical(d)).replace(/[^\x00-\x7f]/g, (ch) => "\\u" + ch.charCodeAt(0).toString(16).padStart(4, "0"));
     expect(createHash("sha256").update(text).digest("hex")).toBe(hash);
-    expect(hash).toBe("9c91accdecc529a6284dff61306ea9ebbbb753db5c86a74888a360b987b2ea94");
+    expect(hash).toBe("fbc5a96af3f409f65f85ea516af47b519a5b3bcd0fb29557adeb2ac1201ca027");
     expect(d.id).toBe(ID);
     expect(d.startHash).toBe(C.start.hashes[0]);
     expect(d.seed1StartHash).toBe(C.start.hashes[1]);
@@ -240,6 +240,9 @@ describe("Mirror and Shears under ordinary game rules", () => {
     expect(w.inventory!.counts.griffin_wig).toBe(1);
     expect((await env.outcome()).status).toBe("ongoing");
     expect(episodes[ID].success(w)).toBe(false);
+    // Descriptive report (owner request 2026-11-06): the peaceful route is visible, not a success.
+    expect(env.situationCReport()).toMatchObject({ descriptiveOnly: true, objectiveSuccess: false, peacefulGroomingOccurred: true, griffinDefeated: false,
+      itemInteractionUsed: true, itemsDeliveredWhileGriffinAlive: true, griffinHpAtFirstItemDelivery: 640, toolsTakenByGriffin: true, wigAcquired: true, griffinHpAtWigClaim: 640, wigRoute: "peaceful", offeringAccepted: false, chapter0Complete: false, griffinHpAtEnd: 640 });
   }, 120000);
 
   it("after a defeat, a plain E at the nest awards the wig immediately and keeps the tools", async () => {
@@ -271,6 +274,9 @@ describe("C2 baseline: unchanged baseline-griffin-heuristic-v1", () => {
       expect(a.endHash).toBe(b.endHash);
       expect(a.invalidActions).toEqual({ sieg: 0, coco: 0 });
       expect(a.modelCalls.attempted).toBe(0);
+      // The approved C2 wins by combat and does not demonstrate prepared-item use.
+      expect(a.situationCReport).toMatchObject({ objectiveSuccess: true, griffinDefeated: true, griffinHpAtEnd: 0, griffinHpAtWigClaim: 0, wigRoute: "defeat",
+        peacefulGroomingOccurred: false, itemsDeliveredWhileGriffinAlive: false, griffinHpAtFirstItemDelivery: 0, toolsTakenByGriffin: false, wigAcquired: true, offeringAccepted: true, chapter0Complete: true });
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }
@@ -294,6 +300,8 @@ describe("Situation C review round 1", () => {
     expect(post.promptHash).toBe(C.prompts.postTunedPromptHash);
     expect(post.maxBatch).toBe(pre.maxBatch);
     expect(pre.system).not.toContain(episodes[ID].goal);
+    // No agent-facing "prepared" (owner 2026-11-06), and nothing about the tools' use, in either prompt.
+    for (const sys of [pre.system, post.system]) expect(sys).not.toMatch(/prepared|groom|peaceful/i);
   });
 
   it("finding 4: B-return's definition at HEAD is unchanged (limits, failure, prefix, task)", () => {
