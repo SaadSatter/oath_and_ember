@@ -125,6 +125,20 @@ export const SITUATION_GRIFFIN_C = Object.freeze({
   }),
 });
 
+/**
+ * Proposed declaration r11 (owner request 2026-11-06, after C1/Pilot-34 ran):
+ * the official C3 uses v4 + a C-specific inventory/nest hint instead of v4
+ * alone. Kept outside SITUATION_GRIFFIN_C so the C definition C1 ran under is
+ * unchanged. Paid C3 stays refused until the owner approves the guidance text.
+ */
+export const C3_R11 = Object.freeze({
+  guidanceId: "c-post-v4-inventory-hint-v1",
+  guidanceSha256: "d750861ba30255fd10e139532c8394e2e7dd44237e1ba50dc3ee4e0d311afa83",
+  promptHash: "d50dc0623921ed00bedb811841d72153fe9b943e072ee180c63bc7856b52dd54",
+  replaces: "C3 = C1 + b-post-combined-v4 (prompt a0c6939a…, declaration r10)",
+  status: "proposed; requires owner approval of the exact text and of declaration r11",
+});
+
 export const SITUATION_GRIFFIN_C_HASH = createHash("sha256").update(canonicalJson(SITUATION_GRIFFIN_C)).digest("hex");
 
 export function griffinCEvaluationLabel(id: SituationId): { label: string; definitionHash: string } | null {

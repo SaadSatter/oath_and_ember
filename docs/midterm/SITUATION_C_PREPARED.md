@@ -210,3 +210,37 @@ Responses:
 Not added: an end-to-end peaceful run through the offering to `chapter0.complete`, which would need a scripted route through the shrine scenes. The peaceful path is covered up to the wig claim, and success after that by the predicate tests. The same-tick defeat-and-claim case is also not added; the reviewer traced it as correct.
 
 Reviewer uncertainties, settled with git: r9 and the B evidence are byte-unchanged since `9f4ac38`. Round 2's source changes are confined to C-guarded code, the summary field and the briefing.
+
+## Official C1 result (Pilot-34, declaration r10)
+
+Run by the owner at `f9edeb7` (ledger entry `pilot-34`). **Success by the peaceful route:**
+
+| Metric | Value |
+| --- | --- |
+| Game time / wall time | 133.3 game-s (7,997 ticks) / 2,479.7 s |
+| Griffin | HP 418 throughout (never defeated); grooming started at the first Mirror delivery (HP 418) |
+| Wig / offering / Chapter 0 | claimed (route `peaceful`) / accepted / `chapter0.complete` |
+| Decisions / invalid actions | Sieg 378 / Coco 359; 1 + 1 invalid |
+| Model calls | 278 attempted, 0 failed, 0 timed out; mean latency 8.35 s (max 21.1 s) |
+| Tokens / cost | 5,449,743 input (2,065,866 cache read, 3,383,043 cache write), 179,558 output; **$0.586742** |
+| Prompt / config | `6dc64411…` (as pinned) / `178f2ce5…` |
+| Start / end hash | `28777a85…` / `a5090db2…` |
+
+Replay verified: start hash, 734 step results, end and 7,997 ticks all match. Evidence: [`midterms/saadsatter/evidence/traces/pilot-34-model-centralized-griffin-prepared-return-v1-seed0/`](../../midterms/saadsatter/evidence/traces/pilot-34-model-centralized-griffin-prepared-return-v1-seed0/). The 217 MB video is local-only, and its SHA-256 is in the manifest.
+
+## Proposed r11: C3 = v4 + inventory/nest hint (owner request, after C1)
+
+After C1 had run, the owner asked that the post-tuned C3 also tell the planner to check the inventory and read what is at the Griffin's nest, as a hint toward the solution but not the solution itself. The official C3 is replaced (owner's choice), not run as a supplement. **Proposed, not active:** [proposed/declaration-r11-c3-hint.json](evaluation-abc/proposed/declaration-r11-c3-hint.json), `5f55307efe676bbc2f86b21ced5babeb4a10d3e8675e19848117ad7ed565b01c`.
+
+- **Guidance `c-post-v4-inventory-hint-v1`** (`d750861b…`, *proposed*; paid runs refuse it until approved): the v4 text byte for byte, a blank line, then:
+
+  > Additional guidance for this task:
+  > Before choosing how to reach the objective, check the shared inventory and read each item's description. Read the labels and messages on objects near the objective, such as the Griffin's nest: they can describe what an item is for. Consider whether an item offers a way to reach the objective besides combat.
+
+- **C3 prompt:** `d50dc0623921ed00bedb811841d72153fe9b943e072ee180c63bc7856b52dd54` = C1's prompt plus this one block (tested). C1's prompt is unchanged.
+- **Disclosures:**
+  - **Outcome-informed:** the hint was requested after C1's peaceful success was known.
+  - **C-specific tuning:** C3 is no longer a B→C transfer test, and C is no longer a clean holdout for C3.
+  - **Strong hint:** in ordinary play, the nest label it points to reads "Griffin nest · drop mirror + shears".
+  - r10's v4-only C3 (`a0c6939a…`) was never run.
+- **Budget:** C1 cost $0.587, leaving $0.913 of the $1.50 combined cap, so C3's $0.75 cap fits.

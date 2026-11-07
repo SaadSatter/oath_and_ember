@@ -8,7 +8,7 @@ import { readFileSync } from "node:fs";
 import { environmentFor, situation } from "../src/suite.js";
 import { episodes, griffinWigReturned } from "../src/evaluator.js";
 import { validatePlan, runSuite, EPISODE_CAP_USD, ABC_WALL_CLOCK_CEILING_S, OBS_ONLY_SITUATIONS, type ModelSetup } from "../src/harness.js";
-import { SITUATION_GRIFFIN_C as C, SITUATION_GRIFFIN_C_HASH, SITUATION_C_PAID_APPROVED, stateDiff } from "../src/griffinSituationC.js";
+import { SITUATION_GRIFFIN_C as C, SITUATION_GRIFFIN_C_HASH, SITUATION_C_PAID_APPROVED, stateDiff, C3_R11 } from "../src/griffinSituationC.js";
 import { guidance, guidanceApproved, guidanceHash } from "../src/policies/situationGuidance.js";
 import { MockGateway } from "../src/policies/mockGateway.js";
 import { Director } from "../src/route/director.js";
@@ -431,5 +431,47 @@ describe("r10 activation", () => {
     };
     expect(strip(active)).toEqual(strip(proposal));
     expect(active.trialAllocation.paidLimits).toMatchObject({ model: "openai:gpt-6-luna", effort: "medium", scenario: ID, seed: 0, perEpisodeCapUsd: 0.75, combinedCapUsd: 1.5 });
+  });
+});
+
+describe("proposed r11: C3 = v4 + inventory/nest hint (owner request after C1)", () => {
+  const manual = readFileSync(new URL("../../../manual/Oath_and_Ember_Player_Manual.md", import.meta.url), "utf8");
+  const gateways = () => {
+    const budget = new ModelBudget({ maxModelCallsPerPlayer: 1, maxTokensPerPlayer: 1, maxSpendUsd: 0.01, callTimeoutMs: 1000 });
+    return { sieg: new MeteredGateway(new MockGateway(0, 0), budget, "sieg"), coco: new MeteredGateway(new MockGateway(0, 0), budget, "coco") };
+  };
+  const planner = (text?: string) => { const s = situation(ID); return new CentralPlanner(manual, gateways(), 4, s.briefing, s.tutorial, s.task, text); };
+
+  it("keeps v4 byte for byte and appends only the hint paragraph", () => {
+    const v4 = guidance("b-post-combined-v4").text, g = guidance(C3_R11.guidanceId);
+    expect(guidanceHash(v4)).toBe("1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34");
+    expect(guidanceHash(g.text)).toBe(C3_R11.guidanceSha256);
+    expect(g.text.startsWith(v4 + "\n\n")).toBe(true);
+    const hint = g.text.slice(v4.length + 2);
+    expect(hint).toMatch(/inventory/i);
+    expect(hint).toMatch(/nest/i);
+    // A hint, not the solution: no tool names, no delivery instruction, no grooming.
+    expect(hint).not.toMatch(/mirror|shears|drop|deliver|groom|trim|haircut|E at|press/i);
+    expect(g.situations).toEqual([ID]);
+  });
+
+  it("C3's prompt is exactly C1's prompt plus one guidance block; C1 is unchanged", () => {
+    const g = guidance(C3_R11.guidanceId).text;
+    const pre = planner(), post = planner(g);
+    expect(pre.promptHash).toBe(C.prompts.preTunedPromptHash);
+    expect(post.system).toBe(pre.system + guidanceBlock(g));
+    expect(post.promptHash).toBe(C3_R11.promptHash);
+    expect(post.maxBatch).toBe(pre.maxBatch);
+  });
+
+  it("stays locked for paid runs until the owner approves the text (mock allowed)", () => {
+    const g = guidance(C3_R11.guidanceId);
+    expect(g.status).toBe("proposed");
+    expect(guidanceApproved(g)).toBe(false);
+    const mock = { gateway: new MockGateway(0, 0), stage: "pilot", guidance: C3_R11.guidanceId } as unknown as ModelSetup;
+    const paid = { gateway: { label: "openai:gpt-6-luna@medium" }, stage: "pilot", guidance: C3_R11.guidanceId } as unknown as ModelSetup;
+    expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: mock })).not.toThrow();
+    expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: paid })).toThrow(/not approved/);
+    expect(() => validatePlan({ player: "model-centralized", situations: [B_ID], seeds: [0], model: { ...mock } })).toThrow(/limited to/);
   });
 });
