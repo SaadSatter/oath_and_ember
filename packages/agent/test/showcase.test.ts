@@ -1,7 +1,7 @@
 // Prompt-tuned continuous showcase, showcase-maze-griffin-complete-v1
 // (docs/midterm/SHOWCASE_CONTINUOUS_EPISODE.md). Offline: no model call, no
 // network, no spending. Checks that the showcase is separate from the frozen
-// A/B/C lists, starts at S2-A's exact start, that its success predicate needs
+// A/B/C lists, starts at the normal Goddess Shrine checkpoint, that its success predicate needs
 // every step of the combat route, that its guidance is proposed (paid runs
 // refused) and contains the approved v4 text unchanged, and that the free
 // scripted baseline completes the whole route deterministically.
@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import type { GameRoom } from "../../../apps/server/src/GameRoom.js";
 import { ABC_SITUATIONS, environmentFor, SHOWCASE_SITUATIONS, SITUATIONS, situation } from "../src/suite.js";
-import { episodes, showcaseComplete, showcaseEpisodeComplete, SHOWCASE_REQUIRED_HISTORY } from "../src/evaluator.js";
+import { episodes, showcaseComplete, showcaseEpisodeComplete, SHOWCASE_REQUIRED_HISTORY, SHOWCASE_ORDERED_MILESTONES } from "../src/evaluator.js";
 import { EPISODE_CAP_USD, OBS_ONLY_SITUATIONS, runSuite, SHOWCASE_WALL_CLOCK_CEILING, validatePlan, checkWallSeconds, type ModelSetup } from "../src/harness.js";
 import { SHOWCASE, SHOWCASE_GUIDANCE_ID, SHOWCASE_HASH, SHOWCASE_ID, SHOWCASE_PAID_APPROVED } from "../src/showcase.js";
 import { CentralPlanner } from "../src/policies/centralized.js";
@@ -23,7 +23,7 @@ import { MockGateway } from "../src/policies/mockGateway.js";
 
 const root = fileURLToPath(new URL("../../..", import.meta.url));
 const manual = readFileSync(join(root, "manual/Oath_and_Ember_Player_Manual.md"), "utf8");
-/** S2-A (S2-local, version 2) start hashes, seeds 0 and 1 (SITUATION_A.md). */
+/** Normal goddess checkpoint start hashes, seeds 0 and 1 (SITUATION_A.md). */
 const SHRINE_START = { 0: "9d565ae90d161cc9e79979e0b9b66b1c5499d5a22e5292ba10ca271bda12cb50", 1: "f18052b4e9d452c9cb5251d3b34739292b833f0b79f3c4e9562b944d8a05bb21" };
 const GUIDANCE_SHA = "32836d8f85b7228e3bc83f1b8aae7a7b9e8e602dc1e72aa3d15949cdb595b439";
 const PROMPT_SHA = "8ce07fb23b81781f7fb66456458538e046d9ba0b65ebc777d77bb42651951a7d";
@@ -42,7 +42,7 @@ describe("showcase definition", () => {
     expect(ABC_SITUATIONS.some((s) => s.id === SHOWCASE_ID)).toBe(false);
     expect(SHOWCASE.officialEvaluation).toBe(false);
     expect(SHOWCASE.disclosure).toMatch(/excluded from official A\/B\/C evaluation/);
-    expect(SHOWCASE_HASH).toBe("ae094af70c5a6f75487f0621bfe37f336b8f93adf0865e5334e0f690eeabef39");
+    expect(SHOWCASE_HASH).toBe("ec827f19555e5456d987f866c6f50414827f8875efd911859f351aeafe532831");
     // No prefix: normal shrine checkpoint, no fixture.
     expect(situation(SHOWCASE_ID).prefix).toBeUndefined();
     expect(SHOWCASE.start.fixture).toBe("none");
@@ -167,11 +167,20 @@ describe("free scripted baseline: the whole continuous route", () => {
     // removing any one step makes the predicate fail.
     const w = room.state;
     expect(showcaseComplete(w)).toBe(true);
-    const seen = new Set(SHOWCASE_REQUIRED_HISTORY);
+    const seen = new Map<string, number>(s.showcaseReport!.milestones.map(m => [m.milestone, m.tick]));
     expect(showcaseEpisodeComplete(w, seen)).toBe(true);
     for (const m of SHOWCASE_REQUIRED_HISTORY) {
-      const missing = new Set<string>(seen); missing.delete(m);
+      const missing = new Map(seen); missing.delete(m);
       expect(showcaseEpisodeComplete(w, missing), `Missing episode history ${m}`).toBe(false);
+    }
+    // Labelled evaluator-only fixture: Griffin defeated before maze completion.
+    // Revisiting areas after the detour cannot make the episode valid.
+    const outOfOrder = new Map(seen);
+    outOfOrder.set("showcase:2-griffin-defeated", seen.get("showcase:0-maze-entered")! - 1);
+    expect(showcaseEpisodeComplete(w, outOfOrder)).toBe(false);
+    for (const m of SHOWCASE_ORDERED_MILESTONES) {
+      const missing = new Map(seen); missing.delete(m);
+      expect(showcaseEpisodeComplete(w, missing), m).toBe(false);
     }
     expect(lines.some(l => l.type === "observation" && /showcase:0-|showcase:1b-/.test(JSON.stringify(l.data)))).toBe(false);
     const copy = () => structuredClone(w);

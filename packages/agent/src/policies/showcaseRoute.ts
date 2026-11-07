@@ -2,11 +2,12 @@
 // (docs/midterm/SHOWCASE_CONTINUOUS_EPISODE.md). It is a free validation
 // player, labelled as a baseline, never presented as a model, and excluded
 // from the A/B/C evaluation. It exists to prove, with no model calls, that the
-// continuous route (maze, travel, Griffin combat, wig, offering, finale) is
+// continuous route (opening shrine dialogue, maze, travel, Griffin combat, wig, offering, finale) is
 // possible through the five-operation interface, and to exercise the
 // recorder, trace and replay checks end to end.
 //
 // It composes the two frozen baselines without changing them:
+//   0. Read the shrine greeting, then navigate to the visible Hedge Maze exit.
 //   1. Hedge Maze, until this hero's backpack panel lists the Enchanted Shears:
 //      baseline-maze-heuristic-v2 (MazeHeuristic), unchanged.
 //   2. Travel: an observation-only walk to a visible exit by its drawn label

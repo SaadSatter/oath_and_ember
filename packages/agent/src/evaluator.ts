@@ -240,7 +240,12 @@ export const showcaseComplete = (w: World) => {
     && g?.hp === 0 && !!g.wigClaimed && !g.toolsTaken && shrineComplete(w) && has(w, FINALE.complete);
 };
 export const SHOWCASE_REQUIRED_HISTORY = ["showcase:0-goddess-quest-received", "showcase:0-maze-entered", "showcase:1b-returned-from-maze", "showcase:1c-griffin-entered", "showcase:3b-returned-with-wig"] as const;
-export const showcaseEpisodeComplete = (w: World, seen: ReadonlySet<string>) => showcaseComplete(w) && SHOWCASE_REQUIRED_HISTORY.every(m => seen.has(m));
+export const SHOWCASE_ORDERED_MILESTONES = ["showcase:0-goddess-quest-received", "showcase:0-maze-entered", "showcase:1-maze-complete", "showcase:1b-returned-from-maze", "showcase:1c-griffin-entered", "showcase:2-griffin-defeated", "showcase:3-wig-acquired-after-defeat", "showcase:3b-returned-with-wig", "showcase:4-offering-accepted", "showcase:5-chapter0-complete"] as const;
+/** First occurrence times must be strictly ordered: an early combat detour cannot be repaired by revisiting. */
+export const showcaseEpisodeComplete = (w: World, first: ReadonlyMap<string, number>) => showcaseComplete(w) && SHOWCASE_ORDERED_MILESTONES.every((m, i) => {
+  const tick = first.get(m), prior = i ? first.get(SHOWCASE_ORDERED_MILESTONES[i - 1]) : -1;
+  return tick !== undefined && prior !== undefined && tick > prior;
+});
 export const SHOWCASE_EPISODE: EpisodeDefinition = {
   preset: "showcase-maze-griffin-complete-v1",
   goal: "Showcase (excluded from A/B/C): from the normal Goddess Shrine checkpoint, read the Goddess greeting and quest, enter the Hedge Maze through normal travel, obtain the Enchanted Shears, travel to the Griffin Enclosure, defeat the Griffin in combat, claim its wig, offer it to the goddess and reach chapter0.complete. Knockouts are recorded, not terminal.",

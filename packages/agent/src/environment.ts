@@ -863,7 +863,7 @@ export class AgentEnvironment implements GameInterface {
     // Declared failure rules (Griffin trials) come first: a knockout in the same tick as success still fails.
     const failed = episodes[this.preset].failure?.(w, tick);
     if (failed) this.stop(failed);
-    else if (episodes[this.preset].success(w) && (this.preset !== "showcase-maze-griffin-complete-v1" || showcaseEpisodeComplete(w, new Set(this.showcaseMilestoneTicks.keys())))) this.stop("success");
+    else if (episodes[this.preset].success(w) && (this.preset !== "showcase-maze-griffin-complete-v1" || showcaseEpisodeComplete(w, this.showcaseMilestoneTicks))) this.stop("success");
     else if (w.serverTick - this.startTick >= this.limits.maxTicks) this.stop("tick_limit");
   }
 
@@ -942,7 +942,7 @@ export class AgentEnvironment implements GameInterface {
     if (this.preset === "P1" || this.preset === "P1-v2" || this.preset === "P1-v3") return [...milestones(w), ...prologueMilestones(w)];
     // Griffin trials add evaluator-only Griffin markers; other episodes are unchanged.
     if (this.preset === "griffin-unprepared-v1") return [...milestones(w), ...griffinMilestones(w)];
-    // Showcase (excluded from A/B/C): the Griffin markers plus the five ordered showcase milestones, evaluator-only.
+    // Showcase (excluded from A/B/C): the Griffin markers plus ordered quest and travel milestones, evaluator-only.
     if (this.preset === "showcase-maze-griffin-complete-v1") return [...milestones(w), ...griffinMilestones(w), ...this.showcaseHistory(w), ...showcaseMilestones(w)];
     return milestones(w);
   }

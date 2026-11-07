@@ -62,7 +62,7 @@ export interface Situation {
    */
   task?: string;
   /** Suite revision of this definition. */
-  revision: 1 | 2;
+  revision: 1 | 2 | 3;
   /** Historical definitions only: the current id that replaced this one. */
   supersededBy?: CurrentSituationId;
 }

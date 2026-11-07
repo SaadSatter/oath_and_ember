@@ -2,9 +2,9 @@
 // showcase-maze-griffin-complete-v1 (docs/midterm/SHOWCASE_CONTINUOUS_EPISODE.md).
 //
 // EXCLUDED FROM THE OFFICIAL A/B/C EVALUATION. It is a showcase recording for
-// the submission: one continuous episode from the Hedge Maze entrance through
+// the submission: one continuous episode from the normal Goddess Shrine checkpoint through
 // the Griffin fight to chapter0.complete. It reuses the frozen A/B/C pieces
-// without changing them: S2-A's start prefix, the unchanged model-centralized
+// without changing them: the normal goddess checkpoint, the unchanged model-centralized
 // planner, the approved b-post-combined-v4 text (inside the showcase guidance)
 // and the unchanged A and B heuristics (inside the free validation baseline).
 //
@@ -12,7 +12,7 @@
 // and the showcase guidance (SHOWCASE_PAID_APPROVED and the guidance status).
 
 import { createHash } from "node:crypto";
-import { episodes } from "./evaluator.js";
+import { episodes, SHOWCASE_ORDERED_MILESTONES } from "./evaluator.js";
 import { situation, type SituationId } from "./suite.js";
 import { canonicalJson } from "./situationA.js";
 import { tutorialId } from "./playerKnowledge.js";
@@ -64,9 +64,9 @@ export const SHOWCASE = Object.freeze({
     "Coco claims the wig at the nest after the defeat",
     "Return to the shrine, offer the wig, read the finale to chapter0.complete",
   ]),
-  success: "Evaluator episode history: opening quest read, maze entered, returned from maze, Griffin entered, returned with wig; authoritative state: Shears Chest claimed AND enchanted_shears held AND griffin.hp == 0 AND griffin.wigClaimed AND NOT griffin.toolsTaken AND offering accepted AND chapter0.complete (evaluator showcaseComplete).",
+  success: "Strictly ordered first-occurrence evaluator episode history: opening quest read, maze entered, returned from maze, Griffin entered, returned with wig; authoritative state: Shears Chest claimed AND enchanted_shears held AND griffin.hp == 0 AND griffin.wigClaimed AND NOT griffin.toolsTaken AND offering accepted AND chapter0.complete (evaluator showcaseComplete).",
   failure: "None from knockouts (owner decision 2026-11-07): the game's own rule returns a knocked-out hero to the area's starting point with full health, quest progress, inventory and the Griffin unchanged, and the episode continues; each knockout is recorded (trace line showcase_knockout, summary showcaseReport). The episode ends on any limit (ticks, decisions, calls, tokens, spend, wall clock), three consecutive policy failures, the planner's stall watchdog (error) or a manual stop. A peaceful (groomed) wig makes success impossible: a groomed Griffin can never reach 0 HP.",
-  milestones: Object.freeze(["showcase:0-goddess-quest-received", "showcase:0-maze-entered", "showcase:1-maze-complete", "showcase:1b-returned-from-maze", "showcase:1c-griffin-entered", "showcase:2-griffin-defeated", "showcase:3-wig-acquired-after-defeat", "showcase:3b-returned-with-wig", "showcase:4-offering-accepted", "showcase:5-chapter0-complete"]),
+  milestones: Object.freeze(SHOWCASE_ORDERED_MILESTONES),
   goal: episode.goal,
   limits: Object.freeze({ ...episode.limits, wallClockSeconds: SHOWCASE_WALL_CLOCK_CEILING_S, episodeSpendCapUsd: SHOWCASE_EPISODE_CAP_USD, status: "owner-approved 2026-11-07" }),
   prompts: Object.freeze({
