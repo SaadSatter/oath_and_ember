@@ -452,6 +452,16 @@
    "role": "Claude Code implementation agent under CLAUDE.md: Situation B post-tuned prompt-only guidance (b-post-a-transfer-v1) from the Situation A heuristic baseline, owner-approved observation parity for griffin-unprepared-v1, declaration r7 and the paid-run preflight; session-evidence invoked by name in this session. The rules-reviewer subagent was launched by this session in a separate invocation at the owner's request, read-only and not instructed to approve; its findings are committed verbatim.",
    "title": "Situation B post-tuning: A-derived guidance, observation parity, declaration r7 and preflight",
    "note": "Guidance written after Pilot-31 (B pre-tuned) was run and its trace read: the B pre/post contrast is tuning on B, not a transfer test. No paid call, no push, no merge. Commits 6276656, 732c998, ec135fe and this record's commit."
+  },
+  {
+   "number": 51,
+   "slug": "claude-situation-c-prepared",
+   "ids": [
+    "e7c32221"
+   ],
+   "role": "Claude Code implementation agent under CLAUDE.md: Situation C (griffin-prepared-return-v1) scenario, injected-inventory start fixture, return success predicate, paid lock, descriptive route metrics, proposed declaration r10; session-evidence invoked by name in this session. The rules-reviewer subagent was launched by this session in separate invocations at the owner's request, read-only and not instructed to approve; its findings are committed verbatim.",
+   "title": "Situation C: Griffin Trial (Prepared) with goddess return, offline checks, review rounds and proposed r10",
+   "note": "Owner decisions taken in-session over r9: injected start, renamed id, peaceful wig valid with return, tutorial plus owner's neutral briefing, re-pinned B tests, C2 = unchanged B baseline. A concurrent session committed 4f9695b (inventory baseline) to the same branch during this session; it is not this session's work. No paid call, push or merge; r10 not active; SITUATION_C_PAID_APPROVED false."
   }
  ]
 }
