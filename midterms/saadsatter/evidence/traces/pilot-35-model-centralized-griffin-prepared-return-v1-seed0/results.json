@@ -1,0 +1,221 @@
+{
+  "episodes": [
+    {
+      "situation": "griffin-prepared-return-v1",
+      "suiteRevision": 2,
+      "scenario": {
+        "preset": "griffin-prepared-return-v1",
+        "title": "Griffin Trial Prepared, return offering (C)",
+        "goal": "Situation C: from the Griffin Enclosure entrance holding the Vanity Mirror and Enchanted Shears, obtain the Griffin's wig, offer it to the goddess and reach chapter0.complete without a hero knockout.",
+        "revision": 1,
+        "tutorialId": "2ec2f251",
+        "briefing": true
+      },
+      "seed": 0,
+      "player": "model-centralized",
+      "policies": {
+        "sieg": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-1ba46753·guidance-d750861b",
+        "coco": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-1ba46753·guidance-d750861b"
+      },
+      "gateway": "openai:gpt-6-luna@medium",
+      "modelIds": [
+        "gpt-6-luna"
+      ],
+      "gitHash": "24a3ba1",
+      "startHash": "28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7",
+      "startTick": 540,
+      "prefix": "B-return start, then Mirror and Shears added to the backpack (owner-approved start fixture)",
+      "status": "success",
+      "reason": "success",
+      "success": true,
+      "gameTicks": 3379,
+      "gameSeconds": 56.3,
+      "wallSeconds": 958.5,
+      "decisions": {
+        "sieg": 159,
+        "coco": 200
+      },
+      "actions": {
+        "sieg": {
+          "move": 43,
+          "interact": 4,
+          "wait": 76,
+          "advance_dialogue": 35,
+          "choose_dialogue": 1
+        },
+        "coco": {
+          "move": 31,
+          "ability": 2,
+          "use_item": 3,
+          "wait": 89,
+          "interact": 4,
+          "advance_dialogue": 70,
+          "choose_dialogue": 1
+        }
+      },
+      "attempt": 1,
+      "endHash": "8342ec057bd04bbbea5764ed3a26b90199f909f5b395fd2cdac9724c2a214efa",
+      "limits": {
+        "maxTicks": 18000,
+        "maxDecisionsPerPlayer": 1600,
+        "maxModelCallsPerPlayer": 400,
+        "maxTokensPerPlayer": 4000000
+      },
+      "modelLimits": {
+        "maxModelCallsPerPlayer": 400,
+        "maxTokensPerPlayer": 4000000,
+        "maxSpendUsd": 0.75,
+        "callTimeoutMs": 30000
+      },
+      "invalidActions": {
+        "sieg": 0,
+        "coco": 1
+      },
+      "metrics": {
+        "sieg": {
+          "modelCalls": 62,
+          "modelDecisions": 62,
+          "parseFailures": 0,
+          "recoveredReplies": 0,
+          "proposedActions": 63,
+          "submittedActions": 159,
+          "executedActions": 159,
+          "staleSubmissions": 0,
+          "gameplayRejections": 0,
+          "skippedActions": 1
+        },
+        "coco": {
+          "modelCalls": 101,
+          "modelDecisions": 99,
+          "parseFailures": 3,
+          "recoveredReplies": 0,
+          "proposedActions": 101,
+          "submittedActions": 200,
+          "executedActions": 199,
+          "staleSubmissions": 0,
+          "gameplayRejections": 1,
+          "skippedActions": 0
+        }
+      },
+      "metricsVersion": 2,
+      "messages": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "batchStops": 1,
+      "modelCalls": {
+        "attempted": 163,
+        "failed": 0,
+        "timedOut": 0,
+        "unknownUsage": 0
+      },
+      "latencyMs": {
+        "mean": 5457,
+        "max": 20528
+      },
+      "tokens": {
+        "input": 3024600,
+        "output": 71352,
+        "cacheRead": 1328724,
+        "cacheWrite": 1695387
+      },
+      "spendUsd": {
+        "known": 0.287029,
+        "charged": 0.287029
+      },
+      "priceSource": "https://developers.openai.com/api/docs/models/gpt-6-luna (verified 2026-10-28); https://developers.openai.com/api/docs/pricing; https://developers.openai.com/api/docs/guides/prompt-caching",
+      "ledgerEntry": "pilot-35",
+      "episodeCapUsd": 0.75,
+      "wallLimitSeconds": 3600,
+      "launch": {
+        "launcher": "scripts/midterm/live.ts",
+        "speed": 1,
+        "viewer": true
+      },
+      "finalClaim": null,
+      "evaluation": {
+        "label": "C",
+        "definitionHash": "048679a38eea4e15177af2990fac94c19b2cd4f0c40de33a92c559a57f22d4a4"
+      },
+      "promptHashes": {
+        "sieg": "d50dc0623921ed00bedb811841d72153fe9b943e072ee180c63bc7856b52dd54",
+        "coco": "d50dc0623921ed00bedb811841d72153fe9b943e072ee180c63bc7856b52dd54"
+      },
+      "configHash": "3238a5a63631e91e86a3dbde20a37dcefd799ad3c311f6b255602bfaded6a4e7",
+      "guidance": {
+        "id": "c-post-v4-inventory-hint-v1",
+        "status": "approved",
+        "sha256": "d750861ba30255fd10e139532c8394e2e7dd44237e1ba50dc3ee4e0d311afa83",
+        "situations": [
+          "griffin-prepared-return-v1"
+        ]
+      },
+      "situationCReport": {
+        "descriptiveOnly": true,
+        "objectiveSuccess": true,
+        "terminalReason": "success",
+        "griffinHpAtEnd": 640,
+        "griffinPhaseAtEnd": "GROOMING",
+        "griffinDefeated": false,
+        "mirrorDelivered": true,
+        "shearsDelivered": true,
+        "itemInteractionUsed": true,
+        "griffinHpAtFirstItemDelivery": 640,
+        "itemsDeliveredWhileGriffinAlive": true,
+        "griffinHpAtMirrorDelivery": 640,
+        "peacefulGroomingOccurred": true,
+        "toolsTakenByGriffin": true,
+        "wigAcquired": true,
+        "griffinHpAtWigClaim": 640,
+        "wigRoute": "peaceful",
+        "offeringAccepted": true,
+        "chapter0Complete": true
+      }
+    }
+  ],
+  "aggregate": [
+    {
+      "situation": "griffin-prepared-return-v1",
+      "trials": 1,
+      "successes": 1,
+      "reasons": [
+        "success"
+      ],
+      "meanGameSeconds": 56.3,
+      "meanWallSeconds": 958.5,
+      "gameTicks": 3379,
+      "actions": 359,
+      "failedModelCalls": 0,
+      "unknownUsageCalls": 0,
+      "tokens": {
+        "input": 3024600,
+        "output": 71352,
+        "cacheRead": 1328724,
+        "cacheWrite": 1695387
+      },
+      "knownUsd": 0.287029,
+      "meanDecisions": 359,
+      "invalidActions": 1,
+      "messages": 0,
+      "modelCalls": 163,
+      "chargedUsd": 0.287029,
+      "startHashes": [
+        "28777a85eebd5599"
+      ],
+      "metrics": {
+        "modelCalls": 163,
+        "modelDecisions": 161,
+        "parseFailures": 3,
+        "recoveredReplies": 0,
+        "proposedActions": 164,
+        "submittedActions": 359,
+        "executedActions": 358,
+        "staleSubmissions": 0,
+        "gameplayRejections": 1,
+        "skippedActions": 1
+      },
+      "metricsEpisodes": 1
+    }
+  ],
+  "previousAttempts": []
+}

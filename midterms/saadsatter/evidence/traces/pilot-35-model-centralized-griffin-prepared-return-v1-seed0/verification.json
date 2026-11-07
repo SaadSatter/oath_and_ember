@@ -1,0 +1,8 @@
+{
+ "command": "node --import tsx scripts/midterm/replay-video.ts <trace> --check-only",
+ "date": "2026-11-07",
+ "verifiedAtCommit": "24a3ba1",
+ "traceSha256": "d8824c91e1aae24a7647ea3c2a3ba80f0d3a195229e6ce5a75871a9683e36aff",
+ "result": "REPLAY MATCHES THE TRACE: start hash, 357 step results, end (success, 8342ec057bd04bbb) and 3379 ticks.",
+ "chainVerified": true
+}

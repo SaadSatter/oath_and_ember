@@ -244,3 +244,13 @@ After C1 had run, the owner asked that the post-tuned C3 also tell the planner t
   - **Strong hint:** in ordinary play, the nest label it points to reads "Griffin nest · drop mirror + shears".
   - r10's v4-only C3 (`a0c6939a…`) was never run.
 - **Budget:** C1 cost $0.587, leaving $0.913 of the $1.50 combined cap, so C3's $0.75 cap fits.
+
+## Official C results (all three cells)
+
+| Cell | Run | Outcome | Route | Griffin HP (end) | Game-s / wall-s | Calls | Invalid | Cost |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C1 pre-tuned | Pilot-34 (`f9edeb7`, r10) | Success | peaceful | 418 | 133.3 / 2,479.7 | 278 | 2 | $0.586742 |
+| C3 post-tuned (v4 + hint) | Pilot-35 (`24a3ba1`, r11) | Success | peaceful | 640 | 56.3 / 958.5 | 163 | 1 | $0.287029 |
+| C2 baseline | recorded run (`19e5d87`) | Success | combat | 0 | 89.8 / 103.3 | 0 | 0 | $0 |
+
+All three runs replay exactly at `24a3ba1`. The full comparison, disclosures and the C2 ordering deviation are in [EVALUATION.md](../../midterms/saadsatter/EVALUATION.md#situation-c-results-declarations-r10-and-r11). C3 is outcome-informed, C-specific supplementary tuning. With one run per cell, nothing here is a statistical result.
