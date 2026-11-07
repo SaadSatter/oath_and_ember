@@ -1,0 +1,117 @@
+{
+ "episode": "Pilot-34",
+ "case": "C",
+ "condition": "pre-tuned (C1, official)",
+ "sourceCommit": "f9edeb7",
+ "declaration": "oath-ember-abc-2026-11-06-r10-c (87700138\u2026)",
+ "files": {
+  "trace.jsonl": {
+   "sha256": "6adbb2367d1469704355b14e6f3bfba25afee16c4cecb84edd1deda99466a2bf",
+   "bytes": 10237536,
+   "original": "evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T03-14-55-647Z/griffin-prepared-return-v1-seed0/trace.jsonl"
+  },
+  "summary.json": {
+   "sha256": "7d13ec265f11832ef00125ce772a5ba8f27c525c6ab6be412c73babd0dc29612",
+   "bytes": 4893,
+   "original": "evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T03-14-55-647Z/griffin-prepared-return-v1-seed0/summary.json"
+  },
+  "live-recording.json": {
+   "sha256": "d99666f4780886f6fb031ec28a110feb5189a074dfd050f75b581585b421c74e",
+   "bytes": 2269,
+   "original": "evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T03-14-55-647Z/recording.json"
+  },
+  "run.json": {
+   "sha256": "9f3714c34d871497d8d9ca84990bc904f9f8b9769960e0405f1a40d8951e2161",
+   "bytes": 722,
+   "original": "evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T03-14-55-647Z/run.json"
+  },
+  "results.json": {
+   "sha256": "2d0c090f4e15d23f1d00263d9ad5d7d3890fa161dcfe75b7544b041a22a263a7",
+   "bytes": 6445,
+   "original": "evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T03-14-55-647Z/results.json"
+  },
+  "results.md": {
+   "sha256": "da255013296c92ab04fb053438494fdf265a32ab98f494c2e185bae57a7b4daa",
+   "bytes": 554,
+   "original": "evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T03-14-55-647Z/results.md"
+  },
+  "live.json": {
+   "sha256": "da475f15610fb20166a753a26515ff509d2c5919b22e84ad4b5dbae2c1ca5471",
+   "bytes": 647,
+   "original": "evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T03-14-55-647Z/live.json"
+  }
+ },
+ "recording": {
+  "path": "evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T03-14-55-647Z/recording.webm",
+  "sha256": "ff967567a22ec343654691e1cc435cf6a63808f64ff67f8edbb8d1fbd612aa13",
+  "bytes": 216702422,
+  "committed": false,
+  "note": "video local-only (217 MB), untouched"
+ },
+ "outcome": {
+  "status": "success",
+  "reason": "success",
+  "success": true,
+  "gameTicks": 7997,
+  "gameSeconds": 133.3,
+  "wallSeconds": 2479.7,
+  "decisions": {
+   "sieg": 378,
+   "coco": 359
+  },
+  "invalidActions": {
+   "sieg": 1,
+   "coco": 1
+  },
+  "modelCalls": {
+   "attempted": 278,
+   "failed": 0,
+   "timedOut": 0,
+   "unknownUsage": 0
+  },
+  "tokens": {
+   "input": 5449743,
+   "output": 179558,
+   "cacheRead": 2065866,
+   "cacheWrite": 3383043
+  },
+  "spendUsd": {
+   "known": 0.586742,
+   "charged": 0.586742
+  },
+  "ledgerEntry": "pilot-34",
+  "startHash": "28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7",
+  "endHash": "a5090db295d1088d9562c04f8d59c5ce377ce3d9716d5029f3d30e08c5c2aec1",
+  "promptHashes": {
+   "sieg": "6dc64411b2373596f925360334680211657c266a3fe5487b4f687868740e3701",
+   "coco": "6dc64411b2373596f925360334680211657c266a3fe5487b4f687868740e3701"
+  },
+  "configHash": "178f2ce557556e13b71c14ce00c2cf8a1e98e4269601e9e3c5cd04856786b165",
+  "situationCReport": {
+   "descriptiveOnly": true,
+   "objectiveSuccess": true,
+   "terminalReason": "success",
+   "griffinHpAtEnd": 418,
+   "griffinPhaseAtEnd": "GROOMING",
+   "griffinDefeated": false,
+   "mirrorDelivered": true,
+   "shearsDelivered": true,
+   "itemInteractionUsed": true,
+   "griffinHpAtFirstItemDelivery": 418,
+   "itemsDeliveredWhileGriffinAlive": true,
+   "griffinHpAtMirrorDelivery": 418,
+   "peacefulGroomingOccurred": true,
+   "toolsTakenByGriffin": true,
+   "wigAcquired": true,
+   "griffinHpAtWigClaim": 418,
+   "wigRoute": "peaceful",
+   "offeringAccepted": true,
+   "chapter0Complete": true
+  },
+  "latencyMs": {
+   "mean": 8350,
+   "max": 21107
+  }
+ },
+ "preservation": "Files copied byte for byte from the live output folder; no file edited. Preserved before any change to the C3 guidance; the C3 hint was requested by the owner after this run."
+}
