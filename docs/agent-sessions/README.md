@@ -188,3 +188,5 @@ Pilot-33 owner-requested preservation: seven source files copied byte-for-byte; 
 S54 supplement: [exact paid showcase authorization and credential-boundary validation](../midterm/SHOWCASE_PAID_AUTHORIZATION.md), source `165d5f7`; attempt unstarted because credential is unavailable.
 
 S54 shrine-start supplement: [revision 3](../midterm/SHOWCASE_SHRINE_START.md), `6206065`/`e5d2dfe`, free connected-quest evidence and read-only reviewer reports. Prior maze-start paid authorization superseded; new exact-hash approval pending, both paid gates locked.
+
+S54 final shrine-start approval: source `1b3d83d`, exact revised hashes approved, 17 targeted tests/typecheck/build pass; credential-free launch validation succeeds through the missing-key boundary. Revised attempt remains unused.

@@ -404,3 +404,5 @@ Showcase final authorization supersedes the prior pending-approval status: [one 
 ## Showcase current shrine-start revision 3
 
 [Current handoff](SHOWCASE_SHRINE_START.md) supersedes both prior maze-start versions and their paid authorization. Normal goddess checkpoint, legal opening dialogue and all connected transitions; strict ordered history and combat-only defeat. [Free validation v3](../../midterms/saadsatter/evidence/showcase/free-validation-v3/README.md), [read-only reviewer report](agent-evidence/reviews/2026-11-07-showcase-shrine-review.md), [ordering-fix follow-up](agent-evidence/reviews/2026-11-07-showcase-shrine-followup.md), same-session S54 supplement. Supports recording evidence only, excluded from A/B/C. Revised paid execution locked pending final exact-hash owner approval.
+
+Shrine-start revision 3 execution authorized by owner after bac3a5f, source `1b3d83d`; [exact command and hash validation](evidence/showcase-shrine-authorization/command-validation.json). No revised model run yet: credential unavailable, no reservation. Prior pending-approval statements are historical.

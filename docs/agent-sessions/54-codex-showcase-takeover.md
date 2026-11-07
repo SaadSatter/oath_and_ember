@@ -69,3 +69,7 @@ Sources: subsequent explicit owner request in the same Codex session, refreshed 
 - No paid call or real reservation, push, merge, course PR update or submission. The prior exact-hash authorization applies to the former start/prompt only. [Current shrine-start revision](../midterm/SHOWCASE_SHRINE_START.md).
 
 Final shrine-revision ledger inventory changed externally from 35 to 36 entries: settled pilot-36 at older source cee0713, charged $0.012616, no open reservation. Revised shrine-start run remains unstarted and locked. Final pilot $2.117789 / total $19.114868 remaining; this workstream made no provider call and did not retry the older attempt.
+
+## Final shrine-start approval and credential boundary
+
+Sources: owner's “I approve” reply to the revised hash/one-attempt proposal in this ongoing session, refreshed mechanical extraction to scratch, git and actual command outputs. Applied the existing session-evidence procedure; no new independent session or share URL. Minimal scoped authorization committed as `1b3d83d55e793a0a57e7cfbaa4726d54b9fab159`; approved guidance hash 32836d8f… and full prompt 8ce07fb2…, definition ec827f19… unchanged. Typecheck/build and 17/17 targeted tests pass. Exact command validation stops safely at missing OPENAI_API_KEY, before provider construction or ledger reservation. Ledger remains 36 entries, zero open; pilot $2.117789 / total $19.114868. Revised paid attempt unstarted; older pilot-36 remains preserved. No paid retry, push, merge, course PR update or submission. Changed evidence scanned before final commit.
