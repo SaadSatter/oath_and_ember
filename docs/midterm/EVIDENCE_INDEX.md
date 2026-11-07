@@ -410,3 +410,5 @@ Shrine-start revision 3 execution authorized by owner after bac3a5f, source `1b3
 ## Showcase north-next tuning and Pilot-37 preservation
 
 [Current north-next prompt/budget handoff](SHOWCASE_NORTH_NEXT.md), [preserved partial Pilot-37](../../midterms/saadsatter/evidence/showcase/pilot-37-original/README.md). Outcome-informed showcase-only tuning; original run reached maze return then detoured south to Bridge Ruins, manual stop. New prompt explicitly selects north Griffin trail and excludes south Puzzle Map2. Pilot cap $9, contingency $0.90, total $25 by owner selection; paid run locked pending new exact-hash approval. No A/B/C changes.
+
+North-next prompt approved for one owner-launched attempt at `2ba618d`; [authorization checks](evidence/showcase-north-next-owner-authorization/). Prior pending-approval text is historical. No new model result yet.

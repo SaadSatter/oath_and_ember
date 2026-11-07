@@ -48,3 +48,5 @@ No automatic retry, push, merge, course PR modification or submission. Session-e
 ## Final approval — owner launches personally
 
 Owner reply after 4c70686: “I approve, I will run it my self.” This explicitly approves the exact guidance 1bd73ba9…/full prompt 89f34d17… above for one new $2/7,200s/400-calls-per-hero attempt, maximum batch 4, seed 0, OpenAI gpt-6-luna medium, without automatic retry. The owner will launch; Codex will not make a paid call. Runtime unlock only opens the showcase flag and exact guidance hash. Pre-change clean source 4c70686 and hashes verified; ledger has no open reservation and enough pilot balance. Earlier pending-approval language is historical. No prompt text, world/definition, A/B/C or budget change in this authorization step.
+
+Owner-launch authorization source: `2ba618d6d17449153a73528577adb940d18cb640`. All hashes unchanged and verified, typecheck and 17/17 targeted tests pass; credential-free subprocess validates through the missing-key boundary without provider calls. [Validation evidence](evidence/showcase-north-next-owner-authorization/). No paid run or reservation started by Codex; owner will run the command personally.
