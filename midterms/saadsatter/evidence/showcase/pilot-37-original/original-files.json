@@ -1,0 +1,39 @@
+{
+  "sourceDirectory": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/showcase-maze-griffin-complete-v1-seed0-model-centralized-openai-2026-11-07T20-26-12-953Z",
+  "sourceGit": "14646d3",
+  "ledgerEntry": "pilot-37",
+  "files": {
+    "live.json": {
+      "bytes": 650,
+      "sha256": "1921206166cc062dad5d4ceef0b2297164e060736dacdc821fc8e34f69262530"
+    },
+    "results.json": {
+      "bytes": 7084,
+      "sha256": "4f3c271bb4dc7f1edbab2328dd2f521b48c182007a44b23c1041a371cc6c3c96"
+    },
+    "recording.json": {
+      "bytes": 2323,
+      "sha256": "b6e886ea4ca26967095315794095fc3708221aa5cab74adad4c5d49740e74797"
+    },
+    "results.md": {
+      "bytes": 568,
+      "sha256": "bfd8e922462032dcad9fbe7638ec7c3b5961047a8665254a7042870f4f81d57d"
+    },
+    "recording.webm": {
+      "bytes": 202520833,
+      "sha256": "c02ec4812ce90c371e733cebd9e176525957767edbf08210169e8c0b578e713d"
+    },
+    "run.json": {
+      "bytes": 977,
+      "sha256": "ed0ffa8aee66f8e34dfa265b4122b9ab965a6435cb69d65792799dfba773664b"
+    },
+    "showcase-maze-griffin-complete-v1-seed0/summary.json": {
+      "bytes": 5463,
+      "sha256": "8da3e2f2a5b4647c742174285ee3cd82de2d711272c8301e5c56d23b901486b4"
+    },
+    "showcase-maze-griffin-complete-v1-seed0/trace.jsonl": {
+      "bytes": 9682800,
+      "sha256": "02f5ddec22a4555ac6c036c286c278fcac9bf568d5fbfd660bca65259e4b32f5"
+    }
+  }
+}

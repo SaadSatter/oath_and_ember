@@ -1,0 +1,17 @@
+{
+  "allocation": {
+    "totalCapUsd": 25,
+    "stages": {
+      "smoke": 0.1,
+      "pilot": 9,
+      "final": 15,
+      "contingency": 0.9
+    }
+  },
+  "entries": 37,
+  "openReservations": 0,
+  "pilotRemainingUsd": 2.667402,
+  "contingencyRemainingUsd": 0.9,
+  "totalRemainingUsd": 18.664481,
+  "noNewPaidRun": true
+}

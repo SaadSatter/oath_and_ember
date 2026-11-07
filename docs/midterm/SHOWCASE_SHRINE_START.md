@@ -89,3 +89,7 @@ Pre-unlock: clean HEAD `bac3a5f`, all three proposed hashes matched. Canonical l
 `OPENAI_API_KEY` is unavailable in the agent process. Validate the committed command through the missing-credential boundary without provider access. The revised paid attempt remains unstarted until a credential is supplied via the existing hidden prompt or environment; never through chat or command arguments.
 
 Authorization source SHA: `1b3d83d55e793a0a57e7cfbaa4726d54b9fab159`. On this clean committed source, all three hashes match unchanged; typecheck/build and all 17 targeted tests pass. Exact proposed CLI command validates through the credential boundary, then stops with `no OPENAI_API_KEY and no interactive terminal for the hidden prompt`, before a reservation/provider call. Final canonical inventory remains 36 entries/no open reservations, pilot $2.117789 / total $19.114868. The approved revised attempt is unstarted and unused. No automatic retry. [Authorization validation evidence](evidence/showcase-shrine-authorization/command-validation.json).
+
+## Current prompt follow-up
+
+[North-next clarification and owner-approved contingency transfer](SHOWCASE_NORTH_NEXT.md) supersedes the above prompt hashes/execution authorization. Pilot-37 consumed the prior attempt and is preserved; revised prompt is locked pending new exact-hash approval. Pilot cap now $9 / contingency $0.90 / total $25.

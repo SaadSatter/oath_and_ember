@@ -1,0 +1,28 @@
+{
+  "authorization": "Owner selected Move $1 from contingency: pilot cap $9, total stays $25 in Codex session 01a1b479",
+  "beforeConfig": {
+    "totalCapUsd": 25,
+    "stages": {
+      "smoke": 0.1,
+      "pilot": 8,
+      "final": 15,
+      "contingency": 1.9
+    }
+  },
+  "afterConfig": {
+    "totalCapUsd": 25,
+    "stages": {
+      "smoke": 0.1,
+      "pilot": 9,
+      "final": 15,
+      "contingency": 0.9
+    }
+  },
+  "entryCount": 37,
+  "allEntriesPreservedSha256": "ca7e251665a27792e425fc9d22faff73222b435ff5ed69d1e5843ef6b3de224b",
+  "ledgerIdentityPreserved": true,
+  "openReservations": 0,
+  "beforeFileSha256": "6b8964428827ed7e22dc730980c608dcaac0683bb2d0173baa7207c6717b4315",
+  "afterFileSha256": "fc14c203f6de08bcb1eff034760ea8d143c5c557a2c1760a4f1c6fe6f8e90c28",
+  "newReservationMade": false
+}

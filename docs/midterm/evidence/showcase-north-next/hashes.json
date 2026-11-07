@@ -1,0 +1,58 @@
+{
+  "label": "Prompt-tuned continuous gameplay demonstration — excluded from official A/B/C evaluation results.",
+  "scenario": "showcase-maze-griffin-complete-v1",
+  "gitHead": "95c01c3+dirty",
+  "definitionHash": "ec827f19555e5456d987f866c6f50414827f8875efd911859f351aeafe532831",
+  "status": "revision 3 shrine start requested by owner; paid execution locked pending new exact-hash authorization",
+  "paidApproved": false,
+  "proposedPaidScope": {
+    "player": "model-centralized",
+    "gateway": "openai",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "maxBatch": 4,
+    "seed": 0,
+    "maxEpisodeCapUsd": 2,
+    "wallClockSeconds": 7200,
+    "guidance": "showcase-maze-griffin-v1"
+  },
+  "limits": {
+    "maxTicks": 36000,
+    "maxDecisionsPerPlayer": 4000,
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 8000000,
+    "wallClockSeconds": 7200,
+    "episodeSpendCapUsd": 2,
+    "status": "owner-approved 2026-11-07"
+  },
+  "starts": {
+    "0": {
+      "startHash": "9d565ae90d161cc9e79979e0b9b66b1c5499d5a22e5292ba10ca271bda12cb50",
+      "episode": "showcase-maze-griffin-complete-v1-0-9d565ae9",
+      "repeatIdentical": true,
+      "shrineCheckpointStartHash": "9d565ae90d161cc9e79979e0b9b66b1c5499d5a22e5292ba10ca271bda12cb50",
+      "sameAsNormalShrineCheckpoint": true,
+      "tick": 0
+    },
+    "1": {
+      "startHash": "f18052b4e9d452c9cb5251d3b34739292b833f0b79f3c4e9562b944d8a05bb21",
+      "episode": "showcase-maze-griffin-complete-v1-1-f18052b4",
+      "repeatIdentical": true,
+      "shrineCheckpointStartHash": "f18052b4e9d452c9cb5251d3b34739292b833f0b79f3c4e9562b944d8a05bb21",
+      "sameAsNormalShrineCheckpoint": true,
+      "tick": 0
+    }
+  },
+  "guidance": {
+    "id": "showcase-maze-griffin-v1",
+    "status": "proposed",
+    "sha256": "1bd73ba9714f78e1b4bdf23975ffff2f4ec6ff4fc4129d95a5e5394b0ccb18f2",
+    "chars": 7177
+  },
+  "briefingSha256": "6d6caa7b51ccd1cd6739d9bcf8272af17d574900ecb487536271c58613ef21d6",
+  "taskSha256": "76f8c7c9b7203a3dfd39fa5e31d8e6b8a6fbfddaf81cfc6f14b404133e89e0c8",
+  "manualSha256": "4b091a6630dd56f236f89f8e2213a6bb7cad4a31d4851d1883f95867d92bfa86",
+  "plannerPolicyNameSuffix": "guidance-1bd73ba9",
+  "systemPromptSha256": "89f34d173193e616c5356834aa8b29f7a97437ba2e88d75a4b1914da2663a8a6",
+  "systemPromptChars": 39330
+}

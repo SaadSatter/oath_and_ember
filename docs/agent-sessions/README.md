@@ -190,3 +190,5 @@ S54 supplement: [exact paid showcase authorization and credential-boundary valid
 S54 shrine-start supplement: [revision 3](../midterm/SHOWCASE_SHRINE_START.md), `6206065`/`e5d2dfe`, free connected-quest evidence and read-only reviewer reports. Prior maze-start paid authorization superseded; new exact-hash approval pending, both paid gates locked.
 
 S54 final shrine-start approval: source `1b3d83d`, exact revised hashes approved, 17 targeted tests/typecheck/build pass; credential-free launch validation succeeds through the missing-key boundary. Revised attempt remains unused.
+
+S54 north-next follow-up: Pilot-37 preservation, explicit south-exit avoidance, owner-approved $1 contingency transfer; source 95c01c3, 59 passing affected tests. [Handoff](../midterm/SHOWCASE_NORTH_NEXT.md).
