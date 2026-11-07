@@ -56,7 +56,7 @@ If satisfying the supplied unaided-observation requirement, conduct and document
 
 ## Notes given
 
-No notes given to another student's build are in this repository. If you gave a partner notes, add them here, anonymised.
+Not required for this submission (owner decision, 7 November 2026, following the professor's clarification that the playtest need not be with a classmate). No notes given are included.
 
 ## Related
 
