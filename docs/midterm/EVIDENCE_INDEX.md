@@ -398,3 +398,5 @@ Supports 5c (recording) only. **Prompt-tuned continuous gameplay demonstration �
 ## Showcase current revision 2 — November 7 takeover
 
 The preceding showcase entry is historical revision 1. Current guidance is `7f3203b9…`, full prompt `59e46825…`, with nonterminal normal knockout recovery. [Current handoff](SHOWCASE_CONTINUOUS_EPISODE.md#10-codex-takeover-and-final-review-response-november-7-2026), [free validation v2](../../midterms/saadsatter/evidence/showcase/free-validation-v2/README.md), [same-session follow-up audit](agent-evidence/skill-runs/2026-11-07-showcase-codex-takeover.md), [Claude S53](../agent-sessions/53-claude-showcase-preparation.md), [Codex S54](../agent-sessions/54-codex-showcase-takeover.md). Excluded from A/B/C; no paid model showcase, no paid unlock.
+
+Showcase final authorization supersedes the prior pending-approval status: [one exact attempt and validation](SHOWCASE_PAID_AUTHORIZATION.md), source `165d5f7`. Prompt hashes unchanged; execution unstarted because credential is unavailable.

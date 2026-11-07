@@ -184,3 +184,5 @@ Pilot-33 owner-requested preservation: seven source files copied byte-for-byte; 
 ## Showcase preparation and takeover — November 7
 
 [S53 Claude preparation](53-claude-showcase-preparation.md) preserves the original implementation/reviewer provenance. [S54 Codex takeover](54-codex-showcase-takeover.md) records preservation commits, offline fixes, free tests and locked paid handoff. S54 continues the existing Codex chat; it is not an independent reviewer session.
+
+S54 supplement: [exact paid showcase authorization and credential-boundary validation](../midterm/SHOWCASE_PAID_AUTHORIZATION.md), source `165d5f7`; attempt unstarted because credential is unavailable.

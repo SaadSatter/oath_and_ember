@@ -30,3 +30,11 @@ npm run eval:live -- --scenario showcase-maze-griffin-complete-v1 --seed 0 \
 ```
 
 Do not push, merge, change the course PR or submit. Preserve any failed or partial attempt; report its actual outcome. The earlier review's live-capture timing caveat remains applicable.
+
+## Completed authorization validation
+
+Authorization source commit: `165d5f7ffa0b792cd6a25eb011e6c22cfdf81859`. Clean-source exact CLI validation passed scenario/configuration/guidance/budget/clean-tree checks and stopped at `no OPENAI_API_KEY and no interactive terminal for the hidden prompt`. No provider call or real reservation occurred; the authorized attempt remains unstarted. Unescalated checks could not create the canonical ledger lock; rerunning the credential-free validation with required filesystem permissions reached the expected credential boundary.
+
+Typecheck/build pass; existing showcase suites **16/16 pass**, including full prompt hash pins, approved guidance hash, rejected configurations, no resume, cap checks and the credential-free CLI check. Runtime changes are limited to the two authorization locks; harness, live launcher, server/shared code and official A/B/C definitions are unchanged. The existing definition status string is historical metadata retained to avoid silently changing its frozen hash.
+
+Evidence: [authorization checks](evidence/showcase-authorization/command-validation.json). Changed evidence secret scan passes. Broad historical docs scan still reports the pre-existing truncated synthetic canary in the immutable October 27 recording audit; that report was preserved verbatim. No claim that the entire historical scan is clean.

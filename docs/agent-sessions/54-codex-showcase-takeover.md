@@ -51,3 +51,9 @@ Commits whose author time falls inside this window (any branch). A time match is
 | --- | --- | --- | --- |
 | `20d9d28` | 2026-11-07 07:00 | Complete showcase scope guards and recovery regression checks | — |
 | `c242906` | 2026-11-07 06:57 | Preserve Claude showcase review and interrupted scope fixes | Claude Opus 5.5 <noreply@anthropic.com> |
+
+## Final owner authorization supplement
+
+Sources: explicit owner approval in this same ongoing Codex session, refreshed mechanical extraction to scratch, git commit and current command outputs. The owner approved one exact showcase attempt, the two specified hashes, $2/7,200 s/400 calls per hero, no automatic retry. Authorization is committed as `165d5f7ffa0b792cd6a25eb011e6c22cfdf81859`. Both frozen hashes match; original review reports remain unchanged. Typecheck/build and 16 targeted tests pass. Exact clean-source live command validates through the credential boundary; `OPENAI_API_KEY` is unavailable and no paid attempt or reservation started. Pilot $2.130405, total $19.127484 remain, zero open reservations. Session-evidence was invoked again in this same session; this is not an independent review or a second skill session. [Authorization and evidence](../midterm/SHOWCASE_PAID_AUTHORIZATION.md).
+
+Changed evidence scan: zero findings. Broad historical scan: one existing synthetic credential-shaped canary in the immutable October 27 recording audit; preserved and reported, not removed. No push/merge/course PR update/submission.
