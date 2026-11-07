@@ -416,3 +416,5 @@ North-next prompt approved for one owner-launched attempt at `2ba618d`; [authori
 ## Pilot-38 cow failure and positioning proposal
 
 [Diagnosis](SHOWCASE_COW_DIAGNOSIS.md), [original stopped run](../../midterms/saadsatter/evidence/showcase/pilot-38-original/README.md), [new proposed hashes](evidence/showcase-cow-diagnosis/). Wrong landing geometry and actions-before-walking order; no engine/controller change. Outcome-informed showcase proposal only, excluded from A/B/C. 17 targeted tests/typecheck pass; paid retry locked pending new approval.
+
+Positioning proposal approved for one new owner-launched attempt at `a899acc`: [authorization checks](evidence/showcase-positioning-authorization/). Pending-approval language above is historical; no new model result or agent launch.

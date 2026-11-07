@@ -196,3 +196,5 @@ S54 north-next follow-up: Pilot-37 preservation, explicit south-exit avoidance, 
 S54 final north-next authorization: owner launches personally; source `2ba618d`, exact hashes verified, 17 targeted tests/typecheck pass, no Codex paid run.
 
 S54 Pilot-38 cow investigation: [diagnosis and proposed generic positioning guidance](../midterm/SHOWCASE_COW_DIAGNOSIS.md); original failed run preserved, exact replay, no controller change or paid retry.
+
+S54 positioning prompt approved for owner self-launch, source `a899acc`; exact hashes/typecheck/17 targeted tests verified, no Codex paid call.
