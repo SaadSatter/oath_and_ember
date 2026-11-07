@@ -58,7 +58,7 @@ Rubric checks are those of [MIDTERM_GUIDELINES.md](MIDTERM_GUIDELINES.md). The e
 | Viewer final-clock mismatch (43.1 s shown, 49.8 s actual) | **pending: follow-up** | A separate fix to the viewer or recorder. Not changed here; `live.ts` was left alone as instructed |
 | Limitations paragraph in the owner's voice | **blocked: owner** | The facts are listed under EVALUATION.md "Limitations" |
 | AGENT-TEAM.md in the owner's voice | **blocked: owner** | The scaffold is unchanged by this work |
-| Peer playtest notes (received and given) | **received: included** (friends' session; the professor allows a non-classmate playtester); **given: not required** (owner decision, following the professor's clarification) | Due November 6 |
+| Peer playtest notes (received and given) | **received: the human playtest notes serve as the peer notes**, because no class time was available for a classmate session (friends' session; the professor allows a non-classmate playtester); **given: not required** (owner decision, following the professor's clarification) | Due November 6 |
 | Generated sprites' terms confirmed for publication | **blocked: owner** | README "Sources and terms" |
 | Fresh-clone rehearsal and CI at the submitted commit | **pending** | The last rehearsal was at `c65dbe2`, before this documentation commit |
 | Course PR opened and URL submitted on CourseWorks | **blocked: owner** | Not opened. No push or PR from this session |

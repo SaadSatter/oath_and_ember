@@ -1,6 +1,6 @@
-# Playtest notes
+# Peer notes
 
-**Status:** human playtest notes are included below. The owner reports that the professor clarified the playtester does not have to be a classmate (peer). These notes come from a session with friends. The copy of the original notes is [docs/midterm/playtests/README.md](../../docs/midterm/playtests/README.md).
+**These human playtest notes are the submission's peer notes.** No class time was available for the scheduled classmate playtest, so no peer session took place (owner-reported). The owner reports that the professor clarified the playtester does not have to be a classmate. These notes come from a session with friends. The copy of the original notes is [docs/midterm/playtests/README.md](../../docs/midterm/playtests/README.md).
 
 **Disclosures:**
 
@@ -8,7 +8,7 @@
 - The notes are the developer's retrospective account, with participants anonymous. They are not a transcript, a recording or a verified log.
 - No playtester tried the revised build.
 
-## Notes received (human playtest, 2 November 2026)
+## Notes received (peer notes: human playtest, 2 November 2026)
 
 ### Session details supplied by the developer
 
