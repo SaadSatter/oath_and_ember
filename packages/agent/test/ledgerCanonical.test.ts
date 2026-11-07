@@ -77,9 +77,9 @@ describe("canonical spend ledger (H1)", () => {
     ledger.close();
     expect(() => SpendLedger.initCanonical(repoInfo(b))).toThrow(/never re-initialized/);
     const fromB = SpendLedger.openCanonical(repoInfo(b));
-    expect(fromB.remaining("pilot")).toBe(5);
+    expect(fromB.remaining("pilot")).toBe(6);
     expect(fromB.remaining()).toBe(22);
-    expect(() => fromB.reserve("pilot", "too-much", 5.01)).toThrow(LedgerError);
+    expect(() => fromB.reserve("pilot", "too-much", 6.01)).toThrow(LedgerError);
     fromB.close();
   });
 

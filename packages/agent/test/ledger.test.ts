@@ -18,8 +18,8 @@ afterEach(() => {
 });
 
 describe("spend ledger", () => {
-  it("uses the approved allocation: $25 total; smoke $0.10, pilot $8, final $15, contingency $1.90", () => {
-    expect(APPROVED_LEDGER).toEqual({ totalCapUsd: 25, stages: { smoke: 0.1, pilot: 8, final: 15, contingency: 1.9 } });
+  it("uses the approved allocation: $25 total; smoke $0.10, pilot $9, final $15, contingency $0.90", () => {
+    expect(APPROVED_LEDGER).toEqual({ totalCapUsd: 25, stages: { smoke: 0.1, pilot: 9, final: 15, contingency: 0.9 } });
     const stages = Object.values(APPROVED_LEDGER.stages).reduce((a, b) => a + b, 0);
     expect(stages).toBeCloseTo(25, 9);
   });
@@ -29,8 +29,8 @@ describe("spend ledger", () => {
     expect(() => l.reserve("smoke", "r1", 0.11)).toThrow(LedgerError);
     const a = l.reserve("pilot", "S2-0", 3);
     l.settle(a, 2.5);
-    expect(l.remaining("pilot")).toBeCloseTo(5.5);
-    expect(() => l.reserve("pilot", "S2-1", 5.6)).toThrow(/Stage "pilot"/);
+    expect(l.remaining("pilot")).toBeCloseTo(6.5);
+    expect(() => l.reserve("pilot", "S2-1", 6.6)).toThrow(/Stage "pilot"/);
     expect(() => l.reserve("nope", "x", 1)).toThrow(/Unknown stage/);
     expect(() => l.reserve("pilot", "x", 0)).toThrow(/positive/);
     l.close();
@@ -121,8 +121,8 @@ describe("spend ledger", () => {
   it("serializes same-process concurrent reservations at the stage boundary", async () => {
     const ledger = SpendLedger.open(fresh());
     const results = await Promise.allSettled(Array.from({ length: 12 }, (_, i) => Promise.resolve().then(() => ledger.reserve("pilot", `concurrent-${i}`, 1))));
-    expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(8);
-    expect(ledger.committed("pilot")).toBe(8);
+    expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(9);
+    expect(ledger.committed("pilot")).toBe(9);
     expect(ledger.remaining("pilot")).toBe(0);
     ledger.close();
   });
@@ -133,7 +133,7 @@ describe("spend ledger", () => {
     const child = spawn(process.execPath, ["--import", "tsx", "--input-type=module", "-e", `
       import { SpendLedger } from ${JSON.stringify(module)};
       const ledger = SpendLedger.open(${JSON.stringify(path)});
-      ledger.reserve("pilot", "interrupted-process", 7.9);
+      ledger.reserve("pilot", "interrupted-process", 8.9);
       process.stdout.write("reserved");
       setInterval(() => {}, 1000);
     `], { stdio: ["ignore", "pipe", "pipe"] });
@@ -153,10 +153,10 @@ describe("spend ledger", () => {
       // Documented recovery: only remove the stale lock after confirming its owner is dead.
       rmSync(`${path}.lock`);
       const resumed = SpendLedger.open(path);
-      expect(resumed.committed("pilot")).toBe(7.9);
+      expect(resumed.committed("pilot")).toBe(8.9);
       expect(() => resumed.reserve("pilot", "too-much", 0.2)).toThrow();
       resumed.reserve("pilot", "resume", 0.1);
-      expect(resumed.committed("pilot")).toBe(8);
+      expect(resumed.committed("pilot")).toBe(9);
       resumed.close();
     } finally { if (child.exitCode === null && child.signalCode === null) child.kill("SIGKILL"); }
   }, 15_000);

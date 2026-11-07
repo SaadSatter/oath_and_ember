@@ -31,10 +31,10 @@ export interface LedgerConfig {
   totalCapUsd: number;
   stages: Record<string, number>;
 }
-/** Owner-approved allocation (2026-10-27). */
+/** Owner-approved $25 total; 2026-11-07 moves $1 from contingency to pilot (session 01a1b479). */
 export const APPROVED_LEDGER: LedgerConfig = Object.freeze({
   totalCapUsd: 25,
-  stages: Object.freeze({ smoke: 0.1, pilot: 8, final: 15, contingency: 1.9 }),
+  stages: Object.freeze({ smoke: 0.1, pilot: 9, final: 15, contingency: 0.9 }),
 });
 
 export interface LedgerEntry {

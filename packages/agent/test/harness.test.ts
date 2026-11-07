@@ -105,7 +105,7 @@ describe("model episodes and the spend ledger", () => {
   it("refuses to start an episode the stage cannot cover, before any call", async () => {
     const d = tmp();
     const ledger = SpendLedger.open(join(d, "l.json"));
-    ledger.settle(ledger.reserve("pilot", "earlier", 7.9), 7.9);
+    ledger.settle(ledger.reserve("pilot", "earlier", 8.9), 8.9);
     const gateway = new FakeGateway();
     await expect(runSuite({ player: "model-history", situations: ["S1"], seeds: [0], outDir: join(d, "out"), gitHash: "test", model: setup(ledger, gateway) })).rejects.toThrow(/Stage "pilot"/);
     expect(gateway.calls).toBe(0);
@@ -258,7 +258,7 @@ describe("checkpointed metrics and resuming", () => {
     const path = join(root, "ledger.json");
     const ledger = SpendLedger.open(path);
     // Accounting-only fixtures: consume prior stage allowances, no scenario execution.
-    for (const [stage, usd] of [["smoke", 0.1], ["final", 15], ["contingency", 1.9], ["pilot", 7.8]] as const)
+    for (const [stage, usd] of [["smoke", 0.1], ["final", 15], ["contingency", 0.9], ["pilot", 8.8]] as const)
       ledger.settle(ledger.reserve(stage, "prior-accounting", usd), usd);
     const gateway: Gateway = { label: "known-cap", worstCaseUsd: () => 0.01, complete: async () => ({ text: '{"actions":[{"type":"wait","ticks":30}]}', tokens: null, costUsd: null }) };
     const options = { player: "model-history" as const, situations: ["S1" as const], seeds: [0], outDir: join(root, "one"), gitHash: "test" };

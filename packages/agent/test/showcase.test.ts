@@ -25,8 +25,8 @@ const root = fileURLToPath(new URL("../../..", import.meta.url));
 const manual = readFileSync(join(root, "manual/Oath_and_Ember_Player_Manual.md"), "utf8");
 /** Normal goddess checkpoint start hashes, seeds 0 and 1 (SITUATION_A.md). */
 const SHRINE_START = { 0: "9d565ae90d161cc9e79979e0b9b66b1c5499d5a22e5292ba10ca271bda12cb50", 1: "f18052b4e9d452c9cb5251d3b34739292b833f0b79f3c4e9562b944d8a05bb21" };
-const GUIDANCE_SHA = "c67220b30ce9aa144f08a42131dd40289efc8e4be14fc565622249a924d34b44";
-const PROMPT_SHA = "2d63627ed2584543ada75b56b88d949b7030a4ccfdf57927d97f580cdea0094a";
+const GUIDANCE_SHA = "1bd73ba9714f78e1b4bdf23975ffff2f4ec6ff4fc4129d95a5e5394b0ccb18f2";
+const PROMPT_SHA = "89f34d173193e616c5356834aa8b29f7a97437ba2e88d75a4b1914da2663a8a6";
 const BASELINE_END_SEED0 = "c0e8e3551152d57d9bc861b83daccfab28df1620bad672125f7aac534ccee563";
 const mock = { gateway: new MockGateway(0, 0), stage: "pilot" } as unknown as ModelSetup;
 const paidLike = (label = "openai:gpt-6-luna@medium") => ({ gateway: { label }, stage: "pilot", maxBatch: 4, guidance: SHOWCASE_GUIDANCE_ID }) as unknown as ModelSetup;
