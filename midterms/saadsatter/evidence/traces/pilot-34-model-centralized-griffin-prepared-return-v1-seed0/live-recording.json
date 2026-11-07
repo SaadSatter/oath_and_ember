@@ -1,0 +1,69 @@
+{
+  "runId": "griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T03-14-55-647Z",
+  "scenario": "griffin-prepared-return-v1",
+  "seed": 0,
+  "player": "model-centralized",
+  "model": "gpt-6-luna",
+  "effort": "medium",
+  "gateway": "openai:gpt-6-luna@medium",
+  "paid": true,
+  "speed": 1,
+  "gitHash": "f9edeb7",
+  "viewerUrl": "http://127.0.0.1:3030/watch",
+  "passive": true,
+  "shutdown": {
+    "activeStage": null,
+    "stages": [
+      {
+        "stage": "context.close",
+        "elapsedMs": 217,
+        "status": "completed"
+      },
+      {
+        "stage": "video.saveAs",
+        "elapsedMs": 13656,
+        "status": "completed"
+      },
+      {
+        "stage": "video.delete",
+        "elapsedMs": 12,
+        "status": "completed"
+      },
+      {
+        "stage": "browser.close",
+        "elapsedMs": 106,
+        "status": "completed"
+      }
+    ],
+    "elapsedMs": 13991,
+    "saved": true,
+    "timedOut": false,
+    "timeoutStage": null,
+    "activeStageElapsedMs": 0,
+    "cleanup": "completed",
+    "forcedCleanup": []
+  },
+  "status": "saved",
+  "path": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T03-14-55-647Z/recording.webm",
+  "relativePath": "evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T03-14-55-647Z/recording.webm",
+  "bytes": 216702422,
+  "resolution": "1280x720",
+  "browser": "chromium (GPU)",
+  "readyConfirmed": true,
+  "finalConfirmed": true,
+  "startedAt": "2026-11-07T03:14:55.744Z",
+  "readyAt": "2026-11-07T03:15:14.125Z",
+  "stoppedAt": "2026-11-07T03:56:39.005Z",
+  "wallSeconds": 2503.3,
+  "completion": "success",
+  "episode": {
+    "status": "success",
+    "reason": "success",
+    "success": true,
+    "startHash": "28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7",
+    "endHash": "a5090db295d1088d9562c04f8d59c5ce377ce3d9716d5029f3d30e08c5c2aec1",
+    "trace": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T03-14-55-647Z/griffin-prepared-return-v1-seed0/trace.jsonl"
+  },
+  "error": null,
+  "warnings": []
+}

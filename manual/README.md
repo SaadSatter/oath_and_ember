@@ -16,4 +16,4 @@ Verify controls against `apps/client/src/main.ts`, panel behavior against `apps/
 
 ## Game design rationale
 
-[Game design rationale](GAME_DESIGN_RATIONALE.md) documents the original concept, attributed inspirations, verified rules, design alternatives, evidence map, proposed midterm episode, and open questions. Proposed personal motivations are marked for designer approval. The same content is also saved at `docs/GAME_DESIGN_RATIONALE.md`.
+[Game design rationale](GAME_DESIGN_RATIONALE.md) documents the original concept, attributed inspirations, verified rules, design alternatives, evidence map, proposed midterm episode, and open questions. The designer approved D1–D11 on 22 October 2026; evaluation proposals and unresolved questions remain separately marked. The same content is also saved at `docs/GAME_DESIGN_RATIONALE.md`.

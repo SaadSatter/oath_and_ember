@@ -1,0 +1,82 @@
+{
+  "sourceCommit": "1de3b61",
+  "sourceSha256": "4523a6a554387f99013ea6c16649c909015a92bdbddd0178f145838598ea9086",
+  "policyId": "baseline-maze-heuristic-v2",
+  "declaration": "oath-ember-abc-2026-11-06-r5",
+  "runs": [
+    {
+      "run": 1,
+      "recordedGitHash": "1de3b61",
+      "success": true,
+      "gameSeconds": 31.5,
+      "gameTicks": 1890,
+      "wallSeconds": 6.7,
+      "decisions": {
+        "sieg": 367,
+        "coco": 306
+      },
+      "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+      "endHash": "1287b39e69747d50c98005d23dd7c6ad5757975ca9e0555e329ac6d27a611b79",
+      "traceSha256": "3fe460b3d33b3c239145ee026120527c72aca6cb8d8e6b058460f7a91b26fe58",
+      "compressedTraceSha256": "51153c68cab1c0963051e731015161b66028dffb4bf1b2b7e91d10ce4b04b7d7",
+      "summarySha256": "624ef9e4cdc7459991e9852feb763d457555e3fc7eaf258f5b4ddd4d77869bbf",
+      "actionResultFingerprint": "14a03bd099037cc74f2fe91b17b6327d2bed01b3d75f2c77721452171e098d70",
+      "traceChainVerified": true,
+      "lines": 3373,
+      "milestones": [
+        "maze-banter",
+        "holding:hedge_gate_key",
+        "claimed:hedge-runner-key",
+        "holding:enchanted_shears",
+        "claimed:hedge-shears-chest"
+      ]
+    },
+    {
+      "run": 2,
+      "recordedGitHash": "1de3b61",
+      "success": true,
+      "gameSeconds": 31.5,
+      "gameTicks": 1890,
+      "wallSeconds": 6.4,
+      "decisions": {
+        "sieg": 367,
+        "coco": 306
+      },
+      "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+      "endHash": "1287b39e69747d50c98005d23dd7c6ad5757975ca9e0555e329ac6d27a611b79",
+      "traceSha256": "e24e9a507d2ff866fae846ff021527481eb70db57990e4923642dec7bf9d351c",
+      "compressedTraceSha256": "cb3098938eb7c58458f0770b9913cf205dedd000ccb0397a1fc967d61ede6a8d",
+      "summarySha256": "b77efd3a87a10a10c0c891352e5d59fbac2f156f125be77435723f8f2952c825",
+      "actionResultFingerprint": "14a03bd099037cc74f2fe91b17b6327d2bed01b3d75f2c77721452171e098d70",
+      "traceChainVerified": true,
+      "lines": 3373,
+      "milestones": [
+        "maze-banter",
+        "holding:hedge_gate_key",
+        "claimed:hedge-runner-key",
+        "holding:enchanted_shears",
+        "claimed:hedge-shears-chest"
+      ]
+    }
+  ],
+  "development": [
+    {
+      "summary": "docs/midterm/evidence/maze-heuristic-v2/development-1-summary.json",
+      "sha256": "bc6f2de0e129f198e5830221e9a02da4b65816701d60875fa53dd1845abf70ab"
+    },
+    {
+      "summary": "docs/midterm/evidence/maze-heuristic-v2/development-2-summary.json",
+      "sha256": "5c5d2fbabecb652850b7ea9ac80d8ffb7dfac28bd5129aa5019fc773aeda9010"
+    },
+    {
+      "summary": "docs/midterm/evidence/maze-heuristic-v2/development-3-summary.json",
+      "sha256": "4fcc6d7212b935d91f8d0ee41bc45d8ee6b5246bb95043d29238aa6db22a522d"
+    },
+    {
+      "summary": "docs/midterm/evidence/maze-heuristic-v2/development-4-summary.json",
+      "sha256": "364bc119a1ad64ad48852a030ea479a36cac5404dec4e4f15f0c9bad1cd35a7c"
+    }
+  ],
+  "fingerprintSemantics": "SHA256 compact JSON [type,tick,player,data] step/result tuples in order, excluding only data.waitMs and data.latencyMs (host timing). Raw trace chain hashes checked separately.",
+  "determinism": "Identical gameplay fingerprint, start/end hashes, ticks and decisions. Both runs from clean frozen commit; wall-time fields excluded from gameplay fingerprint."
+}

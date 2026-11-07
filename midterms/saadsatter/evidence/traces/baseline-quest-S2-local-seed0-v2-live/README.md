@@ -1,0 +1,12 @@
+# baseline-quest on S2-A version 2 (S2-local), seed 0: live, recorded
+
+The scripted quest baseline played through the live launcher with the browser viewer and the video recorder, at a clean committed tree, on 2026-11-05. **Scripted baseline, no model.** It reproduces the offline reference `../baseline-quest-S2-local-seed0-v2/` exactly (same start and end hash).
+
+- **Command.** `npm run eval:live -- --scenario S2-local --seed 0 --player baseline-quest --no-open --out evaluation-runs/live/S2-local-seed0-baseline-quest-0f86844`, at `0f86844` (clean tree; `summary.json` `gitHash` has no `+dirty`).
+- **Result.** Success: the Enchanted Shears entered the shared backpack (milestones `holding:enchanted_shears`, `claimed:hedge-shears-chest`). 395 decisions (231 Sieg, 164 Coco), 0 invalid actions, 6 messages, 0 model calls.
+- **Game time.** The episode ran from absolute tick 405 to 3,128: 2,723 ticks, **45.4 game-seconds**. `summary.json` reports `gameTicks` 3,128 / 52.1 s, which is the absolute end tick (it includes the 405-tick walk into the maze); the viewer's status line shows the episode time, 45.4 s.
+- **Wall time.** 51.2 s for the episode (paced at real time); the recording lasted 57.6 s including asset load and the final screen.
+- **Hashes.** Start `fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca`, end `6644f2cac04b945444c3ec609d59d798cd767ecad80405d49ce8cd26314c7f56` (equal to the offline v2 reference). `trace.jsonl` SHA-256 `d789e371aa8cadf65e17d6487de811b033d39a6be315f6899c77262897be57fc`; its hash chain verifies (1,594 lines).
+- **Video (not committed, `evaluation-runs/` is gitignored).** `evaluation-runs/live/S2-local-seed0-baseline-quest-0f86844/recording.webm`, 1280×720 VP8, 6,486,058 bytes, SHA-256 `90a76f85f07ad9cc7ef42ee597f9030467204c3f2c96d04d4fd75fed5e9b2bf8`. `recording.json`: saved, `readyConfirmed` and `finalConfirmed` true, browser "chromium (GPU)".
+- **Video verified** with `node --import tsx scripts/evidence/verify-video.ts <video> <outDir> 0.02 0.25 0.5 0.75 0.99`: the whole file decodes (exit 0, no decode errors), 55.76 s long, every sampled frame has picture content. Frames at 30 s and at the end were inspected by eye: both hero views in the Hedge Maze; the last frame shows "finished: success" and the shears milestone.
+- **Edits.** Only `summary.json`'s absolute trace path was replaced by `trace.jsonl`, and `recording.json`'s video path by a note; the trace is byte-for-byte the run's.

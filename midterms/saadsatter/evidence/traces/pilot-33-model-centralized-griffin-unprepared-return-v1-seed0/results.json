@@ -1,0 +1,202 @@
+{
+  "episodes": [
+    {
+      "situation": "griffin-unprepared-return-v1",
+      "suiteRevision": 2,
+      "scenario": {
+        "preset": "griffin-unprepared-return-v1",
+        "title": "Griffin Trial Unprepared, return offering",
+        "goal": "Situation B: defeat the Griffin without tools, acquire its wig, return it to the goddess and reach chapter0.complete without a hero knockout.",
+        "revision": 1,
+        "tutorialId": null,
+        "briefing": false
+      },
+      "seed": 0,
+      "player": "model-centralized",
+      "policies": {
+        "sieg": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·task-cdbee612·guidance-12874542",
+        "coco": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·task-cdbee612·guidance-12874542"
+      },
+      "gateway": "openai:gpt-6-luna@medium",
+      "modelIds": [
+        "gpt-6-luna"
+      ],
+      "gitHash": "1f0ca45",
+      "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
+      "startTick": 540,
+      "prefix": "opening and ordinary north travel to Griffin enclosure (unprepared)",
+      "status": "success",
+      "reason": "success",
+      "success": true,
+      "gameTicks": 3057,
+      "gameSeconds": 51,
+      "wallSeconds": 2184.4,
+      "decisions": {
+        "sieg": 262,
+        "coco": 183
+      },
+      "actions": {
+        "sieg": {
+          "move": 105,
+          "interact": 8,
+          "ability": 2,
+          "attack": 27,
+          "wait": 27,
+          "defend": 1,
+          "advance_dialogue": 91,
+          "choose_dialogue": 1
+        },
+        "coco": {
+          "move": 80,
+          "interact": 8,
+          "ability": 5,
+          "attack": 35,
+          "wait": 39,
+          "use_item": 1,
+          "advance_dialogue": 14,
+          "choose_dialogue": 1
+        }
+      },
+      "attempt": 1,
+      "endHash": "6fd8c37f7fe956e48e04adace7265b6318842da30302947a703e4198c9b89da0",
+      "limits": {
+        "maxTicks": 18000,
+        "maxDecisionsPerPlayer": 1600,
+        "maxModelCallsPerPlayer": 400,
+        "maxTokensPerPlayer": 4000000
+      },
+      "modelLimits": {
+        "maxModelCallsPerPlayer": 400,
+        "maxTokensPerPlayer": 4000000,
+        "maxSpendUsd": 0.75,
+        "callTimeoutMs": 30000
+      },
+      "invalidActions": {
+        "sieg": 0,
+        "coco": 1
+      },
+      "metrics": {
+        "sieg": {
+          "modelCalls": 156,
+          "modelDecisions": 156,
+          "parseFailures": 0,
+          "recoveredReplies": 0,
+          "proposedActions": 170,
+          "submittedActions": 262,
+          "executedActions": 262,
+          "staleSubmissions": 0,
+          "gameplayRejections": 0,
+          "skippedActions": 4
+        },
+        "coco": {
+          "modelCalls": 95,
+          "modelDecisions": 91,
+          "parseFailures": 5,
+          "recoveredReplies": 0,
+          "proposedActions": 106,
+          "submittedActions": 183,
+          "executedActions": 182,
+          "staleSubmissions": 0,
+          "gameplayRejections": 1,
+          "skippedActions": 1
+        }
+      },
+      "metricsVersion": 2,
+      "messages": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "batchStops": 5,
+      "modelCalls": {
+        "attempted": 251,
+        "failed": 0,
+        "timedOut": 0,
+        "unknownUsage": 0
+      },
+      "latencyMs": {
+        "mean": 8492,
+        "max": 28053
+      },
+      "tokens": {
+        "input": 4871133,
+        "output": 157250,
+        "cacheRead": 1595500,
+        "cacheWrite": 3274880
+      },
+      "spendUsd": {
+        "known": 0.554417,
+        "charged": 0.554417
+      },
+      "priceSource": "https://developers.openai.com/api/docs/models/gpt-6-luna (verified 2026-10-28); https://developers.openai.com/api/docs/pricing; https://developers.openai.com/api/docs/guides/prompt-caching",
+      "ledgerEntry": "pilot-33",
+      "episodeCapUsd": 0.75,
+      "wallLimitSeconds": 3600,
+      "launch": {
+        "launcher": "scripts/midterm/live.ts",
+        "speed": 1,
+        "viewer": true
+      },
+      "finalClaim": null,
+      "evaluation": null,
+      "promptHashes": {
+        "sieg": "7ff08ba84c4ab14460d0f6707febdc19b8e417ced89d3127636ce7ed9f352144",
+        "coco": "7ff08ba84c4ab14460d0f6707febdc19b8e417ced89d3127636ce7ed9f352144"
+      },
+      "configHash": "f3949a6dbabea35e5053053f4a7e46ecc6f801c7698fcc78eaeb75f233d66cb3",
+      "guidance": {
+        "id": "b-post-combined-v4",
+        "status": "approved",
+        "sha256": "1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34",
+        "situations": [
+          "griffin-unprepared-v1",
+          "griffin-unprepared-return-v1"
+        ]
+      }
+    }
+  ],
+  "aggregate": [
+    {
+      "situation": "griffin-unprepared-return-v1",
+      "trials": 1,
+      "successes": 1,
+      "reasons": [
+        "success"
+      ],
+      "meanGameSeconds": 51,
+      "meanWallSeconds": 2184.4,
+      "gameTicks": 3057,
+      "actions": 445,
+      "failedModelCalls": 0,
+      "unknownUsageCalls": 0,
+      "tokens": {
+        "input": 4871133,
+        "output": 157250,
+        "cacheRead": 1595500,
+        "cacheWrite": 3274880
+      },
+      "knownUsd": 0.554417,
+      "meanDecisions": 445,
+      "invalidActions": 1,
+      "messages": 0,
+      "modelCalls": 251,
+      "chargedUsd": 0.554417,
+      "startHashes": [
+        "45b1a6aa2c164b2c"
+      ],
+      "metrics": {
+        "modelCalls": 251,
+        "modelDecisions": 247,
+        "parseFailures": 5,
+        "recoveredReplies": 0,
+        "proposedActions": 276,
+        "submittedActions": 445,
+        "executedActions": 444,
+        "staleSubmissions": 0,
+        "gameplayRejections": 1,
+        "skippedActions": 5
+      },
+      "metricsEpisodes": 1
+    }
+  ],
+  "previousAttempts": []
+}

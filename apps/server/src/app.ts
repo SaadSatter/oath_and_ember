@@ -1,6 +1,7 @@
 import type { SceneId } from "../../../packages/shared/src/gameTypes.js";
 import express from "express";
 import { createServer } from "node:http";
+import { randomBytes } from "node:crypto";
 import { resolve } from "node:path";
 import { Server } from "socket.io";
 import { z } from "zod";
@@ -10,7 +11,7 @@ import type {
   ClientEvents,
   ServerEvents,
 } from "../../../packages/shared/src/protocol.js";
-import type { GameRoom } from "./GameRoom.js";
+import type { GameRoom, RoomRuntime } from "./GameRoom.js";
 import {
   DT,
   SNAPSHOT_INTERVAL_TICKS,
@@ -47,6 +48,12 @@ export function createApp(
     encounter?: boolean;
     startingScene?: SceneId;
     prologue?: boolean;
+    /** Clock and id source for new rooms. Default: wall clock and random UUIDs. */
+    runtime?: RoomRuntime;
+    /** No 60 Hz timer; the caller advances rooms with `step(roomCode)`. */
+    manualDriver?: boolean;
+    /** Allow view-only browser attachments registered with `registerViewer`. */
+    viewers?: boolean;
   } = {},
 ) {
   const app = express(),
@@ -55,7 +62,10 @@ export function createApp(
       options.encounter,
       options.startingScene,
       options.prologue,
+      options.runtime,
     );
+  /** Single-use view tokens: token -> the room and hero it may render. */
+  const viewTokens = new Map<string, { roomCode: string; playerId: string }>();
   const io = new Server<ClientEvents, ServerEvents>(http);
   app.get("/healthz", (_req, res) =>
     res.json({ ok: true, rooms: manager.rooms.size }),
@@ -63,7 +73,8 @@ export function createApp(
   app.use(express.static(resolve("dist/client")));
   io.on("connection", (socket) => {
     let room: GameRoom | undefined,
-      id = "";
+      id = "",
+      viewer = false;
     const sync = () => {
       if (room) io.to(room.state.roomCode).emit("state:sync", room.state);
     };
@@ -84,12 +95,19 @@ export function createApp(
         });
       }
     };
+    // Every request that can change shared state goes through `intent`, which
+    // a view-only socket can never pass.
+    const intent = (ack: unknown, fn: () => unknown) =>
+      request(ack, () => {
+        if (viewer) throw Error("View-only session.");
+        return fn();
+      });
     const requireRoom = () => {
       if (!room || !room.sessions.has(id)) throw Error("Join a room first.");
       return room;
     };
     socket.on("room:leave", (p, ack) =>
-      request(ack, () => {
+      intent(ack, () => {
         z.object({}).strict().parse(p);
         const r = requireRoom();
         if (r.state.phase !== "LOBBY")
@@ -106,7 +124,7 @@ export function createApp(
       }),
     );
     socket.on("room:create", (p, ack) =>
-      request(ack, () => {
+      intent(ack, () => {
         if (room) throw Error("Already in a room.");
         const parsed = z
           .object({ checkpoint: z.enum(storyCheckpointIds).optional() })
@@ -119,7 +137,7 @@ export function createApp(
       }),
     );
     socket.on("room:join", (p, ack) =>
-      request(ack, () => {
+      intent(ack, () => {
         if (room) throw Error("Already in a room.");
         const code = z
           .string()
@@ -133,7 +151,7 @@ export function createApp(
       }),
     );
     socket.on("session:resume", (p, ack) =>
-      request(ack, () => {
+      intent(ack, () => {
         if (room) throw Error("Already in a room.");
         const r = manager.get(z.string().parse(p?.roomCode));
         const playerId = z.string().parse(p?.playerId);
@@ -151,25 +169,25 @@ export function createApp(
       }),
     );
     socket.on("role:select", (p, ack) =>
-      request(ack, () => {
+      intent(ack, () => {
         requireRoom().select(id, z.enum(["OATH", "EMBER"]).parse(p?.role));
         sync();
       }),
     );
     socket.on("appearance:select", (p, ack) =>
-      request(ack, () => {
+      intent(ack, () => {
         requireRoom().setAppearance(id, p);
         sync();
       }),
     );
     socket.on("lobby:ready", (p, ack) =>
-      request(ack, () => {
+      intent(ack, () => {
         requireRoom().ready(id, z.boolean().parse(p?.ready));
         sync();
       }),
     );
     socket.on("inventory:use", (p, ack) =>
-      request(ack, () => {
+      intent(ack, () => {
         const intent = z
           .object({
             requestId: z
@@ -197,7 +215,7 @@ export function createApp(
     // Conversation is presentation, but pausing a villager is shared state:
     // the server checks range and holds the villager for both clients.
     socket.on("npc:talk", (p, ack) =>
-      request(ack, () => {
+      intent(ack, () => {
         const intent = z
           .object({
             npcId: z
@@ -219,7 +237,7 @@ export function createApp(
       }),
     );
     socket.on("story:read", (p, ack) =>
-      request(ack, () => {
+      intent(ack, () => {
         const intent = z
           .object({
             cutscene: z
@@ -241,7 +259,7 @@ export function createApp(
       }),
     );
     socket.on("story:choose", (p, ack) =>
-      request(ack, () => {
+      intent(ack, () => {
         const intent = z
           .object({
             cutscene: z
@@ -269,13 +287,13 @@ export function createApp(
       }),
     );
     socket.on("skill:unlock", (p, ack) =>
-      request(ack, () => {
+      intent(ack, () => {
         requireRoom().unlock(id, z.string().parse(p?.nodeId));
         sync();
       }),
     );
     socket.on("game:restart", (_p, ack) =>
-      request(ack, () => {
+      intent(ack, () => {
         const r = requireRoom();
         if (r.state.phase !== "COMPLETE")
           throw Error("Finish the encounter before replaying.");
@@ -284,9 +302,39 @@ export function createApp(
         sync();
       }),
     );
+    socket.on("view:attach", (p, ack) =>
+      request(ack, () => {
+        if (!options.viewers) throw Error("View-only sessions are disabled.");
+        if (room) throw Error("Already in a room.");
+        const parsed = z
+          .object({
+            roomCode: z.string(),
+            playerId: z.string(),
+            viewToken: z.string().min(16).max(128),
+          })
+          .strict()
+          .parse(p);
+        const grant = viewTokens.get(parsed.viewToken);
+        if (
+          !grant ||
+          grant.roomCode !== parsed.roomCode ||
+          grant.playerId !== parsed.playerId
+        )
+          throw Error("Invalid view token.");
+        viewTokens.delete(parsed.viewToken);
+        const r = manager.get(parsed.roomCode);
+        if (!r.sessions.has(parsed.playerId)) throw Error("Invalid view token.");
+        viewer = true;
+        room = r;
+        id = parsed.playerId;
+        socket.join(r.state.roomCode);
+        socket.emit("state:sync", r.state);
+        return { roomCode: r.state.roomCode, playerId: id, viewOnly: true as const };
+      }),
+    );
     socket.on("player:input", (data) => {
       const parsed = inputPacketSchema.safeParse(data);
-      if (!parsed.success || !room) return;
+      if (!parsed.success || !room || viewer) return;
       for (const frame of "frames" in parsed.data
         ? parsed.data.frames
         : [parsed.data])
@@ -296,7 +344,8 @@ export function createApp(
       request(ack, () => ({ serverTick: requireRoom().state.serverTick })),
     );
     socket.on("disconnect", () => {
-      if (room) {
+      // A viewer owns no session: its browser closing never touches the hero.
+      if (room && !viewer) {
         room.disconnect(id, socket.id);
         io.to(room.state.roomCode).emit("connection:status", {
           connected: false,
@@ -305,48 +354,66 @@ export function createApp(
       }
     });
   });
+  /** One simulation step for one room, with the broadcasts live play sends. */
+  const stepRoom = (code: string, r: GameRoom) => {
+    for (const [id, s] of r.sessions)
+      if (s.expires < r.runtime.now()) {
+        r.sessions.delete(id);
+        delete r.state.players[id];
+        r.state.phase = "LOBBY";
+        io.to(code).emit("state:sync", r.state);
+      }
+    if (!r.sessions.size) {
+      manager.rooms.delete(code);
+      return;
+    }
+    const scene = r.state.sceneId,
+      phase = r.state.phase;
+    r.tick();
+    if (scene !== r.state.sceneId) {
+      io.to(code).emit("scene:transition", { sceneId: r.state.sceneId });
+      io.to(code).emit("state:sync", r.state);
+    }
+    if (phase !== "COMPLETE" && r.state.phase === "COMPLETE")
+      io.to(code).emit("game:complete", { victory: true });
+    if (r.state.serverTick % SNAPSHOT_INTERVAL_TICKS === 0)
+      io.to(code).volatile.emit("game:snapshot", r.state);
+  };
   let previous = performance.now(),
     accumulator = 0;
   // At most five catch-up steps prevent a stalled process from spiraling forever.
-  const timer = setInterval(() => {
-    const now = performance.now();
-    accumulator += Math.min((now - previous) / 1000, 5 * DT);
-    previous = now;
-    while (accumulator >= DT) {
-      accumulator -= DT;
-      for (const [code, r] of manager.rooms) {
-        for (const [id, s] of r.sessions)
-          if (s.expires < Date.now()) {
-            r.sessions.delete(id);
-            delete r.state.players[id];
-            r.state.phase = "LOBBY";
-            io.to(code).emit("state:sync", r.state);
-          }
-        if (!r.sessions.size) {
-          manager.rooms.delete(code);
-          continue;
+  const timer = options.manualDriver
+    ? undefined
+    : setInterval(() => {
+        const now = performance.now();
+        accumulator += Math.min((now - previous) / 1000, 5 * DT);
+        previous = now;
+        while (accumulator >= DT) {
+          accumulator -= DT;
+          for (const [code, r] of manager.rooms) stepRoom(code, r);
         }
-        const scene = r.state.sceneId,
-          phase = r.state.phase;
-        r.tick();
-        if (scene !== r.state.sceneId) {
-          io.to(code).emit("scene:transition", { sceneId: r.state.sceneId });
-          io.to(code).emit("state:sync", r.state);
-        }
-        if (phase !== "COMPLETE" && r.state.phase === "COMPLETE")
-          io.to(code).emit("game:complete", { victory: true });
-        if (r.state.serverTick % SNAPSHOT_INTERVAL_TICKS === 0)
-          io.to(code).volatile.emit("game:snapshot", r.state);
-      }
-    }
-  }, 8);
+      }, 8);
   return {
     app,
     http,
     io,
     manager,
+    /** Manual driver only: advance one room by exactly one tick. */
+    step: (roomCode: string) => {
+      if (!options.manualDriver) throw Error("step() needs manualDriver.");
+      stepRoom(roomCode, manager.get(roomCode));
+    },
+    /** Viewers only: a single-use token that lets one browser render one hero. */
+    registerViewer: (roomCode: string, playerId: string) => {
+      if (!options.viewers) throw Error("View-only sessions are disabled.");
+      if (!manager.get(roomCode).sessions.has(playerId))
+        throw Error("Unknown player.");
+      const token = randomBytes(24).toString("base64url");
+      viewTokens.set(token, { roomCode, playerId });
+      return token;
+    },
     close: async () => {
-      clearInterval(timer);
+      if (timer) clearInterval(timer);
       await new Promise<void>((res) => io.close(() => res()));
     },
   };

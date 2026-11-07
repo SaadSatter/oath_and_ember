@@ -1,0 +1,19 @@
+{
+  "suiteRevision": 2,
+  "player": "baseline-griffin-heuristic",
+  "situations": [
+    "griffin-prepared-return-v1"
+  ],
+  "seeds": [
+    0
+  ],
+  "final": false,
+  "gitHash": "19e5d87",
+  "wallSeconds": 600,
+  "model": null,
+  "launch": {
+    "launcher": "scripts/midterm/live.ts",
+    "speed": 1,
+    "viewer": true
+  }
+}

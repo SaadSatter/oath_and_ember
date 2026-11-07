@@ -1,0 +1,19 @@
+{
+  "suiteRevision": 2,
+  "player": "baseline-quest",
+  "situations": [
+    "S2-local"
+  ],
+  "seeds": [
+    0
+  ],
+  "final": false,
+  "gitHash": "7022ea1+dirty",
+  "wallSeconds": 600,
+  "model": null,
+  "launch": {
+    "launcher": "scripts/midterm/live.ts",
+    "speed": 1,
+    "viewer": true
+  }
+}

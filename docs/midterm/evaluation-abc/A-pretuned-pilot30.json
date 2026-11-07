@@ -1,0 +1,6 @@
+{
+  "status": "superseded-misclassification-not-an-active-trial",
+  "replacement": "docs/midterm/evaluation-abc/A-posttuned-pilot30.json",
+  "historicalMetadata": "docs/midterm/evaluation-abc/history/A-pretuned-pilot30.superseded.json",
+  "reason": "Owner confirms Pilot-30 was post-tuned, not pre-tuned. No run evidence or metrics changed."
+}

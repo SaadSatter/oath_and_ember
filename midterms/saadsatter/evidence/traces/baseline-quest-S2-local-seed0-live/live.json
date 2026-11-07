@@ -1,0 +1,16 @@
+{
+  "launcher": "scripts/midterm/live.ts",
+  "scenario": "S2-local",
+  "seed": 0,
+  "player": "baseline-quest",
+  "gateway": null,
+  "paid": false,
+  "episodeCapUsd": null,
+  "speed": 1,
+  "viewer": true,
+  "viewsIssued": 2,
+  "gitHash": "7022ea1+dirty",
+  "interrupted": false,
+  "error": null,
+  "ledger": null
+}

@@ -8,6 +8,16 @@ export interface Session {
   reconnectToken: string;
 }
 export type Ack<T = unknown> = (r: Result<T>) => void;
+/**
+ * A view-only attachment (evaluation recording): renders one hero's view but
+ * holds no reconnect token and cannot submit intent. Only enabled on servers
+ * created with `viewers: true`.
+ */
+export interface ViewSession {
+  roomCode: string;
+  playerId: string;
+  viewOnly: true;
+}
 // Only intent crosses this boundary. Snapshots acknowledge input sequences;
 // authoritative outcomes remain recoverable even when transient packets drop.
 export interface ClientEvents {
@@ -37,6 +47,11 @@ export interface ClientEvents {
   ) => void;
   "room:join": (p: { roomCode: string }, ack: Ack<Session>) => void;
   "session:resume": (p: Session, ack: Ack<Session>) => void;
+  /** Attach a view-only browser with a single-use token from the evaluation host. */
+  "view:attach": (
+    p: { roomCode: string; playerId: string; viewToken: string },
+    ack: Ack<ViewSession>,
+  ) => void;
   "role:select": (p: { role: Role }, ack: Ack) => void;
   "appearance:select": (p: CharacterAppearance, ack: Ack) => void;
   "lobby:ready": (p: { ready: boolean }, ack: Ack) => void;

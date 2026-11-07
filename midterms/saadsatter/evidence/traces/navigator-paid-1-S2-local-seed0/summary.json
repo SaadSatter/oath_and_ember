@@ -1,0 +1,145 @@
+{
+  "situation": "S2-local",
+  "suiteRevision": 2,
+  "scenario": {
+    "preset": "S2-local-v2",
+    "title": "Hedge Maze — local start",
+    "goal": "S2-local (suite revision 2): from the Hedge Maze entrance, obtain the Enchanted Shears.",
+    "revision": 2,
+    "tutorialId": "2ec2f251",
+    "briefing": true
+  },
+  "seed": 0,
+  "player": "model-navigator",
+  "policies": {
+    "sieg": "navigator-d15cd6a3(openai:gpt-6-luna@medium)·batch4·memory·tutorial-2ec2f251·briefing-a97d9268",
+    "coco": "navigator-d15cd6a3(openai:gpt-6-luna@medium)·batch4·memory·tutorial-2ec2f251·briefing-a97d9268"
+  },
+  "gateway": "openai:gpt-6-luna@medium",
+  "modelIds": [
+    "gpt-6-luna"
+  ],
+  "gitHash": "5a9a6ab",
+  "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+  "startTick": 405,
+  "prefix": "opening scene, normal entry to Hedge Maze (before arrival dialogue)",
+  "status": "terminated",
+  "reason": "error",
+  "success": false,
+  "gameTicks": 3746,
+  "gameSeconds": 62.4,
+  "wallSeconds": 3397.2,
+  "decisions": {
+    "sieg": 160,
+    "coco": 170
+  },
+  "actions": {
+    "sieg": {
+      "message": 30,
+      "move": 58,
+      "advance_dialogue": 4,
+      "attack": 14,
+      "wait": 47,
+      "defend": 7
+    },
+    "coco": {
+      "message": 20,
+      "move": 78,
+      "advance_dialogue": 4,
+      "attack": 22,
+      "ability": 5,
+      "defend": 6,
+      "wait": 35
+    }
+  },
+  "attempt": 1,
+  "endHash": "b03ac5d6b21f3112fb528b6fbc8f7ea15852937b51fd17b74e7b0d6cd9963e9e",
+  "limits": {
+    "maxTicks": 18000,
+    "maxDecisionsPerPlayer": 1600,
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000
+  },
+  "modelLimits": {
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000,
+    "maxSpendUsd": 0.75,
+    "callTimeoutMs": 30000
+  },
+  "invalidActions": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "metrics": {
+    "sieg": {
+      "modelCalls": 130,
+      "modelDecisions": 124,
+      "parseFailures": 1,
+      "recoveredReplies": 0,
+      "proposedActions": 146,
+      "submittedActions": 160,
+      "executedActions": 160,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 14
+    },
+    "coco": {
+      "modelCalls": 106,
+      "modelDecisions": 101,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 136,
+      "submittedActions": 170,
+      "executedActions": 166,
+      "staleSubmissions": 4,
+      "gameplayRejections": 0,
+      "skippedActions": 17
+    }
+  },
+  "metricsVersion": 2,
+  "messages": {
+    "sieg": 30,
+    "coco": 20
+  },
+  "batchStops": 25,
+  "modelCalls": {
+    "attempted": 236,
+    "failed": 10,
+    "timedOut": 10,
+    "unknownUsage": 10
+  },
+  "latencyMs": {
+    "mean": 13495,
+    "max": 660287
+  },
+  "tokens": {
+    "input": 2398526,
+    "output": 111884,
+    "cacheRead": 1666112,
+    "cacheWrite": 731736
+  },
+  "spendUsd": {
+    "known": 0.180552,
+    "charged": 0.264229
+  },
+  "priceSource": "https://developers.openai.com/api/docs/models/gpt-6-luna (verified 2026-10-28); https://developers.openai.com/api/docs/pricing; https://developers.openai.com/api/docs/guides/prompt-caching",
+  "ledgerEntry": "pilot-25",
+  "episodeCapUsd": 0.75,
+  "wallLimitSeconds": 3600,
+  "launch": {
+    "launcher": "scripts/midterm/live.ts",
+    "speed": 1,
+    "viewer": true
+  },
+  "finalClaim": null,
+  "evaluation": {
+    "label": "S2-A",
+    "definitionHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab"
+  },
+  "promptHashes": {
+    "sieg": "4204967930a195d2ad1249e3c5007a82d1fda31019eb46711ba420695317231a",
+    "coco": "17ec46d22328213f93872d3be7598e3bb0fdde2b45c8121722e89f46302a06d3"
+  },
+  "configHash": "259649dfd262de5c3c922c66318a7ce9d6986e4714b250317f689c74875ccda9",
+  "trace": "evaluation-runs/live/S2-local-seed0-model-navigator-openai-2026-11-05T23-26-47-539Z/S2-local-seed0/trace.jsonl"
+}

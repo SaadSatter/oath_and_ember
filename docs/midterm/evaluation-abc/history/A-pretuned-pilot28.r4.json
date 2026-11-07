@@ -1,0 +1,66 @@
+{
+  "about": "Owner-designated historical A/pre-tuned/1 (declaration r4). Values verified from the run's own summary.json and trace; supersedes the r3 record with null metrics, archived under history/. No raw evidence changed.",
+  "row": {
+    "scenarioId": "S2-local",
+    "seed": 0,
+    "scenarioHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab",
+    "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+    "declarationId": "oath-ember-abc-2026-11-06-r4",
+    "declarationHash": "fee13d3cc324188a50b289bad2b2e194f3bd404fb2cea0bf3ca470538ab9bd8d",
+    "plannedPlayerType": "model-centralized",
+    "manualHash": "4b091a6630dd56f236f89f8e2213a6bb7cad4a31d4851d1883f95867d92bfa86",
+    "guidanceHash": null,
+    "priceSourceDate": "2026-10-28",
+    "historicalSuiteHash": null,
+    "timedOutModelCalls": 0,
+    "success": false,
+    "situation": "A",
+    "condition": "pre-tuned",
+    "runNumber": 1,
+    "status": "manually-stopped-pilot",
+    "gameSeconds": 125.3,
+    "wallSeconds": 900.8,
+    "modelCalls": 79,
+    "inputTokens": 864786,
+    "outputTokens": 61002,
+    "costUsd": 0.094339,
+    "invalidActions": 1,
+    "failureReason": "Manual stop by the owner at 125.3 game-s: passage still blocked by the cow; no gate key or Enchanted Shears acquired.",
+    "confirmedSubgoals": [
+      "dry hedge removed (diagnosis trace seq 130)"
+    ],
+    "tracePath": "midterms/saadsatter/evidence/traces/pilot-28-model-centralized-S2-local-seed0/trace.jsonl",
+    "recordingPath": "https://github.com/SaadSatter/oath_and_ember/releases/download/pilot-28-29-pretuned-evidence/pilot-28-model-centralized-S2-local-seed0-live.webm",
+    "policyId": "centralized-c497a631(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-a97d9268",
+    "promptHash": "4f19417d3e017ba103767b5205d9cdca4abeabf5c1af8c2d8a940d50066c7412",
+    "configHash": "f57580b9ce3b1a86d79a8f1be841886479e8fb3e78901cd86e5a6b4aab04f55f",
+    "sourceCommit": "678b86c",
+    "decisions": {
+      "sieg": 286,
+      "coco": 357
+    },
+    "failedModelCalls": 1,
+    "unknownUsageCalls": 1,
+    "unusableReplies": 5,
+    "gameRefusalsNotCountedInvalid": 0,
+    "latencyMs": {
+      "mean": 9734,
+      "max": 23181
+    },
+    "cacheReadTokens": 526603,
+    "cacheWriteTokens": 337949,
+    "reasoningTokens": 45505,
+    "costNote": "Runner estimate, not the provider bill: known 0.085837 plus one call aborted at the stop charged at its reservation. Ledger pilot-28 settled 0.09434.",
+    "guidanceStatus": "pre-tuned: planner prompt before both tuning rounds (A_PROMPT_TUNING.md)",
+    "traceSha256": "67f068f3d2297391949187f6ba6444c49bc14077f8c148e04eaa648e8b560ebb",
+    "recordingSha256": "82f49050059cdef168212d5f72be8e7b9da15e305363df53ad7dadd5558ff410",
+    "endHash": "b639c8c9547e10eab784b61838dcbab2c4ebe122dda96494ea9e6ed826aa3283",
+    "evidenceSource": "midterms/saadsatter/evidence/traces/pilot-28-model-centralized-S2-local-seed0/ (summary.json, trace.jsonl); agent-evidence/skill-runs/2026-11-05-pilot28-diagnosis.md",
+    "timingNote": "7,516 ticks = 125.3 game-s (summary.json). Offline replay at 5388b23 matches all 641 step results and the end hash."
+  },
+  "limitations": [
+    "Historical pilots run before the declaration; not preregistered final trials and not held out.",
+    "Pre- and post-tuned differ in the planner prompt (A_PROMPT_TUNING.md) and also in controller code; not a prompt-only controlled comparison.",
+    "Pilot-28 and Pilot-29 ran different prompt versions, so they are not repeats of one frozen policy."
+  ]
+}

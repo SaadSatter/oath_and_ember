@@ -1,0 +1,20 @@
+{
+  "status": "prepared-unrun-proposal",
+  "playerKind": "baseline-inventory-heuristic",
+  "policyId": "baseline-inventory-heuristic-v1",
+  "source": "packages/agent/src/policies/inventoryHeuristic.ts",
+  "sourceSha256": "e383ed94c62f908ad67ed4bab57b516cc533613ec92b67fb45a43923c793cc3f",
+  "candidateScenario": "griffin-prepared-return-v1",
+  "modelCalls": 0,
+  "scenarioExecutionCount": 0,
+  "testsPassed": 29,
+  "activeDeclarationAmended": false,
+  "note": "No scenario hash or result assigned. Scenario approval/freezing is separate concurrent work.",
+  "classification": {
+    "date": "2026-11-06",
+    "by": "owner decision, recorded by the implementation agent",
+    "status": "C-specific exploratory baseline; EXCLUDED from the official evaluation",
+    "reason": "Tuned to C's literal item text (rules-reviewer round 1, finding 1: inventoryHeuristic.ts:14-34, :121). Official C2 is the unchanged baseline-griffin-heuristic-v1.",
+    "preserved": "Implementation, tests and history unchanged."
+  }
+}

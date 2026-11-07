@@ -1,0 +1,186 @@
+{
+  "episodes": [
+    {
+      "situation": "S2-local",
+      "suiteRevision": 2,
+      "scenario": {
+        "preset": "S2-local-v2",
+        "title": "Hedge Maze — local start",
+        "goal": "S2-local (suite revision 2): from the Hedge Maze entrance, obtain the Enchanted Shears.",
+        "revision": 2,
+        "tutorialId": "2ec2f251",
+        "briefing": true
+      },
+      "seed": 0,
+      "player": "model-guided",
+      "policies": {
+        "sieg": "model-guided:llm(openai:gpt-6-luna@medium·guided-975e5580671c)·batch4·tutorial-2ec2f251·briefing-a97d9268·walkthrough-975e5580671c",
+        "coco": "model-guided:llm(openai:gpt-6-luna@medium·guided-975e5580671c)·batch4·tutorial-2ec2f251·briefing-a97d9268·walkthrough-975e5580671c"
+      },
+      "gateway": "openai:gpt-6-luna@medium",
+      "modelIds": [
+        "gpt-6-luna"
+      ],
+      "gitHash": "dc00de2",
+      "startHash": "2b9eddd41bdd6a25457eb66d7d5b3dde66047b2d9103b4be334b378497c8b53e",
+      "startTick": 405,
+      "prefix": "opening scene, normal entry to Hedge Maze (before arrival dialogue)",
+      "status": "success",
+      "reason": "success",
+      "success": true,
+      "gameTicks": 2638,
+      "gameSeconds": 44,
+      "wallSeconds": 1048.2,
+      "decisions": {
+        "sieg": 117,
+        "coco": 77
+      },
+      "actions": {
+        "sieg": {
+          "move": 38,
+          "advance_dialogue": 4,
+          "message": 13,
+          "wait": 16,
+          "defend": 22,
+          "attack": 21,
+          "ability": 1,
+          "interact": 2
+        },
+        "coco": {
+          "move": 30,
+          "wait": 21,
+          "attack": 8,
+          "ability": 2,
+          "defend": 7,
+          "message": 8,
+          "interact": 1
+        }
+      },
+      "attempt": 1,
+      "endHash": "f06df522d04f5af41c500a54fa1dc389a98601ecfa948916e202d5d68588694d",
+      "limits": {
+        "maxTicks": 18000,
+        "maxDecisionsPerPlayer": 1600,
+        "maxModelCallsPerPlayer": 400,
+        "maxTokensPerPlayer": 4000000
+      },
+      "modelLimits": {
+        "maxModelCallsPerPlayer": 400,
+        "maxTokensPerPlayer": 4000000,
+        "maxSpendUsd": 0.3,
+        "callTimeoutMs": 30000
+      },
+      "invalidActions": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "metrics": {
+        "sieg": {
+          "modelCalls": 100,
+          "modelDecisions": 100,
+          "parseFailures": 0,
+          "recoveredReplies": 0,
+          "proposedActions": 138,
+          "submittedActions": 117,
+          "executedActions": 117,
+          "staleSubmissions": 0,
+          "gameplayRejections": 0,
+          "skippedActions": 21
+        },
+        "coco": {
+          "modelCalls": 64,
+          "modelDecisions": 64,
+          "parseFailures": 0,
+          "recoveredReplies": 0,
+          "proposedActions": 93,
+          "submittedActions": 77,
+          "executedActions": 77,
+          "staleSubmissions": 0,
+          "gameplayRejections": 0,
+          "skippedActions": 16
+        }
+      },
+      "metricsVersion": 2,
+      "messages": {
+        "sieg": 13,
+        "coco": 8
+      },
+      "batchStops": 26,
+      "modelCalls": {
+        "attempted": 164,
+        "failed": 0,
+        "timedOut": 0,
+        "unknownUsage": 0
+      },
+      "latencyMs": {
+        "mean": 5275,
+        "max": 14453
+      },
+      "tokens": {
+        "input": 1597895,
+        "output": 53073,
+        "cacheRead": 1269301,
+        "cacheWrite": 328102
+      },
+      "spendUsd": {
+        "known": 0.088321,
+        "charged": 0.088321
+      },
+      "priceSource": "https://developers.openai.com/api/docs/models/gpt-6-luna (verified 2026-10-28); https://developers.openai.com/api/docs/pricing; https://developers.openai.com/api/docs/guides/prompt-caching",
+      "ledgerEntry": "pilot-12",
+      "episodeCapUsd": 0.3,
+      "wallLimitSeconds": 3600,
+      "launch": {
+        "launcher": "scripts/midterm/live.ts",
+        "speed": 1,
+        "viewer": true
+      },
+      "finalClaim": null
+    }
+  ],
+  "aggregate": [
+    {
+      "situation": "S2-local",
+      "trials": 1,
+      "successes": 1,
+      "reasons": [
+        "success"
+      ],
+      "meanGameSeconds": 44,
+      "meanWallSeconds": 1048.2,
+      "gameTicks": 2638,
+      "actions": 194,
+      "failedModelCalls": 0,
+      "unknownUsageCalls": 0,
+      "tokens": {
+        "input": 1597895,
+        "output": 53073,
+        "cacheRead": 1269301,
+        "cacheWrite": 328102
+      },
+      "knownUsd": 0.088321,
+      "meanDecisions": 194,
+      "invalidActions": 0,
+      "messages": 21,
+      "modelCalls": 164,
+      "chargedUsd": 0.088321,
+      "startHashes": [
+        "2b9eddd41bdd6a25"
+      ],
+      "metrics": {
+        "modelCalls": 164,
+        "modelDecisions": 164,
+        "parseFailures": 0,
+        "recoveredReplies": 0,
+        "proposedActions": 231,
+        "submittedActions": 194,
+        "executedActions": 194,
+        "staleSubmissions": 0,
+        "gameplayRejections": 0,
+        "skippedActions": 37
+      },
+      "metricsEpisodes": 1
+    }
+  ],
+  "previousAttempts": []
+}

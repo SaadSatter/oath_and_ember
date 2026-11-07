@@ -1,0 +1,71 @@
+{
+  "about": "Pilot-31 verification record, written 2026-11-06 by the Claude Code implementation agent.",
+  "ledgerEntry": "pilot-31",
+  "sourceCommit": "6df4bc0",
+  "files": [
+    {
+      "file": "live.json",
+      "source": "evaluation-runs/live/griffin-unprepared-v1-seed0-model-centralized-openai-2026-11-06T20-02-49-455Z/live.json",
+      "bytes": 642,
+      "sha256": "282362ca92efc8c0674f70efc087c8e26721d61c12956c9f4c494d281db455d5",
+      "identicalToSource": true
+    },
+    {
+      "file": "recording.json",
+      "source": "evaluation-runs/live/griffin-unprepared-v1-seed0-model-centralized-openai-2026-11-06T20-02-49-455Z/recording.json",
+      "bytes": 2244,
+      "sha256": "041ea472c5526f19088a8405f6a46ce2ee9b842743898b7cc5e71b59da96168c",
+      "identicalToSource": true
+    },
+    {
+      "file": "results.json",
+      "source": "evaluation-runs/live/griffin-unprepared-v1-seed0-model-centralized-openai-2026-11-06T20-02-49-455Z/results.json",
+      "bytes": 5577,
+      "sha256": "457ba28ad5c257a981224c688c8fa8781da00cf830cc78c293205dde632389b4",
+      "identicalToSource": true
+    },
+    {
+      "file": "results.md",
+      "source": "evaluation-runs/live/griffin-unprepared-v1-seed0-model-centralized-openai-2026-11-06T20-02-49-455Z/results.md",
+      "bytes": 543,
+      "sha256": "98c574cd2ecfe0c043233350c0bcc0a1aa1a1e5b4fc14b74e570f9d7a2eaae79",
+      "identicalToSource": true
+    },
+    {
+      "file": "run.json",
+      "source": "evaluation-runs/live/griffin-unprepared-v1-seed0-model-centralized-openai-2026-11-06T20-02-49-455Z/run.json",
+      "bytes": 717,
+      "sha256": "aea77e27119a7d22b3415dbb851f3bca95692e6ab2ca267f63eb250de8a2b149",
+      "identicalToSource": true
+    },
+    {
+      "file": "summary.json",
+      "source": "evaluation-runs/live/griffin-unprepared-v1-seed0-model-centralized-openai-2026-11-06T20-02-49-455Z/griffin-unprepared-v1-seed0/summary.json",
+      "bytes": 4122,
+      "sha256": "b4c6a2eaa975427270d68e6f594e91c9d91799810657d318f2ec3d48476ffef3",
+      "identicalToSource": true
+    },
+    {
+      "file": "trace.jsonl",
+      "source": "evaluation-runs/live/griffin-unprepared-v1-seed0-model-centralized-openai-2026-11-06T20-02-49-455Z/griffin-unprepared-v1-seed0/trace.jsonl",
+      "bytes": 3753700,
+      "sha256": "5d9cfec6b6f6140855daadc69a5a8189fe5c0478f85fb7f0d333ebc2d5309afb",
+      "identicalToSource": true
+    }
+  ],
+  "video": {
+    "file": "recording.webm",
+    "source": "evaluation-runs/live/griffin-unprepared-v1-seed0-model-centralized-openai-2026-11-06T20-02-49-455Z/recording.webm",
+    "bytes": 138747857,
+    "sha256": "5e7c3588da34b7f588f79353b55471b37a06cc7b087acf24d64c0886471f7c0a",
+    "committed": false,
+    "note": "Live capture, 1280x720, 1504.6 s. Too large to commit; kept in the gitignored run folder."
+  },
+  "checks": {
+    "traceChain": "verifyTrace passed on all 1,804 lines",
+    "offlineReplay": "replay-video.ts --check-only at 6df4bc0: start hash, 284 step results, end (knocked_out, c5f341f52ddabff9) and 3007 ticks match",
+    "ledger": "canonical ledger entry pilot-31 settled, 0 open reservations; pilot stage $3.7646 left after the run",
+    "recorder": "recording.json status saved; context.close, video.saveAs, video.delete, browser.close completed",
+    "configuration": "policy centralized-f0592888(openai:gpt-6-luna@medium)\u00b7batch4\u00b7tutorial-2ec2f251\u00b7briefing-5fa93722, no guidance; prompt hash cbabb78b42b1227bafff0ef9e95b62ad5e03ba725691482e2e032384097bbb6a both heroes"
+  }
+}

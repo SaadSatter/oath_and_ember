@@ -1,0 +1,152 @@
+{
+  "about": "Declared A/B/C design, revision 5: one run per cell. A complete; B/C pending.",
+  "labelsFrom": {
+    "source": "owner revised three-situation instruction",
+    "status": "declared design; B/C runtime hashes pending certification",
+    "supersedesPlanningRows": [
+      "Partial Hedge Maze",
+      "Wig Already Obtained"
+    ],
+    "preservesHistoricalScenariosAndResults": true
+  },
+  "requirementInterpretation": {
+    "text": "One pre-tuned and one post-tuned model run per situation, plus a deterministic baseline",
+    "status": "owner decision (declaration r5); professor confirmation pending"
+  },
+  "conditions": [
+    "pre-tuned",
+    "post-tuned",
+    "cheap-baseline"
+  ],
+  "situations": {
+    "A": {
+      "name": "Hedge Maze",
+      "source": "S2-local (S2-A v2)",
+      "scenarioHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab",
+      "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+      "seed": 0,
+      "frozen": true,
+      "heldOut": false,
+      "cells": {
+        "pre-tuned": {
+          "status": "no-success-manual-stop",
+          "trials": 1,
+          "episodes": [
+            "Pilot-28"
+          ],
+          "record": "docs/midterm/evaluation-abc/A-pretuned-pilot28.json",
+          "supplementary": {
+            "episodes": [
+              "Pilot-29"
+            ],
+            "record": "docs/midterm/evaluation-abc/A-supplementary-pilot29.json",
+            "role": "intermediate tuning round, not a trial"
+          }
+        },
+        "post-tuned": {
+          "status": "success",
+          "episodes": [
+            "Pilot-30"
+          ],
+          "trials": 1,
+          "record": "docs/midterm/evaluation-abc/A-posttuned-pilot30.json",
+          "classification": "owner-confirmed post-tuned; prompt tuning documented in docs/midterm/A_PROMPT_TUNING.md"
+        },
+        "cheap-baseline": {
+          "status": "success",
+          "trials": 1,
+          "record": "docs/midterm/evaluation-abc/A-baseline-quest.json",
+          "implementation": "baseline-quest",
+          "gameSeconds": 52.1,
+          "endHash": "6644f2cac04b945444c3ec609d59d798cd767ecad80405d49ce8cd26314c7f56"
+        }
+      },
+      "objective": "Obtain Enchanted Shears",
+      "declared": true
+    },
+    "B": {
+      "name": "Griffin Trial, Unprepared",
+      "source": null,
+      "scenarioHash": null,
+      "startHash": null,
+      "seed": null,
+      "frozen": false,
+      "heldOut": false,
+      "heldOutStatus": "declared development case; checkpoint pending",
+      "objective": "Defeat Griffin and obtain Divine Wig through normal gameplay; both heroes survive",
+      "inventory": {
+        "vanity_mirror": 0,
+        "enchanted_shears": 0,
+        "griffin_wig": 0
+      },
+      "approvalIssue": "Strict defeat retained in declaration r1; peaceful reward with positive HP does not pass",
+      "cells": {
+        "pre-tuned": {
+          "status": "pending",
+          "record": null
+        },
+        "post-tuned": {
+          "status": "pending",
+          "record": null
+        },
+        "cheap-baseline": {
+          "status": "pending",
+          "record": null,
+          "implementation": "baseline-quest"
+        }
+      },
+      "declared": true,
+      "id": "griffin-unprepared-v1",
+      "successPredicate": "griffin HP == 0 AND shared griffin_wig count > 0; no knockout during episode"
+    },
+    "C": {
+      "name": "Griffin Trial, Prepared",
+      "source": null,
+      "scenarioHash": null,
+      "startHash": null,
+      "seed": null,
+      "frozen": false,
+      "heldOut": true,
+      "heldOutStatus": "reserved from model-outcome tuning; checkpoint pending",
+      "objective": "Defeat Griffin and obtain Divine Wig through normal gameplay; both heroes survive",
+      "inventory": {
+        "vanity_mirror": 1,
+        "enchanted_shears": 1,
+        "griffin_wig": 0
+      },
+      "approvalIssue": "Strict defeat retained in declaration r1; peaceful reward with positive HP does not pass",
+      "cells": {
+        "pre-tuned": {
+          "status": "pending",
+          "record": null
+        },
+        "post-tuned": {
+          "status": "pending",
+          "record": null
+        },
+        "cheap-baseline": {
+          "status": "pending",
+          "record": null,
+          "implementation": "baseline-quest"
+        }
+      },
+      "postTunedConstraint": "Transfer of frozen A/B-developed guidance only; no C-specific walkthrough or tuning on C model outcomes",
+      "declared": true,
+      "id": "griffin-prepared-v1",
+      "successPredicate": "griffin HP == 0 AND shared griffin_wig count > 0; no knockout during episode"
+    }
+  },
+  "trialPlan": {
+    "perCell": 2,
+    "status": "declared allocation, not paid authorization",
+    "modelEpisodes": 12,
+    "baselineEpisodes": 6,
+    "pilot30Allocation": "A post-tuned run 1, historical completed pilot; original run evidence unchanged",
+    "remainingNewModelEpisodes": 10,
+    "remainingNewBaselineEpisodes": 6,
+    "pilot28Allocation": "A pre-tuned run 1, historical manual-stop failure"
+  },
+  "baselineImplementation": "baseline-quest at 040685c, existing unchanged solution-aware free comparator",
+  "declaration": "docs/midterm/evaluation-abc/declaration.json",
+  "declarationRevision": "oath-ember-abc-2026-11-06-r3"
+}

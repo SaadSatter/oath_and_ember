@@ -1,0 +1,127 @@
+// Offline stand-in for a model provider, for testing the launcher and the
+// metered model path without spending money. It makes no network request.
+//
+// It reads only the user message the model player would send (that hero's
+// observation and legal actions) and answers with seeded random legal
+// actions. It has no game knowledge and no route; its results are launcher
+// checks, never evaluation results. Usage and cost are reported as zero.
+// Each hero (told apart by its system prompt) draws from its own seeded
+// stream, so one hero's call order never changes the other's choices.
+
+import { createHash } from "node:crypto";
+import type { Completion, Gateway } from "../budget.js";
+import { ModelCallError } from "../budget.js";
+import type { ActionSpec, GameAction } from "../types.js";
+
+/** mulberry32: small deterministic PRNG. */
+function rng(seed: number) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+export class MockGateway implements Gateway {
+  readonly label: string;
+  private readonly streams = new Map<string, () => number>();
+  private random: () => number = () => 0;
+  calls = 0;
+
+  constructor(
+    private readonly seed: number,
+    /** Simulated thinking time per call, so a watched run looks like a model run. */
+    private readonly delayMs = 0,
+    /** Actions per reply (the model player's batch limit still applies). */
+    private readonly batch = 2,
+  ) {
+    this.label = `mock:random-legal@${seed}`;
+  }
+
+  /** The seeded stream for one system prompt (one hero). */
+  private stream(system: string) {
+    let r = this.streams.get(system);
+    if (!r) {
+      r = rng(this.seed ^ createHash("sha256").update(system).digest().readUInt32BE(0));
+      this.streams.set(system, r);
+    }
+    return r;
+  }
+
+  worstCaseUsd() {
+    return 0;
+  }
+
+  private pick<T>(xs: readonly T[]): T {
+    return xs[Math.floor(this.random() * xs.length)];
+  }
+
+  private action(spec: ActionSpec): GameAction {
+    const a: Record<string, unknown> = { type: spec.type };
+    for (const [name, p] of Object.entries(spec.params ?? {})) {
+      if ("optional" in p && p.optional && this.random() < 0.5) continue;
+      if (p.kind === "enum") a[name] = this.pick(p.values);
+      else if (p.kind === "int") a[name] = Math.min(p.max, p.min + Math.floor(this.random() * Math.min(60, p.max - p.min + 1)));
+      else a[name] = "(mock player)".slice(0, p.maxLength);
+    }
+    return a as unknown as GameAction;
+  }
+
+  async complete(system: string, user: string, signal: AbortSignal): Promise<Completion> {
+    this.calls++;
+    if (this.delayMs > 0)
+      await new Promise<void>((resolve, reject) => {
+        const t = setTimeout(resolve, this.delayMs);
+        signal.addEventListener("abort", () => { clearTimeout(t); reject(new ModelCallError("aborted", "mock call aborted")); }, { once: true });
+      });
+    if (signal.aborted) throw new ModelCallError("aborted", "mock call aborted");
+    this.random = this.stream(system);
+    let legal: ActionSpec[] = [];
+    let parsed: { legal_actions?: ActionSpec[]; navigation?: unknown; observation?: { self?: { x: number; y: number }; area?: { widthTiles: number; heightTiles: number } } } = {};
+    try {
+      parsed = JSON.parse(user);
+      legal = parsed.legal_actions ?? [];
+    } catch {
+      legal = [];
+    }
+    // A model-centralized planner (its user message has "heroes" and
+    // "plan_memory"): random orders for each hero, often a walking goal near
+    // it, sometimes a few legal actions or a hold. Other players never reach this.
+    const central = parsed as { heroes?: Record<string, { self?: { x: number; y: number }; legal_actions?: ActionSpec[] } | null>; plan_memory?: unknown; shared?: { maps?: { area: string }[] } };
+    if (central.heroes !== undefined && central.plan_memory !== undefined) {
+      const orders: Record<string, unknown>[] = [];
+      for (const hero of ["sieg", "coco"]) {
+        const h = central.heroes[hero];
+        if (!h?.self || this.random() < 0.25) continue;
+        const r = this.random();
+        if (r < 0.6) {
+          const clamp = (v: number) => Math.max(0, Math.floor(v));
+          orders.push({ hero, go_to: { x: clamp(h.self.x + (this.random() * 16 - 8)), y: clamp(h.self.y + (this.random() * 16 - 8)) } });
+        } else if (r < 0.9) {
+          const usable = (h.legal_actions ?? []).filter((s) => s.type !== "message");
+          if (usable.length) orders.push({ hero, actions: Array.from({ length: this.batch }, () => this.action(this.pick(usable))) });
+        } else orders.push({ hero, hold: true });
+      }
+      const text = JSON.stringify({ plan: "(mock planner)", orders });
+      return { text, tokens: { input: Math.ceil(user.length / 4), output: Math.ceil(text.length / 4) }, costUsd: 0, model: "mock" };
+    }
+    // A model-navigator player (its user message has "navigation"): often
+    // answer with a random walking goal near the hero instead of actions, so
+    // the walking helper is exercised. Other players' replies are unchanged.
+    const self = parsed.observation?.self, area = parsed.observation?.area;
+    if (parsed.navigation !== undefined && self && area && this.random() < 0.6) {
+      const clamp = (v: number, hi: number) => Math.max(0, Math.min(hi - 1, Math.floor(v)));
+      const go_to = { x: clamp(self.x + (this.random() * 16 - 8), area.widthTiles), y: clamp(self.y + (this.random() * 16 - 8), area.heightTiles) };
+      const text = JSON.stringify({ notes: "", go_to, actions: [] });
+      return { text, tokens: { input: Math.ceil(user.length / 4), output: Math.ceil(text.length / 4) }, costUsd: 0, model: "mock" };
+    }
+    // Messages are skipped so the mock never floods its partner.
+    const usable = legal.filter((s) => s.type !== "message");
+    const actions = usable.length ? Array.from({ length: this.batch }, () => this.action(this.pick(usable))) : [];
+    const text = JSON.stringify({ notes: "", actions });
+    return { text, tokens: { input: Math.ceil(user.length / 4), output: Math.ceil(text.length / 4) }, costUsd: 0, model: "mock" };
+  }
+}

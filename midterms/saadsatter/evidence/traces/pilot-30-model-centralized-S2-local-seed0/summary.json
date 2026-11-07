@@ -1,0 +1,147 @@
+{
+  "situation": "S2-local",
+  "suiteRevision": 2,
+  "scenario": {
+    "preset": "S2-local-v2",
+    "title": "Hedge Maze — local start",
+    "goal": "S2-local (suite revision 2): from the Hedge Maze entrance, obtain the Enchanted Shears.",
+    "revision": 2,
+    "tutorialId": "2ec2f251",
+    "briefing": true
+  },
+  "seed": 0,
+  "player": "model-centralized",
+  "policies": {
+    "sieg": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-a97d9268",
+    "coco": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-a97d9268"
+  },
+  "gateway": "openai:gpt-6-luna@medium",
+  "modelIds": [
+    "gpt-6-luna"
+  ],
+  "gitHash": "040685c",
+  "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+  "startTick": 405,
+  "prefix": "opening scene, normal entry to Hedge Maze (before arrival dialogue)",
+  "status": "success",
+  "reason": "success",
+  "success": true,
+  "gameTicks": 5369,
+  "gameSeconds": 89.5,
+  "wallSeconds": 1958.1,
+  "decisions": {
+    "sieg": 401,
+    "coco": 246
+  },
+  "actions": {
+    "sieg": {
+      "move": 273,
+      "advance_dialogue": 2,
+      "wait": 93,
+      "attack": 24,
+      "ability": 4,
+      "defend": 2,
+      "interact": 3
+    },
+    "coco": {
+      "move": 193,
+      "wait": 30,
+      "advance_dialogue": 4,
+      "attack": 8,
+      "ability": 7,
+      "defend": 2,
+      "use_item": 1,
+      "interact": 1
+    }
+  },
+  "attempt": 1,
+  "endHash": "6deca1132fc2e6268ff841a1b912c754127d31e740538bc662b1fd31bb9b0ec0",
+  "limits": {
+    "maxTicks": 18000,
+    "maxDecisionsPerPlayer": 1600,
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000
+  },
+  "modelLimits": {
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000,
+    "maxSpendUsd": 0.75,
+    "callTimeoutMs": 30000
+  },
+  "invalidActions": {
+    "sieg": 1,
+    "coco": 1
+  },
+  "metrics": {
+    "sieg": {
+      "modelCalls": 106,
+      "modelDecisions": 84,
+      "parseFailures": 23,
+      "recoveredReplies": 0,
+      "proposedActions": 86,
+      "submittedActions": 401,
+      "executedActions": 399,
+      "staleSubmissions": 0,
+      "gameplayRejections": 2,
+      "skippedActions": 0
+    },
+    "coco": {
+      "modelCalls": 61,
+      "modelDecisions": 57,
+      "parseFailures": 4,
+      "recoveredReplies": 0,
+      "proposedActions": 58,
+      "submittedActions": 246,
+      "executedActions": 245,
+      "staleSubmissions": 0,
+      "gameplayRejections": 1,
+      "skippedActions": 0
+    }
+  },
+  "metricsVersion": 2,
+  "messages": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "batchStops": 0,
+  "modelCalls": {
+    "attempted": 167,
+    "failed": 0,
+    "timedOut": 0,
+    "unknownUsage": 0
+  },
+  "latencyMs": {
+    "mean": 11048,
+    "max": 20515
+  },
+  "tokens": {
+    "input": 3678281,
+    "output": 171240,
+    "cacheRead": 1238526,
+    "cacheWrite": 2439254
+  },
+  "spendUsd": {
+    "known": 0.443258,
+    "charged": 0.443258
+  },
+  "priceSource": "https://developers.openai.com/api/docs/models/gpt-6-luna (verified 2026-10-28); https://developers.openai.com/api/docs/pricing; https://developers.openai.com/api/docs/guides/prompt-caching",
+  "ledgerEntry": "pilot-30",
+  "episodeCapUsd": 0.75,
+  "wallLimitSeconds": 3600,
+  "launch": {
+    "launcher": "scripts/midterm/live.ts",
+    "speed": 1,
+    "viewer": true
+  },
+  "finalClaim": null,
+  "evaluation": {
+    "label": "S2-A",
+    "definitionHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab"
+  },
+  "promptHashes": {
+    "sieg": "0616c47baf03f2860f75a4a0867221998b2439f51b55fde33c56111ec8240c44",
+    "coco": "0616c47baf03f2860f75a4a0867221998b2439f51b55fde33c56111ec8240c44"
+  },
+  "configHash": "1cf1224550d1d3f8333d13d5e77190548368d9620b4669fb2095144fe1dd300f",
+  "trace": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T08-17-52-847Z/S2-local-seed0/trace.jsonl"
+}

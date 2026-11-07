@@ -12,6 +12,15 @@ import {
 import { EnemyView } from "../entities/EnemyView.js";
 import { spawnEnemy } from "../../../../packages/shared/src/enemies.js";
 import { TreasureChestView } from "./TreasureChestView.js";
+import {
+  SERVER_HZ,
+  SNAPSHOT_INTERVAL_TICKS,
+} from "../../../../packages/shared/src/constants.js";
+// The wolf runs at up to 560 px/s, so each 30 Hz snapshot moved it ~19 px in
+// one jump. It now glides to each new position over one snapshot interval.
+const RUNNER_GLIDE_MS = (SNAPSHOT_INTERVAL_TICKS * 1000) / SERVER_HZ,
+  RUNNER_SNAP_PX = 128,
+  runnerQA = new URLSearchParams(location.search).has("runnerQA");
 const hedgeDirections = [
   "north",
   "south",
@@ -52,6 +61,11 @@ export class HedgeMazeView {
     tick: number;
     moving: boolean;
   };
+  private runnerGlide?: {
+    from: { x: number; y: number };
+    to: { x: number; y: number };
+    start: number;
+  };
   private key?: Phaser.GameObjects.Image;
   private graphics: Phaser.GameObjects.Graphics;
   private runnerLabel?: Phaser.GameObjects.Text;
@@ -88,6 +102,7 @@ export class HedgeMazeView {
     this.runner?.destroy();
     this.runner = undefined;
     this.runnerPrevious = undefined;
+    this.runnerGlide = undefined;
     this.graphics.clear();
     this.active = false;
   }
@@ -212,10 +227,12 @@ export class HedgeMazeView {
         "Enchanted Shears",
       );
       this.label("E · Shears chest", 44 * 32, 7.2 * 32);
+      // The wolf clue, on the hedge south-east of the gate: over no floor,
+      // clear of the wolf's loop and of the "E · key gate" label.
       this.label(
-        "Slow Time + Super Speed\nChase the fleeing key carrier · E to tag",
-        25 * 32,
-        2.3 * 32,
+        "KEY GATE\nThe forest wolf carries its key.\nSieg: catch the wolf · E to take it\nSlow Time + Super Speed to chase",
+        44 * 32,
+        17.2 * 32,
         "#ffdb77",
       );
       this.key = this.image("maze:key", state.runner.x, state.runner.y - 48)
@@ -242,36 +259,59 @@ export class HedgeMazeView {
     this.graphics.fillCircle(8 * 32, 20 * 32, 26);
     this.graphics.lineStyle(4, 0xadb09a);
     this.graphics.strokeCircle(8 * 32, 20 * 32, 26);
+    const shown = this.runnerPosition(state.runner);
     this.key
       ?.setVisible(!state.runner.caught)
-      .setPosition(state.runner.x, state.runner.y - 48);
+      .setPosition(shown.x, shown.y - 48);
     this.runnerLabel
       ?.setVisible(!state.runner.caught)
-      .setPosition(state.runner.x, state.runner.y - 68);
-    const e = spawnEnemy(
-      "key-carrier",
-      "mossling",
-      state.runner.x,
-      state.runner.y,
-    );
+      .setPosition(shown.x, shown.y - 68);
+    const e = spawnEnemy("key-carrier", "mossling", shown.x, shown.y);
     e.facing = state.runner.facing;
     if (this.runnerPrevious?.tick !== w.serverTick)
       this.runnerPrevious = {
-        x: e.x,
-        y: e.y,
+        x: state.runner.x,
+        y: state.runner.y,
         tick: w.serverTick,
         moving:
           !!this.runnerPrevious &&
-          Math.hypot(e.x - this.runnerPrevious.x, e.y - this.runnerPrevious.y) >
-            0.01,
+          Math.hypot(
+            state.runner.x - this.runnerPrevious.x,
+            state.runner.y - this.runnerPrevious.y,
+          ) > 0.01,
       };
     const moving = !state.runner.caught && !!this.runnerPrevious?.moving;
     e.vx = moving ? Math.cos(e.facing) * 50 : 0;
     e.vy = moving ? Math.sin(e.facing) * 50 : 0;
     e.state = state.runner.caught ? "DEAD" : "CHASE";
     this.runner?.update(e, e, w.serverTick, false, w.slowTime ? 0.2 : 1);
-    if (new URLSearchParams(location.search).has("runnerQA"))
+    if (runnerQA)
       document.querySelector<HTMLElement>("#game")!.dataset.runnerVisual =
         JSON.stringify({ ...this.runner?.inspect(), moving });
+  }
+  /** Where to draw the wolf: gliding from the last drawn spot to the server's. */
+  private runnerPosition(
+    target: { x: number; y: number },
+    now = performance.now(),
+  ) {
+    const glide = this.runnerGlide;
+    const drawn = glide ? this.glideAt(glide, now) : target;
+    if (!glide || glide.to.x !== target.x || glide.to.y !== target.y)
+      this.runnerGlide =
+        !glide ||
+        Math.hypot(target.x - drawn.x, target.y - drawn.y) > RUNNER_SNAP_PX
+          ? { from: { ...target }, to: { ...target }, start: now }
+          : { from: drawn, to: { ...target }, start: now };
+    return this.glideAt(this.runnerGlide!, now);
+  }
+  private glideAt(
+    glide: NonNullable<HedgeMazeView["runnerGlide"]>,
+    now: number,
+  ) {
+    const f = Math.max(0, Math.min(1, (now - glide.start) / RUNNER_GLIDE_MS));
+    return {
+      x: glide.from.x + (glide.to.x - glide.from.x) * f,
+      y: glide.from.y + (glide.to.y - glide.from.y) * f,
+    };
   }
 }

@@ -1,0 +1,139 @@
+{
+  "id": "oath-ember-abc-2026-11-06-r5",
+  "declaredOn": "2026-11-06",
+  "status": "declared-design; B/C runtime checkpoints and paid execution pending",
+  "guidelines": {
+    "source": "owner-pasted midterm guidelines",
+    "sha256": "a1040a5425d554e2451837088aba1fb1caad4f8058319dd443eed8a53ccb4c76"
+  },
+  "scope": "Three bounded tasks within the Bald Goddess quest: Hedge Maze and two Griffin inventory conditions",
+  "gamePolicySourceCommit": "040685c (observed Pilot-30 post-tuned snapshot; not an established pre-tuned snapshot)",
+  "designAmendments": "Require a new declaration revision; preserve prior results and frozen A",
+  "baseline": {
+    "kind": "baseline-quest",
+    "status": "selected existing implementation; no new policy code",
+    "sourceCommit": "040685c",
+    "sourceSha256": {
+      "packages/agent/src/policies/questBaseline.ts": "18133c48b19b880df76be42a36e221d8da6e3a347306226f07bb6cf3e3dce975",
+      "packages/agent/src/policies/questKnowledge.ts": "d7b5bc925d189249a5d3ffc269a7eb3319c35bead649156182631797b6c45d4e",
+      "packages/agent/src/policies/navigate.ts": "7e37dca33e772fe3c636d56fcf663dfa54eb15c623ea6a1b6f21fb575817ee60",
+      "packages/agent/src/policies/combat.ts": "44759b6d66c4ff1f8198f911c868843d774fdf762929ed9a499eaa2a84c2bf90"
+    },
+    "information": "solution-aware script; per-hero observations and messages; no model calls",
+    "costUsd": 0,
+    "expectedStrictGriffinResult": "failure forecast from source, not measured"
+  },
+  "model": {
+    "kind": "model-centralized",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "maxBatch": 4,
+    "manualHash": "4b091a6630dd56f236f89f8e2213a6bb7cad4a31d4851d1883f95867d92bfa86",
+    "postGuidanceHash": null,
+    "postStatus": "Pilot-30 is owner-classified post-tuned; actual tuning intervention/diff must be documented before claiming a matched repeat or prompt-only contrast",
+    "centralizedInformation": "one planner sees both permitted hero observations; no repository/evaluator/hidden state",
+    "observedPostTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-a97d9268",
+    "observedPostTunedPromptHashA": "0616c47baf03f2860f75a4a0867221998b2439f51b55fde33c56111ec8240c44",
+    "preTunedSnapshotCommit": "678b86c",
+    "preTunedStatus": "Pilot-28 owner-designated pre-tuned failure, stopped at cow; preserved diagnosis records 125.267 game seconds, not owner-recalled approximately 128 seconds. Planner/controller changes separate it from Pilot-30.",
+    "tuningMechanism": "not independently established; no fine-tuning or explicit solution-prompt claim inferred"
+  },
+  "conditions": [
+    "pre-tuned",
+    "post-tuned",
+    "cheap-baseline"
+  ],
+  "repetitionsPerCell": 1,
+  "limits": {
+    "gameTicks": 18000,
+    "gameSeconds": 300,
+    "decisionsPerHero": 1600,
+    "modelCallsPerHero": 400,
+    "tokensPerHero": 4000000,
+    "callTimeoutMs": 30000,
+    "consecutivePolicyFailureLimit": 3,
+    "runSpendCapUsd": 0.75,
+    "modelWallSeconds": 3600,
+    "baselineWallSeconds": 600,
+    "scope": "Experiment run limits; A frozen definition remains unchanged (its max spend cap is 1.25)"
+  },
+  "situations": {
+    "A": {
+      "name": "Hedge Maze",
+      "id": "S2-local",
+      "seed": 0,
+      "definitionHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab",
+      "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+      "runtimeCheckpoint": "existing-frozen-v2",
+      "objective": "Obtain Enchanted Shears",
+      "success": "authoritative shared enchanted_shears count > 0",
+      "heldOut": false,
+      "history": "Development-informed; Pilot-30 predates this declaration, not retrospectively preregistered"
+    },
+    "B": {
+      "name": "Griffin Trial, Unprepared",
+      "id": "griffin-unprepared-v1",
+      "seed": 0,
+      "definitionHash": null,
+      "startHash": null,
+      "runtimeCheckpoint": "not implemented or certified",
+      "objective": "Defeat Griffin and acquire Divine Wig; neither hero knocked out",
+      "inventory": {
+        "vanity_mirror": 0,
+        "enchanted_shears": 0,
+        "griffin_wig": 0
+      },
+      "start": "Fresh 640-HP encounter, both heroes grounded, normal abilities, full HP/readiness target via legal history only",
+      "success": "griffin HP == 0 AND authoritative shared griffin_wig count > 0 AND no hero knockout during episode",
+      "failureBoundary": "Any knockout or leaving enclosure before success; evaluator support pending",
+      "heldOut": false
+    },
+    "C": {
+      "name": "Griffin Trial, Prepared",
+      "id": "griffin-prepared-v1",
+      "seed": 0,
+      "definitionHash": null,
+      "startHash": null,
+      "runtimeCheckpoint": "not implemented or certified",
+      "objective": "Defeat Griffin and acquire Divine Wig; neither hero knocked out",
+      "inventory": {
+        "vanity_mirror": 1,
+        "enchanted_shears": 1,
+        "griffin_wig": 0
+      },
+      "start": "Match B combat/hero conditions via legal history; preserve and disclose residual quest-history differences",
+      "success": "griffin HP == 0 AND authoritative shared griffin_wig count > 0 AND no hero knockout during episode",
+      "failureBoundary": "Any knockout or leaving enclosure before success; evaluator support pending",
+      "heldOut": true,
+      "holdoutRule": "Freeze both conditions and baseline before any C outcomes; transfer only A/B-developed guidance, no C-specific solution walkthrough"
+    }
+  },
+  "strictDefeatDecision": "Peaceful grooming/wig reward with positive Griffin HP fails B/C. No game mechanic change; broader success would require an explicit declaration amendment.",
+  "trialAllocation": {
+    "allOtherCells": "unrun",
+    "freshModelRunsRemaining": 11,
+    "freshBaselineRunsRemaining": 6,
+    "newModelSpendCeilingUsd": 8.25,
+    "paidAuthorization": false,
+    "A/post-tuned/1": "Pilot-30 historical completed pilot reused once, condition metadata corrected, original run status/evidence unchanged",
+    "A/pre-tuned/1": {
+      "episode": "Pilot-28",
+      "status": "historical manual-stop failure; owner allocated after outcome",
+      "record": "docs/midterm/evaluation-abc/A-pretuned-pilot28.json"
+    }
+  },
+  "holdoutOrder": [
+    "Complete A/B tuning and freeze all policy/manual/guidance hashes",
+    "C pre-tuned",
+    "C post-tuned",
+    "C baseline"
+  ],
+  "memoryRequirement": "Partial observation: clean bounded-memory versus observation-only comparison still required/pending; pre/post guidance is not a memory ablation",
+  "implementationBoundary": "Declaration and documentation only; no new scenarios, policy change, model calls, merge, push or paid-run approval",
+  "supersedes": "oath-ember-abc-2026-11-06-r4",
+  "correction": "r5 (owner decision 2026-11-06): one run per condition per situation (pre-tuned model, post-tuned model, deterministic baseline): six model runs and three baseline runs. Pilot-29 becomes supplementary tuning evidence, not a trial. A's baseline is run.",
+  "classificationNote": "A: pre-tuned Pilot-28 (678b86c, manual stop), post-tuned Pilot-30 (040685c, success), baseline baseline-quest (success). Pilot-29 (327c34a) is supplementary evidence of the intermediate tuning round. Whether a manually stopped run qualifies as the official pre-tuned attempt depends on the professor's rules.",
+  "promptTuningRecord": "docs/midterm/A_PROMPT_TUNING.md",
+  "requirementInterpretation": "Owner's reading: 'two live trials each' = one pre-tuned and one post-tuned model run per situation, plus the baseline. Not yet confirmed by the professor.",
+  "declarationSha256": "f4c60aa77662775e284e3a391b82dff9c492aad045c8a9536334a25bd4ffc04a"
+}

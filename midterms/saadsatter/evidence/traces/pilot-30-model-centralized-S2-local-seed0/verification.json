@@ -1,0 +1,72 @@
+{
+  "about": "Pilot-30 verification record, written 2026-11-06 by the Claude Code implementation agent. Facts below were checked in that session; see docs/midterm/PILOT30_AUDIT.md.",
+  "ledgerEntry": "pilot-30",
+  "files": [
+    {
+      "file": "run.json",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T08-17-52-847Z/run.json",
+      "bytes": 704,
+      "sha256": "521a91386048f22ca2fb4c7de43a8489f65a3be548b3073f62bdfd8bb5a76603",
+      "identicalToSource": true
+    },
+    {
+      "file": "live.json",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T08-17-52-847Z/live.json",
+      "bytes": 628,
+      "sha256": "78246715cd7c6d7186119d05ec7d5019ba5243f0ecb4a120cf977087889dfc8d",
+      "identicalToSource": true
+    },
+    {
+      "file": "recording.json",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T08-17-52-847Z/recording.json",
+      "bytes": 2161,
+      "sha256": "3d96961c99c6506584ad550fee0a3fbd93af97864ce07bbdb3a0714c3d921e9b",
+      "identicalToSource": true
+    },
+    {
+      "file": "results.json",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T08-17-52-847Z/results.json",
+      "bytes": 5444,
+      "sha256": "c84e7bea639c5621ce0150c55246a46d5d471b3720aedabf30caaa34e4f2faf2",
+      "identicalToSource": true
+    },
+    {
+      "file": "results.md",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T08-17-52-847Z/results.md",
+      "bytes": 518,
+      "sha256": "f1e363eefd57d2fa42b41ae3cf4a68aece25165f45f45edc6b9da60477a8b918",
+      "identicalToSource": true
+    },
+    {
+      "file": "summary.json",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T08-17-52-847Z/S2-local-seed0/summary.json",
+      "bytes": 3966,
+      "sha256": "a0ff114f83a31e9feceb7ab9fde66b66b9436c3044aeda03002eed76fba9f2e9",
+      "identicalToSource": true
+    },
+    {
+      "file": "trace.jsonl",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T08-17-52-847Z/S2-local-seed0/trace.jsonl",
+      "bytes": 9411542,
+      "sha256": "6aa22739c28c0550d571e79a0fb7182d54f967dfd6f4ace185837098252231fb",
+      "identicalToSource": true
+    }
+  ],
+  "video": {
+    "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T08-17-52-847Z/recording.webm",
+    "committed": false,
+    "bytes": 202356926,
+    "sha256": "f5100df99e6d248f89f8ceea37e4e8bb86e223bcb01f5d131c1f9aae072c4414",
+    "check": "scripts/evidence/verify-video.ts (Playwright ffmpeg-1011): full decode exit 0, no decode errors, 1962.56 s, 1280x720 VP8 25 fps, 49064 frames; frames at 2/25/50/75/97/99.9% have real content",
+    "terminalOverlay": "final frame header reads 'finished: success · 89.5 s game time · 167 model calls · $0.4433'",
+    "kind": "live viewer capture (not a replay)"
+  },
+  "checks": {
+    "traceChain": "verifyTrace (packages/agent/src/trace.ts) passed: 3823 lines, seq 0..3822",
+    "replay": "node --import tsx scripts/midterm/replay-video.ts <trace> --check-only at 040685c: REPLAY MATCHES THE TRACE: start hash, 644 step results, end (success, 6deca1132fc2e626) and 5369 ticks. No model calls.",
+    "situationA": "node --import tsx scripts/midterm/situation-a.ts at 040685c: definition hash 7efb771a…0eab and seed-0 start hash fdc49877… match the frozen values",
+    "secrets": "python3 -I scripts/evidence/scan_secrets.py on this folder: 7 text files, 0 findings"
+  },
+  "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+  "endHash": "6deca1132fc2e6268ff841a1b912c754127d31e740538bc662b1fd31bb9b0ec0"
+}

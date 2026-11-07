@@ -1,0 +1,68 @@
+{
+  "about": "Pilot-32 verification record, written 2026-11-06 by the Claude Code implementation agent.",
+  "ledgerEntry": "pilot-32",
+  "sourceCommit": "2791bce",
+  "files": [
+    {
+      "file": "live.json",
+      "source": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T22-54-48-449Z/live.json",
+      "bytes": 649,
+      "sha256": "3944c6ca82a710de8e5a6f8dd5b615d074cda69b69b86cc208ba4482a058fb49",
+      "identicalToSource": true
+    },
+    {
+      "file": "recording.json",
+      "source": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T22-54-48-449Z/recording.json",
+      "bytes": 2286,
+      "sha256": "e10ee8a3fa3bb6b5b638516f3a1ca5a0345b44f79d7a446891e2b3fb6ab737f6",
+      "identicalToSource": true
+    },
+    {
+      "file": "results.json",
+      "source": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T22-54-48-449Z/results.json",
+      "bytes": 5588,
+      "sha256": "d22a56c13772ea16ffc2c491ce98eb61b4849135357a4af9b371f214b64789d9",
+      "identicalToSource": true
+    },
+    {
+      "file": "results.md",
+      "source": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T22-54-48-449Z/results.md",
+      "bytes": 554,
+      "sha256": "c685f60b61eb81302b02b659c91af28880d0a76994b64eb71ec8bca8082c96d0",
+      "identicalToSource": true
+    },
+    {
+      "file": "run.json",
+      "source": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T22-54-48-449Z/run.json",
+      "bytes": 999,
+      "sha256": "caa351aff65da12f167fae5adc8a75d6e4701b3bc6c70d66ad32f5d632ec6799",
+      "identicalToSource": true
+    },
+    {
+      "file": "summary.json",
+      "source": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T22-54-48-449Z/griffin-unprepared-return-v1-seed0/summary.json",
+      "bytes": 4127,
+      "sha256": "4d3917f3219bf67bc2146b181e2366bebc05ced2a01850dbb1db3f76856a5de0",
+      "identicalToSource": true
+    },
+    {
+      "file": "trace.jsonl",
+      "source": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T22-54-48-449Z/griffin-unprepared-return-v1-seed0/trace.jsonl",
+      "bytes": 2948338,
+      "sha256": "a7dc9388a7b50c84a149d5b3cc750e0a558881acfb3ac306ca34da12ae5319b2",
+      "identicalToSource": true
+    }
+  ],
+  "notCommitted": {
+    "file": "recording.webm",
+    "source": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T22-54-48-449Z/recording.webm",
+    "bytes": 96328753,
+    "sha256": "9de93e04c13c2017424b0e8f6321399093bc307ff741fc9070586080fc9f7861",
+    "reason": "96 MB video, kept local as for Pilot-31"
+  },
+  "checks": [
+    "verifyTrace: hash chain verified",
+    "replay-video.ts --check-only at d49b942 (code paths identical to 2791bce; d49b942 only adds a locked guidance entry): start hash, 250 step results, end (knocked_out, 23b7b460\u2026) and 2,849 ticks match",
+    "policy, prompt hash 17b89312\u2026 and guidance b-post-a-transfer-v1 (approved, 60a0a013\u2026) match the r8 packet"
+  ]
+}

@@ -1,0 +1,261 @@
+{
+ "from": "griffin-unprepared-return-v1 seed 0 (45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8)",
+ "to": "griffin-prepared-return-v1 seed 0 (28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7)",
+ "tick": 540,
+ "prefixActionsSha256": "1cf7940acb58e02d7509b7567c6e63457c48231b0424f9f77b6ae781d8fff81d",
+ "world": [
+  {
+   "path": "$.inventory.counts.enchanted_shears",
+   "c": 1
+  },
+  {
+   "path": "$.inventory.counts.vanity_mirror",
+   "c": 1
+  },
+  {
+   "path": "$.inventory.revision",
+   "b": 14,
+   "c": 15
+  }
+ ],
+ "observations": {
+  "sieg": [
+   {
+    "path": "$.inventory.items",
+    "b": [
+     {
+      "id": "moonleaf",
+      "name": "Moonleaf Herbs",
+      "count": 1,
+      "description": "A fresh bundle from Brynn's Apothecary. Paid for, for once."
+     },
+     {
+      "id": "crystal_vial",
+      "name": "Crystal Vial",
+      "count": 2,
+      "description": "Clear and empty. Papa is working on something."
+     },
+     {
+      "id": "candlewick",
+      "name": "Candlewick",
+      "count": 1,
+      "description": "A coil of cotton wick from the general store."
+     },
+     {
+      "id": "fresh_bread",
+      "name": "Fresh Bread",
+      "count": 1,
+      "description": "Alden's usual loaf from the village bakery. Still warm."
+     },
+     {
+      "id": "honey_pastry",
+      "name": "Honey Pastry",
+      "count": 1,
+      "description": "A very important magical ingredient. For happiness."
+     },
+     {
+      "id": "alden_journal",
+      "name": "Alden's Journal",
+      "count": 1,
+      "description": "\"If the Ember has been found, the others will not remain hidden for long. I can only hope the old guardian remembers what she promised.\""
+     },
+     {
+      "id": "strange_cloth",
+      "name": "Strange Cloth",
+      "count": 1,
+      "description": "A scrap of cloth with a symbol neither of them knows. Papa kept it with Coco's things from when she was little."
+     },
+     {
+      "id": "star_drawing",
+      "name": "Drawing of Seven Stars",
+      "count": 1,
+      "description": "Seven stars drawn in a ring around a dark circle."
+     }
+    ],
+    "c": [
+     {
+      "id": "enchanted_shears",
+      "name": "Enchanted Shears",
+      "count": 1,
+      "description": "A shared enchanted garden tool. Keep it for the Griffin's nest."
+     },
+     {
+      "id": "vanity_mirror",
+      "name": "Vanity Mirror",
+      "count": 1,
+      "description": "An ornate mirror for the proud Griffin. A shared quest tool."
+     },
+     {
+      "id": "moonleaf",
+      "name": "Moonleaf Herbs",
+      "count": 1,
+      "description": "A fresh bundle from Brynn's Apothecary. Paid for, for once."
+     },
+     {
+      "id": "crystal_vial",
+      "name": "Crystal Vial",
+      "count": 2,
+      "description": "Clear and empty. Papa is working on something."
+     },
+     {
+      "id": "candlewick",
+      "name": "Candlewick",
+      "count": 1,
+      "description": "A coil of cotton wick from the general store."
+     },
+     {
+      "id": "fresh_bread",
+      "name": "Fresh Bread",
+      "count": 1,
+      "description": "Alden's usual loaf from the village bakery. Still warm."
+     },
+     {
+      "id": "honey_pastry",
+      "name": "Honey Pastry",
+      "count": 1,
+      "description": "A very important magical ingredient. For happiness."
+     },
+     {
+      "id": "alden_journal",
+      "name": "Alden's Journal",
+      "count": 1,
+      "description": "\"If the Ember has been found, the others will not remain hidden for long. I can only hope the old guardian remembers what she promised.\""
+     },
+     {
+      "id": "strange_cloth",
+      "name": "Strange Cloth",
+      "count": 1,
+      "description": "A scrap of cloth with a symbol neither of them knows. Papa kept it with Coco's things from when she was little."
+     },
+     {
+      "id": "star_drawing",
+      "name": "Drawing of Seven Stars",
+      "count": 1,
+      "description": "Seven stars drawn in a ring around a dark circle."
+     }
+    ]
+   }
+  ],
+  "coco": [
+   {
+    "path": "$.inventory.items",
+    "b": [
+     {
+      "id": "moonleaf",
+      "name": "Moonleaf Herbs",
+      "count": 1,
+      "description": "A fresh bundle from Brynn's Apothecary. Paid for, for once."
+     },
+     {
+      "id": "crystal_vial",
+      "name": "Crystal Vial",
+      "count": 2,
+      "description": "Clear and empty. Papa is working on something."
+     },
+     {
+      "id": "candlewick",
+      "name": "Candlewick",
+      "count": 1,
+      "description": "A coil of cotton wick from the general store."
+     },
+     {
+      "id": "fresh_bread",
+      "name": "Fresh Bread",
+      "count": 1,
+      "description": "Alden's usual loaf from the village bakery. Still warm."
+     },
+     {
+      "id": "honey_pastry",
+      "name": "Honey Pastry",
+      "count": 1,
+      "description": "A very important magical ingredient. For happiness."
+     },
+     {
+      "id": "alden_journal",
+      "name": "Alden's Journal",
+      "count": 1,
+      "description": "\"If the Ember has been found, the others will not remain hidden for long. I can only hope the old guardian remembers what she promised.\""
+     },
+     {
+      "id": "strange_cloth",
+      "name": "Strange Cloth",
+      "count": 1,
+      "description": "A scrap of cloth with a symbol neither of them knows. Papa kept it with Coco's things from when she was little."
+     },
+     {
+      "id": "star_drawing",
+      "name": "Drawing of Seven Stars",
+      "count": 1,
+      "description": "Seven stars drawn in a ring around a dark circle."
+     }
+    ],
+    "c": [
+     {
+      "id": "enchanted_shears",
+      "name": "Enchanted Shears",
+      "count": 1,
+      "description": "A shared enchanted garden tool. Keep it for the Griffin's nest."
+     },
+     {
+      "id": "vanity_mirror",
+      "name": "Vanity Mirror",
+      "count": 1,
+      "description": "An ornate mirror for the proud Griffin. A shared quest tool."
+     },
+     {
+      "id": "moonleaf",
+      "name": "Moonleaf Herbs",
+      "count": 1,
+      "description": "A fresh bundle from Brynn's Apothecary. Paid for, for once."
+     },
+     {
+      "id": "crystal_vial",
+      "name": "Crystal Vial",
+      "count": 2,
+      "description": "Clear and empty. Papa is working on something."
+     },
+     {
+      "id": "candlewick",
+      "name": "Candlewick",
+      "count": 1,
+      "description": "A coil of cotton wick from the general store."
+     },
+     {
+      "id": "fresh_bread",
+      "name": "Fresh Bread",
+      "count": 1,
+      "description": "Alden's usual loaf from the village bakery. Still warm."
+     },
+     {
+      "id": "honey_pastry",
+      "name": "Honey Pastry",
+      "count": 1,
+      "description": "A very important magical ingredient. For happiness."
+     },
+     {
+      "id": "alden_journal",
+      "name": "Alden's Journal",
+      "count": 1,
+      "description": "\"If the Ember has been found, the others will not remain hidden for long. I can only hope the old guardian remembers what she promised.\""
+     },
+     {
+      "id": "strange_cloth",
+      "name": "Strange Cloth",
+      "count": 1,
+      "description": "A scrap of cloth with a symbol neither of them knows. Papa kept it with Coco's things from when she was little."
+     },
+     {
+      "id": "star_drawing",
+      "name": "Drawing of Seven Stars",
+      "count": 1,
+      "description": "Seven stars drawn in a ring around a dark circle."
+     }
+    ]
+   }
+  ]
+ },
+ "legalActions": {
+  "sieg": [],
+  "coco": []
+ }
+}

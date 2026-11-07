@@ -1,0 +1,32 @@
+{
+  "id": "griffin-unprepared-return-v1",
+  "name": "Griffin Trial, Unprepared \u2014 Goddess Return",
+  "seed": 0,
+  "heldOut": false,
+  "start": "ordinary goddess opening, walk around statue and north travel; arrival dialogue completed",
+  "startTick": 540,
+  "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
+  "encounter": {
+    "hp": 640,
+    "phase": "NEST",
+    "wigClaimed": false
+  },
+  "inventory": {
+    "vanity_mirror": 0,
+    "enchanted_shears": 0,
+    "griffin_wig": 0
+  },
+  "heroes": "normal abilities, full health; legal history preserved",
+  "success": "authoritative Griffin hp <= 0 AND wigClaimed AND story.flags contains chapter0.complete",
+  "failure": "any authoritative knockout terminates, including immediate full-health respawn",
+  "limits": {
+    "gameTicks": 18000,
+    "decisionsPerHero": 1600,
+    "modelCallsPerHero": 400,
+    "tokensPerHero": 4000000
+  },
+  "task": "Defeat Griffin, obtain Divine Wig, return to goddess and complete Chapter 0; neither hero knocked out.",
+  "checkpointMethod": "ordinary reset/opening/Director.go/travelFromShrine, no fixtures or state edits",
+  "policyKnowledge": "generic combat, organic pull, visible labels, map/feedback memory, normal abilities and interactions; no special grounding rule or route",
+  "definitionSha256": "b224f75d2ec71ad61082fe0cba4617057b73cd9feb5173c52f7f32dcd86ed6f1"
+}

@@ -1,0 +1,361 @@
+{
+  "episodes": [
+    {
+      "situation": "S2-local",
+      "suiteRevision": 2,
+      "scenario": {
+        "preset": "S2-local-v2",
+        "title": "Hedge Maze — local start",
+        "goal": "S2-local (suite revision 2): from the Hedge Maze entrance, obtain the Enchanted Shears.",
+        "revision": 2,
+        "tutorialId": null,
+        "briefing": false
+      },
+      "seed": 0,
+      "player": "baseline-quest",
+      "policies": {
+        "sieg": "baseline-quest(Sieg)",
+        "coco": "baseline-quest(Coco)"
+      },
+      "gateway": null,
+      "modelIds": [],
+      "gitHash": "198ef3a+dirty",
+      "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+      "startTick": 405,
+      "prefix": "opening scene, normal entry to Hedge Maze (before arrival dialogue)",
+      "status": "success",
+      "reason": "success",
+      "success": true,
+      "gameTicks": 3128,
+      "gameSeconds": 52.1,
+      "wallSeconds": 1,
+      "decisions": {
+        "sieg": 231,
+        "coco": 164
+      },
+      "actions": {
+        "sieg": {
+          "move": 148,
+          "advance_dialogue": 4,
+          "attack": 16,
+          "wait": 57,
+          "message": 3,
+          "ability": 1,
+          "interact": 2
+        },
+        "coco": {
+          "move": 39,
+          "wait": 93,
+          "attack": 26,
+          "ability": 2,
+          "message": 3,
+          "interact": 1
+        }
+      },
+      "attempt": 1,
+      "endHash": "6644f2cac04b945444c3ec609d59d798cd767ecad80405d49ce8cd26314c7f56",
+      "limits": {
+        "maxTicks": 18000,
+        "maxDecisionsPerPlayer": 1600,
+        "maxModelCallsPerPlayer": 400,
+        "maxTokensPerPlayer": 4000000
+      },
+      "modelLimits": null,
+      "invalidActions": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "metrics": {
+        "sieg": {
+          "modelCalls": 0,
+          "modelDecisions": 0,
+          "parseFailures": 0,
+          "recoveredReplies": 0,
+          "proposedActions": 0,
+          "submittedActions": 231,
+          "executedActions": 231,
+          "staleSubmissions": 0,
+          "gameplayRejections": 0,
+          "skippedActions": 0
+        },
+        "coco": {
+          "modelCalls": 0,
+          "modelDecisions": 0,
+          "parseFailures": 0,
+          "recoveredReplies": 0,
+          "proposedActions": 0,
+          "submittedActions": 164,
+          "executedActions": 164,
+          "staleSubmissions": 0,
+          "gameplayRejections": 0,
+          "skippedActions": 0
+        }
+      },
+      "metricsVersion": 2,
+      "messages": {
+        "sieg": 3,
+        "coco": 3
+      },
+      "batchStops": 0,
+      "modelCalls": {
+        "attempted": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "unknownUsage": 0
+      },
+      "latencyMs": {
+        "mean": null,
+        "max": null
+      },
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0
+      },
+      "spendUsd": {
+        "known": 0,
+        "charged": 0
+      },
+      "priceSource": null,
+      "ledgerEntry": null,
+      "episodeCapUsd": null,
+      "wallLimitSeconds": 600,
+      "launch": {
+        "launcher": "scripts/midterm/situation-a.ts",
+        "speed": null,
+        "viewer": false
+      },
+      "finalClaim": null,
+      "evaluation": {
+        "label": "S2-A",
+        "definitionHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab"
+      },
+      "promptHashes": {
+        "sieg": null,
+        "coco": null
+      },
+      "configHash": "51b861b9ff20dd892f7cdddc7116bd6b769042a314deb905a0c70ef27465ca8b",
+      "baselineLog": {
+        "sieg": [
+          {
+            "tick": 405,
+            "note": "entered Hedge Maze"
+          },
+          {
+            "tick": 3004,
+            "note": "wolf chase 1: caught"
+          }
+        ],
+        "coco": [
+          {
+            "tick": 405,
+            "note": "entered Hedge Maze"
+          }
+        ]
+      }
+    },
+    {
+      "situation": "S2-local",
+      "suiteRevision": 2,
+      "scenario": {
+        "preset": "S2-local-v2",
+        "title": "Hedge Maze — local start",
+        "goal": "S2-local (suite revision 2): from the Hedge Maze entrance, obtain the Enchanted Shears.",
+        "revision": 2,
+        "tutorialId": null,
+        "briefing": false
+      },
+      "seed": 1,
+      "player": "baseline-quest",
+      "policies": {
+        "sieg": "baseline-quest(Sieg)",
+        "coco": "baseline-quest(Coco)"
+      },
+      "gateway": null,
+      "modelIds": [],
+      "gitHash": "198ef3a+dirty",
+      "startHash": "febddd1a479ac6f2750c940ac2fa9f6e469d6a5bd2d4ec89bac9f32514f86519",
+      "startTick": 405,
+      "prefix": "opening scene, normal entry to Hedge Maze (before arrival dialogue)",
+      "status": "success",
+      "reason": "success",
+      "success": true,
+      "gameTicks": 3128,
+      "gameSeconds": 52.1,
+      "wallSeconds": 0.9,
+      "decisions": {
+        "sieg": 231,
+        "coco": 164
+      },
+      "actions": {
+        "sieg": {
+          "move": 148,
+          "advance_dialogue": 4,
+          "attack": 16,
+          "wait": 57,
+          "message": 3,
+          "ability": 1,
+          "interact": 2
+        },
+        "coco": {
+          "move": 39,
+          "wait": 93,
+          "attack": 26,
+          "ability": 2,
+          "message": 3,
+          "interact": 1
+        }
+      },
+      "attempt": 1,
+      "endHash": "2c339ccabbf1b0afa22d4cbc11a7f4e0014db27a272e2248ee2f52492a8c1671",
+      "limits": {
+        "maxTicks": 18000,
+        "maxDecisionsPerPlayer": 1600,
+        "maxModelCallsPerPlayer": 400,
+        "maxTokensPerPlayer": 4000000
+      },
+      "modelLimits": null,
+      "invalidActions": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "metrics": {
+        "sieg": {
+          "modelCalls": 0,
+          "modelDecisions": 0,
+          "parseFailures": 0,
+          "recoveredReplies": 0,
+          "proposedActions": 0,
+          "submittedActions": 231,
+          "executedActions": 231,
+          "staleSubmissions": 0,
+          "gameplayRejections": 0,
+          "skippedActions": 0
+        },
+        "coco": {
+          "modelCalls": 0,
+          "modelDecisions": 0,
+          "parseFailures": 0,
+          "recoveredReplies": 0,
+          "proposedActions": 0,
+          "submittedActions": 164,
+          "executedActions": 164,
+          "staleSubmissions": 0,
+          "gameplayRejections": 0,
+          "skippedActions": 0
+        }
+      },
+      "metricsVersion": 2,
+      "messages": {
+        "sieg": 3,
+        "coco": 3
+      },
+      "batchStops": 0,
+      "modelCalls": {
+        "attempted": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "unknownUsage": 0
+      },
+      "latencyMs": {
+        "mean": null,
+        "max": null
+      },
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0
+      },
+      "spendUsd": {
+        "known": 0,
+        "charged": 0
+      },
+      "priceSource": null,
+      "ledgerEntry": null,
+      "episodeCapUsd": null,
+      "wallLimitSeconds": 600,
+      "launch": {
+        "launcher": "scripts/midterm/situation-a.ts",
+        "speed": null,
+        "viewer": false
+      },
+      "finalClaim": null,
+      "evaluation": {
+        "label": "S2-A",
+        "definitionHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab"
+      },
+      "promptHashes": {
+        "sieg": null,
+        "coco": null
+      },
+      "configHash": "51b861b9ff20dd892f7cdddc7116bd6b769042a314deb905a0c70ef27465ca8b",
+      "baselineLog": {
+        "sieg": [
+          {
+            "tick": 405,
+            "note": "entered Hedge Maze"
+          },
+          {
+            "tick": 3004,
+            "note": "wolf chase 1: caught"
+          }
+        ],
+        "coco": [
+          {
+            "tick": 405,
+            "note": "entered Hedge Maze"
+          }
+        ]
+      }
+    }
+  ],
+  "aggregate": [
+    {
+      "situation": "S2-local",
+      "trials": 2,
+      "successes": 2,
+      "reasons": [
+        "success",
+        "success"
+      ],
+      "meanGameSeconds": 52.1,
+      "meanWallSeconds": 1,
+      "gameTicks": 6256,
+      "actions": 790,
+      "failedModelCalls": 0,
+      "unknownUsageCalls": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0
+      },
+      "knownUsd": 0,
+      "meanDecisions": 395,
+      "invalidActions": 0,
+      "messages": 12,
+      "modelCalls": 0,
+      "chargedUsd": 0,
+      "startHashes": [
+        "fdc498771fe89a1a",
+        "febddd1a479ac6f2"
+      ],
+      "metrics": {
+        "modelCalls": 0,
+        "modelDecisions": 0,
+        "parseFailures": 0,
+        "recoveredReplies": 0,
+        "proposedActions": 0,
+        "submittedActions": 790,
+        "executedActions": 790,
+        "staleSubmissions": 0,
+        "gameplayRejections": 0,
+        "skippedActions": 0
+      },
+      "metricsEpisodes": 2
+    }
+  ],
+  "previousAttempts": []
+}

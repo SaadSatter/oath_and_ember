@@ -1,0 +1,142 @@
+{
+  "kind": "free offline preparation checks for Situation C; baseline rows are unregistered until the owner approves the C declaration; mock prompt checks are not results",
+  "situation": "griffin-prepared-return-v1",
+  "definitionHash": "d563c6eb948063a6d4e0c854fa5eed3ef957b592530b67c806df71ca1ab3ba11",
+  "gameVersion": "a3ce5ab",
+  "node": "v26.9.0",
+  "start": {
+    "seed": 0,
+    "tick": 540,
+    "startHash": "28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7",
+    "seed1StartHash": "dc638ff166d36edfc777d36c24f155f77d013fcb72633b4becda330aa63ccab7",
+    "prefixActionsSha256": "1cf7940acb58e02d7509b7567c6e63457c48231b0424f9f77b6ae781d8fff81d"
+  },
+  "baseline": [
+    {
+      "run": 1,
+      "seed": 0,
+      "status": "success",
+      "reason": "success",
+      "success": true,
+      "gameTicks": 5389,
+      "gameSeconds": 89.8,
+      "wallSeconds": 1.8,
+      "decisions": {
+        "sieg": 481,
+        "coco": 646
+      },
+      "invalidActions": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "modelCalls": {
+        "attempted": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "unknownUsage": 0
+      },
+      "startHash": "28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7",
+      "endHash": "0e419e63ee2244d674ab25b86a939a19cbbbfb49743b970259e5d6cf63c2a4e0",
+      "policies": {
+        "sieg": "baseline-griffin-heuristic-v1",
+        "coco": "baseline-griffin-heuristic-v1"
+      },
+      "traceSha256": "a182f9d08f791115c71e3950eaeacc51a0a847a98ed86f9f29da735102d259ec"
+    },
+    {
+      "run": 2,
+      "seed": 0,
+      "status": "success",
+      "reason": "success",
+      "success": true,
+      "gameTicks": 5389,
+      "gameSeconds": 89.8,
+      "wallSeconds": 1.6,
+      "decisions": {
+        "sieg": 481,
+        "coco": 646
+      },
+      "invalidActions": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "modelCalls": {
+        "attempted": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "unknownUsage": 0
+      },
+      "startHash": "28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7",
+      "endHash": "0e419e63ee2244d674ab25b86a939a19cbbbfb49743b970259e5d6cf63c2a4e0",
+      "policies": {
+        "sieg": "baseline-griffin-heuristic-v1",
+        "coco": "baseline-griffin-heuristic-v1"
+      },
+      "traceSha256": "e57bc96386341f73e31b8e059b0eee275f7a8bf5bc4c6ad5cab7cbd36d435c65"
+    },
+    {
+      "run": 3,
+      "seed": 1,
+      "status": "success",
+      "reason": "success",
+      "success": true,
+      "gameTicks": 5389,
+      "gameSeconds": 89.8,
+      "wallSeconds": 1.6,
+      "decisions": {
+        "sieg": 481,
+        "coco": 646
+      },
+      "invalidActions": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "modelCalls": {
+        "attempted": 0,
+        "failed": 0,
+        "timedOut": 0,
+        "unknownUsage": 0
+      },
+      "startHash": "dc638ff166d36edfc777d36c24f155f77d013fcb72633b4becda330aa63ccab7",
+      "endHash": "3a3ee9ab5305092923f2d8c7f77673b86a3399fc6f11009e4bafd5239919c687",
+      "policies": {
+        "sieg": "baseline-griffin-heuristic-v1",
+        "coco": "baseline-griffin-heuristic-v1"
+      },
+      "traceSha256": "03142a3961c30a66010d6912d92d679bdb659ef8e12d53ba8ba65617e1dac130"
+    }
+  ],
+  "prompts": {
+    "Pilot-31 check: B v1 pre-tuned": {
+      "policy": "centralized-f0592888(mock:random-legal@0)·batch4·tutorial-2ec2f251·briefing-5fa93722",
+      "promptHash": "cbabb78b42b1227bafff0ef9e95b62ad5e03ba725691482e2e032384097bbb6a",
+      "guidance": null
+    },
+    "Pilot-33 check: B-return + v4": {
+      "policy": "centralized-f0592888(mock:random-legal@0)·batch4·task-cdbee612·guidance-12874542",
+      "promptHash": "7ff08ba84c4ab14460d0f6707febdc19b8e417ced89d3127636ce7ed9f352144",
+      "guidance": "1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34"
+    },
+    "C1 pre-tuned": {
+      "policy": "centralized-f0592888(mock:random-legal@0)·batch4·tutorial-2ec2f251·briefing-63b9fbdc",
+      "promptHash": "a6fa78a05e368b6f128844eff22b4b891d4892a772a27fba9c6fac066fab079e",
+      "guidance": null
+    },
+    "C3 post-tuned": {
+      "policy": "centralized-f0592888(mock:random-legal@0)·batch4·tutorial-2ec2f251·briefing-63b9fbdc·guidance-12874542",
+      "promptHash": "be19b8b5e9c350ecaf7ff7f4a478b3ca96bb1b3864d2527744823e2908548db8",
+      "guidance": "1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34"
+    }
+  },
+  "guidance": {
+    "id": "b-post-combined-v4",
+    "status": "approved",
+    "sha256": "1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34",
+    "situations": [
+      "griffin-unprepared-v1",
+      "griffin-unprepared-return-v1",
+      "griffin-prepared-return-v1"
+    ]
+  },
+  "problems": []
+}

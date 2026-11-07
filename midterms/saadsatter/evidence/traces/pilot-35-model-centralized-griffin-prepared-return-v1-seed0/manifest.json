@@ -1,0 +1,131 @@
+{
+ "episode": "Pilot-35",
+ "case": "C",
+ "condition": "post-tuned (C3, official under r11): v4 + inventory/nest hint; outcome-informed, C-specific supplementary tuning, not B-to-C transfer",
+ "sourceCommit": "24a3ba1",
+ "declaration": "oath-ember-abc-2026-11-06-r11-c3-hint (1fd604c2\u2026)",
+ "launchedBy": "owner",
+ "files": {
+  "trace.jsonl": {
+   "sha256": "d8824c91e1aae24a7647ea3c2a3ba80f0d3a195229e6ce5a75871a9683e36aff",
+   "bytes": 4736862,
+   "original": "evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T04-24-24-899Z/griffin-prepared-return-v1-seed0/trace.jsonl"
+  },
+  "summary.json": {
+   "sha256": "35a73d6deae0267999036db9dbe4741e0603e13ad7e9f92f4d5cb9e5833081eb",
+   "bytes": 5055,
+   "original": "evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T04-24-24-899Z/griffin-prepared-return-v1-seed0/summary.json"
+  },
+  "live-recording.json": {
+   "sha256": "bd12c9037b46f18927cda657755480642c1a27ac57a8523a1c37a9b4bda44b7c",
+   "bytes": 2264,
+   "original": "evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T04-24-24-899Z/recording.json"
+  },
+  "run.json": {
+   "sha256": "b274a8f758df2502bae291540ce7c309509f2cf2d70d84c8409056c720e3f654",
+   "bytes": 969,
+   "original": "evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T04-24-24-899Z/run.json"
+  },
+  "results.json": {
+   "sha256": "fb019586d732b511af4699ffb61375ba14648aa6ee4d1736c191353d78167823",
+   "bytes": 6616,
+   "original": "evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T04-24-24-899Z/results.json"
+  },
+  "results.md": {
+   "sha256": "00c1ac630faf6ac525265b9df07e4a7d50198f1850a5ae51d8feee2c95dfbe75",
+   "bytes": 553,
+   "original": "evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T04-24-24-899Z/results.md"
+  },
+  "live.json": {
+   "sha256": "424f402cb5e36aea1f07b3ce5a00e5ec977611c923fe356e0d377548d31ba74b",
+   "bytes": 647,
+   "original": "evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T04-24-24-899Z/live.json"
+  }
+ },
+ "recording": {
+  "path": "evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T04-24-24-899Z/recording.webm",
+  "sha256": "e53234e547319019da6b5155a82fd1987ba2efdeee54b70adcd053e1ba044de1",
+  "bytes": 68913580,
+  "committed": false,
+  "note": "video local-only, untouched"
+ },
+ "outcome": {
+  "player": "model-centralized",
+  "status": "success",
+  "reason": "success",
+  "success": true,
+  "gameTicks": 3379,
+  "gameSeconds": 56.3,
+  "wallSeconds": 958.5,
+  "decisions": {
+   "sieg": 159,
+   "coco": 200
+  },
+  "invalidActions": {
+   "sieg": 0,
+   "coco": 1
+  },
+  "modelCalls": {
+   "attempted": 163,
+   "failed": 0,
+   "timedOut": 0,
+   "unknownUsage": 0
+  },
+  "tokens": {
+   "input": 3024600,
+   "output": 71352,
+   "cacheRead": 1328724,
+   "cacheWrite": 1695387
+  },
+  "spendUsd": {
+   "known": 0.287029,
+   "charged": 0.287029
+  },
+  "ledgerEntry": "pilot-35",
+  "startHash": "28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7",
+  "endHash": "8342ec057bd04bbbea5764ed3a26b90199f909f5b395fd2cdac9724c2a214efa",
+  "policies": {
+   "sieg": "centralized-f0592888(openai:gpt-6-luna@medium)\u00b7batch4\u00b7tutorial-2ec2f251\u00b7briefing-1ba46753\u00b7guidance-d750861b",
+   "coco": "centralized-f0592888(openai:gpt-6-luna@medium)\u00b7batch4\u00b7tutorial-2ec2f251\u00b7briefing-1ba46753\u00b7guidance-d750861b"
+  },
+  "promptHashes": {
+   "sieg": "d50dc0623921ed00bedb811841d72153fe9b943e072ee180c63bc7856b52dd54",
+   "coco": "d50dc0623921ed00bedb811841d72153fe9b943e072ee180c63bc7856b52dd54"
+  },
+  "configHash": "3238a5a63631e91e86a3dbde20a37dcefd799ad3c311f6b255602bfaded6a4e7",
+  "guidance": {
+   "id": "c-post-v4-inventory-hint-v1",
+   "status": "approved",
+   "sha256": "d750861ba30255fd10e139532c8394e2e7dd44237e1ba50dc3ee4e0d311afa83",
+   "situations": [
+    "griffin-prepared-return-v1"
+   ]
+  },
+  "situationCReport": {
+   "descriptiveOnly": true,
+   "objectiveSuccess": true,
+   "terminalReason": "success",
+   "griffinHpAtEnd": 640,
+   "griffinPhaseAtEnd": "GROOMING",
+   "griffinDefeated": false,
+   "mirrorDelivered": true,
+   "shearsDelivered": true,
+   "itemInteractionUsed": true,
+   "griffinHpAtFirstItemDelivery": 640,
+   "itemsDeliveredWhileGriffinAlive": true,
+   "griffinHpAtMirrorDelivery": 640,
+   "peacefulGroomingOccurred": true,
+   "toolsTakenByGriffin": true,
+   "wigAcquired": true,
+   "griffinHpAtWigClaim": 640,
+   "wigRoute": "peaceful",
+   "offeringAccepted": true,
+   "chapter0Complete": true
+  },
+  "latencyMs": {
+   "mean": 5457,
+   "max": 20528
+  }
+ },
+ "preservation": "Files copied byte for byte from the live output folder; no file edited."
+}

@@ -1,0 +1,174 @@
+{
+  "situation": "griffin-prepared-return-v1",
+  "suiteRevision": 2,
+  "scenario": {
+    "preset": "griffin-prepared-return-v1",
+    "title": "Griffin Trial Prepared, return offering (C)",
+    "goal": "Situation C: from the Griffin Enclosure entrance holding the Vanity Mirror and Enchanted Shears, obtain the Griffin's wig, offer it to the goddess and reach chapter0.complete without a hero knockout.",
+    "revision": 1,
+    "tutorialId": "2ec2f251",
+    "briefing": true
+  },
+  "seed": 0,
+  "player": "model-centralized",
+  "policies": {
+    "sieg": "centralized-f0592888(mock:random-legal@0)·batch4·tutorial-2ec2f251·briefing-1ba46753·guidance-12874542",
+    "coco": "centralized-f0592888(mock:random-legal@0)·batch4·tutorial-2ec2f251·briefing-1ba46753·guidance-12874542"
+  },
+  "gateway": "mock:random-legal@0",
+  "modelIds": [
+    "mock"
+  ],
+  "gitHash": "f3b718d+dirty",
+  "startHash": "28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7",
+  "startTick": 540,
+  "prefix": "B-return start, then Mirror and Shears added to the backpack (owner-approved start fixture)",
+  "status": "terminated",
+  "reason": "error",
+  "success": false,
+  "gameTicks": 7421,
+  "gameSeconds": 123.7,
+  "wallSeconds": 0.8,
+  "decisions": {
+    "sieg": 246,
+    "coco": 254
+  },
+  "actions": {
+    "sieg": {
+      "attack": 2,
+      "ability": 4,
+      "move": 46,
+      "wait": 184,
+      "defend": 5,
+      "interact": 5
+    },
+    "coco": {
+      "move": 63,
+      "wait": 182,
+      "interact": 2,
+      "attack": 2,
+      "ability": 3,
+      "defend": 2
+    }
+  },
+  "attempt": 1,
+  "endHash": "af85c73628abf508d918d4c31f6fb86fff3ea4e530e938876b99b441be3eeb43",
+  "limits": {
+    "maxTicks": 18000,
+    "maxDecisionsPerPlayer": 1600,
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000
+  },
+  "modelLimits": {
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000,
+    "maxSpendUsd": 0.75,
+    "callTimeoutMs": 30000
+  },
+  "invalidActions": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "metrics": {
+    "sieg": {
+      "modelCalls": 24,
+      "modelDecisions": 21,
+      "parseFailures": 3,
+      "recoveredReplies": 0,
+      "proposedActions": 30,
+      "submittedActions": 246,
+      "executedActions": 246,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 5
+    },
+    "coco": {
+      "modelCalls": 29,
+      "modelDecisions": 25,
+      "parseFailures": 4,
+      "recoveredReplies": 0,
+      "proposedActions": 32,
+      "submittedActions": 254,
+      "executedActions": 254,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 2
+    }
+  },
+  "metricsVersion": 2,
+  "messages": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "batchStops": 7,
+  "modelCalls": {
+    "attempted": 53,
+    "failed": 0,
+    "timedOut": 0,
+    "unknownUsage": 0
+  },
+  "latencyMs": {
+    "mean": 0,
+    "max": 0
+  },
+  "tokens": {
+    "input": 347495,
+    "output": 1586,
+    "cacheRead": 0,
+    "cacheWrite": 0
+  },
+  "spendUsd": {
+    "known": 0,
+    "charged": 0
+  },
+  "priceSource": "mock: no cost, no network",
+  "ledgerEntry": "pilot-1",
+  "episodeCapUsd": 0.75,
+  "wallLimitSeconds": 3600,
+  "launch": {
+    "launcher": "scripts/midterm/live.ts",
+    "speed": null,
+    "viewer": false
+  },
+  "finalClaim": null,
+  "evaluation": {
+    "label": "C",
+    "definitionHash": "048679a38eea4e15177af2990fac94c19b2cd4f0c40de33a92c559a57f22d4a4"
+  },
+  "promptHashes": {
+    "sieg": "a0c6939af45f82a10ef80dfcbcd2c40c60ca82f01d91a55f330d624292fb9323",
+    "coco": "a0c6939af45f82a10ef80dfcbcd2c40c60ca82f01d91a55f330d624292fb9323"
+  },
+  "configHash": "67ca327f6446ea6a38ed85c48e90492c180fbbc78b4c7781ab3565296b630606",
+  "guidance": {
+    "id": "b-post-combined-v4",
+    "status": "approved",
+    "sha256": "1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34",
+    "situations": [
+      "griffin-unprepared-v1",
+      "griffin-unprepared-return-v1",
+      "griffin-prepared-return-v1"
+    ]
+  },
+  "situationCReport": {
+    "descriptiveOnly": true,
+    "objectiveSuccess": false,
+    "terminalReason": "error",
+    "griffinHpAtEnd": 640,
+    "griffinPhaseAtEnd": "NEST",
+    "griffinDefeated": false,
+    "mirrorDelivered": false,
+    "shearsDelivered": false,
+    "itemInteractionUsed": false,
+    "griffinHpAtFirstItemDelivery": null,
+    "itemsDeliveredWhileGriffinAlive": false,
+    "peacefulGroomingOccurred": false,
+    "toolsTakenByGriffin": false,
+    "wigAcquired": false,
+    "griffinHpAtWigClaim": null,
+    "wigRoute": "none",
+    "offeringAccepted": false,
+    "chapter0Complete": false
+  },
+  "trace": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-mock-2026-11-07T02-00-22-033Z/griffin-prepared-return-v1-seed0/trace.jsonl"
+}

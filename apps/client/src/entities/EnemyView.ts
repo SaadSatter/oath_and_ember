@@ -60,7 +60,10 @@ export function registerEnemies(scene: Phaser.Scene) {
  * Where the Mossling's arm meets its body, per facing, from its feet (world
  * units, at its sprite's scale). Facing north the arm is behind it.
  */
-const MOSSLING_HANDS: Record<string, { x: number; y: number; behind?: boolean }> = {
+const MOSSLING_HANDS: Record<
+  string,
+  { x: number; y: number; behind?: boolean }
+> = {
   south: { x: 16, y: -22 },
   north: { x: -16, y: -24, behind: true },
   east: { x: 6, y: -22 },
@@ -233,13 +236,16 @@ export class EnemyView {
         .fillStyle(0xe86262)
         .fillRect(pos.x - 18, pos.y - 65, (36 * e.hp) / e.maxHp, 4);
     }
-    this.text
-      .setPosition(pos.x, pos.y + 16)
-      .setDepth(pos.y + 2)
-      .setVisible(debug)
-      .setText(
-        `${e.id} ${e.type}\nT${tick} ${e.state} HP${e.hp}\n→${e.targetId?.slice(0, 6) ?? "none"}`,
-      );
+    this.text.setVisible(debug);
+    // The label shows the tick, so its text changes every frame. Phaser redraws
+    // and re-uploads changed text even when hidden, so only update it in debug.
+    if (debug)
+      this.text
+        .setPosition(pos.x, pos.y + 16)
+        .setDepth(pos.y + 2)
+        .setText(
+          `${e.id} ${e.type}\nT${tick} ${e.state} HP${e.hp}\n→${e.targetId?.slice(0, 6) ?? "none"}`,
+        );
   }
   inspect() {
     return {

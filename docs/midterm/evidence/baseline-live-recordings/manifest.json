@@ -1,0 +1,52 @@
+{
+  "about": "Owner-recorded live baseline runs, linked locally. Original video files unchanged and not uploaded/committed. Save metadata claims distinguished from independent frame verification.",
+  "recordings": [
+    {
+      "label": "A \u2014 Hedge Maze",
+      "run": "evaluation-runs/live/S2-local-seed0-baseline-maze-heuristic-2026-11-06T20-12-22-947Z",
+      "video": "evaluation-runs/live/S2-local-seed0-baseline-maze-heuristic-2026-11-06T20-12-22-947Z/recording.webm",
+      "videoSha256": "07d8686dc5c9b89ab85ca76b17064e5629a9de08476a08df811a9502870a3015",
+      "bytes": 12591372,
+      "recordingMetadata": "evaluation-runs/live/S2-local-seed0-baseline-maze-heuristic-2026-11-06T20-12-22-947Z/recording.json",
+      "summary": "evaluation-runs/live/S2-local-seed0-baseline-maze-heuristic-2026-11-06T20-12-22-947Z/S2-local-seed0/summary.json",
+      "savedMetadata": "docs/midterm/evidence/baseline-live-recordings/hedge-maze-recording.json",
+      "savedSummary": "docs/midterm/evidence/baseline-live-recordings/hedge-maze-summary.json",
+      "gameSeconds": 31.5,
+      "episodeWallSeconds": 103.8,
+      "recordingWallSeconds": 116.7,
+      "speed": 1,
+      "success": true,
+      "modelCalls": 0,
+      "costUsd": 0,
+      "gitHash": "4c9cf9f",
+      "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+      "endHash": "1287b39e69747d50c98005d23dd7c6ad5757975ca9e0555e329ac6d27a611b79",
+      "readyConfirmed": true,
+      "finalConfirmed": true
+    },
+    {
+      "label": "B \u2014 Griffin and goddess return",
+      "run": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-baseline-griffin-heuristic-2026-11-06T20-15-12-709Z",
+      "video": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-baseline-griffin-heuristic-2026-11-06T20-15-12-709Z/recording.webm",
+      "videoSha256": "721437dc22e3529049a9491620178f9d75332af80ce0993bf138b0536227ef2a",
+      "bytes": 27346448,
+      "recordingMetadata": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-baseline-griffin-heuristic-2026-11-06T20-15-12-709Z/recording.json",
+      "summary": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-baseline-griffin-heuristic-2026-11-06T20-15-12-709Z/griffin-unprepared-return-v1-seed0/summary.json",
+      "savedMetadata": "docs/midterm/evidence/baseline-live-recordings/griffin-return-recording.json",
+      "savedSummary": "docs/midterm/evidence/baseline-live-recordings/griffin-return-summary.json",
+      "gameSeconds": 89.8,
+      "episodeWallSeconds": 236.2,
+      "recordingWallSeconds": 281.2,
+      "speed": 1,
+      "success": true,
+      "modelCalls": 0,
+      "costUsd": 0,
+      "gitHash": "4c9cf9f",
+      "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
+      "endHash": "a454145029bba5ad3a669aca2852a4db768536a943946be6720f43435d51275c",
+      "readyConfirmed": true,
+      "finalConfirmed": true
+    }
+  ],
+  "verification": "File existence/byte counts, SHA256, saved metadata, summary outcomes and known end hashes checked. Full video decode and terminal-frame inspection not performed in this link-only update."
+}

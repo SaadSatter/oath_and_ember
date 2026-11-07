@@ -1,0 +1,20 @@
+{
+  "suiteRevision": 2,
+  "player": "baseline-quest",
+  "situations": [
+    "S2-local"
+  ],
+  "seeds": [
+    0,
+    1
+  ],
+  "final": false,
+  "gitHash": "198ef3a+dirty",
+  "wallSeconds": 600,
+  "model": null,
+  "launch": {
+    "launcher": "scripts/midterm/situation-a.ts",
+    "speed": null,
+    "viewer": false
+  }
+}
