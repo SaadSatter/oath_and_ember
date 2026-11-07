@@ -40,7 +40,7 @@ import {
   griffinMilestones,
   milestones,
   prologueMilestones,
-  showcaseMilestones,
+  showcaseMilestones, showcaseEpisodeComplete, SHOWCASE_REQUIRED_HISTORY,
   situationCReport,
   stateHash,
   type EpisodePreset,
@@ -322,6 +322,8 @@ export class AgentEnvironment implements GameInterface {
     this.room.ready(sieg, true);
     this.room.ready(coco, true);
     if (this.room.state.phase !== "PLAYING") throw Error("Room did not start.");
+    if (this.preset === "showcase-maze-griffin-complete-v1" && this.prefix)
+      throw Error("The shrine-start showcase requires the normal goddess checkpoint with no prefix.");
     this.watchRoom(this.room);
     this.options.room?.(this.room);
     const slot = (id: PlayerId, key: string): Slot => ({
@@ -861,8 +863,21 @@ export class AgentEnvironment implements GameInterface {
     // Declared failure rules (Griffin trials) come first: a knockout in the same tick as success still fails.
     const failed = episodes[this.preset].failure?.(w, tick);
     if (failed) this.stop(failed);
-    else if (episodes[this.preset].success(w)) this.stop("success");
+    else if (episodes[this.preset].success(w) && (this.preset !== "showcase-maze-griffin-complete-v1" || showcaseEpisodeComplete(w, new Set(this.showcaseMilestoneTicks.keys())))) this.stop("success");
     else if (w.serverTick - this.startTick >= this.limits.maxTicks) this.stop("tick_limit");
+  }
+
+  /** Evaluator-only episode history. Never added to player observations. */
+  private showcaseHistory(w: World): string[] {
+    const seen = (m: string) => this.showcaseMilestoneTicks.has(m);
+    const out: string[] = SHOWCASE_REQUIRED_HISTORY.filter(seen);
+    const together = (area: string) => Object.values(w.players).length === 2 && Object.values(w.players).every(p => (p.sceneId ?? w.sceneId) === area);
+    if (w.story?.flags.includes("chapter0.goddess-meet")) out.push("showcase:0-goddess-quest-received");
+    if (seen("showcase:0-goddess-quest-received") && together("HEDGE_MAZE")) out.push("showcase:0-maze-entered");
+    if (seen("showcase:1-maze-complete") && together("GODDESS_SHRINE")) out.push("showcase:1b-returned-from-maze");
+    if (seen("showcase:1b-returned-from-maze") && together("GRIFFIN_ENCLOSURE")) out.push("showcase:1c-griffin-entered");
+    if (seen("showcase:3-wig-acquired-after-defeat") && together("GODDESS_SHRINE")) out.push("showcase:3b-returned-with-wig");
+    return [...new Set(out)];
   }
 
   /** Backpack and journal changes: both heroes see the same HUD/panels. */
@@ -928,7 +943,7 @@ export class AgentEnvironment implements GameInterface {
     // Griffin trials add evaluator-only Griffin markers; other episodes are unchanged.
     if (this.preset === "griffin-unprepared-v1") return [...milestones(w), ...griffinMilestones(w)];
     // Showcase (excluded from A/B/C): the Griffin markers plus the five ordered showcase milestones, evaluator-only.
-    if (this.preset === "showcase-maze-griffin-complete-v1") return [...milestones(w), ...griffinMilestones(w), ...showcaseMilestones(w)];
+    if (this.preset === "showcase-maze-griffin-complete-v1") return [...milestones(w), ...griffinMilestones(w), ...this.showcaseHistory(w), ...showcaseMilestones(w)];
     return milestones(w);
   }
 }

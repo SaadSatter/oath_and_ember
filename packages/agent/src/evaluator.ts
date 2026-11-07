@@ -236,12 +236,14 @@ export function situationCReport(w: World, seen: ReadonlySet<string>, griffinHpA
 export const SHOWCASE_MAZE_CHEST = "hedge-shears-chest";
 export const showcaseComplete = (w: World) => {
   const g = griffinState(w.puzzles);
-  return !!w.inventory?.claimed.includes(SHOWCASE_MAZE_CHEST) && holding(w, "enchanted_shears")
+  return has(w, FINALE.goddessMeet) && !!w.inventory?.claimed.includes(SHOWCASE_MAZE_CHEST) && holding(w, "enchanted_shears")
     && g?.hp === 0 && !!g.wigClaimed && !g.toolsTaken && shrineComplete(w) && has(w, FINALE.complete);
 };
+export const SHOWCASE_REQUIRED_HISTORY = ["showcase:0-goddess-quest-received", "showcase:0-maze-entered", "showcase:1b-returned-from-maze", "showcase:1c-griffin-entered", "showcase:3b-returned-with-wig"] as const;
+export const showcaseEpisodeComplete = (w: World, seen: ReadonlySet<string>) => showcaseComplete(w) && SHOWCASE_REQUIRED_HISTORY.every(m => seen.has(m));
 export const SHOWCASE_EPISODE: EpisodeDefinition = {
   preset: "showcase-maze-griffin-complete-v1",
-  goal: "Showcase (excluded from A/B/C): from the Hedge Maze entrance, obtain the Enchanted Shears, travel to the Griffin Enclosure, defeat the Griffin in combat, claim its wig, offer it to the goddess and reach chapter0.complete. Knockouts are recorded, not terminal.",
+  goal: "Showcase (excluded from A/B/C): from the normal Goddess Shrine checkpoint, read the Goddess greeting and quest, enter the Hedge Maze through normal travel, obtain the Enchanted Shears, travel to the Griffin Enclosure, defeat the Griffin in combat, claim its wig, offer it to the goddess and reach chapter0.complete. Knockouts are recorded, not terminal.",
   // Owner-approved 2026-11-07 (about twice the expected game time).
   limits: { maxTicks: 600 * 60, maxDecisionsPerPlayer: 4_000, maxModelCallsPerPlayer: 400, maxTokensPerPlayer: 8_000_000 },
   // No failure rule: knockouts are recorded by the environment, not terminal.

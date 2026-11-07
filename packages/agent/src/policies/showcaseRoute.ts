@@ -28,14 +28,14 @@ const cell = (x: number, y: number) => `${Math.floor(x)},${Math.floor(y)}`;
 const dirs: [number, number][] = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 const step: Record<Direction, [number, number]> = { n: [0, -1], ne: [1, -1], e: [1, 0], se: [1, 1], s: [0, 1], sw: [-1, 1], w: [-1, 0], nw: [-1, -1] };
 
-type Phase = "maze" | "travel" | "griffin";
+type Phase = "opening" | "maze" | "travel" | "griffin";
 
 /** The exit label each travel leg looks for, by area name. */
 const TRAVEL_EXIT: Record<string, RegExp> = { "Hedge Maze": /RETURN/i, "Goddess Shrine": /GRIFFIN/i };
 
 export class ShowcaseRouteBaseline implements Policy {
-  readonly name = "baseline-showcase-route-v1(maze-heuristic-v2+travel+griffin-heuristic-v1)";
-  private phase: Phase = "maze";
+  readonly name = "baseline-showcase-route-v2(shrine+maze-heuristic-v2+travel+griffin-heuristic-v1)";
+  private phase: Phase = "opening";
   private readonly maze: MazeHeuristic;
   private readonly griffin = new GriffinHeuristic();
   // Travel memory (this hero's own screens only).
@@ -46,6 +46,9 @@ export class ShowcaseRouteBaseline implements Policy {
   private exits = new Map<string, { x: number; y: number }>();
   private lastMove?: Direction;
   private presses = 0;
+  private openingSeen = false;
+  private openingLine = "";
+  private openingLineTick = 0;
 
   constructor(private readonly hero: "Sieg" | "Coco") {
     this.maze = new MazeHeuristic(hero);
@@ -53,6 +56,21 @@ export class ShowcaseRouteBaseline implements Policy {
 
   async decide(input: { observation: Observation; legal: ActionSpec[]; last?: StepResult; batch?: TurnReport }): Promise<Decision> {
     const o = input.observation;
+    // Every opening decision uses only this hero's displayed dialogue/area.
+    if (this.phase === "opening") {
+      if (o.dialogue) {
+        this.openingSeen = true;
+        const line = JSON.stringify(o.dialogue);
+        if (line !== this.openingLine) { this.openingLine = line; this.openingLineTick = o.tick; }
+        // A labelled scripted presentation choice: show opening lines for one
+        // game second using ordinary waits. No engine/cutscene timing is changed.
+        if (o.tick - this.openingLineTick < 60)
+          return { action: { type: "wait", ticks: 12 }, note: { showcasePhase: "opening", heuristic: "Read the visible opening line for one game second" } };
+      } else if (o.area.name === "Hedge Maze") this.phase = "maze";
+      else if (!this.openingSeen)
+        return { action: { type: "wait", ticks: 12 }, note: { showcasePhase: "opening", heuristic: "Wait for the normal shrine greeting" } };
+      if (this.phase === "opening") return this.travel(o, input.legal, input.last, /HEDGE|MAZE/i);
+    }
     const shears = o.inventory.items.some((i) => i.id === "enchanted_shears" && i.count > 0);
     if (this.phase === "maze" && shears) this.phase = "travel";
     if (this.phase === "travel" && o.area.name === "Griffin Enclosure") this.phase = "griffin";
@@ -62,7 +80,7 @@ export class ShowcaseRouteBaseline implements Policy {
     return tag(this.travel(o, input.legal, input.last));
   }
 
-  private travel(o: Observation, legal: ActionSpec[], last?: StepResult): Decision {
+  private travel(o: Observation, legal: ActionSpec[], last?: StepResult, exitLabel?: RegExp): Decision {
     const can = (t: GameAction["type"]) => legal.some((a) => a.type === t);
     const act = (action: GameAction, why: string): Decision => {
       this.lastMove = action.type === "move" ? action.direction : undefined;
@@ -88,7 +106,7 @@ export class ShowcaseRouteBaseline implements Policy {
     if (o.dialogue)
       return act(can("choose_dialogue") ? { type: "choose_dialogue", option: o.dialogue.choices?.[0]?.option ?? 1 } : can("advance_dialogue") ? { type: "advance_dialogue" } : { type: "wait", ticks: 12 }, "Read the dialogue on screen");
     if (!can("move")) return act({ type: "wait", ticks: 12 }, "Wait for the current action");
-    const want = TRAVEL_EXIT[o.area.name];
+    const want = exitLabel ?? TRAVEL_EXIT[o.area.name];
     if (!want) return act(this.explore(o), `Explore ${o.area.name}`);
     const exit = [...this.exits.entries()].find(([name]) => want.test(name))?.[1];
     if (!exit) return act(this.explore(o), `Search for the exit labelled ${want.source}`);

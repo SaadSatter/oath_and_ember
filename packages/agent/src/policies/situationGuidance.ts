@@ -127,8 +127,9 @@ export const C_INVENTORY_NEST_HINT = "Additional guidance for this task:\nBefore
  * unchanged. Drafted by the implementation agent; the owner may tune it.
  */
 export const SHOWCASE_PHASE_PLAN = [
-  "Showcase plan for both heroes (a demonstration of the whole remaining quest in one run). Work through these four phases in order. Decide which phase you are in only from what the screens, the area name, the shared backpack, the labels and the dialogue show, never from elapsed time or from an order having been accepted. Keep the current phase and the evidence for it in the plan.",
+  "Showcase plan for both heroes (a demonstration of the connected quest from the Bald Goddess Shrine in one run). Work through these five phases in order. Decide which phase you are in only from what the screens, the area name, the shared backpack, the labels and the dialogue show, never from elapsed time or from an order having been accepted. Keep the current phase and the evidence for it in the plan.",
   "Health, in every phase: treat both heroes' health as scarce and do not expect it to come back on its own. Avoid damage that does not advance the objective: deal with enemies from a safe angle, defend or step aside when a visible attack is coming, and do not walk through hazards that can be avoided. Keep each hero's current health in the plan. If a hero is knocked out, read where that hero is now and its health, bring the two heroes back together, and continue the current phase; do not redo phases already completed.",
+  "Phase 0, Goddess Shrine: both heroes begin at the normal shrine checkpoint. Encounter the Goddess and read and answer her entire opening dialogue, including the quest request, before departing. Use only the visible dialogue choices and normal movement and interactions. Then find the shrine exit labelled for the Hedge Maze and use it normally; confirm the area name changes to Hedge Maze. Do not skip the opening or assume a quest has already been received.",
   "Phase 1, Hedge Maze: the two heroes cooperate to get through the maze and obtain the Enchanted Shears. Give Coco the environmental obstacles her fire, pull or flight can affect; give Sieg the enemies, gates and anything that must be chased, struck, pushed or reached quickly. When one hero clears a way, send the other through it. Preserve health here: the Griffin fight comes later with whatever health the heroes still have. Phase 1 ends only when the shared backpack lists the Enchanted Shears.",
   "Phase 2, travel: leave the maze through its RETURN exit. At the Goddess Shrine, take the exit marked for the Griffin. Travel only through ordinary exits; do not visit other areas. Keep both heroes together and avoid damage on the way. Before entering the Griffin Enclosure, note both heroes' health in the plan and decide each hero's role from it: the healthier hero takes the more exposed role.",
   "Phase 3, Griffin combat: defeat the Griffin in combat until its label shows it defeated. Coco attacks from range; Sieg protects himself, keeps clear of the beam line Coco is using, and strikes when the Griffin is in his reach. Fight defensively: before each attack, check whether a visible warning covers either hero and move or defend first; keep the two heroes apart so one attack cannot hit both; give a hero with low health a safer role. Follow the combat guidance below. While the Griffin is alive, do not go to its nest or use any backpack item there: this demonstration requires the combat route.",
@@ -139,9 +140,8 @@ export const SITUATION_GUIDANCE: Readonly<Record<string, SituationGuidance>> = O
   "showcase-maze-griffin-v1": Object.freeze({
     id: "showcase-maze-griffin-v1",
     situations: Object.freeze(["showcase-maze-griffin-complete-v1"] as SituationId[]),
-    // Owner final authorization 2026-11-07, session 01a1b479: one exact showcase attempt.
-    status: "approved",
-    approvedSha256: "7f3203b954001d9e302b154cc77423cdb8fe36f63e4434c7a9ac7fc4a33d2166",
+    // Shrine-start revision: requires new exact-hash owner authorization.
+    status: "proposed",
     provenance: "Showcase-only phase plan drafted by the implementation agent (2026-11-07) at the owner's request, followed by the unchanged, owner-approved b-post-combined-v4 text. Prompt-tuned demonstration; excluded from the A/B/C evaluation.",
     text: `${SHOWCASE_PHASE_PLAN}\n\n${B_POST_COMBINED_V4}`,
   }),

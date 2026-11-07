@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import type { GameRoom } from "../../../apps/server/src/GameRoom.js";
 import { ABC_SITUATIONS, environmentFor, SHOWCASE_SITUATIONS, SITUATIONS, situation } from "../src/suite.js";
-import { episodes, showcaseComplete } from "../src/evaluator.js";
+import { episodes, showcaseComplete, showcaseEpisodeComplete, SHOWCASE_REQUIRED_HISTORY } from "../src/evaluator.js";
 import { EPISODE_CAP_USD, OBS_ONLY_SITUATIONS, runSuite, SHOWCASE_WALL_CLOCK_CEILING, validatePlan, checkWallSeconds, type ModelSetup } from "../src/harness.js";
 import { SHOWCASE, SHOWCASE_GUIDANCE_ID, SHOWCASE_HASH, SHOWCASE_ID, SHOWCASE_PAID_APPROVED } from "../src/showcase.js";
 import { CentralPlanner } from "../src/policies/centralized.js";
@@ -24,10 +24,10 @@ import { MockGateway } from "../src/policies/mockGateway.js";
 const root = fileURLToPath(new URL("../../..", import.meta.url));
 const manual = readFileSync(join(root, "manual/Oath_and_Ember_Player_Manual.md"), "utf8");
 /** S2-A (S2-local, version 2) start hashes, seeds 0 and 1 (SITUATION_A.md). */
-const S2A_START = { 0: "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca", 1: "febddd1a479ac6f2" };
-const GUIDANCE_SHA = "7f3203b954001d9e302b154cc77423cdb8fe36f63e4434c7a9ac7fc4a33d2166";
-const PROMPT_SHA = "59e46825cefa03608f7481c681b625f6204e13c2156eb6f66cb1a6b7f18183c7";
-const BASELINE_END_SEED0 = "2678c3a03c7d38e0ac1cd7e9088398d41b6e74d529fb8712e85782658ca30647";
+const SHRINE_START = { 0: "9d565ae90d161cc9e79979e0b9b66b1c5499d5a22e5292ba10ca271bda12cb50", 1: "f18052b4e9d452c9cb5251d3b34739292b833f0b79f3c4e9562b944d8a05bb21" };
+const GUIDANCE_SHA = "32836d8f85b7228e3bc83f1b8aae7a7b9e8e602dc1e72aa3d15949cdb595b439";
+const PROMPT_SHA = "8ce07fb23b81781f7fb66456458538e046d9ba0b65ebc777d77bb42651951a7d";
+const BASELINE_END_SEED0 = "c0e8e3551152d57d9bc861b83daccfab28df1620bad672125f7aac534ccee563";
 const mock = { gateway: new MockGateway(0, 0), stage: "pilot" } as unknown as ModelSetup;
 const paidLike = (label = "openai:gpt-6-luna@medium") => ({ gateway: { label }, stage: "pilot", maxBatch: 4, guidance: SHOWCASE_GUIDANCE_ID }) as unknown as ModelSetup;
 const gateways = () => {
@@ -42,9 +42,9 @@ describe("showcase definition", () => {
     expect(ABC_SITUATIONS.some((s) => s.id === SHOWCASE_ID)).toBe(false);
     expect(SHOWCASE.officialEvaluation).toBe(false);
     expect(SHOWCASE.disclosure).toMatch(/excluded from official A\/B\/C evaluation/);
-    expect(SHOWCASE_HASH).toMatch(/^[0-9a-f]{64}$/);
-    // Same prefix as S2-A, no fixture.
-    expect(situation(SHOWCASE_ID).prefix!.name).toBe(situation("S2-local").prefix!.name);
+    expect(SHOWCASE_HASH).toBe("ae094af70c5a6f75487f0621bfe37f336b8f93adf0865e5334e0f690eeabef39");
+    // No prefix: normal shrine checkpoint, no fixture.
+    expect(situation(SHOWCASE_ID).prefix).toBeUndefined();
     expect(SHOWCASE.start.fixture).toBe("none");
   });
 
@@ -68,19 +68,25 @@ describe("showcase definition", () => {
 });
 
 describe("showcase start", () => {
-  it("is S2-A's authoritative start exactly, at seeds 0 and 1, and resets identically", async () => {
+  it("refuses a hidden start prefix so opening actions cannot happen outside this episode", async () => {
+    const { AgentEnvironment } = await import("../src/environment.js");
+    const env = new AgentEnvironment({ preset: SHOWCASE_ID, prefix: { name: "forbidden setup", run: async () => { throw Error("must not run"); } } });
+    await expect(env.reset(0)).rejects.toThrow(/normal goddess checkpoint with no prefix/);
+  });
+  it("is the normal goddess checkpoint with no opening prefix and resets identically", async () => {
     const env = environmentFor(SHOWCASE_ID);
     const a = await env.reset(0);
-    expect(a.startHash).toBe(S2A_START[0]);
+    expect(a.startHash).toBe(SHRINE_START[0]);
     const again = await env.reset(0);
     expect(again.startHash).toBe(a.startHash);
-    const s2a = await environmentFor("S2-local").reset(0);
-    expect(s2a.startHash).toBe(a.startHash);
+    const shrine = await environmentFor("S1").reset(0);
+    expect(shrine.startHash).toBe(a.startHash);
+    expect(a.tick).toBe(0);
     const one = await environmentFor(SHOWCASE_ID).reset(1);
-    expect(one.startHash.startsWith(S2A_START[1])).toBe(true);
+    expect(one.startHash.startsWith(SHRINE_START[1])).toBe(true);
     for (const id of ["sieg", "coco"] as const) {
       const o = await env.observe(id);
-      expect(o.area.name).toBe("Hedge Maze");
+      expect(o.area.name).toBe("Goddess Shrine");
       expect(o.self.hp).toBe(100);
       expect(o.inventory.items.filter((i) => /^(vanity_mirror|enchanted_shears|griffin_wig)$/.test(i.id) && i.count > 0)).toEqual([]);
     }
@@ -88,10 +94,10 @@ describe("showcase start", () => {
 });
 
 describe("showcase guidance", () => {
-  it("is owner-approved for its exact pinned text, and contains the approved v4 text unchanged", () => {
+  it("is proposed for new exact-hash owner approval, and contains the approved v4 text unchanged", () => {
     const g = guidance(SHOWCASE_GUIDANCE_ID);
-    expect(g.status).toBe("approved");
-    expect(guidanceApproved(g)).toBe(true);
+    expect(g.status).toBe("proposed");
+    expect(guidanceApproved(g)).toBe(false);
     expect(g.situations).toEqual([SHOWCASE_ID]);
     expect(guidanceHash(g.text)).toBe(GUIDANCE_SHA);
     const v4 = guidance("b-post-combined-v4").text;
@@ -109,7 +115,7 @@ describe("showcase guidance", () => {
     expect(t).not.toMatch(/cow|wolf|hedge is|burn|black hole|key/i);
     expect(t).not.toMatch(/mirror|groom/i);
     expect(t).toMatch(/do not go to its nest or use any backpack item there/);
-    expect(t).toMatch(/Phase 1[\s\S]*Phase 2[\s\S]*Phase 3[\s\S]*Phase 4/);
+    expect(t).toMatch(/Phase 0[\s\S]*Phase 1[\s\S]*Phase 2[\s\S]*Phase 3[\s\S]*Phase 4/);
     // The owner's health-aware refinement (2026-11-07): before and during combat, and recovery after a knockout.
     expect(t).toMatch(/Health, in every phase/);
     expect(t).toMatch(/Before entering the Griffin Enclosure, note both heroes' health/);
@@ -128,9 +134,9 @@ describe("showcase guidance", () => {
 });
 
 describe("showcase run rules", () => {
-  it("admits the exact owner-approved paid scope; allows mock and its own baseline only", () => {
-    expect(SHOWCASE_PAID_APPROVED).toBe(true);
-    expect(() => validatePlan({ player: "model-centralized", situations: [SHOWCASE_ID], seeds: [0], model: paidLike() })).not.toThrow();
+  it("refuses paid runs pending new owner approval; allows mock and its own baseline only", () => {
+    expect(SHOWCASE_PAID_APPROVED).toBe(false);
+    expect(() => validatePlan({ player: "model-centralized", situations: [SHOWCASE_ID], seeds: [0], model: paidLike() })).toThrow(/locked/);
     expect(() => validatePlan({ player: "model-centralized", situations: [SHOWCASE_ID], seeds: [0], model: { ...mock, guidance: SHOWCASE_GUIDANCE_ID } as ModelSetup })).not.toThrow();
     expect(() => validatePlan({ player: "baseline-showcase-route", situations: [SHOWCASE_ID], seeds: [0] })).not.toThrow();
     expect(() => validatePlan({ player: "baseline-maze-heuristic", situations: [SHOWCASE_ID], seeds: [0] })).toThrow(/runs only/);
@@ -147,7 +153,7 @@ describe("free scripted baseline: the whole continuous route", () => {
     let room!: GameRoom;
     const [s] = await runSuite({ player: "baseline-showcase-route", situations: [SHOWCASE_ID], seeds: [0], outDir: out, gitHash: "test", environment: { room: (r) => (room = r) } });
     expect(s.reason).toBe("success");
-    expect(s.startHash).toBe(S2A_START[0]);
+    expect(s.startHash).toBe(SHRINE_START[0]);
     expect(s.endHash).toBe(BASELINE_END_SEED0);
     expect(s.invalidActions).toEqual({ sieg: 0, coco: 0 });
     expect(s.modelCalls.attempted).toBe(0);
@@ -161,6 +167,13 @@ describe("free scripted baseline: the whole continuous route", () => {
     // removing any one step makes the predicate fail.
     const w = room.state;
     expect(showcaseComplete(w)).toBe(true);
+    const seen = new Set(SHOWCASE_REQUIRED_HISTORY);
+    expect(showcaseEpisodeComplete(w, seen)).toBe(true);
+    for (const m of SHOWCASE_REQUIRED_HISTORY) {
+      const missing = new Set<string>(seen); missing.delete(m);
+      expect(showcaseEpisodeComplete(w, missing), `Missing episode history ${m}`).toBe(false);
+    }
+    expect(lines.some(l => l.type === "observation" && /showcase:0-|showcase:1b-/.test(JSON.stringify(l.data)))).toBe(false);
     const copy = () => structuredClone(w);
     const g = (x: typeof w) => x.puzzles.griffin!.griffin!;
     const variants: [string, (x: typeof w) => void][] = [
@@ -169,6 +182,7 @@ describe("free scripted baseline: the whole continuous route", () => {
       ["tools taken (peaceful grooming)", (x) => { g(x).toolsTaken = true; }],
       ["maze chest not claimed", (x) => { x.inventory!.claimed = x.inventory!.claimed.filter((c) => c !== "hedge-shears-chest"); }],
       ["shears not held", (x) => { x.inventory!.counts.enchanted_shears = 0; }],
+      ["no opening Goddess quest", (x) => { x.story!.flags = x.story!.flags.filter((f) => f !== "chapter0.goddess-meet"); }],
       ["no chapter0.complete", (x) => { x.story!.flags = x.story!.flags.filter((f) => f !== "chapter0.complete"); }],
     ];
     for (const [why, edit] of variants) {
@@ -182,7 +196,7 @@ describe("free scripted baseline: the whole continuous route", () => {
 describe("knockout recovery under the game's own rules (certification probe, not a result)", () => {
   it("a real knockout respawns the hero at full health in the same area, keeps progress, backpack and Griffin, and the episode continues to chapter0.complete", async () => {
     const r = await runShowcaseKnockoutProbe(0);
-    expect(r.startHash).toBe(S2A_START[0]);
+    expect(r.startHash).toBe(SHRINE_START[0]);
     expect(r.probe.stage).toBe("recovered");
     expect(r.report.knockoutsByHero.coco).toBeGreaterThanOrEqual(1);
     const first = r.report.events[0];
@@ -200,7 +214,7 @@ describe("knockout recovery under the game's own rules (certification probe, not
     expect(after.mazeProgress).toMatchObject({ burned: true, wolfCaught: true, gateComplete: true });
     expect(after.claimed).toContain("hedge-shears-chest");
     // Not terminal: play went on and every later milestone was reached.
-    expect(first.milestonesReachedAfter).toEqual(["showcase:2-griffin-defeated", "showcase:3-wig-acquired-after-defeat", "showcase:4-offering-accepted", "showcase:5-chapter0-complete"]);
+    expect(first.milestonesReachedAfter).toEqual(["showcase:2-griffin-defeated", "showcase:3-wig-acquired-after-defeat", "showcase:3b-returned-with-wig", "showcase:4-offering-accepted", "showcase:5-chapter0-complete"]);
     expect(r.outcome.reason).toBe("success");
     // The evaluator's knockout records never reach a player: no observation or legal list mentions them.
     expect(r.observationLinesMentioningShowcase).toBe(0);

@@ -5,7 +5,7 @@
 //   node --import tsx scripts/midterm/showcase.ts [--evidence <dir>]
 //
 // Prints and (with --evidence) writes: the definition hash, the start hashes
-// at seeds 0 and 1 compared with S2-A's, the guidance text and hash, and the
+// at seeds 0 and 1 compared with the normal shrine checkpoint's, the guidance text and hash, and the
 // planner's full system prompt and hash for the proposed paid configuration.
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -29,8 +29,8 @@ const starts: Record<string, unknown> = {};
 for (const seed of [0, 1]) {
   const show = await environmentFor(SHOWCASE_ID).reset(seed);
   const again = await environmentFor(SHOWCASE_ID).reset(seed);
-  const s2a = await environmentFor("S2-local").reset(seed);
-  starts[seed] = { startHash: show.startHash, episode: show.episode, repeatIdentical: again.startHash === show.startHash, s2aStartHash: s2a.startHash, sameAsS2A: s2a.startHash === show.startHash, tick: show.tick };
+  const shrine = await environmentFor("S1").reset(seed);
+  starts[seed] = { startHash: show.startHash, episode: show.episode, repeatIdentical: again.startHash === show.startHash, shrineCheckpointStartHash: shrine.startHash, sameAsNormalShrineCheckpoint: shrine.startHash === show.startHash, tick: show.tick };
 }
 
 const manual = readFileSync(join(repo.root, "manual/Oath_and_Ember_Player_Manual.md"), "utf8");

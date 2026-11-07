@@ -258,25 +258,18 @@ export const ABC_SITUATIONS: readonly Situation[] = Object.freeze([
   },
 ]);
 
-/**
- * Prompt-tuned continuous showcase (docs/midterm/SHOWCASE_CONTINUOUS_EPISODE.md).
- * A demonstration for the submission recording, EXCLUDED from the official
- * A/B/C evaluation. Kept apart from SITUATIONS and ABC_SITUATIONS so neither
- * frozen list changes. Its start is S2-A's exactly (the same ordinary prefix,
- * so the same authoritative start state): the Hedge Maze entrance, puzzle
- * pristine, no Mirror, Shears or wig. No fixture.
- */
+/** Showcase revision 3: normal goddess checkpoint, no prefix or fixture. Excluded from A/B/C. */
 export const SHOWCASE_BRIEFING = [
-  "Episode briefing (continuous quest), the same for both players: you start at the entrance of the Hedge Maze.",
-  "This episode is the rest of the quest in one continuous run: obtain the Enchanted Shears in the Hedge Maze, travel to the Griffin Enclosure, defeat the Griffin in combat, take the Magnificent Griffin Wig, bring it to the Goddess as an offering, and follow the story until Chapter 0 is complete.",
-  "Protect both heroes' health throughout. A knockout does not end the episode, but it costs time and position: the game moves the knocked-out hero, and the party must regroup and carry on with the current objective.",
-  "Use your normal observations, actions and messages to your partner.",
+  "Episode briefing (continuous quest), the same for both players: both heroes start at the Bald Goddess Shrine, before the Goddess's greeting.",
+  "Read and answer the opening shrine dialogue to learn the quest. Then travel through ordinary exits to the Hedge Maze, obtain the Enchanted Shears cooperatively, return to the shrine, take the Griffin trail, defeat the Griffin in combat, collect the wig, return and offer it to the Goddess, and follow the story until Chapter 0 is complete.",
+  "Protect both heroes' health throughout. A knockout does not end the episode: regroup using the normal game recovery and continue the current objective.",
+  "Use only normal observations and legal actions.",
 ].join(" ");
-export const SHOWCASE_TASK = "Complete the rest of the quest in one continuous run: the Enchanted Shears from the Hedge Maze, then defeat the Griffin in combat, claim its wig, offer it to the goddess and complete Chapter 0. Protect both heroes' health; if a hero is knocked out, regroup and continue.";
+export const SHOWCASE_TASK = "Complete the connected quest from the Bald Goddess Shrine: first encounter the Goddess and read the opening quest dialogue, then enter the Hedge Maze through its normal shrine exit and obtain the Enchanted Shears, return to the shrine, travel along the Griffin trail, defeat the Griffin through combat and collect its wig, then return, offer the wig and read the finale to Chapter 0 completion. Regroup after normal knockout recovery when needed.";
 export const SHOWCASE_SITUATIONS: readonly Situation[] = Object.freeze([
-  { id: "showcase-maze-griffin-complete-v1", preset: "showcase-maze-griffin-complete-v1", heldOut: false, title: "Showcase: Hedge Maze to Griffin to Goddess (demonstration, excluded from A/B/C)",
-    start: "Hedge Maze entrance, after the opening and ordinary travel (S2-A's start); no Mirror, Shears or wig",
-    prefix: localEntry("Hedge Maze"), briefing: SHOWCASE_BRIEFING, tutorial: TUTORIAL_BRIEFING, task: SHOWCASE_TASK, revision: 2 },
+  { id: "showcase-maze-griffin-complete-v1", preset: "showcase-maze-griffin-complete-v1", heldOut: false, title: "Showcase: Goddess Shrine connected quest (demonstration, excluded from A/B/C)",
+    start: "Normal goddess checkpoint: both heroes at the Bald Goddess Shrine before the greeting; no prefix, Mirror, Shears or wig",
+    briefing: SHOWCASE_BRIEFING, tutorial: TUTORIAL_BRIEFING, task: SHOWCASE_TASK, revision: 3 },
 ]);
 
 /**
