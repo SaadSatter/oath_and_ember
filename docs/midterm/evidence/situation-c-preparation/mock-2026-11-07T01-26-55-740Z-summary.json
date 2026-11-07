@@ -1,0 +1,147 @@
+{
+  "situation": "griffin-prepared-return-v1",
+  "suiteRevision": 2,
+  "scenario": {
+    "preset": "griffin-prepared-return-v1",
+    "title": "Griffin Trial Prepared, return offering (C)",
+    "goal": "Situation C: holding the Vanity Mirror and Enchanted Shears, obtain the Griffin's wig (by defeat or by the nest tools), return it to the goddess and reach chapter0.complete without a hero knockout.",
+    "revision": 1,
+    "tutorialId": "2ec2f251",
+    "briefing": true
+  },
+  "seed": 0,
+  "player": "model-centralized",
+  "policies": {
+    "sieg": "centralized-f0592888(mock:random-legal@0)·batch4·tutorial-2ec2f251·briefing-63b9fbdc·guidance-12874542",
+    "coco": "centralized-f0592888(mock:random-legal@0)·batch4·tutorial-2ec2f251·briefing-63b9fbdc·guidance-12874542"
+  },
+  "gateway": "mock:random-legal@0",
+  "modelIds": [
+    "mock"
+  ],
+  "gitHash": "9f4ac38+dirty",
+  "startHash": "28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7",
+  "startTick": 540,
+  "prefix": "B-return start, then Mirror and Shears added to the backpack (owner-approved start fixture)",
+  "status": "terminated",
+  "reason": "error",
+  "success": false,
+  "gameTicks": 1955,
+  "gameSeconds": 32.6,
+  "wallSeconds": 0.7,
+  "decisions": {
+    "sieg": 66,
+    "coco": 65
+  },
+  "actions": {
+    "sieg": {
+      "wait": 62,
+      "ability": 1,
+      "move": 3
+    },
+    "coco": {
+      "move": 4,
+      "wait": 61
+    }
+  },
+  "attempt": 1,
+  "endHash": "d8e9d041f3ccc0dce326a8534c48ab2c82fce2b3caa42bbf51c9aef986a5258f",
+  "limits": {
+    "maxTicks": 18000,
+    "maxDecisionsPerPlayer": 1600,
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000
+  },
+  "modelLimits": {
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000,
+    "maxSpendUsd": 0.75,
+    "callTimeoutMs": 30000
+  },
+  "invalidActions": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "metrics": {
+    "sieg": {
+      "modelCalls": 5,
+      "modelDecisions": 2,
+      "parseFailures": 3,
+      "recoveredReplies": 0,
+      "proposedActions": 2,
+      "submittedActions": 66,
+      "executedActions": 66,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 0
+    },
+    "coco": {
+      "modelCalls": 4,
+      "modelDecisions": 3,
+      "parseFailures": 6,
+      "recoveredReplies": 0,
+      "proposedActions": 4,
+      "submittedActions": 65,
+      "executedActions": 65,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 0
+    }
+  },
+  "metricsVersion": 2,
+  "messages": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "batchStops": 0,
+  "modelCalls": {
+    "attempted": 9,
+    "failed": 0,
+    "timedOut": 0,
+    "unknownUsage": 0
+  },
+  "latencyMs": {
+    "mean": 0,
+    "max": 1
+  },
+  "tokens": {
+    "input": 37671,
+    "output": 231,
+    "cacheRead": 0,
+    "cacheWrite": 0
+  },
+  "spendUsd": {
+    "known": 0,
+    "charged": 0
+  },
+  "priceSource": "mock: no cost, no network",
+  "ledgerEntry": "pilot-1",
+  "episodeCapUsd": 0.75,
+  "wallLimitSeconds": 3600,
+  "launch": {
+    "launcher": "scripts/midterm/live.ts",
+    "speed": null,
+    "viewer": false
+  },
+  "finalClaim": null,
+  "evaluation": {
+    "label": "C",
+    "definitionHash": "d563c6eb948063a6d4e0c854fa5eed3ef957b592530b67c806df71ca1ab3ba11"
+  },
+  "promptHashes": {
+    "sieg": "be19b8b5e9c350ecaf7ff7f4a478b3ca96bb1b3864d2527744823e2908548db8",
+    "coco": "be19b8b5e9c350ecaf7ff7f4a478b3ca96bb1b3864d2527744823e2908548db8"
+  },
+  "configHash": "6e7be0779a0697e33e4d26c8ed476985f82d6685198eb0a8961ba603d6efaf0c",
+  "guidance": {
+    "id": "b-post-combined-v4",
+    "status": "approved",
+    "sha256": "1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34",
+    "situations": [
+      "griffin-unprepared-v1",
+      "griffin-unprepared-return-v1",
+      "griffin-prepared-return-v1"
+    ]
+  },
+  "trace": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-mock-2026-11-07T01-26-55-740Z/griffin-prepared-return-v1-seed0/trace.jsonl"
+}
