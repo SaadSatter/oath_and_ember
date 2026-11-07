@@ -48,7 +48,15 @@
     "reason": "Owner brief 2026-11-06: reuse a general observation-only baseline unchanged; replaces r9's fallback to the solution-aware baseline-quest for C. No C-specific branch.",
     "knowledge": "Same as B: generic combat, organic pull, visible labels, remembered map/feedback, normal interactions. It interacts with the nest only after a visible defeat, so it never takes the peaceful route; it does not reason about the Mirror or Shears.",
     "freeOfflineResult": "Unregistered preparation runs at the C commit: 3/3 success (seed 0 twice, seed 1), 89.8 game-s, 0 invalid actions, 0 model calls; see docs/midterm/evidence/situation-c-preparation/summary.json",
-    "status": "proposed for C2"
+    "status": "proposed for C2",
+    "alternativeCandidate": {
+     "policyId": "baseline-inventory-heuristic-v1",
+     "source": "packages/agent/src/policies/inventoryHeuristic.ts",
+     "commit": "4f9695b",
+     "author": "concurrent session (committed to this branch while r10 was prepared); proposal docs/midterm/evaluation-abc/proposed/baseline-inventory-v1.json",
+     "difference": "Coco matches owned item names/descriptions to observed targets and delivers them, so it would try the peaceful route; its own document says it was developed with knowledge of the prepared inventory setup.",
+     "status": "not run on C by the implementation agent; owner chooses C2 between the two before any C run"
+    }
    }
   }
  },
@@ -244,7 +252,8 @@
    "C success = wig claimed by any route + offering + chapter0.complete; no knockout; leaving the enclosure allowed (r9: Griffin HP 0 + wig, enclosure boundary, no return)",
    "C prompt = tutorial + new C briefing (draft) for both C1 and C3; C3 adds v4 unchanged",
    "C2 = baseline-griffin-heuristic-v1 unchanged (r9 fell back to baseline-quest)",
-   "Existing B pin tests verify the 2791bce run path from git history (owner approved)"
+   "Existing B pin tests verify the 2791bce run path from git history (owner approved)",
+   "OPEN: C2 policy, baseline-griffin-heuristic-v1 (unchanged B baseline, proposed here) or baseline-inventory-heuristic-v1 (4f9695b)"
   ],
   "consequences": [
    "C and B-return now share start state (except the two items), limits, knockout rule and end point (chapter0.complete); they differ in the items, the Griffin-defeat requirement (B only) and the prompt framing (B-return: task line, no tutorial/briefing; C: tutorial + briefing). B vs C is therefore not an inventory-only contrast.",
@@ -254,5 +263,5 @@
   ],
   "disclosure": "Decided before any C model outcome. The unchanged baseline's C outcome is known from free preparation runs (3/3 success); no model policy was changed after it."
  },
- "declarationSha256": "6e38e3d6e34580959ff0c3e65d7d29fc16489ab4af8d076865eaaf800c02252b"
+ "declarationSha256": "30b92864ac893fa1add28c93c8eec81db9ed3e27490d971cdfe11b99c2916231"
 }

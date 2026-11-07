@@ -94,6 +94,8 @@ Verified in `apps/server/src/griffin.ts` and by tests (`packages/agent/test/grif
 
 These runs were made to certify the scenario. They are not the registered C2 cell, which should be a fresh free run at the approved commit. Identical deterministic repeats are not independent evidence.
 
+**Open choice for the owner:** while this work was in progress, a concurrent session committed `baseline-inventory-heuristic-v1` (`4f9695b`, [SITUATION_C_HEURISTIC_BASELINE.md](SITUATION_C_HEURISTIC_BASELINE.md)) as a C2 candidate. It delivers held items to matching observed targets, so it would try the peaceful route, and its own document says it was developed with knowledge of the prepared inventory setup. The implementation agent has not run it on C. Proposed r10 names the unchanged B baseline and lists the other as an alternative. One of them must be chosen before any C run.
+
 ## Mock model episodes (launcher checks, not results)
 
 `npm run eval:live -- --scenario griffin-prepared-return-v1 --seed 0 --player model-centralized [--guidance b-post-combined-v4] --gateway mock --no-viewer`. The mock gateway picks random legal actions and costs $0.
