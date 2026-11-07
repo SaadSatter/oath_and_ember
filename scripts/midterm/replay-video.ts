@@ -112,6 +112,28 @@ if (!checkOnly) {
   if (recorder.result.status === "failed") fail(`recording failed to start: ${recorder.result.error}`);
 }
 
+// ── Game-clock pacing (2026-11-07) ───────────────────────────────────────────
+// The viewer's pacer waits between ticks while every hero has an action
+// running, so the tick on which one action ends and the next begins is not
+// waited for. In a live run that is right (game time is frozen while a hero
+// decides). In a replay there is no deciding, so those skipped waits add up:
+// a 141.7 game-s episode played in about 132 s. Here each tick is scheduled
+// on one absolute clock, start + ticks / (60 × speed), so the video's length
+// equals game time / speed. Only wall-clock waiting changes; the ticks, their
+// order and every hash are the same (the replay check still compares them).
+let clockStart: number | undefined;
+let clockTicks = 0;
+let clockEnd: number | undefined;
+const tickMs = 1000 / 60 / speed;
+const gameClockPace = async () => {
+  const elapsedTicks = env.currentTick() - startTick;
+  if (clockStart === undefined) clockStart = performance.now() - elapsedTicks * tickMs;
+  clockTicks = elapsedTicks;
+  const wait = clockStart + elapsedTicks * tickMs - performance.now();
+  await new Promise<void>((r) => (wait > 1 ? setTimeout(r, wait) : setImmediate(r)));
+  clockEnd = performance.now();
+};
+
 // ── Replay ───────────────────────────────────────────────────────────────────
 const mismatches: string[] = [];
 const got: Record<PlayerId, (string | null)[]> = { sieg: [], coco: [] };
@@ -145,12 +167,12 @@ const env = environmentFor(scenario, {
       viewer.status.gameSeconds = Math.max(0, (e.tick - startTick) / 60);
     }
   },
-  ...(viewer ? { ...viewer.hooks, ...(recorder ? { ready: () => recorder!.ready() } : {}) } : {}),
+  ...(viewer ? { ...viewer.hooks, pace: gameClockPace, ...(recorder ? { ready: () => recorder!.ready() } : {}) } : {}),
   // An external stop that came while game time was running: stop between the same ticks.
   ...(externalStop
     ? {
         pace: async () => {
-          await viewer?.hooks.pace?.();
+          if (viewer) await gameClockPace();
           if (env.currentTick() >= externalStop.tick) env.stop(externalStop.reason as never);
         },
       }
@@ -202,6 +224,8 @@ if (recorder && viewer) {
   writeFileSync(join(out, RECORDING_META), JSON.stringify({
     kind: "replay", source: { trace: relative(repo.root, resolve(tracePath)), sha256: traceSha, ledgerEntry, gitHash: summary.gitHash ?? null },
     scenario, seed, player: summary.player ?? null, speed, gitHash: version, passive: true, modelCalls: 0,
+    // Game-clock pacing: measured wall time of the paced episode against its game time.
+    pacing: { method: "game-clock", pacedTicks: clockTicks, gameSeconds: clockTicks / 60, wallSeconds: clockStart !== undefined && clockEnd !== undefined ? Math.round((clockEnd - clockStart) / 10) / 100 : null },
     matchesTrace: matched, mismatches, endHash: gotTerminal?.hash ?? null, endReason: gotTerminal?.reason ?? null, episodeTicks: end.ticks,
     status: r.status, path: r.path, relativePath: r.path ? relative(repo.root, r.path) : null, bytes: r.bytes,
     resolution: `${r.size.width}x${r.size.height}`, browser: r.browser, readyConfirmed: r.readyConfirmed, finalConfirmed: r.finalConfirmed,
