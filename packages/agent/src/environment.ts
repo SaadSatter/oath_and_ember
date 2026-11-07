@@ -267,6 +267,7 @@ export class AgentEnvironment implements GameInterface {
   private seenMilestones = new Set<string>();
   private wigClaimGriffinHp: number | null = null;
   private itemDeliveryGriffinHp: number | null = null;
+  private mirrorDeliveryGriffinHp: number | null = null;
   private lastBag = "";
   private lastJournal = "";
   private lastWorld: WorldSnapshot = { hedgeBurned: null, cow: null };
@@ -378,6 +379,7 @@ export class AgentEnvironment implements GameInterface {
     this.seenMilestones = new Set();
     this.wigClaimGriffinHp = null;
     this.itemDeliveryGriffinHp = null;
+    this.mirrorDeliveryGriffinHp = null;
     const startHash = this.hash();
     this.episodeId = `${this.preset}-${seed}-${startHash.slice(0, 8)}`;
     this.lastMilestones = new Set(this.progress(this.room.state));
@@ -508,13 +510,13 @@ export class AgentEnvironment implements GameInterface {
     this.trace("terminal", { reason, milestones: this.progress(this.room.state), hash: this.hash() });
     for (const s of Object.values(this.slots)) this.release(s, `Episode ended: ${reason}.`);
   }
-  /** Evaluator-only progress report. Never pass this to a player. */
-  /** Situation C only: descriptive route metrics for the summary (evaluator.ts situationCReport); null elsewhere. */
+  /** Situation C only: descriptive route metrics for the summary (evaluator.ts situationCReport); null elsewhere. Never pass this to a player. */
   situationCReport() {
     if (this.preset !== "griffin-prepared-return-v1") return null;
-    return situationCReport(this.room.state, this.seenMilestones, this.wigClaimGriffinHp, this.itemDeliveryGriffinHp, this.reason);
+    return situationCReport(this.room.state, this.seenMilestones, this.wigClaimGriffinHp, this.itemDeliveryGriffinHp, this.mirrorDeliveryGriffinHp, this.reason);
   }
 
+  /** Evaluator-only progress report. Never pass this to a player. */
   evaluatorReport() {
     return {
       milestones: this.progress(this.room.state),
@@ -820,6 +822,7 @@ export class AgentEnvironment implements GameInterface {
     const g = w.puzzles.griffin?.griffin;
     if (this.preset === "griffin-prepared-return-v1" && g?.wigClaimed && this.wigClaimGriffinHp === null) this.wigClaimGriffinHp = g.hp;
     if (this.preset === "griffin-prepared-return-v1" && (g?.mirrorDelivered || g?.shearsDelivered) && this.itemDeliveryGriffinHp === null) this.itemDeliveryGriffinHp = g.hp;
+    if (this.preset === "griffin-prepared-return-v1" && g?.mirrorDelivered && this.mirrorDeliveryGriffinHp === null) this.mirrorDeliveryGriffinHp = g.hp;
     // Declared failure rules (Griffin trials) come first: a knockout in the same tick as success still fails.
     const failed = episodes[this.preset].failure?.(w, tick);
     if (failed) this.stop(failed);

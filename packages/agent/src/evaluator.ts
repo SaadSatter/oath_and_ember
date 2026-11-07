@@ -176,11 +176,12 @@ export const GRIFFIN_PREPARED_RETURN_EPISODE: EpisodeDefinition = {
  * authoritative state at the end of an episode plus the evaluator milestones
  * seen during it. Descriptive only: none of these is a success requirement,
  * and none is shown to a player. Note that any plain E at the nest drops every
- * held tool, so mirrorDelivered/shearsDelivered are also true after a combat
- * defeat; itemsDeliveredWhileGriffinAlive and peacefulGroomingOccurred (the
- * Griffin groomed while alive) are the prepared-item and peaceful-route markers.
+ * held tool's flag, so mirrorDelivered/shearsDelivered are also true after a
+ * combat defeat (nothing leaves the backpack then). The effective prepared-item
+ * markers are peacefulGroomingOccurred (the Griffin groomed while alive) and
+ * wigRoute; itemsDeliveredWhileGriffinAlive includes ineffective deliveries.
  */
-export function situationCReport(w: World, seen: ReadonlySet<string>, griffinHpAtWigClaim: number | null, griffinHpAtFirstItemDelivery: number | null, reason: TerminationReason | undefined) {
+export function situationCReport(w: World, seen: ReadonlySet<string>, griffinHpAtWigClaim: number | null, griffinHpAtFirstItemDelivery: number | null, griffinHpAtMirrorDelivery: number | null, reason: TerminationReason | undefined) {
   const g = griffinState(w.puzzles);
   const wigClaimed = !!g?.wigClaimed;
   return {
@@ -193,14 +194,20 @@ export function situationCReport(w: World, seen: ReadonlySet<string>, griffinHpA
     mirrorDelivered: !!g?.mirrorDelivered,
     shearsDelivered: !!g?.shearsDelivered,
     itemInteractionUsed: !!g?.mirrorDelivered || !!g?.shearsDelivered,
-    /** Griffin HP when a tool was first delivered at the nest; 0 means after a defeat (a plain E drops held tools). */
+    /**
+     * Griffin HP when a tool was first delivered at the nest; 0 means after a defeat, where a plain E only sets the
+     * delivery flags (nothing leaves the backpack). A delivery while alive may have had no effect (the Shears alone do nothing).
+     */
     griffinHpAtFirstItemDelivery,
     itemsDeliveredWhileGriffinAlive: griffinHpAtFirstItemDelivery !== null && griffinHpAtFirstItemDelivery > 0,
+    /** Griffin HP when the Mirror was delivered (the delivery that can start grooming), or null. */
+    griffinHpAtMirrorDelivery,
     peacefulGroomingOccurred: seen.has("griffin:grooming"),
     toolsTakenByGriffin: !!g?.toolsTaken,
     wigAcquired: wigClaimed,
     griffinHpAtWigClaim,
-    wigRoute: !wigClaimed ? "none" : griffinHpAtWigClaim !== null && griffinHpAtWigClaim <= 0 ? "defeat" : "peaceful",
+    // "unknown" if the claim was never observed by the evaluator (review round 2, finding 2).
+    wigRoute: !wigClaimed ? "none" : griffinHpAtWigClaim === null ? "unknown" : griffinHpAtWigClaim <= 0 ? "defeat" : "peaceful",
     offeringAccepted: shrineComplete(w),
     chapter0Complete: has(w, FINALE.complete),
   };

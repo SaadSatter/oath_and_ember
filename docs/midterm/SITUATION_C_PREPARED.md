@@ -84,7 +84,7 @@ Verified in `apps/server/src/griffin.ts` and by tests (`packages/agent/test/grif
 
 The briefing ends at the offering. Success also needs `chapter0.complete`, which the game reaches through the dialogue scenes that follow an accepted offering. The planner's generic task line, "Complete the Goddess's quest together.", is still present. Code identifiers such as `GRIFFIN_PREPARED_RETURN_BRIEFING`, the scenario id and the scenario title contain "prepared", but none of them reaches a player; a test checks that neither C prompt contains the word.
 
-**Parity limits.** C1 and C3 differ only by the guidance block. C1 is the original untuned planner prompt (`f0592888`, no guidance) with Pilot-31's tutorial and the owner's C briefing. It is not byte-identical to any earlier pre-tuned prompt, because the briefing is new. B-return (Pilot-33) used a task line with no tutorial or briefing, so C3 and Pilot-33 share the v4 block but not their framing. Do not report B to C as an inventory-only or prompt-only contrast.
+**Parity limits.** C1 and C3 differ only by the guidance block. C1 is the original untuned planner prompt (`f0592888`, no guidance) with Pilot-31's tutorial and the owner's C briefing. It is not byte-identical to any earlier pre-tuned prompt, because the briefing is new. B-return (Pilot-33) used a task line with no tutorial or briefing, so C3 and Pilot-33 share the v4 block but not their framing. Do not report B to C as an inventory-only or prompt-only contrast. One asymmetry belongs to the guidance effect: only C3's v4 step 8 ("follow the task to its end") pushes the planner past the offering to `chapter0.complete`. C1 relies on the generic task line alone.
 
 ## C2 baseline, free preparation runs (unregistered)
 
@@ -98,7 +98,7 @@ The briefing ends at the offering. Success also needs `chapter0.complete`, which
 
 These runs were made to certify the scenario. They are not the registered C2 cell, which should be a fresh free run at the approved commit. Identical deterministic repeats are not independent evidence.
 
-**The approved C2 wins through combat and does not demonstrate prepared-item use.** Its descriptive report shows: route `defeat`, Griffin HP 0, `itemsDeliveredWhileGriffinAlive` false and `peacefulGroomingOccurred` false. The tools are dropped only by the E at the nest after the defeat. On C it replays B-return's baseline trajectory exactly (5,389 ticks, 481/646 decisions), so it gives no information about the value of preparation.
+**The approved C2 wins through combat and does not demonstrate prepared-item use.** Its descriptive report shows: route `defeat`, Griffin HP 0, `itemsDeliveredWhileGriffinAlive` false and `peacefulGroomingOccurred` false. The E at the nest after the defeat only sets the tools' delivery flags: nothing leaves the backpack and the items have no effect. On C it replays B-return's baseline trajectory exactly (5,389 ticks, 481/646 decisions), so it gives no information about the value of preparation.
 
 `baseline-inventory-heuristic-v1` (`4f9695b`, another session) is classified by the owner as a **C-specific exploratory baseline, excluded from the official evaluation**. Its code and history are preserved. It has not been run on C.
 
@@ -109,9 +109,10 @@ Every C summary carries `situationCReport`, read from authoritative state at the
 - `objectiveSuccess`, `terminalReason`
 - `griffinHpAtEnd`, `griffinPhaseAtEnd`, `griffinDefeated`
 - `mirrorDelivered`, `shearsDelivered`, `itemInteractionUsed`: any E at the nest drops held tools, so these are also true after a combat defeat
-- `griffinHpAtFirstItemDelivery`, `itemsDeliveredWhileGriffinAlive`: the prepared-item-use marker
-- `peacefulGroomingOccurred`, `toolsTakenByGriffin`: the peaceful-route markers
-- `wigAcquired`, `griffinHpAtWigClaim`, `wigRoute` (`defeat` / `peaceful` / `none`)
+- `griffinHpAtFirstItemDelivery`, `itemsDeliveredWhileGriffinAlive`: a tool was delivered while the Griffin was alive; this may have had no effect (the Shears alone do nothing)
+- `griffinHpAtMirrorDelivery`: the delivery that can start grooming
+- `peacefulGroomingOccurred`, `toolsTakenByGriffin`: the peaceful-route markers. Together with `wigRoute`, these are the effective prepared-item-use markers
+- `wigAcquired`, `griffinHpAtWigClaim`, `wigRoute` (`defeat` / `peaceful` / `none`, or `unknown` if the evaluator never observed the claim)
 - `offeringAccepted`, `chapter0Complete`
 
 Game time, wall time, decisions, calls, cost and invalid actions are ordinary summary fields. Both routes are tested: the baseline's combat win, and the fixture-positioned peaceful grooming.
@@ -126,7 +127,7 @@ Round 1 (`a3ce5ab`, earlier briefing; `evidence/situation-c-preparation/`):
 - C3 mock: ended `error` (the planner's stall watchdog tripped) at 32.6 game-s, 9 calls.
 - C1 mock: ended `knocked_out` at 43.7 game-s, 23 calls. This exercised the knockout failure in actual play.
 
-Round 2 (`f3b718d`, the owner's briefing; `evidence/situation-c-preparation-r2/`):
+Round 2 (`f3b718d`, the owner's briefing; `evidence/situation-c-preparation-r2/`). The mock summaries record `f3b718d+dirty`: they ran after the new, still uncommitted evidence folder had been written. No source file was modified, and their prompt hashes match the pins.
 - C1 mock: ended `error` (stall watchdog) at 93.9 game-s, 17 calls. The prompt hash `6dc64411…` matches the pin.
 - C3 mock: ended `error` (stall watchdog) at 123.7 game-s, 53 calls. The prompt hash `a0c6939a…` matches the pin.
 - Both summaries carry `situationCReport`: Griffin untouched at 640 HP, no item delivery, no wig.
@@ -165,7 +166,7 @@ The independent `rules-reviewer` report is saved verbatim in [agent-evidence/rev
 | # | Finding | Response |
 | --- | --- | --- |
 | 1 | Major, if chosen: `baseline-inventory-heuristic-v1` is tuned to C's literal item text | Recorded in r10's `alternativeCandidate`. The C2 choice remains the owner's. |
-| 2 | C2 reproduces B2's trajectory exactly | Disclosed here and in r10. **C2 gives no information about the value of preparation.** It wins by fighting, as in B; the tools are dropped only by the E at the nest after the defeat. |
+| 2 | C2 reproduces B2's trajectory exactly | Disclosed here and in r10. **C2 gives no information about the value of preparation.** It wins by fighting, as in B; the E at the nest after the defeat only sets the tools' delivery flags (nothing leaves the backpack). |
 | 3 | v4 is a combat plan, and may bias C3 toward fighting | Disclosed in r10 (`transferCaveat`) and here. C1 to C3 mixes general transfer with that bias. Guidance text not changed. |
 | 4 | Working-tree pins on five B files were dropped | Added a test pinning B-return's limits, failure cases, prefix name, task and missing briefing/tutorial at HEAD, alongside the existing start-hash and prompt-hash pins. |
 | 5 | The pins need git history | CI now checks out full history. If `2791bce` ever becomes unreachable (for example after a squash merge), tag it first. Not tagged here (owner's choice). |
@@ -180,3 +181,32 @@ The independent `rules-reviewer` report is saved verbatim in [agent-evidence/rev
 | 14 | The diff compares `room.state` only | Wording clarified above. |
 
 Reviewer uncertainties, settled by the implementation agent with git: the Pilot-31/32/33 records, B evidence and declaration r9 are byte-unchanged since `9f4ac38`; B-return's prefix name is identical to `2791bce`'s; the game client's backpack panel shows item descriptions (`apps/client/src/ui/inventory.ts:196-198`), so they are ordinary player-visible text.
+
+## Review round 2 (2026-11-06)
+
+Report saved verbatim: [agent-evidence/reviews/2026-11-06-situation-c-round2-rules-review.md](agent-evidence/reviews/2026-11-06-situation-c-round2-rules-review.md). It had no critical or major findings. The reviewer confirmed:
+- the briefing matches the owner's text verbatim;
+- C1 and C3 get identical tutorial and briefing;
+- no route words appear in any prompt;
+- the hashes agree across files;
+- the tracking is read-only and C-guarded;
+- r10 preserves r9's A/B rows.
+
+Responses:
+
+| # | Finding | Response |
+| --- | --- | --- |
+| 1 | `itemsDeliveredWhileGriffinAlive` counts ineffective deliveries | Reworded. Added `griffinHpAtMirrorDelivery`. Tested: Shears alone → no grooming, ineffective delivery reported. Effective markers: `peacefulGroomingOccurred`, `wigRoute`. |
+| 2 | `wigRoute` fell back to "peaceful" if a claim was never seen | Now `unknown` (tested). |
+| 3 | "Dropped" wording vs "tools stay in the backpack" | Corrected here and in r10: the post-defeat E only sets flags. |
+| 4 | Stale "(draft)" in r10 decisions | Fixed. |
+| 5 | Freeze step dropped from the holdout order; `postGuidanceB` scope | Freeze step restored as the first step. `postGuidanceB` marked as the r9 record. |
+| 6 | Mock summaries recorded `+dirty` | Disclosed above: only the uncommitted evidence folder. |
+| 7 | C1/C3 asymmetry past the offering | Added to the parity limits and to r10's consequences. |
+| 8 | Evaluator-only warning displaced | Moved back above `evaluatorReport`. |
+| 9 | Session record compressed rounds 1 and 2 | Session record note split. |
+| 10 | No test of the declaration hashes | Added: recomputes r9 (pinned `616c1824…`, so unchanged) and r10 (`989046a9…`). |
+
+Not added: an end-to-end peaceful run through the offering to `chapter0.complete`, which would need a scripted route through the shrine scenes. The peaceful path is covered up to the wig claim, and success after that by the predicate tests. The same-tick defeat-and-claim case is also not added; the reviewer traced it as correct.
+
+Reviewer uncertainties, settled with git: r9 and the B evidence are byte-unchanged since `9f4ac38`. Round 2's source changes are confined to C-guarded code, the summary field and the briefing.

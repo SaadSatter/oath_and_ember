@@ -49,8 +49,8 @@
     "knowledge": "Same as B: generic combat, organic pull, visible labels, remembered map/feedback, normal interactions. It interacts with the nest only after a visible defeat, so it never takes the peaceful route; it does not reason about the Mirror or Shears.",
     "freeOfflineResult": "Unregistered preparation runs: 3/3 success (seed 0 twice, seed 1), 89.8 game-s, 0 invalid actions, 0 model calls, route defeat; docs/midterm/evidence/situation-c-preparation-r2/summary.json",
     "status": "owner-approved for C2 (2026-11-06)",
-    "trajectoryNote": "Review round 1, finding 2: on C this baseline reproduces B-return's baseline trajectory (5389 ticks, 481/646 decisions): it fights, and the tools are dropped only by the post-defeat E at the nest. C2 therefore gives no information about the value of preparation.",
-    "routeDisclosure": "Wins through combat (Griffin defeated, then E at the nest); it does not demonstrate prepared-item use: the tools are dropped only by the post-defeat E (itemsDeliveredWhileGriffinAlive false, peacefulGroomingOccurred false).",
+    "trajectoryNote": "Review round 1, finding 2: on C this baseline reproduces B-return's baseline trajectory (5389 ticks, 481/646 decisions): it fights; the post-defeat E at the nest sets the tools' delivery flags but nothing leaves the backpack. C2 therefore gives no information about the value of preparation.",
+    "routeDisclosure": "Wins through combat (Griffin defeated, then E at the nest); it does not demonstrate prepared-item use. The post-defeat E only sets the tools' delivery flags: nothing leaves the backpack and the items have no effect (itemsDeliveredWhileGriffinAlive false, peacefulGroomingOccurred false).",
     "excludedExploratoryBaseline": {
      "policyId": "baseline-inventory-heuristic-v1",
      "source": "packages/agent/src/policies/inventoryHeuristic.ts",
@@ -93,7 +93,8 @@
    "configHash": "f3949a6dbabea35e5053053f4a7e46ecc6f801c7698fcc78eaeb75f233d66cb3",
    "sourceCommit": "1f0ca45",
    "observedRun": "Pilot-33",
-   "priorObservedPostTunedRun": "Pilot-32: b-post-a-transfer-v1, knocked_out; preserved separately"
+   "priorObservedPostTunedRun": "Pilot-32: b-post-a-transfer-v1, knocked_out; preserved separately",
+   "note": "r9 record of the B post-tuned guidance, unchanged; v4's allowed situations in code now also include C (see postGuidanceC.scopeChange)"
   },
   "postGuidanceC": {
    "id": "b-post-combined-v4",
@@ -204,6 +205,7 @@
      "itemInteractionUsed",
      "griffinHpAtFirstItemDelivery",
      "itemsDeliveredWhileGriffinAlive",
+     "griffinHpAtMirrorDelivery",
      "peacefulGroomingOccurred",
      "toolsTakenByGriffin",
      "wigAcquired",
@@ -213,7 +215,8 @@
      "chapter0Complete"
     ],
     "plus": "game time, wall time, decisions, calls, cost, invalid actions (ordinary summary fields)",
-    "rule": "Descriptive only, not success requirements. The official result is the one run per cell, whatever route it takes."
+    "rule": "Descriptive only, not success requirements. The official result is the one run per cell, whatever route it takes.",
+    "effectiveUseMarkers": "peacefulGroomingOccurred and wigRoute; itemsDeliveredWhileGriffinAlive includes ineffective deliveries (e.g. Shears alone)"
    }
   }
  },
@@ -244,6 +247,7 @@
   }
  },
  "holdoutOrder": [
+  "Freeze all C hashes (scenario, definition, start, prompts, guidance, baseline source, limits) at the authorized commit",
   "Owner final authorization: activate r10 and set SITUATION_C_PAID_APPROVED in a reviewed commit",
   "C pre-tuned (C1)",
   "C post-tuned (C3)",
@@ -281,7 +285,7 @@
    "C id griffin-prepared-return-v1 (was griffin-prepared-v1)",
    "C start = B-return start + Mirror and Shears injected (r9 required legal acquisition and forbade injection)",
    "C success = wig claimed by any route + offering + chapter0.complete; no knockout; leaving the enclosure allowed (r9: Griffin HP 0 + wig, enclosure boundary, no return)",
-   "C prompt = tutorial + new C briefing (draft) for both C1 and C3; C3 adds v4 unchanged",
+   "C prompt = tutorial + the owner's neutral C briefing (round 2; replaced the round-1 draft) for both C1 and C3; C3 adds v4 unchanged",
    "C2 = baseline-griffin-heuristic-v1 unchanged (r9 fell back to baseline-quest)",
    "Existing B pin tests verify the 2791bce run path from git history (owner approved)",
    "Owner approval 2026-11-06: C2 = baseline-griffin-heuristic-v1; baseline-inventory-heuristic-v1 excluded as C-specific exploratory",
@@ -294,9 +298,10 @@
    "With the tools, the peaceful route is a legal shortcut in C, so C is expected to be easier than B; it tests whether players use the prepared items.",
    "Maze and pond chests remain unclaimed and their banter flags unset in C's world (the items were injected); a player who detours there could collect duplicates. No player needs to.",
    "C1 (pre-tuned) is not byte-identical to any earlier pre-tuned prompt: it uses Pilot-31's tutorial but the owner's new C briefing.",
-   "The briefing ends at the offering; success also needs chapter0.complete, reached through the game's dialogue scenes after the offering. The generic task line ('Complete the Goddess's quest together.') still applies."
+   "The briefing ends at the offering; success also needs chapter0.complete, reached through the game's dialogue scenes after the offering. The generic task line ('Complete the Goddess's quest together.') still applies.",
+   "C1/C3 asymmetry (review round 2, finding 7): only C3's v4 step 8 ('follow the task to its end') reinforces continuing past the offering to chapter0.complete; part of the guidance effect."
   ],
   "disclosure": "Decided before any C model outcome. The unchanged baseline's C outcome is known from free preparation runs (3/3 success); no model policy was changed after it."
  },
- "declarationSha256": "97525b3e3f68ebb4cbdff010f07eb5f0ebaddf0c38345f44df594e5879093ba8"
+ "declarationSha256": "989046a9f96a90daebf9cd51448184ee9b96b4e8c60d392b563c561b73b9a598"
 }

@@ -461,7 +461,7 @@
    ],
    "role": "Claude Code implementation agent under CLAUDE.md: Situation C (griffin-prepared-return-v1) scenario, injected-inventory start fixture, return success predicate, paid lock, descriptive route metrics, proposed declaration r10; session-evidence invoked by name in this session. The rules-reviewer subagent was launched by this session in separate invocations at the owner's request, read-only and not instructed to approve; its findings are committed verbatim.",
    "title": "Situation C: Griffin Trial (Prepared) with goddess return, offline checks, review rounds and proposed r10",
-   "note": "Owner decisions taken in-session over r9: injected start, renamed id, peaceful wig valid with return, tutorial plus owner's neutral briefing, re-pinned B tests, C2 = unchanged B baseline. A concurrent session committed 4f9695b (inventory baseline) to the same branch during this session; it is not this session's work. No paid call, push or merge; r10 not active; SITUATION_C_PAID_APPROVED false."
+   "note": "Round 1 owner decisions over r9: injected start, renamed id, peaceful wig valid with return, tutorial plus a briefing (agent's draft in round 1), re-pinned B tests. Round 2 owner decisions: C2 = unchanged B baseline, inventory baseline excluded, the owner's neutral briefing verbatim, descriptive route metrics. A concurrent session committed 4f9695b (inventory baseline) to the same branch during this session; it is not this session's work. No paid call, push or merge; r10 not active; SITUATION_C_PAID_APPROVED false."
   }
  ]
 }

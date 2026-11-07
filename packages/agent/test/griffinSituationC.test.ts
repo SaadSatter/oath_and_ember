@@ -23,6 +23,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const ID = "griffin-prepared-return-v1" as const;
+/** Proposed r10's self-hash; changes whenever r10 is edited (re-pin with the owner's knowledge). */
+const R10_SHA256 = "989046a9f96a90daebf9cd51448184ee9b96b4e8c60d392b563c561b73b9a598";
 const B_ID = "griffin-unprepared-return-v1" as const;
 const TOOLS = /^(vanity_mirror|enchanted_shears|griffin_wig)$/;
 
@@ -242,7 +244,7 @@ describe("Mirror and Shears under ordinary game rules", () => {
     expect(episodes[ID].success(w)).toBe(false);
     // Descriptive report (owner request 2026-11-06): the peaceful route is visible, not a success.
     expect(env.situationCReport()).toMatchObject({ descriptiveOnly: true, objectiveSuccess: false, peacefulGroomingOccurred: true, griffinDefeated: false,
-      itemInteractionUsed: true, itemsDeliveredWhileGriffinAlive: true, griffinHpAtFirstItemDelivery: 640, toolsTakenByGriffin: true, wigAcquired: true, griffinHpAtWigClaim: 640, wigRoute: "peaceful", offeringAccepted: false, chapter0Complete: false, griffinHpAtEnd: 640 });
+      itemInteractionUsed: true, itemsDeliveredWhileGriffinAlive: true, griffinHpAtFirstItemDelivery: 640, griffinHpAtMirrorDelivery: 640, toolsTakenByGriffin: true, wigAcquired: true, griffinHpAtWigClaim: 640, wigRoute: "peaceful", offeringAccepted: false, chapter0Complete: false, griffinHpAtEnd: 640 });
   }, 120000);
 
   it("after a defeat, a plain E at the nest awards the wig immediately and keeps the tools", async () => {
@@ -276,7 +278,7 @@ describe("C2 baseline: unchanged baseline-griffin-heuristic-v1", () => {
       expect(a.modelCalls.attempted).toBe(0);
       // The approved C2 wins by combat and does not demonstrate prepared-item use.
       expect(a.situationCReport).toMatchObject({ objectiveSuccess: true, griffinDefeated: true, griffinHpAtEnd: 0, griffinHpAtWigClaim: 0, wigRoute: "defeat",
-        peacefulGroomingOccurred: false, itemsDeliveredWhileGriffinAlive: false, griffinHpAtFirstItemDelivery: 0, toolsTakenByGriffin: false, wigAcquired: true, offeringAccepted: true, chapter0Complete: true });
+        peacefulGroomingOccurred: false, itemsDeliveredWhileGriffinAlive: false, griffinHpAtFirstItemDelivery: 0, griffinHpAtMirrorDelivery: 0, toolsTakenByGriffin: false, wigAcquired: true, offeringAccepted: true, chapter0Complete: true });
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }
@@ -358,5 +360,53 @@ describe("Situation C review round 1", () => {
     expect(g.toolsTaken ?? false).toBe(false);
     expect(g.hp).toBe(640);
     expect(room.state.inventory!.counts.enchanted_shears).toBe(1);
+    expect(env.situationCReport()).toMatchObject({ griffinHpAtMirrorDelivery: 640, peacefulGroomingOccurred: true, wigAcquired: false, wigRoute: "none" });
   }, 120000);
+
+  it("round 2 finding 1: the Shears alone, delivered while the Griffin is alive, start nothing; the report shows an ineffective delivery", async () => {
+    // UNIT FIXTURE for Coco's position only.
+    let room!: GameRoom;
+    const env = environmentFor(ID, { room: (r) => (room = r) });
+    await env.reset(0);
+    const d = new Director({ env });
+    await d.both(undefined, { type: "ability", ability: "flight" });
+    const coco = Object.values(room.state.players).find((p) => p.role === "EMBER")!;
+    coco.x = 640; coco.y = 160;
+    expect((await d.both(undefined, { type: "use_item", item: "enchanted_shears" })).coco.accepted).toBe(true);
+    const g = room.state.puzzles.griffin!.griffin!;
+    expect(g.shearsDelivered).toBe(true);
+    expect(g.phase).not.toBe("GROOMING");
+    expect(env.situationCReport()).toMatchObject({ itemsDeliveredWhileGriffinAlive: true, griffinHpAtMirrorDelivery: null, peacefulGroomingOccurred: false, wigRoute: "none" });
+  }, 60000);
+
+  it("round 2 finding 2: an unobserved wig claim is reported as route unknown, never peaceful", async () => {
+    const { situationCReport } = await import("../src/evaluator.js");
+    const { room } = await start();
+    const w = room().state;
+    w.puzzles.griffin!.griffin!.wigClaimed = true; // predicate UNIT FIXTURE
+    expect(situationCReport(w, new Set(), null, null, null, undefined).wigRoute).toBe("unknown");
+    expect(situationCReport(w, new Set(), 0, 0, 0, undefined).wigRoute).toBe("defeat");
+    expect(situationCReport(w, new Set(), 640, 640, 640, undefined).wigRoute).toBe("peaceful");
+  }, 60000);
+
+  it("gives no Situation C report on B scenarios", async () => {
+    const env = environmentFor(B_ID);
+    await env.reset(0);
+    expect(env.situationCReport()).toBeNull();
+  }, 60000);
+
+  it("round 2 finding 10: r9 is unchanged and both declarations' self-hashes recompute", () => {
+    // Python json.dumps(sort_keys=True, separators=(",", ":"), ensure_ascii=True) without declarationSha256.
+    const canon = (v: unknown): string => Array.isArray(v) ? `[${v.map(canon).join(",")}]`
+      : v && typeof v === "object" ? `{${Object.keys(v).sort().map((k) => `${JSON.stringify(k)}:${canon((v as Record<string, unknown>)[k])}`).join(",")}}`
+      : JSON.stringify(v);
+    const ascii = (t: string) => t.replace(/[^\x00-\x7f]/g, (ch) => "\\u" + ch.charCodeAt(0).toString(16).padStart(4, "0"));
+    for (const [f, pin] of [["declaration.json", "616c182453e06ec9568ffea3bc0c26dde314dca54376a2e77012766a269445be"], ["proposed/declaration-r10-c.json", R10_SHA256]] as const) {
+      const d = JSON.parse(readFileSync(new URL(`../../../docs/midterm/evaluation-abc/${f}`, import.meta.url), "utf8"));
+      const h = d.declarationSha256;
+      delete d.declarationSha256;
+      expect(createHash("sha256").update(ascii(canon(d))).digest("hex"), f).toBe(h);
+      expect(h, f).toBe(pin);
+    }
+  });
 });
