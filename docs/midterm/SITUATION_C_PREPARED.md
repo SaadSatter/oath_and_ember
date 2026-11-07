@@ -122,10 +122,16 @@ Game time, wall time, decisions, calls, cost and invalid actions are ordinary su
 
 `npm run eval:live -- --scenario griffin-prepared-return-v1 --seed 0 --player model-centralized [--guidance b-post-combined-v4] --gateway mock --no-viewer`. The mock gateway picks random legal actions and costs $0.
 
+Round 1 (`a3ce5ab`, earlier briefing; `evidence/situation-c-preparation/`):
 - C3 mock: ended `error` (the planner's stall watchdog tripped) at 32.6 game-s, 9 calls.
 - C1 mock: ended `knocked_out` at 43.7 game-s, 23 calls. This exercised the knockout failure in actual play.
 
-Both traces replay exactly with `scripts/midterm/replay-video.ts --check-only`: start hash, every step result, end hash and tick count.
+Round 2 (`f3b718d`, the owner's briefing; `evidence/situation-c-preparation-r2/`):
+- C1 mock: ended `error` (stall watchdog) at 93.9 game-s, 17 calls. The prompt hash `6dc64411…` matches the pin.
+- C3 mock: ended `error` (stall watchdog) at 123.7 game-s, 53 calls. The prompt hash `a0c6939a…` matches the pin.
+- Both summaries carry `situationCReport`: Griffin untouched at 640 HP, no item delivery, no wig.
+
+All four traces replay exactly with `scripts/midterm/replay-video.ts --check-only`: start hash, every step result, end hash and tick count. Round 2's C2 preparation runs (3/3, route `defeat`) are in `situation-c-preparation-r2/summary.json`.
 
 ## Commands
 

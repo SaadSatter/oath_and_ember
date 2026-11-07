@@ -1,0 +1,160 @@
+{
+  "situation": "griffin-prepared-return-v1",
+  "suiteRevision": 2,
+  "scenario": {
+    "preset": "griffin-prepared-return-v1",
+    "title": "Griffin Trial Prepared, return offering (C)",
+    "goal": "Situation C: from the Griffin Enclosure entrance holding the Vanity Mirror and Enchanted Shears, obtain the Griffin's wig, offer it to the goddess and reach chapter0.complete without a hero knockout.",
+    "revision": 1,
+    "tutorialId": null,
+    "briefing": false
+  },
+  "seed": 0,
+  "player": "baseline-griffin-heuristic",
+  "policies": {
+    "sieg": "baseline-griffin-heuristic-v1",
+    "coco": "baseline-griffin-heuristic-v1"
+  },
+  "gateway": null,
+  "modelIds": [],
+  "gitHash": "f3b718d",
+  "startHash": "28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7",
+  "startTick": 540,
+  "prefix": "B-return start, then Mirror and Shears added to the backpack (owner-approved start fixture)",
+  "status": "success",
+  "reason": "success",
+  "success": true,
+  "gameTicks": 5389,
+  "gameSeconds": 89.8,
+  "wallSeconds": 1.6,
+  "decisions": {
+    "sieg": 481,
+    "coco": 646
+  },
+  "actions": {
+    "sieg": {
+      "move": 168,
+      "attack": 23,
+      "wait": 90,
+      "defend": 93,
+      "interact": 1,
+      "use_item": 1,
+      "advance_dialogue": 104,
+      "choose_dialogue": 1
+    },
+    "coco": {
+      "move": 410,
+      "ability": 5,
+      "attack": 19,
+      "wait": 106,
+      "interact": 1,
+      "advance_dialogue": 104,
+      "choose_dialogue": 1
+    }
+  },
+  "attempt": 1,
+  "endHash": "0e419e63ee2244d674ab25b86a939a19cbbbfb49743b970259e5d6cf63c2a4e0",
+  "limits": {
+    "maxTicks": 18000,
+    "maxDecisionsPerPlayer": 1600,
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000
+  },
+  "modelLimits": null,
+  "invalidActions": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "metrics": {
+    "sieg": {
+      "modelCalls": 0,
+      "modelDecisions": 0,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 0,
+      "submittedActions": 481,
+      "executedActions": 481,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 0
+    },
+    "coco": {
+      "modelCalls": 0,
+      "modelDecisions": 0,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 0,
+      "submittedActions": 646,
+      "executedActions": 542,
+      "staleSubmissions": 103,
+      "gameplayRejections": 1,
+      "skippedActions": 0
+    }
+  },
+  "metricsVersion": 2,
+  "messages": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "batchStops": 0,
+  "modelCalls": {
+    "attempted": 0,
+    "failed": 0,
+    "timedOut": 0,
+    "unknownUsage": 0
+  },
+  "latencyMs": {
+    "mean": null,
+    "max": null
+  },
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0
+  },
+  "spendUsd": {
+    "known": 0,
+    "charged": 0
+  },
+  "priceSource": null,
+  "ledgerEntry": null,
+  "episodeCapUsd": null,
+  "wallLimitSeconds": 600,
+  "launch": {
+    "launcher": "runSuite",
+    "speed": null,
+    "viewer": false
+  },
+  "finalClaim": null,
+  "evaluation": {
+    "label": "C",
+    "definitionHash": "048679a38eea4e15177af2990fac94c19b2cd4f0c40de33a92c559a57f22d4a4"
+  },
+  "promptHashes": {
+    "sieg": null,
+    "coco": null
+  },
+  "configHash": "9346e890601d4459e7d3be3550a1b1f4eaa8abf7803e2330c88a11f22949c135",
+  "situationCReport": {
+    "descriptiveOnly": true,
+    "objectiveSuccess": true,
+    "terminalReason": "success",
+    "griffinHpAtEnd": 0,
+    "griffinPhaseAtEnd": "DEFEATED",
+    "griffinDefeated": true,
+    "mirrorDelivered": true,
+    "shearsDelivered": true,
+    "itemInteractionUsed": true,
+    "griffinHpAtFirstItemDelivery": 0,
+    "itemsDeliveredWhileGriffinAlive": false,
+    "peacefulGroomingOccurred": false,
+    "toolsTakenByGriffin": false,
+    "wigAcquired": true,
+    "griffinHpAtWigClaim": 0,
+    "wigRoute": "defeat",
+    "offeringAccepted": true,
+    "chapter0Complete": true
+  },
+  "trace": "/var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/situation-c-3Y0Wrk/baseline-2/griffin-prepared-return-v1-seed0/trace.jsonl"
+}
