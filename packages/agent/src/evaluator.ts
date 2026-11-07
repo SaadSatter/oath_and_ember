@@ -19,7 +19,9 @@ import type { TerminationReason } from "./types.js";
 export type EpisodePreset =
   | "S2-local" | "S3-local" | "full" | "milestone" | "S1" | "S2" | "S3" | "S4"
   | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "S2-B" | "S2-C" | "P1" | "P1-v2" | "P1-v3"
-  | "griffin-unprepared-v1" | "griffin-unprepared-return-v1" | "griffin-prepared-return-v1";
+  | "griffin-unprepared-v1" | "griffin-unprepared-return-v1" | "griffin-prepared-return-v1"
+  // Prompt-tuned continuous showcase (docs/midterm/SHOWCASE_CONTINUOUS_EPISODE.md); excluded from A/B/C.
+  | "showcase-maze-griffin-complete-v1";
 
 export interface EpisodeDefinition {
   preset: EpisodePreset;
@@ -50,7 +52,7 @@ const QUEST_AREAS = new Set(["MIRROR_POND", "HEDGE_MAZE", "GRIFFIN_ENCLOSURE"]);
 const holding = (w: World, item: string) => ((w.inventory?.counts as Record<string, number> | undefined)?.[item] ?? 0) > 0;
 
 /** Owner-approved episode definitions and limits (2026-10-23). */
-const coreEpisodes: Record<Exclude<EpisodePreset, "S2-local" | "S3-local" | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "S2-B" | "S2-C" | "P1" | "P1-v2" | "P1-v3" | "griffin-unprepared-v1" | "griffin-unprepared-return-v1" | "griffin-prepared-return-v1">, EpisodeDefinition> = {
+const coreEpisodes: Record<Exclude<EpisodePreset, "S2-local" | "S3-local" | "S2-v2" | "S3-v2" | "S2-local-v2" | "S3-local-v2" | "S2-B" | "S2-C" | "P1" | "P1-v2" | "P1-v3" | "griffin-unprepared-v1" | "griffin-unprepared-return-v1" | "griffin-prepared-return-v1" | "showcase-maze-griffin-complete-v1">, EpisodeDefinition> = {
   full: {
     preset: "full",
     goal: "Bald Goddess quest: from the goddess checkpoint to chapter0.complete.",
@@ -213,6 +215,49 @@ export function situationCReport(w: World, seen: ReadonlySet<string>, griffinHpA
   };
 }
 
+/**
+ * Prompt-tuned continuous showcase (docs/midterm/SHOWCASE_CONTINUOUS_EPISODE.md).
+ * A demonstration, excluded from the official A/B/C evaluation. One episode
+ * from the Hedge Maze entrance (S2-A's start) to chapter0.complete. Success
+ * needs every step of the combat route, each read from authoritative state:
+ *   1. the Hedge Maze's Shears Chest claimed and the Enchanted Shears held
+ *      (no fixture adds them; the Shears are not consumed on the combat route);
+ *   2. Griffin HP 0 (a groomed Griffin can never be damaged again, so HP 0
+ *      with the wig claimed rules out the peaceful route);
+ *   3. the wig claimed, and the Griffin never took the tools (no grooming);
+ *   4. the offering accepted and chapter0.complete.
+ * Failure: any knockout (checked first, every tick). Limits are PROPOSED and
+ * await the owner's approval.
+ */
+/** The Hedge Maze reward target id (apps/server/src/hedgeMaze.ts MAZE_CHEST_TARGET). */
+export const SHOWCASE_MAZE_CHEST = "hedge-shears-chest";
+export const showcaseComplete = (w: World) => {
+  const g = griffinState(w.puzzles);
+  return !!w.inventory?.claimed.includes(SHOWCASE_MAZE_CHEST) && holding(w, "enchanted_shears")
+    && g?.hp === 0 && !!g.wigClaimed && !g.toolsTaken && shrineComplete(w) && has(w, FINALE.complete);
+};
+export const SHOWCASE_EPISODE: EpisodeDefinition = {
+  preset: "showcase-maze-griffin-complete-v1",
+  goal: "Showcase (excluded from A/B/C): from the Hedge Maze entrance, obtain the Enchanted Shears, travel to the Griffin Enclosure, defeat the Griffin in combat, claim its wig, offer it to the goddess and reach chapter0.complete, with neither hero knocked out.",
+  // PROPOSED (owner approval pending): about twice the expected game time.
+  limits: { maxTicks: 600 * 60, maxDecisionsPerPlayer: 4_000, maxModelCallsPerPlayer: 400, maxTokensPerPlayer: 8_000_000 },
+  failure: (_w, tick) => (tick.knockedOut ? "knocked_out" : undefined),
+  success: showcaseComplete,
+};
+
+/** Showcase milestones (evaluator-only, recorded in the trace; never shown to a player). */
+export function showcaseMilestones(w: World): string[] {
+  const g = griffinState(w.puzzles);
+  const out: string[] = [];
+  if (w.inventory?.claimed.includes(SHOWCASE_MAZE_CHEST) && holding(w, "enchanted_shears")) out.push("showcase:1-maze-complete");
+  if (g && g.hp === 0) out.push("showcase:2-griffin-defeated");
+  if (g?.wigClaimed && g.hp === 0) out.push("showcase:3-wig-acquired-after-defeat");
+  if (g?.wigClaimed && g.hp > 0) out.push("showcase:peaceful-wig (does not satisfy the showcase)");
+  if (shrineComplete(w)) out.push("showcase:4-offering-accepted");
+  if (has(w, FINALE.complete)) out.push("showcase:5-chapter0-complete");
+  return out;
+}
+
 /** Additive variants reuse exactly the parent's predicate and limits. */
 export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
   ...coreEpisodes,
@@ -246,6 +291,7 @@ export const episodes: Record<EpisodePreset, EpisodeDefinition> = {
   // P1 revision 3 (2026-11-03): the fence opening's listing renamed by the owner; otherwise as revision 2.
   "P1-v3": { ...P1_EPISODE, preset: "P1-v3", goal: "P1 Into the Forest (revision 3): from the Prologue's opening, reach the Mossling Woods (story stage WOODS)." },
   "griffin-unprepared-v1": GRIFFIN_UNPREPARED_EPISODE,
+  "showcase-maze-griffin-complete-v1": SHOWCASE_EPISODE,
 };
 
 /**

@@ -111,7 +111,34 @@ const B_POST_COMBINED_V4 = "Planner guidance for both heroes (general-purpose co
  */
 export const C_INVENTORY_NEST_HINT = "Additional guidance for this task:\nBefore choosing how to reach the objective, check the shared inventory and read each item's description. Read the labels and messages on objects near the objective, such as the Griffin's nest: they can describe what an item is for. Consider whether an item offers a way to reach the objective besides combat.";
 
+/**
+ * PROPOSED, NOT APPROVED (2026-11-07). Showcase-only guidance for the
+ * prompt-tuned continuous demonstration showcase-maze-griffin-complete-v1
+ * (docs/midterm/SHOWCASE_CONTINUOUS_EPISODE.md), excluded from the A/B/C
+ * evaluation. The owner allowed explicit guidance because this is a
+ * demonstration, not a generalization experiment. It still names no
+ * coordinate, waypoint, puzzle answer or hidden state: it orders the phases,
+ * says how to tell from the screens that a phase is over, assigns roles, and
+ * forbids the peaceful nest route. The approved v4 combat text follows it
+ * unchanged. Drafted by the implementation agent; the owner may tune it.
+ */
+export const SHOWCASE_PHASE_PLAN = [
+  "Showcase plan for both heroes (a demonstration of the whole remaining quest in one run). Work through these four phases in order. Decide which phase you are in only from what the screens, the area name, the shared backpack, the labels and the dialogue show, never from elapsed time or from an order having been accepted. Keep the current phase and the evidence for it in the plan.",
+  "Phase 1, Hedge Maze: the two heroes cooperate to get through the maze and obtain the Enchanted Shears. Give Coco the environmental obstacles her fire, pull or flight can affect; give Sieg the enemies, gates and anything that must be chased, struck, pushed or reached quickly. When one hero clears a way, send the other through it. Phase 1 ends only when the shared backpack lists the Enchanted Shears.",
+  "Phase 2, travel: leave the maze through its RETURN exit. At the Goddess Shrine, take the exit marked for the Griffin. Travel only through ordinary exits; do not visit other areas. Keep both heroes together and avoid needless damage on the way. Health carries over between areas.",
+  "Phase 3, Griffin combat: defeat the Griffin in combat until its label shows it defeated. Coco attacks from range; Sieg protects himself, keeps clear of the beam line Coco is using, and strikes when the Griffin is in his reach. Both follow the combat guidance below. While the Griffin is alive, do not go to its nest or use any backpack item there: this demonstration requires the combat route. Keep both heroes alive; a knockout ends the episode.",
+  "Phase 4, wig and Goddess: only after the Griffin's label shows it defeated, Coco claims the wig at its nest (only she can reach it, by flight). Confirm that the shared backpack lists the wig. Then return through the RETURN exit to the Goddess Shrine, offer the wig at the offering, and read and answer every following dialogue until the story shows that Chapter 0 is complete. Holding the wig is not the end.",
+].join("\n\n");
+
 export const SITUATION_GUIDANCE: Readonly<Record<string, SituationGuidance>> = Object.freeze({
+  "showcase-maze-griffin-v1": Object.freeze({
+    id: "showcase-maze-griffin-v1",
+    situations: Object.freeze(["showcase-maze-griffin-complete-v1"] as SituationId[]),
+    // Proposed: runs with the mock gateway only until the owner approves this exact text.
+    status: "proposed",
+    provenance: "Showcase-only phase plan drafted by the implementation agent (2026-11-07) at the owner's request, followed by the unchanged, owner-approved b-post-combined-v4 text. Prompt-tuned demonstration; excluded from the A/B/C evaluation.",
+    text: `${SHOWCASE_PHASE_PLAN}\n\n${B_POST_COMBINED_V4}`,
+  }),
   "c-post-v4-inventory-hint-v1": Object.freeze({
     id: "c-post-v4-inventory-hint-v1",
     situations: Object.freeze(["griffin-prepared-return-v1"] as SituationId[]),

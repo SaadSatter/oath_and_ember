@@ -42,6 +42,8 @@ import { mazeEvaluationLabel } from "./hedgeMazeSituations.js";
 import { prologueEvaluationLabel } from "./prologueSituation.js";
 import { griffinEvaluationLabel } from "./griffinSituations.js";
 import { SITUATION_C_ID, SITUATION_C_PAID_APPROVED, C_PAID_SCOPE, griffinCEvaluationLabel } from "./griffinSituationC.js";
+import { SHOWCASE_ID, SHOWCASE_PAID_APPROVED, SHOWCASE_PAID_SCOPE, SHOWCASE_EPISODE_CAP_USD, SHOWCASE_WALL_CLOCK_CEILING_S, showcaseEvaluationLabel } from "./showcase.js";
+import { ShowcaseRouteBaseline } from "./policies/showcaseRoute.js";
 
 export { PLAYER_KINDS, type PlayerKind };
 export const isModel = (p: PlayerKind) => p === "model-history" || p === "model-obs-only" || p === "model-guided" || p === "model-memory" || p === "model-navigator" || p === "model-centralized";
@@ -60,19 +62,23 @@ export const EPISODE_CAP_USD: Record<SituationId, number> = {
   "griffin-unprepared-return-v1": 0.75,
   // Situation C (proposed declaration r10): the same declared run cap as B.
   "griffin-prepared-return-v1": 0.75,
+  // Showcase (excluded from A/B/C; docs/midterm/SHOWCASE_CONTINUOUS_EPISODE.md): PROPOSED cap, owner approval pending.
+  "showcase-maze-griffin-complete-v1": SHOWCASE_EPISODE_CAP_USD,
 };
 /**
  * Wall-clock ceilings (seconds) a run may lower but never raise (review finding
  * F6, 2026-11-03). P1 only; other scenarios keep their behaviour.
  */
 export const WALL_CLOCK_CEILING_S: Partial<Record<SituationId, number>> = { P1: 3600 };
+/** Showcase (excluded from A/B/C): PROPOSED 7,200 s ceiling, kept apart so the P1 map is unchanged. */
+export const SHOWCASE_WALL_CLOCK_CEILING: Partial<Record<SituationId, number>> = { "showcase-maze-griffin-complete-v1": SHOWCASE_WALL_CLOCK_CEILING_S };
 /** A/B/C declaration cases: the declared 3,600 s model bound (Situation B review finding 7, 2026-11-06). */
 export const ABC_WALL_CLOCK_CEILING_S: Partial<Record<SituationId, number>> = { "griffin-unprepared-v1": 3600, "griffin-unprepared-return-v1": 3600, "griffin-prepared-return-v1": 3600 };
 /** Refuses a wall-clock override above a scenario's ceiling. */
 export function checkWallSeconds(o: Pick<SuiteRunOptions, "situations" | "wallSeconds">) {
   if (o.wallSeconds === undefined) return;
   for (const id of o.situations) {
-    const ceiling = WALL_CLOCK_CEILING_S[id] ?? ABC_WALL_CLOCK_CEILING_S[id];
+    const ceiling = WALL_CLOCK_CEILING_S[id] ?? ABC_WALL_CLOCK_CEILING_S[id] ?? SHOWCASE_WALL_CLOCK_CEILING[id];
     if (ceiling !== undefined && o.wallSeconds > ceiling)
       throw Error(`${id}'s wall-clock limit is ${ceiling} s; a run may lower it, never raise it (got ${o.wallSeconds} s).`);
   }
@@ -81,7 +87,9 @@ export const OBS_ONLY_SITUATIONS: readonly SituationId[] = ["S1", "S2", "S3", "S
   // Owner decision 2026-11-06 (declaration r8): the B post-tuned run uses the return scenario.
   "griffin-unprepared-return-v1",
   // Situation C (proposed r10). Paid runs stay refused until the owner approves it (SITUATION_C_PAID_APPROVED).
-  "griffin-prepared-return-v1"];
+  "griffin-prepared-return-v1",
+  // Showcase demonstration (excluded from A/B/C): model-centralized only (checked in validatePlan); paid runs locked.
+  "showcase-maze-griffin-complete-v1"];
 
 export interface ModelSetup {
   /** A provider adapter for paid runs; a fake in tests. */
@@ -327,6 +335,17 @@ export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | 
     if (o.player !== C_PAID_SCOPE.player || o.model.gateway.label !== `${C_PAID_SCOPE.gateway}:${C_PAID_SCOPE.model}@${C_PAID_SCOPE.effort}` || (o.model.maxBatch ?? 4) !== C_PAID_SCOPE.maxBatch)
       throw Error(`${SITUATION_C_ID} paid runs are authorized only for ${C_PAID_SCOPE.player} on ${C_PAID_SCOPE.gateway}:${C_PAID_SCOPE.model}@${C_PAID_SCOPE.effort}, batch ${C_PAID_SCOPE.maxBatch}.`);
   }
+  // Showcase (excluded from A/B/C): its own baseline or model-centralized; paid runs locked until the owner approves.
+  if (o.situations.includes(SHOWCASE_ID)) {
+    if (o.final) throw Error(`${SHOWCASE_ID} is a demonstration and never a final run.`);
+    if (!["baseline-showcase-route", "model-centralized"].includes(o.player)) throw Error(`${SHOWCASE_ID} runs only baseline-showcase-route or model-centralized.`);
+    if (o.situations.length !== 1) throw Error(`${SHOWCASE_ID} runs on its own.`);
+    if (isModel(o.player) && o.model?.gateway && !(o.model.gateway.label ?? "").startsWith("mock:")) {
+      if (!SHOWCASE_PAID_APPROVED) throw Error(`${SHOWCASE_ID} is locked for paid model runs until the owner approves the showcase; use the mock gateway.`);
+      if (o.model.gateway.label !== `${SHOWCASE_PAID_SCOPE.gateway}:${SHOWCASE_PAID_SCOPE.model}@${SHOWCASE_PAID_SCOPE.effort}` || (o.model.maxBatch ?? 4) !== SHOWCASE_PAID_SCOPE.maxBatch || o.model.guidance !== SHOWCASE_PAID_SCOPE.guidance)
+        throw Error(`${SHOWCASE_ID} paid runs are limited to ${SHOWCASE_PAID_SCOPE.gateway}:${SHOWCASE_PAID_SCOPE.model}@${SHOWCASE_PAID_SCOPE.effort}, batch ${SHOWCASE_PAID_SCOPE.maxBatch}, guidance ${SHOWCASE_PAID_SCOPE.guidance}.`);
+    }
+  }
   if (o.model?.guidance !== undefined) {
     const g = guidance(o.model.guidance);
     if (o.player !== "model-centralized") throw Error("Post-tuned guidance is implemented for model-centralized only.");
@@ -355,6 +374,8 @@ export function policiesFor(player: PlayerKind, budget: ModelBudget | undefined,
       return { sieg: new InventoryHeuristic(), coco: new InventoryHeuristic() };
     case "baseline-griffin-heuristic":
       return { sieg: new GriffinHeuristic(), coco: new GriffinHeuristic() };
+    case "baseline-showcase-route":
+      return { sieg: new ShowcaseRouteBaseline("Sieg"), coco: new ShowcaseRouteBaseline("Coco") };
     case "baseline-quest":
       return { sieg: new QuestBaseline("Sieg"), coco: new QuestBaseline("Coco") };
     case "baseline-explore":
@@ -529,7 +550,7 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
   const sum = (f: (r: CallRecord) => number) => records.reduce((a, r) => a + f(r), 0);
   const per = <T>(f: (id: PlayerId) => T) => ({ sieg: f("sieg"), coco: f("coco") });
   const def = situation(id);
-  const evaluation = mazeEvaluationLabel(id) ?? prologueEvaluationLabel(id) ?? griffinEvaluationLabel(id) ?? griffinCEvaluationLabel(id);
+  const evaluation = mazeEvaluationLabel(id) ?? prologueEvaluationLabel(id) ?? griffinEvaluationLabel(id) ?? griffinCEvaluationLabel(id) ?? showcaseEvaluationLabel(id);
   const promptHashes = per((p) => (policies[p] as { promptHash?: string }).promptHash ?? null);
   const configHash = runConfigHash({
     situation: id, preset: def.preset, suiteRevision: SUITE_REVISION, evaluation, player: o.player,

@@ -25,7 +25,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { createHash } from "node:crypto";
-import { ABC_SITUATIONS, environmentFor, HISTORICAL_SITUATIONS, SITUATIONS, type SituationId } from "../../packages/agent/src/suite.js";
+import { ABC_SITUATIONS, environmentFor, HISTORICAL_SITUATIONS, SHOWCASE_SITUATIONS, SITUATIONS, type SituationId } from "../../packages/agent/src/suite.js";
 import { verifyTrace, type TraceLine } from "../../packages/agent/src/trace.js";
 import { startViewer, type Viewer } from "../../packages/agent/src/liveViewer.js";
 import { RECORDING_META, startRecorder, type Recorder } from "../../packages/agent/src/recorder.js";
@@ -69,7 +69,7 @@ const summaryPath = join(dirname(resolve(tracePath)), "summary.json");
 const summary = existsSync(summaryPath) ? (JSON.parse(readFileSync(summaryPath, "utf8")) as { situation?: string; player?: string; gitHash?: string }) : {};
 // Episode ids are `<preset>-<seed>-<hash8>`; the scenario comes from the summary.
 const scenario = summary.situation as SituationId | undefined;
-const known = [...SITUATIONS, ...HISTORICAL_SITUATIONS, ...ABC_SITUATIONS];
+const known = [...SITUATIONS, ...HISTORICAL_SITUATIONS, ...ABC_SITUATIONS, ...SHOWCASE_SITUATIONS];
 if (!scenario || !known.some((s) => s.id === scenario)) fail(`cannot tell the scenario (summary.json situation: ${String(scenario)}).`);
 // Held-out scenarios and final seeds are never replayed here.
 if (scenario === "S4" || scenario === "F") fail(`${scenario} is held out; not replayed.`);

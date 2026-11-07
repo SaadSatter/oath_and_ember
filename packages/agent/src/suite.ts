@@ -30,7 +30,9 @@ export type CurrentSituationId = "S1" | "S2" | "S3" | "S4" | "F" | "S2-local" | 
 /** A/B/C declaration cases that are new scenarios (ABC_SITUATIONS). */
 export type AbcSituationId = "griffin-unprepared-v1" | "griffin-unprepared-return-v1" | "griffin-prepared-return-v1";
 export type HistoricalSituationId = "S2-v1" | "S3-v1" | "S2-local-v1" | "S3-local-v1";
-export type SituationId = CurrentSituationId | HistoricalSituationId | AbcSituationId;
+/** Prompt-tuned demonstration episodes, excluded from the A/B/C evaluation (SHOWCASE_SITUATIONS). */
+export type ShowcaseSituationId = "showcase-maze-griffin-complete-v1";
+export type SituationId = CurrentSituationId | HistoricalSituationId | AbcSituationId | ShowcaseSituationId;
 
 export interface Situation {
   id: SituationId;
@@ -257,6 +259,27 @@ export const ABC_SITUATIONS: readonly Situation[] = Object.freeze([
 ]);
 
 /**
+ * Prompt-tuned continuous showcase (docs/midterm/SHOWCASE_CONTINUOUS_EPISODE.md).
+ * A demonstration for the submission recording, EXCLUDED from the official
+ * A/B/C evaluation. Kept apart from SITUATIONS and ABC_SITUATIONS so neither
+ * frozen list changes. Its start is S2-A's exactly (the same ordinary prefix,
+ * so the same authoritative start state): the Hedge Maze entrance, puzzle
+ * pristine, no Mirror, Shears or wig. No fixture.
+ */
+export const SHOWCASE_BRIEFING = [
+  "Episode briefing (continuous quest), the same for both players: you start at the entrance of the Hedge Maze.",
+  "This episode is the rest of the quest in one continuous run: obtain the Enchanted Shears in the Hedge Maze, travel to the Griffin Enclosure, defeat the Griffin in combat, take the Magnificent Griffin Wig, bring it to the Goddess as an offering, and follow the story until Chapter 0 is complete.",
+  "Neither hero may be knocked out: if either hero's health runs out, the episode ends as a failure.",
+  "Use your normal observations, actions and messages to your partner.",
+].join(" ");
+export const SHOWCASE_TASK = "Complete the rest of the quest in one continuous run: the Enchanted Shears from the Hedge Maze, then defeat the Griffin in combat, claim its wig, offer it to the goddess and complete Chapter 0. Both heroes must avoid knockout.";
+export const SHOWCASE_SITUATIONS: readonly Situation[] = Object.freeze([
+  { id: "showcase-maze-griffin-complete-v1", preset: "showcase-maze-griffin-complete-v1", heldOut: false, title: "Showcase: Hedge Maze to Griffin to Goddess (demonstration, excluded from A/B/C)",
+    start: "Hedge Maze entrance, after the opening and ordinary travel (S2-A's start); no Mirror, Shears or wig",
+    prefix: localEntry("Hedge Maze"), briefing: SHOWCASE_BRIEFING, tutorial: TUTORIAL_BRIEFING, task: SHOWCASE_TASK, revision: 2 },
+]);
+
+/**
  * Revision 1 S2/S3 definitions, exactly as they were until the swap: the same
  * presets (so episode ids and goal text match the old traces), prefixes,
  * briefings and no tutorial briefing. Tuning-only, like their originals. They
@@ -290,7 +313,7 @@ export function historicalSituationId(id: string, suiteRevision?: number): Situa
 export const SEEDS = Object.freeze({ tuning: [0, 1], final: [100, 101] });
 
 export function situation(id: SituationId): Situation {
-  const s = SITUATIONS.find((x) => x.id === id) ?? HISTORICAL_SITUATIONS.find((x) => x.id === id) ?? ABC_SITUATIONS.find((x) => x.id === id);
+  const s = SITUATIONS.find((x) => x.id === id) ?? HISTORICAL_SITUATIONS.find((x) => x.id === id) ?? ABC_SITUATIONS.find((x) => x.id === id) ?? SHOWCASE_SITUATIONS.find((x) => x.id === id);
   if (!s) throw Error(`Unknown situation ${id}`);
   return s;
 }

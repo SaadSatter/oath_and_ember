@@ -40,6 +40,7 @@ import {
   griffinMilestones,
   milestones,
   prologueMilestones,
+  showcaseMilestones,
   situationCReport,
   stateHash,
   type EpisodePreset,
@@ -892,6 +893,8 @@ export class AgentEnvironment implements GameInterface {
     if (this.preset === "P1" || this.preset === "P1-v2" || this.preset === "P1-v3") return [...milestones(w), ...prologueMilestones(w)];
     // Griffin trials add evaluator-only Griffin markers; other episodes are unchanged.
     if (this.preset === "griffin-unprepared-v1") return [...milestones(w), ...griffinMilestones(w)];
+    // Showcase (excluded from A/B/C): the Griffin markers plus the five ordered showcase milestones, evaluator-only.
+    if (this.preset === "showcase-maze-griffin-complete-v1") return [...milestones(w), ...griffinMilestones(w), ...showcaseMilestones(w)];
     return milestones(w);
   }
 }
