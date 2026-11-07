@@ -66,9 +66,13 @@ export type TraceEvent = { type: string; tick: number; player?: PlayerId; data: 
  * to add its declared starting items after the ordinary B-return prefix. It is
  * never given to a policy and is gone once reset returns.
  */
+/** The only items a start fixture may add, and the only preset that may use it (review round 1, finding 6). */
+export const START_FIXTURE_ITEMS = Object.freeze(["vanity_mirror", "enchanted_shears"] as const);
+export type StartFixtureItem = (typeof START_FIXTURE_ITEMS)[number];
+export const START_FIXTURE_PRESETS: readonly EpisodePreset[] = Object.freeze(["griffin-prepared-return-v1"]);
 export interface StartFixture {
-  /** Adds items to the shared backpack, as the inventory service does on a pickup. */
-  addItems(counts: Record<string, number>): void;
+  /** Adds the owner-approved start items to the shared backpack, as a pickup does (without a claim). */
+  addItems(counts: Partial<Record<StartFixtureItem, number>>): void;
 }
 
 export interface EnvironmentOptions {
@@ -337,6 +341,9 @@ export class AgentEnvironment implements GameInterface {
         const setup: StartFixture = {
           addItems: (counts) => {
             if (!open) throw Error("Start fixtures are only available during reset.");
+            if (!START_FIXTURE_PRESETS.includes(this.preset)) throw Error(`Preset ${this.preset} has no approved start fixture.`);
+            for (const id of Object.keys(counts))
+              if (!(START_FIXTURE_ITEMS as readonly string[]).includes(id)) throw Error(`${id} is not an approved start item.`);
             const bag = room.state.inventory;
             if (!bag) throw Error("This room has no shared backpack.");
             for (const [id, n] of Object.entries(counts)) {

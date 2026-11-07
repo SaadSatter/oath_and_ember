@@ -12,6 +12,11 @@ import { SITUATION_GRIFFIN_C as C, SITUATION_GRIFFIN_C_HASH, SITUATION_C_PAID_AP
 import { guidance, guidanceApproved, guidanceHash } from "../src/policies/situationGuidance.js";
 import { MockGateway } from "../src/policies/mockGateway.js";
 import { Director } from "../src/route/director.js";
+import { AgentEnvironment, type StartFixture } from "../src/environment.js";
+import { CentralPlanner } from "../src/policies/centralized.js";
+import { guidanceBlock } from "../src/policies/situationGuidance.js";
+import { ModelBudget, MeteredGateway } from "../src/budget.js";
+import { PLAYER_KINDS } from "../src/playerKinds.js";
 import type { GameRoom } from "../../../apps/server/src/GameRoom.js";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -32,7 +37,7 @@ const both = (env: Awaited<ReturnType<typeof start>>["env"], sieg: Parameters<ty
 
 describe("Situation C definition", () => {
   it("pins its definition hash, B parity references and the paid lock", () => {
-    expect(SITUATION_GRIFFIN_C_HASH).toBe("d563c6eb948063a6d4e0c854fa5eed3ef957b592530b67c806df71ca1ab3ba11");
+    expect(SITUATION_GRIFFIN_C_HASH).toBe("f68bf85b3bd571be186b04c46083040a179941d0d54fba3eab3f74523d197400");
     expect(C.situation).toBe(ID);
     expect(situation(ID).heldOut).toBe(false); // holdout is enforced by the paid lock and the declaration, as for B
     expect(SITUATION_C_PAID_APPROVED).toBe(false);
@@ -269,5 +274,81 @@ describe("C2 baseline: unchanged baseline-griffin-heuristic-v1", () => {
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }
+  }, 120000);
+});
+
+// Review round 1 (docs/midterm/agent-evidence/reviews/2026-11-06-situation-c-rules-review.md).
+describe("Situation C review round 1", () => {
+  const manual = readFileSync(new URL("../../../manual/Oath_and_Ember_Player_Manual.md", import.meta.url), "utf8");
+  const gateways = () => {
+    const budget = new ModelBudget({ maxModelCallsPerPlayer: 1, maxTokensPerPlayer: 1, maxSpendUsd: 0.01, callTimeoutMs: 1000 });
+    return { sieg: new MeteredGateway(new MockGateway(0, 0), budget, "sieg"), coco: new MeteredGateway(new MockGateway(0, 0), budget, "coco") };
+  };
+  const planner = (text?: string) => { const s = situation(ID); return new CentralPlanner(manual, gateways(), 4, s.briefing, s.tutorial, s.task, text); };
+
+  it("finding 7: C3's system prompt is exactly C1's plus the v4 block, with the pinned hashes", () => {
+    const v4 = guidance("b-post-combined-v4").text;
+    const pre = planner(), post = planner(v4);
+    expect(post.system).toBe(pre.system + guidanceBlock(v4));
+    expect(pre.promptHash).toBe(C.prompts.preTunedPromptHash);
+    expect(post.promptHash).toBe(C.prompts.postTunedPromptHash);
+    expect(post.maxBatch).toBe(pre.maxBatch);
+    expect(pre.system).not.toContain(episodes[ID].goal);
+  });
+
+  it("finding 4: B-return's definition at HEAD is unchanged (limits, failure, prefix, task)", () => {
+    const b = episodes[B_ID], s = situation(B_ID);
+    expect(b.limits).toEqual({ maxTicks: 18000, maxDecisionsPerPlayer: 1600, maxModelCallsPerPlayer: 400, maxTokensPerPlayer: 4000000 });
+    expect(s.prefix?.name).toBe("opening and ordinary north travel to Griffin enclosure (unprepared)");
+    expect(s.task).toBe("Defeat the Griffin, obtain its Divine Wig, return it to the goddess and complete Chapter 0. Both heroes must avoid knockout.");
+    expect(s.briefing).toBeUndefined();
+    expect(s.tutorial).toBeUndefined();
+    const w = { players: { a: { role: "OATH", sceneId: "GODDESS_SHRINE" } } } as never;
+    expect(b.failure?.(w, { knockedOut: false })).toBeUndefined();
+    expect(b.failure?.(w, { knockedOut: true })).toBe("knocked_out");
+    expect(EPISODE_CAP_USD[B_ID]).toBe(0.75);
+  });
+
+  it("seed 1 resets to its pinned start hash", async () => {
+    expect((await environmentFor(ID).reset(1)).startHash).toBe(C.start.hashes[1]);
+  }, 60000);
+
+  it("finding 6: the start fixture is C-only, tool-only and closed once reset returns", async () => {
+    let kept!: StartFixture;
+    const env = new AgentEnvironment({ preset: ID, prefix: { name: "test", run: async (_e, setup) => { kept = setup!; } } });
+    await env.reset(0);
+    expect(() => kept.addItems({ vanity_mirror: 1 })).toThrow(/only available during reset/);
+    await expect(new AgentEnvironment({ preset: ID, prefix: { name: "test", run: async (_e, setup) => setup!.addItems({ griffin_wig: 1 } as never) } }).reset(0)).rejects.toThrow(/not an approved start item/);
+    await expect(new AgentEnvironment({ preset: B_ID, prefix: { name: "test", run: async (_e, setup) => setup!.addItems({ vanity_mirror: 1 }) } }).reset(0)).rejects.toThrow(/no approved start fixture/);
+  }, 60000);
+
+  it("the paid lock refuses every model player kind on C, and admits scripted baselines", () => {
+    const paid = { gateway: { label: "openai:gpt-6-luna@medium" }, stage: "pilot" } as unknown as ModelSetup;
+    for (const player of PLAYER_KINDS) {
+      const plan = () => validatePlan({ player, situations: [ID], seeds: [0], ...(player.startsWith("model-") ? { model: paid } : {}) });
+      if (player.startsWith("model-")) expect(plan, player).toThrow();
+      else if (player !== "baseline-quest" && player !== "baseline-explore") expect(plan, player).not.toThrow();
+    }
+  });
+
+  it("finding 8: the Mirror alone starts grooming that never finishes without the Shears; the Griffin stays immune and the Shears stay held", async () => {
+    // UNIT FIXTURE for Coco's position only, as above.
+    let room!: GameRoom;
+    const env = environmentFor(ID, { room: (r) => (room = r) });
+    await env.reset(0);
+    const d = new Director({ env });
+    await d.both(undefined, { type: "ability", ability: "flight" });
+    const coco = Object.values(room.state.players).find((p) => p.role === "EMBER")!;
+    coco.x = 640; coco.y = 160;
+    const r = (await d.both(undefined, { type: "use_item", item: "vanity_mirror" })).coco;
+    expect(r.accepted).toBe(true);
+    const g = room.state.puzzles.griffin!.griffin!;
+    expect(g).toMatchObject({ mirrorDelivered: true, phase: "GROOMING" });
+    expect(g.shearsDelivered ?? false).toBe(false);
+    for (let t = 0; t < 12 * 60; t += 60) await d.both({ type: "wait", ticks: 60 }, { type: "wait", ticks: 60 });
+    expect(g.wigDropped ?? false).toBe(false);
+    expect(g.toolsTaken ?? false).toBe(false);
+    expect(g.hp).toBe(640);
+    expect(room.state.inventory!.counts.enchanted_shears).toBe(1);
   }, 120000);
 });

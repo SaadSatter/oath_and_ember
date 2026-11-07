@@ -26,14 +26,14 @@ C2 reuses the B baseline unchanged, as the brief asks. r9 had fallen back to the
 | Start hash (seed 1; only the ids differ) | `dc638ff166d36edfc777d36c24f155f77d013fcb72633b4becda330aa63ccab7` |
 | Prefix actions SHA-256 | `1cf7940acb58e02d7509b7567c6e63457c48231b0424f9f77b6ae781d8fff81d` (200 Sieg + 60 Coco, identical to B-return's) |
 | Definition file | [C-prepared-return-definition.json](evaluation-abc/C-prepared-return-definition.json), `9c91accdecc529a6284dff61306ea9ebbbb753db5c86a74888a360b987b2ea94` |
-| Code definition hash | `SITUATION_GRIFFIN_C_HASH` = `d563c6eb948063a6d4e0c854fa5eed3ef957b592530b67c806df71ca1ab3ba11` |
+| Code definition hash | `SITUATION_GRIFFIN_C_HASH` = `f68bf85b3bd571be186b04c46083040a179941d0d54fba3eab3f74523d197400` |
 | Heroes | Sieg (18.5, 33) and Coco (21.5, 33), 100/100 HP, the same ability states as B-return |
 | Griffin | 640/640 HP, NEST at (640, 112) px, four pillars standing, no tool delivered, wig unclaimed |
 | Backpack | B-return's eight items + `vanity_mirror` 1 + `enchanted_shears` 1; `griffin_wig` 0 |
 
 ### Diff against B-return (`45b1a6aa…`)
 
-Produced by `scripts/midterm/situation-c.ts` over the whole authoritative world, both heroes' observations and their legal actions (`evidence/situation-c-preparation/initial-state-diff.json`):
+Produced by `scripts/midterm/situation-c.ts` over the whole serialized authoritative world (`room.state`; private `GameRoom` fields are not compared), both heroes' observations and their legal actions (`evidence/situation-c-preparation/initial-state-diff.json`):
 
 | Path | B-return | C |
 | --- | --- | --- |
@@ -54,7 +54,7 @@ Nothing else differs: hero positions, HP, cooldowns, facing, story flags, claims
 Verified in `apps/server/src/griffin.ts` and by tests (`packages/agent/test/griffinSituationC.test.ts`, "Mirror and Shears under ordinary game rules"). No mechanic was added or changed.
 
 1. Only Coco can use the nest, which lies over water, so she has to fly there. A plain E at the nest drops every tool the party holds.
-2. **If the Griffin is alive,** the Mirror starts grooming: the Griffin returns to the nest and admires itself, then cuts its hair with the Shears, takes both tools and flies away, dropping the wig. While it grooms, `damageGriffin` ignores all hits. Once the wig is claimed, the Griffin can never be damaged again. Coco's next E at the nest claims the wig, with the Griffin at full HP.
+2. **If the Griffin is alive,** the Mirror starts grooming: the Griffin returns to the nest and admires itself, then cuts its hair with the Shears, takes both tools and flies away, dropping the wig. While it grooms, `damageGriffin` ignores all hits and the Griffin does not attack (its tick returns before any attack logic, and any beam is cleared). Once the wig is claimed, the Griffin can never be damaged again. Coco's next E at the nest claims the wig, with the Griffin's HP unchanged from when grooming began. Partial delivery: the Mirror alone (`use_item`) starts grooming that loops without ever cutting, leaving the Griffin immune, until the Shears arrive. The Shears alone start nothing until the Mirror arrives (the Mirror-only case is tested; the Shears-only case is read from source).
 3. **If the Griffin is at 0 HP,** E at the nest awards the wig at once. The tools stay in the backpack.
 4. The tools add no combat ability. Their only effect is the peaceful route, which under the owner's C rule is a legal way to obtain the wig.
 
@@ -129,3 +129,26 @@ Maximum paid spend: 2 runs × $0.75 cap = **$1.50**, both from the pilot stage o
 - The C2 outcome is known before any model run (3/3 free preparation successes). No model policy changed after it.
 - One run per cell with a small sample: no statistical claim.
 - The pre-existing `s2Shutdown` recorder test fails on HEAD both with and without these changes (a 200 ms timing assertion). It is unrelated to C.
+
+## Review round 1 (2026-11-06)
+
+The independent `rules-reviewer` report is saved verbatim in [agent-evidence/reviews/2026-11-06-situation-c-rules-review.md](agent-evidence/reviews/2026-11-06-situation-c-rules-review.md). It had no critical findings. The implementation agent's responses:
+
+| # | Finding | Response |
+| --- | --- | --- |
+| 1 | Major, if chosen: `baseline-inventory-heuristic-v1` is tuned to C's literal item text | Recorded in r10's `alternativeCandidate`. The C2 choice remains the owner's. |
+| 2 | C2 reproduces B2's trajectory exactly | Disclosed here and in r10. **C2 gives no information about the value of preparation.** It wins by fighting, as in B; the tools are dropped only by the E at the nest after the defeat. |
+| 3 | v4 is a combat plan, and may bias C3 toward fighting | Disclosed in r10 (`transferCaveat`) and here. C1 to C3 mixes general transfer with that bias. Guidance text not changed. |
+| 4 | Working-tree pins on five B files were dropped | Added a test pinning B-return's limits, failure cases, prefix name, task and missing briefing/tutorial at HEAD, alongside the existing start-hash and prompt-hash pins. |
+| 5 | The pins need git history | CI now checks out full history. If `2791bce` ever becomes unreachable (for example after a squash merge), tag it first. Not tagged here (owner's choice). |
+| 6 | The start fixture accepted any item, in any preset | Fixed: tool items only, `griffin-prepared-return-v1` only, closed after reset (tested). |
+| 7 | C prompt hashes were checked only by the script | Added a vitest: C3's prompt = C1's + v4 block, both hashes computed by the real planner. |
+| 8 | Mechanics wording | Corrected above: HP is unchanged rather than full, no attacks while grooming, partial delivery (Mirror-only case tested). |
+| 9 | Model, effort and batch are only command-line flags | To be enforced when C is unlocked. The registered commands above fix them, and the policy id and configHash record them. |
+| 10 | The mock exemption is by gateway label | Kept. A new test refuses every model player kind on C with a paid gateway. |
+| 11 | The evaluator goal text named the route | Reworded to neutral text; a test checks it is absent from C's prompt. The code definition hash is now `f68bf85b3bd571be186b04c46083040a179941d0d54fba3eab3f74523d197400`. The evidence summaries recorded at `a3ce5ab` keep the earlier hash `d563c6eb…`, correctly for that commit. |
+| 12 | "(Griffin Trial, prepared)" in the briefing | Owner's wording decision; flagged for approval. |
+| 13 | The centralized planner sees both heroes | Existing, disclosed, the same for C1 and C3. |
+| 14 | The diff compares `room.state` only | Wording clarified above. |
+
+Reviewer uncertainties, settled by the implementation agent with git: the Pilot-31/32/33 records, B evidence and declaration r9 are byte-unchanged since `9f4ac38`; B-return's prefix name is identical to `2791bce`'s; the game client's backpack panel shows item descriptions (`apps/client/src/ui/inventory.ts:196-198`), so they are ordinary player-visible text.

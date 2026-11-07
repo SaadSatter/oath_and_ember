@@ -55,8 +55,10 @@
      "commit": "4f9695b",
      "author": "concurrent session (committed to this branch while r10 was prepared); proposal docs/midterm/evaluation-abc/proposed/baseline-inventory-v1.json",
      "difference": "Coco matches owned item names/descriptions to observed targets and delivers them, so it would try the peaceful route; its own document says it was developed with knowledge of the prepared inventory setup.",
-     "status": "not run on C by the implementation agent; owner chooses C2 between the two before any C run"
-    }
+     "status": "not run on C by the implementation agent; owner chooses C2 between the two before any C run",
+     "reviewFinding": "Review round 1, finding 1 (major if chosen): inventoryHeuristic.ts:14-34 and :121 strip exactly C's item-description flavour words and match the Shears text 'Keep it for the Griffin's nest', so it is tuned to C's literal item text. Choosing it as C2 would break the no-C-specific-baseline holdout rule unless it is reported as C-informed."
+    },
+    "trajectoryNote": "Review round 1, finding 2: on C this baseline reproduces B-return's baseline trajectory (5389 ticks, 481/646 decisions): it fights, and the tools are dropped only by the post-defeat E at the nest. C2 therefore gives no information about the value of preparation."
    }
   }
  },
@@ -102,7 +104,8 @@
    "postTunedPromptSha256": "be19b8b5e9c350ecaf7ff7f4a478b3ca96bb1b3864d2527744823e2908548db8",
    "preTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-63b9fbdc",
    "postTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-63b9fbdc·guidance-12874542",
-   "promptDifference": "C3 system prompt = C1 system prompt + v4 guidance block (nothing else)"
+   "promptDifference": "C3 system prompt = C1 system prompt + v4 guidance block (nothing else)",
+   "transferCaveat": "Review round 1, finding 3: v4 is a combat plan tuned for B's defeat objective; in C, where defeat is optional, it may bias C3 toward fighting rather than using the items. C1 to C3 mixes general tuning transfer with that bias."
   }
  },
  "conditions": [
@@ -168,7 +171,7 @@
    "seed": 0,
    "definitionHash": "9c91accdecc529a6284dff61306ea9ebbbb753db5c86a74888a360b987b2ea94",
    "definitionFile": "docs/midterm/evaluation-abc/C-prepared-return-definition.json",
-   "codeDefinitionHash": "d563c6eb948063a6d4e0c854fa5eed3ef957b592530b67c806df71ca1ab3ba11",
+   "codeDefinitionHash": "f68bf85b3bd571be186b04c46083040a179941d0d54fba3eab3f74523d197400",
    "startHash": "28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7",
    "startTick": 540,
    "prefixActionsSha256": "1cf7940acb58e02d7509b7567c6e63457c48231b0424f9f77b6ae781d8fff81d",
@@ -263,5 +266,5 @@
   ],
   "disclosure": "Decided before any C model outcome. The unchanged baseline's C outcome is known from free preparation runs (3/3 success); no model policy was changed after it."
  },
- "declarationSha256": "30b92864ac893fa1add28c93c8eec81db9ed3e27490d971cdfe11b99c2916231"
+ "declarationSha256": "c92c4fb2ff0aec1548266c64e974f81c14623fa95627d54a15ce3fdd3aced569"
 }

@@ -165,7 +165,7 @@ export const GRIFFIN_UNPREPARED_EPISODE: EpisodeDefinition = {
 export const griffinWigReturned = (w: World) => !!griffinState(w.puzzles)?.wigClaimed && has(w, FINALE.complete);
 export const GRIFFIN_PREPARED_RETURN_EPISODE: EpisodeDefinition = {
   preset: "griffin-prepared-return-v1",
-  goal: "Situation C: holding the Vanity Mirror and Enchanted Shears, obtain the Griffin's wig (by defeat or by the nest tools), return it to the goddess and reach chapter0.complete without a hero knockout.",
+  goal: "Situation C: from the Griffin Enclosure entrance holding the Vanity Mirror and Enchanted Shears, obtain the Griffin's wig, offer it to the goddess and reach chapter0.complete without a hero knockout.",
   limits: { maxTicks: 18000, maxDecisionsPerPlayer: 1600, maxModelCallsPerPlayer: 400, maxTokensPerPlayer: 4000000 },
   failure: (_w, tick) => (tick.knockedOut ? "knocked_out" : undefined),
   success: griffinWigReturned,
