@@ -1,7 +1,7 @@
 {
- "id": "oath-ember-abc-2026-11-06-r10-c",
+ "id": "oath-ember-abc-2026-11-06-r11-c3-hint",
  "declaredOn": "2026-11-06",
- "status": "ACTIVE (owner final authorization 2026-11-06). Supersedes r9, archived byte for byte in docs/midterm/evaluation-abc/history/r9/declaration.json.",
+ "status": "ACTIVE (owner approval 2026-11-06). Supersedes r10, archived byte for byte in docs/midterm/evaluation-abc/history/r10/declaration.json.",
  "guidelines": {
   "source": "owner-pasted midterm guidelines",
   "sha256": "a1040a5425d554e2451837088aba1fb1caad4f8058319dd443eed8a53ccb4c76"
@@ -97,6 +97,17 @@
    "note": "r9 record of the B post-tuned guidance, unchanged; v4's allowed situations in code now also include C (see postGuidanceC.scopeChange)"
   },
   "postGuidanceC": {
+   "id": "c-post-v4-inventory-hint-v1",
+   "sha256": "d750861ba30255fd10e139532c8394e2e7dd44237e1ba50dc3ee4e0d311afa83",
+   "composition": "b-post-combined-v4 text unchanged (1287454219c4…) + blank line + C-specific hint paragraph",
+   "hintText": "Additional guidance for this task:\nBefore choosing how to reach the objective, check the shared inventory and read each item's description. Read the labels and messages on objects near the objective, such as the Griffin's nest: they can describe what an item is for. Consider whether an item offers a way to reach the objective besides combat.",
+   "status": "approved by the owner (2026-11-06), exact text d750861b…",
+   "preTunedPromptSha256": "6dc64411b2373596f925360334680211657c266a3fe5487b4f687868740e3701",
+   "postTunedPromptSha256": "d50dc0623921ed00bedb811841d72153fe9b943e072ee180c63bc7856b52dd54",
+   "postTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-1ba46753·guidance-d750861b",
+   "promptDifference": "C3 system prompt = C1 system prompt + one guidance block (v4 + hint)"
+  },
+  "postGuidanceC_r10": {
    "id": "b-post-combined-v4",
    "sha256": "1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34",
    "source": "Pilot-33's guidance (verified: recorded guidanceHash and the reproduced Pilot-33 prompt hash 7ff08ba8…)",
@@ -189,8 +200,8 @@
    "success": "authoritative griffin.wigClaimed AND story.flags contains chapter0.complete (Griffin HP not required)",
    "failureBoundary": "Any authoritative knockout, or an episode limit. Leaving the enclosure is allowed.",
    "prompt": "tutorial (Pilot-31's) + the owner's neutral C briefing verbatim (briefing-1ba46753), identical for C1 and C3; no task line (generic TASK); no agent-facing 'prepared'",
-   "heldOut": true,
-   "holdoutRule": "Both model conditions and the baseline are frozen before any C model outcome; C3 transfers only B-developed guidance (v4) unchanged; no C-specific hint. Enforced in code by the paid lock, not by Situation.heldOut (which would refuse the tuning-path launcher model-centralized needs).",
+   "heldOut": false,
+   "holdoutRule": "r11: C is no longer a clean holdout for C3. The C3 guidance includes a C-specific hint requested after C1's outcome (Pilot-34, peaceful success) was known. C1 and C2 are unaffected.",
    "briefingText": "You and your companion are at the Griffin Enclosure. Your objective is to obtain the Magnificent Griffin Wig and bring it to the Goddess as an offering. Complete the offering without either hero being knocked out. You may use your available abilities, inventory, and ordinary interactions. Determine how to proceed from what you observe.",
    "descriptiveMetrics": {
     "field": "summary.situationCReport",
@@ -226,7 +237,7 @@
   "freshModelRunsRemaining": 2,
   "freshBaselineRunsRemaining": 1,
   "newModelSpendCeilingUsd": 1.5,
-  "paidAuthorization": true,
+  "paidAuthorization": "C1 done under r10; C3 requires owner approval of r11 and the hint text",
   "A/post-tuned/1": "Pilot-30 historical completed pilot reused once, condition metadata corrected, original run status/evidence unchanged",
   "A/pre-tuned/1": {
    "episode": "Pilot-28",
@@ -240,9 +251,9 @@
    "priorPostTunedAttempt": "Pilot-32 failed under earlier guidance, retained; neither repeated identical policy nor prompt-only controlled comparison"
   },
   "C": {
-   "C/pre-tuned/1": "C1, unrun",
-   "C/cheap-baseline/1": "C2, unrun (a fresh free run at the authorized commit; preparation runs are not registered)",
-   "C/post-tuned/1": "C3, unrun",
+   "C/pre-tuned/1": "Pilot-34 (official C1, r10): success, peaceful route, 133.3 game-s, $0.586742",
+   "C/post-tuned/1": "C3 under r11 (v4 + hint), unrun",
+   "C/cheap-baseline/1": "C2, unrun",
    "selection": "One official run per cell; never selected or replaced by route or outcome."
   },
   "paidLimits": {
@@ -253,15 +264,16 @@
    "perEpisodeCapUsd": 0.75,
    "combinedCapUsd": 1.5,
    "runs": [
-    "C1 once",
-    "C3 once"
+    "C1 once (done: Pilot-34, $0.586742)",
+    "C3 once with c-post-v4-inventory-hint-v1"
    ],
    "order": [
     "C1",
     "C3",
     "C2"
    ],
-   "rule": "record the first valid result regardless of outcome; no retries for better results; stop and report on infrastructure failure"
+   "rule": "record the first valid result regardless of outcome; no retries for better results; stop and report on infrastructure failure",
+   "remainingCombinedUsd": 0.913258
   }
  },
  "holdoutOrder": [
@@ -273,7 +285,7 @@
  ],
  "memoryRequirement": "Partial observation: clean bounded-memory versus observation-only comparison still required/pending; pre/post guidance is not a memory ablation",
  "implementationBoundary": "C scenario, evaluator preset, start fixture, paid lock, v4 scope and tests added; no gameplay, rule, observation-schema or B change; no paid calls, merge or push",
- "supersedes": "oath-ember-abc-2026-11-06-r9-pilot33",
+ "supersedes": "oath-ember-abc-2026-11-06-r10-c",
  "correction": "Owner designated Pilot-33 (b-post-combined-v4) as B/post-tuned/1 after observing success. R8 pinned b-post-a-transfer-v1; its Pilot-32 knockout failure and artifacts are retained. This is an after-outcome primary-result amendment, not preregistration of v4 or removal of a failed attempt.",
  "classificationNote": "A: pre-tuned Pilot-28 (678b86c, manual stop), post-tuned Pilot-30 (040685c, success), baseline baseline-quest (success). Pilot-29 (327c34a) is supplementary evidence of the intermediate tuning round. Whether a manually stopped run qualifies as the official pre-tuned attempt depends on the professor's rules.",
  "promptTuningRecord": "docs/midterm/A_PROMPT_TUNING.md",
@@ -321,38 +333,40 @@
   ],
   "disclosure": "Decided before any C model outcome. The unchanged baseline's C outcome is known from free preparation runs (3/3 success); no model policy was changed after it."
  },
+ "basedOn": {
+  "declaration": "oath-ember-abc-2026-11-06-r10-c",
+  "sha256": "877001388470b6b153a6b5b2d3372f987aea83435ad233f6999bab215e0ef238"
+ },
+ "amendmentR11": {
+  "date": "2026-11-06",
+  "by": "owner request, recorded by the implementation agent; proposed, not active",
+  "decision": "Replace the official C3 guidance: v4 + a C-specific hint to check the inventory and read what is at the Griffin's nest, without giving the solution.",
+  "disclosure": [
+   "Requested after C1 (Pilot-34) ran and its outcome (peaceful success) was known: outcome-informed.",
+   "C3 is C-specific tuning, not a B-to-C transfer test; the C1 to C3 difference is v4 plus the hint, and cannot be attributed to B tuning alone.",
+   "The hint points at observable text that, in ordinary play, names the tools (the nest label 'Griffin nest · drop mirror + shears'); it is a strong hint even though it names no tool.",
+   "C1 (Pilot-34) and its evidence are unchanged and remain the official C1; r10's C3 configuration (v4 only, prompt a0c6939a…) is recorded in model.postGuidanceC_r10 and was never run."
+  ]
+ },
  "activation": {
   "date": "2026-11-06",
-  "by": "owner final authorization, recorded by the implementation agent",
-  "proposal": "docs/midterm/evaluation-abc/proposed/declaration-r10-c.json",
-  "proposalSha256": "989046a9f96a90daebf9cd51448184ee9b96b4e8c60d392b563c561b73b9a598",
-  "changesFromProposal": "id, status, supersedes, activation and trialAllocation.paidAuthorization/paidLimits only",
-  "verifiedBeforeActivation": [
-   "r10 proposal self-hash 989046a9… recomputed",
-   "r9 self-hash 616c1824… recomputed; A/B records and evidence unchanged since 9f4ac38",
-   "C start 28777a85… (seed 0, tick 540) and prefix 1cf7940a…",
-   "C1 prompt 6dc64411…, C3 prompt a0c6939a… = C1 + v4 block (v4 text 12874542…)",
-   "Pilot-31 and Pilot-33 prompt hashes reproduce"
-  ],
-  "pricingRecheck": {
-   "date": "2026-11-06",
-   "source": "https://developers.openai.com/api/docs/models/gpt-6-luna",
-   "perMillionUsd": {
-    "input": 0.1,
-    "cachedInput": 0.01,
-    "cacheWrite": 0.125,
-    "output": 0.5
-   },
-   "longContext": "over 272K input: 2x input and cache, 1.5x output",
-   "matchesRunnerTable": true,
-   "runnerUplift": 1.1
-  },
-  "ledgerCheck": {
-   "date": "2026-11-06",
-   "pilotRemainingUsd": 3.004177,
-   "totalRemainingUsd": 20.001256,
-   "openReservations": 0
-  }
+  "by": "owner approval, recorded by the implementation agent",
+  "proposal": "docs/midterm/evaluation-abc/proposed/declaration-r11-c3-hint.json",
+  "proposalSha256": "5f55307efe676bbc2f86b21ced5babeb4a10d3e8675e19848117ad7ed565b01c",
+  "changesFromProposal": "id, status, supersedes, activation, model.postGuidanceC.status and c3Classification only",
+  "conditions": [
+   "C1/Pilot-34 and its evidence preserved unchanged (file and video hashes verified before activation)",
+   "C3 classified as outcome-informed, C-specific supplementary tuning, not independent B-to-C transfer",
+   "C1 already succeeded via the peaceful route without this hint",
+   "C3 differs from C1 only by the one approved guidance block (c-post-v4-inventory-hint-v1 = v4 text + hint); same scenario, start, controller, model, effort, batch, tutorial, briefing, observations, evaluator and limits",
+   "No paid C3 call without separate owner authorization"
+  ]
  },
- "declarationSha256": "877001388470b6b153a6b5b2d3372f987aea83435ad233f6999bab215e0ef238"
+ "c3Classification": {
+  "cell": "C/post-tuned/1",
+  "label": "outcome-informed, C-specific supplementary tuning; not independent B-to-C transfer",
+  "c1Context": "C1 (Pilot-34) succeeded by the peaceful route (Griffin HP 418, grooming) without this hint",
+  "comparisonNote": "C1 vs C3 differs by one guidance block containing the frozen v4 text plus the hint; neither component's effect can be separated with one run each"
+ },
+ "declarationSha256": "1fd604c24d8388c94c9808e828ef959d35152878e2d31a1a753504a243e5fe85"
 }

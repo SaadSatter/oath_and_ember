@@ -246,3 +246,13 @@ C is `griffin-prepared-return-v1` (seed 0, start `28777a85…`, tick 540): B-ret
 **Paid authorization:** only `model-centralized` on `openai:gpt-6-luna@medium`, batch 4, seed 0, at most $0.75 per episode and $1.50 combined. One C1 run and one C3 run, in the order C1 → C3 → C2. The first valid result is recorded regardless of outcome, and there are no retries. This scope is enforced in code (`C_PAID_SCOPE`).
 
 **Pre-activation checks:** price re-check on 2026-11-06 (the model page matches the runner's table); pilot ledger balance $3.004 with no open reservations; all C pins verified.
+
+## Revision r11 (2026-11-06): C3 = v4 + inventory/nest hint
+
+The owner approved the exact wording of `c-post-v4-inventory-hint-v1` (`d750861ba30255fd10e139532c8394e2e7dd44237e1ba50dc3ee4e0d311afa83`) and activated r11, recorded by the implementation agent. The active declaration is `oath-ember-abc-2026-11-06-r11-c3-hint` (self-hash `1fd604c24d8388c94c9808e828ef959d35152878e2d31a1a753504a243e5fe85`). It is the reviewed proposal ([proposed/declaration-r11-c3-hint.json](evaluation-abc/proposed/declaration-r11-c3-hint.json), `5f55307e…`) plus its activation record and classification (tested). r10 is archived byte for byte in [history/r10/declaration.json](evaluation-abc/history/r10/declaration.json).
+
+- **C3 classification:** outcome-informed, C-specific supplementary tuning. It is **not** an independent B-to-C transfer test. The hint was requested after C1 was run.
+- **C1 context:** C1 (Pilot-34) had already succeeded by the peaceful route without this hint (Griffin HP 418, grooming, $0.586742). Pilot-34 and its evidence are unchanged; file and video hashes were verified before activation.
+- **Only difference between C1 and C3:** one guidance block, `c-post-v4-inventory-hint-v1`, which is the frozen v4 text followed by the approved hint paragraph. Everything else is identical: scenario, start `28777a85…`, controller, gpt-6-luna medium, batch 4, tutorial, briefing, observations, evaluator and limits. C1 prompt `6dc64411…`; C3 prompt `d50dc0623921ed00bedb811841d72153fe9b943e072ee180c63bc7856b52dd54`, equal to C1's prompt plus that block (tested). With one run each, the v4 and hint parts cannot be separated.
+- **Budget:** pilot ledger $2.417 remaining, no open reservations. $0.913 of the $1.50 C combined cap remains, and C3 is capped at $0.75.
+- **The paid C3 run needs a separate owner authorization.**

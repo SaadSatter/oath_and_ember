@@ -228,11 +228,11 @@ Run by the owner at `f9edeb7` (ledger entry `pilot-34`). **Success by the peacef
 
 Replay verified: start hash, 734 step results, end and 7,997 ticks all match. Evidence: [`midterms/saadsatter/evidence/traces/pilot-34-model-centralized-griffin-prepared-return-v1-seed0/`](../../midterms/saadsatter/evidence/traces/pilot-34-model-centralized-griffin-prepared-return-v1-seed0/). The 217 MB video is local-only, and its SHA-256 is in the manifest.
 
-## Proposed r11: C3 = v4 + inventory/nest hint (owner request, after C1)
+## r11 (active): C3 = v4 + inventory/nest hint (owner request, after C1)
 
-After C1 had run, the owner asked that the post-tuned C3 also tell the planner to check the inventory and read what is at the Griffin's nest, as a hint toward the solution but not the solution itself. The official C3 is replaced (owner's choice), not run as a supplement. **Proposed, not active:** [proposed/declaration-r11-c3-hint.json](evaluation-abc/proposed/declaration-r11-c3-hint.json), `5f55307efe676bbc2f86b21ced5babeb4a10d3e8675e19848117ad7ed565b01c`.
+After C1 had run, the owner asked that the post-tuned C3 also tell the planner to check the inventory and read what is at the Griffin's nest, as a hint toward the solution but not the solution itself. The official C3 is replaced (owner's choice). **Active since the owner's approval** (`1fd604c2…`), classified as **outcome-informed, C-specific supplementary tuning, not independent B-to-C transfer**. Proposal: [proposed/declaration-r11-c3-hint.json](evaluation-abc/proposed/declaration-r11-c3-hint.json), `5f55307efe676bbc2f86b21ced5babeb4a10d3e8675e19848117ad7ed565b01c`.
 
-- **Guidance `c-post-v4-inventory-hint-v1`** (`d750861b…`, *proposed*; paid runs refuse it until approved): the v4 text byte for byte, a blank line, then:
+- **Guidance `c-post-v4-inventory-hint-v1`** (`d750861b…`, **approved by the owner**, exact text): the v4 text byte for byte, a blank line, then:
 
   > Additional guidance for this task:
   > Before choosing how to reach the objective, check the shared inventory and read each item's description. Read the labels and messages on objects near the objective, such as the Griffin's nest: they can describe what an item is for. Consider whether an item offers a way to reach the objective besides combat.

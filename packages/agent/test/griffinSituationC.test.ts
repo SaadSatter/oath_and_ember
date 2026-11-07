@@ -27,6 +27,9 @@ const ID = "griffin-prepared-return-v1" as const;
 const R10_SHA256 = "989046a9f96a90daebf9cd51448184ee9b96b4e8c60d392b563c561b73b9a598";
 /** The active r10 (owner activation 2026-11-06): the reviewed proposal plus id, status, activation and paid limits. */
 const R10_ACTIVE_SHA256 = "877001388470b6b153a6b5b2d3372f987aea83435ad233f6999bab215e0ef238";
+/** Proposed r11 and the active r11 (owner approval 2026-11-06). */
+const R11_PROPOSAL_SHA256 = "5f55307efe676bbc2f86b21ced5babeb4a10d3e8675e19848117ad7ed565b01c";
+const R11_ACTIVE_SHA256 = "1fd604c24d8388c94c9808e828ef959d35152878e2d31a1a753504a243e5fe85";
 const B_ID = "griffin-unprepared-return-v1" as const;
 const TOOLS = /^(vanity_mirror|enchanted_shears|griffin_wig)$/;
 
@@ -408,7 +411,7 @@ describe("Situation C review round 1", () => {
       : v && typeof v === "object" ? `{${Object.keys(v).sort().map((k) => `${JSON.stringify(k)}:${canon((v as Record<string, unknown>)[k])}`).join(",")}}`
       : JSON.stringify(v);
     const ascii = (t: string) => t.replace(/[^\x00-\x7f]/g, (ch) => "\\u" + ch.charCodeAt(0).toString(16).padStart(4, "0"));
-    for (const [f, pin] of [["history/r9/declaration.json", "616c182453e06ec9568ffea3bc0c26dde314dca54376a2e77012766a269445be"], ["proposed/declaration-r10-c.json", R10_SHA256], ["declaration.json", R10_ACTIVE_SHA256]] as const) {
+    for (const [f, pin] of [["history/r9/declaration.json", "616c182453e06ec9568ffea3bc0c26dde314dca54376a2e77012766a269445be"], ["proposed/declaration-r10-c.json", R10_SHA256], ["history/r10/declaration.json", R10_ACTIVE_SHA256], ["proposed/declaration-r11-c3-hint.json", R11_PROPOSAL_SHA256], ["declaration.json", R11_ACTIVE_SHA256]] as const) {
       const d = JSON.parse(readFileSync(new URL(`../../../docs/midterm/evaluation-abc/${f}`, import.meta.url), "utf8"));
       const h = d.declarationSha256;
       delete d.declarationSha256;
@@ -421,7 +424,7 @@ describe("Situation C review round 1", () => {
 describe("r10 activation", () => {
   it("active r10 equals the reviewed proposal except id, status, supersedes, activation and paid limits", () => {
     const read = (f: string) => JSON.parse(readFileSync(new URL(`../../../docs/midterm/evaluation-abc/${f}`, import.meta.url), "utf8"));
-    const active = read("declaration.json"), proposal = read("proposed/declaration-r10-c.json");
+    const active = read("history/r10/declaration.json"), proposal = read("proposed/declaration-r10-c.json");
     expect(active.activation.proposalSha256).toBe(proposal.declarationSha256);
     const strip = (d: Record<string, unknown>) => {
       const c = JSON.parse(JSON.stringify(d));
@@ -464,14 +467,38 @@ describe("proposed r11: C3 = v4 + inventory/nest hint (owner request after C1)",
     expect(post.maxBatch).toBe(pre.maxBatch);
   });
 
-  it("stays locked for paid runs until the owner approves the text (mock allowed)", () => {
+  it("is owner-approved for this exact text, on C only and in the authorized paid scope (mock allowed)", () => {
     const g = guidance(C3_R11.guidanceId);
-    expect(g.status).toBe("proposed");
-    expect(guidanceApproved(g)).toBe(false);
+    expect(g.status).toBe("approved");
+    expect(g.approvedSha256).toBe(C3_R11.guidanceSha256);
+    expect(guidanceApproved(g)).toBe(true);
+    expect(guidanceApproved({ ...g, text: g.text + " " })).toBe(false);
     const mock = { gateway: new MockGateway(0, 0), stage: "pilot", guidance: C3_R11.guidanceId } as unknown as ModelSetup;
     const paid = { gateway: { label: "openai:gpt-6-luna@medium" }, stage: "pilot", guidance: C3_R11.guidanceId } as unknown as ModelSetup;
     expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: mock })).not.toThrow();
-    expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: paid })).toThrow(/not approved/);
+    expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: paid })).not.toThrow();
+    expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: { ...paid, gateway: { label: "openai:gpt-6-luna@low" } } as unknown as ModelSetup })).toThrow(/authorized only/);
     expect(() => validatePlan({ player: "model-centralized", situations: [B_ID], seeds: [0], model: { ...mock } })).toThrow(/limited to/);
+  });
+});
+
+describe("r11 activation", () => {
+  it("active r11 equals the reviewed proposal except id, status, supersedes, activation, guidance status and C3 classification", () => {
+    const read = (f: string) => JSON.parse(readFileSync(new URL(`../../../docs/midterm/evaluation-abc/${f}`, import.meta.url), "utf8"));
+    const active = read("declaration.json"), proposal = read("proposed/declaration-r11-c3-hint.json");
+    expect(active.activation.proposalSha256).toBe(proposal.declarationSha256);
+    const strip = (d: Record<string, unknown>) => {
+      const c = JSON.parse(JSON.stringify(d));
+      for (const k of ["id", "status", "supersedes", "activation", "declarationSha256", "c3Classification"]) delete c[k];
+      delete c.model.postGuidanceC.status;
+      return c;
+    };
+    expect(strip(active)).toEqual(strip(proposal));
+    expect(active.c3Classification.label).toMatch(/outcome-informed, C-specific supplementary tuning; not independent B-to-C transfer/);
+    expect(active.model.postGuidanceC).toMatchObject({ id: C3_R11.guidanceId, sha256: C3_R11.guidanceSha256, postTunedPromptSha256: C3_R11.promptHash, preTunedPromptSha256: C.prompts.preTunedPromptHash });
+    // A and B rows unchanged from r10 (and from r9, tested via history).
+    const r10 = read("history/r10/declaration.json");
+    expect(active.situations.A).toEqual(r10.situations.A);
+    expect(active.situations.B).toEqual(r10.situations.B);
   });
 });
