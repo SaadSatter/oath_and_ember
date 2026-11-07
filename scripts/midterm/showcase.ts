@@ -62,7 +62,7 @@ console.log(JSON.stringify(report, null, 2));
 if (evidence) {
   mkdirSync(evidence, { recursive: true });
   writeFileSync(join(evidence, "showcase-check.json"), JSON.stringify(report, null, 2) + "\n");
-  writeFileSync(join(evidence, "guidance-showcase-maze-griffin-v1.txt"), g.text);
+  writeFileSync(join(evidence, `guidance-${SHOWCASE_GUIDANCE_ID}.txt`), g.text);
   writeFileSync(join(evidence, "planner-system-prompt.txt"), planner.system);
   console.error(`Wrote ${evidence}`);
 }

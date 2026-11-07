@@ -137,7 +137,40 @@ export const SHOWCASE_PHASE_PLAN = [
   "Phase 4, wig and Goddess: only after the Griffin's label shows it defeated, Coco claims the wig at its nest (only she can reach it, by flight). Confirm that the shared backpack lists the wig. Once the backpack confirms the wig, stop exploring the enclosure: return through its RETURN exit to the Goddess Shrine, offer the wig at the offering, and read and answer every following dialogue until the story shows that Chapter 0 is complete. Holding the wig is not the end.",
 ].join("\n\n");
 
+/**
+ * APPROVED by the owner (2026-11-07), exact text pinned by hash. Revision of SHOWCASE_PHASE_PLAN
+ * after Pilot-37, Pilot-38 and Pilot-39, where the maze phase turned into
+ * cautious wandering (docs/midterm/SHOWCASE_PROMPT_V2_PROPOSAL.md). Owner
+ * decision 2026-11-07: health is inconsequential for the showcase in every
+ * phase, including the Griffin fight. So v2 drops all health-preservation
+ * advice, restates the manual's knockout rule, uses lighter plan bookkeeping
+ * and a puzzle-testing Phase 1, and does NOT append b-post-combined-v4 (its
+ * steps 1 and 7 are built on protecting health); a short Phase 3 keeps v4's
+ * non-health tactics. Positioning, Phase 0, Phase 2's directions and Phase 4
+ * are unchanged from v1. Names no coordinate, waypoint, maze answer or hidden
+ * state. Outcome-informed showcase tuning.
+ */
+export const SHOWCASE_PHASE_PLAN_V2 = [
+  "Showcase plan for both heroes (a demonstration of the connected quest from the Bald Goddess Shrine in one run). Work through these five phases in order. Decide which phase you are in only from what the screens, the area name, the shared backpack, the labels and the dialogue show, never from elapsed time or from an order having been accepted. Begin the plan with a short phase tag such as \"P1\"; use the rest of it for what you have learned and what you will test next. Do not restate facts that have not changed, such as an item still missing.",
+  "Health does not matter in this demonstration, in any phase, including the Griffin fight. As the manual says, a knocked-out hero returns to the current area's starting point at full health, and quest progress, the backpack and everything already solved are kept. Never retreat, hold back, postpone an objective step or change a hero's role because of its health, and do not track health in the plan. The only cost of a knockout is the walk back: bring that hero back to its partner and continue the current phase; do not redo phases already completed.",
+  "Position before casting: an order runs its explicit actions BEFORE its go_to walking intention. If an ability needs a different casting position, first issue only the repositioning order, wait for observed arrival, then inspect the current screen and ability preview in a later decision before casting. Never combine a cast with go_to while expecting the walk to happen first. For a pulling ability, the pull is toward the predicted landing point, not the firing direction: check the current navigation.aim_preview for actual landing, affected targets, range uncertainty and obstructing bodies. An accepted cast does not prove a pull. Verify visible target displacement or opened ground; after no effect, change the actual casting position or predicted landing geometry before another attempt, rather than repeating a failed position-and-aim combination.",
+  "Phase 0, Goddess Shrine: both heroes begin at the normal shrine checkpoint. Encounter the Goddess and read and answer her entire opening dialogue, including the quest request, before departing. Use only the visible dialogue choices and normal movement and interactions. Then find the shrine exit labelled for the Hedge Maze and use it normally; confirm the area name changes to Hedge Maze. Do not skip the opening or assume a quest has already been received.",
+  "Phase 1, Hedge Maze: the two heroes cooperate to get through the maze and obtain the Enchanted Shears. Treat the maze as a puzzle. Read every sign, caption and label; keep in known_obstacles each thing that blocks the way and which hero's ability or action might change it; then test those ideas instead of searching for a way around them. Give Coco the environmental obstacles her fire, pull or flight can affect; give Sieg the enemies, gates and anything that must be chased, struck, pushed or reached quickly. When one hero clears a way, send the other through it. Deal with enemies that block the way or are attacking; otherwise keep both heroes working on the obstacles. Phase 1 ends only when the shared backpack lists the Enchanted Shears.",
+  "Phase 2, next destination after the maze: once the shared backpack lists the Enchanted Shears, stop exploring the maze or repeating its puzzles. Find and use its visible RETURN exit to reach the Goddess Shrine. From the shrine, explore north and find the visible exit labelled NORTH · GRIFFIN TRAIL; use that normal exit and confirm the area name is Griffin Enclosure. The Griffin is the next quest destination. Do not take the shrine's south exit labelled START / RETURN · E · Puzzle Map 2: that goes back to the earlier trials, not to the Griffin. If your observations show Bridge Ruins or Puzzle Map 2, find the normal exits back to the Goddess Shrine using their visible labels, then resume the northbound Griffin leg; do not repeat the old trials. Do not visit other areas. Keep both heroes together.",
+  "Phase 3, Griffin combat: defeat the Griffin in combat until its label shows it defeated. Keep both heroes attacking: Coco attacks from range; Sieg strikes whenever the Griffin is in his reach. Its floating label shows its health and what it is doing; use it to time attacks and to check that they land. Step off a visible warning line only when that costs no attack. Keep in known_obstacles which position, direction and timing showed damage and which showed none; repeat what works, and when nothing lands, change one thing (distance, direction, obstruction or timing) and check again. While the Griffin is alive, do not go to its nest or use any backpack item there: this demonstration requires the combat route.",
+  "Phase 4, wig and Goddess: only after the Griffin's label shows it defeated, Coco claims the wig at its nest (only she can reach it, by flight). Confirm that the shared backpack lists the wig. Once the backpack confirms the wig, stop exploring the enclosure: return through its RETURN exit to the Goddess Shrine, offer the wig at the offering, and read and answer every following dialogue until the story shows that Chapter 0 is complete. Holding the wig is not the end.",
+].join("\n\n");
+
 export const SITUATION_GUIDANCE: Readonly<Record<string, SituationGuidance>> = Object.freeze({
+  "showcase-maze-griffin-v2": Object.freeze({
+    id: "showcase-maze-griffin-v2",
+    situations: Object.freeze(["showcase-maze-griffin-complete-v1"] as SituationId[]),
+    // Owner approved this exact text on 2026-11-07 ("I approve it all"), with health inconsequential and v4 dropped.
+    status: "approved",
+    approvedSha256: "364acf1a96ca45899d91f3e35f142d21a32ab91a406e745e57def868a8128664",
+    provenance: "Revision of showcase-maze-griffin-v1 drafted by the Claude Code implementation agent (2026-11-07) at the owner's request, after diagnosing cautious wandering in the maze phase of Pilot-37 to Pilot-39, with the owner's decision that health is inconsequential for the showcase. Phase plan only: b-post-combined-v4 is not appended. Outcome-informed showcase tuning. Prompt-tuned demonstration; excluded from the A/B/C evaluation.",
+    text: SHOWCASE_PHASE_PLAN_V2,
+  }),
   "showcase-maze-griffin-v1": Object.freeze({
     id: "showcase-maze-griffin-v1",
     situations: Object.freeze(["showcase-maze-griffin-complete-v1"] as SituationId[]),

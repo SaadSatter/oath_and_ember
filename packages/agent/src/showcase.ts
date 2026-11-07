@@ -19,11 +19,12 @@ import { tutorialId } from "./playerKnowledge.js";
 import { briefingId } from "./policies/llm.js";
 
 export const SHOWCASE_ID = "showcase-maze-griffin-complete-v1" as const;
-export const SHOWCASE_GUIDANCE_ID = "showcase-maze-griffin-v1" as const;
+export const SHOWCASE_GUIDANCE_ID = "showcase-maze-griffin-v2" as const;
 export const SHOWCASE_LABEL = "Prompt-tuned continuous gameplay demonstration — excluded from official A/B/C evaluation results.";
 
 /**
- * Owner approved the exact positioning prompt after reviewing 4487a4f.
+ * Owner approved guidance v2 (health inconsequential, no v4) and the briefing
+ * without its health sentence on 2026-11-07 (docs/midterm/SHOWCASE_PROMPT_V2_PROPOSAL.md).
  * One new owner-launched attempt, no automatic retry or agent launch.
  * Scenario/configuration/episode bounds unchanged.
  */
@@ -44,8 +45,8 @@ export const SHOWCASE = Object.freeze({
   label: "SHOWCASE",
   disclosure: SHOWCASE_LABEL,
   logicalId: SHOWCASE_ID,
-  version: 3,
-  status: "revision 3 shrine start requested by owner; paid execution locked pending new exact-hash authorization",
+  version: 4,
+  status: "revision 4: guidance v2 and briefing without health protection, approved by owner 2026-11-07 for one owner-launched attempt",
   situation: SHOWCASE_ID as SituationId,
   preset: def.preset,
   officialEvaluation: false,

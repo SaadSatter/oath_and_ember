@@ -17,7 +17,7 @@ import { EPISODE_CAP_USD, OBS_ONLY_SITUATIONS, runSuite, SHOWCASE_WALL_CLOCK_CEI
 import { SHOWCASE, SHOWCASE_GUIDANCE_ID, SHOWCASE_HASH, SHOWCASE_ID, SHOWCASE_PAID_APPROVED } from "../src/showcase.js";
 import { CentralPlanner } from "../src/policies/centralized.js";
 import { runShowcaseKnockoutProbe } from "../src/route/showcaseKnockoutProbe.js";
-import { guidance, guidanceApproved, guidanceBlock, guidanceHash, SHOWCASE_PHASE_PLAN } from "../src/policies/situationGuidance.js";
+import { guidance, guidanceApproved, guidanceBlock, guidanceHash, SHOWCASE_PHASE_PLAN, SHOWCASE_PHASE_PLAN_V2 } from "../src/policies/situationGuidance.js";
 import { ModelBudget, MeteredGateway } from "../src/budget.js";
 import { MockGateway } from "../src/policies/mockGateway.js";
 
@@ -25,8 +25,8 @@ const root = fileURLToPath(new URL("../../..", import.meta.url));
 const manual = readFileSync(join(root, "manual/Oath_and_Ember_Player_Manual.md"), "utf8");
 /** Normal goddess checkpoint start hashes, seeds 0 and 1 (SITUATION_A.md). */
 const SHRINE_START = { 0: "9d565ae90d161cc9e79979e0b9b66b1c5499d5a22e5292ba10ca271bda12cb50", 1: "f18052b4e9d452c9cb5251d3b34739292b833f0b79f3c4e9562b944d8a05bb21" };
-const GUIDANCE_SHA = "ea5d75ba9b74a4c72ac60f0b2f35aaa8e991c5e767737a34fc14b871a355d320";
-const PROMPT_SHA = "0099a850c7219c31797e0802bc82c7a688c99512adc600fe4a4aa808b7087e8b";
+const GUIDANCE_SHA = "364acf1a96ca45899d91f3e35f142d21a32ab91a406e745e57def868a8128664";
+const PROMPT_SHA = "3045e66d8ac6ea06abb76396242eeb3e6f6fe70320999a6444db2e9cc1449a77";
 const BASELINE_END_SEED0 = "c0e8e3551152d57d9bc861b83daccfab28df1620bad672125f7aac534ccee563";
 const mock = { gateway: new MockGateway(0, 0), stage: "pilot" } as unknown as ModelSetup;
 const paidLike = (label = "openai:gpt-6-luna@medium") => ({ gateway: { label }, stage: "pilot", maxBatch: 4, guidance: SHOWCASE_GUIDANCE_ID }) as unknown as ModelSetup;
@@ -42,7 +42,7 @@ describe("showcase definition", () => {
     expect(ABC_SITUATIONS.some((s) => s.id === SHOWCASE_ID)).toBe(false);
     expect(SHOWCASE.officialEvaluation).toBe(false);
     expect(SHOWCASE.disclosure).toMatch(/excluded from official A\/B\/C evaluation/);
-    expect(SHOWCASE_HASH).toBe("ec827f19555e5456d987f866c6f50414827f8875efd911859f351aeafe532831");
+    expect(SHOWCASE_HASH).toBe("e6136fa454a18085118f69a109e5e00bd1085d405d3d50309e423e1b4e94d45d");
     // No prefix: normal shrine checkpoint, no fixture.
     expect(situation(SHOWCASE_ID).prefix).toBeUndefined();
     expect(SHOWCASE.start.fixture).toBe("none");
@@ -55,6 +55,8 @@ describe("showcase definition", () => {
     const s = situation(SHOWCASE_ID);
     expect(`${s.briefing} ${s.task}`).not.toMatch(/ends as a failure|must avoid knockout/i);
     expect(s.briefing).toMatch(/does not end the episode/);
+    // Owner decision 2026-11-07: health is inconsequential for the showcase.
+    expect(s.briefing).not.toMatch(/protect both heroes' health/i);
   });
 
   it("has the owner-approved limits, cap and wall clock, and the planner allowed", () => {
@@ -94,7 +96,7 @@ describe("showcase start", () => {
 });
 
 describe("showcase guidance", () => {
-  it("is owner-approved at its exact pinned text, and contains the approved v4 text unchanged", () => {
+  it("is owner-approved v2 at its exact pinned text: the phase plan only, with v1, v4 and C3 unchanged", () => {
     const g = guidance(SHOWCASE_GUIDANCE_ID);
     expect(g.status).toBe("approved");
     expect(guidanceApproved(g)).toBe(true);
@@ -102,12 +104,16 @@ describe("showcase guidance", () => {
     expect(guidanceHash(g.text)).toBe(GUIDANCE_SHA);
     const v4 = guidance("b-post-combined-v4").text;
     expect(guidanceHash(v4)).toBe("1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34");
-    expect(g.text).toBe(`${SHOWCASE_PHASE_PLAN}\n\n${v4}`);
+    expect(g.text).toBe(SHOWCASE_PHASE_PLAN_V2);
+    expect(g.text).not.toContain(v4);
+    // The previously approved v1 text is kept unchanged (no longer the paid scope).
+    expect(guidanceHash(guidance("showcase-maze-griffin-v1").text)).toBe("ea5d75ba9b74a4c72ac60f0b2f35aaa8e991c5e767737a34fc14b871a355d320");
+    expect(guidance("showcase-maze-griffin-v1").text).toBe(`${SHOWCASE_PHASE_PLAN}\n\n${v4}`);
     // The frozen C3 guidance is untouched.
     expect(guidanceHash(guidance("c-post-v4-inventory-hint-v1").text)).toBe("d750861ba30255fd10e139532c8394e2e7dd44237e1ba50dc3ee4e0d311afa83");
   });
 
-  it("names no coordinates, waypoints or puzzle answers, and forbids the peaceful route", () => {
+  it("v1 (historical) names no coordinates, waypoints or puzzle answers, and forbids the peaceful route", () => {
     const t = SHOWCASE_PHASE_PLAN;
     expect(t).not.toMatch(/\d+(\.\d+)?\s*,\s*\d+/); // no coordinate pairs
     expect(t).not.toMatch(/\btile\b|\bx\s*=|\by\s*=/i);

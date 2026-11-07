@@ -31,10 +31,13 @@ export interface LedgerConfig {
   totalCapUsd: number;
   stages: Record<string, number>;
 }
-/** Owner-approved $25 total; 2026-11-07 moves $1 from contingency to pilot (session 01a1b479). */
+/**
+ * Owner-approved $25 total; 2026-11-07 moves $1 from contingency to pilot (session 01a1b479),
+ * then $2 from final to pilot for the showcase v2 attempt (Claude Code session e3e1a5e6).
+ */
 export const APPROVED_LEDGER: LedgerConfig = Object.freeze({
   totalCapUsd: 25,
-  stages: Object.freeze({ smoke: 0.1, pilot: 9, final: 15, contingency: 0.9 }),
+  stages: Object.freeze({ smoke: 0.1, pilot: 11, final: 13, contingency: 0.9 }),
 });
 
 export interface LedgerEntry {

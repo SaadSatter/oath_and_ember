@@ -418,3 +418,7 @@ North-next prompt approved for one owner-launched attempt at `2ba618d`; [authori
 [Diagnosis](SHOWCASE_COW_DIAGNOSIS.md), [original stopped run](../../midterms/saadsatter/evidence/showcase/pilot-38-original/README.md), [new proposed hashes](evidence/showcase-cow-diagnosis/). Wrong landing geometry and actions-before-walking order; no engine/controller change. Outcome-informed showcase proposal only, excluded from A/B/C. 17 targeted tests/typecheck pass; paid retry locked pending new approval.
 
 Positioning proposal approved for one new owner-launched attempt at `a899acc`: [authorization checks](evidence/showcase-positioning-authorization/). Pending-approval language above is historical; no new model result or agent launch.
+
+## Showcase maze wandering and guidance v2
+
+[Diagnosis, v2 text, owner approval and sequencing](SHOWCASE_PROMPT_V2_PROPOSAL.md). Pilot-37 to Pilot-39 maze plans were dominated by health caution and phase boilerplate; the prompt was the only change since Pilot-30. Owner: health is inconsequential for the showcase. v2 guidance `364acf1a…` is the phase plan only (no v4). The briefing health sentence is removed (definition `e6136fa4…`). The full prompt is `3045e66d…`. $2 moved from final to pilot via `scripts/midterm/ledger-reallocate.ts`, to be applied after Pilot-39 settles. Outcome-informed showcase tuning, excluded from A/B/C. Same-session work; not an independent review.

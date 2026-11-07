@@ -10,7 +10,7 @@ const { validatePlan, defaultWallSeconds, runSuite } = await import("../src/harn
 import type { ModelSetup } from "../src/harness.js";
 
 const ID = "showcase-maze-griffin-complete-v1" as const;
-const model = (over: Record<string, unknown> = {}) => ({ gateway: { label: "openai:gpt-6-luna@medium" }, stage: "pilot", maxBatch: 4, guidance: "showcase-maze-griffin-v1", ...over }) as unknown as ModelSetup;
+const model = (over: Record<string, unknown> = {}) => ({ gateway: { label: "openai:gpt-6-luna@medium" }, stage: "pilot", maxBatch: 4, guidance: "showcase-maze-griffin-v2", ...over }) as unknown as ModelSetup;
 
 describe("owner-approved positioning scope", () => {
   it("admits only openai:gpt-6-luna@medium, batch 4, the showcase guidance and seed 0", () => {
@@ -50,7 +50,7 @@ describe("owner-approved positioning scope", () => {
     }
     try {
       const [summary] = await runSuite({ player: "model-centralized", situations: [ID], seeds: [0], outDir: join(dir, "run"), gitHash: "offline-test",
-        episodeCapUsd: 0.01, model: { gateway: new FreeFailure(0), ledger, stage: "pilot", manual: "test-only manual", priceSource: "mock, zero cost", guidance: "showcase-maze-griffin-v1" } });
+        episodeCapUsd: 0.01, model: { gateway: new FreeFailure(0), ledger, stage: "pilot", manual: "test-only manual", priceSource: "mock, zero cost", guidance: "showcase-maze-griffin-v2" } });
       expect(summary.wallLimitSeconds).toBe(7200);
       expect(JSON.parse(readFileSync(join(dir, "run", "run.json"), "utf8")).wallSeconds).toBe(7200);
       expect(summary.modelCalls.failed).toBeGreaterThan(0);
@@ -61,7 +61,7 @@ describe("owner-approved positioning scope", () => {
     const env = { ...process.env };
     delete env.OPENAI_API_KEY;
     delete env.ANTHROPIC_API_KEY;
-    const result = spawnSync(process.execPath, ["--import", "tsx", "scripts/midterm/live.ts", "--scenario", ID, "--seed", "0", "--player", "model-centralized", "--guidance", "showcase-maze-griffin-v1", "--gateway", "openai", "--model", "gpt-6-luna", "--effort", "medium", "--max-spend-usd", "2.00", "--wall-seconds", "7200", "--paid"], { env, encoding: "utf8", timeout: 30_000 });
+    const result = spawnSync(process.execPath, ["--import", "tsx", "scripts/midterm/live.ts", "--scenario", ID, "--seed", "0", "--player", "model-centralized", "--guidance", "showcase-maze-griffin-v2", "--gateway", "openai", "--model", "gpt-6-luna", "--effort", "medium", "--max-spend-usd", "2.00", "--wall-seconds", "7200", "--paid"], { env, encoding: "utf8", timeout: 30_000 });
     expect(result.status).not.toBe(0);
     expect(result.stderr).toMatch(/no OPENAI_API_KEY and no interactive terminal/);
     expect(result.stderr).not.toMatch(/locked for paid|not approved|paid scope requires|insufficient/);
