@@ -5,7 +5,7 @@
 | Agent | Codex (desktop app); model id(s) recorded in the transcript: `gpt-6.1-sol` |
 | Role | Codex implementation agent under AGENTS.md: Pilot-28 diagnosis and owner-approved centralized progress, observation-derived aim and evidence fixes; same-session game-rules-audit checkpoint and session-evidence, not independent review. |
 | Session ID | `01a1aed2-3232-7011-bb41-5fccdea13a5c` |
-| Window (UTC) | 2026-11-06 03:06 → 2026-11-07 00:39 |
+| Window (UTC) | 2026-11-06 03:06 → 2026-11-07 01:29 |
 | Session URL | None. Local session; no shareable URL was created. |
 | Repository | `https://github.com/SaadSatter/oath_and_ember` |
 | Transcript | Local only, not committed: `~/.codex/sessions/2026/11/05/rollout-2026-11-05T22-06-13-01a1aed2-3232-7011-bb41-5fccdea13a5c.jsonl` |
@@ -42,6 +42,7 @@
 26. 2026-11-06 20:11 — I am running another session rn: npm run eval:live -- --scenario S2-local --seed 0 --player baseline-maze-heuristic > eval:live > node --import tsx scripts/midterm/live.ts --scenario S2-local --seed 0 --player baseline-maze-heuristic eval:live: could not start the viewer: listen EADDRINUSE: address already in use 127.0.0.1:3030. Try --port <n>.
 27. 2026-11-06 20:28 — I ran a recorded baseline of both of them, link those to the evaluation.md
 28. 2026-11-07 00:36 — [attachments: "Viewer (read-only)] Preserve Pilot 33: This is the post-tuned run for the Situation B and update the evaluation md with links to its data recording and such.
+29. 2026-11-07 01:24 — Now you need to make a cheap baseline for Situation C
 
 <!-- narrative:start -->
 ## What was done
@@ -98,6 +99,9 @@ Owner recorded live A/B heuristic runs at clean 4c9cf9f. Linked both original lo
 
 Pilot-33 owner-requested preservation: seven source files copied byte-for-byte; trace/model replies/policy notes and video metadata preserved, video untouched/local-only. Existing offline replay verifies all 443 results, original start/end and 3057 ticks. Full video decode exit 0, 2188.88 s; 1x1 PNG SAR warning separated from decode errors. Inspected terminal frame shows finished success and Chapter 0 milestones. Owner registers Pilot-33/v4 as B post-tuned primary after outcome; r9 archives r8, failed Pilot-32/v1 preserved and disclosed, no erased failures. 51.0 game-s, 2184.4 wall-s, 251 calls, 1 invalid, 5 unusable replies, $0.554417 saved runner estimate. Nine primary rows /six observed; C three rows unrun. Changed artifact scan: 13 files, 0 findings. No new paid call or gameplay/policy/scenario edit. Same-session audit, not independent review. Links: midterms/saadsatter/EVALUATION.md; docs/midterm/evaluation-abc/B-posttuned-pilot33.json; docs/midterm/agent-evidence/skill-runs/2026-11-06-pilot33-preservation.md.
 
+
+- 2026-11-06: implemented `baseline-inventory-heuristic-v1` on synthetic observations only; 29 targeted tests, typecheck and build passed. No C execution, paid calls, push or merge. A/B policies unchanged. Concurrent C scenario edits excluded. [Policy report](../midterm/SITUATION_C_HEURISTIC_BASELINE.md) and [same-session audit](../midterm/agent-evidence/skill-runs/2026-11-06-inventory-baseline.md).
+- Evidence scans: changed six documents reported 0 findings; broad 277-file scan retained one existing finding in historical 2026-10-27-recording.md, outside this change. `git diff --check` passed.
 <!-- narrative:end -->
 
 ## Mechanically extracted record
@@ -107,18 +111,19 @@ Pilot-33 owner-requested preservation: seven source files copied byte-for-byte; 
 - Pull requests referenced in tool output: https://github.com/SaadSatter/oath_and_ember/pull/1 (the example URL quoted in MIDTERM_GUIDELINES.md was also printed; it is not a PR of this project and is not listed)
 - Files edited through the agent's edit/patch tool: 1 (`docs/midterm` 1)
 - Test-summary lines printed in tool output (last 6 distinct, as printed):
-  - `Tests  77 passed (77)`
   - `Tests  43 passed (43)`
   - `Tests  1 failed | 1 passed (2)`
   - `Tests  2 passed (2)`
   - `Test Files  6 passed (6)`
   - `Tests  78 passed (78)`
+  - `Tests  29 passed (29)`
 - TypeScript errors (`error TS…`) appeared in tool output at least once during the session.
 
 Commits whose author time falls inside this window (any branch). A time match is not proof of authorship when sessions overlap; the co-author trailer is shown where present.
 
 | Commit | Author time (UTC) | Subject | Co-author trailer |
 | --- | --- | --- | --- |
+| `9f4ac38` | 2026-11-07 00:40 | Preserve Pilot-33 and register B post-tuned success with full attempt history | — |
 | `1f0ca45` | 2026-11-06 23:55 | Unlock b-post-combined-v4 for paid runs (owner approval) | Claude Opus 5.5 <noreply@anthropic.com> |
 | `e85aad3` | 2026-11-06 23:50 | Record review round 3 on b-post-combined-v4; widen Pilot-32 pins, text unchanged | Claude Opus 5.5 <noreply@anthropic.com> |
 | `af81ccc` | 2026-11-06 23:41 | Propose supplementary B guidance b-post-combined-v4 (locked, not approved) | Claude Opus 5.5 <noreply@anthropic.com> |

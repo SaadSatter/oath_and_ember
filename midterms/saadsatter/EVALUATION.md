@@ -114,3 +114,7 @@ No new paid call, gameplay/policy change or scenario modification occurred durin
 Typecheck and build pass in `oath_and_ember-eval`. Integration targeted suite: **78/78 tests in six files**, covering both heuristic policies, the live Griffin CLI, native reviewed Griffin scenario, frozen A and scripted behavior pins. Held-out refusal remains tested. No full-suite test run was launched concurrently with the other workstream. No paid calls, push or merge occurred.
 
 C remains held out from model-outcome tuning. Freeze any final policies and C checkpoint before C outcomes. Model memory comparison, remaining model/C trials, fresh green full CI, a short normal-speed submission recording, human playtest and student-authored reflection remain separate requirements; no completed course hand-in is claimed. Both heuristics are incomplete and development-informed; success on these cases does not prove general puzzle/combat competence.
+
+### Prepared C baseline (unrun)
+
+`baseline-inventory-heuristic-v1` is a proposed zero-model inventory-aware baseline for the prepared-return C candidate. It uses observed item/target descriptions and the unchanged B combat/return fallback. [Implementation and offline verification](../../docs/midterm/SITUATION_C_HEURISTIC_BASELINE.md). No C episode was run; this note does not amend the active scenario declaration or report a result.

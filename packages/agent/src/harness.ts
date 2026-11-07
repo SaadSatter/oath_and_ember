@@ -28,6 +28,7 @@ import { centralizedPolicies } from "./policies/centralized.js";
 import { guidance, guidanceApproved, guidanceHash } from "./policies/situationGuidance.js";
 import { ExplorationBaseline } from "./policies/baseline.js";
 import { MazeHeuristic } from "./policies/mazeHeuristic.js";
+import { InventoryHeuristic } from "./policies/inventoryHeuristic.js";
 import { GriffinHeuristic } from "./policies/griffinHeuristic.js";
 import { QuestBaseline } from "./policies/questBaseline.js";
 import type { Policy } from "./policies/policy.js";
@@ -334,6 +335,8 @@ export function policiesFor(player: PlayerKind, budget: ModelBudget | undefined,
   switch (player) {
     case "baseline-maze-heuristic":
       return { sieg: new MazeHeuristic("Sieg"), coco: new MazeHeuristic("Coco") };
+    case "baseline-inventory-heuristic":
+      return { sieg: new InventoryHeuristic(), coco: new InventoryHeuristic() };
     case "baseline-griffin-heuristic":
       return { sieg: new GriffinHeuristic(), coco: new GriffinHeuristic() };
     case "baseline-quest":
