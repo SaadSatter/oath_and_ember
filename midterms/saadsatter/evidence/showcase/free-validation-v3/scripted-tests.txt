@@ -1,0 +1,9 @@
+
+ RUN  v5.0.2 ~/Classes/AI_Pract_Building_Games/oath_and_ember-eval
+
+
+ Test Files  1 passed (1)
+      Tests  6 passed | 1 skipped (7)
+   Start at  15:14:35
+   Duration  24.33s (tests 92%, transform 7%, import 2%)
+

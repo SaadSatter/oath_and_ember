@@ -1,3 +1,5 @@
+> Current proposal: [Shrine-start revision 3](SHOWCASE_SHRINE_START.md). The maze-start design and authorization below are historical; revised paid execution is locked pending new exact-hash approval.
+
 # Showcase: one continuous episode, Hedge Maze → Griffin → Goddess
 
 > **Prompt-tuned continuous gameplay demonstration — excluded from official A/B/C evaluation results.**

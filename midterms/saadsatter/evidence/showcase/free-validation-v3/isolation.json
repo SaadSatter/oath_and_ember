@@ -1,0 +1,75 @@
+{
+  "base": "cee0713",
+  "sourceCommit": "e5d2dfe58bff3e008bf7be29be2dc24766964b92",
+  "protectedPaths": [
+    "apps",
+    "packages/shared",
+    "manual",
+    "Images",
+    "docs/midterm/evaluation-abc",
+    "midterms/saadsatter/evidence/traces"
+  ],
+  "protectedDiffEmpty": true,
+  "immutableRunPaths": [
+    {
+      "file": "packages/agent/src/perception.ts",
+      "unchanged": true,
+      "sha256": "38cb8a2bd02d022dba502ab9394228a235966105198e8ee3b4cf00ad07535c9e"
+    },
+    {
+      "file": "packages/agent/src/actions.ts",
+      "unchanged": true,
+      "sha256": "8f7bc65c8c031d1442e678ac7b9fb3074b5723e447a8d121fb81054f0013c856"
+    },
+    {
+      "file": "packages/agent/src/policies/centralized.ts",
+      "unchanged": true,
+      "sha256": "0a0dbc31f1d8f21fb529aa8e36469d3d131d06c9c436aceccf66316f9c1a7d49"
+    },
+    {
+      "file": "packages/agent/src/policies/llm.ts",
+      "unchanged": true,
+      "sha256": "5a090839c86ce68a4c7840cfbd2d94f0fa3a9729dc81500d86b3c9f30281cf9b"
+    },
+    {
+      "file": "packages/agent/src/policies/mazeHeuristic.ts",
+      "unchanged": true,
+      "sha256": "4523a6a554387f99013ea6c16649c909015a92bdbddd0178f145838598ea9086"
+    },
+    {
+      "file": "packages/agent/src/policies/griffinHeuristic.ts",
+      "unchanged": true,
+      "sha256": "a7c9ea786a8c57c374952d9425b7a4bc25553aa453913ae3f935fca330792edc"
+    },
+    {
+      "file": "packages/agent/src/runner.ts",
+      "unchanged": true,
+      "sha256": "29064a6958427bc20e290f6d3efd34cf405a71d9f2857520eb96c9dd4d3e0c83"
+    },
+    {
+      "file": "packages/agent/src/budget.ts",
+      "unchanged": true,
+      "sha256": "a5493a1b36588c3fc9081301543d41e33dfcbfe804679577d03c44d505180274"
+    },
+    {
+      "file": "packages/agent/src/situationA.ts",
+      "unchanged": true,
+      "sha256": "7053c26ee8340f357454618259f4c849866f90b86dcb833d444d97b225347a0b"
+    },
+    {
+      "file": "packages/agent/src/griffinSituations.ts",
+      "unchanged": true,
+      "sha256": "0d8d3247adaf4bd8a1972f5c733cc0805e31c2c6e6747c7b02f9ca793f486772"
+    },
+    {
+      "file": "packages/agent/src/griffinSituationC.ts",
+      "unchanged": true,
+      "sha256": "58829e94be1085505761fbb85b3e2758e2f5419e20bbf66d6a11bc5544bb0e5a"
+    },
+    {
+      "file": "packages/agent/src/policies/navigate.ts",
+      "unchanged": true,
+      "sha256": "7e37dca33e772fe3c636d56fcf663dfa54eb15c623ea6a1b6f21fb575817ee60"
+    }
+  ]
+}

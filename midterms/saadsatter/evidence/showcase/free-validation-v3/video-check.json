@@ -1,0 +1,35 @@
+{
+  "video": "/tmp/oath-showcase-shrine/replay-video/recording.webm",
+  "bytes": 22382647,
+  "ffmpeg": "~/Library/Caches/ms-playwright/ffmpeg-1011/ffmpeg-mac",
+  "fullDecodeExit": 0,
+  "decodeErrors": [],
+  "durationSeconds": 182.12,
+  "frames": [
+    {
+      "fraction": 0.03,
+      "time": 5.46,
+      "distinctColors": 249,
+      "meanLuma": 26,
+      "content": true,
+      "png": "/tmp/oath-showcase-shrine/video-check/frame-0030.png"
+    },
+    {
+      "fraction": 0.14,
+      "time": 25.5,
+      "distinctColors": 304,
+      "meanLuma": 34,
+      "content": true,
+      "png": "/tmp/oath-showcase-shrine/video-check/frame-0140.png"
+    },
+    {
+      "fraction": 0.99,
+      "time": 180.3,
+      "distinctColors": 405,
+      "meanLuma": 40,
+      "content": true,
+      "png": "/tmp/oath-showcase-shrine/video-check/frame-0990.png"
+    }
+  ],
+  "ok": true
+}
