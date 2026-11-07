@@ -266,6 +266,9 @@ export class AgentEnvironment implements GameInterface {
   private lastMilestones = new Set<string>();
   /** Situation C descriptive metrics: every evaluator milestone seen since the start, and Griffin HP when the wig was claimed. */
   private seenMilestones = new Set<string>();
+  /** Showcase only: each knockout (the game's own respawn) and the milestone ticks, for showcaseReport. Evaluator-only. */
+  private showcaseKnockouts: { hero: PlayerId; tick: number; gameSeconds: number; area: string; heroHpAfter: number; griffinHp: number | null; milestonesBefore: string[] }[] = [];
+  private showcaseMilestoneTicks = new Map<string, number>();
   private wigClaimGriffinHp: number | null = null;
   private itemDeliveryGriffinHp: number | null = null;
   private mirrorDeliveryGriffinHp: number | null = null;
@@ -378,6 +381,8 @@ export class AgentEnvironment implements GameInterface {
       prefixInfo = { name: this.prefix.name, ticks: this.startTick };
     }
     this.seenMilestones = new Set();
+    this.showcaseKnockouts = [];
+    this.showcaseMilestoneTicks = new Map();
     this.wigClaimGriffinHp = null;
     this.itemDeliveryGriffinHp = null;
     this.mirrorDeliveryGriffinHp = null;
@@ -511,6 +516,27 @@ export class AgentEnvironment implements GameInterface {
     this.trace("terminal", { reason, milestones: this.progress(this.room.state), hash: this.hash() });
     for (const s of Object.values(this.slots)) this.release(s, `Episode ended: ${reason}.`);
   }
+  /**
+   * Showcase only (evaluator-only, never shown to a player): knockouts, the
+   * game's respawns, and whether play continued afterwards (the showcase
+   * milestones reached after each knockout). Null elsewhere.
+   */
+  showcaseReport() {
+    if (this.preset !== "showcase-maze-griffin-complete-v1") return null;
+    const at = (m: string) => this.showcaseMilestoneTicks.get(m) ?? null;
+    const showcase = [...this.showcaseMilestoneTicks.entries()].filter(([m]) => m.startsWith("showcase:")).map(([m, t]) => ({ milestone: m, tick: t, gameSeconds: Math.round(((t - this.startTick) / 60) * 100) / 100 }));
+    return {
+      descriptiveOnly: true as const,
+      knockouts: this.showcaseKnockouts.length,
+      knockoutsByHero: { sieg: this.showcaseKnockouts.filter((k) => k.hero === "sieg").length, coco: this.showcaseKnockouts.filter((k) => k.hero === "coco").length },
+      events: this.showcaseKnockouts.map((k) => ({ ...k, respawn: "game rule: full health at this area's starting point",
+        milestonesReachedAfter: showcase.filter((m) => m.tick > k.tick).map((m) => m.milestone) })),
+      milestones: showcase,
+      griffinDefeatedTick: at("showcase:2-griffin-defeated"),
+      reason: this.reason ?? null,
+    };
+  }
+
   /** Situation C only: descriptive route metrics for the summary (evaluator.ts situationCReport); null elsewhere. Never pass this to a player. */
   situationCReport() {
     if (this.preset !== "griffin-prepared-return-v1") return null;
@@ -682,6 +708,13 @@ export class AgentEnvironment implements GameInterface {
       if (this.knockedOut.has(me.id)) {
         r.feedback.push(KNOCKED_OUT);
         s.memory.note(KNOCKED_OUT);
+        // Showcase (owner decision 2026-11-07): knockouts are recorded, not terminal. Evaluator-only trace line.
+        if (this.preset === "showcase-maze-griffin-complete-v1" && !this.inPrefix) {
+          const k = { hero: s.id, tick: w.serverTick, gameSeconds: Math.round(((w.serverTick - this.startTick) / 60) * 100) / 100, area: areaName(sceneOf(w, me)),
+            heroHpAfter: me.hp, griffinHp: w.puzzles.griffin?.griffin?.hp ?? null, milestonesBefore: [...this.showcaseMilestoneTicks.keys()].filter((m) => m.startsWith("showcase:")) };
+          this.showcaseKnockouts.push(k);
+          this.trace("showcase_knockout", { ...k, count: this.showcaseKnockouts.length, respawn: "game rule: full health at this area's starting point" });
+        }
       }
       const scene = sceneOf(w, me);
       const dialogue = storyView(w, s.role)?.key ?? null;
@@ -820,6 +853,7 @@ export class AgentEnvironment implements GameInterface {
     // A scenario prefix only reaches the start state: no success or limits yet.
     if (this.inPrefix) return;
     for (const m of now) this.seenMilestones.add(m);
+    if (this.preset === "showcase-maze-griffin-complete-v1") for (const m of now) if (!this.showcaseMilestoneTicks.has(m)) this.showcaseMilestoneTicks.set(m, w.serverTick);
     const g = w.puzzles.griffin?.griffin;
     if (this.preset === "griffin-prepared-return-v1" && g?.wigClaimed && this.wigClaimGriffinHp === null) this.wigClaimGriffinHp = g.hp;
     if (this.preset === "griffin-prepared-return-v1" && (g?.mirrorDelivered || g?.shearsDelivered) && this.itemDeliveryGriffinHp === null) this.itemDeliveryGriffinHp = g.hp;

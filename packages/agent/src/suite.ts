@@ -269,10 +269,10 @@ export const ABC_SITUATIONS: readonly Situation[] = Object.freeze([
 export const SHOWCASE_BRIEFING = [
   "Episode briefing (continuous quest), the same for both players: you start at the entrance of the Hedge Maze.",
   "This episode is the rest of the quest in one continuous run: obtain the Enchanted Shears in the Hedge Maze, travel to the Griffin Enclosure, defeat the Griffin in combat, take the Magnificent Griffin Wig, bring it to the Goddess as an offering, and follow the story until Chapter 0 is complete.",
-  "Neither hero may be knocked out: if either hero's health runs out, the episode ends as a failure.",
+  "Protect both heroes' health throughout. A knockout does not end the episode, but it costs time and position: the game moves the knocked-out hero, and the party must regroup and carry on with the current objective.",
   "Use your normal observations, actions and messages to your partner.",
 ].join(" ");
-export const SHOWCASE_TASK = "Complete the rest of the quest in one continuous run: the Enchanted Shears from the Hedge Maze, then defeat the Griffin in combat, claim its wig, offer it to the goddess and complete Chapter 0. Both heroes must avoid knockout.";
+export const SHOWCASE_TASK = "Complete the rest of the quest in one continuous run: the Enchanted Shears from the Hedge Maze, then defeat the Griffin in combat, claim its wig, offer it to the goddess and complete Chapter 0. Protect both heroes' health; if a hero is knocked out, regroup and continue.";
 export const SHOWCASE_SITUATIONS: readonly Situation[] = Object.freeze([
   { id: "showcase-maze-griffin-complete-v1", preset: "showcase-maze-griffin-complete-v1", heldOut: false, title: "Showcase: Hedge Maze to Griffin to Goddess (demonstration, excluded from A/B/C)",
     start: "Hedge Maze entrance, after the opening and ordinary travel (S2-A's start); no Mirror, Shears or wig",

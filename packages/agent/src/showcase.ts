@@ -22,14 +22,18 @@ export const SHOWCASE_ID = "showcase-maze-griffin-complete-v1" as const;
 export const SHOWCASE_GUIDANCE_ID = "showcase-maze-griffin-v1" as const;
 export const SHOWCASE_LABEL = "Prompt-tuned continuous gameplay demonstration — excluded from official A/B/C evaluation results.";
 
-/** Paid model runs: refused until the owner approves (a reviewed code change). */
+/**
+ * Paid model runs: refused until the owner's separate final authorization (a
+ * reviewed code change). The owner approved the design, model, limits and one
+ * attempt on 2026-11-07, but not execution.
+ */
 export const SHOWCASE_PAID_APPROVED = false;
-/** The proposed paid configuration (owner approval pending). */
+/** The paid configuration the owner approved on 2026-11-07 (execution not yet authorized). One attempt, no automatic retry. */
 export const SHOWCASE_PAID_SCOPE = Object.freeze({
   player: "model-centralized", gateway: "openai", model: "gpt-6-luna", effort: "medium", maxBatch: 4, seed: 0,
   maxEpisodeCapUsd: 2.0, wallClockSeconds: 7200, guidance: SHOWCASE_GUIDANCE_ID,
 });
-/** PROPOSED per-episode spend cap and wall-clock ceiling (harness.ts reads these). */
+/** Owner-approved per-episode spend cap and wall-clock ceiling (harness.ts reads these). */
 export const SHOWCASE_EPISODE_CAP_USD = SHOWCASE_PAID_SCOPE.maxEpisodeCapUsd;
 export const SHOWCASE_WALL_CLOCK_CEILING_S = SHOWCASE_PAID_SCOPE.wallClockSeconds;
 
@@ -40,8 +44,8 @@ export const SHOWCASE = Object.freeze({
   label: "SHOWCASE",
   disclosure: SHOWCASE_LABEL,
   logicalId: SHOWCASE_ID,
-  version: 1,
-  status: "proposed (2026-11-07): free validation only; owner approval pending for limits, guidance and the paid run",
+  version: 2,
+  status: "owner-approved design, model and limits (2026-11-07); knockouts recorded, not terminal (owner correction 2026-11-07); paid execution locked until separate final authorization",
   situation: SHOWCASE_ID as SituationId,
   preset: def.preset,
   officialEvaluation: false,
@@ -60,10 +64,10 @@ export const SHOWCASE = Object.freeze({
     "Return to the shrine, offer the wig, read the finale to chapter0.complete",
   ]),
   success: "Authoritative state: Shears Chest claimed AND enchanted_shears held AND griffin.hp == 0 AND griffin.wigClaimed AND NOT griffin.toolsTaken AND offering accepted AND chapter0.complete (evaluator showcaseComplete).",
-  failure: "knocked_out: a hero's health ran out during any tick (checked before success). A peaceful (groomed) wig makes success impossible: a groomed Griffin can never reach 0 HP.",
+  failure: "None from knockouts (owner decision 2026-11-07): the game's own rule returns a knocked-out hero to the area's starting point with full health, quest progress, inventory and the Griffin unchanged, and the episode continues; each knockout is recorded (trace line showcase_knockout, summary showcaseReport). The episode ends on any limit (ticks, decisions, calls, tokens, spend, wall clock), three consecutive policy failures, the planner's stall watchdog (error) or a manual stop. A peaceful (groomed) wig makes success impossible: a groomed Griffin can never reach 0 HP.",
   milestones: Object.freeze(["showcase:1-maze-complete", "showcase:2-griffin-defeated", "showcase:3-wig-acquired-after-defeat", "showcase:4-offering-accepted", "showcase:5-chapter0-complete"]),
   goal: episode.goal,
-  limits: Object.freeze({ ...episode.limits, wallClockSeconds: SHOWCASE_WALL_CLOCK_CEILING_S, episodeSpendCapUsd: SHOWCASE_EPISODE_CAP_USD, status: "proposed" }),
+  limits: Object.freeze({ ...episode.limits, wallClockSeconds: SHOWCASE_WALL_CLOCK_CEILING_S, episodeSpendCapUsd: SHOWCASE_EPISODE_CAP_USD, status: "owner-approved 2026-11-07" }),
   prompts: Object.freeze({
     tutorialId: def.tutorial ? tutorialId(def.tutorial) : null,
     briefingId: def.briefing ? briefingId(def.briefing) : null,

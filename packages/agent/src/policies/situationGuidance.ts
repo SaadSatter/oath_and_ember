@@ -112,7 +112,11 @@ const B_POST_COMBINED_V4 = "Planner guidance for both heroes (general-purpose co
 export const C_INVENTORY_NEST_HINT = "Additional guidance for this task:\nBefore choosing how to reach the objective, check the shared inventory and read each item's description. Read the labels and messages on objects near the objective, such as the Griffin's nest: they can describe what an item is for. Consider whether an item offers a way to reach the objective besides combat.";
 
 /**
- * PROPOSED, NOT APPROVED (2026-11-07). Showcase-only guidance for the
+ * PROVISIONALLY APPROVED by the owner (2026-11-07), revision 2 with the owner's
+ * health-aware refinement and knockout recovery; frozen by hash in
+ * showcase.test.ts. Status stays "proposed" (paid runs refuse it) until the
+ * owner's separate final authorization flips it with SHOWCASE_PAID_APPROVED.
+ * Showcase-only guidance for the
  * prompt-tuned continuous demonstration showcase-maze-griffin-complete-v1
  * (docs/midterm/SHOWCASE_CONTINUOUS_EPISODE.md), excluded from the A/B/C
  * evaluation. The owner allowed explicit guidance because this is a
@@ -124,9 +128,10 @@ export const C_INVENTORY_NEST_HINT = "Additional guidance for this task:\nBefore
  */
 export const SHOWCASE_PHASE_PLAN = [
   "Showcase plan for both heroes (a demonstration of the whole remaining quest in one run). Work through these four phases in order. Decide which phase you are in only from what the screens, the area name, the shared backpack, the labels and the dialogue show, never from elapsed time or from an order having been accepted. Keep the current phase and the evidence for it in the plan.",
-  "Phase 1, Hedge Maze: the two heroes cooperate to get through the maze and obtain the Enchanted Shears. Give Coco the environmental obstacles her fire, pull or flight can affect; give Sieg the enemies, gates and anything that must be chased, struck, pushed or reached quickly. When one hero clears a way, send the other through it. Phase 1 ends only when the shared backpack lists the Enchanted Shears.",
-  "Phase 2, travel: leave the maze through its RETURN exit. At the Goddess Shrine, take the exit marked for the Griffin. Travel only through ordinary exits; do not visit other areas. Keep both heroes together and avoid needless damage on the way. Health carries over between areas.",
-  "Phase 3, Griffin combat: defeat the Griffin in combat until its label shows it defeated. Coco attacks from range; Sieg protects himself, keeps clear of the beam line Coco is using, and strikes when the Griffin is in his reach. Both follow the combat guidance below. While the Griffin is alive, do not go to its nest or use any backpack item there: this demonstration requires the combat route. Keep both heroes alive; a knockout ends the episode.",
+  "Health, in every phase: treat both heroes' health as scarce and do not expect it to come back on its own. Avoid damage that does not advance the objective: deal with enemies from a safe angle, defend or step aside when a visible attack is coming, and do not walk through hazards that can be avoided. Keep each hero's current health in the plan. If a hero is knocked out, read where that hero is now and its health, bring the two heroes back together, and continue the current phase; do not redo phases already completed.",
+  "Phase 1, Hedge Maze: the two heroes cooperate to get through the maze and obtain the Enchanted Shears. Give Coco the environmental obstacles her fire, pull or flight can affect; give Sieg the enemies, gates and anything that must be chased, struck, pushed or reached quickly. When one hero clears a way, send the other through it. Preserve health here: the Griffin fight comes later with whatever health the heroes still have. Phase 1 ends only when the shared backpack lists the Enchanted Shears.",
+  "Phase 2, travel: leave the maze through its RETURN exit. At the Goddess Shrine, take the exit marked for the Griffin. Travel only through ordinary exits; do not visit other areas. Keep both heroes together and avoid damage on the way. Before entering the Griffin Enclosure, note both heroes' health in the plan and decide each hero's role from it: the healthier hero takes the more exposed role.",
+  "Phase 3, Griffin combat: defeat the Griffin in combat until its label shows it defeated. Coco attacks from range; Sieg protects himself, keeps clear of the beam line Coco is using, and strikes when the Griffin is in his reach. Fight defensively: before each attack, check whether a visible warning covers either hero and move or defend first; keep the two heroes apart so one attack cannot hit both; give a hero with low health a safer role. Follow the combat guidance below. While the Griffin is alive, do not go to its nest or use any backpack item there: this demonstration requires the combat route.",
   "Phase 4, wig and Goddess: only after the Griffin's label shows it defeated, Coco claims the wig at its nest (only she can reach it, by flight). Confirm that the shared backpack lists the wig. Then return through the RETURN exit to the Goddess Shrine, offer the wig at the offering, and read and answer every following dialogue until the story shows that Chapter 0 is complete. Holding the wig is not the end.",
 ].join("\n\n");
 

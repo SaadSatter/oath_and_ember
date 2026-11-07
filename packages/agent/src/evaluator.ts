@@ -226,8 +226,11 @@ export function situationCReport(w: World, seen: ReadonlySet<string>, griffinHpA
  *      with the wig claimed rules out the peaceful route);
  *   3. the wig claimed, and the Griffin never took the tools (no grooming);
  *   4. the offering accepted and chapter0.complete.
- * Failure: any knockout (checked first, every tick). Limits are PROPOSED and
- * await the owner's approval.
+ * Knockouts are NOT a failure here (owner decision 2026-11-07): the game's own
+ * rule (GameRoom.damage) returns a knocked-out hero to the area's starting
+ * point with full health, and play continues. The environment records each
+ * knockout (showcaseReport). The episode still ends on any limit, the stall
+ * watchdog or an error. Limits approved by the owner 2026-11-07.
  */
 /** The Hedge Maze reward target id (apps/server/src/hedgeMaze.ts MAZE_CHEST_TARGET). */
 export const SHOWCASE_MAZE_CHEST = "hedge-shears-chest";
@@ -238,10 +241,10 @@ export const showcaseComplete = (w: World) => {
 };
 export const SHOWCASE_EPISODE: EpisodeDefinition = {
   preset: "showcase-maze-griffin-complete-v1",
-  goal: "Showcase (excluded from A/B/C): from the Hedge Maze entrance, obtain the Enchanted Shears, travel to the Griffin Enclosure, defeat the Griffin in combat, claim its wig, offer it to the goddess and reach chapter0.complete, with neither hero knocked out.",
-  // PROPOSED (owner approval pending): about twice the expected game time.
+  goal: "Showcase (excluded from A/B/C): from the Hedge Maze entrance, obtain the Enchanted Shears, travel to the Griffin Enclosure, defeat the Griffin in combat, claim its wig, offer it to the goddess and reach chapter0.complete. Knockouts are recorded, not terminal.",
+  // Owner-approved 2026-11-07 (about twice the expected game time).
   limits: { maxTicks: 600 * 60, maxDecisionsPerPlayer: 4_000, maxModelCallsPerPlayer: 400, maxTokensPerPlayer: 8_000_000 },
-  failure: (_w, tick) => (tick.knockedOut ? "knocked_out" : undefined),
+  // No failure rule: knockouts are recorded by the environment, not terminal.
   success: showcaseComplete,
 };
 

@@ -19,7 +19,7 @@ import { environmentFor, SEEDS, situation, SUITE_REVISION, type SituationId } fr
 import { tutorialId } from "./playerKnowledge.js";
 import { runEpisode } from "./runner.js";
 import { TraceWriter, verifyTrace, type TraceLine } from "./trace.js";
-import type { EnvironmentOptions } from "./environment.js";
+import type { AgentEnvironment, EnvironmentOptions } from "./environment.js";
 import { ModelBudget, MeteredGateway, defaultBudgetLimits, type CallRecord, type Gateway } from "./budget.js";
 import { GUIDED_SITUATIONS, GUIDES, GuidedPlayer } from "./policies/guided.js";
 import { LLMPlayer } from "./policies/llm.js";
@@ -268,6 +268,8 @@ export interface EpisodeSummary {
   configHash?: string;
   /** Situation C only: descriptive route metrics (evaluator.ts situationCReport). Added 2026-11-06. */
   situationCReport?: ReturnType<typeof situationCReport>;
+  /** Showcase only: knockouts and recovery (environment.ts showcaseReport). Added 2026-11-07. */
+  showcaseReport?: NonNullable<ReturnType<AgentEnvironment["showcaseReport"]>>;
   /** Stage notes of a scripted baseline (its own log; never shown to the partner). */
   baselineLog?: Record<PlayerId, { tick: number; note: string }[]>;
   trace: string;
@@ -624,6 +626,8 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
     ...(o.player === "baseline-quest" ? { baselineLog: per((p) => (policies[p] as QuestBaseline).log) } : {}),
     // Situation C only (owner request 2026-11-06): descriptive route metrics, not success requirements.
     ...((r) => (r ? { situationCReport: r } : {}))(env.situationCReport()),
+    // Showcase only (2026-11-07): knockouts recorded, not terminal.
+    ...((r) => (r ? { showcaseReport: r } : {}))(env.showcaseReport()),
     trace: tracePath,
   };
   atomicJson(join(dir, "summary.json"), summary);
