@@ -118,3 +118,9 @@ C remains held out from model-outcome tuning. Freeze any final policies and C ch
 ### Prepared C baseline (unrun)
 
 `baseline-inventory-heuristic-v1` is a proposed zero-model inventory-aware baseline for the prepared-return C candidate. It uses observed item/target descriptions and the unchanged B combat/return fallback. [Implementation and offline verification](../../docs/midterm/SITUATION_C_HEURISTIC_BASELINE.md). No C episode was run; this note does not amend the active scenario declaration or report a result.
+
+### Approved C2 recorded baseline
+
+Owner-approved `baseline-griffin-heuristic-v1` ran on `griffin-prepared-return-v1`, seed 0, at `19e5d87`: **success**, 89.8 game seconds / 103.3 wall seconds, zero counted invalid actions, zero model calls, $0. It defeated the Griffin, claimed the wig, offered it and reached actual `chapter0.complete`, without knockout. It did not use the tools while the Griffin was alive; no prepared-item benefit is demonstrated.
+
+[Watch recording](../../evaluation-runs/live/c2-approved-recorded-2026-11-06/recording.webm) · [Preserved trace, summary, hashes and verification](evidence/traces/c2-approved-recorded-2026-11-06/README.md) · [Summary](evidence/traces/c2-approved-recorded-2026-11-06/summary.json). Full video decode and deterministic replay passed; final frame shows success and Chapter 0 completion. This records the approved candidate result without activating proposed declaration r10.

@@ -102,6 +102,7 @@ Pilot-33 owner-requested preservation: seven source files copied byte-for-byte; 
 
 - 2026-11-06: implemented `baseline-inventory-heuristic-v1` on synthetic observations only; 29 targeted tests, typecheck and build passed. No C execution, paid calls, push or merge. A/B policies unchanged. Concurrent C scenario edits excluded. [Policy report](../midterm/SITUATION_C_HEURISTIC_BASELINE.md) and [same-session audit](../midterm/agent-evidence/skill-runs/2026-11-06-inventory-baseline.md).
 - Evidence scans: changed six documents reported 0 findings; broad 277-file scan retained one existing finding in historical 2026-10-27-recording.md, outside this change. `git diff --check` passed.
+- Owner subsequently authorized a recorded C baseline. Approval document selected unchanged Griffin heuristic, not inventory overlay. Recorded at clean `19e5d87`: success, 89.8 game-s, 103.3 episode wall-s, 0 model calls/cost/invalid count. Full decode and deterministic replay passed; final overlay visually confirmed. Initial bundled ffmpeg image2pipe muxer unsupported; PNG-update retry decoded all frames successfully. Ten evidence text files scanned with 0 findings. [Recording evidence](../../midterms/saadsatter/evidence/traces/c2-approved-recorded-2026-11-06/README.md). No paid calls, push, merge or policy/scenario changes.
 <!-- narrative:end -->
 
 ## Mechanically extracted record

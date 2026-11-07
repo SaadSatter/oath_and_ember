@@ -1,0 +1,9 @@
+{
+  "replay": "Start, 1126 step results, success end hash and 5389 ticks match; trace chain verified.",
+  "fullDecodeExit": 0,
+  "decodeErrors": [],
+  "decodeMethod": "All frames to updated 1x1 PNG sink using bundled Playwright ffmpeg. Initial image2pipe attempt unsupported by bundled binary; retry passed.",
+  "terminalFrameInspected": true,
+  "terminalFrameFinding": "finished: success, 89.8 game seconds, zero model calls, offering-accepted and chapter0-complete visible.",
+  "videoLocalOnly": true
+}
