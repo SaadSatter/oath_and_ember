@@ -94,10 +94,10 @@ describe("showcase start", () => {
 });
 
 describe("showcase guidance", () => {
-  it("is proposed at its exact pinned text, and contains the approved v4 text unchanged", () => {
+  it("is owner-approved at its exact pinned text, and contains the approved v4 text unchanged", () => {
     const g = guidance(SHOWCASE_GUIDANCE_ID);
-    expect(g.status).toBe("proposed");
-    expect(guidanceApproved(g)).toBe(false);
+    expect(g.status).toBe("approved");
+    expect(guidanceApproved(g)).toBe(true);
     expect(g.situations).toEqual([SHOWCASE_ID]);
     expect(guidanceHash(g.text)).toBe(GUIDANCE_SHA);
     const v4 = guidance("b-post-combined-v4").text;
@@ -134,9 +134,9 @@ describe("showcase guidance", () => {
 });
 
 describe("showcase run rules", () => {
-  it("refuses paid runs until revised positioning prompt approval; allows mock and its own baseline only", () => {
-    expect(SHOWCASE_PAID_APPROVED).toBe(false);
-    expect(() => validatePlan({ player: "model-centralized", situations: [SHOWCASE_ID], seeds: [0], model: paidLike() })).toThrow(/locked/);
+  it("admits only the exact approved scope; allows mock and its own baseline only", () => {
+    expect(SHOWCASE_PAID_APPROVED).toBe(true);
+    expect(() => validatePlan({ player: "model-centralized", situations: [SHOWCASE_ID], seeds: [0], model: paidLike() })).not.toThrow();
     expect(() => validatePlan({ player: "model-centralized", situations: [SHOWCASE_ID], seeds: [0], model: { ...mock, guidance: SHOWCASE_GUIDANCE_ID } as ModelSetup })).not.toThrow();
     expect(() => validatePlan({ player: "baseline-showcase-route", situations: [SHOWCASE_ID], seeds: [0] })).not.toThrow();
     expect(() => validatePlan({ player: "baseline-maze-heuristic", situations: [SHOWCASE_ID], seeds: [0] })).toThrow(/runs only/);

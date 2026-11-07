@@ -23,12 +23,12 @@ export const SHOWCASE_GUIDANCE_ID = "showcase-maze-griffin-v1" as const;
 export const SHOWCASE_LABEL = "Prompt-tuned continuous gameplay demonstration — excluded from official A/B/C evaluation results.";
 
 /**
- * Pilot-38 consumed the owner-launched attempt. General positioning guidance
- * is now proposed for review; new exact-hash authorization is required.
- * No automatic retry; scenario/configuration/episode bounds unchanged.
+ * Owner approved the exact positioning prompt after reviewing 4487a4f.
+ * One new owner-launched attempt, no automatic retry or agent launch.
+ * Scenario/configuration/episode bounds unchanged.
  */
-export const SHOWCASE_PAID_APPROVED = false;
-/** The paid configuration the owner approved on 2026-11-07 (target scope unchanged; revised positioning prompt awaits approval). One attempt, no automatic retry. */
+export const SHOWCASE_PAID_APPROVED = true;
+/** The paid configuration the owner approved on 2026-11-07 (positioning prompt approved for one new owner-launched attempt). One attempt, no automatic retry. */
 export const SHOWCASE_PAID_SCOPE = Object.freeze({
   player: "model-centralized", gateway: "openai", model: "gpt-6-luna", effort: "medium", maxBatch: 4, seed: 0,
   maxEpisodeCapUsd: 2.0, wallClockSeconds: 7200, guidance: SHOWCASE_GUIDANCE_ID,

@@ -34,3 +34,7 @@ Previous owner authorization was for one owner-launched attempt and was consumed
 Canonical ledger: 38 entries, no open reservation; pilot cap $9 / remaining $2.304996, contingency $0.90, total cap $25 / remaining $18.302075. All charges preserved; no budget increase or new reservation during this diagnosis. No push, merge, course PR modification or submission.
 
 Validation: 17/17 targeted tests and typecheck pass; original Pilot-38 replays all 430 results exactly. [Proposed exact text/hash checks](evidence/showcase-cow-diagnosis/). Same-session diff audit confirms unchanged engine, controller, observation/action paths and frozen official evidence. No independent-review or new model-success claim.
+
+## Final owner approval
+
+Owner replied “I approve” after reviewing 4487a4f and the proposed positioning correction. Approval covers the exact guidance ea5d75ba…/full prompt 0099a850… above, one new owner-launched attempt with the existing $2/7,200s/400-calls-per-hero/batch4/seed0/gpt-6-luna-medium scope and no automatic retry. The earlier owner self-launch preference persists: Codex will not launch a paid run. Only the two scoped locks and related expectations change; prompt bytes/definition/A/B/C/budget remain unchanged. Prior pending-approval text is historical. Pre-unlock source clean, exact hashes matched, canonical ledger no open reservation and sufficient pilot balance.

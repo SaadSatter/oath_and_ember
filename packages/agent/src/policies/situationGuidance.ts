@@ -141,8 +141,9 @@ export const SITUATION_GUIDANCE: Readonly<Record<string, SituationGuidance>> = O
   "showcase-maze-griffin-v1": Object.freeze({
     id: "showcase-maze-griffin-v1",
     situations: Object.freeze(["showcase-maze-griffin-complete-v1"] as SituationId[]),
-    // Proposed after Pilot-38: public action-order and landing-preview clarification; new hash approval required.
-    status: "proposed",
+    // Owner approved exact post-Pilot-38 positioning text after 4487a4f; one owner-launched attempt.
+    status: "approved",
+    approvedSha256: "ea5d75ba9b74a4c72ac60f0b2f35aaa8e991c5e767737a34fc14b871a355d320",
     provenance: "Showcase-only phase plan drafted by the implementation agent (2026-11-07) at the owner's request, followed by the unchanged, owner-approved b-post-combined-v4 text. North-next and return-after-wig clarification requested by the owner after Pilot-37; general positioning/action-order clarification drafted after Pilot-38. Outcome-informed showcase tuning. Prompt-tuned demonstration; excluded from the A/B/C evaluation.",
     text: `${SHOWCASE_PHASE_PLAN}\n\n${B_POST_COMBINED_V4}`,
   }),
