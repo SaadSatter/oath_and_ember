@@ -1,5 +1,5 @@
 {
-  "id": "oath-ember-abc-2026-11-06-r8-b-return",
+  "id": "oath-ember-abc-2026-11-06-r9-pilot33",
   "declaredOn": "2026-11-06",
   "status": "declared-design; B/C runtime checkpoints and paid execution pending",
   "guidelines": {
@@ -54,20 +54,25 @@
     },
     "postStatus": "Pilot-30 is owner-classified post-tuned; actual tuning intervention/diff must be documented before claiming a matched repeat or prompt-only contrast",
     "centralizedInformation": "one planner sees both permitted hero observations; no repository/evaluator/hidden state",
-    "observedPostTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-a97d9268",
+    "observedPostTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)\u00b7batch4\u00b7tutorial-2ec2f251\u00b7briefing-a97d9268",
     "observedPostTunedPromptHashA": "0616c47baf03f2860f75a4a0867221998b2439f51b55fde33c56111ec8240c44",
     "preTunedSnapshotCommit": "678b86c",
     "preTunedStatus": "Pilot-28 owner-designated pre-tuned failure, stopped at cow; preserved diagnosis records 125.267 game seconds, not owner-recalled approximately 128 seconds. Planner/controller changes separate it from Pilot-30.",
     "tuningMechanism": "not independently established; no fine-tuning or explicit solution-prompt claim inferred",
     "postGuidanceB": {
-      "id": "b-post-a-transfer-v1",
-      "textSha256": "60a0a01357e68e2f44f0ecd9d0d0ebb41bfaab04c5c3ec78cae62c760c265263",
-      "status": "approved by owner 2026-11-06 for griffin-unprepared-v1 and griffin-unprepared-return-v1 (approvedSha256 in code)",
-      "record": "docs/midterm/B_POST_TUNING_TRANSFER.md",
-      "promptSha256ByScenario": {
-        "griffin-unprepared-v1": "54605c1b010826448627189d92fc8dfedc9f853b14d45fe5ad21260ce21e5627",
-        "griffin-unprepared-return-v1": "17b89312d88c9da0f81bdea5344c58f149a046b9a86873d166821a74f4be96a6"
-      }
+      "id": "b-post-combined-v4",
+      "status": "approved",
+      "sha256": "1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34",
+      "situations": [
+        "griffin-unprepared-v1",
+        "griffin-unprepared-return-v1"
+      ],
+      "policyId": "centralized-f0592888(openai:gpt-6-luna@medium)\u00b7batch4\u00b7task-cdbee612\u00b7guidance-12874542",
+      "promptHash": "7ff08ba84c4ab14460d0f6707febdc19b8e417ced89d3127636ce7ed9f352144",
+      "configHash": "f3949a6dbabea35e5053053f4a7e46ecc6f801c7698fcc78eaeb75f233d66cb3",
+      "sourceCommit": "1f0ca45",
+      "observedRun": "Pilot-33",
+      "priorObservedPostTunedRun": "Pilot-32: b-post-a-transfer-v1, knocked_out; preserved separately"
     }
   },
   "conditions": [
@@ -103,7 +108,7 @@
       "history": "Development-informed; Pilot-30 predates this declaration, not retrospectively preregistered"
     },
     "B": {
-      "name": "Griffin Trial, Unprepared — Goddess Return",
+      "name": "Griffin Trial, Unprepared \u2014 Goddess Return",
       "id": "griffin-unprepared-return-v1",
       "seed": 0,
       "definitionHash": "b224f75d2ec71ad61082fe0cba4617057b73cd9feb5173c52f7f32dcd86ed6f1",
@@ -148,16 +153,22 @@
   },
   "strictDefeatDecision": "Peaceful grooming/wig reward with positive Griffin HP fails B/C. No game mechanic change; broader success would require an explicit declaration amendment.",
   "trialAllocation": {
-    "allOtherCells": "A pre/post observed; A/B heuristic primary runs observed; B/C model cells and C baseline unrun",
-    "freshModelRunsRemaining": 4,
+    "allOtherCells": "A/B primary cells observed; C pre/post/baseline unrun",
+    "freshModelRunsRemaining": 2,
     "freshBaselineRunsRemaining": 1,
-    "newModelSpendCeilingUsd": 3,
+    "newModelSpendCeilingUsd": 1.5,
     "paidAuthorization": false,
     "A/post-tuned/1": "Pilot-30 historical completed pilot reused once, condition metadata corrected, original run status/evidence unchanged",
     "A/pre-tuned/1": {
       "episode": "Pilot-28",
       "status": "historical manual-stop failure; owner allocated after outcome",
       "record": "docs/midterm/evaluation-abc/A-pretuned-pilot28.json"
+    },
+    "B/post-tuned/1": {
+      "episode": "Pilot-33",
+      "source": "owner designation after outcome",
+      "status": "success",
+      "priorPostTunedAttempt": "Pilot-32 failed under earlier guidance, retained; neither repeated identical policy nor prompt-only controlled comparison"
     }
   },
   "holdoutOrder": [
@@ -168,8 +179,8 @@
   ],
   "memoryRequirement": "Partial observation: clean bounded-memory versus observation-only comparison still required/pending; pre/post guidance is not a memory ablation",
   "implementationBoundary": "Declaration and documentation only; no scenario, gameplay, policy or controller change; no model calls, merge, push or paid-run approval",
-  "supersedes": "oath-ember-abc-2026-11-06-r7-b-enclosure",
-  "correction": "Owner requested all baseline/return changes be available in oath_and_ember-eval. Preserve this checkout's one repetition per cell; imported second baseline runs are supplementary deterministic reproductions. Preserve reviewed griffin-unprepared-v1 as historical enclosure case beside active return variant.",
+  "supersedes": "oath-ember-abc-2026-11-06-r8-b-return",
+  "correction": "Owner designated Pilot-33 (b-post-combined-v4) as B/post-tuned/1 after observing success. R8 pinned b-post-a-transfer-v1; its Pilot-32 knockout failure and artifacts are retained. This is an after-outcome primary-result amendment, not preregistration of v4 or removal of a failed attempt.",
   "classificationNote": "A: pre-tuned Pilot-28 (678b86c, manual stop), post-tuned Pilot-30 (040685c, success), baseline baseline-quest (success). Pilot-29 (327c34a) is supplementary evidence of the intermediate tuning round. Whether a manually stopped run qualifies as the official pre-tuned attempt depends on the professor's rules.",
   "promptTuningRecord": "docs/midterm/A_PROMPT_TUNING.md",
   "requirementInterpretation": "Owner's reading: 'two live trials each' = one pre-tuned and one post-tuned model run per situation, plus the baseline. Not yet confirmed by the professor.",
@@ -191,5 +202,5 @@
     "disclosure": "Post hoc: decided after Pilot-31's outcome. The guidance was written after reading Pilot-31: tuning on B.",
     "history": "r6 and r7 archived byte for byte in docs/midterm/evaluation-abc/history/r6/ and history/r7/."
   },
-  "declarationSha256": "14525a1229a2c719c3064452e91e22245942821430cd222bc73642470c3fe8b2"
+  "declarationSha256": "616c182453e06ec9568ffea3bc0c26dde314dca54376a2e77012766a269445be"
 }

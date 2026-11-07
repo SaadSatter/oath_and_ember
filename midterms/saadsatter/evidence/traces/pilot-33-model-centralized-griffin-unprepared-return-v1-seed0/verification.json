@@ -1,0 +1,14 @@
+{
+  "fullDecodeExit": 0,
+  "durationSeconds": 2188.88,
+  "decodeErrors": [],
+  "method": "All frames decoded to a 1x1 PNG sink; visual terminal check separate.",
+  "video": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T23-57-08-007Z/recording.webm",
+  "decodeWarnings": [
+    "[png @ 0xc5cc34000] ignoring invalid SAR: 16/9"
+  ],
+  "warningExplanation": "PNG sink scaled to 1x1 cannot represent the original 16:9 sample aspect ratio; this sink warning is not a WebM corruption/decode failure.",
+  "terminalFrameInspected": true,
+  "terminalFrameFinding": "Full-resolution final frame visibly shows finished: success, 51.0 s game time, 251 model calls, $0.5544, and griffin-defeated / holding:griffin_wig / claimed:griffin-nest / offering-accepted / chapter0-complete.",
+  "replay": "Existing replay-video.ts --check-only: start, 443 results, end(success,6fd8c37f7fe956e4), 3057 ticks match; no model calls."
+}

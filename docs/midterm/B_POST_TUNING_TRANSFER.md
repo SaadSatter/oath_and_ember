@@ -382,3 +382,7 @@ The owner approved `b-post-combined-v4` for paid runs ("Unlock V4"). The text is
 
 Classification is unchanged: Pilot-32 is B/post-tuned/1 (r8). A v4 run is a supplementary B tuning trial, reported beside it. Declaration r8 and its results files were not modified. No paid run has been made by the agent.
 
+
+## Pilot-33 preservation and owner result designation
+
+Pilot-33 (`1f0ca45`, approved b-post-combined-v4) succeeded on `griffin-unprepared-return-v1`: 51.0 game-s, 2184.4 wall-s, 251 calls, 1 invalid action, $0.554417. The owner designates it B/post-tuned/1 after outcome; declaration r9-pilot33 records this amendment. R8's earlier v1 guidance and failed Pilot-32 ($0.206005, knocked_out) remain preserved, not replaced in their historical artifacts. Two post-tuning attempts span different guidance versions (one failure/one success), not repeated identical-policy trials. Six primary cells are observed; only three C cells remain unrun. See `midterms/saadsatter/EVALUATION.md` and `evaluation-abc/B-posttuned-pilot33.json`. No new paid call or policy/scenario change during preservation.

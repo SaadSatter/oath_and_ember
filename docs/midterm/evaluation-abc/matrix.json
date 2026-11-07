@@ -67,7 +67,7 @@
       "declared": true
     },
     "B": {
-      "name": "Griffin Trial, Unprepared — Goddess Return",
+      "name": "Griffin Trial, Unprepared \u2014 Goddess Return",
       "source": "griffin-unprepared-return-v1",
       "scenarioHash": "b224f75d2ec71ad61082fe0cba4617057b73cd9feb5173c52f7f32dcd86ed6f1",
       "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
@@ -93,10 +93,13 @@
           "scenarioNote": "Run on griffin-unprepared-v1, a different scenario from B under r8; counted by owner decision"
         },
         "post-tuned": {
-          "status": "pending; approved, prepared, paid run not executed",
-          "guidance": "b-post-a-transfer-v1 (60a0a013)",
-          "promptHash": "17b89312d88c9da0f81bdea5344c58f149a046b9a86873d166821a74f4be96a6",
-          "record": "docs/midterm/B_POST_TUNING_TRANSFER.md"
+          "status": "success (owner-designated primary Pilot-33)",
+          "trials": 1,
+          "record": "docs/midterm/evaluation-abc/B-posttuned-pilot33.json",
+          "episode": "Pilot-33",
+          "guidance": "b-post-combined-v4",
+          "priorFailedAttempt": "Pilot-32, b-post-a-transfer-v1: knocked_out; retained",
+          "recordedPostTunedAttempts": "1 success / 2 attempts across different guidance versions; not identical-policy repetitions"
         },
         "cheap-baseline": {
           "status": "1 primary success; 1 matching supplementary reproduction",
@@ -155,7 +158,7 @@
     "modelEpisodes": 6,
     "baselineEpisodes": 3,
     "pilot30Allocation": "A post-tuned run 1, historical completed pilot; original run evidence unchanged",
-    "remainingNewModelEpisodes": 3,
+    "remainingNewModelEpisodes": 2,
     "remainingNewBaselineEpisodes": 1,
     "pilot28Allocation": "A pre-tuned run 1, historical manual-stop failure",
     "supplementaryBaselineRuns": "A and B each have a second identical reproduction, outside nine primary cells",
@@ -163,5 +166,5 @@
   },
   "baselineImplementation": "baseline-quest at 040685c, existing unchanged solution-aware free comparator",
   "declaration": "docs/midterm/evaluation-abc/declaration.json",
-  "declarationRevision": "oath-ember-abc-2026-11-06-r8-b-return"
+  "declarationRevision": "oath-ember-abc-2026-11-06-r9-pilot33"
 }

@@ -5,7 +5,7 @@
 | Agent | Codex (desktop app); model id(s) recorded in the transcript: `gpt-6.1-sol` |
 | Role | Codex implementation agent under AGENTS.md: Pilot-28 diagnosis and owner-approved centralized progress, observation-derived aim and evidence fixes; same-session game-rules-audit checkpoint and session-evidence, not independent review. |
 | Session ID | `01a1aed2-3232-7011-bb41-5fccdea13a5c` |
-| Window (UTC) | 2026-11-06 03:06 → 2026-11-06 20:05 |
+| Window (UTC) | 2026-11-06 03:06 → 2026-11-07 00:39 |
 | Session URL | None. Local session; no shareable URL was created. |
 | Repository | `https://github.com/SaadSatter/oath_and_ember` |
 | Transcript | Local only, not committed: `~/.codex/sessions/2026/11/05/rollout-2026-11-05T22-06-13-01a1aed2-3232-7011-bb41-5fccdea13a5c.jsonl` |
@@ -38,6 +38,10 @@
 22. 2026-11-06 19:59 — npm run eval:live -- --scenario griffin-unprepared-return-v1 --seed 0 --player baseline-griffin-heuristic > eval:live > node --import tsx scripts/midterm/live.ts --scenario griffin-unprepared-return-v1 --seed 0 --player baseline-griffin-heuristic eval:live: unknown scenario GRIFFIN-UNPREPARED-RETURN-V1 (S1, S2, S3, S2-local, S3-local, S2-B, S2-C, griffin-unprepared-v1, or a historical S2-v1, S3-v1, S2-local-v1, S3-lo … (428 characters; full text in the local transcript)
 23. 2026-11-06 20:00 — What about the hedge maze? Is there no recording information or anything?
 24. 2026-11-06 20:01 — No no all these changes shouldn't be on your own worktree they need to be availabel for oath_and_ember eval
+25. 2026-11-06 20:11 — how to run the baseline recording?
+26. 2026-11-06 20:11 — I am running another session rn: npm run eval:live -- --scenario S2-local --seed 0 --player baseline-maze-heuristic > eval:live > node --import tsx scripts/midterm/live.ts --scenario S2-local --seed 0 --player baseline-maze-heuristic eval:live: could not start the viewer: listen EADDRINUSE: address already in use 127.0.0.1:3030. Try --port <n>.
+27. 2026-11-06 20:28 — I ran a recorded baseline of both of them, link those to the evaluation.md
+28. 2026-11-07 00:36 — [attachments: "Viewer (read-only)] Preserve Pilot 33: This is the post-tuned run for the Situation B and update the evaluation md with links to its data recording and such.
 
 <!-- narrative:start -->
 ## What was done
@@ -92,6 +96,8 @@ Owner-requested integration into oath_and_ember-eval: both deterministic heurist
 
 Owner recorded live A/B heuristic runs at clean 4c9cf9f. Linked both original local recording.webm/recording.json/summary files in course EVALUATION.md and preserved metadata plus SHA256 manifest at docs/midterm/evidence/baseline-live-recordings/. Both saved, speed 1, successful, 31.5/89.8 game-s, zero model calls and invalid actions. Video bytes/hashes and recorded outcomes checked; no full decode or independent terminal-frame inspection claimed. Videos were neither modified, committed nor uploaded. Changed artifact/doc secret scan: 6 files, 0 findings. No new gameplay or paid run.
 
+Pilot-33 owner-requested preservation: seven source files copied byte-for-byte; trace/model replies/policy notes and video metadata preserved, video untouched/local-only. Existing offline replay verifies all 443 results, original start/end and 3057 ticks. Full video decode exit 0, 2188.88 s; 1x1 PNG SAR warning separated from decode errors. Inspected terminal frame shows finished success and Chapter 0 milestones. Owner registers Pilot-33/v4 as B post-tuned primary after outcome; r9 archives r8, failed Pilot-32/v1 preserved and disclosed, no erased failures. 51.0 game-s, 2184.4 wall-s, 251 calls, 1 invalid, 5 unusable replies, $0.554417 saved runner estimate. Nine primary rows /six observed; C three rows unrun. Changed artifact scan: 13 files, 0 findings. No new paid call or gameplay/policy/scenario edit. Same-session audit, not independent review. Links: midterms/saadsatter/EVALUATION.md; docs/midterm/evaluation-abc/B-posttuned-pilot33.json; docs/midterm/agent-evidence/skill-runs/2026-11-06-pilot33-preservation.md.
+
 <!-- narrative:end -->
 
 ## Mechanically extracted record
@@ -101,18 +107,32 @@ Owner recorded live A/B heuristic runs at clean 4c9cf9f. Linked both original lo
 - Pull requests referenced in tool output: https://github.com/SaadSatter/oath_and_ember/pull/1 (the example URL quoted in MIDTERM_GUIDELINES.md was also printed; it is not a PR of this project and is not listed)
 - Files edited through the agent's edit/patch tool: 1 (`docs/midterm` 1)
 - Test-summary lines printed in tool output (last 6 distinct, as printed):
-  - `Test Files  1 failed | 4 passed (5)`
-  - `Tests  1 failed | 75 passed (76)`
   - `Tests  77 passed (77)`
   - `Tests  43 passed (43)`
   - `Tests  1 failed | 1 passed (2)`
   - `Tests  2 passed (2)`
+  - `Test Files  6 passed (6)`
+  - `Tests  78 passed (78)`
 - TypeScript errors (`error TS…`) appeared in tool output at least once during the session.
 
 Commits whose author time falls inside this window (any branch). A time match is not proof of authorship when sessions overlap; the co-author trailer is shown where present.
 
 | Commit | Author time (UTC) | Subject | Co-author trailer |
 | --- | --- | --- | --- |
+| `1f0ca45` | 2026-11-06 23:55 | Unlock b-post-combined-v4 for paid runs (owner approval) | Claude Opus 5.5 <noreply@anthropic.com> |
+| `e85aad3` | 2026-11-06 23:50 | Record review round 3 on b-post-combined-v4; widen Pilot-32 pins, text unchanged | Claude Opus 5.5 <noreply@anthropic.com> |
+| `af81ccc` | 2026-11-06 23:41 | Propose supplementary B guidance b-post-combined-v4 (locked, not approved) | Claude Opus 5.5 <noreply@anthropic.com> |
+| `68b20f8` | 2026-11-06 23:34 | Record review round 2 on b-post-combined-v3; add pins, text unchanged | Claude Opus 5.5 <noreply@anthropic.com> |
+| `94673c0` | 2026-11-06 23:24 | Propose combined B guidance b-post-combined-v3 (locked, not approved) | Claude Opus 5.5 <noreply@anthropic.com> |
+| `fa644d1` | 2026-11-06 23:22 | Preserve Pilot-32 evidence: B post-tuned v1 on the return scenario, knocked out at 47.5 game-s | Claude Opus 5.5 <noreply@anthropic.com> |
+| `d49b942` | 2026-11-06 23:16 | Add owner-authored B guidance candidate b-post-combat-v2 (proposed, locked) | Claude Opus 5.5 <noreply@anthropic.com> |
+| `2791bce` | 2026-11-06 22:52 | Approve b-post-a-transfer-v1; declaration r8 runs B post-tuned on the return scenario | Claude Opus 5.5 <noreply@anthropic.com> |
+| `ec135fe` | 2026-11-06 22:27 | Declaration r7: griffin-unprepared-v1 is the official Situation B pre/post scenario | Claude Opus 5.5 <noreply@anthropic.com> |
+| `732c998` | 2026-11-06 22:25 | Restore Pilot-31 observation parity for griffin-unprepared-v1; record review round 1 | Claude Opus 5.5 <noreply@anthropic.com> |
+| `6276656` | 2026-11-06 22:17 | Freeze B post-tuned candidate b-post-a-transfer-v1 (proposed, not approved) | Claude Opus 5.5 <noreply@anthropic.com> |
+| `ec84a4f` | 2026-11-06 21:40 | Register Pilot-31 as Situation B pre-tuned: knocked out at 50.1 game-s | Claude Opus 5.5 <noreply@anthropic.com> |
+| `2690ccd` | 2026-11-06 20:30 | Link owner-recorded baseline videos from evaluation report | — |
+| `4c9cf9f` | 2026-11-06 20:08 | Integrate heuristic baselines and return evaluation into evaluation checkout | — |
 | `9c46eeb` | 2026-11-06 20:01 | Admit new Griffin baseline in live launcher and document recording commands | — |
 | `6df4bc0` | 2026-11-06 20:00 | Record Situation B owner decisions and pre-run checks for the B pre-tuned run | Claude Opus 5.5 <noreply@anthropic.com> |
 | `3b9eb7b` | 2026-11-06 19:55 | Hide the Griffin beam entry when the game draws no beam (20 px or less) | Claude Opus 5.5 <noreply@anthropic.com> |
