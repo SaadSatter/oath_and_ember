@@ -140,8 +140,9 @@ export const SITUATION_GUIDANCE: Readonly<Record<string, SituationGuidance>> = O
   "showcase-maze-griffin-v1": Object.freeze({
     id: "showcase-maze-griffin-v1",
     situations: Object.freeze(["showcase-maze-griffin-complete-v1"] as SituationId[]),
-    // Shrine-start revision: requires new exact-hash owner authorization.
-    status: "proposed",
+    // Owner final approval of shrine-start revision 3, session 01a1b479, after bac3a5f.
+    status: "approved",
+    approvedSha256: "32836d8f85b7228e3bc83f1b8aae7a7b9e8e602dc1e72aa3d15949cdb595b439",
     provenance: "Showcase-only phase plan drafted by the implementation agent (2026-11-07) at the owner's request, followed by the unchanged, owner-approved b-post-combined-v4 text. Prompt-tuned demonstration; excluded from the A/B/C evaluation.",
     text: `${SHOWCASE_PHASE_PLAN}\n\n${B_POST_COMBINED_V4}`,
   }),

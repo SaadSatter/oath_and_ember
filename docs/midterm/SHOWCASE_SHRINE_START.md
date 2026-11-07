@@ -79,3 +79,11 @@ The video is preserved byte-identically, local-only, at `evaluation-runs/live/sh
 [Current free evidence package](../../midterms/saadsatter/evidence/showcase/free-validation-v3/README.md) includes manifest, exact guidance/prompt texts, opening dialogue proof, compressed original traces, logs, official replay verification and video metadata/hash. [Same-session rules audit](agent-evidence/skill-runs/2026-11-07-showcase-shrine.md) separates its findings from the read-only reviewer reports. New exact-hash approval remains the next owner decision; no paid run has started.
 
 Final ledger recheck observed a separately settled **pilot-36**, source `cee0713` (the older maze-start version), opened 2026-11-07T20:05:28.838Z, charged $0.012616. This entry appeared while this workstream performed free checks; no paid launcher/provider call was issued by this workstream. It is an older-version attempt, not a result for revised source `e5d2dfe`. No retry was made. Final available balance above includes it. The new exact-hash approval must refer to this revised shrine-start version explicitly.
+
+## Final revision-3 authorization
+
+Source: owner’s “I approve” reply to the exact revised hashes, bounds and one-attempt question following review package `bac3a5f`, in Codex session `01a1b479-dfba-79a0-9de7-9cca63bdc8bb`. This supersedes pending-authorization statements above. One revised shrine-start attempt is authorized, no automatic retry; the separate old maze-start pilot-36 remains preserved.
+
+Pre-unlock: clean HEAD `bac3a5f`, all three proposed hashes matched. Canonical ledger36entries, zero open, unlocked; pilot$2.117789/total$19.114868 remaining. Minimal runtime change opens only the showcase approval flag and approves its exact guidance hash. No prompt text, definition object, game rules or A/B/C change. Definition status wording remains frozen historical metadata to preserve the approved definition hash. Existing scenario/config/seed/cap/wall/call/no-resume protections remain.
+
+`OPENAI_API_KEY` is unavailable in the agent process. Validate the committed command through the missing-credential boundary without provider access. The revised paid attempt remains unstarted until a credential is supplied via the existing hidden prompt or environment; never through chat or command arguments.
