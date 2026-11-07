@@ -62,7 +62,7 @@ export const EPISODE_CAP_USD: Record<SituationId, number> = {
   "griffin-unprepared-return-v1": 0.75,
   // Situation C (proposed declaration r10): the same declared run cap as B.
   "griffin-prepared-return-v1": 0.75,
-  // Showcase (excluded from A/B/C; docs/midterm/SHOWCASE_CONTINUOUS_EPISODE.md): PROPOSED cap, owner approval pending.
+  // Showcase (excluded from A/B/C; docs/midterm/SHOWCASE_CONTINUOUS_EPISODE.md): owner-approved cap (2026-11-07).
   "showcase-maze-griffin-complete-v1": SHOWCASE_EPISODE_CAP_USD,
 };
 /**
@@ -70,7 +70,7 @@ export const EPISODE_CAP_USD: Record<SituationId, number> = {
  * F6, 2026-11-03). P1 only; other scenarios keep their behaviour.
  */
 export const WALL_CLOCK_CEILING_S: Partial<Record<SituationId, number>> = { P1: 3600 };
-/** Showcase (excluded from A/B/C): PROPOSED 7,200 s ceiling, kept apart so the P1 map is unchanged. */
+/** Showcase (excluded from A/B/C): owner-approved 7,200 s (2026-11-07), also its model-run default; kept apart so the P1 map is unchanged. */
 export const SHOWCASE_WALL_CLOCK_CEILING: Partial<Record<SituationId, number>> = { "showcase-maze-griffin-complete-v1": SHOWCASE_WALL_CLOCK_CEILING_S };
 /** A/B/C declaration cases: the declared 3,600 s model bound (Situation B review finding 7, 2026-11-06). */
 export const ABC_WALL_CLOCK_CEILING_S: Partial<Record<SituationId, number>> = { "griffin-unprepared-v1": 3600, "griffin-unprepared-return-v1": 3600, "griffin-prepared-return-v1": 3600 };
@@ -344,8 +344,9 @@ export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | 
     if (o.situations.length !== 1) throw Error(`${SHOWCASE_ID} runs on its own.`);
     if (isModel(o.player) && o.model?.gateway && !(o.model.gateway.label ?? "").startsWith("mock:")) {
       if (!SHOWCASE_PAID_APPROVED) throw Error(`${SHOWCASE_ID} is locked for paid model runs until the owner approves the showcase; use the mock gateway.`);
-      if (o.model.gateway.label !== `${SHOWCASE_PAID_SCOPE.gateway}:${SHOWCASE_PAID_SCOPE.model}@${SHOWCASE_PAID_SCOPE.effort}` || (o.model.maxBatch ?? 4) !== SHOWCASE_PAID_SCOPE.maxBatch || o.model.guidance !== SHOWCASE_PAID_SCOPE.guidance)
-        throw Error(`${SHOWCASE_ID} paid runs are limited to ${SHOWCASE_PAID_SCOPE.gateway}:${SHOWCASE_PAID_SCOPE.model}@${SHOWCASE_PAID_SCOPE.effort}, batch ${SHOWCASE_PAID_SCOPE.maxBatch}, guidance ${SHOWCASE_PAID_SCOPE.guidance}.`);
+      if (o.model.gateway.label !== `${SHOWCASE_PAID_SCOPE.gateway}:${SHOWCASE_PAID_SCOPE.model}@${SHOWCASE_PAID_SCOPE.effort}` || (o.model.maxBatch ?? 4) !== SHOWCASE_PAID_SCOPE.maxBatch || o.model.guidance !== SHOWCASE_PAID_SCOPE.guidance
+        || o.seeds.length !== 1 || o.seeds[0] !== SHOWCASE_PAID_SCOPE.seed)
+        throw Error(`${SHOWCASE_ID} paid runs are limited to ${SHOWCASE_PAID_SCOPE.gateway}:${SHOWCASE_PAID_SCOPE.model}@${SHOWCASE_PAID_SCOPE.effort}, batch ${SHOWCASE_PAID_SCOPE.maxBatch}, guidance ${SHOWCASE_PAID_SCOPE.guidance}, seed ${SHOWCASE_PAID_SCOPE.seed}.`);
     }
   }
   if (o.model?.guidance !== undefined) {
@@ -435,8 +436,17 @@ function requireFinalGrant(o: SuiteRunOptions) {
       if (!g.covers(o.player, id, seed, stage)) throw new FinalAccessError(`The approval does not cover ${o.player} ${id} seed ${seed} (${stage}).`);
 }
 
+/** Default wall clock: 3,600 s for models, 600 s for scripted players; the showcase's model runs get its owner-approved 7,200 s (audit 2026-11-07, finding 3). */
+export function defaultWallSeconds(o: Pick<SuiteRunOptions, "model" | "situations">) {
+  if (o.model && o.situations.length === 1 && o.situations[0] === SHOWCASE_ID) return SHOWCASE_WALL_CLOCK_CEILING_S;
+  return o.model ? 3600 : 600;
+}
+
 export async function runSuite(o: SuiteRunOptions): Promise<EpisodeSummary[]> {
   validatePlan(o);
+  // Showcase: one paid attempt, no automatic retry (owner 2026-11-07; review finding 3).
+  if (o.resume && o.situations.includes(SHOWCASE_ID) && isModel(o.player) && !(o.model?.gateway.label ?? "").startsWith("mock:"))
+    throw Error(`${SHOWCASE_ID} paid runs are one attempt only: resume and retry are refused.`);
   requireFinalGrant(o);
   if (o.episodeCapUsd !== undefined) {
     if (!o.model) throw Error("An episode spend cap applies to model runs only.");
@@ -448,7 +458,7 @@ export async function runSuite(o: SuiteRunOptions): Promise<EpisodeSummary[]> {
   const manifest = {
     suiteRevision: SUITE_REVISION,
     player: o.player, situations: o.situations, seeds: o.seeds, final: !!o.final, gitHash: o.gitHash,
-    wallSeconds: o.wallSeconds ?? (o.model ? 3600 : 600),
+    wallSeconds: o.wallSeconds ?? defaultWallSeconds(o),
     model: o.model ? { gateway: o.model.gateway.label, stage: o.model.stage, priceSource: o.model.priceSource,
       maxBatch: o.model.maxBatch ?? 4, manualHash: createHash("sha256").update(o.model.manual).digest("hex"),
       // Added 2026-11-06 for the post-tuned condition; absent (as before) when no guidance is used.
@@ -523,7 +533,7 @@ async function runOne(o: SuiteRunOptions, id: SituationId, seed: number, dir: st
   const ledgerEntry = model ? model.ledger.reserve(model.stage, run, cap) : null;
   if (model && ledgerEntry) budget!.bindLedger(model.ledger, ledgerEntry);
   if (model && ledgerEntry) trace.write({ type: "ledger_reservation", tick: 0, data: { entry: ledgerEntry, stage: model.stage, run, reservedUsd: cap, ledger: model.ledger.path } });
-  const wallLimitSeconds = o.wallSeconds ?? (model ? 3600 : 600);
+  const wallLimitSeconds = o.wallSeconds ?? defaultWallSeconds(o);
   const started = Date.now();
   let outcome: GameOutcome;
   try {

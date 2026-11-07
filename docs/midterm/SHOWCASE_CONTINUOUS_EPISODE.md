@@ -2,7 +2,7 @@
 
 > **Prompt-tuned continuous gameplay demonstration — excluded from official A/B/C evaluation results.**
 
-Scenario `showcase-maze-griffin-complete-v1`, guidance `showcase-maze-griffin-v1`. Prepared 2026-11-07 by the Claude Code implementation agent at the owner's request. **Status: free validation done; paid run locked.** No paid call, push or merge has been made. Nothing in the official A/B/C evaluation was changed (see "What was not touched").
+Scenario `showcase-maze-griffin-complete-v1`, guidance `showcase-maze-griffin-v1`. Prepared 2026-11-07 by the Claude Code implementation agent at the owner's request. **Status (revision 2): design, model, limits and one attempt approved by the owner; guidance provisionally approved and frozen; paid execution still locked pending the owner's separate final authorization.** No paid call, push or merge has been made. Nothing in the official A/B/C evaluation was changed (see "What was not touched"). Section 10 records the owner's 2026-11-07 decisions and what changed for them; where an earlier section disagrees, section 10 is current.
 
 ## 1. Feasibility: yes, with no gameplay change
 
@@ -21,7 +21,7 @@ Facts from the source and the free runs that shape the showcase:
 | --- | --- |
 | `packages/agent/src/showcase.ts` (new) | Definition, pinned by hash; paid lock `SHOWCASE_PAID_APPROVED = false`; proposed paid scope; summary label `SHOWCASE` with `officialEvaluation: false` and the disclosure text |
 | `packages/agent/src/suite.ts` | New `SHOWCASE_SITUATIONS` list (one entry), briefing and task line; `situation()` also searches it. `SITUATIONS` and `ABC_SITUATIONS` unchanged |
-| `packages/agent/src/evaluator.ts` | New preset: `showcaseComplete` predicate, knockout failure, proposed limits, `showcaseMilestones` |
+| `packages/agent/src/evaluator.ts` | New preset: `showcaseComplete` predicate, owner-approved limits, `showcaseMilestones`; no knockout failure (revision 2) |
 | `packages/agent/src/environment.ts` | Records the showcase and Griffin milestones in the trace for this preset only |
 | `packages/agent/src/harness.ts` | Cap $2.00 and 7,200 s wall-clock ceiling (proposed); the showcase runs only `model-centralized` or its own baseline; paid runs refused while locked; summary label |
 | `packages/agent/src/playerKinds.ts` | New player kind `baseline-showcase-route` |
@@ -39,26 +39,26 @@ The planner (`centralized.ts`, id `f0592888`), `llm.ts`, perception, actions, na
 | | Value |
 | --- | --- |
 | Scenario id = preset | `showcase-maze-griffin-complete-v1` |
-| Definition hash | `23701f01086385d245a929640c58c1c596934a1ee21f0cddf885d2f911495d29` |
+| Definition hash | `43f72cfe7a2e152527df2a91b2eaa18a281abf5a51bcee58dabcd9851757f5f9` (revision 2; revision 1 was `23701f01…`) |
 | Start | S2-A's ordinary prefix (goddess checkpoint, opening scene, walk to the shrine's east exit, E). No fixture. Absolute tick 405 |
 | Start hash, seed 0 | `fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca`, **identical to S2-A's** (episode id `showcase-maze-griffin-complete-v1-0-fdc49877`) |
 | Start hash, seed 1 | `febddd1a479ac6f2750c940ac2fa9f6e469d6a5bd2d4ec89bac9f32514f86519`, identical to S2-A's seed 1 |
 | Start conditions | Both heroes 100 HP with all abilities; maze pristine (dry hedge, cow in the lane, wolf with the key, gate shut, chest unclaimed); Griffin 640/640 at its nest; no Mirror, Shears or wig; offering not made |
 | Success (authoritative state) | Shears Chest claimed **and** Enchanted Shears held **and** Griffin HP 0 **and** wig claimed **and** the Griffin never took the tools **and** offering accepted **and** `chapter0.complete` |
-| Failure | Any knockout, checked first on every tick (**proposed**; see decision B in section 9) |
+| Knockouts | **Not a failure** (owner decision 2026-11-07). The game's own rule returns the hero to the area's starting point with full health; quest progress, backpack and Griffin are untouched; play continues. Each knockout is recorded (trace `showcase_knockout`, summary `showcaseReport`). The episode still ends on any limit, three consecutive policy failures, the planner's stall watchdog or a manual stop |
 | Milestones (trace only) | `showcase:1-maze-complete`, `2-griffin-defeated`, `3-wig-acquired-after-defeat`, `4-offering-accepted`, `5-chapter0-complete`; plus the Griffin HP quarters and the ordinary story/inventory markers. A wig taken while HP > 0 would be marked `showcase:peaceful-wig (does not satisfy the showcase)` |
-| Limits (**proposed**) | 36,000 ticks (600 game-s); 4,000 decisions, 400 model calls and 8M tokens per hero; 30 s per call; 3 consecutive policy failures; 7,200 s wall clock; $2.00 per episode |
+| Limits (owner-approved 2026-11-07) | 36,000 ticks (600 game-s); 4,000 decisions, 400 model calls and 8M tokens per hero; 30 s per call; 3 consecutive policy failures; 7,200 s wall clock (the default for showcase model runs); $2.00 per episode |
 
 Obtaining the wig is never reported as success; the episode ends only at `chapter0.complete` (or a failure or limit).
 
-## 4. Proposed guidance `showcase-maze-griffin-v1` (status: proposed)
+## 4. Guidance `showcase-maze-griffin-v1` (revision 2: provisionally approved, frozen; status flag stays "proposed" until the final authorization)
 
 | | Value |
 | --- | --- |
-| Guidance SHA-256 | `c0f7382e577a59b4a71d2141dad90b2037880a7dad55c1f01e34592c636a9c61` (5,142 characters) |
-| Full planner system prompt SHA-256 | `fecf10c70440a6e0c8f8283c774098d1150b3448add661be8d8b9ced17fdf753` (36,964 characters) |
-| Policy name | `centralized-f0592888(<gateway>)·batch4·tutorial-2ec2f251·briefing-a7116c6b·task-a3e1355f·guidance-c0f7382e` |
-| Prompt parts | the public manual (`4b091a66…`), the tutorial (`2ec2f251`, as in A), the showcase briefing (`a7116c6b`), the showcase task line (`a3e1355f`), then one guidance block |
+| Guidance SHA-256 | `7f3203b954001d9e302b154cc77423cdb8fe36f63e4434c7a9ac7fc4a33d2166` (6,034 characters; revision 1 was `c0f7382e…`) |
+| Full planner system prompt SHA-256 | `59e46825cefa03608f7481c681b625f6204e13c2156eb6f66cb1a6b7f18183c7` (revision 1 was `fecf10c7…`) |
+| Policy name | `centralized-f0592888(<gateway>)·batch4·tutorial-2ec2f251·briefing-bf6cd3d3·task-368f4886·guidance-7f3203b9` |
+| Prompt parts | the public manual (`4b091a66…`), the tutorial (`2ec2f251`, as in A), the showcase briefing (`bf6cd3d3`, revision 2: a knockout does not end the episode), the showcase task line (`368f4886`), then one guidance block |
 | Full texts | `midterms/saadsatter/evidence/showcase/free-validation/guidance-showcase-maze-griffin-v1.txt` and `planner-system-prompt.txt` |
 
 The guidance is a four-phase plan followed by the **unchanged, owner-approved `b-post-combined-v4` text** (the guidance that won B in Pilot-33). The plan:
@@ -145,14 +145,9 @@ npm run eval:live -- --scenario showcase-maze-griffin-complete-v1 --seed 0 --pla
 
 A failed or partial run is still preserved and reported as what it is. It is never labelled a success, and a later attempt never erases it.
 
-## 9. Decisions needed from the owner before the paid run
+## 9. Owner decisions (revision 1 questions)
 
-- **A. Limits and cap:** 600 game-s, 4,000 decisions, 400 calls and 8M tokens per hero, 7,200 s wall clock, $2.00 cap. Approve or change.
-- **B. Knockout rule:** (1) terminal failure, as in B and C (implemented now); or (2) record a knockout as a disclosed milestone and let the game's own respawn continue the episode. Option 2 is closer to normal play and raises the chance of a finished recording; option 1 matches the evaluation's survival rule.
-- **C. Guidance text:** approve `c0f7382e…` as written, or edit it. A more explicit maze walkthrough would conflict with `CLAUDE.md`'s rule against answer keys in prompts; it would need an explicit owner override for this demonstration.
-- **D. Model and run:** `gpt-6-luna` at medium effort, batch 4, seed 0, one run. Approval is a reviewed commit that sets `SHOWCASE_PAID_APPROVED = true` and the guidance status to `approved` with its hash.
-- **E. Budget for a retry**, if wanted, before the first run (see risk 5).
-- **F. Review:** run `rules-reviewer` and `game-rules-audit recording` on this change before the paid run (not yet done), and record this session with `session-evidence`.
+Answered on 2026-11-07; see section 10.
 
 ## What was not touched
 

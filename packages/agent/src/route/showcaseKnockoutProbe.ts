@@ -59,6 +59,8 @@ export interface KnockoutProbeRun {
   /** Authoritative state read by the evaluator around the first knockout (never given to a player). */
   aroundKnockout: { before: Snapshot; after: Snapshot } | null;
   traceLines: number;
+  /** Player-facing observation and legal-action lines in the trace that mention the evaluator's showcase records (must be 0). */
+  observationLinesMentioningShowcase: number;
 }
 interface Snapshot { tick: number; cocoHp: number; cocoScene: string | undefined; griffinHp: number | null; griffinPhase: string | null; backpack: Record<string, number>; storyFlags: number }
 
@@ -92,5 +94,6 @@ export async function runShowcaseKnockoutProbe(seed = 0, tracePath?: string): Pr
     probe: { stage: probe.stage, knockoutSeenAtTick: probe.knockoutSeenAtTick },
     aroundKnockout: around,
     traceLines: trace.lines.length,
+    observationLinesMentioningShowcase: trace.lines.filter((l) => l.type === "observation" && /showcase|knockout_|showcaseReport/i.test(JSON.stringify(l.data))).length,
   };
 }

@@ -198,5 +198,7 @@ describe("knockout recovery under the game's own rules (certification probe, not
     // Not terminal: play went on and every later milestone was reached.
     expect(first.milestonesReachedAfter).toEqual(["showcase:2-griffin-defeated", "showcase:3-wig-acquired-after-defeat", "showcase:4-offering-accepted", "showcase:5-chapter0-complete"]);
     expect(r.outcome.reason).toBe("success");
+    // The evaluator's knockout records never reach a player: no observation or legal list mentions them.
+    expect(r.observationLinesMentioningShowcase).toBe(0);
   }, 180_000);
 });
