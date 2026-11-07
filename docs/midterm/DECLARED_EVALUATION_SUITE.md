@@ -230,3 +230,19 @@ Declaration SHA-256 (sorted compact JSON without the field): `14525a1229a2c719c3
 ## Pilot-33 preservation and owner result designation
 
 Pilot-33 (`1f0ca45`, approved b-post-combined-v4) succeeded on `griffin-unprepared-return-v1`: 51.0 game-s, 2184.4 wall-s, 251 calls, 1 invalid action, $0.554417. The owner designates it B/post-tuned/1 after outcome; declaration r9-pilot33 records this amendment. R8's earlier v1 guidance and failed Pilot-32 ($0.206005, knocked_out) remain preserved, not replaced in their historical artifacts. Two post-tuning attempts span different guidance versions (one failure/one success), not repeated identical-policy trials. Six primary cells are observed; only three C cells remain unrun. See `midterms/saadsatter/EVALUATION.md` and `evaluation-abc/B-posttuned-pilot33.json`. No new paid call or policy/scenario change during preservation.
+
+## Revision r10 (2026-11-06): Situation C activated
+
+Owner final authorization, recorded by the implementation agent. The active declaration is `oath-ember-abc-2026-11-06-r10-c` ([declaration.json](evaluation-abc/declaration.json), self-hash `877001388470b6b153a6b5b2d3372f987aea83435ad233f6999bab215e0ef238`). It is the reviewed proposal ([proposed/declaration-r10-c.json](evaluation-abc/proposed/declaration-r10-c.json), `989046a9…`) with only these fields changed: id, status, supersedes, activation record and paid limits (tested). r9 is archived byte for byte in [history/r9/declaration.json](evaluation-abc/history/r9/declaration.json). The A/B rows, Pilot-28/30/31/32/33 records and B evidence are unchanged.
+
+C is `griffin-prepared-return-v1` (seed 0, start `28777a85…`, tick 540): B-return's start with the Mirror and Shears injected. Success is the wig claimed by any route, offered to the goddess, and `chapter0.complete`, with no knockout. The design is in [SITUATION_C_PREPARED.md](SITUATION_C_PREPARED.md).
+
+| Cell | Configuration | Prompt hash |
+| --- | --- | --- |
+| C1 | `model-centralized`, gpt-6-luna medium, batch 4, tutorial + the owner's briefing | `6dc64411b2373596f925360334680211657c266a3fe5487b4f687868740e3701` |
+| C3 | C1 + `b-post-combined-v4` | `a0c6939af45f82a10ef80dfcbcd2c40c60ca82f01d91a55f330d624292fb9323` |
+| C2 | `baseline-griffin-heuristic-v1`, unchanged | none |
+
+**Paid authorization:** only `model-centralized` on `openai:gpt-6-luna@medium`, batch 4, seed 0, at most $0.75 per episode and $1.50 combined. One C1 run and one C3 run, in the order C1 → C3 → C2. The first valid result is recorded regardless of outcome, and there are no retries. This scope is enforced in code (`C_PAID_SCOPE`).
+
+**Pre-activation checks:** price re-check on 2026-11-06 (the model page matches the runner's table); pilot ledger balance $3.004 with no open reservations; all C pins verified.

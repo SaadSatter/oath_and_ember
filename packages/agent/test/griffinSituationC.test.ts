@@ -25,6 +25,8 @@ import { join } from "node:path";
 const ID = "griffin-prepared-return-v1" as const;
 /** Proposed r10's self-hash; changes whenever r10 is edited (re-pin with the owner's knowledge). */
 const R10_SHA256 = "989046a9f96a90daebf9cd51448184ee9b96b4e8c60d392b563c561b73b9a598";
+/** The active r10 (owner activation 2026-11-06): the reviewed proposal plus id, status, activation and paid limits. */
+const R10_ACTIVE_SHA256 = "877001388470b6b153a6b5b2d3372f987aea83435ad233f6999bab215e0ef238";
 const B_ID = "griffin-unprepared-return-v1" as const;
 const TOOLS = /^(vanity_mirror|enchanted_shears|griffin_wig)$/;
 
@@ -42,7 +44,7 @@ describe("Situation C definition", () => {
     expect(SITUATION_GRIFFIN_C_HASH).toBe("048679a38eea4e15177af2990fac94c19b2cd4f0c40de33a92c559a57f22d4a4");
     expect(C.situation).toBe(ID);
     expect(situation(ID).heldOut).toBe(false); // holdout is enforced by the paid lock and the declaration, as for B
-    expect(SITUATION_C_PAID_APPROVED).toBe(false);
+    expect(SITUATION_C_PAID_APPROVED).toBe(true); // owner final authorization 2026-11-06 (r10 active), scope C_PAID_SCOPE
     expect(C.parity.bStartHash).toBe("45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8");
     // Same limits as B-return.
     expect(episodes[ID].limits).toEqual(episodes[B_ID].limits);
@@ -70,13 +72,17 @@ describe("Situation C definition", () => {
       expect(guidance(other).situations).not.toContain(ID);
   });
 
-  it("refuses paid C model runs while locked but admits mock and baseline plans", () => {
+  it("admits paid C runs only in the owner-authorized scope, and always admits mock and baseline plans", () => {
     const mock = { gateway: new MockGateway(0, 0), stage: "pilot" } as unknown as ModelSetup;
     const paid = { gateway: { label: "openai:gpt-6-luna@medium" }, stage: "pilot" } as unknown as ModelSetup;
     expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: mock })).not.toThrow();
     expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: { ...mock, guidance: "b-post-combined-v4" } })).not.toThrow();
-    expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: paid })).toThrow(/locked for paid model runs/);
-    expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: { ...paid, guidance: "b-post-combined-v4" } })).toThrow(/locked for paid model runs/);
+    expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: paid })).not.toThrow();
+    expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: { ...paid, guidance: "b-post-combined-v4" } })).not.toThrow();
+    // Outside the authorized scope: another effort, provider or batch size.
+    for (const label of ["openai:gpt-6-luna@low", "anthropic:claude-x@medium"])
+      expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: { ...paid, gateway: { label } } as unknown as ModelSetup })).toThrow(/authorized only/);
+    expect(() => validatePlan({ player: "model-centralized", situations: [ID], seeds: [0], model: { ...paid, maxBatch: 2 } as unknown as ModelSetup })).toThrow(/authorized only/);
     expect(() => validatePlan({ player: "baseline-griffin-heuristic", situations: [ID], seeds: [0] })).not.toThrow();
     // B is not affected by the C lock.
     expect(() => validatePlan({ player: "model-centralized", situations: [B_ID], seeds: [0], model: paid })).not.toThrow();
@@ -332,11 +338,12 @@ describe("Situation C review round 1", () => {
     await expect(new AgentEnvironment({ preset: B_ID, prefix: { name: "test", run: async (_e, setup) => setup!.addItems({ vanity_mirror: 1 }) } }).reset(0)).rejects.toThrow(/no approved start fixture/);
   }, 60000);
 
-  it("the paid lock refuses every model player kind on C, and admits scripted baselines", () => {
+  it("paid C runs are refused for every model player kind except model-centralized, and scripted baselines are admitted", () => {
     const paid = { gateway: { label: "openai:gpt-6-luna@medium" }, stage: "pilot" } as unknown as ModelSetup;
     for (const player of PLAYER_KINDS) {
       const plan = () => validatePlan({ player, situations: [ID], seeds: [0], ...(player.startsWith("model-") ? { model: paid } : {}) });
-      if (player.startsWith("model-")) expect(plan, player).toThrow();
+      if (player === "model-centralized") expect(plan, player).not.toThrow();
+      else if (player.startsWith("model-")) expect(plan, player).toThrow();
       else if (player !== "baseline-quest" && player !== "baseline-explore") expect(plan, player).not.toThrow();
     }
   });
@@ -395,18 +402,34 @@ describe("Situation C review round 1", () => {
     expect(env.situationCReport()).toBeNull();
   }, 60000);
 
-  it("round 2 finding 10: r9 is unchanged and both declarations' self-hashes recompute", () => {
+  it("round 2 finding 10: archived r9 is unchanged and every declaration's self-hash recomputes", () => {
     // Python json.dumps(sort_keys=True, separators=(",", ":"), ensure_ascii=True) without declarationSha256.
     const canon = (v: unknown): string => Array.isArray(v) ? `[${v.map(canon).join(",")}]`
       : v && typeof v === "object" ? `{${Object.keys(v).sort().map((k) => `${JSON.stringify(k)}:${canon((v as Record<string, unknown>)[k])}`).join(",")}}`
       : JSON.stringify(v);
     const ascii = (t: string) => t.replace(/[^\x00-\x7f]/g, (ch) => "\\u" + ch.charCodeAt(0).toString(16).padStart(4, "0"));
-    for (const [f, pin] of [["declaration.json", "616c182453e06ec9568ffea3bc0c26dde314dca54376a2e77012766a269445be"], ["proposed/declaration-r10-c.json", R10_SHA256]] as const) {
+    for (const [f, pin] of [["history/r9/declaration.json", "616c182453e06ec9568ffea3bc0c26dde314dca54376a2e77012766a269445be"], ["proposed/declaration-r10-c.json", R10_SHA256], ["declaration.json", R10_ACTIVE_SHA256]] as const) {
       const d = JSON.parse(readFileSync(new URL(`../../../docs/midterm/evaluation-abc/${f}`, import.meta.url), "utf8"));
       const h = d.declarationSha256;
       delete d.declarationSha256;
       expect(createHash("sha256").update(ascii(canon(d))).digest("hex"), f).toBe(h);
       expect(h, f).toBe(pin);
     }
+  });
+});
+
+describe("r10 activation", () => {
+  it("active r10 equals the reviewed proposal except id, status, supersedes, activation and paid limits", () => {
+    const read = (f: string) => JSON.parse(readFileSync(new URL(`../../../docs/midterm/evaluation-abc/${f}`, import.meta.url), "utf8"));
+    const active = read("declaration.json"), proposal = read("proposed/declaration-r10-c.json");
+    expect(active.activation.proposalSha256).toBe(proposal.declarationSha256);
+    const strip = (d: Record<string, unknown>) => {
+      const c = JSON.parse(JSON.stringify(d));
+      for (const k of ["id", "status", "supersedes", "activation", "declarationSha256"]) delete c[k];
+      delete c.trialAllocation.paidAuthorization; delete c.trialAllocation.paidLimits;
+      return c;
+    };
+    expect(strip(active)).toEqual(strip(proposal));
+    expect(active.trialAllocation.paidLimits).toMatchObject({ model: "openai:gpt-6-luna", effort: "medium", scenario: ID, seed: 0, perEpisodeCapUsd: 0.75, combinedCapUsd: 1.5 });
   });
 });

@@ -1,6 +1,6 @@
 # Situation C: Griffin Trial, Prepared, with Goddess Return
 
-Scenario `griffin-prepared-return-v1`. Prepared 2026-11-06 by the Claude Code implementation agent, following the owner's decisions recorded below. **Status:** design approved by the owner (round 2, 2026-11-06); implemented and checked offline. The declaration ([proposed r10](evaluation-abc/proposed/declaration-r10-c.json)) is **not active**: r9 remains the active declaration. Paid model runs on C are **locked in code** (`SITUATION_C_PAID_APPROVED = false` in `packages/agent/src/griffinSituationC.ts`). No paid call, push or merge has been made.
+Scenario `griffin-prepared-return-v1`. Prepared 2026-11-06 by the Claude Code implementation agent, following the owner's decisions recorded below. **Status:** declaration r10 **active** (owner final authorization 2026-11-06). Paid runs are allowed only in the authorized scope (`C_PAID_SCOPE`: model-centralized, openai:gpt-6-luna@medium, batch 4, seed 0, ≤ $0.75 per episode). Results are in the "Official C results" section once they are run.
 
 ## Owner decisions (2026-11-06)
 

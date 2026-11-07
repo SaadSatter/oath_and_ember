@@ -33,7 +33,7 @@ import { providerConfig } from "../../packages/agent/src/policies/providers.js";
 import type { Gateway } from "../../packages/agent/src/budget.js";
 import { MockGateway } from "../../packages/agent/src/policies/mockGateway.js";
 import { guidance, guidanceApproved } from "../../packages/agent/src/policies/situationGuidance.js";
-import { SITUATION_C_ID, SITUATION_C_PAID_APPROVED } from "../../packages/agent/src/griffinSituationC.js";
+import { SITUATION_C_ID, SITUATION_C_PAID_APPROVED, C_PAID_SCOPE } from "../../packages/agent/src/griffinSituationC.js";
 import { canonicalLedgerPath, repoInfo, unmeteredWorktrees } from "../../packages/agent/src/repo.js";
 import { ABC_SITUATIONS, HISTORICAL_SITUATIONS, SEEDS, SITUATIONS, situation, type SituationId } from "../../packages/agent/src/suite.js";
 import type { TraceLine } from "../../packages/agent/src/trace.js";
@@ -232,6 +232,9 @@ if (isModel) {
     catch (e) { fail((e as Error).message); }
     const raw = get("--max-spend-usd") ?? fail(`--max-spend-usd is required for paid runs (at most $${EPISODE_CAP_USD[scenario]} for ${scenario}).`);
     episodeCapUsd = Number(raw);
+    // Situation C (owner authorization 2026-11-06): only the authorized paid configuration, checked before any credential is read.
+    if (scenario === SITUATION_C_ID && (player !== C_PAID_SCOPE.player || gatewayKind !== C_PAID_SCOPE.gateway || config.model !== C_PAID_SCOPE.model || config.effort !== C_PAID_SCOPE.effort || maxBatch !== C_PAID_SCOPE.maxBatch || seed !== C_PAID_SCOPE.seed || !(episodeCapUsd <= C_PAID_SCOPE.maxEpisodeCapUsd)))
+      fail(`${SITUATION_C_ID} paid runs are authorized only for ${C_PAID_SCOPE.player} on ${C_PAID_SCOPE.gateway}:${C_PAID_SCOPE.model}@${C_PAID_SCOPE.effort}, batch ${C_PAID_SCOPE.maxBatch}, seed ${C_PAID_SCOPE.seed}, cap at most $${C_PAID_SCOPE.maxEpisodeCapUsd}.`);
     try {
       episodeCap({ episodeCapUsd }, scenario);
     } catch (e) {

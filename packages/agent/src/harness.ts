@@ -41,7 +41,7 @@ import { canonicalJson } from "./situationA.js";
 import { mazeEvaluationLabel } from "./hedgeMazeSituations.js";
 import { prologueEvaluationLabel } from "./prologueSituation.js";
 import { griffinEvaluationLabel } from "./griffinSituations.js";
-import { SITUATION_C_ID, SITUATION_C_PAID_APPROVED, griffinCEvaluationLabel } from "./griffinSituationC.js";
+import { SITUATION_C_ID, SITUATION_C_PAID_APPROVED, C_PAID_SCOPE, griffinCEvaluationLabel } from "./griffinSituationC.js";
 
 export { PLAYER_KINDS, type PlayerKind };
 export const isModel = (p: PlayerKind) => p === "model-history" || p === "model-obs-only" || p === "model-guided" || p === "model-memory" || p === "model-navigator" || p === "model-centralized";
@@ -320,8 +320,13 @@ export function validatePlan(o: Pick<SuiteRunOptions, "player" | "situations" | 
   }
   // Situation C paid lock: mock and baseline runs only until the owner approves the C declaration.
   const lockedC = o.situations.filter((id) => id === SITUATION_C_ID);
-  if (lockedC.length && isModel(o.player) && !SITUATION_C_PAID_APPROVED && o.model?.gateway && !(o.model.gateway.label ?? "").startsWith("mock:"))
-    throw Error(`${SITUATION_C_ID} is locked for paid model runs until the owner approves the Situation C declaration; use the mock gateway.`);
+  if (lockedC.length && isModel(o.player) && o.model?.gateway && !(o.model.gateway.label ?? "").startsWith("mock:")) {
+    if (!SITUATION_C_PAID_APPROVED)
+      throw Error(`${SITUATION_C_ID} is locked for paid model runs until the owner approves the Situation C declaration; use the mock gateway.`);
+    // Owner authorization 2026-11-06: model-centralized on openai:gpt-6-luna@medium only.
+    if (o.player !== C_PAID_SCOPE.player || o.model.gateway.label !== `${C_PAID_SCOPE.gateway}:${C_PAID_SCOPE.model}@${C_PAID_SCOPE.effort}` || (o.model.maxBatch ?? 4) !== C_PAID_SCOPE.maxBatch)
+      throw Error(`${SITUATION_C_ID} paid runs are authorized only for ${C_PAID_SCOPE.player} on ${C_PAID_SCOPE.gateway}:${C_PAID_SCOPE.model}@${C_PAID_SCOPE.effort}, batch ${C_PAID_SCOPE.maxBatch}.`);
+  }
   if (o.model?.guidance !== undefined) {
     const g = guidance(o.model.guidance);
     if (o.player !== "model-centralized") throw Error("Post-tuned guidance is implemented for model-centralized only.");

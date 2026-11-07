@@ -27,10 +27,14 @@ import type { TerminationReason } from "./types.js";
 
 export const SITUATION_C_ID = "griffin-prepared-return-v1" as const;
 /**
- * Paid model runs on C are refused until the owner approves the C declaration
- * (harness validatePlan and live.ts). Mock and scripted baseline runs are allowed.
+ * Paid model runs on C: refused until the owner approves the C declaration
+ * (harness validatePlan and live.ts). Owner final authorization 2026-11-06
+ * (declaration r10 activated): approved, but only for C_PAID_SCOPE. Mock and
+ * scripted baseline runs are always allowed.
  */
-export const SITUATION_C_PAID_APPROVED = false;
+export const SITUATION_C_PAID_APPROVED = true;
+/** The only paid configuration the owner authorized for C (one C1 and one C3 run). */
+export const C_PAID_SCOPE = Object.freeze({ player: "model-centralized", gateway: "openai", model: "gpt-6-luna", effort: "medium", maxBatch: 4, maxEpisodeCapUsd: 0.75, seed: 0 });
 
 const def = situation(SITUATION_C_ID);
 const episode = episodes[def.preset];
