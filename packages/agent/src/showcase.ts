@@ -23,12 +23,12 @@ export const SHOWCASE_GUIDANCE_ID = "showcase-maze-griffin-v1" as const;
 export const SHOWCASE_LABEL = "Prompt-tuned continuous gameplay demonstration — excluded from official A/B/C evaluation results.";
 
 /**
- * Paid model runs: refused until the owner's separate final authorization (a
- * reviewed code change). The owner approved the design, model, limits and one
- * attempt on 2026-11-07, but not execution.
+ * Owner final authorization in Codex session 01a1b479 on 2026-11-07:
+ * exactly SHOWCASE_PAID_SCOPE, approved guidance/prompt hashes, one attempt.
+ * No automatic retry; all other scenario/configuration protections remain.
  */
-export const SHOWCASE_PAID_APPROVED = false;
-/** The paid configuration the owner approved on 2026-11-07 (execution not yet authorized). One attempt, no automatic retry. */
+export const SHOWCASE_PAID_APPROVED = true;
+/** The paid configuration the owner approved on 2026-11-07 (execution authorized for one attempt). One attempt, no automatic retry. */
 export const SHOWCASE_PAID_SCOPE = Object.freeze({
   player: "model-centralized", gateway: "openai", model: "gpt-6-luna", effort: "medium", maxBatch: 4, seed: 0,
   maxEpisodeCapUsd: 2.0, wallClockSeconds: 7200, guidance: SHOWCASE_GUIDANCE_ID,

@@ -139,8 +139,9 @@ export const SITUATION_GUIDANCE: Readonly<Record<string, SituationGuidance>> = O
   "showcase-maze-griffin-v1": Object.freeze({
     id: "showcase-maze-griffin-v1",
     situations: Object.freeze(["showcase-maze-griffin-complete-v1"] as SituationId[]),
-    // Proposed: runs with the mock gateway only until the owner approves this exact text.
-    status: "proposed",
+    // Owner final authorization 2026-11-07, session 01a1b479: one exact showcase attempt.
+    status: "approved",
+    approvedSha256: "7f3203b954001d9e302b154cc77423cdb8fe36f63e4434c7a9ac7fc4a33d2166",
     provenance: "Showcase-only phase plan drafted by the implementation agent (2026-11-07) at the owner's request, followed by the unchanged, owner-approved b-post-combined-v4 text. Prompt-tuned demonstration; excluded from the A/B/C evaluation.",
     text: `${SHOWCASE_PHASE_PLAN}\n\n${B_POST_COMBINED_V4}`,
   }),
