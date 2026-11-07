@@ -1,0 +1,3 @@
+Trace ../../../../../tmp/oath-showcase-takeover/knockout-current/trace.jsonl (sha256 0d1a24c80aa15264, chain verified)
+Scenario showcase-maze-griffin-complete-v1, seed 0; Sieg 1020 actions, Coco 1066 actions; recorded end: success
+REPLAY MATCHES THE TRACE: start hash, 2085 step results, end (success, 09c07331bf8c0c27) and 9285 ticks.

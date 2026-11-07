@@ -1,0 +1,15 @@
+{
+  "kind": "scratch ledger copy only; no canonical reservation or model call",
+  "before": {
+    "pilot": 2.130405,
+    "total": 19.127484
+  },
+  "requested": 2,
+  "scratchReservationSucceeded": true,
+  "after": {
+    "pilot": 0.130405,
+    "total": 17.127484
+  },
+  "canonicalUnchanged": true,
+  "canonicalLocked": false
+}

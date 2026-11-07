@@ -394,3 +394,7 @@ Supports 4a/4b/4c/5a. C1 [Pilot-34](../../midterms/saadsatter/evidence/traces/pi
 ## Showcase: continuous Hedge Maze → Griffin → Goddess episode (excluded from A/B/C)
 
 Supports 5c (recording) only. **Prompt-tuned continuous gameplay demonstration — excluded from official A/B/C evaluation results.** [SHOWCASE_CONTINUOUS_EPISODE.md](SHOWCASE_CONTINUOUS_EPISODE.md): scenario `showcase-maze-griffin-complete-v1` (start = S2-A's `fdc49877…`), proposed guidance `showcase-maze-griffin-v1` (`c0f7382e…`), free validation at `c30d2fb` ([evidence](../../midterms/saadsatter/evidence/showcase/free-validation/README.md): scripted baseline success in 141.7 game-s, replay exact), replay pacing fix `6fc3102`. Paid run locked pending owner approval; no paid call made.
+
+## Showcase current revision 2 — November 7 takeover
+
+The preceding showcase entry is historical revision 1. Current guidance is `7f3203b9…`, full prompt `59e46825…`, with nonterminal normal knockout recovery. [Current handoff](SHOWCASE_CONTINUOUS_EPISODE.md#10-codex-takeover-and-final-review-response-november-7-2026), [free validation v2](../../midterms/saadsatter/evidence/showcase/free-validation-v2/README.md), [same-session follow-up audit](agent-evidence/skill-runs/2026-11-07-showcase-codex-takeover.md), [Claude S53](../agent-sessions/53-claude-showcase-preparation.md), [Codex S54](../agent-sessions/54-codex-showcase-takeover.md). Excluded from A/B/C; no paid model showcase, no paid unlock.

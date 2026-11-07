@@ -1,0 +1,27 @@
+{
+  "video": "/tmp/oath-showcase-takeover/replay-video-v2/recording.webm",
+  "bytes": 19813590,
+  "ffmpeg": "~/Library/Caches/ms-playwright/ffmpeg-1011/ffmpeg-mac",
+  "fullDecodeExit": 0,
+  "decodeErrors": [],
+  "durationSeconds": 152.84,
+  "frames": [
+    {
+      "fraction": 0.5,
+      "time": 76.42,
+      "distinctColors": 549,
+      "meanLuma": 39,
+      "content": true,
+      "png": "/tmp/oath-showcase-takeover/replay-video-check/frame-0500.png"
+    },
+    {
+      "fraction": 0.99,
+      "time": 151.31,
+      "distinctColors": 496,
+      "meanLuma": 45,
+      "content": true,
+      "png": "/tmp/oath-showcase-takeover/replay-video-check/frame-0990.png"
+    }
+  ],
+  "ok": true
+}

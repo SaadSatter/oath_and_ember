@@ -23,10 +23,10 @@ Facts from the source and the free runs that shape the showcase:
 | `packages/agent/src/suite.ts` | New `SHOWCASE_SITUATIONS` list (one entry), briefing and task line; `situation()` also searches it. `SITUATIONS` and `ABC_SITUATIONS` unchanged |
 | `packages/agent/src/evaluator.ts` | New preset: `showcaseComplete` predicate, owner-approved limits, `showcaseMilestones`; no knockout failure (revision 2) |
 | `packages/agent/src/environment.ts` | Records the showcase and Griffin milestones in the trace for this preset only |
-| `packages/agent/src/harness.ts` | Cap $2.00 and 7,200 s wall-clock ceiling (proposed); the showcase runs only `model-centralized` or its own baseline; paid runs refused while locked; summary label |
+| `packages/agent/src/harness.ts` | Owner-approved $2.00 cap and 7,200 s model default/ceiling; the showcase runs only `model-centralized` or its own baseline; paid runs refused while locked; summary label |
 | `packages/agent/src/playerKinds.ts` | New player kind `baseline-showcase-route` |
 | `packages/agent/src/policies/showcaseRoute.ts` (new) | Free validation baseline (section 5) |
-| `packages/agent/src/policies/situationGuidance.ts` | New **proposed** entry `showcase-maze-griffin-v1` (section 4). Existing entries untouched |
+| `packages/agent/src/policies/situationGuidance.ts` | New showcase-only entry `showcase-maze-griffin-v1`, provisionally approved text; status remains proposed until final authorization (section 4). Existing entries untouched |
 | `scripts/midterm/live.ts`, `scripts/midterm/replay-video.ts` | Accept the showcase scenario; the launcher refuses paid showcase runs while locked |
 | `scripts/midterm/replay-video.ts` (`6fc3102`) | **Pacing fix** (section 5): replays now schedule ticks on one game clock, so a speed-1 replay video runs in real time. Ticks, order and compared hashes are unchanged |
 | `scripts/midterm/showcase.ts` (new) | Free checks: start hashes, guidance and prompt export |
@@ -72,9 +72,9 @@ Every phase change is tied to something the screens show (area name, backpack, l
 
 The frozen A/B/C prompts and guidance texts are unchanged (tests check the v4 and C3 hashes).
 
-## 5. Free end-to-end validation
+## 5. Historical revision-1 free end-to-end validation
 
-Implementation commit `c30d2fb`. Every run below was first made on the uncommitted change and then repeated from the clean commit for the evidence folder, with identical hashes.
+This section preserves revision-1 results, including the earlier guidance/knockout policy. Current revision-2 verification is in section 10 and `free-validation-v2/`; it does not overwrite `free-validation/`. Implementation commit `c30d2fb`. Every run below was first made on the uncommitted change and then repeated from the clean commit for the evidence folder, with identical hashes.
 
 ### Scripted baseline `baseline-showcase-route-v1` (labelled baseline, never presented as a model)
 
@@ -104,11 +104,11 @@ Milestones in the seed-0 trace (game seconds): Shears + maze complete 31.5; Grif
 
 `npm run eval:live -- --scenario showcase-maze-griffin-complete-v1 … --gateway openai … --paid` stops with "locked for paid model runs until the owner approves the showcase". `validatePlan` refuses it too (tested).
 
-## 6. Tests
+## 6. Historical implementation tests
 
 `packages/agent/test/showcase.test.ts`, 8 tests (all pass). Full suite at `c30d2fb`: **1,381 of 1,382 pass**; the one failure is `s2Shutdown.test.ts` "gives up on a video that never finalizes" (a 200 ms timing assertion), which fails the same way on the untouched `eeb2b59` (checked in a temporary checkout). `npm run typecheck` and `npm run build` pass. Tests: separation from the frozen lists and the label; proposed limits; start equal to S2-A at seeds 0 and 1 and identical on reset; guidance proposed, pinned and equal to plan + v4; no coordinates or maze answers in the plan; prompt = generic prompt + one block (hash pinned); paid lock and player restrictions; the baseline's full run (success, pinned end hash, five milestones in order, no peaceful marker) and, on copies of the final world, that removing any one required step (Griffin alive, wig unclaimed, tools taken, chest unclaimed, Shears gone, no `chapter0.complete`) fails the predicate.
 
-## 7. Evidence
+## 7. Historical evidence
 
 `midterms/saadsatter/evidence/showcase/free-validation/` (see its README): the free-check report, the guidance and full prompt texts, the recorded baseline run's trace, summary, run and recording metadata, replay and video checks, the mock run's summary and replay check, and a SHA-256 manifest. Videos stay in `evaluation-runs/live/` (Git-ignored, local only) and are identified by SHA-256.
 
@@ -136,7 +136,7 @@ npm run eval:live -- --scenario showcase-maze-griffin-complete-v1 --seed 0 --pla
 
 **Risks**
 
-1. **Knockout in the Griffin fight (largest).** At full health, B pre-tuned (Pilot-31) and the first B post-tuned (Pilot-32) were knocked out; only Pilot-33 (v4) won. Here the heroes arrive with whatever health the maze left. I estimate roughly an even chance that a single paid run fails here.
+1. **Recovery costs time and calls.** Knockouts are not terminal in the showcase. Heroes arrive with maze damage, can respawn under ordinary rules, and must regroup; repeated knockouts may still exhaust a limit or trigger the planner watchdog. The B failures show risk, not a measured showcase failure probability.
 2. **Maze stall.** Before tuning, the planner got stuck at the cow (Pilot-28/29). The current planner (Pilot-30) solved it once. One success is not a reliability measure.
 3. **Planner stall watchdog** ends the episode as `error` if no verified progress is made for too long (seen in mock runs).
 4. **Known controller limits** (disclosed for B): the planner is not woken by a new beam warning, and its `fight` intention cannot target the Griffin, so the fight runs on ordinary attack/move/defend orders.
@@ -152,3 +152,64 @@ Answered on 2026-11-07; see section 10.
 ## What was not touched
 
 Frozen scenario definitions, start hashes and definition hashes (A, B, B-return, C); every guidance text and its hash; the planner; both baselines; declarations, result manifests and `EVALUATION.md`; Pilot-28 to Pilot-35 evidence. The full test suite result at the implementation commit is recorded in the evidence README.
+
+
+## 10. Codex takeover and final review response (November 7, 2026)
+
+The owner requested takeover after Claude Code reached its weekly limit. Codex continued **the same worktree and branch**, without reset, clean, stash or branch switch. Original HEAD was `6e528f7`; all seven pending files were copied to scratch and then preserved in attribution-bearing commit `c242906`. Claude's reviewer report and implementing-session audit remain **verbatim**, including their provenance headers. The reviewer report SHA-256 is `25a4e31b66e5bda873e1abfc6771e09a0e4d1cd3dbe4e01b2be5d70e5ba4c91a`; its bytes exactly match the Write payload in Claude session `9409e901`. Its ten findings, checklist, missing-coverage list and final uncertainty section are present. The incomplete part was the implementation response/documentation, not the report file write.
+
+Codex completed the guard/recovery checks in `20d9d28` and performed a separately documented **same-session read-only equivalent rules audit**. Codex wrote the follow-up fixes, so this is not an independent review of those fixes. The original reviewer did not inspect the final follow-up commit.
+
+### Current owner decisions and hashes
+
+- One centralized planner, `gpt-6-luna`, medium, batch four, seed zero. One paid attempt, no automatic retry.
+- Knockouts are recorded, not terminal; normal engine recovery is retained. No healing, teleport, item grant or state injection was added.
+- Required objective remains the earned Shears/maze chest, combat defeat, claimed wig, accepted offering and actual `chapter0.complete`.
+- $2.00 cap, 400 calls per hero and 7,200 s model wall-clock bound. Other game/decision/token limits remain as documented above.
+- Guidance text is unchanged from Claude's health-aware revision 2: SHA-256 `7f3203b954001d9e302b154cc77423cdb8fe36f63e4434c7a9ac7fc4a33d2166`; full prompt `59e46825cefa03608f7481c681b625f6204e13c2156eb6f66cb1a6b7f18183c7`; definition `43f72cfe7a2e152527df2a91b2eaa18a281abf5a51bcee58dabcd9851757f5f9`.
+- Design/guidance have the recorded provisional owner approval, but the exact hashes and reviewer caution about strong role/nest hints remain visible for final authorization. **Execution remains locked:** `SHOWCASE_PAID_APPROVED = false`; guidance status `proposed`, with no approved hash. Neither lock was flipped.
+
+### Reviewer findings: disposition
+
+| Finding | Severity | Follow-up |
+| --- | --- | --- |
+| 1: wrong effective wall default | Major | Completed Claude's default helper; both manifest and actual summary use 7,200 s for a showcase model run. A real free failing-gateway run tests those fields. Other model cases remain 3,600 s; free baseline stays 600 s. |
+| 2: version-1 evidence presented as current | Major | Revision-1 folder and its original bytes remain historical. New `free-validation-v2/` contains current hashes, free baseline, mock prompt-path check, actual-knockout probe, exact replays and validation/provenance. Index and this document distinguish them. |
+| 3: seed/count/retry scope | Minor | Paid showcase requires exactly `[0]`, correct provider/model/effort/batch/guidance; excess cap and resume/retry are refused before dispatch. CLI adds the exact seed/config/cap check before credentials. Tests mock the approval flag **only inside a test**, never in runtime source. |
+| 4: strong demo guidance | Minor / owner decision | Text preserved and hashes disclosed; no coordinate/waypoint/maze-answer addition. This remains prompt-tuned demonstration guidance, not transfer evidence. Final execution authorization must cover this exact text; provisional approval is not a paid unlock. |
+| 5: advance knockout knowledge | Minor | Existing public manual, Health and recovery, explicitly says zero HP returns a hero to the current spawn at 100 HP. The reviewer stated otherwise after searching; report is not edited. The briefing discloses the same rule; it is not a hidden-state observation. |
+| 6: outdated comments/status | Minor | Pending cap/default comments corrected; current section controls. Historical v1 measurements stay labelled historical. |
+| 7: new baseline admitted on A/B/C | Minor | `baseline-showcase-route` is restricted to the showcase. The C player-kind admission test now expects rejection for this new demonstration-only player; C definition, policy and recorded results are unchanged. |
+| 8: A/B/C isolation uncertainty | Info | Reviewed the actual diff: only new showcase-gated branches in environment/evaluator/suite. Twelve frozen run-path files are byte-identical to `eeb2b59`; server/shared/manual/art/declarations/official trace paths have an empty diff. All nine official traces replay exactly at `20d9d28`. |
+| 9: replay pacing / last tick | Info | A fresh baseline trace was recorded as a speed-1 replay. All step hashes match; metadata reports 8,499 paced ticks = 141.65 s and 141.65 wall-s, versus 8,500 total ticks. The final tick accounting difference is disclosed, not hidden. |
+| 10: one planner | Info | Confirmed and disclosed: one joint planner controls both heroes. The scripted comparator has independent per-hero observation memories; it is not another LLM. |
+
+### Current free verification and recovery
+
+The baseline at `20d9d28` succeeds in 8,500 ticks (141.7 game-s), decisions 962/1,064, zero invalid actions/model calls, end hash `2678c3a03c7d38e0ac1cd7e9088398d41b6e74d529fb8712e85782658ca30647`. Its new trace exactly replays all 2,025 step results.
+
+The **certification probe**, not an official baseline/model result, deliberately exposes Coco to ordinary Griffin attacks through legal actions. It records two knockouts (one each hero) and still succeeds in 9,285 ticks (154.8 saved game-s). Around Coco's knockout, HP goes from 10 to 100 in the same area; the backpack, claimed rewards, full story-flag list and completed maze burned/cow/wolf/gate progress are unchanged. Griffin HP stays 640 while its phase naturally advances. All four later milestones follow recovery. The probe trace replays all 2,085 results to end hash `09c07331bf8c0c27ee3d447bec14e81432476579013ab2fb94708e0e2aacf1f6`. No player observation/contained legal list includes evaluator showcase metadata. The separate Hedge-Maze-in-area knockout and a full planner-after-knockout trace remain additional coverage, not claimed tests; the exercised engine recovery and retained maze progress satisfy the current recovery check without changing mechanics.
+
+Current free mock check ends `error` via the planner watchdog (235.5 game-s, 144 simulated calls, $0), not a successful model showcase. It exercises the current prompt path and is labelled mock-only. The current free baseline replay video is likewise a **baseline replay**, not the final model showcase or the required submission recording.
+
+### Recording honesty
+
+Live `speed: 1` is a configuration label: the live acting loop can skip waits at action boundaries, so acting portions may run faster than wall time; the live discrepancy was not quantified here. No shared live/game clock was changed. The normal-speed clip must use the game-clock-paced, exact-action replay and be labelled **REPLAY of recorded model actions; no model calls**, alongside the original unedited model capture. The viewer shows human HUD hints that are excluded from agent input. Startup, pauses and final hold make full file duration differ from game duration. Earlier A/B/C videos and manifests remain untouched; this timing caveat does not change their game hashes or outcomes.
+
+### Ledger and paid command (not executed)
+
+Read-only canonical inventory: 35 entries, no open reservations, no lock, $5.872516 committed total, $5.869595 committed to pilot; remaining **pilot $2.130405, total $19.127484**. A $2 reservation succeeds on a scratch copy, leaving $0.130405 pilot there. The canonical file hash is unchanged and no real reservation was made. Balances must be checked again at dispatch; the key/provider path is untested by these free checks.
+
+From `/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval`, **only after separate final owner authorization and a reviewed unlock commit**:
+
+```sh
+npm run eval:live -- --scenario showcase-maze-griffin-complete-v1 --seed 0 --player model-centralized \
+  --guidance showcase-maze-griffin-v1 --gateway openai --model gpt-6-luna --effort medium --max-batch 4 \
+  --max-spend-usd 2.00 --wall-seconds 7200 --paid
+```
+
+This command is currently refused by the paid lock before credentials/provider access (subprocess regression check). It is a proposed command, not permission or a completed run. No retry, push, merge, course PR change or submission was performed. Residual risks are model navigation/combat stalls, recovery consuming the call/time/spend limits, untested provider availability and the known recorder-message test failure; no completion probability is claimed.
+
+### Completed validation inventory
+
+At `20d9d28`: typecheck and build pass; 53/53 targeted tests pass. The permitted broad suite reports 1,355 pass and one pre-existing `s2Shutdown.test.ts:59` recorder-timeout wording failure in 139 files. Separate S1–S3 scripted checks report six pass and one skip. Held-out/full-route cases were excluded. The baseline replay video fully decodes without errors (152.84 s decoded duration); its inspected terminal frame shows success and all required milestones. Current logs, trace hashes and provenance are in [free-validation-v2](../../midterms/saadsatter/evidence/showcase/free-validation-v2/README.md). No additional gameplay edits followed these checks.

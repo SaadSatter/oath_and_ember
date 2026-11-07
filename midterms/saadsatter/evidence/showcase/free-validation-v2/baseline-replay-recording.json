@@ -1,0 +1,40 @@
+{
+  "kind": "replay",
+  "source": {
+    "trace": "../../../../../tmp/oath-showcase-takeover/baseline-current/showcase-maze-griffin-complete-v1-seed0/trace.jsonl",
+    "sha256": "5928cc9c9b0436b45246e4a6b93257421371f3feeaaa3cf2b626e2211b3e7230",
+    "ledgerEntry": null,
+    "gitHash": "20d9d28"
+  },
+  "scenario": "showcase-maze-griffin-complete-v1",
+  "seed": 0,
+  "player": "baseline-showcase-route",
+  "speed": 1,
+  "gitHash": "20d9d28",
+  "passive": true,
+  "modelCalls": 0,
+  "pacing": {
+    "method": "game-clock",
+    "pacedTicks": 8499,
+    "gameSeconds": 141.65,
+    "wallSeconds": 141.65
+  },
+  "matchesTrace": true,
+  "mismatches": [],
+  "endHash": "2678c3a03c7d38e0ac1cd7e9088398d41b6e74d529fb8712e85782658ca30647",
+  "endReason": "success",
+  "episodeTicks": 8500,
+  "status": "saved",
+  "path": "/tmp/oath-showcase-takeover/replay-video-v2/recording.webm",
+  "relativePath": "../../../../../tmp/oath-showcase-takeover/replay-video-v2/recording.webm",
+  "bytes": 19813590,
+  "resolution": "1280x720",
+  "browser": "chromium (GPU)",
+  "readyConfirmed": true,
+  "finalConfirmed": true,
+  "startedAt": "2026-11-07T07:01:57.870Z",
+  "stoppedAt": "2026-11-07T07:04:35.956Z",
+  "wallSeconds": 158.1,
+  "error": null,
+  "warnings": []
+}

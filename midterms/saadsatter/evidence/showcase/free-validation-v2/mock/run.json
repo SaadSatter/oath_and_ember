@@ -1,0 +1,33 @@
+{
+  "suiteRevision": 2,
+  "player": "model-centralized",
+  "situations": [
+    "showcase-maze-griffin-complete-v1"
+  ],
+  "seeds": [
+    0
+  ],
+  "final": false,
+  "gitHash": "20d9d28",
+  "wallSeconds": 7200,
+  "model": {
+    "gateway": "mock:random-legal@0",
+    "stage": "pilot",
+    "priceSource": "mock: no cost, no network",
+    "maxBatch": 4,
+    "manualHash": "4b091a6630dd56f236f89f8e2213a6bb7cad4a31d4851d1883f95867d92bfa86",
+    "guidance": {
+      "id": "showcase-maze-griffin-v1",
+      "status": "proposed",
+      "sha256": "7f3203b954001d9e302b154cc77423cdb8fe36f63e4434c7a9ac7fc4a33d2166",
+      "situations": [
+        "showcase-maze-griffin-complete-v1"
+      ]
+    }
+  },
+  "launch": {
+    "launcher": "scripts/midterm/live.ts",
+    "speed": null,
+    "viewer": false
+  }
+}

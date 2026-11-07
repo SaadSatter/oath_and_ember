@@ -127,7 +127,7 @@
     "01a16225"
    ],
    "role": "Implementation agent (`AGENTS.md`); orchestrator of subagents 18, 19 and 21",
-   "title": "Player manual, design rationale D1–D11, midterm architecture, superseded Codex evaluation (PR #5)"
+   "title": "Player manual, design rationale D1\u2013D11, midterm architecture, superseded Codex evaluation (PR #5)"
   },
   {
    "number": 15,
@@ -462,6 +462,25 @@
    "role": "Claude Code implementation agent under CLAUDE.md: Situation C (griffin-prepared-return-v1) scenario, injected-inventory start fixture, return success predicate, paid lock, descriptive route metrics, proposed declaration r10; session-evidence invoked by name in this session. The rules-reviewer subagent was launched by this session in separate invocations at the owner's request, read-only and not instructed to approve; its findings are committed verbatim.",
    "title": "Situation C: Griffin Trial (Prepared) with goddess return, offline checks, review rounds and proposed r10",
    "note": "Round 1 owner decisions over r9: injected start, renamed id, peaceful wig valid with return, tutorial plus a briefing (agent's draft in round 1), re-pinned B tests. Round 2 owner decisions: C2 = unchanged B baseline, inventory baseline excluded, the owner's neutral briefing verbatim, descriptive route metrics. A concurrent session committed 4f9695b (inventory baseline) to the same branch during this session; it is not this session's work. No paid call, push or merge; r10 not active; SITUATION_C_PAID_APPROVED false."
+  },
+  {
+   "number": 53,
+   "slug": "claude-showcase-preparation",
+   "ids": [
+    "9409e901"
+   ],
+   "role": "Claude Code showcase implementation under CLAUDE.md; read-only reviewer subagent and same-session audit preserved, not a top-level independent review",
+   "title": "Continuous showcase, non-terminal knockouts and interrupted review handoff"
+  },
+  {
+   "number": 54,
+   "slug": "codex-showcase-takeover",
+   "ids": [
+    "01a1b479"
+   ],
+   "role": "Codex takeover under AGENTS.md; implementation fixes plus explicitly same-session read-only audit, not independent review",
+   "title": "Showcase review completion, free certification and locked paid-run handoff",
+   "note": "Same ongoing Codex chat as the submission-preparation session numbered 52 in its separate worktree; this record is scoped to the later showcase takeover, not a new independent session."
   }
  ]
 }

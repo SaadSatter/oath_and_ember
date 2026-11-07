@@ -1,0 +1,125 @@
+{
+  "sourceCodeCommit": "20d9d2813dc6f0c37a6fb3d420d049addec7a98d",
+  "files": {
+    "README.md": {
+      "sha256": "3778277e98b505be8fd9465cd83bff18d176f8df097ad49d3c8e8ae0f54eb4c5",
+      "bytes": 3119
+    },
+    "baseline/run.json": {
+      "sha256": "5bebfb158a75105c722018125d4df21659e80e329d5168e9c6990f160a8866f5",
+      "bytes": 336
+    },
+    "baseline/summary.json": {
+      "sha256": "443dc9e0398c09de6701449361d61315ecebbf874b83d2ab9e8e8f637957e3e9",
+      "bytes": 4651
+    },
+    "baseline/trace.jsonl.gz": {
+      "sha256": "7ad5e9f3481036af13d2dd3c1708e5aec65761abad17979510c877983cab109d",
+      "bytes": 863621
+    },
+    "baseline-replay-recording.json": {
+      "sha256": "fcfe2b759791bf8b61a8aef27fca016967e5d3dcd5ebcfd5e2e8986de019f9a4",
+      "bytes": 1242
+    },
+    "baseline-replay-video.json": {
+      "sha256": "e52a38c51e0ec1e844a641b19bffc9ea7a82e811b05bcc48f5d35573f111d032",
+      "bytes": 353
+    },
+    "baseline-replay.txt": {
+      "sha256": "5054aa4fb7fcf3daa745cac7b7ab4ed871f6d4130acf8d2f6e5a66a7f39b8dbe",
+      "bytes": 375
+    },
+    "build.txt": {
+      "sha256": "fe8e0c854780774f071f3c727e132e546cf951b47d5ca0c3ca6b1ed6394721b7",
+      "bytes": 823
+    },
+    "guidance-showcase-maze-griffin-v1.txt": {
+      "sha256": "7f3203b954001d9e302b154cc77423cdb8fe36f63e4434c7a9ac7fc4a33d2166",
+      "bytes": 6034
+    },
+    "isolation.json": {
+      "sha256": "c6835f0aa1d8aaf78409ef6f76d29aca1b083ac486bd8afb6419e81b3d770dcf",
+      "bytes": 2330
+    },
+    "knockout-probe/knockout-check.json": {
+      "sha256": "eea22d987c9b3660729ad095d201f6a03cbde110d08aac9ae79780cadae2a1b0",
+      "bytes": 7078
+    },
+    "knockout-probe/summary.json": {
+      "sha256": "598bc7cbcceaff360f314369f6f61fcfb655927725b853c992123039e97e8b20",
+      "bytes": 124
+    },
+    "knockout-probe/trace.jsonl.gz": {
+      "sha256": "c23713fc0f2d4098804ae4f62e495ac99f92283b17e6da976a895b1e26164f3c",
+      "bytes": 890377
+    },
+    "knockout-replay.txt": {
+      "sha256": "2002fbbb0e262365160c617177d55d9e938da01dc7f79c48208394c1fea15762",
+      "bytes": 336
+    },
+    "ledger-dry-run.json": {
+      "sha256": "d61a8ca37ead32e5b1097d5114317bd3b9d70a309855c0ec87df2d079c0d7543",
+      "bytes": 325
+    },
+    "mock/run.json": {
+      "sha256": "a878d9f578572b1905145985da28df29fce4ece9aa805b63e5e3ed8aa2375dc5",
+      "bytes": 791
+    },
+    "mock/summary.json": {
+      "sha256": "30cd04fddf41e837477338b35fe3afa5d68f97341cae9f533d62ccd142abac6c",
+      "bytes": 5254
+    },
+    "mock/trace.jsonl.gz": {
+      "sha256": "504cc4220580b2d267c1486e12e3ebb46a16c30c3232225c7b11a63924d585c3",
+      "bytes": 609717
+    },
+    "mock-replay.txt": {
+      "sha256": "dfc64059c8c0f8d14f4aa8df481b2cc5ac8e15f7ac2a8e07842355ce8878416f",
+      "bytes": 376
+    },
+    "official-abc-replay-verification.json": {
+      "sha256": "0c0ebb84f1177808bfccce3d64b7059186d0790351cffb50fc11a753242dfa37",
+      "bytes": 5566
+    },
+    "permitted-tests.txt": {
+      "sha256": "bc0b17bb57b8611123ad084d91a62dc2dc25e7f9dcb46b5ece8f1b22fab4ffbe",
+      "bytes": 1767
+    },
+    "planner-system-prompt.txt": {
+      "sha256": "59e46825cefa03608f7481c681b625f6204e13c2156eb6f66cb1a6b7f18183c7",
+      "bytes": 38020
+    },
+    "provenance.json": {
+      "sha256": "44f0cc68b4723fad2ffbcf60dab8d8a05cd2e93b49c42d64a9b3aeed75622a27",
+      "bytes": 692
+    },
+    "report-preservation.json": {
+      "sha256": "5658f4d312f103878851b05a59074d99e6a11fa32762434c209ee011e2d02a34",
+      "bytes": 371
+    },
+    "scripted-tests.txt": {
+      "sha256": "c6dad614c93558410794ccfd7df59e133101f38faef27247048af7a9ca739f2d",
+      "bytes": 214
+    },
+    "showcase-check.json": {
+      "sha256": "998555186b247e82f5e742cfd01b12852c7ef05b582dba8384b82d9f3e766333",
+      "bytes": 2319
+    },
+    "targeted-tests.txt": {
+      "sha256": "5735a5866981a4f92d7ae9a222197883b4f347a8b5cd3ffc3ceca1aca6ccfca5",
+      "bytes": 221
+    },
+    "typecheck.txt": {
+      "sha256": "8fa1cf5506304e8abac55868e7f1a136c9b1dde57a3981a382da4c21ea129a6f",
+      "bytes": 29
+    },
+    "video-check.json": {
+      "sha256": "fdd653d5f5c1ee5f4c419158094f7440c8a6235cac18215e24afb97da03c8d54",
+      "bytes": 689
+    },
+    "video-check.txt": {
+      "sha256": "87a0aca511b6f8dc3c148d177a9e6b81a6832e3624ac092f9caf31c2b5be74ac",
+      "bytes": 690
+    }
+  }
+}
