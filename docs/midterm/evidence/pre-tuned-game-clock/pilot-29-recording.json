@@ -1,0 +1,40 @@
+{
+  "kind": "replay",
+  "source": {
+    "trace": "../../../../../private/tmp/oath-drive-completion/pilot29-source/trace.jsonl",
+    "sha256": "c930d8312274d159fdaed4492e709ac7357cc23fe305f311eea19d72dbb622c6",
+    "ledgerEntry": "pilot-29",
+    "gitHash": "327c34a"
+  },
+  "scenario": "S2-local",
+  "seed": 0,
+  "player": "model-centralized",
+  "speed": 1,
+  "gitHash": "b4bedb9+dirty",
+  "passive": true,
+  "modelCalls": 0,
+  "pacing": {
+    "method": "game-clock",
+    "pacedTicks": 3275,
+    "gameSeconds": 54.583333333333336,
+    "wallSeconds": 54.59
+  },
+  "matchesTrace": true,
+  "mismatches": [],
+  "endHash": "559944d7930c18bf67fa07885c86d0a6970da4d32a3fb5bb839a08c44aa06182",
+  "endReason": "manual_stop",
+  "episodeTicks": 3276,
+  "status": "saved",
+  "path": "/private/tmp/oath-drive-completion/A-pre-tuned-pilot29-replay/recording.webm",
+  "relativePath": "../../../../../private/tmp/oath-drive-completion/A-pre-tuned-pilot29-replay/recording.webm",
+  "bytes": 7963894,
+  "resolution": "1280x720",
+  "browser": "chromium (GPU)",
+  "readyConfirmed": true,
+  "finalConfirmed": true,
+  "startedAt": "2026-11-08T04:35:45.884Z",
+  "stoppedAt": "2026-11-08T04:36:55.973Z",
+  "wallSeconds": 70.1,
+  "error": null,
+  "warnings": []
+}

@@ -83,16 +83,34 @@ The live viewer records at normal speed by default. Its printed output folder co
 
 Input tokens include cached input. Costs are runner estimates from list prices verified on 2026-10-28, with a 1.1 safety uplift; they are not provider invoices. Limits for every model run: at most 400 model calls per hero, a token cap per hero, a per-episode spend cap and a wall-clock limit, all enforced in code, with the terminal reason logged in each `summary.json`.
 
+## External recordings
+
+Video files are hosted on [Google Drive](https://drive.google.com/drive/folders/1yXkvhtOPV8I9b6hQxDs1D_WVNFMkzTN0?usp=drive_link), outside the Git submission. Links were supplied by the owner; viewer permissions and remote file identity have not been independently verified. Model latency pauses simulation: use **game time** for episode duration. A replay is labelled separately from an original live capture.
+
+| Recording | Kind | Link |
+| --- | --- | --- |
+| Submission — Pilot-39 | Trace-verified replay, normal game speed | [Watch](https://drive.google.com/file/d/1gdwVPO4_xMDQnH0v7ETj5DDXnfqUBLcR/view?usp=drive_link) |
+| A baseline | Original live capture | [Watch](https://drive.google.com/file/d/1oDoq23jJVF2rcATmljJF96AkmRTHZLgJ/view?usp=drive_link) |
+| A post-tuned — Pilot-30 | Original live capture | [Watch](https://drive.google.com/file/d/1hRmzAv0vSgiswsArHD03WX2WshDA1Z13/view?usp=drive_link) |
+| B baseline | Original live capture | [Watch](https://drive.google.com/file/d/1H7qtgMviZjPww8obf8xV19Sa3MHg9dFV/view?usp=drive_link) |
+| B post-tuned — Pilot-33 | Original live capture | [Watch](https://drive.google.com/file/d/1eTWUm8geqjSmrqAeKMPrtun-6fnC0Yyt/view?usp=drive_link) |
+| C baseline — C2 | Original live capture | [Watch](https://drive.google.com/file/d/1mz-oCaw1-piy15qQY08KBLNbik0g-ndi/view?usp=drive_link) |
+| A pre-tuned — Pilot-28 | Manual-stop failure; 125.267 game-s (900.8 episode wall-s). Trace-verified game-clock replay, speed 1. | [Watch replay](https://drive.google.com/file/d/1Jj4wWyVpyuVd3cxroR3P6dD0rAyG17rJ/view?usp=drive_link) |
+| C pre-tuned — Pilot-34 | Original live capture; 133.3 game-s | [Watch](https://drive.google.com/file/d/1zdjT-NIoGajJYPOX6ue4JxMfpsZzSqGE/view?usp=drive_link) |
+| C post-tuned — Pilot-35 | Original live capture; 56.3 game-s | [Watch](https://drive.google.com/file/d/16-5plIAsYZeOo3px0x70yStaNosI6ysJ/view?usp=drive_link) |
+
+The owner clarified the distinct C pre/post links during this continuation. Pilot-29 is supplementary tuning evidence under declaration r5, not an additional allocated trial; its game-clock replay is verified and available locally (54.6 game-s, manual-stop failure), with no separate Drive link supplied.
+
 ## Recorded baseline videos (owner runs, November 6)
 
 These are new live recordings at configured speed **1**, from clean commit `4c9cf9f`. Both runs succeeded with zero model calls, zero invalid actions and $0 API cost; their end hashes match the archived deterministic baseline results.
 
 | Baseline | Video | Recording metadata | Outcome | Game time | Episode wall time |
 | --- | --- | --- | --- | --- | --- |
-| A — Hedge Maze | [Watch recording](../../evaluation-runs/live/S2-local-seed0-baseline-maze-heuristic-2026-11-06T20-12-22-947Z/recording.webm) | [Metadata](../../evaluation-runs/live/S2-local-seed0-baseline-maze-heuristic-2026-11-06T20-12-22-947Z/recording.json) · [Summary](../../evaluation-runs/live/S2-local-seed0-baseline-maze-heuristic-2026-11-06T20-12-22-947Z/S2-local-seed0/summary.json) | Success | 31.5 s | 103.8 s |
-| B — Griffin and goddess return | [Watch recording](../../evaluation-runs/live/griffin-unprepared-return-v1-seed0-baseline-griffin-heuristic-2026-11-06T20-15-12-709Z/recording.webm) | [Metadata](../../evaluation-runs/live/griffin-unprepared-return-v1-seed0-baseline-griffin-heuristic-2026-11-06T20-15-12-709Z/recording.json) · [Summary](../../evaluation-runs/live/griffin-unprepared-return-v1-seed0-baseline-griffin-heuristic-2026-11-06T20-15-12-709Z/griffin-unprepared-return-v1-seed0/summary.json) | Success | 89.8 s | 236.2 s |
+| A — Hedge Maze | [Watch recording](https://drive.google.com/file/d/1oDoq23jJVF2rcATmljJF96AkmRTHZLgJ/view?usp=drive_link) | [Metadata](../../evaluation-runs/live/S2-local-seed0-baseline-maze-heuristic-2026-11-06T20-12-22-947Z/recording.json) · [Summary](../../evaluation-runs/live/S2-local-seed0-baseline-maze-heuristic-2026-11-06T20-12-22-947Z/S2-local-seed0/summary.json) | Success | 31.5 s | 103.8 s |
+| B — Griffin and goddess return | [Watch recording](https://drive.google.com/file/d/1H7qtgMviZjPww8obf8xV19Sa3MHg9dFV/view?usp=drive_link) | [Metadata](../../evaluation-runs/live/griffin-unprepared-return-v1-seed0-baseline-griffin-heuristic-2026-11-06T20-15-12-709Z/recording.json) · [Summary](../../evaluation-runs/live/griffin-unprepared-return-v1-seed0-baseline-griffin-heuristic-2026-11-06T20-15-12-709Z/griffin-unprepared-return-v1-seed0/summary.json) | Success | 89.8 s | 236.2 s |
 
-Videos are local files in `evaluation-runs/live/`, excluded from Git; the links work in this evaluation checkout. They are not yet public submission links. [Preserved metadata and SHA-256 manifest](../../docs/midterm/evidence/baseline-live-recordings/manifest.json) identifies the original files without changing them. The recorder reports successful save, readiness and final confirmation with no warnings; those metadata fields are not an independent visual verification of the terminal frame. File hashes/byte counts and summary outcomes were checked; full decode was not performed for this linking update.
+Videos are hosted externally on Google Drive using the owner-supplied links above. Local originals remain in `evaluation-runs/live/`; video bytes are excluded from the submission. [Preserved metadata and SHA-256 manifest](../../docs/midterm/evidence/baseline-live-recordings/manifest.json) identifies the original files without changing them. The recorder reports successful save, readiness and final confirmation with no warnings; those metadata fields are not an independent visual verification of the terminal frame. File hashes/byte counts and summary outcomes were checked; full decode was not performed for this linking update.
 
 Episode wall time differs from game time and from recording-session wall time; recording startup/finalization is not model latency. These recordings supplement the declared primary trials rather than replacing historical measurements.
 
@@ -111,7 +129,7 @@ A separate, prompt-tuned demonstration of the whole connected quest in one episo
 
 61 ticks later, Coco's planner reached the owner-approved limit of 8,000,000 tokens per hero, during the finale dialogue. `chapter0.complete`, the scenario's declared success condition, was therefore not recorded. Only the finale dialogue remained. We report the run as gameplay-complete and do not relabel the raw result.
 
-542 model calls, 2 invalid actions, one knockout (Coco, recovered by the game's normal respawn). Estimated cost $1.556206. Every step was verified by an exact replay of the trace (1,428 step results). [Preserved evidence](evidence/showcase/pilot-39-original/README.md). **[4-minute video](https://github.com/SaadSatter/oath_and_ember/blob/midterm/evaluation/docs/midterm/evidence/pilot-39-showcase-replay/replay.webm)**: a speed-1 **replay** of the recorded actions, verified step by step against the trace, with no model calls ([details](../../docs/midterm/evidence/pilot-39-showcase-replay/README.md)). The viewer shows human HUD hints that the AI players never received. The live capture is local only (595 MB, about 99 minutes of wall time, because model latency is included).
+542 model calls, 2 invalid actions, one knockout (Coco, recovered by the game's normal respawn). Estimated cost $1.556206. Every step was verified by an exact replay of the trace (1,428 step results). [Preserved evidence](evidence/showcase/pilot-39-original/README.md). **[4-minute video](https://drive.google.com/file/d/1gdwVPO4_xMDQnH0v7ETj5DDXnfqUBLcR/view?usp=drive_link)**: a speed-1 **replay** of the recorded actions, verified step by step against the trace, with no model calls ([details](../../docs/midterm/evidence/pilot-39-showcase-replay/README.md)). The viewer shows human HUD hints that the AI players never received. The live capture is local only (595 MB, about 99 minutes of wall time, because model latency is included).
 
 Context: earlier showcase attempts Pilot-37 (Griffin-trail detour) and Pilot-38 (cow puzzle) were manually stopped. This is one tuned run, not evidence of reliability. A later prompt revision (`showcase-maze-griffin-v2`) is documented in `docs/midterm/SHOWCASE_PROMPT_V2_PROPOSAL.md`.
 
@@ -122,10 +140,10 @@ The owner designates Pilot-33 as **B/post-tuned/1**. It used `gpt-6-luna` medium
 - [Preserved evidence and run details](evidence/traces/pilot-33-model-centralized-griffin-unprepared-return-v1-seed0/README.md)
 - [Complete trace, including raw model responses and policy notes](evidence/traces/pilot-33-model-centralized-griffin-unprepared-return-v1-seed0/trace.jsonl)
 - [Summary](evidence/traces/pilot-33-model-centralized-griffin-unprepared-return-v1-seed0/summary.json) · [Run configuration](evidence/traces/pilot-33-model-centralized-griffin-unprepared-return-v1-seed0/run.json) · [Results](evidence/traces/pilot-33-model-centralized-griffin-unprepared-return-v1-seed0/results.json)
-- [Watch original recording](../../evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T23-57-08-007Z/recording.webm) · [Recording metadata](evidence/traces/pilot-33-model-centralized-griffin-unprepared-return-v1-seed0/live-recording.json)
+- [Watch original recording](https://drive.google.com/file/d/1eTWUm8geqjSmrqAeKMPrtun-6fnC0Yyt/view?usp=drive_link) · [Recording metadata](evidence/traces/pilot-33-model-centralized-griffin-unprepared-return-v1-seed0/live-recording.json)
 - [Preservation/hash manifest](evidence/traces/pilot-33-model-centralized-griffin-unprepared-return-v1-seed0/manifest.json) · [Registered result](../../docs/midterm/evaluation-abc/B-posttuned-pilot33.json)
 
-The video is **local-only**, 188,269,515 bytes; it has not been uploaded or committed. Its metadata reports successful save, 1280×720, speed 1 and final confirmation. [Full decode and terminal-frame verification](evidence/traces/pilot-33-model-centralized-griffin-unprepared-return-v1-seed0/verification.json) passed: encoded duration 2188.88 s, final frame visibly shows `finished: success` and Chapter 0 completion. A 1x1 PNG-sink aspect-ratio warning is distinguished from decode errors. Recording-session wall time (2201.3 s) differs from episode wall time (2184.4 s); neither is game time (3057 ticks = 50.95 s, displayed 51.0). Model thinking pauses game time.
+The original live video is hosted on Google Drive at the owner-supplied link above (188,269,515 bytes locally). Its metadata reports successful save, 1280×720, speed 1 and final confirmation. [Full decode and terminal-frame verification](evidence/traces/pilot-33-model-centralized-griffin-unprepared-return-v1-seed0/verification.json) passed: encoded duration 2188.88 s, final frame visibly shows `finished: success` and Chapter 0 completion. A 1x1 PNG-sink aspect-ratio warning is distinguished from decode errors. Recording-session wall time (2201.3 s) differs from episode wall time (2184.4 s); neither is game time (3057 ticks = 50.95 s, displayed 51.0). Model thinking pauses game time.
 
 Confirmed trace milestones: Griffin defeated at 38.183 game-s, wig acquired at 41.267 s, offering accepted at 47.417 s and `chapter0.complete` at 50.95 s. The trace chain and offline replay match the original start, all 443 results, end hash and tick count. Five unusable replies were still charged; there were no failed/timed-out/unknown-usage calls. Token totals: 4,871,133 input (cache included) and 157,250 output; mean/max call latency 8492/28053 ms. Raw evidence preserves the exact identifiers, limits and price source; cost is a dated runner estimate, not a provider invoice.
 
@@ -195,7 +213,7 @@ Overall, these limitations suggest that reliable LLM gameplay requires more than
 
 Owner-approved `baseline-griffin-heuristic-v1` ran on `griffin-prepared-return-v1`, seed 0, at `19e5d87`: **success**, 89.8 game seconds / 103.3 wall seconds, zero counted invalid actions, zero model calls, $0. It defeated the Griffin, claimed the wig, offered it and reached actual `chapter0.complete`, without knockout. It did not use the tools while the Griffin was alive; no prepared-item benefit is demonstrated.
 
-[Watch recording](../../evaluation-runs/live/c2-approved-recorded-2026-11-06/recording.webm) · [Preserved trace, summary, hashes and verification](evidence/traces/c2-approved-recorded-2026-11-06/README.md) · [Summary](evidence/traces/c2-approved-recorded-2026-11-06/summary.json). Full video decode and deterministic replay passed; final frame shows success and Chapter 0 completion. This was recorded at `19e5d87`, before r10's activation at `f9edeb7` and before C1. It is the official C2 cell; see "Situation C results" for this ordering deviation.
+[Watch recording](https://drive.google.com/file/d/1mz-oCaw1-piy15qQY08KBLNbik0g-ndi/view?usp=drive_link) · [Preserved trace, summary, hashes and verification](evidence/traces/c2-approved-recorded-2026-11-06/README.md) · [Summary](evidence/traces/c2-approved-recorded-2026-11-06/summary.json). Full video decode and deterministic replay passed; final frame shows success and Chapter 0 completion. This was recorded at `19e5d87`, before r10's activation at `f9edeb7` and before C1. It is the official C2 cell; see "Situation C results" for this ordering deviation.
 
 ## Situation C results (declarations r10 and r11)
 
@@ -223,7 +241,7 @@ Scenario `griffin-prepared-return-v1`, seed 0, start `28777a85eebd55998461e7bbff
 | Replay at `24a3ba1` | Matches (734 results, 7,997 ticks) | Matches (357 results, 3,379 ticks) | Matches (1,126 results, 5,389 ticks) |
 | Evidence | [pilot-34](evidence/traces/pilot-34-model-centralized-griffin-prepared-return-v1-seed0/manifest.json) | [pilot-35](evidence/traces/pilot-35-model-centralized-griffin-prepared-return-v1-seed0/manifest.json) | [c2-approved-recorded](evidence/traces/c2-approved-recorded-2026-11-06/manifest.json) |
 
-Paid C total: **$0.873771** of the $1.50 combined cap (ledger: pilot stage $2.1304 left after Pilot-35). Videos are local-only (`evaluation-runs/live/…/recording.webm`), and their SHA-256 hashes are in each manifest.
+Paid C total: **$0.873771** of the $1.50 combined cap (ledger: pilot stage $2.1304 left after Pilot-35). Recordings are hosted externally; see the recordings table. Original SHA-256 hashes are in each manifest. The C model links are owner-confirmed.
 
 **How to read C:**
 - **Both model runs succeeded without fighting.** They delivered the prepared tools, the Griffin groomed itself, and they collected the wig and returned it. The baseline won by combat and demonstrates no use of the prepared items.

@@ -1,0 +1,35 @@
+{
+  "video": "/private/tmp/oath-drive-completion/A-pre-tuned-pilot29-replay/recording.webm",
+  "bytes": 7963894,
+  "ffmpeg": "/Users/saadsatter/Library/Caches/ms-playwright/ffmpeg-1011/ffmpeg-mac",
+  "fullDecodeExit": 0,
+  "decodeErrors": [],
+  "durationSeconds": 67.76,
+  "frames": [
+    {
+      "fraction": 0.05,
+      "time": 3.39,
+      "distinctColors": 136,
+      "meanLuma": 13,
+      "content": true,
+      "png": "/private/tmp/oath-drive-completion/A-pre-tuned-pilot29-replay/verification/frame-0050.png"
+    },
+    {
+      "fraction": 0.5,
+      "time": 33.88,
+      "distinctColors": 480,
+      "meanLuma": 35,
+      "content": true,
+      "png": "/private/tmp/oath-drive-completion/A-pre-tuned-pilot29-replay/verification/frame-0500.png"
+    },
+    {
+      "fraction": 0.999,
+      "time": 67.66,
+      "distinctColors": 463,
+      "meanLuma": 36,
+      "content": true,
+      "png": "/private/tmp/oath-drive-completion/A-pre-tuned-pilot29-replay/verification/frame-0999.png"
+    }
+  ],
+  "ok": true
+}

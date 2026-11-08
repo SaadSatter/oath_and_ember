@@ -481,6 +481,15 @@
    "role": "Codex takeover under AGENTS.md; implementation fixes plus explicitly same-session read-only audit, not independent review",
    "title": "Showcase review completion, free certification and locked paid-run handoff",
    "note": "Same ongoing Codex chat as the submission-preparation session numbered 52 in its separate worktree; this record is scoped to the later showcase takeover, not a new independent session."
+  },
+  {
+   "number": 55,
+   "slug": "codex-drive-recording-delivery",
+   "ids": [
+    "01a1b8ff"
+   ],
+   "role": "Codex continuation under AGENTS.md; documentation and recording delivery, same-session audit only",
+   "title": "External recording links and game-clock pre-tuned replays"
   }
  ]
 }

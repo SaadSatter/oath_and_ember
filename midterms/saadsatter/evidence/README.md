@@ -26,7 +26,7 @@ This folder holds the evidence for the primary evaluated episode, **S2-local, th
 
 | Evidence | Policy | Result (authoritative `summary.json`) | Recording |
 | --- | --- | --- | --- |
-| [`showcase/pilot-39-original`](showcase/pilot-39-original/README.md) | `model-centralized` (one LLM planner, prompt-tuned showcase guidance) | **gameplay-complete**: maze, Griffin defeated, wig claimed, offering accepted at 236.4 game-s. Recorded `success: false` (`token_limit` during the finale dialogue; `chapter0.complete` not reached). Replay-verified | **replay**, verified against the trace: [4-minute video](https://github.com/SaadSatter/oath_and_ember/blob/midterm/evaluation/docs/midterm/evidence/pilot-39-showcase-replay/replay.webm). The live capture is local only (595 MB) |
+| [`showcase/pilot-39-original`](showcase/pilot-39-original/README.md) | `model-centralized` (one LLM planner, prompt-tuned showcase guidance) | **gameplay-complete**: maze, Griffin defeated, wig claimed, offering accepted at 236.4 game-s. Recorded `success: false` (`token_limit` during the finale dialogue; `chapter0.complete` not reached). Replay-verified | **replay**, verified against the trace: [4-minute video](https://drive.google.com/file/d/1gdwVPO4_xMDQnH0v7ETj5DDXnfqUBLcR/view?usp=drive_link). The live capture is local only (595 MB) |
 
 ## Recordings and delivery
 
@@ -72,3 +72,7 @@ node --import tsx scripts/midterm/replay-video.ts evidence/traces/pilot-12-model
 ```
 
 `collect_evidence.py` without `--verify` re-collects from the owner's local `evaluation-runs/` folders. It never overwrites a file that differs, and it stops if any published number disagrees with a run's `summary.json`. Model runs are paid and are not re-run by any command here.
+
+## External video delivery
+
+[Submission showcase replay](https://drive.google.com/file/d/1gdwVPO4_xMDQnH0v7ETj5DDXnfqUBLcR/view?usp=drive_link) · [All recording links and pending file mappings](../EVALUATION.md#external-recordings). Video originals remain local; no video bytes are packaged for the course repository.

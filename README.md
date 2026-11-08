@@ -93,3 +93,7 @@ Heavy Break now charges on hold and strikes on release; Coco’s traveling blast
 Coco's projectile now loops normalized magical ribbons around a stable core at 14 FPS, with palette recoloring and a separate one-shot impact. See [twirling projectile assets and validation](docs/TWIRLING_MAGIC_PROJECTILES.md).
 
 Monster designs and original source sheets are preserved in [Images/Sprites/monster_sprites](Images/Sprites/monster_sprites/README.md). The former multi-role art workflow has been retired. The existing multiplayer enemy encounter remains available with `npm run enemy:encounter`; see [enemy gameplay documentation](docs/ENEMY_GAMEPLAY.md).
+
+## Midterm recordings
+
+[Watch the four-minute Pilot-39 showcase replay](https://drive.google.com/file/d/1gdwVPO4_xMDQnH0v7ETj5DDXnfqUBLcR/view?usp=drive_link). This is a trace-verified replay at normal game speed, with no new model calls; the original run ended at the token limit during finale dialogue (`success: false`). [All recording links and delivery status](midterms/saadsatter/EVALUATION.md#external-recordings).

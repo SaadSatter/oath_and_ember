@@ -198,3 +198,7 @@ S54 final north-next authorization: owner launches personally; source `2ba618d`,
 S54 Pilot-38 cow investigation: [diagnosis and proposed generic positioning guidance](../midterm/SHOWCASE_COW_DIAGNOSIS.md); original failed run preserved, exact replay, no controller change or paid retry.
 
 S54 positioning prompt approved for owner self-launch, source `a899acc`; exact hashes/typecheck/17 targeted tests verified, no Codex paid call.
+
+## External recording delivery continuation
+
+[S55: Codex Drive recording delivery](55-codex-drive-recording-delivery.md), session `01a1b8ff-47bf-76e2-b531-b34f728d7d18`: owner-clarified links, preserved local originals, exact game-clock replays. Same-session audit only.

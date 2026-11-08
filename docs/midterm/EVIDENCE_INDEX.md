@@ -426,3 +426,7 @@ Positioning proposal approved for one new owner-launched attempt at `a899acc`: [
 ## Pilot-39 continuous showcase (gameplay-complete)
 
 [Preserved evidence and replay check](../../midterms/saadsatter/evidence/showcase/pilot-39-original/README.md). The offering was accepted at 236.4 game-s; `token_limit` (Coco, 8M tokens) ended the run 61 ticks later during the finale dialogue, so recorded `success: false` and no `chapter0.complete`. The owner reports it as gameplay-complete, without relabelling. $1.556206 settled. After it settled, `scripts/midterm/ledger-reallocate.ts --apply` moved $2 from final to pilot ([evidence](evidence/showcase-v2-authorization/reallocation.json)).
+
+## External recording delivery continuation
+
+Supports 5c: [S55](../agent-sessions/55-codex-drive-recording-delivery.md), [recordings table](../../midterms/saadsatter/EVALUATION.md#external-recordings), and [pre-tuned replay delivery](evidence/pre-tuned-game-clock/README.md). Owner supplied corrected distinct C links. Eight videos removed from current Git tracking with local originals preserved; history/LFS not purged. Drive viewer access unverified; all nine primary recordings have owner-supplied links, including confirmed Pilot-28. Supplementary Pilot-29 replay remains local.

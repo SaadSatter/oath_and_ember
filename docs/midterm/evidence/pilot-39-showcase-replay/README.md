@@ -1,6 +1,6 @@
 # Pilot-39 continuous showcase — 4-minute replay video
 
-[replay.webm](replay.webm): 1280×720, 247 s, 30.8 MB. Public link: https://github.com/SaadSatter/oath_and_ember/blob/midterm/evaluation/docs/midterm/evidence/pilot-39-showcase-replay/replay.webm
+[Watch replay on Google Drive](https://drive.google.com/file/d/1gdwVPO4_xMDQnH0v7ETj5DDXnfqUBLcR/view?usp=drive_link): 1280×720, 247 s, 30.8 MB. Public link: https://drive.google.com/file/d/1gdwVPO4_xMDQnH0v7ETj5DDXnfqUBLcR/view?usp=drive_link
 
 **This is a REPLAY of the recorded Pilot-39 actions, not the live capture.** No model calls were made, and it cost $0. `scripts/midterm/replay-video.ts` reset the same scenario and seed on the real game server and submitted each hero's recorded actions in order, paced on the game clock at speed 1. Every check matched the original trace:
 
@@ -22,4 +22,4 @@ The run is **gameplay-complete**. Its recorded result is `success: false`: Coco'
 
 Viewer caveat: each hero panel shows the game's human HUD hint line (for example, which ability to use on an obstacle). Those hints are **excluded from the AI players' observations** (`packages/agent/src/perception.ts`). The AI players never received them. The `acting:` line shows each hero's current recorded action.
 
-Prompt-tuned demonstration, excluded from the official A/B/C evaluation. Not included in the course package (`MANIFEST.txt` excludes `*.webm`); the submission links to it in this repository.
+Prompt-tuned demonstration, excluded from the official A/B/C evaluation. Not included in the course package (`MANIFEST.txt` excludes `*.webm`); the submission links to its Google Drive copy.
