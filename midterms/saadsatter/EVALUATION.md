@@ -133,6 +133,12 @@ Confirmed trace milestones: Griffin defeated at 38.183 game-s, wig acquired at 4
 
 No new paid call, gameplay/policy change or scenario modification occurred during preservation. C remains unrun and held out.
 
+### Interpretation of Situation B
+
+The pre-tuned and post-tuned trials used different recorded checkpoints, but both evaluated the same core challenge: defeating the unprepared Griffin using the heroes' normal abilities, without the Mirror or Enchanted Shears. The pre-tuned run ended in a knockout during combat, before the additional goddess-return objective could become relevant. Therefore, its failure is directly relevant to the combat task tested by the post-tuned run.
+
+The primary gameplay difference under investigation was the model's guidance. However, because the checkpoints and full terminal objectives were not identical, the comparison should be interpreted as evidence of improved performance following prompt tuning, rather than a strictly controlled prompt-only experiment.
+
 ## Design choices
 
 | Choice | What we did | Alternative it replaced, and why |
@@ -175,6 +181,8 @@ The evaluation revealed several limitations in using LLM-driven agents to play a
 **Spatial reasoning and navigation.** The agents struggled to navigate the game's interconnected maps, particularly when obstacles, narrow passages, or previously explored areas were involved. They sometimes revisited locations, overlooked accessible routes, or continued attempting actions that were no longer useful. Limited visibility and imperfect spatial memory made long-horizon exploration difficult, even when the agents understood the immediate objective.
 
 **Dependence on prompt tuning and situational guidance.** Early evaluations demonstrated that general gameplay instructions were often insufficient for completing multi-step objectives reliably. Performance improved after refining prompts and providing focused, situation-specific hints about objectives, relevant abilities, and task priorities. These hints did not provide exact solutions, coordinates, or action sequences, but they helped agents concentrate on relevant information and avoid unproductive exploration. Consequently, the results reflect the effectiveness of the complete prompted agent system rather than the model's unaided ability to discover and solve every puzzle.
+
+**Human playtesting.** In contrast with the AI players, a human player completed the game without any help. On 7 November 2026, a friend played the full current build for about an hour with no hints or assistance and reached "Chapter 0 complete". They hesitated on some puzzles but solved each one alone, and reported only cosmetic issues such as lag. This is one unassisted session, recorded from the developer's account; an earlier session on 2 November was assisted. See [PEER_NOTES.md](PEER_NOTES.md).
 
 Overall, these limitations suggest that reliable LLM gameplay requires more than knowledge of the game's rules. Effective cooperation depends on maintaining spatial memory, communicating progress, recovering from unsuccessful actions, and providing sufficiently focused objectives while preserving the challenge of solving the game itself.
 
@@ -226,5 +234,13 @@ Paid C total: **$0.873771** of the $1.50 combined cap (ledger: pilot stage $2.13
 **Deviations:**
 - **C2 ordering and commit:** C2 ran at `19e5d87`, before r10's activation and before C1, whereas the declared order was C1 → C3 → C2. Between `19e5d87` and the run commits, only paid-lock, guidance and documentation files changed; game, baseline, observation, evaluator and scenario code are identical. C2 is deterministic: its end hash equals three earlier free runs, and it replays exactly at `24a3ba1`.
 - **C3 configuration:** C3's configuration changed after C1 (r11). The r10 C3 (v4 only, prompt `a0c6939a…`) was never run.
+
+### Interpretation of Situation C
+
+Situation C tested whether the agents could recognize and use the tools already available in their shared inventory. Both model configurations independently reached the peaceful grooming outcome through normal gameplay. The pre-tuned agent discovered this route without the additional C-specific hint.
+
+The post-tuned guidance emphasized existing game rules, inventory descriptions, and relevant abilities. It did not disclose the solution, provide coordinates, or prescribe an action sequence. The guidance was added after the earlier run, so the comparison measures a refinement to the agent's task framing rather than independent generalization to an unseen situation.
+
+The post-tuned run completed the objective with fewer calls, less game time, and lower estimated cost. These are observed improvements, although a single run per condition does not establish their statistical reliability.
 
 Results registry: [declared-results.json](../../docs/midterm/evaluation-abc/declared-results.json). Only the C rows were filled; the A/B rows are unchanged, and the previous file is archived in `history/r11/`.
