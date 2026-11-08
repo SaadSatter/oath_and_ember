@@ -1,5 +1,7 @@
 # Oath & Ember
 
+Play the game: [Oath & Ember](https://oath-and-ember.onrender.com)
+
 A playable two-player cooperative browser prototype. Oath handles physical barriers and melee combat; Ember channels runes and casts ranged bolts. Both explore independently with their own cameras, open two forest gates, board a side-view airship, power its engine together, and defeat the Stormbound Warden.
 
 ## Run locally
