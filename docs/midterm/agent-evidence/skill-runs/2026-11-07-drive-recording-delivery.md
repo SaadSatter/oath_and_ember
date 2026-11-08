@@ -7,7 +7,7 @@ Session: 01a1b8ff-47bf-76e2-b531-b34f728d7d18. Same-session audit, not independe
 | Severity | Evidence | Recommendation |
 | --- | --- | --- |
 | Medium | Drive URLs are owner-supplied; remote file identity/viewer permissions have not been checked. | Owner should verify anyone-with-link viewing before submission. |
-| Info | Pilot-28 Drive link supplied and identified by owner; Pilot-29 supplementary replay remains local. | All nine primary recording links are present; optional Pilot-29 upload can follow. |
+| Info | Pilot-28 Drive link supplied and identified by owner; Pilot-29 supplementary replay remains local. | All nine supplied recording links are present; optional Pilot-29 upload can follow. |
 
 ## Checks performed
 

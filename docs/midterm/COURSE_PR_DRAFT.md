@@ -27,4 +27,4 @@ This PR adds only `midterms/saadsatter/` and one workflow, `.github/workflows/mi
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
-Recordings are hosted externally on Google Drive. The evaluation report links all nine primary A/B/C recordings; A pre-tuned is a trace-verified Pilot-28 replay at normal game speed (125.267 game-seconds), preserving the manual-stop failure. No video bytes are included in this course submission.
+Recordings are hosted externally on Google Drive. The evaluation report links the showcase and eight supplied A/B/C recordings; A pre-tuned is a trace-verified Pilot-28 replay at normal game speed (125.267 game-seconds), preserving the manual-stop failure. No video bytes are included in this course submission.

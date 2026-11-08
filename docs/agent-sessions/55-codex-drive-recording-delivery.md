@@ -33,7 +33,7 @@ Sources: local session transcript, commands run in this continuation, original c
 - Existing replay checker verified Pilot-28 (641 results, 7516 ticks, manual_stop) and Pilot-29 (391 results, 3276 ticks, manual_stop) exactly on current code. No model calls or held-out episode.
 - Pilot-29 has no original summary.json. A scratch-only scenario locator was derived from original run.json; original evidence was not changed and no result summary was fabricated.
 - Invoked session-evidence and game-rules-audit (recording) in this session. The audit is same-session, not independent. Video verification details and delivery state are in docs/midterm/evidence/pre-tuned-game-clock/README.md.
-- No gameplay, networking, player policy, prompt or scenario change. No typecheck/test/build triad required for this documentation and existing-tool recording task. Owner supplied and identified Pilot-28 Drive link; all nine primary recordings now linked. Pilot-29 is supplementary and stays local unless uploaded. Both full video decodes passed without errors; terminal frames inspected. Evidence-manifest verification passed for 46 files; changed-file secret scan passed (15 files, 0 findings), with one pre-existing finding in the broad historical scan.
+- No gameplay, networking, player policy, prompt or scenario change. No typecheck/test/build triad required for this documentation and existing-tool recording task. Owner supplied and identified Pilot-28 Drive link; all nine supplied recordings now linked. Pilot-29 is supplementary and stays local unless uploaded. Both full video decodes passed without errors; terminal frames inspected. Evidence-manifest verification passed for 46 files; changed-file secret scan passed (15 files, 0 findings), with one pre-existing finding in the broad historical scan.
 <!-- narrative:end -->
 
 ## Mechanically extracted record
@@ -44,3 +44,7 @@ Sources: local session transcript, commands run in this continuation, original c
 - Files edited through the agent's edit/patch tool: none recorded (edits made by shell commands are not counted)
 - Test-summary lines printed in tool output: none found
 - Commits inside the session window: none
+
+## Publication verification
+
+Personal branch update `fd3c9f9` and course PR #92 update `e6c1ae3f` were pushed successfully on November 7 before the deadline. PR description updated to Drive showcase link and verified by GitHub response. Existing course interpretation/playtest edits retained with a checked patch. Course evidence manifest: 46 files verified from the correct submission working directory. Final changed-file scan: 19 text files, zero findings. No video files tracked under the course submission. The nine supplied recording links comprise the showcase and eight A/B/C recordings; a B pre-tuned video link was not supplied.
