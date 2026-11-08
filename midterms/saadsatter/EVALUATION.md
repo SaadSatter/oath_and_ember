@@ -16,7 +16,7 @@ The separately reviewed **`griffin-unprepared-v1`** is preserved exactly as impl
 
 ## Conditions and primary trial allocation
 
-Preserve the evaluation checkout's owner-approved **one primary run per condition per case**: nine primary cells (six model, three baseline). A/B each additionally have a second identical heuristic reproduction, reported as supplementary evidence rather than another primary cell. Six primary outcomes are available and three C cells remain unrun. This is not two independent repetitions of each model condition; a reduced/mixed-condition design must not be described as stronger evidence than it is.
+Preserve the evaluation checkout's owner-approved **one primary run per condition per case**: nine primary cells (six model, three baseline). A/B each additionally have a second identical heuristic reproduction, reported as supplementary evidence rather than another primary cell. All nine primary outcomes are recorded. This is not two independent repetitions of each model condition; a reduced/mixed-condition design must not be described as stronger evidence than it is.
 
 | Situation | Pre-tuned model | Post-tuned model | Cheap baseline |
 | --- | --- | --- | --- |
@@ -28,18 +28,18 @@ Preserve the evaluation checkout's owner-approved **one primary run per conditio
 
 ## Recorded outcomes
 
-| Run | Result | Game time | Wall time | Model calls | Invalid actions | Estimated API cost |
-| --- | --- | --- | --- | --- | --- | --- |
-| A pre-tuned — Pilot-28 | Manual stop; cow passage not cleared; no Shears | 125.267 s | 900.8 s | 79 attempted | See original diagnosis; not inferred | $0.094339 conservative charge; $0.085837 known usage |
-| A post-tuned — Pilot-30 | Shears acquired | 89.5 s | 1958.1 s | 167 | 2 | $0.443258 runner estimate |
-| A heuristic v2, primary / reproduction | Both Shears successes | 31.5 s each | 6.7 /6.4 s | 0 | 0 | $0 |
-| B pre-tuned — Pilot-31 | Knocked out (Sieg) with the Griffin at 152/640; no wig | 50.1 s | 1486.5 s | 117 attempted, 0 failed | 1 | $0.265961 runner estimate |
-| B Griffin heuristic v1, primary / reproduction | Both combat defeat + wig + goddess offering + Chapter 0 completion; no knockout | 89.8 s each | 6.7 /6.6 s | 0 | 0 | $0 |
-| B post-tuned — Pilot-33 (v4) | Griffin defeated, wig acquired/offered, Chapter 0 complete; no knockout | 51.0 s | 2184.4 s | 251 | 1 | $0.554417 |
-| Earlier B post-tuned attempt — Pilot-32 (v1) | Knocked out; retained failure, not erased by Pilot-33 | 47.5 s | 1048.5 s | 98 | 1 | $0.206005 |
-| C pre-tuned — Pilot-34 | Peaceful: tools delivered while alive, Griffin groomed (HP 418, never defeated); wig claimed, offered, Chapter 0 complete; no knockout | 133.3 s | 2479.7 s | 278 | 2 | $0.586742 |
-| C post-tuned — Pilot-35 (v4 + hint) | Peaceful: tools delivered before any damage (HP 640); wig claimed, offered, Chapter 0 complete; no knockout | 56.3 s | 958.5 s | 163 | 1 | $0.287029 |
-| C Griffin heuristic v1 (C2) | Combat: Griffin defeated (HP 0), then wig, offering, Chapter 0 complete; no knockout; tools unused while alive | 89.8 s | 103.3 s | 0 | 0 | $0 |
+| Run | Result | Game time | Wall time | Model calls | Invalid actions | Estimated API cost | Tokens in / out | Call latency mean / max |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| A pre-tuned — Pilot-28 | Manual stop; cow passage not cleared; no Shears | 125.267 s | 900.8 s | 79 attempted | See original diagnosis; not inferred | $0.094339 conservative charge; $0.085837 known usage | 864,786 / 61,002 | 9.7 s / 23.2 s |
+| A post-tuned — Pilot-30 | Shears acquired | 89.5 s | 1958.1 s | 167 | 2 | $0.443258 runner estimate | 3,678,281 / 171,240 | 11.0 s / 20.5 s |
+| A heuristic v2, primary / reproduction | Both Shears successes | 31.5 s each | 6.7 /6.4 s | 0 | 0 | $0 | 0 | none (no model) |
+| B pre-tuned — Pilot-31 | Knocked out (Sieg) with the Griffin at 152/640; no wig | 50.1 s | 1486.5 s | 117 attempted, 0 failed | 1 | $0.265961 runner estimate | 2,271,965 / 116,199 | 11.9 s / 24.2 s |
+| B Griffin heuristic v1, primary / reproduction | Both combat defeat + wig + goddess offering + Chapter 0 completion; no knockout | 89.8 s each | 6.7 /6.6 s | 0 | 0 | $0 | 0 | none (no model) |
+| B post-tuned — Pilot-33 (v4) | Griffin defeated, wig acquired/offered, Chapter 0 complete; no knockout | 51.0 s | 2184.4 s | 251 | 1 | $0.554417 | 4,871,133 / 157,250 | 8.5 s / 28.1 s |
+| Earlier B post-tuned attempt — Pilot-32 (v1) | Knocked out; retained failure, not erased by Pilot-33 | 47.5 s | 1048.5 s | 98 | 1 | $0.206005 | 1,641,372 / 103,909 | 10.1 s / 18.2 s |
+| C pre-tuned — Pilot-34 | Peaceful: tools delivered while alive, Griffin groomed (HP 418, never defeated); wig claimed, offered, Chapter 0 complete; no knockout | 133.3 s | 2479.7 s | 278 | 2 | $0.586742 | 5,449,743 / 179,558 | 8.4 s / 21.1 s |
+| C post-tuned — Pilot-35 (v4 + hint) | Peaceful: tools delivered before any damage (HP 640); wig claimed, offered, Chapter 0 complete; no knockout | 56.3 s | 958.5 s | 163 | 1 | $0.287029 | 3,024,600 / 71,352 | 5.5 s / 20.5 s |
+| C Griffin heuristic v1 (C2) | Combat: Griffin defeated (HP 0), then wig, offering, Chapter 0 complete; no knockout; tools unused while alive | 89.8 s | 103.3 s | 0 | 0 | $0 | 0 | none (no model) |
 
 The owner designated Pilot-28 pre-tuned and Pilot-30 post-tuned. Pilot-28's owner-recalled approximately 128 seconds is retained as recollection; recorded elapsed time is 125.267 seconds. Both are historical development pilots, not retroactively preregistered final runs. Their comparison includes controller/planner changes and does not isolate prompt-only tuning. Pilot-30 used `gpt-6-luna` medium at `040685c`; exact intervention provenance is not independently complete. Provider charges above are saved runner estimates, not a current price lookup or invoice. Input/cache/output/reasoning totals and all available identifiers remain in the original records.
 
@@ -80,6 +80,8 @@ npm run eval:live -- --scenario griffin-unprepared-return-v1 --seed 0 --player b
 ```
 
 The live viewer records at normal speed by default. Its printed output folder contains `recording.webm` and `recording.json`. Archived heuristic trials were accelerated offline and have no video; these commands start new free baseline runs. Pilot-30 has a separate saved model-run recording. No new recording is claimed by the no-viewer integration smoke tests; the later owner-recorded videos are linked below.
+
+Input tokens include cached input. Costs are runner estimates from list prices verified on 2026-10-28, with a 1.1 safety uplift; they are not provider invoices. Limits for every model run: at most 400 model calls per hero, a token cap per hero, a per-episode spend cap and a wall-clock limit, all enforced in code, with the terminal reason logged in each `summary.json`.
 
 ## Recorded baseline videos (owner runs, November 6)
 
@@ -131,6 +133,35 @@ Confirmed trace milestones: Griffin defeated at 38.183 game-s, wig acquired at 4
 
 No new paid call, gameplay/policy change or scenario modification occurred during preservation. C remains unrun and held out.
 
+## Design choices
+
+| Choice | What we did | Alternative it replaced, and why |
+| --- | --- | --- |
+| Evaluation suite | Three situations, each testing a different capability of the game: **A (Hedge Maze) for puzzle solving**: environmental obstacles, the cow, the wolf and key gate; **B (Griffin, unprepared) for combat**: a 640-HP boss with telegraphed attacks, then the return to the goddess; **C (Griffin, prepared) for inventory reasoning**: the same encounter with the Mirror and Shears already in the backpack, where reading item descriptions opens a peaceful route. | The earlier evaluation focused on the Hedge Maze alone ([history](EVALUATION_HISTORY_BEFORE_ABC_DECLARATION.md)): one kind of task, which could not show whether the players handled combat or item use. |
+| Model player | One centralized planner that sees both heroes' permitted screens and orders both heroes; each hero still acts only through its own legal controls. | Two independent model players (one per hero) with messages and per-hero memory, used in earlier pilots. They were slower, cost more and coordinated poorly; see Limitations. |
+| Baselines | Rule-aware deterministic heuristics with per-hero map memory and zero model calls (`baseline-maze-heuristic-v2` for A, `baseline-griffin-heuristic-v1` for B and C). | The earlier `baseline-quest`, a solution-aware scripted route. That is a walkthrough, not a competitor that has to read the screen. |
+| Conditions | Pre-tuned model, post-tuned model (general guidance text) and the baseline, on the same start states. | Model only. Without a pre/post pair and a baseline, a success could not be attributed to tuning or compared with a non-model player. |
+| Interface | Five operations (reset, observe, legal_actions, step, outcome) over the real authoritative game server. | A separate simulator. It would have needed a second copy of the rules, which could drift from the game. |
+
+## CI evidence
+
+The course workflow [`.github/workflows/midterm-saadsatter.yml`](../../.github/workflows/midterm-saadsatter.yml) runs `bash scripts/midterm/ci-checks.sh` from this folder on every pull request touching it: `npm ci`, typecheck, the deterministic tests and the build. It makes no network calls to model providers and uses no API key. [Workflow runs on this branch](https://github.com/columbia-university-ai-games/game-dev-f26/actions/workflows/midterm-saadsatter.yml?query=branch%3Asaadsatter%2Fmidterm-oath-and-ember). Green run for the submission content: [run 42431927855](https://github.com/columbia-university-ai-games/game-dev-f26/actions/runs/42431927855). It had 139 test files, 1,356 tests passed and 1 skipped, plus 6 of the 7 frozen-baseline outcome tests (the one held-out route case is excluded).
+
+| Check kind | Where it is tested |
+| --- | --- |
+| Rule invariants | `apps/server/test/` (43 files, 26 of them over real Socket.IO connections): the authoritative server's movement, combat, puzzles, Griffin and story rules |
+| Legal and illegal actions | `packages/agent/test/environment.test.ts`, "action validation": illegal or malformed actions are refused, and the world is unchanged |
+| Terminal outcome | `packages/agent/test/scriptedFreeze.test.ts`, "baseline on S1–S3": frozen baselines reach success with pinned end hashes |
+| Observed regression | `packages/agent/test/pilot6Fixes.test.ts` (the Slow Time false collision seen in Pilot-6) and `budget.test.ts` (failed model calls counted against the budget) |
+| Episode limits | `packages/agent/test/budget.test.ts`, `environment.test.ts` "termination" and `reliability.test.ts`: tick, decision, call, token, spend and wall-clock limits end the episode with an explicit reason |
+| Hidden information | `environment.test.ts` (observations and legal actions never contain hidden state), `perception.test.ts` (observations report what the client draws, such as health bars in eighths, not hidden numbers) and `griffinObservationParity.test.ts` (replayed observations match the recorded ones byte for byte) |
+
+What CI excludes, and why:
+
+- The tests that build or play the held-out scenarios (the scripted full route, `suite.test.ts`, `finalAccess.test.ts`).
+- The npm Ctrl-C launcher test, skipped on GitHub's Linux runner only, where npm's signal relay differs; it runs locally.
+- Two checks that compare files against older commits in the development repository. They check only the current files here, because the course copy has no project git history.
+
 ## Verification
 
 Typecheck and build pass in `oath_and_ember-eval`. Integration targeted suite: **78/78 tests in six files**, covering both heuristic policies, the live Griffin CLI, native reviewed Griffin scenario, frozen A and scripted behavior pins. Held-out refusal remains tested. No full-suite test run was launched concurrently with the other workstream. No paid calls, push or merge occurred.
@@ -139,7 +170,7 @@ Typecheck and build pass in `oath_and_ember-eval`. Integration targeted suite: *
 
 The evaluation revealed several limitations in using LLM-driven agents to play a cooperative, partially observable game.
 
-**Multi-agent coordination and complexity.** Although Coco and Sieg have complementary abilities, coordinating two heroes introduced substantial complexity. The agents sometimes issued conflicting instructions, repeated completed tasks, or failed to communicate important discoveries. Their separate positions and observations also made it difficult to maintain a consistent understanding of the world. Running two model-driven controllers increased token consumption substantially, approaching twice the cost of a single-controller setup when both required comparable model calls. This made the system slower and more expensive without guaranteeing better cooperation.
+**Multi-agent coordination and complexity.** Although Coco and Sieg have complementary abilities, coordinating two heroes introduced substantial complexity. The agents sometimes issued conflicting instructions, repeated completed tasks, or failed to communicate important discoveries. Their separate positions and observations also made it difficult to maintain a consistent understanding of the world. Running two model-driven controllers increased token consumption substantially, approaching twice the cost of a single-controller setup when both required comparable model calls. This made the system slower and more expensive without guaranteeing better cooperation. So for these reasons I went with a single controller.
 
 **Spatial reasoning and navigation.** The agents struggled to navigate the game's interconnected maps, particularly when obstacles, narrow passages, or previously explored areas were involved. They sometimes revisited locations, overlooked accessible routes, or continued attempting actions that were no longer useful. Limited visibility and imperfect spatial memory made long-horizon exploration difficult, even when the agents understood the immediate objective.
 

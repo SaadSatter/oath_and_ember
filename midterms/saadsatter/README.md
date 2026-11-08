@@ -1,62 +1,41 @@
-# Oath and Ember — declared A/B/C evaluation
+# Oath and Ember
 
-GitHub login: `saadsatter`. **Oath and Ember** is an original cooperative
-two-character fantasy action-adventure. The implemented Bald Goddess quest is
-playable from the goddess checkpoint to Chapter 0 completion.
+GitHub login: `saadsatter`. **Oath and Ember** is an original cooperative two-hero fantasy action-adventure. Sieg (sword) and Coco (magic) play on an authoritative Socket.IO game server. The Bald Goddess quest is playable from the goddess checkpoint to "Chapter 0 complete". For the midterm, AI players control both heroes through a five-operation interface (reset, observe, legal_actions, step, outcome). They are compared with free scripted baselines on three declared situations.
 
-**Declared evaluation scope (2026-11-06):** three bounded tasks from that quest:
-A — Hedge Maze; B — Griffin Trial, Unprepared; C — Griffin Trial, Prepared.
-Each has pre-tuned model, post-tuned model and free scripted-baseline conditions,
-with one run per cell. **Declaration is not completed evaluation:** A is
-complete (Pilot-28 pre-tuned, Pilot-30 post-tuned, baseline-quest); new B/C checkpoints/integration are pending.
-No new paid run is authorized by these documents.
-
-| Deliverable | Where / status |
+| Deliverable | Where |
 | --- | --- |
-| Current declared suite and comparison | [EVALUATION.md](EVALUATION.md); only A/post/1 has an observed result |
-| Declaration and machine records | `docs/midterm/DECLARED_EVALUATION_SUITE.md`; `docs/midterm/evaluation-abc/declaration.json` and `declared-results.json` (included after course packaging) |
-| Agent-team log | [AGENT-TEAM.md](AGENT-TEAM.md) — owner-authored completion still required |
-| Rules/source map | [RULE_SOURCE_MAP.md](RULE_SOURCE_MAP.md) |
-| Peer notes | [PEER_NOTES.md](PEER_NOTES.md): no class time was available for a classmate playtest, so a human playtest stands in as the peer notes. An anonymous session with friends on 2 November (about 45 min, prologue to ending), where players hesitated and the changes made in response. The developer helped during play (disclosed). The professor allows a non-classmate playtester (owner-reported) |
-| Submission recording (3–5 min) | **[Pilot-39 continuous showcase, 4-minute replay](https://github.com/SaadSatter/oath_and_ember/blob/midterm/evaluation/docs/midterm/evidence/pilot-39-showcase-replay/replay.webm)**: a trace-verified replay of the AI players' recorded actions, labelled as a replay. Full live Pilot-30 maze recording (about 32.7 min): [evidence](evidence/traces/pilot-30-model-centralized-S2-local-seed0/README.md) |
-| Continuous showcase (demonstration, excluded from A/B/C) | [Pilot-39](evidence/showcase/pilot-39-original/README.md): gameplay-complete in 236.4 game-s (maze, Griffin defeated, wig, offering accepted); recorded `success: false` because the token limit ended it during the finale dialogue, before `chapter0.complete`. **[4-minute replay video](https://github.com/SaadSatter/oath_and_ember/blob/midterm/evaluation/docs/midterm/evidence/pilot-39-showcase-replay/replay.webm)**. See [EVALUATION.md](EVALUATION.md#continuous-showcase--pilot-39-gameplay-complete-excluded-from-abc) |
-| Preserved historical evaluation | [EVALUATION_HISTORY_BEFORE_ABC_DECLARATION.md](EVALUATION_HISTORY_BEFORE_ABC_DECLARATION.md) — older versions/results, not pooled with current suite |
-| CI | Source template `ci/midterm-saadsatter.yml`; packaged to course `.github/workflows/midterm-saadsatter.yml`. Latest-green CI still pending |
-| Game's own README | [GAME_README.md](GAME_README.md) (created during packaging) |
+| Evaluation report | [EVALUATION.md](EVALUATION.md): declared suite, comparison table, design choices, CI evidence, limitations |
+| Agent-team log | [AGENT-TEAM.md](AGENT-TEAM.md) |
+| Rule/source map | [RULE_SOURCE_MAP.md](RULE_SOURCE_MAP.md) |
+| Peer notes | [PEER_NOTES.md](PEER_NOTES.md). No class time was available for a classmate playtest, so an anonymous human playtest with friends (2 November, about 45 min, prologue to ending) serves as the peer notes; the professor allows a non-classmate playtester. The developer helped during play, and this is disclosed |
+| Recording (4 min) | **[Pilot-39 continuous showcase](https://github.com/SaadSatter/oath_and_ember/blob/midterm/evaluation/docs/midterm/evidence/pilot-39-showcase-replay/replay.webm)**. Two AI players go from the Goddess Shrine through the Hedge Maze and defeat the Griffin in combat, then return the wig. It is a trace-verified **replay** of the recorded actions (no model calls). The run is gameplay-complete; its recorded result is `success: false`, because the token limit ended it during the finale dialogue ([details](evidence/showcase/pilot-39-original/README.md)) |
+| CI | `.github/workflows/midterm-saadsatter.yml` runs `scripts/midterm/ci-checks.sh`; green for this submission ([EVALUATION.md, CI evidence](EVALUATION.md#ci-evidence)) |
+| Evidence | [evidence/README.md](evidence/README.md): traces, summaries, SHA-256 manifest |
+| Game's own README | [GAME_README.md](GAME_README.md) |
 
 ## Scope
 
-**A — Hedge Maze:** frozen S2-local v2 seed 0. Obtain Enchanted Shears through
-normal play. Pilot-30 succeeded in 89.5 game seconds, 167 model calls and an
-estimated $0.443258. It is a preserved, development-informed post-tuned
-model-driven completion, not a historically preregistered final run.
+The declared suite (`oath-ember-abc-2026-11-06`, revision r11) has three situations from the Bald Goddess quest. Each tests a different capability:
 
-**B — Griffin Trial, Unprepared:** start at a fresh encounter without the Mirror,
-Shears or wig. Defeat the Griffin and acquire the wig; no hero knockout and no
-leaving the enclosure before success.
+| Situation | Tests | Start | Success |
+| --- | --- | --- | --- |
+| **A — Hedge Maze** (`S2-local`, seed 0) | Puzzle solving | Both heroes at the maze entrance after normal travel | Enchanted Shears in the shared backpack |
+| **B — Griffin, unprepared** (`griffin-unprepared-return-v1`, seed 0) | Combat | Fresh 640-HP Griffin; no Mirror, Shears or wig | Griffin defeated (HP 0), wig claimed, offered at the goddess, `chapter0.complete`; no knockout |
+| **C — Griffin, prepared** (`griffin-prepared-return-v1`, seed 0) | Inventory reasoning | B's start with the Vanity Mirror and Enchanted Shears in the backpack | Wig claimed by any normal route, offered, `chapter0.complete`; no knockout |
 
-**C — Griffin Trial, Prepared:** near-matched encounter/hero conditions, but the
-shared bag contains the Mirror and Shears. Same strict combat-defeat plus wig
-objective. C is reserved from model-outcome tuning; post-tuned C transfers only
-guidance frozen from A/B, with no C-specific walkthrough. The tools' peaceful
-reward path does not satisfy strict defeat; see [EVALUATION.md](EVALUATION.md).
+Each situation has three conditions: pre-tuned model, post-tuned model and a free deterministic baseline, with one primary run each. All nine cells have a recorded outcome:
 
-The selected model player is **one centralized planner for both heroes**, with
-only their normal observations and legal controls. The cheap comparator is the
-existing solution-aware `baseline-quest`; this asymmetry and its expected strict
-Griffin failures are disclosed. Legal B/C preparation must preserve all world
-consequences, not manufacture inventory-only fixture states. The final hashes
-and exact matching remain unverified until approved certification.
+| | Pre-tuned model | Post-tuned model | Baseline |
+| --- | --- | --- | --- |
+| A | Fail (Pilot-28, stopped at the cow) | Success (Pilot-30, 89.5 game-s) | Success (31.5 game-s) |
+| B | Fail (Pilot-31, knocked out; ran on the older enclosure-only start, disclosed in EVALUATION.md) | Success (Pilot-33, 51.0 game-s); earlier v1 attempt Pilot-32 failed | Success (89.8 game-s) |
+| C | Success, peaceful route (Pilot-34, 133.3 game-s) | Success, peaceful route (Pilot-35, 56.3 game-s) | Success, combat route (89.8 game-s) |
 
-The full game also includes the shrine hub, Mirror Pond, prologue and finale.
-Those remain playable context or historical supplementary evaluations, not
-additional current suite cases. No airship/legacy-boss, persistence or online
-matchmaking expansion is part of this scope. The five-operation adapter drives
-the authoritative server without changing the game's rules.
+The model player is one centralized planner (OpenAI `gpt-6-luna`, medium effort) that orders both heroes, each through its own legal controls. It has no repository, shell or evaluator access. The baselines are rule-aware heuristics with per-hero map memory and zero model calls. Full numbers, tuning disclosures and caveats (one run per cell, so this is not a statistical result) are in [EVALUATION.md](EVALUATION.md).
 
-The owner must post this scope revision in the Week 3 discussion thread and
-finish the human playtest/reflection and course PR requirements. Those external
-or personally authored steps have not been performed by this agent.
+**Included:** the playable game (prologue, shrine hub, Mirror Pond, Hedge Maze, Griffin, finale), the agent interface and players, the baselines, the evaluation harness, traces and tests. The continuous Pilot-39 showcase is a separate, prompt-tuned demonstration, excluded from the A/B/C comparison.
+
+**Excluded:** persistence, online matchmaking, and any further chapters. The five-operation interface drives the real game server and does not change the game's rules.
 
 ## Setup
 
@@ -98,24 +77,37 @@ The script runs every test except the ones that build or play the held-out scena
 
 ## Evaluate
 
-Read [EVALUATION.md](EVALUATION.md) before running anything. B/C logical IDs in
-the declaration are **not yet registered runner scenarios**. No command below
-starts a paid model.
+All commands run from `midterms/saadsatter/`. Each opens a read-only viewer and saves the trace, summary and a `recording.webm` in the printed output folder.
+
+**Baselines (free, deterministic, no API key):**
 
 ```sh
 cd midterms/saadsatter
-# Existing free reference on frozen A; creates a new run, does not overwrite Pilot-30.
-node --import tsx scripts/midterm/evaluate.ts --player baseline-quest --situations S2-local --seeds 0
+npm run eval:live -- --scenario S2-local --seed 0 --player baseline-maze-heuristic                         # A
+npm run eval:live -- --scenario griffin-unprepared-return-v1 --seed 0 --player baseline-griffin-heuristic  # B
+npm run eval:live -- --scenario griffin-prepared-return-v1 --seed 0 --player baseline-griffin-heuristic    # C
 ```
 
-At the current gameplay snapshot, the A reference succeeds in 3,128 ticks /
-52.1 game seconds with pinned end hash `6644f2ca…f56`. That historical reference
-is not silently counted as a new declared baseline trial. New scenario
-registration/certification, post-tuned prompt freeze and any paid evaluation
-require separate approval. Full evidence and model settings are linked from
-[EVALUATION.md](EVALUATION.md). The exact source/asset packaging procedure is
-`scripts/midterm/package_submission.py`; use a committed revision and rehearse
-in a separate course checkout, never overwrite another project's folder.
+**Model player, free check (no API key):** the same planner and interface, driven by a mock gateway that picks random legal actions. It shows the pipeline running end to end; it is not expected to succeed.
+
+```sh
+npm run eval:live -- --scenario S2-local --seed 0 --player model-centralized --gateway mock
+```
+
+**Model player, paid (needs an OpenAI key):** each paid episode reserves its cap in a local spend ledger first. Initialize the ledger once, then supply the key through `OPENAI_API_KEY` or the hidden prompt, never as an argument.
+
+```sh
+node --import tsx scripts/midterm/ledger.ts init
+npm run eval:live -- --scenario S2-local --seed 0 --player model-centralized \
+  --gateway openai --model gpt-6-luna --effort medium --max-batch 4 --max-spend-usd 0.75 --paid
+```
+
+**Verify a recorded model run without calling a model:** the replay re-submits the run's recorded actions to the real game server and checks every step against the trace.
+
+```sh
+node --import tsx scripts/midterm/replay-video.ts evidence/traces/pilot-30-model-centralized-S2-local-seed0/trace.jsonl --check-only
+# REPLAY MATCHES THE TRACE: start hash, 644 step results, end (success, 6deca1132fc2e626) and 5369 ticks.
+```
 
 ## Sources and terms
 
@@ -142,19 +134,8 @@ Development tools are listed in `package.json`.
 | CraftPix packs (forest trees, map, paths, ruins, buildings, an example swordsman) | CraftPix file licence (https://craftpix.net/file-licenses/) | `apps/client/public/assets/environment/trees/License.txt`, `Images/Sprites/**/License.txt` |
 | Generated and hand-edited sprites (heroes, enemies, Griffin, items, maps) | Produced for this project; per-asset records | [SPRITE_ASSETS.md](docs/SPRITE_ASSETS.md), [ENVIRONMENT_ASSET_PROVENANCE.json](docs/ENVIRONMENT_ASSET_PROVENANCE.json), [COMBAT_ASSET_PROVENANCE.json](docs/COMBAT_ASSET_PROVENANCE.json), `Images/**/provenance*.json`, `Images/**/PROVENANCE.md` |
 
-**Open for the owner before publication:** the generated sprites' tool terms must be confirmed to permit publication. This is not resolved here.
+**Open item:** the terms of the tool used for the generated sprites have not been independently confirmed here; the per-asset records above list how each was made.
 
 ## Repository and version
 
 The project's history and full evidence live in `SaadSatter/oath_and_ember`, branch `midterm/evaluation`. This folder is generated from one of its commits by `scripts/midterm/package_submission.py`; the commit is in `SUBMITTED_COMMIT.txt`. Large art sources and historical QA captures are not copied: [MANIFEST.txt](MANIFEST.txt) lists what is included and why.
-
-## Deterministic heuristic baselines
-
-From the project root (this folder in the packaged submission), run either command separately. Both use zero model calls.
-
-```sh
-npm run eval:live -- --scenario S2-local --seed 0 --player baseline-maze-heuristic
-npm run eval:live -- --scenario griffin-unprepared-return-v1 --seed 0 --player baseline-griffin-heuristic
-```
-
-The live viewer records to `recording.webm` plus `recording.json` in the printed output folder. The archived heuristic evaluation trials are offline traces/summaries, not recordings. The older `griffin-unprepared-v1` is a separate enclosure-only task. See [EVALUATION.md](EVALUATION.md) for current goals, results, declared knowledge and limitations. All implementation is available directly in the development `oath_and_ember-eval` checkout; no separate worktree is needed.
