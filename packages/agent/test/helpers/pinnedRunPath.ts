@@ -23,10 +23,27 @@ export const C_REGISTRATION_FILES: ReadonlySet<string> = new Set([
   "scripts/midterm/live.ts",
 ]);
 
+/**
+ * Whether `commit` is in this checkout's git history. The course submission
+ * folder is a copy without the project's history; there only the working-tree
+ * half of the check can run.
+ */
+function hasCommit(commit: string): boolean {
+  try {
+    execFileSync("git", ["cat-file", "-e", `${commit}^{commit}`], { cwd: root, stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function expectRunPathPinned(commit: string, pins: Record<string, string>) {
+  const history = hasCommit(commit);
   for (const [f, h] of Object.entries(pins)) {
-    const historical = execFileSync("git", ["show", `${commit}:${f}`], { cwd: root, maxBuffer: 64 << 20 });
-    expect(sha(historical), `${f} at ${commit}`).toBe(h);
+    if (history) {
+      const historical = execFileSync("git", ["show", `${commit}:${f}`], { cwd: root, maxBuffer: 64 << 20 });
+      expect(sha(historical), `${f} at ${commit}`).toBe(h);
+    }
     if (!C_REGISTRATION_FILES.has(f)) expect(sha(readFileSync(join(root, f))), `${f} in the working tree`).toBe(h);
   }
 }

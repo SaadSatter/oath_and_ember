@@ -8,7 +8,7 @@
 // byte. Test 2 uses a clearly labelled unit fixture (a hero placed next to the
 // nest by writing World) only to show which scenarios list the nest; it is not
 // part of any episode.
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -19,7 +19,9 @@ import type { AgentEnvironment } from "../src/environment.js";
 import type { PlayerId } from "../src/types.js";
 
 const root = fileURLToPath(new URL("../../..", import.meta.url));
-const TRACE = join(root, "midterms/saadsatter/evidence/traces/pilot-31-model-centralized-griffin-unprepared-v1-seed0/trace.jsonl");
+// Repository root, or the course submission folder (midterms/saadsatter/ is the root there).
+const stage = existsSync(join(root, "midterms/saadsatter/evidence")) ? join(root, "midterms/saadsatter") : root;
+const TRACE = join(stage, "evidence/traces/pilot-31-model-centralized-griffin-unprepared-v1-seed0/trace.jsonl");
 type Rec = { type: string; player?: PlayerId; tick: number; data: Record<string, any> };
 // Test-only access to the environment's room and per-hero slots (read, and written only in the labelled fixture).
 type Inner = { room: GameRoom; slots: Record<PlayerId, { key: string; memory: any }> };

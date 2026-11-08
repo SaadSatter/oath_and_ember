@@ -4,7 +4,7 @@
 // a real model, and the controller under test receives only the hero's own
 // observations.
 
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { defaultBudgetLimits, MeteredGateway, ModelBudget, type Completion, type Gateway } from "../src/budget.js";
 import { policiesFor, validatePlan, type ModelSetup } from "../src/harness.js";
@@ -343,7 +343,9 @@ describe("the fenced cow on S2-A version 2 (committed baseline trace)", () => {
   it("never plans a path through the cow's drawn body, wherever Sieg stood while it was on his screen", () => {
     // Sieg's own observations from the committed reference run, fed in order
     // into a fresh memory: exactly what a navigator for Sieg would have had.
-    const lines = readFileSync("midterms/saadsatter/evidence/traces/baseline-quest-S2-local-seed0-v2/trace.jsonl", "utf8").trim().split("\n").map((l) => JSON.parse(l));
+    // Repository root, or the course submission folder (midterms/saadsatter/ is the root there).
+    const stage = existsSync("midterms/saadsatter/evidence") ? "midterms/saadsatter/" : "";
+    const lines = readFileSync(`${stage}evidence/traces/baseline-quest-S2-local-seed0-v2/trace.jsonl`, "utf8").trim().split("\n").map((l) => JSON.parse(l));
     const mine = lines.filter((l) => l.type === "observation" && l.player === "sieg").map((l) => l.data.observation as Observation);
     const m = new HeroMemory("Sieg");
     let checked = 0, blockedBody = 0;

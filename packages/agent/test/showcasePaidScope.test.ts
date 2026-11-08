@@ -63,7 +63,9 @@ describe("owner-approved positioning scope", () => {
     delete env.ANTHROPIC_API_KEY;
     const result = spawnSync(process.execPath, ["--import", "tsx", "scripts/midterm/live.ts", "--scenario", ID, "--seed", "0", "--player", "model-centralized", "--guidance", "showcase-maze-griffin-v2", "--gateway", "openai", "--model", "gpt-6-luna", "--effort", "medium", "--max-spend-usd", "2.00", "--wall-seconds", "7200", "--paid"], { env, encoding: "utf8", timeout: 30_000 });
     expect(result.status).not.toBe(0);
-    expect(result.stderr).toMatch(/no OPENAI_API_KEY and no interactive terminal/);
+    // Both refusals come before any credential is read. A checkout without the
+    // canonical spend ledger (a fresh clone, course CI) stops at the ledger first.
+    expect(result.stderr).toMatch(/no OPENAI_API_KEY and no interactive terminal|No ledger at/);
     expect(result.stderr).not.toMatch(/locked for paid|not approved|paid scope requires|insufficient/);
   }, 35_000);
 
