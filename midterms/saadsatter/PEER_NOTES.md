@@ -1,14 +1,37 @@
 # Peer notes
 
-**These human playtest notes are the submission's peer notes.** No class time was available for the scheduled classmate playtest, so no peer session took place (owner-reported). The owner reports that the professor clarified the playtester does not have to be a classmate. These notes come from a session with friends. The copy of the original notes is [docs/midterm/playtests/README.md](../../docs/midterm/playtests/README.md).
+**These human playtest notes are the submission's peer notes.** No class time was available for the scheduled classmate playtest, so no peer session took place (owner-reported). The owner reports that the professor clarified the playtester does not have to be a classmate. Two sessions with friends are recorded:
 
-**Disclosures:**
+| Session | Build | Help given | Outcome |
+| --- | --- | --- | --- |
+| [Session 2, 7 November 2026](#session-2-unassisted-playtest-7-november-2026) | Current build (this submission) | **None**: observed without hints or assistance | Reached "Chapter 0 complete" |
+| [Session 1, 2 November 2026](#notes-received-peer-notes-human-playtest-2-november-2026) | Before the cow, grave-dialogue and wolf changes | Assisted: the developer explained unclear parts | Played to the ending (developer's account) |
 
-- This was **assisted** play: the developer explained several unclear parts during the session. It does not meet the "observed without helping" condition.
-- The notes are the developer's retrospective account, with participants anonymous. They are not a transcript, a recording or a verified log.
-- No playtester tried the revised build.
+Both are the developer's accounts, with participants anonymous. They are not transcripts, recordings or verified logs. The copy of the original session 1 notes is [docs/midterm/playtests/README.md](../../docs/midterm/playtests/README.md).
+
+## Session 2: unassisted playtest, 7 November 2026
+
+Reported by the developer the same evening.
+
+| Field | Account |
+| --- | --- |
+| When | 7 November 2026, about 8 p.m. |
+| Duration | About 1 hour |
+| Tested build | The current game, the version in this submission. It includes the cow barriers, the grave dialogue and the wolf changes made after session 1 |
+| Participant | One friend; anonymous |
+| Coverage | The full game, through to "Chapter 0 complete" |
+| Assistance | **None.** The player completed the game without hints or help from the developer |
+| Outcome | Reached "Chapter 0 complete"; no dead end reported |
+
+**What the player did and where they hesitated:** the player was confused by some of the puzzles, but worked each one out alone. The developer treats this as the intended challenge of the puzzles, not a clarity problem. Which puzzles caused hesitation, and for how long, was not recorded. So this session does not show specifically whether the session 1 problem spots (the cow's sideways route, returning to the grave, finding the wolf) were clearer. It does show that a new player could complete the revised build without help.
+
+**Feedback:** the player called it a great game. They reported cosmetic issues, such as lag, and wanted more chapters.
+
+**Changes made:** none yet. The lag report has not been investigated or reproduced.
 
 ## Notes received (peer notes: human playtest, 2 November 2026)
+
+Session 1. Its disclosures still apply: this was **assisted** play, and these players did not try the revised build.
 
 ### Session details supplied by the developer
 
