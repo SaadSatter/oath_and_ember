@@ -1,0 +1,3 @@
+Trace ../../../../../tmp/oath-showcase-takeover/mock-current/showcase-maze-griffin-complete-v1-seed0/trace.jsonl (sha256 95a302a4b8fbbb76, chain verified, pilot-1)
+Scenario showcase-maze-griffin-complete-v1, seed 0; Sieg 577 actions, Coco 579 actions; recorded end: error
+REPLAY MATCHES THE TRACE: start hash, 1154 step results, end (error, d7f6e2b4d06bff36) and 14128 ticks.

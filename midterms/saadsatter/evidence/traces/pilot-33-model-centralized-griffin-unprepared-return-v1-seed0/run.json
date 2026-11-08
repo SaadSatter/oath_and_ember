@@ -1,0 +1,35 @@
+{
+  "suiteRevision": 2,
+  "player": "model-centralized",
+  "situations": [
+    "griffin-unprepared-return-v1"
+  ],
+  "seeds": [
+    0
+  ],
+  "final": false,
+  "gitHash": "1f0ca45",
+  "wallSeconds": 3600,
+  "model": {
+    "gateway": "openai:gpt-6-luna@medium",
+    "stage": "pilot",
+    "priceSource": "https://developers.openai.com/api/docs/models/gpt-6-luna (verified 2026-10-28); https://developers.openai.com/api/docs/pricing; https://developers.openai.com/api/docs/guides/prompt-caching",
+    "maxBatch": 4,
+    "manualHash": "4b091a6630dd56f236f89f8e2213a6bb7cad4a31d4851d1883f95867d92bfa86",
+    "guidance": {
+      "id": "b-post-combined-v4",
+      "status": "approved",
+      "sha256": "1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34",
+      "situations": [
+        "griffin-unprepared-v1",
+        "griffin-unprepared-return-v1"
+      ]
+    }
+  },
+  "episodeCapUsd": 0.75,
+  "launch": {
+    "launcher": "scripts/midterm/live.ts",
+    "speed": 1,
+    "viewer": true
+  }
+}

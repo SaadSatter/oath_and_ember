@@ -1,0 +1,69 @@
+{
+  "runId": "c2-approved-recorded-2026-11-06",
+  "scenario": "griffin-prepared-return-v1",
+  "seed": 0,
+  "player": "baseline-griffin-heuristic",
+  "model": null,
+  "effort": null,
+  "gateway": null,
+  "paid": false,
+  "speed": 1,
+  "gitHash": "19e5d87",
+  "viewerUrl": "http://127.0.0.1:3041/watch",
+  "passive": true,
+  "shutdown": {
+    "activeStage": null,
+    "stages": [
+      {
+        "stage": "context.close",
+        "elapsedMs": 287,
+        "status": "completed"
+      },
+      {
+        "stage": "video.saveAs",
+        "elapsedMs": 1173,
+        "status": "completed"
+      },
+      {
+        "stage": "video.delete",
+        "elapsedMs": 6,
+        "status": "completed"
+      },
+      {
+        "stage": "browser.close",
+        "elapsedMs": 106,
+        "status": "completed"
+      }
+    ],
+    "elapsedMs": 1573,
+    "saved": true,
+    "timedOut": false,
+    "timeoutStage": null,
+    "activeStageElapsedMs": 0,
+    "cleanup": "completed",
+    "forcedCleanup": []
+  },
+  "status": "saved",
+  "path": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/c2-approved-recorded-2026-11-06/recording.webm",
+  "relativePath": "evaluation-runs/live/c2-approved-recorded-2026-11-06/recording.webm",
+  "bytes": 13804248,
+  "resolution": "1280x720",
+  "browser": "chromium (GPU)",
+  "readyConfirmed": true,
+  "finalConfirmed": true,
+  "startedAt": "2026-11-07T02:42:04.364Z",
+  "readyAt": "2026-11-07T02:42:14.621Z",
+  "stoppedAt": "2026-11-07T02:43:56.816Z",
+  "wallSeconds": 112.5,
+  "completion": "success",
+  "episode": {
+    "status": "success",
+    "reason": "success",
+    "success": true,
+    "startHash": "28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7",
+    "endHash": "0e419e63ee2244d674ab25b86a939a19cbbbfb49743b970259e5d6cf63c2a4e0",
+    "trace": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/c2-approved-recorded-2026-11-06/griffin-prepared-return-v1-seed0/trace.jsonl"
+  },
+  "error": null,
+  "warnings": []
+}

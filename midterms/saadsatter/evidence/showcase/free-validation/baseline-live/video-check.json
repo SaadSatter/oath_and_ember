@@ -1,0 +1,51 @@
+{
+  "video": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/showcase-free-baseline-c30d2fb-seed0/recording.webm",
+  "bytes": 26248789,
+  "ffmpeg": "/Users/saadsatter/Library/Caches/ms-playwright/ffmpeg-1011/ffmpeg-mac",
+  "fullDecodeExit": 0,
+  "decodeErrors": [],
+  "durationSeconds": 209.24,
+  "frames": [
+    {
+      "fraction": 0.1,
+      "time": 20.92,
+      "distinctColors": 513,
+      "meanLuma": 35,
+      "content": true,
+      "png": "/private/tmp/claude-501/-Users-saadsatter-Classes-AI-Pract-Building-Games-oath-and-ember-eval/9409e901-41c2-42f4-839f-2090bdeba517/scratchpad/vframes/frame-0100.png"
+    },
+    {
+      "fraction": 0.35,
+      "time": 73.23,
+      "distinctColors": 521,
+      "meanLuma": 39,
+      "content": true,
+      "png": "/private/tmp/claude-501/-Users-saadsatter-Classes-AI-Pract-Building-Games-oath-and-ember-eval/9409e901-41c2-42f4-839f-2090bdeba517/scratchpad/vframes/frame-0350.png"
+    },
+    {
+      "fraction": 0.6,
+      "time": 125.54,
+      "distinctColors": 561,
+      "meanLuma": 37,
+      "content": true,
+      "png": "/private/tmp/claude-501/-Users-saadsatter-Classes-AI-Pract-Building-Games-oath-and-ember-eval/9409e901-41c2-42f4-839f-2090bdeba517/scratchpad/vframes/frame-0600.png"
+    },
+    {
+      "fraction": 0.85,
+      "time": 177.85,
+      "distinctColors": 566,
+      "meanLuma": 38,
+      "content": true,
+      "png": "/private/tmp/claude-501/-Users-saadsatter-Classes-AI-Pract-Building-Games-oath-and-ember-eval/9409e901-41c2-42f4-839f-2090bdeba517/scratchpad/vframes/frame-0850.png"
+    },
+    {
+      "fraction": 0.995,
+      "time": 208.19,
+      "distinctColors": 475,
+      "meanLuma": 45,
+      "content": true,
+      "png": "/private/tmp/claude-501/-Users-saadsatter-Classes-AI-Pract-Building-Games-oath-and-ember-eval/9409e901-41c2-42f4-839f-2090bdeba517/scratchpad/vframes/frame-0995.png"
+    }
+  ],
+  "ok": true
+}

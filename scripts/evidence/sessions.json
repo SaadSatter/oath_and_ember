@@ -1,0 +1,495 @@
+{
+ "about": "Which local transcripts make up each docs/agent-sessions file. Read by scripts/evidence/render_sessions.py. Codex permission-check transcripts (model codex-auto-review, source subagent 'guardian') are listed in docs/agent-sessions/README.md only; they approve or deny tool calls and are not reviews.",
+ "files": [
+  {
+   "number": 1,
+   "slug": "codex-bald-goddess-quest-maps",
+   "ids": [
+    "01a13672"
+   ],
+   "role": "Implementation agent (instructions: `AGENTS.md`, auto-loaded by Codex)",
+   "title": "Bald Goddess quest maps: Hedge Maze, Mirror Pond, Griffin Enclosure, shrine hub"
+  },
+  {
+   "number": 2,
+   "slug": "claude-animation-smoothness",
+   "ids": [
+    "c5d40999"
+   ],
+   "role": "Implementation agent (no `CLAUDE.md` existed yet; `AGENTS.md` only)",
+   "title": "Animation and movement smoothness, first pass"
+  },
+  {
+   "number": 3,
+   "slug": "claude-smoothness-study-and-sprites",
+   "ids": [
+    "bfddd89c"
+   ],
+   "role": "Implementation agent (`AGENTS.md`)",
+   "title": "Smoothness study against Zelda: Mystery of Solarus DX, attack and fireball fixes, PixelLab setup",
+   "note": "The owner's PixelLab MCP setup command in this transcript contained a bearer token. It is redacted here; the token is being rotated."
+  },
+  {
+   "number": 4,
+   "slug": "claude-60hz-playtest-shortcut-title-screen",
+   "ids": [
+    "2d0672b3"
+   ],
+   "role": "Implementation agent (`AGENTS.md`)",
+   "title": "60 Hz movement, playtest shortcut (PR #1), title screen, villagers, statue puzzle",
+   "note": "A git URL in this transcript contained a PixelLab credential. It is redacted here; the token is being rotated."
+  },
+  {
+   "number": 5,
+   "slug": "codex-griffin-nest-and-villages",
+   "ids": [
+    "01a1460e"
+   ],
+   "role": "Implementation agent (`AGENTS.md`)",
+   "title": "Griffin nest and haircut, puzzle-map target fix, village and town maps"
+  },
+  {
+   "number": 6,
+   "slug": "codex-chest-animations",
+   "ids": [
+    "01a14c16"
+   ],
+   "role": "Implementation agent (`AGENTS.md`)",
+   "title": "Chest opening and item reveal animations"
+  },
+  {
+   "number": 7,
+   "slug": "claude-chapter0-prologue-and-part1",
+   "ids": [
+    "d2b75ea8"
+   ],
+   "role": "Implementation agent (`AGENTS.md`)",
+   "title": "Chapter 0 prologue (PR #2) and Part 1 (PR #3)"
+  },
+  {
+   "number": 8,
+   "slug": "codex-prologue-fixes-checkpoints-mossling",
+   "ids": [
+    "01a14d63"
+   ],
+   "role": "Implementation agent (`AGENTS.md`)",
+   "title": "Prologue house fixes, title-screen story checkpoints, Mossling attack animation"
+  },
+  {
+   "number": 9,
+   "slug": "claude-chapter0-finale",
+   "ids": [
+    "bea14c52"
+   ],
+   "role": "Implementation agent (`AGENTS.md`)",
+   "title": "Chapter 0 finale, The Forgotten Shrine (PR #4)"
+  },
+  {
+   "number": 10,
+   "slug": "claude-commit-mossling-attack",
+   "ids": [
+    "04d06bff"
+   ],
+   "role": "Implementation agent (`AGENTS.md`)",
+   "title": "Commit the Mossling attack to main"
+  },
+  {
+   "number": 11,
+   "slug": "claude-prologue-forest-and-finale-revisions",
+   "ids": [
+    "9c6f50f1"
+   ],
+   "role": "Implementation agent (`AGENTS.md`)",
+   "title": "Prologue forest touch-ups, revised finale scenes, puzzle fixes"
+  },
+  {
+   "number": 12,
+   "slug": "codex-sound-design",
+   "ids": [
+    "01a15749"
+   ],
+   "role": "Implementation agent (`AGENTS.md`)",
+   "title": "Sound design plan and integration"
+  },
+  {
+   "number": 13,
+   "slug": "claude-sound-remap-quest-journal",
+   "ids": [
+    "a2128edc"
+   ],
+   "role": "Implementation agent (`AGENTS.md`)",
+   "title": "Sound remapping, quest journal, prologue as default, jump removed from controls"
+  },
+  {
+   "number": 14,
+   "slug": "codex-manual-rationale-midterm-architecture",
+   "ids": [
+    "01a16225"
+   ],
+   "role": "Implementation agent (`AGENTS.md`); orchestrator of subagents 18, 19 and 21",
+   "title": "Player manual, design rationale D1\u2013D11, midterm architecture, superseded Codex evaluation (PR #5)"
+  },
+  {
+   "number": 15,
+   "slug": "codex-render-deployment",
+   "ids": [
+    "01a16235"
+   ],
+   "role": "Implementation agent (`AGENTS.md`)",
+   "title": "Render deployment and commits to main"
+  },
+  {
+   "number": 16,
+   "slug": "claude-mirror-pond-goddess-checkpoint",
+   "ids": [
+    "5fb3c7ac"
+   ],
+   "role": "Implementation agent (`AGENTS.md`)",
+   "title": "Mirror Pond push and reflection, Bald Goddess checkpoint, wig mystery"
+  },
+  {
+   "number": 17,
+   "slug": "claude-agent-team-setup",
+   "ids": [
+    "2ef44cdb"
+   ],
+   "role": "Implementation agent (`AGENTS.md`; wrote `CLAUDE.md` in this session)",
+   "title": "Midterm agent team configuration (PR #6) and the woods tutorial request"
+  },
+  {
+   "number": 18,
+   "slug": "codex-preimplementation-boundary-review",
+   "ids": [
+    "01a166c4"
+   ],
+   "role": "Read-only reviewer subagent spawned by the implementation session (14). Not independent of the builder's session",
+   "title": "Pre-implementation information-boundary review (Codex subagent)"
+  },
+  {
+   "number": 19,
+   "slug": "codex-evaluation-subagents",
+   "ids": [
+    "01a166d4"
+   ],
+   "role": "Implementation subagents spawned by session 14",
+   "title": "Superseded Codex evaluation implementation: engine, browser observer and video, players and traces"
+  },
+  {
+   "number": 20,
+   "slug": "claude-agent-team-config-checks",
+   "ids": [
+    "894c52f7",
+    "d9dbc9ba",
+    "d8f2c33e",
+    "e6c5752b"
+   ],
+   "role": "Configuration smoke tests for PR #6 (non-interactive `claude -p`). Not skill invocations and not reviews",
+   "title": "PR #6 configuration checks: role, skill and reviewer discovery, reviewer read-only enforcement"
+  },
+  {
+   "number": 21,
+   "slug": "codex-boundary-review-session-a",
+   "ids": [
+    "01a16965"
+   ],
+   "role": "Reviewer subagent applying the Codex skill `oath-rule-information-boundary`, spawned by session 14. A skill invocation; weak as an independent review",
+   "title": "Information-boundary review, session A (Codex skill invocation)"
+  },
+  {
+   "number": 22,
+   "slug": "claude-agent-interface",
+   "ids": [
+    "3d2319ad"
+   ],
+   "role": "Implementation agent (`CLAUDE.md`, which imports `AGENTS.md`)",
+   "title": "Two-player five-operation agent interface (PR #7)"
+  },
+  {
+   "number": 23,
+   "slug": "claude-gap-analysis-evidence-foundation",
+   "ids": [
+    "618e460d"
+   ],
+   "role": "Implementation agent (`CLAUDE.md`, which imports `AGENTS.md`); launched skill sessions 24, 25, 26 and 27",
+   "title": "Gap analysis and evidence foundation (phase 1); server runtime injection, view-only browsers and model budgets (phase 2); scripted route, batching and suite freeze (phase 3); Phase 4 code handed to Codex uncommitted",
+   "note": "Final render, made by this session itself at the owner's request before closing it. The session itself wrote this record, so it is not independent of the work it describes."
+  },
+  {
+   "number": 24,
+   "slug": "claude-skill-game-rules-audit-adapter",
+   "ids": [
+    "3a0642f5"
+   ],
+   "role": "Skill invocation (`/game-rules-audit adapter`; `.claude/skills/game-rules-audit/SKILL.md`) in a fresh non-interactive `claude -p` session launched by implementation session 618e460d (23), resumed once to save the report. Not an independent review",
+   "title": "game-rules-audit, first invocation: adapter"
+  },
+  {
+   "number": 25,
+   "slug": "claude-skill-session-evidence-first",
+   "ids": [
+    "f7e2bf18"
+   ],
+   "role": "Skill invocation (`/session-evidence`; `.claude/skills/session-evidence/SKILL.md`) in a fresh non-interactive `claude -p` session launched by implementation session 618e460d (23). Not an independent review",
+   "title": "session-evidence, first invocation: record of session 23"
+  },
+  {
+   "number": 26,
+   "slug": "claude-skill-game-rules-audit-server-changes",
+   "ids": [
+    "fb09128d"
+   ],
+   "role": "Skill invocation (`/game-rules-audit server-changes`; `.claude/skills/game-rules-audit/SKILL.md`) in a fresh non-interactive `claude -p` session launched by implementation session 618e460d (23). Not an independent review",
+   "title": "game-rules-audit, second invocation: server changes and re-check of the adapter findings"
+  },
+  {
+   "number": 27,
+   "slug": "claude-skill-session-evidence-second",
+   "ids": [
+    "83ac1132"
+   ],
+   "role": "Skill invocation (`/session-evidence`; `.claude/skills/session-evidence/SKILL.md`) in a fresh non-interactive `claude -p` session launched by implementation session 618e460d (23). Not an independent review. Interrupted by the account usage limit",
+   "title": "session-evidence, second invocation: files 24-26 and phase 2 of file 23 (interrupted)"
+  },
+  {
+   "number": 28,
+   "slug": "codex-evaluation-handoff",
+   "ids": [
+    "01a17e49"
+   ],
+   "role": "Implementation handoff under AGENTS.md and CLAUDE.md; session-evidence and game-rules-audit checkpoint use in this same session, not an independent review",
+   "title": "Continue the evaluation worktree and validate existing Phase 4 work"
+  },
+  {
+   "number": 29,
+   "slug": "claude-phase4-review-and-fixes",
+   "ids": [
+    "ffcdac23"
+   ],
+   "role": "Mixed session under CLAUDE.md and AGENTS.md. Turn 1: read-only review of Phase 4 commits bc377ee..b612285, which a different session built, so independent of that builder (not the rules-reviewer subagent). Turns 2-3: implementation agent fixing that review's findings in oath_and_ember-eval and, with owner approval, oath_and_ember-agent. Those fixes have not been independently reviewed. Turn 4: session-evidence skill invocation (this record)",
+   "title": "Independent review of the Phase 4 launcher, re-review fixes, and the legacy-runner paid guard"
+  },
+  {
+   "number": 30,
+   "slug": "codex-paid-entrypoint-audit-supplement",
+   "ids": [
+    "01a17e49"
+   ],
+   "role": "Codex supplement to session 28 under AGENTS.md and CLAUDE.md: paid-entrypoint safety audit and evidence finalization; same session, not an independent review",
+   "title": "Paid-entrypoint safety audit supplement",
+   "note": "Same session id as file 28; this is a task-specific supplement, not an additional independent session."
+  },
+  {
+   "number": 31,
+   "slug": "claude-agent-interface-reliability-pass",
+   "ids": [
+    "47c36046"
+   ],
+   "role": "Implementation agent under CLAUDE.md and AGENTS.md: owner-approved agent-interface reliability pass after the first real-LLM S1 run; then session-evidence skill invocation (this record). Not reviewed independently yet",
+   "title": "Agent-interface reliability pass after the first real-LLM S1 run"
+  },
+  {
+   "number": 32,
+   "slug": "claude-eval-live-video-recording",
+   "ids": [
+    "bf4d982e"
+   ],
+   "role": "Implementation agent under CLAUDE.md and AGENTS.md: owner-requested automatic gameplay video recording for eval:live, integrated after the reliability pass (5c3de48, 5240cb0); then session-evidence skill invocation (this record). Not reviewed independently yet",
+   "title": "Automatic gameplay video recording for eval:live",
+   "note": "Protocol deviation: two early plain `npm test` runs in this session included the held-out route tests suite.test.ts and route/fullQuest.test.ts. Their outcomes were not inspected or used for implementation or tuning; later runs excluded them and checkpointFreeze.test.ts."
+  },
+  {
+   "number": 33,
+   "slug": "codex-openai-provider-supplement",
+   "ids": [
+    "01a17e49"
+   ],
+   "role": "Codex supplement to sessions 28 and 30 under AGENTS.md and CLAUDE.md: owner-approved OpenAI provider integration in oath_and_ember-eval, left uncommitted when Codex reached its usage limit during final verification; same session, not an independent review",
+   "title": "OpenAI provider integration (Codex implementation, uncommitted at the usage limit)",
+   "note": "Same session id as files 28 and 30; this is a task-specific supplement covering the turns from 2026-10-28 04:28 UTC, not an additional independent session. Codex's code was committed by session 34."
+  },
+  {
+   "number": 34,
+   "slug": "claude-openai-provider-completion",
+   "ids": [
+    "9e618f25"
+   ],
+   "role": "Implementation agent under CLAUDE.md and AGENTS.md: continued Codex's uncommitted OpenAI provider work (session 33), reviewed the dispatch guards, fixed two defects, verified offline and committed it; then session-evidence skill invocation (this record). Not an independent review of Codex's work and not reviewed independently yet",
+   "title": "OpenAI provider integration: Codex implementation finished and verified"
+  },
+  {
+   "number": 35,
+   "slug": "claude-s2-reliability-fixes",
+   "ids": [
+    "1d2c5393"
+   ],
+   "role": "Implementation agent under CLAUDE.md and AGENTS.md: diagnosed the first real OpenAI S2 run from its existing records (no paid call), implemented the owner-approved S2 reliability fixes, ran a rules-reviewer subagent review at the owner's request, then the owner-approved pre-pilot cleanup, then investigated the owner's paid pilot-5 and added the owner-approved S2 episode briefing; invoked game-rules-audit twice (before the fixes and before the briefing) and session-evidence three times for this record. The rules-reviewer was spawned by this implementing session, so it is not counted as an independent review",
+   "title": "S2 OpenAI runs: diagnosis, reliability fixes, review, pre-pilot cleanup and S2 briefing"
+  },
+  {
+   "number": 36,
+   "slug": "claude-pilot6-navigation-fixes",
+   "ids": [
+    "4bd24137"
+   ],
+   "role": "Implementation agent under CLAUDE.md and AGENTS.md: investigated the owner's paid pilot-6 run from its existing records (no paid call), invoked game-rules-audit (adapter) before implementing, implemented the owner-approved fixes 1-5 and verified them offline, then invoked session-evidence for this record. No independent review yet",
+   "title": "Pilot-6 navigation investigation, pre-implementation audit, and movement, cow, position, briefing and prompt fixes"
+  },
+  {
+   "number": 37,
+   "slug": "claude-independent-review-pilot6",
+   "ids": [
+    "130b0cd4"
+   ],
+   "role": "Independent reviewer: a separate Claude Code session started by the owner with a read-only review brief, following the checklist and report format of .claude/agents/rules-reviewer.md. It did not write the reviewed code (bdfcf7c, f48ae0e; built in session 4bd24137), was not spawned by the implementing session and was not asked to approve. It changed no implementation code. Counted as an independent review. Invoked session-evidence for this record",
+   "title": "Independent review of the pilot-6 movement feedback and review fixes (bdfcf7c, f48ae0e)"
+  },
+  {
+   "number": 38,
+   "slug": "codex-local-starts-supplement",
+   "ids": [
+    "01a17e49"
+   ],
+   "role": "Same-session Codex implementation supplement under AGENTS.md and CLAUDE.md: owner-approved S2-local/S3-local only; game-rules-audit preflight and session-evidence. Same session as S28/S30/S33, not independent review or an additional distinct session.",
+   "title": "Additive S2-local and S3-local tuning starts",
+   "note": "Another owner-confirmed session was active in the canonical worktree. Only owned files committed; validation uses an isolated fb844ae snapshot plus the eight files in 115c542. No paid calls or held-out episodes/tests. Follow-up: owner provisionally approved both implementations and evidence; combined canonical verification at e1829af began clean, with 924 permitted Vitest checks passing. Test-only stale expectation correction c35f6c5. No paid or held-out execution."
+  },
+  {
+   "number": 39,
+   "slug": "claude-suite-revision2-tutorial",
+   "ids": [
+    "a209a67a"
+   ],
+   "role": "Implementation agent (Claude Code, CLAUDE.md and AGENTS.md) on midterm/evaluation: suite revision 2 (S2/S3 swap with preserved -v1 definitions), the verbatim player manual and a tutorial-completion briefing for model players, then the owner's follow-up decisions. Invoked game-rules-audit (same-session checkpoint, not an independent review) and session-evidence for this record. No subagent and no independent review.",
+   "title": "Suite revision 2: S2/S3 swap, player manual and tutorial knowledge",
+   "note": "No paid call, held-out S4/F run, push or merge. The full npm test and checkpointFreeze were not run because they build held-out starts. The S2-local cost estimate uses the owner's pilot-8 local run record (not run in this session)."
+  },
+  {
+   "number": 40,
+   "slug": "claude-pilot10-diagnosis",
+   "ids": [
+    "ce758032"
+   ],
+   "role": "Implementation agent under CLAUDE.md and AGENTS.md, read-only for this task: investigated the owner's paid pilot-10 run from its existing local trace (no paid call), wrote docs/midterm/PILOT10_DIAGNOSIS.md, checked whether the browser client shows a hero's own sent messages, and invoked session-evidence for this record. No implementation change, no subagent, no independent review",
+   "title": "Pilot-10 diagnosis: spatial memory, the cow passage and the stale dry-hedge request",
+   "note": "Documentation only. No observation, memory, prompt, gameplay, baseline or pin change; no tests run; no paid call, S4/F or route/seed1 inspection, push or merge."
+  },
+  {
+   "number": 41,
+   "slug": "codex-guided-maze-supplement",
+   "ids": [
+    "01a17e49"
+   ],
+   "role": "Same-session Codex implementation supplement under AGENTS.md/CLAUDE.md: owner-approved solution-informed model-guided baseline for revision 2 S2-local Hedge Maze, independent of persistent-memory work. Invoked game-rules-audit, oath-rule-information-boundary and session-evidence; same session as S28/S30/S33/S38, not independent review or a new distinct session.",
+   "title": "Opt-in instruction-guided LLM Hedge Maze baseline",
+   "note": "No paid calls or held-out evaluation in this task. Another session owns prompt-capture helper files; preserved and excluded. Scripted Maze-only proof is engineering verification, not live LLM success."
+  },
+  {
+   "number": 42,
+   "slug": "claude-model-memory",
+   "ids": [
+    "682df3aa"
+   ],
+   "role": "Implementation agent (Claude Code, CLAUDE.md and AGENTS.md) on midterm/evaluation: Workstream B, the opt-in model-memory player (per-hero persistent memory). Invoked game-rules-audit (same-session checkpoint, not an independent review) and session-evidence for this record. No subagent and no independent review.",
+   "title": "Opt-in persistent memory player (model-memory)",
+   "note": "No paid call, held-out S4/F run or inspection, pin change, gameplay change, push or merge. The full npm test, route/seed1, checkpointFreeze, suite.test.ts and finalAccess.test.ts were not run because they reach held-out content. The model-guided session edited the same worktree concurrently; this session paused shared-file edits until its commits (3b7115b, 74adda8) landed."
+  },
+  {
+   "number": 43,
+   "slug": "codex-recorder-shutdown",
+   "ids": [
+    "01a1862b"
+   ],
+   "role": "Codex implementation agent under AGENTS.md and CLAUDE.md: owner-approved recorder diagnostics and shutdown lifecycle only. Invoked game-rules-audit recording (same-session checkpoint, not independent review) and session-evidence.",
+   "title": "Recorder shutdown diagnostics, independent viewer grace, and pilot trace recovery investigation",
+   "note": "No paid calls, held-out execution, gameplay/policy/pin changes, historical trace writes, commits, push or merge. Local video verification artifacts are in /private/tmp; not committed."
+  },
+  {
+   "number": 44,
+   "slug": "claude-cow-posts-repin",
+   "ids": [
+    "9741c85a"
+   ],
+   "role": "Implementation agent (Claude Code, AGENTS.md) on main, then on midterm/evaluation: owner-requested gameplay and story changes, and the owner-chosen re-pin of the frozen evaluation values. Invoked session-evidence for this record (following the skill file by hand; it is not loaded as a skill on main). No subagent and no independent review.",
+   "title": "Cow posts, griffin HP and story lines; evaluation re-pinned as a new revision",
+   "note": "No paid call, no model run, no live recording and no push. The S4 and final-seed start hashes were recomputed under the existing reset-only route-development access, as checkpointFreeze.test.ts already does. The commit ab70771 also contains another session's earlier uncommitted work in progress (Hedge Maze situations B and C, the wolf glide, the maze navigation cache), committed at the owner's request."
+  },
+  {
+   "number": 47,
+   "slug": "codex-pilot28-fixes",
+   "ids": [
+    "01a1aed2"
+   ],
+   "role": "Codex implementation agent under AGENTS.md: Pilot-28 diagnosis and owner-approved centralized progress, observation-derived aim and evidence fixes; same-session game-rules-audit checkpoint and session-evidence, not independent review.",
+   "title": "Pilot-28 diagnosis, cumulative progress watchdog, pull obstruction preview and verified subgoals",
+   "note": "No paid calls, held-out execution, frozen scenario or pin changes, push or merge. Local commit authorized by the owner after offline verification. The referenced pilot-28 diagnosis originated in the older chat checkout and is copied unchanged into this worktree. Session numbers 45 and 46 already exist in related project worktrees; 47 avoids a numbering collision. Same chat later performed documentation-only Pilot-30 preservation recheck and revised Griffin B/C planning on isolated codex/pilot30-griffin-planning, based on 0a89094. No new Griffin configuration, replay, model outcome, policy or game change; Pilot-30 originals/registration unchanged. Same-session audit, not independent review. Owner then requested formal declaration against pasted guidelines: documentation-only A/B/C design r1, course EVALUATION/README and readiness updates; previous report archived byte-identically, no new gameplay/model run. Existing baseline-quest selected, strict Griffin goals retained, two repetitions per condition allocated."
+  },
+  {
+   "number": 48,
+   "slug": "claude-pilot30-situation-a",
+   "ids": [
+    "13d00d43"
+   ],
+   "role": "Claude Code implementation agent under CLAUDE.md: evidence preservation, verification and reporting for Pilot-30 (Situation A pre-tuned); session-evidence invoked by name; not independent review.",
+   "title": "Pilot-30 evidence audit, Situation A pre-tuned registration, A/B/C matrix and post-tuning proposal",
+   "note": "No paid calls, model episodes, gameplay, scenario, policy or pin changes. The original run folder was not modified. The owner asked for the commits to be pushed."
+  },
+  {
+   "number": 49,
+   "slug": "claude-situation-b-griffin",
+   "ids": [
+    "959362b9"
+   ],
+   "role": "Claude Code implementation agent under CLAUDE.md: Situation B (Griffin Trial, Unprepared) scenario, strict predicate and failure rules, Griffin warning observations, post-tuned guidance mechanism, offline certification witness; game-rules-audit (griffin) and session-evidence invoked by name in the same session (implementer audit, not independent review). The rules-reviewer subagent was launched by this session, read-only and not instructed to approve; its findings are committed verbatim.",
+   "title": "Situation B: Griffin Trial (Unprepared) implementation, offline certification and review round 1",
+   "note": "Owner pasted a brief written for Codex and asked Claude to implement it, then a review brief. Work in a separate worktree (oath_and_ember-griffin-b, branch midterm/griffin-situation-b off 5388b23) because another session was editing oath_and_ember-eval. No paid call, model episode, push or merge. Guidance griffin-b-post-v1 left proposed. Commits 6deaef3, 96fd952, 0ca9a5f, 3f9f11e, 6e26f76 and this record's commit."
+  },
+  {
+   "number": 50,
+   "slug": "claude-b-post-tuning",
+   "ids": [
+    "3a986109"
+   ],
+   "role": "Claude Code implementation agent under CLAUDE.md: Situation B post-tuned prompt-only guidance (b-post-a-transfer-v1) from the Situation A heuristic baseline, owner-approved observation parity for griffin-unprepared-v1, declaration r7 and the paid-run preflight; session-evidence invoked by name in this session. The rules-reviewer subagent was launched by this session in a separate invocation at the owner's request, read-only and not instructed to approve; its findings are committed verbatim.",
+   "title": "Situation B post-tuning: A-derived guidance, observation parity, declaration r7 and preflight",
+   "note": "Guidance written after Pilot-31 (B pre-tuned) was run and its trace read: the B pre/post contrast is tuning on B, not a transfer test. No paid call, no push, no merge. Commits 6276656, 732c998, ec135fe and this record's commit."
+  },
+  {
+   "number": 51,
+   "slug": "claude-situation-c-prepared",
+   "ids": [
+    "e7c32221"
+   ],
+   "role": "Claude Code implementation agent under CLAUDE.md: Situation C (griffin-prepared-return-v1) scenario, injected-inventory start fixture, return success predicate, paid lock, descriptive route metrics, proposed declaration r10; session-evidence invoked by name in this session. The rules-reviewer subagent was launched by this session in separate invocations at the owner's request, read-only and not instructed to approve; its findings are committed verbatim.",
+   "title": "Situation C: Griffin Trial (Prepared) with goddess return, offline checks, review rounds and proposed r10",
+   "note": "Round 1 owner decisions over r9: injected start, renamed id, peaceful wig valid with return, tutorial plus a briefing (agent's draft in round 1), re-pinned B tests. Round 2 owner decisions: C2 = unchanged B baseline, inventory baseline excluded, the owner's neutral briefing verbatim, descriptive route metrics. A concurrent session committed 4f9695b (inventory baseline) to the same branch during this session; it is not this session's work. No paid call, push or merge; r10 not active; SITUATION_C_PAID_APPROVED false."
+  },
+  {
+   "number": 53,
+   "slug": "claude-showcase-preparation",
+   "ids": [
+    "9409e901"
+   ],
+   "role": "Claude Code showcase implementation under CLAUDE.md; read-only reviewer subagent and same-session audit preserved, not a top-level independent review",
+   "title": "Continuous showcase, non-terminal knockouts and interrupted review handoff"
+  },
+  {
+   "number": 54,
+   "slug": "codex-showcase-takeover",
+   "ids": [
+    "01a1b479"
+   ],
+   "role": "Codex takeover under AGENTS.md; implementation fixes plus explicitly same-session read-only audit, not independent review",
+   "title": "Showcase review completion, free certification and locked paid-run handoff",
+   "note": "Same ongoing Codex chat as the submission-preparation session numbered 52 in its separate worktree; this record is scoped to the later showcase takeover, not a new independent session."
+  },
+  {
+   "number": 55,
+   "slug": "codex-drive-recording-delivery",
+   "ids": [
+    "01a1b8ff"
+   ],
+   "role": "Codex continuation under AGENTS.md; documentation and recording delivery, same-session audit only",
+   "title": "External recording links and game-clock pre-tuned replays"
+  }
+ ]
+}

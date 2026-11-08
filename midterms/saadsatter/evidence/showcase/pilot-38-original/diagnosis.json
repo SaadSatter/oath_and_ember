@@ -1,0 +1,127 @@
+{
+  "latestVortex": {
+    "sourceSeq": 1675,
+    "sourceLineHash": "851a382294e1da460ea0b8bcabf50b46c83dea643f9f8103bd5543c3d5e7f4c0",
+    "tick": 2028,
+    "self": {
+      "x": 21.49,
+      "y": 30.4,
+      "facing": "w",
+      "hp": 100,
+      "maxHp": 100,
+      "status": []
+    },
+    "cow": {
+      "ref": "creature-1",
+      "kind": "creature",
+      "name": "cow",
+      "x": 26,
+      "y": 25,
+      "distance": 7,
+      "direction": "ne",
+      "extent": {
+        "x": 24,
+        "y": 23,
+        "w": 4,
+        "h": 4
+      }
+    },
+    "vortex": {
+      "ref": "effect-1",
+      "kind": "effect",
+      "name": "black hole",
+      "x": 23.78,
+      "y": 30.18,
+      "distance": 2.3,
+      "direction": "e",
+      "details": "vortex"
+    },
+    "distanceTiles": 5.636
+  },
+  "previousSuccessfulVortex": {
+    "sourceSeq": 1734,
+    "sourceLineHash": "12abdb0b0abf13cdd560d53391f5e577e81fff437bf3157cd1990e1efd86b221",
+    "tick": 2149,
+    "self": {
+      "x": 20.19,
+      "y": 23.4,
+      "facing": "e",
+      "hp": 78,
+      "maxHp": 100,
+      "status": []
+    },
+    "cow": {
+      "ref": "creature-1",
+      "kind": "creature",
+      "name": "cow",
+      "x": 25.08,
+      "y": 25,
+      "distance": 5.1,
+      "direction": "e",
+      "extent": {
+        "x": 23.09,
+        "y": 23,
+        "w": 4,
+        "h": 4
+      }
+    },
+    "vortex": {
+      "ref": "effect-1",
+      "kind": "effect",
+      "name": "black hole",
+      "x": 23.81,
+      "y": 23.4,
+      "distance": 3.6,
+      "direction": "e",
+      "details": "vortex"
+    },
+    "distanceTiles": 2.043
+  },
+  "mixedOrderAtTick1996": {
+    "sourceSeq": 1647,
+    "sourceLineHash": "0e40ffb761732836113c6f2e4f1733c78145a97347a4a346701821045a6b3c0b",
+    "plan": "Phase 1, Hedge Maze; Enchanted Shears not yet in backpack. Opening dialogue and maze entry verified. Sieg 55/100 HP, Coco 100/100. Coco is southwest of the cow; pull it northeast to clear the posts. Sieg explores the northern passage while staying clear of the pull path.",
+    "orders": [
+      {
+        "hero": "coco",
+        "actions": [
+          {
+            "type": "ability",
+            "ability": "black_hole",
+            "direction": "ne",
+            "ticks": 1
+          }
+        ],
+        "go_to": {
+          "x": 22,
+          "y": 29
+        },
+        "wait_until": null,
+        "fight": null,
+        "catch": null,
+        "hold": null
+      },
+      {
+        "hero": "sieg",
+        "actions": [],
+        "go_to": {
+          "x": 22,
+          "y": 24
+        },
+        "wait_until": null,
+        "fight": null,
+        "catch": null,
+        "hold": null
+      }
+    ]
+  },
+  "latestCowObservedPositions": [
+    [
+      26,
+      25
+    ]
+  ],
+  "publicManual": "Black Hole affects within 3 tiles of landing vortex; forward firing range differs from pull radius",
+  "controllerContract": "Explicit actions execute first, then go_to intention",
+  "scope": "No game/controller change; geometry from recorded public observations. Engine collision causing early stop not pinpointed."
+}

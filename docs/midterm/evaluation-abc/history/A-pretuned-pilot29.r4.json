@@ -1,0 +1,67 @@
+{
+  "about": "Owner-designated historical A/pre-tuned/2 (declaration r4). Values verified from the run's trace; no summary.json exists. No raw evidence changed.",
+  "row": {
+    "scenarioId": "S2-local",
+    "seed": 0,
+    "scenarioHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab",
+    "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+    "declarationId": "oath-ember-abc-2026-11-06-r4",
+    "declarationHash": "fee13d3cc324188a50b289bad2b2e194f3bd404fb2cea0bf3ca470538ab9bd8d",
+    "plannedPlayerType": "model-centralized",
+    "manualHash": "4b091a6630dd56f236f89f8e2213a6bb7cad4a31d4851d1883f95867d92bfa86",
+    "guidanceHash": null,
+    "priceSourceDate": "2026-10-28",
+    "historicalSuiteHash": null,
+    "timedOutModelCalls": 0,
+    "success": false,
+    "situation": "A",
+    "condition": "pre-tuned",
+    "runNumber": 2,
+    "status": "manually-stopped-pilot",
+    "gameSeconds": 54.6,
+    "wallSeconds": 1193.6,
+    "modelCalls": 95,
+    "inputTokens": 1781160,
+    "outputTokens": 112211,
+    "costUsd": 0.237263,
+    "invalidActions": 1,
+    "failureReason": "Manual stop by the owner at 54.6 game-s: the cow had been pulled into its bay (parked from tick 1560) but the planner never sent a hero through the post gap; no gate key or Enchanted Shears acquired.",
+    "confirmedSubgoals": [
+      "dry hedge burned by Coco's Fireball, tick 546 (COW_PASSAGE_DIAGNOSIS.md §6)",
+      "cow parked from tick 1560 (COW_PASSAGE_DIAGNOSIS.md summary)"
+    ],
+    "tracePath": "midterms/saadsatter/evidence/traces/pilot-29-model-centralized-S2-local-seed0/trace.jsonl",
+    "recordingPath": "https://github.com/SaadSatter/oath_and_ember/releases/download/pilot-28-29-pretuned-evidence/pilot-29-model-centralized-S2-local-seed0-live.webm",
+    "policyId": "centralized-9ab2dec9(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-a97d9268",
+    "promptHash": null,
+    "configHash": null,
+    "sourceCommit": "327c34a",
+    "decisions": {
+      "sieg": 188,
+      "coco": 205
+    },
+    "failedModelCalls": 1,
+    "unknownUsageCalls": 1,
+    "unusableReplies": 14,
+    "gameRefusalsNotCountedInvalid": 0,
+    "latencyMs": {
+      "mean": 11838,
+      "max": 20690
+    },
+    "cacheReadTokens": 666531,
+    "cacheWriteTokens": 1114347,
+    "reasoningTokens": 92657,
+    "costNote": "Runner estimate, not the provider bill: known 0.222302 plus one call aborted at the stop charged at its reservation. Ledger pilot-29 settled 0.237264.",
+    "guidanceStatus": "pre-tuned: planner prompt with tuning round 1 only (A_PROMPT_TUNING.md)",
+    "traceSha256": "c930d8312274d159fdaed4492e709ac7357cc23fe305f311eea19d72dbb622c6",
+    "recordingSha256": "26482056e7c8ab569a431cecb8a30efd44bf7d4f0254c3e2e6625fc5b1ac3b47",
+    "endHash": "559944d7930c18bf67fa07885c86d0a6970da4d32a3fb5bb839a08c44aa06182",
+    "evidenceSource": "midterms/saadsatter/evidence/traces/pilot-29-model-centralized-S2-local-seed0/ (trace.jsonl outcome line; no summary.json); COW_PASSAGE_DIAGNOSIS.md",
+    "timingNote": "3,276 ticks = 54.6 game-s (trace outcome line). No summary.json was written because of the trace-writer bug fixed in 9f16035, so promptHash and configHash were never recorded. Offline replay matches all 391 step results and the end hash."
+  },
+  "limitations": [
+    "Historical pilots run before the declaration; not preregistered final trials and not held out.",
+    "Pre- and post-tuned differ in the planner prompt (A_PROMPT_TUNING.md) and also in controller code; not a prompt-only controlled comparison.",
+    "Pilot-28 and Pilot-29 ran different prompt versions, so they are not repeats of one frozen policy."
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "situation": "S2-local",
+  "suiteRevision": 2,
+  "scenario": {
+    "preset": "S2-local-v2",
+    "title": "Hedge Maze — local start",
+    "goal": "S2-local (suite revision 2): from the Hedge Maze entrance, obtain the Enchanted Shears.",
+    "revision": 2,
+    "tutorialId": null,
+    "briefing": false
+  },
+  "seed": 0,
+  "player": "baseline-quest",
+  "policies": {
+    "sieg": "baseline-quest(Sieg)",
+    "coco": "baseline-quest(Coco)"
+  },
+  "gateway": null,
+  "modelIds": [],
+  "gitHash": "7022ea1+dirty",
+  "startHash": "2b9eddd41bdd6a25457eb66d7d5b3dde66047b2d9103b4be334b378497c8b53e",
+  "startTick": 405,
+  "prefix": "opening scene, normal entry to Hedge Maze (before arrival dialogue)",
+  "status": "success",
+  "reason": "success",
+  "success": true,
+  "gameTicks": 2990,
+  "gameSeconds": 49.8,
+  "wallSeconds": 1.8,
+  "decisions": {
+    "sieg": 177,
+    "coco": 163
+  },
+  "actions": {
+    "sieg": {
+      "move": 79,
+      "advance_dialogue": 4,
+      "attack": 16,
+      "wait": 72,
+      "message": 3,
+      "ability": 1,
+      "interact": 2
+    },
+    "coco": {
+      "move": 56,
+      "wait": 75,
+      "attack": 26,
+      "ability": 2,
+      "message": 3,
+      "interact": 1
+    }
+  },
+  "attempt": 1,
+  "endHash": "bf31311f6c56638bc7e5a6a45b9eaa621fa5042963c6e7c477e2ce74e729f936",
+  "limits": {
+    "maxTicks": 18000,
+    "maxDecisionsPerPlayer": 1600,
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000
+  },
+  "modelLimits": null,
+  "invalidActions": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "metrics": {
+    "sieg": {
+      "modelCalls": 0,
+      "modelDecisions": 0,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 0,
+      "submittedActions": 177,
+      "executedActions": 177,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 0
+    },
+    "coco": {
+      "modelCalls": 0,
+      "modelDecisions": 0,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 0,
+      "submittedActions": 163,
+      "executedActions": 163,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 0
+    }
+  },
+  "metricsVersion": 2,
+  "messages": {
+    "sieg": 3,
+    "coco": 3
+  },
+  "batchStops": 0,
+  "modelCalls": {
+    "attempted": 0,
+    "failed": 0,
+    "timedOut": 0,
+    "unknownUsage": 0
+  },
+  "latencyMs": {
+    "mean": null,
+    "max": null
+  },
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0
+  },
+  "spendUsd": {
+    "known": 0,
+    "charged": 0
+  },
+  "priceSource": null,
+  "ledgerEntry": null,
+  "episodeCapUsd": null,
+  "wallLimitSeconds": 600,
+  "launch": {
+    "launcher": "scripts/midterm/evaluate.ts",
+    "speed": null,
+    "viewer": false
+  },
+  "finalClaim": null,
+  "baselineLog": {
+    "sieg": [
+      {
+        "tick": 405,
+        "note": "entered Hedge Maze"
+      },
+      {
+        "tick": 2762,
+        "note": "wolf chase 1: caught"
+      }
+    ],
+    "coco": [
+      {
+        "tick": 405,
+        "note": "entered Hedge Maze"
+      }
+    ]
+  },
+  "trace": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/repro-baseline-quest-S2-local-2026-10-29/run-2/S2-local-seed0/trace.jsonl"
+}

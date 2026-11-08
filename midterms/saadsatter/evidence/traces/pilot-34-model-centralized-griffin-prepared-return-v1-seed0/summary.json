@@ -1,0 +1,170 @@
+{
+  "situation": "griffin-prepared-return-v1",
+  "suiteRevision": 2,
+  "scenario": {
+    "preset": "griffin-prepared-return-v1",
+    "title": "Griffin Trial Prepared, return offering (C)",
+    "goal": "Situation C: from the Griffin Enclosure entrance holding the Vanity Mirror and Enchanted Shears, obtain the Griffin's wig, offer it to the goddess and reach chapter0.complete without a hero knockout.",
+    "revision": 1,
+    "tutorialId": "2ec2f251",
+    "briefing": true
+  },
+  "seed": 0,
+  "player": "model-centralized",
+  "policies": {
+    "sieg": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-1ba46753",
+    "coco": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-1ba46753"
+  },
+  "gateway": "openai:gpt-6-luna@medium",
+  "modelIds": [
+    "gpt-6-luna"
+  ],
+  "gitHash": "f9edeb7",
+  "startHash": "28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7",
+  "startTick": 540,
+  "prefix": "B-return start, then Mirror and Shears added to the backpack (owner-approved start fixture)",
+  "status": "success",
+  "reason": "success",
+  "success": true,
+  "gameTicks": 7997,
+  "gameSeconds": 133.3,
+  "wallSeconds": 2479.7,
+  "decisions": {
+    "sieg": 378,
+    "coco": 359
+  },
+  "actions": {
+    "sieg": {
+      "move": 220,
+      "interact": 25,
+      "ability": 3,
+      "defend": 3,
+      "attack": 15,
+      "wait": 89,
+      "advance_dialogue": 22,
+      "choose_dialogue": 1
+    },
+    "coco": {
+      "move": 154,
+      "ability": 9,
+      "interact": 8,
+      "defend": 2,
+      "attack": 1,
+      "wait": 98,
+      "use_item": 3,
+      "advance_dialogue": 83,
+      "choose_dialogue": 1
+    }
+  },
+  "attempt": 1,
+  "endHash": "a5090db295d1088d9562c04f8d59c5ce377ce3d9716d5029f3d30e08c5c2aec1",
+  "limits": {
+    "maxTicks": 18000,
+    "maxDecisionsPerPlayer": 1600,
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000
+  },
+  "modelLimits": {
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000,
+    "maxSpendUsd": 0.75,
+    "callTimeoutMs": 30000
+  },
+  "invalidActions": {
+    "sieg": 1,
+    "coco": 1
+  },
+  "metrics": {
+    "sieg": {
+      "modelCalls": 132,
+      "modelDecisions": 126,
+      "parseFailures": 6,
+      "recoveredReplies": 0,
+      "proposedActions": 144,
+      "submittedActions": 378,
+      "executedActions": 377,
+      "staleSubmissions": 0,
+      "gameplayRejections": 1,
+      "skippedActions": 1
+    },
+    "coco": {
+      "modelCalls": 146,
+      "modelDecisions": 144,
+      "parseFailures": 2,
+      "recoveredReplies": 0,
+      "proposedActions": 145,
+      "submittedActions": 359,
+      "executedActions": 358,
+      "staleSubmissions": 0,
+      "gameplayRejections": 1,
+      "skippedActions": 0
+    }
+  },
+  "metricsVersion": 2,
+  "messages": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "batchStops": 1,
+  "modelCalls": {
+    "attempted": 278,
+    "failed": 0,
+    "timedOut": 0,
+    "unknownUsage": 0
+  },
+  "latencyMs": {
+    "mean": 8350,
+    "max": 21107
+  },
+  "tokens": {
+    "input": 5449743,
+    "output": 179558,
+    "cacheRead": 2065866,
+    "cacheWrite": 3383043
+  },
+  "spendUsd": {
+    "known": 0.586742,
+    "charged": 0.586742
+  },
+  "priceSource": "https://developers.openai.com/api/docs/models/gpt-6-luna (verified 2026-10-28); https://developers.openai.com/api/docs/pricing; https://developers.openai.com/api/docs/guides/prompt-caching",
+  "ledgerEntry": "pilot-34",
+  "episodeCapUsd": 0.75,
+  "wallLimitSeconds": 3600,
+  "launch": {
+    "launcher": "scripts/midterm/live.ts",
+    "speed": 1,
+    "viewer": true
+  },
+  "finalClaim": null,
+  "evaluation": {
+    "label": "C",
+    "definitionHash": "048679a38eea4e15177af2990fac94c19b2cd4f0c40de33a92c559a57f22d4a4"
+  },
+  "promptHashes": {
+    "sieg": "6dc64411b2373596f925360334680211657c266a3fe5487b4f687868740e3701",
+    "coco": "6dc64411b2373596f925360334680211657c266a3fe5487b4f687868740e3701"
+  },
+  "configHash": "178f2ce557556e13b71c14ce00c2cf8a1e98e4269601e9e3c5cd04856786b165",
+  "situationCReport": {
+    "descriptiveOnly": true,
+    "objectiveSuccess": true,
+    "terminalReason": "success",
+    "griffinHpAtEnd": 418,
+    "griffinPhaseAtEnd": "GROOMING",
+    "griffinDefeated": false,
+    "mirrorDelivered": true,
+    "shearsDelivered": true,
+    "itemInteractionUsed": true,
+    "griffinHpAtFirstItemDelivery": 418,
+    "itemsDeliveredWhileGriffinAlive": true,
+    "griffinHpAtMirrorDelivery": 418,
+    "peacefulGroomingOccurred": true,
+    "toolsTakenByGriffin": true,
+    "wigAcquired": true,
+    "griffinHpAtWigClaim": 418,
+    "wigRoute": "peaceful",
+    "offeringAccepted": true,
+    "chapter0Complete": true
+  },
+  "trace": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-openai-2026-11-07T03-14-55-647Z/griffin-prepared-return-v1-seed0/trace.jsonl"
+}

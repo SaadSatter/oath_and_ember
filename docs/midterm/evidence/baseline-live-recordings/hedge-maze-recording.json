@@ -1,0 +1,69 @@
+{
+  "runId": "S2-local-seed0-baseline-maze-heuristic-2026-11-06T20-12-22-947Z",
+  "scenario": "S2-local",
+  "seed": 0,
+  "player": "baseline-maze-heuristic",
+  "model": null,
+  "effort": null,
+  "gateway": null,
+  "paid": false,
+  "speed": 1,
+  "gitHash": "4c9cf9f",
+  "viewerUrl": "http://127.0.0.1:3031/watch",
+  "passive": true,
+  "shutdown": {
+    "activeStage": null,
+    "stages": [
+      {
+        "stage": "context.close",
+        "elapsedMs": 563,
+        "status": "completed"
+      },
+      {
+        "stage": "video.saveAs",
+        "elapsedMs": 1316,
+        "status": "completed"
+      },
+      {
+        "stage": "video.delete",
+        "elapsedMs": 7,
+        "status": "completed"
+      },
+      {
+        "stage": "browser.close",
+        "elapsedMs": 243,
+        "status": "completed"
+      }
+    ],
+    "elapsedMs": 2130,
+    "saved": true,
+    "timedOut": false,
+    "timeoutStage": null,
+    "activeStageElapsedMs": 0,
+    "cleanup": "completed",
+    "forcedCleanup": []
+  },
+  "status": "saved",
+  "path": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/S2-local-seed0-baseline-maze-heuristic-2026-11-06T20-12-22-947Z/recording.webm",
+  "relativePath": "evaluation-runs/live/S2-local-seed0-baseline-maze-heuristic-2026-11-06T20-12-22-947Z/recording.webm",
+  "bytes": 12591372,
+  "resolution": "1280x720",
+  "browser": "chromium (GPU)",
+  "readyConfirmed": true,
+  "finalConfirmed": true,
+  "startedAt": "2026-11-06T20:12:22.965Z",
+  "readyAt": "2026-11-06T20:12:51.772Z",
+  "stoppedAt": "2026-11-06T20:14:19.712Z",
+  "wallSeconds": 116.7,
+  "completion": "success",
+  "episode": {
+    "status": "success",
+    "reason": "success",
+    "success": true,
+    "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+    "endHash": "1287b39e69747d50c98005d23dd7c6ad5757975ca9e0555e329ac6d27a611b79",
+    "trace": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/S2-local-seed0-baseline-maze-heuristic-2026-11-06T20-12-22-947Z/S2-local-seed0/trace.jsonl"
+  },
+  "error": null,
+  "warnings": []
+}

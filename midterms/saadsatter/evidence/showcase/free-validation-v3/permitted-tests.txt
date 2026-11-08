@@ -1,0 +1,37 @@
+
+ RUN  v5.0.2 ~/Classes/AI_Pract_Building_Games/oath_and_ember-eval
+
+ ❯ packages/agent/test/s2Shutdown.test.ts (12 tests | 1 failed) 28686ms
+   ❯ bounded recorder cleanup (3)
+     × gives up on a video that never finalizes, reports it as not saved, and shuts the browser down 213ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/agent/test/s2Shutdown.test.ts > bounded recorder cleanup > gives up on a video that never finalizes, reports it as not saved, and shuts the browser down
+AssertionError: expected 'Could not save the video: Finalizing …' to match /not a valid recording/
+
+- Expected:
+/not a valid recording/
+
++ Received:
+"Could not save the video: Finalizing the video did not finish within 200 ms; stage=between stages; elapsed=202 ms; saved=false. Diagnostic files retained in /var/folders/3k/4g4yc3356vq38kp2xcwcqb340000gn/T/s2-shutdown-aFC2FP/.recording-tmp"
+
+ ❯ packages/agent/test/s2Shutdown.test.ts:59:21
+     57|     expect(r).toMatchObject({ status: "failed", path: null, bytes: nul…
+     58|     expect(r.error).toMatch(/Finalizing the video did not finish withi…
+     59|     expect(r.error).toMatch(/not a valid recording/);
+       |                     ^
+     60|     expect(r.stoppedAt).not.toBeNull();
+     61|     expect(calls.abandons).toBe(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 138 passed (139)
+      Tests  1 failed | 1356 passed (1357)
+   Start at  15:12:41
+   Duration  307.78s (tests 92%, import 7%, transform 1%)
+
+    Isolate  139 workers spawned · ~260ms startup each (spawn + environment, per file)
+             at least ~17.80s faster with isolate: false — reuses workers across files instead of one per file
+

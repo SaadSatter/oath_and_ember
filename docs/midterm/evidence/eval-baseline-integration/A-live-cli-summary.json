@@ -1,0 +1,135 @@
+{
+  "situation": "S2-local",
+  "suiteRevision": 2,
+  "scenario": {
+    "preset": "S2-local-v2",
+    "title": "Hedge Maze — local start",
+    "goal": "S2-local (suite revision 2): from the Hedge Maze entrance, obtain the Enchanted Shears.",
+    "revision": 2,
+    "tutorialId": null,
+    "briefing": false
+  },
+  "seed": 0,
+  "player": "baseline-maze-heuristic",
+  "policies": {
+    "sieg": "baseline-maze-heuristic-v2",
+    "coco": "baseline-maze-heuristic-v2"
+  },
+  "gateway": null,
+  "modelIds": [],
+  "gitHash": "6df4bc0+dirty",
+  "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+  "startTick": 405,
+  "prefix": "opening scene, normal entry to Hedge Maze (before arrival dialogue)",
+  "status": "success",
+  "reason": "success",
+  "success": true,
+  "gameTicks": 1890,
+  "gameSeconds": 31.5,
+  "wallSeconds": 8.1,
+  "decisions": {
+    "sieg": 367,
+    "coco": 306
+  },
+  "actions": {
+    "sieg": {
+      "move": 181,
+      "advance_dialogue": 4,
+      "attack": 178,
+      "ability": 1,
+      "interact": 3
+    },
+    "coco": {
+      "attack": 129,
+      "advance_dialogue": 4,
+      "move": 167,
+      "ability": 1,
+      "wait": 5
+    }
+  },
+  "attempt": 1,
+  "endHash": "1287b39e69747d50c98005d23dd7c6ad5757975ca9e0555e329ac6d27a611b79",
+  "limits": {
+    "maxTicks": 18000,
+    "maxDecisionsPerPlayer": 1600,
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000
+  },
+  "modelLimits": null,
+  "invalidActions": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "metrics": {
+    "sieg": {
+      "modelCalls": 0,
+      "modelDecisions": 0,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 0,
+      "submittedActions": 367,
+      "executedActions": 367,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 0
+    },
+    "coco": {
+      "modelCalls": 0,
+      "modelDecisions": 0,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 0,
+      "submittedActions": 306,
+      "executedActions": 302,
+      "staleSubmissions": 4,
+      "gameplayRejections": 0,
+      "skippedActions": 0
+    }
+  },
+  "metricsVersion": 2,
+  "messages": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "batchStops": 0,
+  "modelCalls": {
+    "attempted": 0,
+    "failed": 0,
+    "timedOut": 0,
+    "unknownUsage": 0
+  },
+  "latencyMs": {
+    "mean": null,
+    "max": null
+  },
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0
+  },
+  "spendUsd": {
+    "known": 0,
+    "charged": 0
+  },
+  "priceSource": null,
+  "ledgerEntry": null,
+  "episodeCapUsd": null,
+  "wallLimitSeconds": 600,
+  "launch": {
+    "launcher": "scripts/midterm/live.ts",
+    "speed": null,
+    "viewer": false
+  },
+  "finalClaim": null,
+  "evaluation": {
+    "label": "S2-A",
+    "definitionHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab"
+  },
+  "promptHashes": {
+    "sieg": null,
+    "coco": null
+  },
+  "configHash": "fd87d68d5b32bdd3d694858a6368af562885d6dc1df558d01cf528f9b3fcec9d",
+  "trace": "/tmp/oath-eval-integration-maze-check/S2-local-seed0/trace.jsonl"
+}

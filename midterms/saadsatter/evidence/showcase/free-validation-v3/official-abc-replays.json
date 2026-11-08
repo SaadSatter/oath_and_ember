@@ -1,0 +1,65 @@
+[
+  {
+    "cell": "A-pre-tuned",
+    "trace": "midterms/saadsatter/evidence/traces/pilot-28-model-centralized-S2-local-seed0/trace.jsonl",
+    "exit": 0,
+    "output": "Trace midterms/saadsatter/evidence/traces/pilot-28-model-centralized-S2-local-seed0/trace.jsonl (sha256 67f068f3d2297391, chain verified, pilot-28)\nScenario S2-local, seed 0; Sieg 286 actions, Coco 357 actions; recorded end: manual_stop\nREPLAY MATCHES THE TRACE: start hash, 641 step results, end (manual_stop, b639c8c9547e10ea) and 7516 ticks.",
+    "traceSha256": "67f068f3d2297391949187f6ba6444c49bc14077f8c148e04eaa648e8b560ebb"
+  },
+  {
+    "cell": "A-post-tuned",
+    "trace": "midterms/saadsatter/evidence/traces/pilot-30-model-centralized-S2-local-seed0/trace.jsonl",
+    "exit": 0,
+    "output": "Trace midterms/saadsatter/evidence/traces/pilot-30-model-centralized-S2-local-seed0/trace.jsonl (sha256 6aa22739c28c0550, chain verified, pilot-30)\nScenario S2-local, seed 0; Sieg 401 actions, Coco 246 actions; recorded end: success\nREPLAY MATCHES THE TRACE: start hash, 644 step results, end (success, 6deca1132fc2e626) and 5369 ticks.",
+    "traceSha256": "6aa22739c28c0550d571e79a0fb7182d54f967dfd6f4ace185837098252231fb"
+  },
+  {
+    "cell": "A-cheap-baseline",
+    "trace": "docs/midterm/evidence/maze-heuristic-v2/run-1/trace.jsonl.gz",
+    "exit": 0,
+    "output": "Trace ../../../../../tmp/oath-showcase-shrine/official-replays/A-cheap-baseline/trace.jsonl (sha256 3fe460b3d33b3c23, chain verified)\nScenario S2-local, seed 0; Sieg 367 actions, Coco 306 actions; recorded end: success\nREPLAY MATCHES THE TRACE: start hash, 672 step results, end (success, 1287b39e69747d50) and 1890 ticks.",
+    "traceSha256": "3fe460b3d33b3c239145ee026120527c72aca6cb8d8e6b058460f7a91b26fe58"
+  },
+  {
+    "cell": "B-pre-tuned",
+    "trace": "midterms/saadsatter/evidence/traces/pilot-31-model-centralized-griffin-unprepared-v1-seed0/trace.jsonl",
+    "exit": 0,
+    "output": "Trace midterms/saadsatter/evidence/traces/pilot-31-model-centralized-griffin-unprepared-v1-seed0/trace.jsonl (sha256 5d9cfec6b6f61408, chain verified, pilot-31)\nScenario griffin-unprepared-v1, seed 0; Sieg 146 actions, Coco 141 actions; recorded end: knocked_out\nREPLAY MATCHES THE TRACE: start hash, 284 step results, end (knocked_out, c5f341f52ddabff9) and 3007 ticks.",
+    "traceSha256": "5d9cfec6b6f6140855daadc69a5a8189fe5c0478f85fb7f0d333ebc2d5309afb"
+  },
+  {
+    "cell": "B-post-tuned",
+    "trace": "midterms/saadsatter/evidence/traces/pilot-33-model-centralized-griffin-unprepared-return-v1-seed0/trace.jsonl",
+    "exit": 0,
+    "output": "Trace midterms/saadsatter/evidence/traces/pilot-33-model-centralized-griffin-unprepared-return-v1-seed0/trace.jsonl (sha256 b45719346981d2ac, chain verified, pilot-33)\nScenario griffin-unprepared-return-v1, seed 0; Sieg 262 actions, Coco 183 actions; recorded end: success\nREPLAY MATCHES THE TRACE: start hash, 443 step results, end (success, 6fd8c37f7fe956e4) and 3057 ticks.",
+    "traceSha256": "b45719346981d2acbe385789458e89b90e8c7b0f632c2ebaf5c759b2cd9a9423"
+  },
+  {
+    "cell": "B-cheap-baseline",
+    "trace": "docs/midterm/evidence/griffin-heuristic-v1/run-1/trace.jsonl.gz",
+    "exit": 0,
+    "output": "Trace ../../../../../tmp/oath-showcase-shrine/official-replays/B-cheap-baseline/trace.jsonl (sha256 63fc112306dc311d, chain verified)\nScenario griffin-unprepared-return-v1, seed 0; Sieg 481 actions, Coco 646 actions; recorded end: success\nREPLAY MATCHES THE TRACE: start hash, 1126 step results, end (success, a454145029bba5ad) and 5389 ticks.",
+    "traceSha256": "63fc112306dc311d6d67759b76a926ae2a7c1b04845749a75ae64f0abb9428ac"
+  },
+  {
+    "cell": "C-pre-tuned",
+    "trace": "midterms/saadsatter/evidence/traces/pilot-34-model-centralized-griffin-prepared-return-v1-seed0/trace.jsonl",
+    "exit": 0,
+    "output": "Trace midterms/saadsatter/evidence/traces/pilot-34-model-centralized-griffin-prepared-return-v1-seed0/trace.jsonl (sha256 6adbb2367d146970, chain verified, pilot-34)\nScenario griffin-prepared-return-v1, seed 0; Sieg 378 actions, Coco 359 actions; recorded end: success\nREPLAY MATCHES THE TRACE: start hash, 734 step results, end (success, a5090db295d1088d) and 7997 ticks.",
+    "traceSha256": "6adbb2367d1469704355b14e6f3bfba25afee16c4cecb84edd1deda99466a2bf"
+  },
+  {
+    "cell": "C-post-tuned",
+    "trace": "midterms/saadsatter/evidence/traces/pilot-35-model-centralized-griffin-prepared-return-v1-seed0/trace.jsonl",
+    "exit": 0,
+    "output": "Trace midterms/saadsatter/evidence/traces/pilot-35-model-centralized-griffin-prepared-return-v1-seed0/trace.jsonl (sha256 d8824c91e1aae24a, chain verified, pilot-35)\nScenario griffin-prepared-return-v1, seed 0; Sieg 159 actions, Coco 200 actions; recorded end: success\nREPLAY MATCHES THE TRACE: start hash, 357 step results, end (success, 8342ec057bd04bbb) and 3379 ticks.",
+    "traceSha256": "d8824c91e1aae24a7647ea3c2a3ba80f0d3a195229e6ce5a75871a9683e36aff"
+  },
+  {
+    "cell": "C-cheap-baseline",
+    "trace": "midterms/saadsatter/evidence/traces/c2-approved-recorded-2026-11-06/trace.jsonl",
+    "exit": 0,
+    "output": "Trace midterms/saadsatter/evidence/traces/c2-approved-recorded-2026-11-06/trace.jsonl (sha256 ef3fd3301b7e8789, chain verified)\nScenario griffin-prepared-return-v1, seed 0; Sieg 481 actions, Coco 646 actions; recorded end: success\nREPLAY MATCHES THE TRACE: start hash, 1126 step results, end (success, 0e419e63ee2244d6) and 5389 ticks.",
+    "traceSha256": "ef3fd3301b7e8789d42ecdb74ec272644065a898474560810ef40a5b6642d2d3"
+  }
+]

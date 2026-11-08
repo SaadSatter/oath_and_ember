@@ -1,0 +1,8 @@
+# Pilot-28: model-centralized on S2-local (Situation A, v2), seed 0 — pre-tuned
+
+**Model-driven play** (OpenAI `gpt-6-luna`, medium effort) by the `model-centralized` player (one LLM planner, two legal per-hero controllers; [MODEL_CENTRALIZED.md](../../../../../docs/midterm/MODEL_CENTRALIZED.md)). Launched by the owner on 2026-11-06 at clean commit `678b86c` (live viewer, speed 1, $0.75 cap, ledger entry `pilot-28`). Local run folder: `evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T02-37-35-986Z/` (gitignored). Registered as **A/pre-tuned/1** ([record](../../../../../docs/midterm/evaluation-abc/A-pretuned-pilot28.json), [prompt tuning](../../../../../docs/midterm/A_PROMPT_TUNING.md)).
+
+- **Outcome.** `manual_stop` by the owner at 7,516 ticks (125.3 game-s), 900.8 s wall clock, while the cow still blocked the passage. No gate key or Shears. 643 decisions (Sieg 286, Coco 357), 1 invalid action, 0 messages, 79 model calls (1 aborted by the stop, unknown usage), $0.094339 estimated.
+- **Files.** Byte-for-byte copies of the run folder's files (`trace.jsonl` and `summary.json` from its `S2-local-seed0/` subfolder); absolute local paths remain as written. SHA-256 values are in [verification.json](verification.json).
+- **Verification.** Trace chain verifies; an offline replay matches all 641 step results and the end hash `b639c8c9…826aa3283`. Diagnosis: [2026-11-05-pilot28-diagnosis.md](../../../../../docs/midterm/agent-evidence/skill-runs/2026-11-05-pilot28-diagnosis.md).
+- **Video.** Live capture, not committed. Release asset: [pilot-28-model-centralized-S2-local-seed0-live.webm](https://github.com/SaadSatter/oath_and_ember/releases/download/pilot-28-29-pretuned-evidence/pilot-28-model-centralized-S2-local-seed0-live.webm).

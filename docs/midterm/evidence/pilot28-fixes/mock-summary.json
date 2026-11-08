@@ -1,0 +1,140 @@
+{
+  "situation": "S2-local",
+  "suiteRevision": 2,
+  "scenario": {
+    "preset": "S2-local-v2",
+    "title": "Hedge Maze — local start",
+    "goal": "S2-local (suite revision 2): from the Hedge Maze entrance, obtain the Enchanted Shears.",
+    "revision": 2,
+    "tutorialId": "2ec2f251",
+    "briefing": true
+  },
+  "seed": 0,
+  "player": "model-centralized",
+  "policies": {
+    "sieg": "centralized-9ab2dec9(mock:random-legal@0)·batch4·tutorial-2ec2f251·briefing-a97d9268",
+    "coco": "centralized-9ab2dec9(mock:random-legal@0)·batch4·tutorial-2ec2f251·briefing-a97d9268"
+  },
+  "gateway": "mock:random-legal@0",
+  "modelIds": [
+    "mock"
+  ],
+  "gitHash": "678b86c+dirty",
+  "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+  "startTick": 405,
+  "prefix": "opening scene, normal entry to Hedge Maze (before arrival dialogue)",
+  "status": "terminated",
+  "reason": "manual_stop",
+  "success": false,
+  "gameTicks": 911,
+  "gameSeconds": 15.2,
+  "wallSeconds": 23.4,
+  "decisions": {
+    "sieg": 56,
+    "coco": 54
+  },
+  "actions": {
+    "sieg": {
+      "move": 2,
+      "wait": 49,
+      "advance_dialogue": 4,
+      "interact": 1
+    },
+    "coco": {
+      "interact": 1,
+      "advance_dialogue": 1,
+      "wait": 49,
+      "move": 3
+    }
+  },
+  "attempt": 1,
+  "endHash": "ec313caa3e7d4d2c897a500de2d8f87701f284d67e2fa3c999b733d9fbcdf79e",
+  "limits": {
+    "maxTicks": 18000,
+    "maxDecisionsPerPlayer": 1600,
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000
+  },
+  "modelLimits": {
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000,
+    "maxSpendUsd": 1.25,
+    "callTimeoutMs": 30000
+  },
+  "invalidActions": {
+    "sieg": 1,
+    "coco": 0
+  },
+  "metrics": {
+    "sieg": {
+      "modelCalls": 10,
+      "modelDecisions": 10,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 14,
+      "submittedActions": 56,
+      "executedActions": 55,
+      "staleSubmissions": 0,
+      "gameplayRejections": 1,
+      "skippedActions": 3
+    },
+    "coco": {
+      "modelCalls": 7,
+      "modelDecisions": 7,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 10,
+      "submittedActions": 54,
+      "executedActions": 54,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 4
+    }
+  },
+  "metricsVersion": 2,
+  "messages": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "batchStops": 7,
+  "modelCalls": {
+    "attempted": 17,
+    "failed": 0,
+    "timedOut": 0,
+    "unknownUsage": 0
+  },
+  "latencyMs": {
+    "mean": 42,
+    "max": 45
+  },
+  "tokens": {
+    "input": 62930,
+    "output": 507,
+    "cacheRead": 0,
+    "cacheWrite": 0
+  },
+  "spendUsd": {
+    "known": 0,
+    "charged": 0
+  },
+  "priceSource": "mock: no cost, no network",
+  "ledgerEntry": "pilot-1",
+  "episodeCapUsd": 1.25,
+  "wallLimitSeconds": 60,
+  "launch": {
+    "launcher": "scripts/midterm/live.ts",
+    "speed": 1,
+    "viewer": true
+  },
+  "finalClaim": null,
+  "evaluation": {
+    "label": "S2-A",
+    "definitionHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab"
+  },
+  "promptHashes": {
+    "sieg": "495de57b80cb4942e69da62b2f5d57513b5ecc261a288b610b992702179e6530",
+    "coco": "495de57b80cb4942e69da62b2f5d57513b5ecc261a288b610b992702179e6530"
+  },
+  "configHash": "6aa965efa44a829d14c40f74677ca6af8fdbe38b9a0731f38e500b5d9386bd01",
+  "trace": "/tmp/p28-fix-smoke-2/S2-local-seed0/trace.jsonl"
+}

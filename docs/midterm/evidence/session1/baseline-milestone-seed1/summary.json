@@ -1,0 +1,70 @@
+{
+  "policy": {
+    "sieg": "exploration-baseline",
+    "coco": "exploration-baseline"
+  },
+  "preset": "milestone",
+  "seed": 1,
+  "labels": "names-only",
+  "outcome": {
+    "status": "success",
+    "reason": "success",
+    "episode": "milestone-1-2b2ab2d9",
+    "ticks": 323,
+    "seconds": 5.4,
+    "decisions": {
+      "sieg": 36,
+      "coco": 37
+    },
+    "invalidActions": {
+      "sieg": 0,
+      "coco": 0
+    },
+    "modelCalls": {
+      "sieg": 0,
+      "coco": 0
+    },
+    "tokens": {
+      "sieg": {
+        "input": 0,
+        "output": 0
+      },
+      "coco": {
+        "input": 0,
+        "output": 0
+      }
+    },
+    "limits": {
+      "maxTicks": 5400,
+      "maxDecisionsPerPlayer": 400,
+      "maxModelCallsPerPlayer": 40,
+      "maxTokensPerPlayer": 1000000
+    }
+  },
+  "evaluator": {
+    "milestones": [
+      "goddess-meet-finished",
+      "holding:moonleaf",
+      "holding:crystal_vial",
+      "holding:candlewick",
+      "holding:fresh_bread",
+      "holding:honey_pastry",
+      "holding:alden_journal",
+      "holding:strange_cloth",
+      "holding:star_drawing"
+    ],
+    "area": "GRIFFIN_ENCLOSURE",
+    "stateHash": "b287dfc97bd574cc3337bfd9a3072a3eaa6cedebe70416a0127dce2f16e6ea20"
+  },
+  "wallSeconds": 0.2,
+  "steps": 73,
+  "invalidActions": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "policyErrors": 0,
+  "modelCalls": 0,
+  "meanLatencyMs": 0,
+  "spendUsd": 0,
+  "traceLines": 299
+}

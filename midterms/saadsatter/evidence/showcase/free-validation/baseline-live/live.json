@@ -1,0 +1,21 @@
+{
+  "launcher": "scripts/midterm/live.ts",
+  "scenario": "showcase-maze-griffin-complete-v1",
+  "seed": 0,
+  "player": "baseline-showcase-route",
+  "gateway": null,
+  "paid": false,
+  "episodeCapUsd": null,
+  "speed": 1,
+  "viewer": true,
+  "viewsIssued": 2,
+  "gitHash": "c30d2fb",
+  "interrupted": false,
+  "error": null,
+  "host": {
+    "sleepPrevention": "caffeinate",
+    "suspensions": [],
+    "suspendedSeconds": 0
+  },
+  "ledger": null
+}

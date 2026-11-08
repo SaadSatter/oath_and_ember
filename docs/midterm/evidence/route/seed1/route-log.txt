@@ -1,0 +1,29 @@
+     0  reset seed 1, start hash 1d3e679308ca3e5d
+   221  opening scene read
+   426  entered Hedge Maze
+  2200  cow pulled into the bay
+  3497  Sieg took the key from the wolf
+  4038  Coco took the Enchanted Shears
+  4725  back at the shrine
+  5137  entered Mirror Pond
+  5688  spike crossing attempt 1: crossed
+  5936  M1 solve: 157.5° (off 0°)
+  6350  fired from pad A1
+  6467  M1 rest: 90° (off 0°)
+  6649  M2 solve: 67.5° (off 0°)
+  6831  fired from pad A2
+  7060  M2 rest: 0° (off 0°)
+  7396  M3 solve: 22.5° (off 0°)
+  7684  fired from pad A3
+  7844  M3 rest: 90° (off 0°)
+  8163  M4 solve: 292.5° (off 0°)
+  9280  fired from pad A4
+  9367  M4 rest: 0° (off 0°)
+  9669  Coco took the Vanity Mirror
+  9979  back at the shrine
+ 10232  entered Griffin Enclosure
+ 10695  at the nest: Both tools are at the nest. The Griffin will admire its hair, then give itself a trim.
+ 11284  Coco picked up the Griffin Wig
+ 11399  back at the shrine
+ 11744  offered the wig: “At last! Divine volume. The Bald Goddess thanks you—and requests a new title.”
+ 12412  outcome: "success"

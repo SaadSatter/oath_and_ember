@@ -1,0 +1,19 @@
+{
+  "suiteRevision": 2,
+  "player": "baseline-showcase-route",
+  "situations": [
+    "showcase-maze-griffin-complete-v1"
+  ],
+  "seeds": [
+    0
+  ],
+  "final": false,
+  "gitHash": "c30d2fb",
+  "wallSeconds": 600,
+  "model": null,
+  "launch": {
+    "launcher": "scripts/midterm/live.ts",
+    "speed": 1,
+    "viewer": true
+  }
+}

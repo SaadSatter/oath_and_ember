@@ -1,0 +1,24 @@
+{
+  "launcher": "scripts/midterm/live.ts",
+  "scenario": "showcase-maze-griffin-complete-v1",
+  "seed": 0,
+  "player": "model-centralized",
+  "gateway": "mock:random-legal@0",
+  "paid": false,
+  "episodeCapUsd": null,
+  "speed": null,
+  "viewer": false,
+  "viewsIssued": 0,
+  "gitHash": "c30d2fb",
+  "interrupted": false,
+  "error": null,
+  "host": {
+    "sleepPrevention": "caffeinate",
+    "suspensions": [],
+    "suspendedSeconds": 0
+  },
+  "ledger": {
+    "path": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/showcase-mock-c30d2fb-seed0/mock-ledger.json",
+    "scratch": true
+  }
+}

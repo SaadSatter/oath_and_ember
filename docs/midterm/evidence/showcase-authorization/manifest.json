@@ -1,0 +1,8 @@
+{
+  "build.txt": "37ce60b7790c713b011ce7cccd23d6f5063173c3b635319d2104b0cf5f5fd12c",
+  "command-validation.json": "7a80bd4976379b346356b0a54e92e9b77e2a244ce22bce62b229bd993240d9f0",
+  "hashes.json": "7029902889638d8dad96ef85e5794dfd85ceea5e1f3309980703c1ff8b68f3f0",
+  "ledger-check.json": "5fa88e0338277e6e110dcc42e373c12f19d7dad9a89ba5b7fd1a582194cfe2b0",
+  "targeted-tests.txt": "571bcbec8e80e9d196a2e4060b2504c61491349c25e9ef2d34795e7444570aab",
+  "typecheck.txt": "8fa1cf5506304e8abac55868e7f1a136c9b1dde57a3981a382da4c21ea129a6f"
+}

@@ -1,0 +1,26 @@
+{
+  "checkout": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval",
+  "nativeBase": "6df4bc0",
+  "sourceBranch": "codex/pilot30-griffin-planning",
+  "importedPolicyBytesUnchanged": true,
+  "importedEvidenceBytesUnchanged": true,
+  "nativeReviewedGriffinScenarioChanged": false,
+  "gameplayChanged": false,
+  "typecheck": "pass",
+  "targetedTests": {
+    "files": 6,
+    "passed": 78,
+    "failed": 0
+  },
+  "build": "pass (existing chunk-size warning)",
+  "ACommandSmoke": {
+    "summary": "docs/midterm/evidence/eval-baseline-integration/A-live-cli-summary.json",
+    "sha256": "d035b46be73dda6d1dde81710de0ca821599f6db365c5f83b6482555e966b3d3",
+    "success": true,
+    "endHash": "1287b39e69747d50c98005d23dd7c6ad5757975ca9e0555e329ac6d27a611b79"
+  },
+  "BCommandSmoke": "liveGriffin.test.ts passes: success, zero model calls, original end hash; S4 remains refused",
+  "recording": "no-viewer smoke only; no new recording claimed",
+  "plan": "native one primary repetition per cell retained; second baseline runs supplementary",
+  "paidCalls": 0
+}

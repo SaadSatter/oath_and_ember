@@ -1,0 +1,206 @@
+{
+  "situation": "showcase-maze-griffin-complete-v1",
+  "suiteRevision": 2,
+  "scenario": {
+    "preset": "showcase-maze-griffin-complete-v1",
+    "title": "Showcase: Goddess Shrine connected quest (demonstration, excluded from A/B/C)",
+    "goal": "Showcase (excluded from A/B/C): from the normal Goddess Shrine checkpoint, read the Goddess greeting and quest, enter the Hedge Maze through normal travel, obtain the Enchanted Shears, travel to the Griffin Enclosure, defeat the Griffin in combat, claim its wig, offer it to the goddess and reach chapter0.complete. Knockouts are recorded, not terminal.",
+    "revision": 3,
+    "tutorialId": null,
+    "briefing": false
+  },
+  "seed": 0,
+  "player": "baseline-showcase-route",
+  "policies": {
+    "sieg": "baseline-showcase-route-v2(shrine+maze-heuristic-v2+travel+griffin-heuristic-v1)",
+    "coco": "baseline-showcase-route-v2(shrine+maze-heuristic-v2+travel+griffin-heuristic-v1)"
+  },
+  "gateway": null,
+  "modelIds": [],
+  "gitHash": "e5d2dfe",
+  "startHash": "9d565ae90d161cc9e79979e0b9b66b1c5499d5a22e5292ba10ca271bda12cb50",
+  "startTick": 0,
+  "prefix": null,
+  "status": "success",
+  "reason": "success",
+  "success": true,
+  "gameTicks": 10166,
+  "gameSeconds": 169.4,
+  "wallSeconds": 5,
+  "decisions": {
+    "sieg": 1125,
+    "coco": 1228
+  },
+  "actions": {
+    "sieg": {
+      "wait": 214,
+      "advance_dialogue": 136,
+      "move": 473,
+      "attack": 201,
+      "ability": 1,
+      "interact": 5,
+      "defend": 93,
+      "use_item": 1,
+      "choose_dialogue": 1
+    },
+    "coco": {
+      "wait": 235,
+      "advance_dialogue": 136,
+      "move": 699,
+      "interact": 3,
+      "attack": 148,
+      "ability": 6,
+      "choose_dialogue": 1
+    }
+  },
+  "attempt": 1,
+  "endHash": "c0e8e3551152d57d9bc861b83daccfab28df1620bad672125f7aac534ccee563",
+  "limits": {
+    "maxTicks": 36000,
+    "maxDecisionsPerPlayer": 4000,
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 8000000
+  },
+  "modelLimits": null,
+  "invalidActions": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "metrics": {
+    "sieg": {
+      "modelCalls": 0,
+      "modelDecisions": 0,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 0,
+      "submittedActions": 1125,
+      "executedActions": 1125,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 0
+    },
+    "coco": {
+      "modelCalls": 0,
+      "modelDecisions": 0,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 0,
+      "submittedActions": 1228,
+      "executedActions": 1092,
+      "staleSubmissions": 135,
+      "gameplayRejections": 1,
+      "skippedActions": 0
+    }
+  },
+  "metricsVersion": 2,
+  "messages": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "batchStops": 0,
+  "modelCalls": {
+    "attempted": 0,
+    "failed": 0,
+    "timedOut": 0,
+    "unknownUsage": 0
+  },
+  "latencyMs": {
+    "mean": null,
+    "max": null
+  },
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0
+  },
+  "spendUsd": {
+    "known": 0,
+    "charged": 0
+  },
+  "priceSource": null,
+  "ledgerEntry": null,
+  "episodeCapUsd": null,
+  "wallLimitSeconds": 600,
+  "launch": {
+    "launcher": "scripts/midterm/evaluate.ts",
+    "speed": null,
+    "viewer": false
+  },
+  "finalClaim": null,
+  "evaluation": {
+    "label": "SHOWCASE",
+    "definitionHash": "ec827f19555e5456d987f866c6f50414827f8875efd911859f351aeafe532831",
+    "officialEvaluation": false,
+    "disclosure": "Prompt-tuned continuous gameplay demonstration — excluded from official A/B/C evaluation results."
+  },
+  "promptHashes": {
+    "sieg": null,
+    "coco": null
+  },
+  "configHash": "89de902c9745341f11a7f9f528c1488c2d2df0eca1754c229fb8853d02acfc23",
+  "showcaseReport": {
+    "descriptiveOnly": true,
+    "knockouts": 0,
+    "knockoutsByHero": {
+      "sieg": 0,
+      "coco": 0
+    },
+    "events": [],
+    "milestones": [
+      {
+        "milestone": "showcase:0-goddess-quest-received",
+        "tick": 1486,
+        "gameSeconds": 24.77
+      },
+      {
+        "milestone": "showcase:0-maze-entered",
+        "tick": 1666,
+        "gameSeconds": 27.77
+      },
+      {
+        "milestone": "showcase:1-maze-complete",
+        "tick": 3556,
+        "gameSeconds": 59.27
+      },
+      {
+        "milestone": "showcase:1b-returned-from-maze",
+        "tick": 4006,
+        "gameSeconds": 66.77
+      },
+      {
+        "milestone": "showcase:1c-griffin-entered",
+        "tick": 4776,
+        "gameSeconds": 79.6
+      },
+      {
+        "milestone": "showcase:2-griffin-defeated",
+        "tick": 6777,
+        "gameSeconds": 112.95
+      },
+      {
+        "milestone": "showcase:3-wig-acquired-after-defeat",
+        "tick": 9342,
+        "gameSeconds": 155.7
+      },
+      {
+        "milestone": "showcase:3b-returned-with-wig",
+        "tick": 9518,
+        "gameSeconds": 158.63
+      },
+      {
+        "milestone": "showcase:4-offering-accepted",
+        "tick": 9985,
+        "gameSeconds": 166.42
+      },
+      {
+        "milestone": "showcase:5-chapter0-complete",
+        "tick": 10166,
+        "gameSeconds": 169.43
+      }
+    ],
+    "griffinDefeatedTick": 6777,
+    "reason": "success"
+  },
+  "trace": "/tmp/oath-showcase-shrine/final-baseline/showcase-maze-griffin-complete-v1-seed0/trace.jsonl"
+}

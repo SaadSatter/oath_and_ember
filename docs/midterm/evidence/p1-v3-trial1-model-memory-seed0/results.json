@@ -1,0 +1,191 @@
+{
+  "episodes": [
+    {
+      "situation": "P1",
+      "suiteRevision": 2,
+      "scenario": {
+        "preset": "P1-v3",
+        "title": "Into the Forest (Prologue)",
+        "goal": "P1 Into the Forest (revision 3): from the Prologue's opening, reach the Mossling Woods (story stage WOODS).",
+        "revision": 2,
+        "tutorialId": null,
+        "briefing": false
+      },
+      "seed": 0,
+      "player": "model-memory",
+      "policies": {
+        "sieg": "llm(openai:gpt-6-luna@medium)·batch4·memory·task-4079cad5",
+        "coco": "llm(openai:gpt-6-luna@medium)·batch4·memory·task-4079cad5"
+      },
+      "gateway": "openai:gpt-6-luna@medium",
+      "modelIds": [
+        "gpt-6-luna"
+      ],
+      "gitHash": "b61035f",
+      "startHash": "688b246237f8183790ca7f1f0d38a5b96570ffd323c3d662683ca04cf1b71530",
+      "startTick": 0,
+      "prefix": null,
+      "status": "success",
+      "reason": "success",
+      "success": true,
+      "gameTicks": 1574,
+      "gameSeconds": 26.2,
+      "wallSeconds": 840.5,
+      "decisions": {
+        "sieg": 136,
+        "coco": 81
+      },
+      "actions": {
+        "sieg": {
+          "interact": 18,
+          "move": 75,
+          "message": 8,
+          "wait": 6,
+          "advance_dialogue": 29
+        },
+        "coco": {
+          "move": 40,
+          "interact": 10,
+          "message": 12,
+          "wait": 10,
+          "advance_dialogue": 8,
+          "ability": 1
+        }
+      },
+      "attempt": 1,
+      "endHash": "df298be79393561ee1946eb8b80b1eb65006f10727a9ca4a1ddfeb5e02b9ac46",
+      "limits": {
+        "maxTicks": 10800,
+        "maxDecisionsPerPlayer": 1600,
+        "maxModelCallsPerPlayer": 250,
+        "maxTokensPerPlayer": 4000000
+      },
+      "modelLimits": {
+        "maxModelCallsPerPlayer": 250,
+        "maxTokensPerPlayer": 4000000,
+        "maxSpendUsd": 0.15,
+        "callTimeoutMs": 30000
+      },
+      "invalidActions": {
+        "sieg": 0,
+        "coco": 0
+      },
+      "metrics": {
+        "sieg": {
+          "modelCalls": 107,
+          "modelDecisions": 107,
+          "parseFailures": 0,
+          "recoveredReplies": 0,
+          "proposedActions": 152,
+          "submittedActions": 136,
+          "executedActions": 136,
+          "staleSubmissions": 0,
+          "gameplayRejections": 0,
+          "skippedActions": 16
+        },
+        "coco": {
+          "modelCalls": 70,
+          "modelDecisions": 70,
+          "parseFailures": 0,
+          "recoveredReplies": 0,
+          "proposedActions": 96,
+          "submittedActions": 81,
+          "executedActions": 77,
+          "staleSubmissions": 4,
+          "gameplayRejections": 0,
+          "skippedActions": 15
+        }
+      },
+      "metricsVersion": 2,
+      "messages": {
+        "sieg": 8,
+        "coco": 12
+      },
+      "batchStops": 29,
+      "modelCalls": {
+        "attempted": 177,
+        "failed": 0,
+        "timedOut": 0,
+        "unknownUsage": 0
+      },
+      "latencyMs": {
+        "mean": 5019,
+        "max": 27681
+      },
+      "tokens": {
+        "input": 1403993,
+        "output": 58087,
+        "cacheRead": 897925,
+        "cacheWrite": 505537
+      },
+      "spendUsd": {
+        "known": 0.111395,
+        "charged": 0.111395
+      },
+      "priceSource": "https://developers.openai.com/api/docs/models/gpt-6-luna (verified 2026-10-28); https://developers.openai.com/api/docs/pricing; https://developers.openai.com/api/docs/guides/prompt-caching",
+      "ledgerEntry": "pilot-17",
+      "episodeCapUsd": 0.15,
+      "wallLimitSeconds": 3600,
+      "launch": {
+        "launcher": "scripts/midterm/evaluate.ts",
+        "speed": null,
+        "viewer": false
+      },
+      "finalClaim": null,
+      "evaluation": {
+        "label": "P1",
+        "definitionHash": "05a2e7442d5271f04af135ddcfec687c23c756e3cc9e6894f43182dd0d7161aa"
+      },
+      "promptHashes": {
+        "sieg": "3902600e793433812c5310463ef4c6775abc453c5a40d2dc377c1d8789425279",
+        "coco": "37d7fd978756337ea904c6a8c515310789d57020e3fa8bdd35b0cd1f57964ae5"
+      },
+      "configHash": "916e7baf037bfeebcd18d8b1d06768446b8c85ef5605d89c639ce57053a60438"
+    }
+  ],
+  "aggregate": [
+    {
+      "situation": "P1",
+      "trials": 1,
+      "successes": 1,
+      "reasons": [
+        "success"
+      ],
+      "meanGameSeconds": 26.2,
+      "meanWallSeconds": 840.5,
+      "gameTicks": 1574,
+      "actions": 217,
+      "failedModelCalls": 0,
+      "unknownUsageCalls": 0,
+      "tokens": {
+        "input": 1403993,
+        "output": 58087,
+        "cacheRead": 897925,
+        "cacheWrite": 505537
+      },
+      "knownUsd": 0.111395,
+      "meanDecisions": 217,
+      "invalidActions": 0,
+      "messages": 20,
+      "modelCalls": 177,
+      "chargedUsd": 0.111395,
+      "startHashes": [
+        "688b246237f81837"
+      ],
+      "metrics": {
+        "modelCalls": 177,
+        "modelDecisions": 177,
+        "parseFailures": 0,
+        "recoveredReplies": 0,
+        "proposedActions": 248,
+        "submittedActions": 217,
+        "executedActions": 213,
+        "staleSubmissions": 4,
+        "gameplayRejections": 0,
+        "skippedActions": 31
+      },
+      "metricsEpisodes": 1
+    }
+  ],
+  "previousAttempts": []
+}

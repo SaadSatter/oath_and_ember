@@ -1,0 +1,297 @@
+{
+  "kind": "certification probe (not a player, not a result)",
+  "gitHead": "e5d2dfe",
+  "outcome": {
+    "status": "success",
+    "reason": "success",
+    "seconds": 182.5
+  },
+  "startHash": "9d565ae90d161cc9e79979e0b9b66b1c5499d5a22e5292ba10ca271bda12cb50",
+  "endHash": "54ca7cf1c05d5e6251b9a2430015772d001949c2cbd9ebc79202b97cebc6fe68",
+  "report": {
+    "descriptiveOnly": true,
+    "knockouts": 2,
+    "knockoutsByHero": {
+      "sieg": 1,
+      "coco": 1
+    },
+    "events": [
+      {
+        "hero": "coco",
+        "tick": 6149,
+        "gameSeconds": 102.48,
+        "area": "Griffin Enclosure",
+        "heroHpAfter": 100,
+        "griffinHp": 640,
+        "milestonesBefore": [
+          "showcase:0-goddess-quest-received",
+          "showcase:0-maze-entered",
+          "showcase:1-maze-complete",
+          "showcase:1b-returned-from-maze",
+          "showcase:1c-griffin-entered"
+        ],
+        "respawn": "game rule: full health at this area's starting point",
+        "milestonesReachedAfter": [
+          "showcase:2-griffin-defeated",
+          "showcase:3-wig-acquired-after-defeat",
+          "showcase:3b-returned-with-wig",
+          "showcase:4-offering-accepted",
+          "showcase:5-chapter0-complete"
+        ]
+      },
+      {
+        "hero": "sieg",
+        "tick": 7869,
+        "gameSeconds": 131.15,
+        "area": "Griffin Enclosure",
+        "heroHpAfter": 100,
+        "griffinHp": 640,
+        "milestonesBefore": [
+          "showcase:0-goddess-quest-received",
+          "showcase:0-maze-entered",
+          "showcase:1-maze-complete",
+          "showcase:1b-returned-from-maze",
+          "showcase:1c-griffin-entered"
+        ],
+        "respawn": "game rule: full health at this area's starting point",
+        "milestonesReachedAfter": [
+          "showcase:2-griffin-defeated",
+          "showcase:3-wig-acquired-after-defeat",
+          "showcase:3b-returned-with-wig",
+          "showcase:4-offering-accepted",
+          "showcase:5-chapter0-complete"
+        ]
+      }
+    ],
+    "milestones": [
+      {
+        "milestone": "showcase:0-goddess-quest-received",
+        "tick": 1486,
+        "gameSeconds": 24.77
+      },
+      {
+        "milestone": "showcase:0-maze-entered",
+        "tick": 1666,
+        "gameSeconds": 27.77
+      },
+      {
+        "milestone": "showcase:1-maze-complete",
+        "tick": 3556,
+        "gameSeconds": 59.27
+      },
+      {
+        "milestone": "showcase:1b-returned-from-maze",
+        "tick": 4006,
+        "gameSeconds": 66.77
+      },
+      {
+        "milestone": "showcase:1c-griffin-entered",
+        "tick": 4776,
+        "gameSeconds": 79.6
+      },
+      {
+        "milestone": "showcase:2-griffin-defeated",
+        "tick": 8627,
+        "gameSeconds": 143.78
+      },
+      {
+        "milestone": "showcase:3-wig-acquired-after-defeat",
+        "tick": 10115,
+        "gameSeconds": 168.58
+      },
+      {
+        "milestone": "showcase:3b-returned-with-wig",
+        "tick": 10303,
+        "gameSeconds": 171.72
+      },
+      {
+        "milestone": "showcase:4-offering-accepted",
+        "tick": 10770,
+        "gameSeconds": 179.5
+      },
+      {
+        "milestone": "showcase:5-chapter0-complete",
+        "tick": 10951,
+        "gameSeconds": 182.52
+      }
+    ],
+    "griffinDefeatedTick": 8627,
+    "reason": "success"
+  },
+  "probe": {
+    "stage": "recovered",
+    "knockoutSeenAtTick": 6165
+  },
+  "aroundKnockout": {
+    "before": {
+      "tick": 6142,
+      "cocoHp": 10,
+      "cocoScene": "GRIFFIN_ENCLOSURE",
+      "griffinHp": 640,
+      "griffinPhase": "BEAM_CHARGE",
+      "backpack": {
+        "moonleaf": 1,
+        "crystal_vial": 2,
+        "candlewick": 1,
+        "fresh_bread": 1,
+        "honey_pastry": 1,
+        "alden_journal": 1,
+        "strange_cloth": 1,
+        "star_drawing": 1,
+        "enchanted_shears": 1
+      },
+      "storyFlags": [
+        "prologue.visit",
+        "prologue.detour",
+        "prologue.cart",
+        "prologue.ambush",
+        "prologue.rescue",
+        "prologue.home",
+        "prologue.farewell",
+        "prologue.complete",
+        "chapter0.errand",
+        "chapter0.moonleaf",
+        "chapter0.store",
+        "chapter0.bakery",
+        "chapter0.errand-done",
+        "chapter0.homecoming",
+        "chapter0.silent",
+        "chapter0.bag",
+        "chapter0.last-words",
+        "chapter0.sets-out",
+        "chapter0.stranger",
+        "chapter0.glance",
+        "chapter0.no-fire",
+        "chapter0.reunion",
+        "chapter0.next-day",
+        "chapter0.stone-1",
+        "chapter0.stone-2",
+        "chapter0.stone-3",
+        "chapter0.flower-1",
+        "chapter0.flower-2",
+        "chapter0.flower-3",
+        "chapter0.site-ready",
+        "chapter0.ready-OATH",
+        "chapter0.ready-EMBER",
+        "chapter0.burial",
+        "chapter0.flowers",
+        "chapter0.sword",
+        "chapter0.funeral",
+        "chapter0.clue-bertram",
+        "chapter0.clue-brynn",
+        "chapter0.clue-merchant",
+        "chapter0.clues-done",
+        "chapter0.journal",
+        "chapter0.shrine-quest",
+        "chapter0.drawer-forced",
+        "chapter0.seal-undone",
+        "chapter0.angel-meet",
+        "chapter0.angel-blessing",
+        "chapter0.trials-inscription",
+        "chapter0.trial-cooperation",
+        "chapter0.trial-ingenuity",
+        "chapter0.trial-courage",
+        "chapter0.trials-passed",
+        "chapter0.goddess-meet",
+        "chapter0.maze-banter",
+        "chapter0.griffin-banter"
+      ],
+      "claimed": [
+        "hedge-runner-key",
+        "hedge-shears-chest"
+      ],
+      "mazeProgress": {
+        "burned": true,
+        "cowParked": true,
+        "wolfCaught": true,
+        "gateComplete": true
+      }
+    },
+    "after": {
+      "tick": 6149,
+      "cocoHp": 100,
+      "cocoScene": "GRIFFIN_ENCLOSURE",
+      "griffinHp": 640,
+      "griffinPhase": "BEAM",
+      "backpack": {
+        "moonleaf": 1,
+        "crystal_vial": 2,
+        "candlewick": 1,
+        "fresh_bread": 1,
+        "honey_pastry": 1,
+        "alden_journal": 1,
+        "strange_cloth": 1,
+        "star_drawing": 1,
+        "enchanted_shears": 1
+      },
+      "storyFlags": [
+        "prologue.visit",
+        "prologue.detour",
+        "prologue.cart",
+        "prologue.ambush",
+        "prologue.rescue",
+        "prologue.home",
+        "prologue.farewell",
+        "prologue.complete",
+        "chapter0.errand",
+        "chapter0.moonleaf",
+        "chapter0.store",
+        "chapter0.bakery",
+        "chapter0.errand-done",
+        "chapter0.homecoming",
+        "chapter0.silent",
+        "chapter0.bag",
+        "chapter0.last-words",
+        "chapter0.sets-out",
+        "chapter0.stranger",
+        "chapter0.glance",
+        "chapter0.no-fire",
+        "chapter0.reunion",
+        "chapter0.next-day",
+        "chapter0.stone-1",
+        "chapter0.stone-2",
+        "chapter0.stone-3",
+        "chapter0.flower-1",
+        "chapter0.flower-2",
+        "chapter0.flower-3",
+        "chapter0.site-ready",
+        "chapter0.ready-OATH",
+        "chapter0.ready-EMBER",
+        "chapter0.burial",
+        "chapter0.flowers",
+        "chapter0.sword",
+        "chapter0.funeral",
+        "chapter0.clue-bertram",
+        "chapter0.clue-brynn",
+        "chapter0.clue-merchant",
+        "chapter0.clues-done",
+        "chapter0.journal",
+        "chapter0.shrine-quest",
+        "chapter0.drawer-forced",
+        "chapter0.seal-undone",
+        "chapter0.angel-meet",
+        "chapter0.angel-blessing",
+        "chapter0.trials-inscription",
+        "chapter0.trial-cooperation",
+        "chapter0.trial-ingenuity",
+        "chapter0.trial-courage",
+        "chapter0.trials-passed",
+        "chapter0.goddess-meet",
+        "chapter0.maze-banter",
+        "chapter0.griffin-banter"
+      ],
+      "claimed": [
+        "hedge-runner-key",
+        "hedge-shears-chest"
+      ],
+      "mazeProgress": {
+        "burned": true,
+        "cowParked": true,
+        "wolfCaught": true,
+        "gateComplete": true
+      }
+    }
+  },
+  "traceLines": 12097,
+  "observationLinesMentioningShowcase": 0
+}

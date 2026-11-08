@@ -1,0 +1,147 @@
+# Opt-in fast model player: `model-navigator`
+
+Owner request, 2026-11-05: finish the Hedge Maze (S2-local, seed 0) evaluation quickly. Verify and record the scripted baseline; add an opt-in, faster, genuinely model-driven two-agent player; test it offline; prepare (not run) a paid model run. No paid call has been made with this player.
+
+## 1. Scripted baseline, verified (2026-11-05)
+
+`baseline-quest`, S2-local seed 0, at `0f86844` (clean tree), through the live launcher with video. **Scripted, no model.**
+
+| Field | Value |
+| --- | --- |
+| Success | yes: Enchanted Shears in the shared backpack (`holding:enchanted_shears`) |
+| Game time | 2,723 ticks, 45.4 s of episode time (absolute end tick 3,128; summaries report 52.1 s because they include the 405-tick walk-in) |
+| Wall time | 51.2 s episode; 57.6 s recording |
+| Actions | 395 decisions (231 Sieg, 164 Coco), 0 invalid, 6 messages, 0 model calls |
+| Hashes | start `fdc49877…03ca`, end `6644f2ca…7f56`, identical to the offline v2 reference |
+| Trace | `midterms/saadsatter/evidence/traces/baseline-quest-S2-local-seed0-v2-live/trace.jsonl` |
+| Video | `evaluation-runs/live/S2-local-seed0-baseline-quest-0f86844/recording.webm` (local, gitignored; SHA-256 `90a76f85…2bf8`) |
+
+The baseline was not broken by the cow posts (`ffbdecb`) or the lapping wolf (`3ca9792`); those were already folded into its v2 values (`0f86844`). No baseline or scenario change was needed. Details: the evidence folder's README.
+
+**Video check.** `scripts/evidence/verify-video.ts` decodes the whole file with ffmpeg (from PATH, or the one Playwright installs) and checks sampled frames for picture content. A first, browser-based version read every frame of these files as blank white although the files decode correctly; it was replaced. The owner's 2026-11-04 recordings decode correctly too.
+
+## 2. What the navigator is
+
+A model player with two independent heroes, like `model-memory`, plus a walking helper. Code: `packages/agent/src/policies/navigator.ts`.
+
+- **Model.** Each hero's model sees everything `model-memory` sees (its notes, completed and refused actions, last turn, its own `HeroMemory`, its observation, legal actions) plus a `navigation` block: the current goal, its status, why it is being asked, and how far the helper walked. Its reply may carry, besides the usual `actions`, `"go_to": {"x", "y"}` (a tile in this area) or `"stop_navigation": true`. The system prompt is the `model-memory` prompt plus `NAVIGATOR_SECTION`, which explains these fields and gives general advice on abilities and messages. It has no game content, coordinates or puzzle steps (tested).
+- **Walking helper.** When a goal is set and nothing has happened, the helper answers the decision itself with one ordinary `move` (at most 60 ticks), which the game validates like any other. It plans with A* (8-way, no corner cutting) over that hero's own remembered map (tiles its screen showed; never-seen tiles count as possibly open at a higher cost), its current screen (a creature's drawn body is blocked; creatures, enemies and the partner are costly to walk through), and the cells its own moves were stopped short by. It lines up with the row or column before a straight run, walks the longest straight run of the path, and re-plans every decision.
+- **Stuck and unreachable.** A move that goes nowhere marks the cell ahead as costly for 20 s and re-plans; two in a row add a short side-step. The goal ends as unreachable when no path exists on the hero's map, after 6 stopped moves, or after 6 moves without getting closer than the previous plan. The model is then told why.
+- **When the model is asked** (each listed in `navigation.why_you_are_asked`): no goal; arrival; unreachable goal; a new dialogue line; damage; something of a kind and name this hero had not seen before coming on screen; an enemy coming within 2.5 tiles; a new kind of action becoming available (E, an item, dialogue); a partner message with text this hero had not received before; a backpack or journal change; a new non-routine feedback line; a refused action or unusable reply; the game not taking a walking move; or 12 walking moves in a row.
+- **Goals persist.** A model call does not cancel the goal. Only a new `go_to`, `stop_navigation`, arrival or an unreachable goal ends it. Answering a message keeps it (tested).
+- **What the helper never does.** Attack, guard, press E, use abilities or items, advance dialogue, or send messages. It never changes or vetoes a model action, with one disclosed exception: a message identical (ignoring case and spacing) to one this hero sent in the last 10 game-seconds is not sent, and the model is told so next turn (`navigation.notices`).
+- **What it cannot see.** It imports only types, the hero's own `HeroMemory`, the prompt helpers and `navigate.ts` (for `directionTo` and the walking speed). No `World`, `GameRoom`, environment, route, baseline, walkthrough, map geometry or partner state (tested by an import check). The speed constants it needs (super speed ×2, slowed time ×0.2) are copied.
+- **Trace.** Every navigator decision writes a `policy_note` line (`source: "model"` or `"controller"`, events, goal, status, path length and unknown cells). The runner gained this optional field (`Decision.note`); other players never set it, so their traces are unchanged.
+- **Limits.** Same as every model player: the scenario's tick, decision (1,600 per hero), model-call (400 per hero), token and spend limits, and the shared ledger. A helper decision counts as a decision, not a model call.
+- **Scope.** Tuning runs on S1–S3 and their approved local variants only, never final (`validatePlan`), like `model-memory`. It is not part of S2-A's frozen player list, so its results are reported separately from the S2-A comparison.
+
+Existing players are unchanged: their prompts and replies are pinned by `promptFreeze`/`modelMemory` tests, which pass. The mock gateway gained a branch that sends random goals only when the user message has a `navigation` block.
+
+## 3. Offline tests (2026-11-05)
+
+`packages/agent/test/navigator.test.ts`, 15 tests, all passing. Fixed goal coordinates appear only in test fixtures, never in a prompt.
+
+| Claim | Test |
+| --- | --- |
+| Follows a long observed corridor without repeated model calls | REAL PLAY S2-local seed 0: Sieg walks 12 tiles east; between goal and arrival the only calls are the opening dialogue and three events (an exit within reach, new enemies, a new sign); no "walking moves" check-in |
+| Recovers from an unreachable goal | REAL PLAY: a goal beyond the burnable hedge is searched for, declared unreachable within 20 calls, and the hero never passes the hedge |
+| Handles the fenced cow | The committed S2-A v2 trace's Sieg observations, replayed into a fresh memory: at every one of them with the cow on screen, no planned path crosses the cow's body |
+| Dynamic enemies | Enemy-close, new-thing and damage events; occupied cells cost more |
+| Independent memories | REAL PLAY: tiles only Sieg saw stay unknown in Coco's memory; neither hero's prompt contains the other's notes; separate `HeroMemory` objects |
+| Messages don't cancel goals | A partner message triggers a call; a reply with only a message keeps the goal, and walking resumes without another call; a repeated text is not news |
+| No duplicate messages | A message repeated within 10 s is not sent, and the model is told |
+| No hidden state or shortcuts | Import check; prompt section has no game words or coordinates; tuning-only, own player kind |
+
+Whole repository: `npm run typecheck` passed; `npm run build` passed (existing chunk-size warning); `npm test` 1,180 of 1,181 passed. The one failure is `s2Shutdown.test.ts` (a recorder finalize-timeout message), which sessions 44 and `0f86844` already recorded as failing before this work; no recorder code changed.
+
+Mock runs through the live launcher (offline, random goals; launcher checks only, not results): headless, 689 calls over 256 game-s ending at the call limit, 0 crashes; recorded with the viewer, the video saved and decodes.
+
+## 4. Model-call frequency, old and new
+
+Old players, measured from local traces of earlier unaided Hedge Maze runs (OpenAI `gpt-6-luna`, medium; game time counted from the episode start):
+
+| Run | Player | Calls | Game s | Calls per game-s | Wall s per game-s |
+| --- | --- | --- | --- | --- | --- |
+| 2026-10-29T04-35 (pilot-10) | model-history | 221 | 38.0 | 5.81 | 28.9 |
+| 2026-10-29T06-09 (pilot-13) | model-memory | 386 | 69.4 | 5.56 | 44.2 |
+| 2026-10-29T14-31 (pilot-15) | model-memory | 173 | 26.8 | 6.47 | 43.0 |
+| 2026-10-29T05-45 | model-guided (solution-informed) | 164 | 37.2 | 4.41 | 28.2 |
+
+None of the unaided runs succeeded (all stopped by hand). Pilot-13's calls averaged 9,944 input and 446 output tokens, $0.00084 and 6.3 s each (median latency).
+
+New player, estimated offline by `scripts/midterm/navigator-call-estimate.ts`: it replays each hero's observations from the scripted baseline through the navigator's own event detector and counts the decisions that would need the model (an event, or any action other than walking, batched by 4). For a player that picked the baseline's walking goals: **88 calls** (Sieg 43, Coco 45) for the 45.4 s episode, **1.94 per game-second**, about a third of the old rate. 168 of the baseline's 395 decisions would be the helper's. This is a lower bound for an ideal player on that route, not a prediction for a real model; the paid run measures the real rate.
+
+## 5. Prepared paid run (needs the owner's approval)
+
+```sh
+npm run eval:live -- --scenario S2-local --seed 0 --player model-navigator \
+  --gateway openai --model gpt-6-luna --effort medium --max-spend-usd 0.75 --paid --no-open
+```
+
+- **Model:** `gpt-6-luna` at medium effort, the only provider whose calls have succeeded here and the one all S2-local pilots used. Alternative: `--gateway anthropic --model claude-haiku-5-5 --effort medium`, but the owner's three Anthropic attempts on 2026-11-04 failed with `401 invalid x-api-key`, so the key must be fixed first.
+- **Cap:** $0.75 for the episode (suite cap $1.25). Ledger before the run: $2.40 of $25 spent, all pilot; $5.60 of the $8 pilot stage left; nothing held.
+- **Estimate:** about 10,500 input tokens per call (pilot-13's 9,944 plus the navigator section and block), about $0.0009 per call. Calls: 90 (ideal route) to 300 (expected, with mistakes); 800 is the hard limit. Cost $0.08–$0.30 expected, at most the cap. Wall time at 6–8 s per call: 10–40 minutes; the 3,600 s wall limit ends a run near 450–600 calls.
+- **Risks:** the model may still not solve the maze (none of the unaided players has); events in combat-heavy stretches may cause bursts of calls; the helper can be slowed by narrow gaps; `wall_clock_limit` would be a latency result, not a game failure; the 2026-11-04 Anthropic key was invalid. A replay of the video, if needed, must be labelled as a replay.
+
+## 6. Paid run 1 review and fixes (2026-11-05)
+
+Run: `midterms/saadsatter/evidence/traces/navigator-paid-1-S2-local-seed0/` (owner-launched, `gpt-6-luna` medium, $0.75 cap). Ended `error` at 62.4 s after 236 calls; $0.264 charged. No paid call was made in this review.
+
+### Long timeouts: host sleep, not the timeout code
+
+- All 10 timeouts overlap macOS sleep intervals from `pmset -g log` (idle sleep at 18:38:38, then maintenance sleeps). The calls longer than 30 s (660, 514, 122, 80, 66 and 32 s) each contained 27–655 s of host sleep; the 30 s ones overlapped dark-wake periods with the network down. The last three, Coco's at 19:11–19:23, ended the episode under the existing three-consecutive-failures rule.
+- Not retries: the OpenAI gateway and the Anthropic SDK make one request per call (retries off), and each attempt is counted. Not a cancellation failure: the trace shows each long call ended within seconds of the host waking, which is when the 30 s timer could first run.
+- Accounting was correct: each timeout was charged its full reservation (unknown usage), $0.0837 of the $0.264.
+- **Fix.** `packages/agent/src/keepAwake.ts`: the live launcher and `evaluate.ts` hold `caffeinate -i -s -w <pid>` for the run (verified with `pmset -g assertions`), and a `SuspendMonitor` records any wall-clock gap over 5 s as a host suspension. Both go into `live.json` (`host`) and are printed. The timeout code is unchanged.
+- **Tests** (`hostSuspend.test.ts`): a transport that ignores its abort signal still fails at the deadline, is charged its reservation once, and a late reply changes nothing; three stalled calls take about three deadlines; caffeinate is started for the process and stopped; a 657 s clock jump is recorded as a suspension. Earlier tests already covered hung calls (`budget.test.ts`, `openai.test.ts`).
+
+### Model-call breakdown (`audit.json`)
+
+| Reason included in the call (226 answered calls) | Calls |
+| --- | --- |
+| no walking goal (nothing to carry on) | 172 (130 with no other reason) |
+| new partner message | 42 |
+| arrived at walking goal | 23 |
+| new thing on screen | 10 |
+| something moved (game feedback) | 9 |
+| dialogue line | 8 |
+| enemy close | 8 |
+| other feedback, refused action, damage, new action, move not taken, unreachable | 26 |
+
+Replies: 54 set a goal, 66 only waited (Sieg 45), 45 attacked or guarded, 29 moved by hand, 19 only messaged (and waited), 4 cast Black Hole. Waiting: 66 calls in 26 runs. Communication: 50 messages sent (Sieg 30, Coco 20), 42 calls caused by partner messages.
+
+### Fixes for calls and play
+
+- **`wait_until`** `{"seconds" ≤ 30, "watch"?: name}`: ordinary 30-tick waits, no model calls, until any event the walker already wakes for (new message text, damage, dialogue, backpack/journal, new thing, close enemy, feedback), the watched thing moving 0.5 tiles or leaving the screen, or the deadline. Up to 40 of the run's 66 wait-only calls fall in runs that one `wait_until` could cover.
+- **`fight`** `{"target": enemy name, "seconds" ≤ 15}`: the existing observation-only combat rules (`planFightTarget`, a new function beside the scripted players' unchanged `planFight`) against that enemy, waiting out J recovery; ends when the target leaves the screen, the hero has lost 25% of max HP since the fight began, any other event, or the deadline. Smaller hits do not interrupt it. Up to 29 of the 45 combat calls fall in runs one `fight` could cover (an upper bound).
+- **Edge-triggered movement lines.** A run of the game's "The X moved …" lines is one "started moving" event and one "stopped moving, last reported at (…)" event. In this run it would have removed 1 of 9 such calls (the others had other reasons too), but while waiting it removes every repeat. The "line had already moved on" notice is now routine. Damage, new enemies, blocked moves and journal changes still interrupt.
+- **Black Hole aim preview** (`navigation.aim_preview`, only while the ability is in `legal_actions`): for each of the 8 directions, where it would stop by the manual's rules (up to 6 tiles, first blocked tile, enemy or creature body on the hero's own map) and what lies within its 3-tile pull, with the straight pull direction. It names no target or place, and the model still decides. Tested against all five casts of this run: each predicted stop is within 0.5 tiles of the vortex the heroes saw. For the cast that parked the cow, the preview shows the cow within the pull. The game's sideways-only cow movement is a puzzle reaction the preview does not claim to know.
+
+The cow finding matters more than aiming: the third cast parked the cow and Coco then walked past it, but both heroes kept saying it blocked the way. The new "cow stopped moving" event and `wait_until` with `watch` make that result visible to a waiting hero. Whether the model then reads the opening correctly is for the next run to show.
+
+### Verification
+
+`npm run typecheck` passed; `npm run build` passed; `npm test` 1,192 of 1,193 (the known `s2Shutdown` recorder failure). Baseline: `baseline-quest` S2-local seed 0 headless, success, 395 decisions, end hash `6644f2ca…` (unchanged). A mock navigator run through the launcher completed with no errors.
+
+### Recommended next paid run (needs the owner's approval)
+
+```sh
+npm run eval:live -- --scenario S2-local --seed 0 --player model-navigator \
+  --gateway openai --model gpt-6-luna --effort medium --max-spend-usd 0.75 --paid --no-open
+```
+
+Same model, effort and cap as run 1. Pilot stage left: $5.34. Keep the machine on AC power with the lid open; the launcher now holds a sleep assertion, but closing a laptop lid still sleeps it. Check `live.json` `host.suspendedSeconds` afterwards. Expect fewer calls per game-second than run 1's 4.2 if the model uses `wait_until` and `fight`; that is not guaranteed and is what the run measures.
+
+## 7. Wolf clue fix and `catch` (2026-11-05)
+
+Owner request: the wolf is caught, never defeated; Sieg approaches it and presses E to get the gate key.
+
+- **Clue.** The maze's wolf sign moved from the top lane (25, 2.3) to the hedge south-east of the key gate (44, 17.2), and now reads "KEY GATE · The forest wolf carries its key. · Sieg: catch the wolf · E to take it · Slow Time + Super Speed to chase" (`HedgeMazeView.ts`; agent copy `MAZE_WOLF_SIGN` in `perception.ts`, now a label with no grid mark). No game rule changed.
+- **`catch`** `{"target": name on screen, "seconds" ≤ 30}`: ordinary short moves toward the target while it is on screen, toward where it was last seen when it is not; an ordinary E when it is within 2.5 tiles and the backpack panel shows a nearby target. Ends when an E press changes the backpack, on reaching the last-seen spot without seeing it, with no path, or at the deadline. News about the chased thing itself does not interrupt it; everything else does. It never attacks, uses abilities or items, or messages. The prompt names no game thing.
+- **`fight`** attacks only enemies; naming a creature (the wolf) ends it at once with "is a creature, not an enemy".
+- **Tests** (`wolfCatch.test.ts`, 13): clue text and place match the client and cover no floor; real-play discoverability on S2-local (sign, wolf, panel E prompt; no off-screen wolf position); catch unit tests; REAL PLAY on S2-C seed 0, where a fixture-driven Sieg takes the key with one E and no attack.
+- **Effect on frozen values.** None of the pinned hashes moved (the sign is not authoritative state): S2-A/S2-B/S2-C definitions and start hashes, the baseline's actions, per-action state hashes and end hash `6644f2ca…7f56`. What players observe in the maze did change (120 of the baseline's 395 observations differ, only in the sign entry), so model runs before this fix, including paid run 1, saw the old sign. The navigator's id is now `1f2e87d3`.
+
+## 8. go_to oscillation fix (owner request, 2026-11-06)
+
+`NAV_ID` `1f2e87d3` → **`5a8c202e`**: remembered body tiles, a bounded cycle guard with one local recovery, observable unreachable reasons, and retry after a map change. Paid navigator runs of 2026-11-05/06 were under `1f2e87d3` and are not comparable. Details: [COW_PASSAGE_FIXES.md](COW_PASSAGE_FIXES.md).

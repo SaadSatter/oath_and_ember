@@ -1,0 +1,110 @@
+{
+  "episode": "Pilot-33",
+  "situation": "B",
+  "condition": "post-tuned",
+  "classification": "Owner-designated primary after outcome; guidance approved before run, r8 originally pinned earlier guidance",
+  "row": {
+    "situation": "B",
+    "condition": "post-tuned",
+    "runNumber": 1,
+    "scenarioId": "griffin-unprepared-return-v1",
+    "seed": 0,
+    "scenarioHash": "b224f75d2ec71ad61082fe0cba4617057b73cd9feb5173c52f7f32dcd86ed6f1",
+    "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
+    "declarationId": "oath-ember-abc-2026-11-06-r9-pilot33",
+    "status": "completed",
+    "success": true,
+    "gameSeconds": 51,
+    "wallSeconds": 2184.4,
+    "modelCalls": 251,
+    "inputTokens": 4871133,
+    "outputTokens": 157250,
+    "costUsd": 0.554417,
+    "invalidActions": 1,
+    "failureReason": null,
+    "confirmedSubgoals": [
+      "griffin-defeated",
+      "holding:griffin_wig",
+      "claimed:griffin-nest",
+      "offering-accepted",
+      "chapter0-complete"
+    ],
+    "tracePath": "midterms/saadsatter/evidence/traces/pilot-33-model-centralized-griffin-unprepared-return-v1-seed0/trace.jsonl",
+    "recordingPath": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T23-57-08-007Z/recording.webm",
+    "policyId": "centralized-f0592888(openai:gpt-6-luna@medium)\u00b7batch4\u00b7task-cdbee612\u00b7guidance-12874542",
+    "promptHash": "7ff08ba84c4ab14460d0f6707febdc19b8e417ced89d3127636ce7ed9f352144",
+    "configHash": "f3949a6dbabea35e5053053f4a7e46ecc6f801c7698fcc78eaeb75f233d66cb3",
+    "sourceCommit": "1f0ca45",
+    "plannedPlayerType": "model-centralized",
+    "declarationHash": "616c182453e06ec9568ffea3bc0c26dde314dca54376a2e77012766a269445be",
+    "decisions": {
+      "sieg": 262,
+      "coco": 183
+    },
+    "failedModelCalls": 0,
+    "timedOutModelCalls": 0,
+    "unknownUsageCalls": 0,
+    "unusableReplies": 5,
+    "gameRefusalsNotCountedInvalid": null,
+    "latencyMs": {
+      "mean": 8492,
+      "max": 28053
+    },
+    "cacheReadTokens": 1595500,
+    "cacheWriteTokens": 3274880,
+    "reasoningTokens": null,
+    "priceSourceDate": null,
+    "costNote": "Saved runner estimate based on dated price source; not provider invoice. Failed Pilot-32 cost 0.206005 preserved separately.",
+    "manualHash": "4b091a6630dd56f236f89f8e2213a6bb7cad4a31d4851d1883f95867d92bfa86",
+    "guidanceHash": "1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34",
+    "guidanceStatus": "b-post-combined-v4: approved before run; owner designated this primary result after outcome",
+    "traceSha256": "b45719346981d2acbe385789458e89b90e8c7b0f632c2ebaf5c759b2cd9a9423",
+    "recordingSha256": "6af860495e545d94343a8674360e4d341509421f5bab30261bd1528bb5e879c3",
+    "endHash": "6fd8c37f7fe956e48e04adace7265b6318842da30302947a703e4198c9b89da0",
+    "historicalSuiteHash": null,
+    "scenarioNote": "Different scenario from B pre-tuned (Pilot-31 on griffin-unprepared-v1); not a prompt-only contrast.",
+    "priorPostTunedAttempt": "Pilot-32: knocked_out, 47.5 game-s, 98 calls, 0.206005 USD; different guidance",
+    "episode": "Pilot-33",
+    "selectionNote": "Replaces r8 planned v1 row after owner instruction; historical r8 metadata retained. Different scenario/start/framing from pre-tuned Pilot-31."
+  },
+  "recordingMetadata": "midterms/saadsatter/evidence/traces/pilot-33-model-centralized-griffin-unprepared-return-v1-seed0/live-recording.json",
+  "manifest": "midterms/saadsatter/evidence/traces/pilot-33-model-centralized-griffin-unprepared-return-v1-seed0/manifest.json",
+  "milestones": [
+    {
+      "tick": 2831,
+      "gameSeconds": 38.183,
+      "name": "griffin-defeated"
+    },
+    {
+      "tick": 3016,
+      "gameSeconds": 41.267,
+      "name": "holding:griffin_wig"
+    },
+    {
+      "tick": 3016,
+      "gameSeconds": 41.267,
+      "name": "claimed:griffin-nest"
+    },
+    {
+      "tick": 3385,
+      "gameSeconds": 47.417,
+      "name": "offering-accepted"
+    },
+    {
+      "tick": 3597,
+      "gameSeconds": 50.95,
+      "name": "chapter0-complete"
+    }
+  ],
+  "guidance": {
+    "id": "b-post-combined-v4",
+    "status": "approved",
+    "sha256": "1287454219c46dbce31bc5ea0beaee68cdb7addb55b957f2ca57d899ef1bdf34",
+    "situations": [
+      "griffin-unprepared-v1",
+      "griffin-unprepared-return-v1"
+    ]
+  },
+  "priorFailedAttempt": "docs/midterm/evaluation-abc/B-posttuned-pilot32.json",
+  "preservation": "Seven run files copied byte-for-byte; video untouched and local-only; complete trace includes raw replies and policy_note records. No new paid calls."
+}

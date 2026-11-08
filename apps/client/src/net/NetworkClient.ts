@@ -11,6 +11,24 @@ import type {
 import { Prediction } from "./prediction.js";
 import { SimulationClock } from "./simulationClock.js";
 import { Interpolation } from "./interpolation.js";
+/**
+ * Evaluation recording: `?view=<token>&room=<code>&player=<id>` attaches this
+ * browser as a view-only renderer of one hero. It never sends intent and never
+ * stores a session; the server also refuses anything else from such a socket.
+ */
+export function viewParams(
+  search = typeof location === "undefined" ? "" : location.search,
+) {
+  const q = new URLSearchParams(search);
+  const viewToken = q.get("view"),
+    roomCode = q.get("room"),
+    playerId = q.get("player");
+  return viewToken && roomCode && playerId
+    ? { viewToken, roomCode, playerId }
+    : null;
+}
+/** Requests a view-only client may still make: attaching and clock sync. */
+const VIEW_REQUESTS = new Set<keyof ClientEvents>(["view:attach", "clock:probe"]);
 export class NetworkClient {
   socket: Socket<ServerEvents, ClientEvents> = io();
   session: Session | null = null;
@@ -22,19 +40,34 @@ export class NetworkClient {
   private sentInputs: InputFrame[] = [];
   seq = 0;
   private leaving = false;
+  readonly view = viewParams();
+  get viewOnly() {
+    return this.view !== null;
+  }
   onchange = () => {};
   onworld = (_world: World) => {};
   onerror = (s: string) => console.warn(s);
   constructor() {
-    try {
-      this.session = JSON.parse(
-        sessionStorage.getItem("oath-session") || "null",
-      );
-    } catch {
-      sessionStorage.removeItem("oath-session");
-    }
+    if (!this.view)
+      try {
+        this.session = JSON.parse(
+          sessionStorage.getItem("oath-session") || "null",
+        );
+      } catch {
+        sessionStorage.removeItem("oath-session");
+      }
     this.socket.on("connect", () => {
-      if (this.session)
+      if (this.view) {
+        this.request("view:attach", this.view)
+          .then((v) => {
+            const s = v as { roomCode: string; playerId: string };
+            this.save({ roomCode: s.roomCode, playerId: s.playerId, reconnectToken: "" });
+          })
+          .catch((e) => {
+            this.onerror(e.message);
+            this.onchange();
+          });
+      } else if (this.session)
         this.request("session:resume", this.session)
           .then((s) => this.save(s as Session))
           .catch((e) => {
@@ -111,6 +144,7 @@ export class NetworkClient {
     this.onchange();
   }
   sendInput(input: InputFrame, reliable: boolean) {
+    if (this.viewOnly) return;
     this.sentInputs.push({ ...input });
     if (this.sentInputs.length > 6) this.sentInputs.shift();
     const packet = { frames: this.sentInputs };
@@ -139,7 +173,7 @@ export class NetworkClient {
   }
   save(s: Session) {
     this.session = s;
-    sessionStorage.setItem("oath-session", JSON.stringify(s));
+    if (!this.viewOnly) sessionStorage.setItem("oath-session", JSON.stringify(s));
     if (this.world) this.accept(this.world, true);
     if (!this.clockTimer) {
       const probe = () => {
@@ -163,6 +197,8 @@ export class NetworkClient {
   }
   // Acks have a deadline; a missing response never leaves the UI stuck forever.
   request(event: keyof ClientEvents, payload: unknown): Promise<unknown> {
+    if (this.viewOnly && !VIEW_REQUESTS.has(event))
+      return Promise.reject(Error("View-only session."));
     return new Promise((resolve, reject) => {
       const timer = setTimeout(
         () => reject(Error("Request timed out. Check the connection.")),

@@ -1,0 +1,73 @@
+{
+  "about": "Pilot-28 verification record, written 2026-11-06 by the Claude Code implementation agent (session 48).",
+  "ledgerEntry": "pilot-28",
+  "sourceCommit": "678b86c",
+  "files": [
+    {
+      "file": "live.json",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T02-37-35-986Z/live.json",
+      "bytes": 628,
+      "sha256": "3aa6374df7e835ddfc1d6bb5a1a64646d18f8b79d485f64b9eba242c8d5b1d56",
+      "identicalToSource": true
+    },
+    {
+      "file": "recording.json",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T02-37-35-986Z/recording.json",
+      "bytes": 2168,
+      "sha256": "41633129cd9d77bf26a47d0b853788833d293818c6f72c4278667efeba0782ae",
+      "identicalToSource": true
+    },
+    {
+      "file": "results.json",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T02-37-35-986Z/results.json",
+      "bytes": 5366,
+      "sha256": "fb16b0755e628ca2e0a7332531b95b992fd84c54fb83131c7e690df34dc81779",
+      "identicalToSource": true
+    },
+    {
+      "file": "results.md",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T02-37-35-986Z/results.md",
+      "bytes": 515,
+      "sha256": "e8b644878fddcc6e47b857bd3ef10cc81e38515fa806c44a727fa6e30f87356b",
+      "identicalToSource": true
+    },
+    {
+      "file": "run.json",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T02-37-35-986Z/run.json",
+      "bytes": 704,
+      "sha256": "708988aca059ba0609371fc492ae5221c339c29ccd91235652bc7568f4c5023b",
+      "identicalToSource": true
+    },
+    {
+      "file": "summary.json",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T02-37-35-986Z/S2-local-seed0/summary.json",
+      "bytes": 3905,
+      "sha256": "cb27c8257f4b4bfa33d29c558567c9a95cc8aa608712020d56a6859fd9e00006",
+      "identicalToSource": true
+    },
+    {
+      "file": "trace.jsonl",
+      "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T02-37-35-986Z/S2-local-seed0/trace.jsonl",
+      "bytes": 4518358,
+      "sha256": "67f068f3d2297391949187f6ba6444c49bc14077f8c148e04eaa648e8b560ebb",
+      "identicalToSource": true
+    }
+  ],
+  "video": {
+    "source": "evaluation-runs/live/S2-local-seed0-model-centralized-openai-2026-11-06T02-37-35-986Z/recording.webm",
+    "committed": false,
+    "bytes": 76476044,
+    "sha256": "82f49050059cdef168212d5f72be8e7b9da15e305363df53ad7dadd5558ff410",
+    "releaseAsset": "https://github.com/SaadSatter/oath_and_ember/releases/download/pilot-28-29-pretuned-evidence/pilot-28-model-centralized-S2-local-seed0-live.webm",
+    "check": "scripts/evidence/verify-video.ts (Playwright ffmpeg-1011): full decode exit 0, no decode errors, 902.36 s; frames at 2/50/97/99.9% have real content",
+    "terminalOverlay": "final frame header reads '125.3 s game time · 78 model calls · $0.0858'; no 'finished' line (the viewer's known-spend figure, before the aborted call was charged)",
+    "kind": "live viewer capture"
+  },
+  "checks": {
+    "traceChain": "verifyTrace passed: 3473 lines",
+    "replay": "replay-video.ts --check-only at 5388b23: REPLAY MATCHES THE TRACE: start hash, 641 step results, end (manual_stop, b639c8c9547e10ea) and 7516 ticks. No model calls.",
+    "secrets": "scan_secrets.py on this folder: 0 findings"
+  },
+  "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+  "endHash": "b639c8c9547e10eab784b61838dcbab2c4ebe122dda96494ea9e6ed826aa3283"
+}

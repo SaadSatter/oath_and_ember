@@ -1,0 +1,160 @@
+{
+  "normalCheckpoint": "goddess",
+  "startTick": 0,
+  "openingDialogueObserved": [
+    {
+      "speaker": "Goddess",
+      "text": "MORTALS! You stand before the radiant guardian of this sacred land!",
+      "firstObservedTick": 106
+    },
+    {
+      "speaker": "Goddess",
+      "text": "Kneel before my magnificent\u2014",
+      "firstObservedTick": 166
+    },
+    {
+      "speaker": "Coco",
+      "text": "...Is she supposed to be bald?",
+      "firstObservedTick": 226
+    },
+    {
+      "speaker": "Sieg",
+      "text": "Coco!",
+      "firstObservedTick": 286
+    },
+    {
+      "speaker": "Goddess",
+      "text": "WHAT DID YOU SAY?!",
+      "firstObservedTick": 346
+    },
+    {
+      "speaker": "Coco",
+      "text": "Nothing.",
+      "firstObservedTick": 406
+    },
+    {
+      "speaker": "Goddess",
+      "text": "YOU SAID BALD!",
+      "firstObservedTick": 466
+    },
+    {
+      "speaker": "Sieg",
+      "text": "Great. We offended a deity.",
+      "firstObservedTick": 526
+    },
+    {
+      "speaker": "Coco",
+      "text": "I was just asking!",
+      "firstObservedTick": 586
+    },
+    {
+      "speaker": "Goddess",
+      "text": "My glorious hair is MISSING! Vanished from my very own shrine!",
+      "firstObservedTick": 646
+    },
+    {
+      "speaker": "Coco",
+      "text": "Wait. We passed three trials to meet a goddess who lost her wig?",
+      "firstObservedTick": 706
+    },
+    {
+      "speaker": "Goddess",
+      "text": "A DIVINE WIG!",
+      "firstObservedTick": 766
+    },
+    {
+      "speaker": "Sieg",
+      "text": "Is there a difference?",
+      "firstObservedTick": 826
+    },
+    {
+      "speaker": "Goddess",
+      "text": "A CONSIDERABLE DIFFERENCE!",
+      "firstObservedTick": 886
+    },
+    {
+      "speaker": "Coco",
+      "text": "Look, we're not here about your hair. My papa\u2014",
+      "firstObservedTick": 946
+    },
+    {
+      "speaker": "Goddess",
+      "text": "NO QUESTIONS UNTIL MY CROWN OF BEAUTY IS RESTORED!",
+      "firstObservedTick": 1006
+    },
+    {
+      "speaker": "Coco",
+      "text": "You're impossible.",
+      "firstObservedTick": 1066
+    },
+    {
+      "speaker": "Goddess",
+      "text": "AND YOU ARE IMPUDENT!",
+      "firstObservedTick": 1126
+    },
+    {
+      "speaker": "Sieg",
+      "text": "Coco, maybe we should just help her.",
+      "firstObservedTick": 1186
+    },
+    {
+      "speaker": "Coco",
+      "text": "Fine. We'll get your wig.",
+      "firstObservedTick": 1246
+    },
+    {
+      "speaker": "Goddess",
+      "text": "At last! Mortals with proper reverence!",
+      "firstObservedTick": 1306
+    },
+    {
+      "speaker": "Coco",
+      "text": "I wouldn't go that far.",
+      "firstObservedTick": 1366
+    },
+    {
+      "speaker": "Quest",
+      "text": "New objective: Recover the Divine Wig. No one knows where it went: search the Mirror Pond to the west, the Hedge Maze to the east, and the Griffin Enclosure to the north.",
+      "firstObservedTick": 1426
+    }
+  ],
+  "questLines": [
+    {
+      "speaker": "Quest",
+      "text": "New objective: Recover the Divine Wig. No one knows where it went: search the Mirror Pond to the west, the Hedge Maze to the east, and the Griffin Enclosure to the north.",
+      "firstObservedTick": 1426
+    }
+  ],
+  "firstAreaObservations": [
+    {
+      "area": "Goddess Shrine",
+      "hero": "sieg",
+      "firstTick": 0
+    },
+    {
+      "area": "Goddess Shrine",
+      "hero": "coco",
+      "firstTick": 0
+    },
+    {
+      "area": "Hedge Maze",
+      "hero": "sieg",
+      "firstTick": 1666
+    },
+    {
+      "area": "Hedge Maze",
+      "hero": "coco",
+      "firstTick": 1666
+    },
+    {
+      "area": "Griffin Enclosure",
+      "hero": "coco",
+      "firstTick": 4776
+    },
+    {
+      "area": "Griffin Enclosure",
+      "hero": "sieg",
+      "firstTick": 4776
+    }
+  ]
+}

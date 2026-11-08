@@ -505,9 +505,15 @@ it("shows the directional sprint atlas only during an accepted moving speed boos
   const sprint = h.scene.add.image.mock.results[0].value;
   expect(sprint.setTexture.mock.calls.at(-1)?.[1]).toBe(24);
   expect(sprint.setFlipX).toHaveBeenLastCalledWith(false);
-  h.scene.time.now = 200;
+  // Super Speed plays the 200 ms frames at double cadence (owner request,
+  // "Speed up Sieg's running animation when he is using super speed", 2026-10-22),
+  // so each frame lasts 100 ms of scene time.
+  h.scene.time.now = 100;
   h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 6 });
   expect(sprint.setTexture.mock.calls.at(-1)?.[1]).toBe(25);
+  h.scene.time.now = 200;
+  h.view.update(p, p, p, "TOP_DOWN", "sprite", { serverTick: 12 });
+  expect(sprint.setTexture.mock.calls.at(-1)?.[1]).toBe(26);
   const expired = { ...p, sprintRemaining: 0 };
   h.view.update(expired, expired, expired, "TOP_DOWN", "sprite", {
     serverTick: 7,

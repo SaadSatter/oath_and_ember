@@ -1,0 +1,3 @@
+     × gives up on a video that never finalizes, reports it as not saved, and shuts the browser down 211ms
+ Test Files  1 failed | 142 passed (143)
+      Tests  1 failed | 1381 passed (1382)

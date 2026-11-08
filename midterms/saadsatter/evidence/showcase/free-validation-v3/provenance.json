@@ -1,0 +1,11 @@
+{
+  "sourceCommit": "e5d2dfe58bff3e008bf7be29be2dc24766964b92",
+  "nodeVersion": "v26.9.0",
+  "traceUncompressedSha256": {
+    "baseline": "b8d8bda167b62447c9cbec2cd3bc78d66c264a27967dd06bb7249bbfa44d573e",
+    "knockout-probe": "41d275c35f4dd549d5fd5aea4738962054eac25fe552e54dbea1bd6f0e23c6ab"
+  },
+  "priorVersions": "free-validation and free-validation-v2 preserved unchanged; different showcase starts require their recorded source versions",
+  "probeSummary": "Replay-identification metadata only; knockout-check.json is actual certification report",
+  "review": "Separate read-only subagent from same implementing session; not independent top-level review"
+}

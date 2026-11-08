@@ -1,0 +1,1361 @@
+{
+ "source": "S2-local-seed0-model-navigator-openai-2026-11-05T23-26-47-539Z/S2-local-seed0/trace.jsonl",
+ "note": "Black Hole casts from a model run: caster observation before each cast, first vortex seen afterwards, cow drawn position before and after (observation data only).",
+ "casts": [
+  {
+   "tick": 593,
+   "hero": "coco",
+   "direction": "s",
+   "observation": {
+    "player": "coco",
+    "hero": "Coco",
+    "tick": 593,
+    "seconds": 9.9,
+    "area": {
+     "name": "Hedge Maze",
+     "widthTiles": 48,
+     "heightTiles": 40
+    },
+    "self": {
+     "x": 23.47,
+     "y": 34.49,
+     "facing": "e",
+     "hp": 100,
+     "maxHp": 100,
+     "status": []
+    },
+    "abilities": [
+     {
+      "key": "J",
+      "name": "Fireball",
+      "state": "ready"
+     },
+     {
+      "key": "K",
+      "name": "Ward",
+      "state": "hold"
+     },
+     {
+      "key": "1",
+      "name": "Slow Time",
+      "state": "ready"
+     },
+     {
+      "key": "2",
+      "name": "Flight",
+      "state": "ready"
+     },
+     {
+      "key": "3",
+      "name": "Black Hole",
+      "state": "ready"
+     }
+    ],
+    "screen": {
+     "originX": 13,
+     "originY": 28,
+     "rows": [
+      "...####..##....#####",
+      "...####..##.E..#####",
+      ".E.####..........###",
+      "...####..........###",
+      "..............E..###",
+      ".........P.......###",
+      "..........@......###",
+      "..........E......###",
+      "...####..........###",
+      "...####..........###",
+      "####################",
+      "####################"
+     ]
+    },
+    "visible": [
+     {
+      "ref": "partner-1",
+      "kind": "partner",
+      "name": "Sieg",
+      "x": 22.3,
+      "y": 33.51,
+      "distance": 1.5,
+      "direction": "nw",
+      "details": "health bar full"
+     },
+     {
+      "ref": "enemy-1",
+      "kind": "enemy",
+      "name": "cinder wisp",
+      "x": 14.28,
+      "y": 30.61,
+      "distance": 10,
+      "direction": "nw",
+      "details": "health bar full"
+     },
+     {
+      "ref": "enemy-2",
+      "kind": "enemy",
+      "name": "mossling",
+      "x": 23.63,
+      "y": 35.27,
+      "distance": 0.8,
+      "direction": "s",
+      "details": "health bar full"
+     },
+     {
+      "ref": "enemy-3",
+      "kind": "enemy",
+      "name": "cinder wisp",
+      "x": 27.69,
+      "y": 32.2,
+      "distance": 4.8,
+      "direction": "ne",
+      "details": "health bar full, attacking"
+     },
+     {
+      "ref": "enemy-4",
+      "kind": "enemy",
+      "name": "ironbound sentinel",
+      "x": 25.48,
+      "y": 29.27,
+      "distance": 5.6,
+      "direction": "n",
+      "details": "health bar full, attacking"
+     },
+     {
+      "ref": "label-1",
+      "kind": "label",
+      "name": "Harmless cow · too wide for the posts",
+      "x": 26,
+      "y": 28.8,
+      "distance": 6.2,
+      "direction": "ne"
+     }
+    ],
+    "dialogue": null,
+    "journal": {
+     "current": {
+      "quest": "Chapter 0 · The Forgotten Shrine",
+      "step": "Recover the Divine Wig",
+      "done": [
+       "Find the Forgotten Shrine",
+       "Pass the Three Trials",
+       "Speak to the Guardian Goddess"
+      ]
+     },
+     "completed": [
+      "Prologue · A Promise Kept",
+      "Chapter 0 · The Forgotten Oath"
+     ]
+    },
+    "inventory": {
+     "items": [
+      {
+       "id": "moonleaf",
+       "name": "Moonleaf Herbs",
+       "count": 1,
+       "description": "A fresh bundle from Brynn's Apothecary. Paid for, for once."
+      },
+      {
+       "id": "crystal_vial",
+       "name": "Crystal Vial",
+       "count": 2,
+       "description": "Clear and empty. Papa is working on something."
+      },
+      {
+       "id": "candlewick",
+       "name": "Candlewick",
+       "count": 1,
+       "description": "A coil of cotton wick from the general store."
+      },
+      {
+       "id": "fresh_bread",
+       "name": "Fresh Bread",
+       "count": 1,
+       "description": "Alden's usual loaf from the village bakery. Still warm."
+      },
+      {
+       "id": "honey_pastry",
+       "name": "Honey Pastry",
+       "count": 1,
+       "description": "A very important magical ingredient. For happiness."
+      },
+      {
+       "id": "alden_journal",
+       "name": "Alden's Journal",
+       "count": 1,
+       "description": "\"If the Ember has been found, the others will not remain hidden for long. I can only hope the old guardian remembers what she promised.\""
+      },
+      {
+       "id": "strange_cloth",
+       "name": "Strange Cloth",
+       "count": 1,
+       "description": "A scrap of cloth with a symbol neither of them knows. Papa kept it with Coco's things from when she was little."
+      },
+      {
+       "id": "star_drawing",
+       "name": "Drawing of Seven Stars",
+       "count": 1,
+       "description": "Seven stars drawn in a ring around a dark circle."
+      }
+     ]
+    },
+    "discovered": {
+     "areas": [
+      "Hedge Maze"
+     ],
+     "exploredRows": [
+      "????????????",
+      "????????????",
+      "????????????",
+      "????????????",
+      "????????????",
+      "????????????",
+      "????????????",
+      ".........???",
+      ".....@...???",
+      ".........???"
+     ]
+    },
+    "dialogueLog": [
+     {
+      "speaker": "Sieg",
+      "text": "A hedge maze. How bad could it be?",
+      "tick": 406
+     },
+     {
+      "speaker": "Coco",
+      "text": "Don't say that.",
+      "tick": 406
+     },
+     {
+      "speaker": "Sieg",
+      "text": "What?",
+      "tick": 406
+     },
+     {
+      "speaker": "Coco",
+      "text": "Every time you say that, something terrible happens.",
+      "tick": 406
+     }
+    ],
+    "feedback": [
+     "A dialogue line appeared.",
+     "For 1 of 1 ticks your hero did not take your movement input.",
+     "That line had already moved on before your press arrived (it was advanced first, usually by your partner). Nothing happened; read the line now on screen.",
+     "That line had already moved on before your press arrived (it was advanced first, usually by your partner). Nothing happened; read the line now on screen.",
+     "That line had already moved on before your press arrived (it was advanced first, usually by your partner). Nothing happened; read the line now on screen.",
+     "That line had already moved on before your press arrived (it was advanced first, usually by your partner). Nothing happened; read the line now on screen.",
+     "The dry hedge at (19, 34) disappeared.",
+     "Message sent."
+    ],
+    "messages": [
+     {
+      "from": "Sieg",
+      "text": "I see FIREBALL · dry hedge at (19,34), with a cinder wisp at (14,30.5). Can you try a fireball on the hedge? I’m moving east along y=34.",
+      "tick": 405
+     }
+    ]
+   },
+   "cowBefore": null,
+   "vortex": {
+    "x": 23.47,
+    "y": 34.59,
+    "seenBy": "sieg",
+    "tick": 595
+   },
+   "cowAfter": {
+    "x": 26,
+    "y": 25,
+    "tick": 942
+   }
+  },
+  {
+   "tick": 1307,
+   "hero": "coco",
+   "direction": "nw",
+   "observation": {
+    "player": "coco",
+    "hero": "Coco",
+    "tick": 1307,
+    "seconds": 21.8,
+    "area": {
+     "name": "Hedge Maze",
+     "widthTiles": 48,
+     "heightTiles": 40
+    },
+    "self": {
+     "x": 25.96,
+     "y": 30.46,
+     "facing": "e",
+     "hp": 97,
+     "maxHp": 100,
+     "status": []
+    },
+    "abilities": [
+     {
+      "key": "J",
+      "name": "Fireball",
+      "state": "ready"
+     },
+     {
+      "key": "K",
+      "name": "Ward",
+      "state": "hold"
+     },
+     {
+      "key": "1",
+      "name": "Slow Time",
+      "state": "ready"
+     },
+     {
+      "key": "2",
+      "name": "Flight",
+      "state": "ready"
+     },
+     {
+      "key": "3",
+      "name": "Black Hole",
+      "state": "ready"
+     }
+    ],
+    "screen": {
+     "originX": 15,
+     "originY": 24,
+     "rows": [
+      ".##......CCCC#######",
+      ".##......CCCC#######",
+      ".##......CCCC#######",
+      ".####..####..#######",
+      ".####..##....#######",
+      ".####..##.E..#######",
+      ".####.....@....#####",
+      ".####..........#####",
+      "...............#####",
+      "...............#####",
+      "...............#####",
+      "...............#####"
+     ]
+    },
+    "visible": [
+     {
+      "ref": "enemy-1",
+      "kind": "enemy",
+      "name": "ironbound sentinel",
+      "x": 25.15,
+      "y": 29.93,
+      "distance": 1,
+      "direction": "nw",
+      "details": "health bar about 4/8"
+     },
+     {
+      "ref": "creature-1",
+      "kind": "creature",
+      "name": "cow",
+      "x": 26,
+      "y": 25,
+      "distance": 5.5,
+      "direction": "n",
+      "extent": {
+       "x": 24,
+       "y": 23,
+       "w": 4,
+       "h": 4
+      }
+     },
+     {
+      "ref": "label-1",
+      "kind": "label",
+      "name": "Harmless cow · too wide for the posts",
+      "x": 26,
+      "y": 28.8,
+      "distance": 1.7,
+      "direction": "n"
+     }
+    ],
+    "dialogue": null,
+    "journal": {
+     "current": {
+      "quest": "Chapter 0 · The Forgotten Shrine",
+      "step": "Recover the Divine Wig",
+      "done": [
+       "Find the Forgotten Shrine",
+       "Pass the Three Trials",
+       "Speak to the Guardian Goddess"
+      ]
+     },
+     "completed": [
+      "Prologue · A Promise Kept",
+      "Chapter 0 · The Forgotten Oath"
+     ]
+    },
+    "inventory": {
+     "items": [
+      {
+       "id": "moonleaf",
+       "name": "Moonleaf Herbs",
+       "count": 1,
+       "description": "A fresh bundle from Brynn's Apothecary. Paid for, for once."
+      },
+      {
+       "id": "crystal_vial",
+       "name": "Crystal Vial",
+       "count": 2,
+       "description": "Clear and empty. Papa is working on something."
+      },
+      {
+       "id": "candlewick",
+       "name": "Candlewick",
+       "count": 1,
+       "description": "A coil of cotton wick from the general store."
+      },
+      {
+       "id": "fresh_bread",
+       "name": "Fresh Bread",
+       "count": 1,
+       "description": "Alden's usual loaf from the village bakery. Still warm."
+      },
+      {
+       "id": "honey_pastry",
+       "name": "Honey Pastry",
+       "count": 1,
+       "description": "A very important magical ingredient. For happiness."
+      },
+      {
+       "id": "alden_journal",
+       "name": "Alden's Journal",
+       "count": 1,
+       "description": "\"If the Ember has been found, the others will not remain hidden for long. I can only hope the old guardian remembers what she promised.\""
+      },
+      {
+       "id": "strange_cloth",
+       "name": "Strange Cloth",
+       "count": 1,
+       "description": "A scrap of cloth with a symbol neither of them knows. Papa kept it with Coco's things from when she was little."
+      },
+      {
+       "id": "star_drawing",
+       "name": "Drawing of Seven Stars",
+       "count": 1,
+       "description": "Seven stars drawn in a ring around a dark circle."
+      }
+     ]
+    },
+    "discovered": {
+     "areas": [
+      "Hedge Maze"
+     ],
+     "exploredRows": [
+      "????????????",
+      "????????????",
+      "????????????",
+      "????????????",
+      "????????????",
+      "??......????",
+      "??........??",
+      "......@...??",
+      "..........??",
+      "..........??"
+     ]
+    },
+    "dialogueLog": [
+     {
+      "speaker": "Sieg",
+      "text": "A hedge maze. How bad could it be?",
+      "tick": 406
+     },
+     {
+      "speaker": "Coco",
+      "text": "Don't say that.",
+      "tick": 406
+     },
+     {
+      "speaker": "Sieg",
+      "text": "What?",
+      "tick": 406
+     },
+     {
+      "speaker": "Coco",
+      "text": "Every time you say that, something terrible happens.",
+      "tick": 406
+     }
+    ],
+    "feedback": [
+     "Message sent.",
+     "Message sent.",
+     "No fireball was cast: J was still recovering from your last cast, so the press did nothing.",
+     "No fireball was cast: J was still recovering from your last cast, so the press did nothing.",
+     "Message sent.",
+     "You took 3 damage.",
+     "No fireball was cast: J was still recovering from your last cast, so the press did nothing.",
+     "Message sent."
+    ],
+    "messages": [
+     {
+      "from": "Sieg",
+      "text": "Lower/east corridor ends at a wall around x30; I’m checking the north side. Wisp at (28.48,30.92), sentinel at (25.48,29.27).",
+      "tick": 730
+     },
+     {
+      "from": "Sieg",
+      "text": "I’m beside you near (27.6,31.7); I’ll scout north via the open corridor, avoiding the sentinel.",
+      "tick": 846
+     },
+     {
+      "from": "Sieg",
+      "text": "Sentinel is near (25.5,29.3), about 5/8 health. I’m avoiding it and heading west through the lower corridor.",
+      "tick": 874
+     },
+     {
+      "from": "Sieg",
+      "text": "Thanks. I’m moving south to get clear of the sentinel, then continuing west through the lower opening.",
+      "tick": 898
+     },
+     {
+      "from": "Sieg",
+      "text": "Understood. I’m taking the lower corridor west along y34.",
+      "tick": 943
+     },
+     {
+      "from": "Sieg",
+      "text": "I reached west side near (8.5,34.5). I’ll scout north from here for the Shears; please avoid my route if you’re approaching west.",
+      "tick": 1083
+     }
+    ]
+   },
+   "cowBefore": {
+    "x": 26,
+    "y": 25,
+    "extent": {
+     "x": 24,
+     "y": 23,
+     "w": 4,
+     "h": 4
+    }
+   },
+   "vortex": {
+    "x": 25.89,
+    "y": 30.39,
+    "seenBy": "coco",
+    "tick": 1309
+   },
+   "cowAfter": {
+    "x": 26,
+    "y": 25,
+    "tick": 1558
+   }
+  },
+  {
+   "tick": 2265,
+   "hero": "coco",
+   "direction": "e",
+   "observation": {
+    "player": "coco",
+    "hero": "Coco",
+    "tick": 2265,
+    "seconds": 37.8,
+    "area": {
+     "name": "Hedge Maze",
+     "widthTiles": 48,
+     "heightTiles": 40
+    },
+    "self": {
+     "x": 20.52,
+     "y": 23.47,
+     "facing": "n",
+     "hp": 97,
+     "maxHp": 100,
+     "status": []
+    },
+    "abilities": [
+     {
+      "key": "J",
+      "name": "Fireball",
+      "state": "ready"
+     },
+     {
+      "key": "K",
+      "name": "Ward",
+      "state": "hold"
+     },
+     {
+      "key": "1",
+      "name": "Slow Time",
+      "state": "ready"
+     },
+     {
+      "key": "2",
+      "name": "Flight",
+      "state": "ready"
+     },
+     {
+      "key": "3",
+      "name": "Black Hole",
+      "state": "ready"
+     }
+    ],
+    "screen": {
+     "originX": 10,
+     "originY": 17,
+     "rows": [
+      "##############......",
+      "##....########......",
+      "##....########......",
+      "##....########....##",
+      "##....########....##",
+      "##....##########..##",
+      "##....##..@P..CCCC##",
+      "......##......CCCC##",
+      "......##......CCCC##",
+      "......##......CCCC##",
+      "......####..####..##",
+      "##....####..##....##"
+     ]
+    },
+    "visible": [
+     {
+      "ref": "partner-1",
+      "kind": "partner",
+      "name": "Sieg",
+      "x": 21.41,
+      "y": 23.4,
+      "distance": 0.9,
+      "direction": "e",
+      "details": "health bar about 6/8"
+     },
+     {
+      "ref": "creature-1",
+      "kind": "creature",
+      "name": "cow",
+      "x": 26,
+      "y": 25,
+      "distance": 5.7,
+      "direction": "e",
+      "extent": {
+       "x": 24,
+       "y": 23,
+       "w": 4,
+       "h": 4
+      }
+     },
+     {
+      "ref": "label-1",
+      "kind": "label",
+      "name": "Harmless cow · too wide for the posts",
+      "x": 26,
+      "y": 28.8,
+      "distance": 7.6,
+      "direction": "se"
+     },
+     {
+      "ref": "label-2",
+      "kind": "label",
+      "name": "BLACK HOLE → grazing bay",
+      "x": 22.2,
+      "y": 22.2,
+      "distance": 2.1,
+      "direction": "ne"
+     }
+    ],
+    "dialogue": null,
+    "journal": {
+     "current": {
+      "quest": "Chapter 0 · The Forgotten Shrine",
+      "step": "Recover the Divine Wig",
+      "done": [
+       "Find the Forgotten Shrine",
+       "Pass the Three Trials",
+       "Speak to the Guardian Goddess"
+      ]
+     },
+     "completed": [
+      "Prologue · A Promise Kept",
+      "Chapter 0 · The Forgotten Oath"
+     ]
+    },
+    "inventory": {
+     "items": [
+      {
+       "id": "moonleaf",
+       "name": "Moonleaf Herbs",
+       "count": 1,
+       "description": "A fresh bundle from Brynn's Apothecary. Paid for, for once."
+      },
+      {
+       "id": "crystal_vial",
+       "name": "Crystal Vial",
+       "count": 2,
+       "description": "Clear and empty. Papa is working on something."
+      },
+      {
+       "id": "candlewick",
+       "name": "Candlewick",
+       "count": 1,
+       "description": "A coil of cotton wick from the general store."
+      },
+      {
+       "id": "fresh_bread",
+       "name": "Fresh Bread",
+       "count": 1,
+       "description": "Alden's usual loaf from the village bakery. Still warm."
+      },
+      {
+       "id": "honey_pastry",
+       "name": "Honey Pastry",
+       "count": 1,
+       "description": "A very important magical ingredient. For happiness."
+      },
+      {
+       "id": "alden_journal",
+       "name": "Alden's Journal",
+       "count": 1,
+       "description": "\"If the Ember has been found, the others will not remain hidden for long. I can only hope the old guardian remembers what she promised.\""
+      },
+      {
+       "id": "strange_cloth",
+       "name": "Strange Cloth",
+       "count": 1,
+       "description": "A scrap of cloth with a symbol neither of them knows. Papa kept it with Coco's things from when she was little."
+      },
+      {
+       "id": "star_drawing",
+       "name": "Drawing of Seven Stars",
+       "count": 1,
+       "description": "Seven stars drawn in a ring around a dark circle."
+      }
+     ]
+    },
+    "discovered": {
+     "areas": [
+      "Hedge Maze"
+     ],
+     "exploredRows": [
+      "????????????",
+      "????????????",
+      "????????????",
+      ".......?????",
+      "........????",
+      ".....@..????",
+      "..........??",
+      "..........??",
+      "..........??",
+      "..........??"
+     ]
+    },
+    "dialogueLog": [
+     {
+      "speaker": "Sieg",
+      "text": "A hedge maze. How bad could it be?",
+      "tick": 406
+     },
+     {
+      "speaker": "Coco",
+      "text": "Don't say that.",
+      "tick": 406
+     },
+     {
+      "speaker": "Sieg",
+      "text": "What?",
+      "tick": 406
+     },
+     {
+      "speaker": "Coco",
+      "text": "Every time you say that, something terrible happens.",
+      "tick": 406
+     }
+    ],
+    "feedback": [
+     "You took 3 damage.",
+     "No fireball was cast: J was still recovering from your last cast, so the press did nothing.",
+     "Message sent.",
+     "Message sent.",
+     "Message sent.",
+     "Message sent.",
+     "Message sent.",
+     "Message sent."
+    ],
+    "messages": [
+     {
+      "from": "Sieg",
+      "text": "Saw label at (22,22): BLACK HOLE → grazing bay.",
+      "tick": 1665
+     },
+     {
+      "from": "Sieg",
+      "text": "I only saw the label at (22.2,22.2), reading “BLACK HOLE → grazing bay”; I haven’t seen the bay itself. I’m heading east to investigate.",
+      "tick": 1685
+     },
+     {
+      "from": "Sieg",
+      "text": "Cow at (26,25); BLACK HOLE sign. No shears.",
+      "tick": 1699
+     },
+     {
+      "from": "Sieg",
+      "text": "I see a label by the cow: “Harmless cow · too wide for the posts.” I’m heading north through the central passage to investigate.",
+      "tick": 1849
+     },
+     {
+      "from": "Sieg",
+      "text": "At (21.4,24.1): cow spans (24–27,23–26), blocking the route; signs read “Harmless cow · too wide for the posts” and “BLACK HOLE → grazing bay.” Can you try Black Hole on the cow?",
+      "tick": 1952
+     },
+     {
+      "from": "Sieg",
+      "text": "Please fire Black Hole east at cow (26,25).",
+      "tick": 1962
+     }
+    ]
+   },
+   "cowBefore": {
+    "x": 26,
+    "y": 25,
+    "extent": {
+     "x": 24,
+     "y": 23,
+     "w": 4,
+     "h": 4
+    }
+   },
+   "vortex": {
+    "x": 23.81,
+    "y": 23.47,
+    "seenBy": "coco",
+    "tick": 2317
+   },
+   "cowAfter": {
+    "x": 23.84,
+    "y": 25,
+    "tick": 2592
+   }
+  },
+  {
+   "tick": 2906,
+   "hero": "coco",
+   "direction": "n",
+   "observation": {
+    "player": "coco",
+    "hero": "Coco",
+    "tick": 2906,
+    "seconds": 48.4,
+    "area": {
+     "name": "Hedge Maze",
+     "widthTiles": 48,
+     "heightTiles": 40
+    },
+    "self": {
+     "x": 24.66,
+     "y": 29.53,
+     "facing": "w",
+     "hp": 97,
+     "maxHp": 100,
+     "status": []
+    },
+    "abilities": [
+     {
+      "key": "J",
+      "name": "Fireball",
+      "state": "ready"
+     },
+     {
+      "key": "K",
+      "name": "Ward",
+      "state": "hold"
+     },
+     {
+      "key": "1",
+      "name": "Slow Time",
+      "state": "ready"
+     },
+     {
+      "key": "2",
+      "name": "Flight",
+      "state": "ready"
+     },
+     {
+      "key": "3",
+      "name": "Black Hole",
+      "state": "ready"
+     }
+    ],
+    "screen": {
+     "originX": 14,
+     "originY": 23,
+     "rows": [
+      "..##....CCCC..######",
+      "..##....CCCC..######",
+      "..##....CCCC..######",
+      "..##....CCCC..######",
+      "..####..####..######",
+      "..####..##....######",
+      "..####..##@...######",
+      "..####..........####",
+      "..####..........####",
+      "................####",
+      "................####",
+      "................####"
+     ]
+    },
+    "visible": [
+     {
+      "ref": "creature-1",
+      "kind": "creature",
+      "name": "cow",
+      "x": 23.84,
+      "y": 25,
+      "distance": 4.6,
+      "direction": "n",
+      "extent": {
+       "x": 21.85,
+       "y": 23,
+       "w": 4,
+       "h": 4
+      }
+     },
+     {
+      "ref": "label-1",
+      "kind": "label",
+      "name": "Harmless cow · too wide for the posts",
+      "x": 26,
+      "y": 28.8,
+      "distance": 1.5,
+      "direction": "ne"
+     }
+    ],
+    "dialogue": null,
+    "journal": {
+     "current": {
+      "quest": "Chapter 0 · The Forgotten Shrine",
+      "step": "Recover the Divine Wig",
+      "done": [
+       "Find the Forgotten Shrine",
+       "Pass the Three Trials",
+       "Speak to the Guardian Goddess"
+      ]
+     },
+     "completed": [
+      "Prologue · A Promise Kept",
+      "Chapter 0 · The Forgotten Oath"
+     ]
+    },
+    "inventory": {
+     "items": [
+      {
+       "id": "moonleaf",
+       "name": "Moonleaf Herbs",
+       "count": 1,
+       "description": "A fresh bundle from Brynn's Apothecary. Paid for, for once."
+      },
+      {
+       "id": "crystal_vial",
+       "name": "Crystal Vial",
+       "count": 2,
+       "description": "Clear and empty. Papa is working on something."
+      },
+      {
+       "id": "candlewick",
+       "name": "Candlewick",
+       "count": 1,
+       "description": "A coil of cotton wick from the general store."
+      },
+      {
+       "id": "fresh_bread",
+       "name": "Fresh Bread",
+       "count": 1,
+       "description": "Alden's usual loaf from the village bakery. Still warm."
+      },
+      {
+       "id": "honey_pastry",
+       "name": "Honey Pastry",
+       "count": 1,
+       "description": "A very important magical ingredient. For happiness."
+      },
+      {
+       "id": "alden_journal",
+       "name": "Alden's Journal",
+       "count": 1,
+       "description": "\"If the Ember has been found, the others will not remain hidden for long. I can only hope the old guardian remembers what she promised.\""
+      },
+      {
+       "id": "strange_cloth",
+       "name": "Strange Cloth",
+       "count": 1,
+       "description": "A scrap of cloth with a symbol neither of them knows. Papa kept it with Coco's things from when she was little."
+      },
+      {
+       "id": "star_drawing",
+       "name": "Drawing of Seven Stars",
+       "count": 1,
+       "description": "Seven stars drawn in a ring around a dark circle."
+      }
+     ]
+    },
+    "discovered": {
+     "areas": [
+      "Hedge Maze"
+     ],
+     "exploredRows": [
+      "????????????",
+      "????????????",
+      "????????????",
+      ".......?????",
+      "........????",
+      "..........??",
+      "..........??",
+      "......@...??",
+      "..........??",
+      "..........??"
+     ]
+    },
+    "dialogueLog": [
+     {
+      "speaker": "Sieg",
+      "text": "A hedge maze. How bad could it be?",
+      "tick": 406
+     },
+     {
+      "speaker": "Coco",
+      "text": "Don't say that.",
+      "tick": 406
+     },
+     {
+      "speaker": "Sieg",
+      "text": "What?",
+      "tick": 406
+     },
+     {
+      "speaker": "Coco",
+      "text": "Every time you say that, something terrible happens.",
+      "tick": 406
+     }
+    ],
+    "feedback": [
+     "Message sent.",
+     "The cow moved w, from (25.2, 25) to (24, 25).",
+     "Message sent.",
+     "The cow moved w, from (24, 25) to (23.9, 25).",
+     "The cow moved w, from (23.9, 25) to (23.8, 25).",
+     "Message sent.",
+     "Message sent.",
+     "Message sent."
+    ],
+    "messages": [
+     {
+      "from": "Sieg",
+      "text": "Cow at (26,25); BLACK HOLE sign. No shears.",
+      "tick": 1699
+     },
+     {
+      "from": "Sieg",
+      "text": "I see a label by the cow: “Harmless cow · too wide for the posts.” I’m heading north through the central passage to investigate.",
+      "tick": 1849
+     },
+     {
+      "from": "Sieg",
+      "text": "At (21.4,24.1): cow spans (24–27,23–26), blocking the route; signs read “Harmless cow · too wide for the posts” and “BLACK HOLE → grazing bay.” Can you try Black Hole on the cow?",
+      "tick": 1952
+     },
+     {
+      "from": "Sieg",
+      "text": "Please fire Black Hole east at cow (26,25).",
+      "tick": 1962
+     },
+     {
+      "from": "Sieg",
+      "text": "I’m staying west of the blockage. Please try pulling it north from the south/east side; let me know when the passage clears.",
+      "tick": 2442
+     },
+     {
+      "from": "Sieg",
+      "text": "Cow is now at about (23.84,25), still filling the passage. I’m waiting west of it for your northward pull.",
+      "tick": 2562
+     }
+    ]
+   },
+   "cowBefore": {
+    "x": 23.84,
+    "y": 25,
+    "extent": {
+     "x": 21.85,
+     "y": 23,
+     "w": 4,
+     "h": 4
+    }
+   },
+   "vortex": {
+    "x": 24.66,
+    "y": 27.93,
+    "seenBy": "sieg",
+    "tick": 2922
+   },
+   "cowAfter": {
+    "x": 23.84,
+    "y": 25,
+    "tick": 3223
+   }
+  },
+  {
+   "tick": 3576,
+   "hero": "coco",
+   "direction": "nw",
+   "observation": {
+    "player": "coco",
+    "hero": "Coco",
+    "tick": 3576,
+    "seconds": 59.6,
+    "area": {
+     "name": "Hedge Maze",
+     "widthTiles": 48,
+     "heightTiles": 40
+    },
+    "self": {
+     "x": 26.71,
+     "y": 29.5,
+     "facing": "s",
+     "hp": 97,
+     "maxHp": 100,
+     "status": []
+    },
+    "abilities": [
+     {
+      "key": "J",
+      "name": "Fireball",
+      "state": "ready"
+     },
+     {
+      "key": "K",
+      "name": "Ward",
+      "state": "hold"
+     },
+     {
+      "key": "1",
+      "name": "Slow Time",
+      "state": "ready"
+     },
+     {
+      "key": "2",
+      "name": "Flight",
+      "state": "ready"
+     },
+     {
+      "key": "3",
+      "name": "Black Hole",
+      "state": "ready"
+     }
+    ],
+    "screen": {
+     "originX": 16,
+     "originY": 23,
+     "rows": [
+      "##....CCCC..########",
+      "##....CCCC..########",
+      "##....CCCC..########",
+      "##....CCCC..########",
+      "####..####..########",
+      "####..##....########",
+      "####..##..@.########",
+      "####..........######",
+      "####..........######",
+      "..............######",
+      "..............######",
+      "..............######"
+     ]
+    },
+    "visible": [
+     {
+      "ref": "creature-1",
+      "kind": "creature",
+      "name": "cow",
+      "x": 23.84,
+      "y": 25,
+      "distance": 5.3,
+      "direction": "nw",
+      "extent": {
+       "x": 21.85,
+       "y": 23,
+       "w": 4,
+       "h": 4
+      }
+     },
+     {
+      "ref": "label-1",
+      "kind": "label",
+      "name": "Harmless cow · too wide for the posts",
+      "x": 26,
+      "y": 28.8,
+      "distance": 1,
+      "direction": "nw"
+     }
+    ],
+    "dialogue": null,
+    "journal": {
+     "current": {
+      "quest": "Chapter 0 · The Forgotten Shrine",
+      "step": "Recover the Divine Wig",
+      "done": [
+       "Find the Forgotten Shrine",
+       "Pass the Three Trials",
+       "Speak to the Guardian Goddess"
+      ]
+     },
+     "completed": [
+      "Prologue · A Promise Kept",
+      "Chapter 0 · The Forgotten Oath"
+     ]
+    },
+    "inventory": {
+     "items": [
+      {
+       "id": "moonleaf",
+       "name": "Moonleaf Herbs",
+       "count": 1,
+       "description": "A fresh bundle from Brynn's Apothecary. Paid for, for once."
+      },
+      {
+       "id": "crystal_vial",
+       "name": "Crystal Vial",
+       "count": 2,
+       "description": "Clear and empty. Papa is working on something."
+      },
+      {
+       "id": "candlewick",
+       "name": "Candlewick",
+       "count": 1,
+       "description": "A coil of cotton wick from the general store."
+      },
+      {
+       "id": "fresh_bread",
+       "name": "Fresh Bread",
+       "count": 1,
+       "description": "Alden's usual loaf from the village bakery. Still warm."
+      },
+      {
+       "id": "honey_pastry",
+       "name": "Honey Pastry",
+       "count": 1,
+       "description": "A very important magical ingredient. For happiness."
+      },
+      {
+       "id": "alden_journal",
+       "name": "Alden's Journal",
+       "count": 1,
+       "description": "\"If the Ember has been found, the others will not remain hidden for long. I can only hope the old guardian remembers what she promised.\""
+      },
+      {
+       "id": "strange_cloth",
+       "name": "Strange Cloth",
+       "count": 1,
+       "description": "A scrap of cloth with a symbol neither of them knows. Papa kept it with Coco's things from when she was little."
+      },
+      {
+       "id": "star_drawing",
+       "name": "Drawing of Seven Stars",
+       "count": 1,
+       "description": "Seven stars drawn in a ring around a dark circle."
+      }
+     ]
+    },
+    "discovered": {
+     "areas": [
+      "Hedge Maze"
+     ],
+     "exploredRows": [
+      "????????????",
+      "????????????",
+      "????????????",
+      "...........?",
+      "...........?",
+      "...........?",
+      "...........?",
+      "......@...??",
+      "..........??",
+      "..........??"
+     ]
+    },
+    "dialogueLog": [
+     {
+      "speaker": "Sieg",
+      "text": "A hedge maze. How bad could it be?",
+      "tick": 406
+     },
+     {
+      "speaker": "Coco",
+      "text": "Don't say that.",
+      "tick": 406
+     },
+     {
+      "speaker": "Sieg",
+      "text": "What?",
+      "tick": 406
+     },
+     {
+      "speaker": "Coco",
+      "text": "Every time you say that, something terrible happens.",
+      "tick": 406
+     }
+    ],
+    "feedback": [
+     "The cow moved w, from (23.9, 25) to (23.8, 25).",
+     "Message sent.",
+     "Message sent.",
+     "Message sent.",
+     "Message sent.",
+     "You moved w only 2.22 of 2.47 tiles, from (27.28, 22.02) to (25.05, 21.84). Something stopped you.",
+     "You moved w only 0.65 of 0.99 tiles, from (25.05, 21.84) to (24.4, 21.84). Something stopped you.",
+     "Message sent."
+    ],
+    "messages": [
+     {
+      "from": "Sieg",
+      "text": "Cow is now at about (23.84,25), still filling the passage. I’m waiting west of it for your northward pull.",
+      "tick": 2562
+     },
+     {
+      "from": "Sieg",
+      "text": "I see the Black Hole vortex at (24.66,27.93), south of the cow at (23.84,25); cow still blocks the passage. It may pull south rather than north.",
+      "tick": 2922
+     },
+     {
+      "from": "Sieg",
+      "text": "My screen shows you north of the cow at (24.4,21.84); the grazing-bay label is south of it. If that's the target, try a Black Hole from north to pull the cow south.",
+      "tick": 3162
+     },
+     {
+      "from": "Sieg",
+      "text": "Correction: grazing bay is south of cow. Fire south from north of it to pull it toward the bay.",
+      "tick": 3342
+     },
+     {
+      "from": "Sieg",
+      "text": "Correction: I misread the label. “BLACK HOLE → grazing bay” is at (22.2,22.2), north of the cow. Please fire north from the cow’s south side to pull it toward the bay.",
+      "tick": 3342
+     },
+     {
+      "from": "Sieg",
+      "text": "Label is NW of cow at (22.2,22.2). From your NE position, try Black Hole SW toward the label.",
+      "tick": 3402
+     }
+    ]
+   },
+   "cowBefore": {
+    "x": 23.84,
+    "y": 25,
+    "extent": {
+     "x": 21.85,
+     "y": 23,
+     "w": 4,
+     "h": 4
+    }
+   },
+   "vortex": {
+    "x": 25.14,
+    "y": 27.93,
+    "seenBy": "coco",
+    "tick": 3618
+   },
+   "cowAfter": {
+    "x": 23.84,
+    "y": 25,
+    "tick": 3911
+   }
+  }
+ ]
+}

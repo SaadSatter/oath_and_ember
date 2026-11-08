@@ -1,0 +1,49 @@
+{
+  "about": "Situation A cheap-baseline verification, 2026-11-06, Claude Code session 48.",
+  "sourceCommit": "af0f19e",
+  "files": [
+    {
+      "file": "results.json",
+      "source": "evaluation-runs/baseline-quest-tuning-1793991393800/results.json",
+      "bytes": 4996,
+      "sha256": "c355551beef47b5af7c00fa8dac0e626ce36efee0f070dc955ff669edeb309d2",
+      "identicalToSource": true
+    },
+    {
+      "file": "results.md",
+      "source": "evaluation-runs/baseline-quest-tuning-1793991393800/results.md",
+      "bytes": 504,
+      "sha256": "c493b3d767447e193ae85652ae14147978a79c4d95ef95274491def70684a64e",
+      "identicalToSource": true
+    },
+    {
+      "file": "run.json",
+      "source": "evaluation-runs/baseline-quest-tuning-1793991393800/run.json",
+      "bytes": 302,
+      "sha256": "9f9f80f5a6383e583b9f5939482522fa454d3babda194df3f4d7e3499854c74f",
+      "identicalToSource": true
+    },
+    {
+      "file": "summary.json",
+      "source": "evaluation-runs/baseline-quest-tuning-1793991393800/S2-local-seed0/summary.json",
+      "bytes": 3497,
+      "sha256": "90a2b966f64bbfc3a0e9573939a640eeae31de5500ac42fd26cdb5939b06a936",
+      "identicalToSource": true
+    },
+    {
+      "file": "trace.jsonl",
+      "source": "evaluation-runs/baseline-quest-tuning-1793991393800/S2-local-seed0/trace.jsonl",
+      "bytes": 2467435,
+      "sha256": "5b872873c6e90cf5e0a0d39be316d959b882f2a957412ccc4cba232d93c27d27",
+      "identicalToSource": true
+    }
+  ],
+  "checks": {
+    "traceChain": "verifyTrace passed",
+    "determinism": "second run evaluation-runs/baseline-quest-tuning-1793991405601: same 395 step actions and results, same end hash",
+    "pinnedEndHash": "6644f2cac04b945444c3ec609d59d798cd767ecad80405d49ce8cd26314c7f56 (S2-A v2 baseline reference)",
+    "secrets": "scan_secrets.py: 0 findings"
+  },
+  "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+  "endHash": "6644f2cac04b945444c3ec609d59d798cd767ecad80405d49ce8cd26314c7f56"
+}

@@ -1,0 +1,34 @@
+{
+  "balance.json": {
+    "sha256": "178d1efd72742fd7fc3106c5936f2f52e3a9a9b8670e686a5ccae2275712a6bd",
+    "bytes": 320
+  },
+  "canonical-validation.json": {
+    "sha256": "96f67e3e2e00c7b14f34710a29aff813849c531ead0181df65aefe8b955e1e46",
+    "bytes": 95
+  },
+  "guidance.txt": {
+    "sha256": "1bd73ba9714f78e1b4bdf23975ffff2f4ec6ff4fc4129d95a5e5394b0ccb18f2",
+    "bytes": 7180
+  },
+  "hashes.json": {
+    "sha256": "5941df1cd0e631940f2eafcf3fb14a75c2afb75b2d2e72269cb16e33ffeb25c7",
+    "bytes": 2313
+  },
+  "planner-system-prompt.txt": {
+    "sha256": "89f34d173193e616c5356834aa8b29f7a97437ba2e88d75a4b1914da2663a8a6",
+    "bytes": 39337
+  },
+  "reallocation.json": {
+    "sha256": "99be7b62762210e505744dafa3107a1dbdc59d99725df1e4b69347ca93441752",
+    "bytes": 814
+  },
+  "tests.txt": {
+    "sha256": "64f50a46d0f87ca5acf108a8b548c0f0f51e2d998cdc4e93bda958d1e421ddd2",
+    "bytes": 205
+  },
+  "typecheck.txt": {
+    "sha256": "8fa1cf5506304e8abac55868e7f1a136c9b1dde57a3981a382da4c21ea129a6f",
+    "bytes": 29
+  }
+}

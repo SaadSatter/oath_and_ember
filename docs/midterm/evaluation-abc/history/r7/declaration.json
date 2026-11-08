@@ -1,0 +1,185 @@
+{
+  "id": "oath-ember-abc-2026-11-06-r7-b-enclosure",
+  "declaredOn": "2026-11-06",
+  "status": "declared-design; B/C runtime checkpoints and paid execution pending",
+  "guidelines": {
+    "source": "owner-pasted midterm guidelines",
+    "sha256": "a1040a5425d554e2451837088aba1fb1caad4f8058319dd443eed8a53ccb4c76"
+  },
+  "scope": "A Hedge Maze; B unprepared Griffin combat and wig acquisition in the enclosure (griffin-unprepared-v1); C prepared Griffin wig acquisition. Different bounded success predicates explicitly declared.",
+  "gamePolicySourceCommit": "040685c (observed Pilot-30 post-tuned snapshot; not an established pre-tuned snapshot)",
+  "designAmendments": "Require a new declaration revision; preserve prior results and frozen A",
+  "baseline": {
+    "kind": "baseline-quest",
+    "status": "selected existing implementation; no new policy code",
+    "sourceCommit": "040685c",
+    "sourceSha256": {
+      "packages/agent/src/policies/questBaseline.ts": "18133c48b19b880df76be42a36e221d8da6e3a347306226f07bb6cf3e3dce975",
+      "packages/agent/src/policies/questKnowledge.ts": "d7b5bc925d189249a5d3ffc269a7eb3319c35bead649156182631797b6c45d4e",
+      "packages/agent/src/policies/navigate.ts": "7e37dca33e772fe3c636d56fcf663dfa54eb15c623ea6a1b6f21fb575817ee60",
+      "packages/agent/src/policies/combat.ts": "44759b6d66c4ff1f8198f911c868843d774fdf762929ed9a499eaa2a84c2bf90"
+    },
+    "information": "solution-aware script; per-hero observations and messages; no model calls",
+    "costUsd": 0,
+    "expectedStrictGriffinResult": "failure forecast from source, not measured",
+    "situationOverrides": {
+      "A": {
+        "kind": "baseline-maze-heuristic",
+        "sourceSha256": "4523a6a554387f99013ea6c16649c909015a92bdbddd0178f145838598ea9086",
+        "source": "packages/agent/src/policies/mazeHeuristic.ts",
+        "reason": "Owner requested exploration beyond opened gate; v2 infers crossing direction from observed gate/wall/approach, prioritizes unvisited far-side space and retries ordinary interaction after closing range. Prior v1 outcomes retained in history/declared-results-r4.json; v2 repetitions pending.",
+        "information": "Independent per-hero observations, remembered observed map, public mechanics and clue labels; no full hidden map, route constants or model calls.",
+        "policyId": "baseline-maze-heuristic-v2",
+        "sourceCommit": null
+      },
+      "B": {
+        "kind": "baseline-griffin-heuristic",
+        "policyId": "baseline-griffin-heuristic-v1",
+        "source": "packages/agent/src/policies/griffinHeuristic.ts",
+        "sourceSha256": "a7c9ea786a8c57c374952d9425b7a4bc25553aa453913ae3f935fca330792edc",
+        "knowledge": "Generic combat and organic-target pulling; no special grounding instruction, fixed nest/return coordinates or source map. Uses observed nest, map and shared inventory/journal.",
+        "status": "owner-authorized B development; freeze before repetitions"
+      }
+    }
+  },
+  "model": {
+    "kind": "model-centralized",
+    "model": "gpt-6-luna",
+    "effort": "medium",
+    "maxBatch": 4,
+    "manualHash": "4b091a6630dd56f236f89f8e2213a6bb7cad4a31d4851d1883f95867d92bfa86",
+    "postGuidanceHash": {
+      "A": null,
+      "B": "60a0a01357e68e2f44f0ecd9d0d0ebb41bfaab04c5c3ec78cae62c760c265263"
+    },
+    "postStatus": "Pilot-30 is owner-classified post-tuned; actual tuning intervention/diff must be documented before claiming a matched repeat or prompt-only contrast",
+    "centralizedInformation": "one planner sees both permitted hero observations; no repository/evaluator/hidden state",
+    "observedPostTunedPolicyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-a97d9268",
+    "observedPostTunedPromptHashA": "0616c47baf03f2860f75a4a0867221998b2439f51b55fde33c56111ec8240c44",
+    "preTunedSnapshotCommit": "678b86c",
+    "preTunedStatus": "Pilot-28 owner-designated pre-tuned failure, stopped at cow; preserved diagnosis records 125.267 game seconds, not owner-recalled approximately 128 seconds. Planner/controller changes separate it from Pilot-30.",
+    "tuningMechanism": "not independently established; no fine-tuning or explicit solution-prompt claim inferred",
+    "postGuidanceB": {
+      "id": "b-post-a-transfer-v1",
+      "textSha256": "60a0a01357e68e2f44f0ecd9d0d0ebb41bfaab04c5c3ec78cae62c760c265263",
+      "promptSha256": "54605c1b010826448627189d92fc8dfedc9f853b14d45fe5ad21260ce21e5627",
+      "status": "conditionally approved by owner; proposed in code until final authorization",
+      "record": "docs/midterm/B_POST_TUNING_TRANSFER.md"
+    }
+  },
+  "conditions": [
+    "pre-tuned",
+    "post-tuned",
+    "cheap-baseline"
+  ],
+  "repetitionsPerCell": 1,
+  "limits": {
+    "gameTicks": 18000,
+    "gameSeconds": 300,
+    "decisionsPerHero": 1600,
+    "modelCallsPerHero": 400,
+    "tokensPerHero": 4000000,
+    "callTimeoutMs": 30000,
+    "consecutivePolicyFailureLimit": 3,
+    "runSpendCapUsd": 0.75,
+    "modelWallSeconds": 3600,
+    "baselineWallSeconds": 600,
+    "scope": "Experiment run limits; A frozen definition remains unchanged (its max spend cap is 1.25)"
+  },
+  "situations": {
+    "A": {
+      "name": "Hedge Maze",
+      "id": "S2-local",
+      "seed": 0,
+      "definitionHash": "7efb771a7b91d35422b719676f09c9b36063c5d95ede2de9e5dc681dd93e0eab",
+      "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+      "runtimeCheckpoint": "existing-frozen-v2",
+      "objective": "Obtain Enchanted Shears",
+      "success": "authoritative shared enchanted_shears count > 0",
+      "heldOut": false,
+      "history": "Development-informed; Pilot-30 predates this declaration, not retrospectively preregistered"
+    },
+    "B": {
+      "name": "Griffin Trial, Unprepared",
+      "id": "griffin-unprepared-v1",
+      "seed": 0,
+      "definitionHash": "bbbbc43532324b80179ab8fdf122fe7f6d10446a52d9ac752a0efdeae7671374",
+      "startHash": "1a270d7b5e456d1be0e3250d37baae26a77b5ca3099b18433a9c8e5a25fb0051",
+      "startTick": 439,
+      "runtimeCheckpoint": "implemented and certified (docs/midterm/SITUATION_B_GRIFFIN.md); ordinary legal prefix; unchanged since Pilot-31",
+      "objective": "Defeat the Griffin (its HP reaches 0) and obtain the Magnificent Griffin Wig into the shared backpack through normal gameplay, with neither hero knocked out and both staying in the Griffin Enclosure.",
+      "inventory": {
+        "vanity_mirror": 0,
+        "enchanted_shears": 0,
+        "griffin_wig": 0
+      },
+      "start": "goddess checkpoint, scripted opening and ordinary north travel to the Griffin Enclosure, before the arrival dialogue",
+      "success": "Authoritative Griffin HP == 0 AND shared inventory griffin_wig count > 0 (evaluator griffinDefeatedAndWig).",
+      "failureBoundary": "knocked_out: a hero's health ran out during any tick. left_area: any hero outside GRIFFIN_ENCLOSURE. Both are checked before success on every tick.",
+      "heldOut": false,
+      "observationContract": "Pilot-31's: the straw-nest entry added in 4c9cf9f is omitted for this scenario only (owner decision 2026-11-06; parity test packages/agent/test/griffinObservationParity.test.ts)",
+      "replaces": {
+        "id": "griffin-unprepared-return-v1",
+        "definitionHash": "b224f75d2ec71ad61082fe0cba4617057b73cd9feb5173c52f7f32dcd86ed6f1",
+        "startHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
+        "status": "r6's declared B; kept unchanged as a separate scenario. Its baseline results stay recorded, not deleted or relabelled."
+      }
+    },
+    "C": {
+      "name": "Griffin Trial, Prepared",
+      "id": "griffin-prepared-v1",
+      "seed": 0,
+      "definitionHash": null,
+      "startHash": null,
+      "runtimeCheckpoint": "not implemented or certified",
+      "objective": "Defeat Griffin and acquire Divine Wig; neither hero knocked out",
+      "inventory": {
+        "vanity_mirror": 1,
+        "enchanted_shears": 1,
+        "griffin_wig": 0
+      },
+      "start": "Match B combat/hero conditions via legal history; preserve and disclose residual quest-history differences",
+      "success": "griffin HP == 0 AND authoritative shared griffin_wig count > 0 AND no hero knockout during episode",
+      "failureBoundary": "Any knockout or leaving enclosure before success; evaluator support pending",
+      "heldOut": true,
+      "holdoutRule": "Freeze both conditions and baseline before any C outcomes; transfer only A/B-developed guidance, no C-specific solution walkthrough"
+    }
+  },
+  "strictDefeatDecision": "Peaceful grooming/wig reward with positive Griffin HP fails B/C. No game mechanic change; broader success would require an explicit declaration amendment.",
+  "trialAllocation": {
+    "allOtherCells": "A pre/post observed; A/B heuristic primary runs observed; B/C model cells and C baseline unrun",
+    "freshModelRunsRemaining": 4,
+    "freshBaselineRunsRemaining": 1,
+    "newModelSpendCeilingUsd": 3,
+    "paidAuthorization": false,
+    "A/post-tuned/1": "Pilot-30 historical completed pilot reused once, condition metadata corrected, original run status/evidence unchanged",
+    "A/pre-tuned/1": {
+      "episode": "Pilot-28",
+      "status": "historical manual-stop failure; owner allocated after outcome",
+      "record": "docs/midterm/evaluation-abc/A-pretuned-pilot28.json"
+    }
+  },
+  "holdoutOrder": [
+    "Complete A/B tuning and freeze all policy/manual/guidance hashes",
+    "C pre-tuned",
+    "C post-tuned",
+    "C baseline"
+  ],
+  "memoryRequirement": "Partial observation: clean bounded-memory versus observation-only comparison still required/pending; pre/post guidance is not a memory ablation",
+  "implementationBoundary": "Declaration and documentation only; no scenario, gameplay, policy or controller change; no model calls, merge, push or paid-run approval",
+  "supersedes": "oath-ember-abc-2026-11-06-r6-eval-integration",
+  "correction": "Owner requested all baseline/return changes be available in oath_and_ember-eval. Preserve this checkout's one repetition per cell; imported second baseline runs are supplementary deterministic reproductions. Preserve reviewed griffin-unprepared-v1 as historical enclosure case beside active return variant.",
+  "classificationNote": "A: pre-tuned Pilot-28 (678b86c, manual stop), post-tuned Pilot-30 (040685c, success), baseline baseline-quest (success). Pilot-29 (327c34a) is supplementary evidence of the intermediate tuning round. Whether a manually stopped run qualifies as the official pre-tuned attempt depends on the professor's rules.",
+  "promptTuningRecord": "docs/midterm/A_PROMPT_TUNING.md",
+  "requirementInterpretation": "Owner's reading: 'two live trials each' = one pre-tuned and one post-tuned model run per situation, plus the baseline. Not yet confirmed by the professor.",
+  "amendmentR7": {
+    "date": "2026-11-06",
+    "by": "owner decision, recorded by the implementation agent",
+    "decision": "griffin-unprepared-v1, seed 0, is the official Situation B pre/post comparison, matching the scenario Pilot-31 (B pre-tuned) actually ran on. The scenario checkpoint, objective and gameplay are unchanged.",
+    "why": "Pilot-31 ran on griffin-unprepared-v1 while r6 had declared griffin-unprepared-return-v1. r7 makes the declaration match the run instead of counting a run on one scenario against another.",
+    "disclosure": "This amendment is post hoc: it was made after Pilot-31's outcome was known. The B post-tuned guidance was also written after reading Pilot-31 (docs/midterm/B_POST_TUNING_TRANSFER.md), so the B pre/post contrast is tuning on B.",
+    "openItem": "The B cheap-baseline cell's recorded runs are on griffin-unprepared-return-v1. A baseline run on griffin-unprepared-v1 needs owner allocation; until then the B baseline row is on a different scenario from the B model rows.",
+    "history": "docs/midterm/evaluation-abc/history/r6/ holds r6's declaration, results, matrix and suite document byte for byte."
+  },
+  "declarationSha256": "b39116b3495dcdebd3eb2f84e1815fb6c7865b3bb7f021d92f32c106144bc442"
+}

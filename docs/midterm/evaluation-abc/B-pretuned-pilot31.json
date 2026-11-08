@@ -1,0 +1,112 @@
+{
+  "about": "Situation B pre-tuned run 1 (Pilot-31). Written 2026-11-06 by the Claude Code implementation agent at the owner's instruction.",
+  "situation": "B",
+  "condition": "pre-tuned",
+  "runNumber": 1,
+  "episode": "Pilot-31",
+  "classification": "Owner decision (2026-11-06): counted as B/pre-tuned/1 under declaration r6 without revising the declaration, because the heroes were knocked out in the Griffin Enclosure before the Griffin was defeated, which fails both the enclosure-only and the return predicates.",
+  "scenarioDisclosure": {
+    "runScenarioId": "griffin-unprepared-v1",
+    "runScenarioHash": "bbbbc43532324b80179ab8fdf122fe7f6d10446a52d9ac752a0efdeae7671374",
+    "runStartHash": "1a270d7b5e456d1be0e3250d37baae26a77b5ca3099b18433a9c8e5a25fb0051",
+    "runStartTick": 439,
+    "declaredScenarioId": "griffin-unprepared-return-v1",
+    "declaredScenarioHash": "b224f75d2ec71ad61082fe0cba4617057b73cd9feb5173c52f7f32dcd86ed6f1",
+    "declaredStartHash": "45b1a6aa2c164b2c31885d6e5d514fc8d7eae190ef76d7aad4422445f38db9b8",
+    "declaredStartTick": 540,
+    "differences": [
+      "Different start state and tick.",
+      "The run's success predicate was Griffin HP 0 and the wig; r6's B also requires the goddess offering and chapter0.complete.",
+      "The run's prompt included the v1 episode briefing (5fa93722), which names the wig as the goal; the return variant's configuration has no briefing and a different tutorial setting.",
+      "The run predates the r6 adapter change that lists the drawn straw nest; its observations did not include it."
+    ],
+    "note": "Not a trial of the r6 return checkpoint. Its failure is a knockout inside the enclosure, which the return predicate also counts as failure."
+  },
+  "launch": {
+    "sourceCommit": "6df4bc0",
+    "launchedBy": "owner",
+    "command": "npm run eval:live -- --scenario griffin-unprepared-v1 --seed 0 --player model-centralized --gateway openai --model gpt-6-luna --effort medium --max-spend-usd 0.75 --paid",
+    "ledgerEntry": "pilot-31",
+    "episodeCapUsd": 0.75,
+    "wallLimitSeconds": 3600
+  },
+  "policy": {
+    "player": "model-centralized",
+    "policyId": "centralized-f0592888(openai:gpt-6-luna@medium)·batch4·tutorial-2ec2f251·briefing-5fa93722",
+    "promptHash": "cbabb78b42b1227bafff0ef9e95b62ad5e03ba725691482e2e032384097bbb6a",
+    "configHash": "1228fa1afe0551641f9d2c401c696029370500f7de3eb87493d35ad18252c8ef",
+    "manualHash": "4b091a6630dd56f236f89f8e2213a6bb7cad4a31d4851d1883f95867d92bfa86",
+    "guidance": null,
+    "definition": "Pilot-30's generic planner (CENTRAL_ID f0592888), no Griffin-specific guidance; controller limits unchanged (no wake-up on beam warnings; fight targets enemy entries only)"
+  },
+  "outcome": {
+    "status": "terminated",
+    "reason": "knocked_out",
+    "success": false,
+    "knockedOut": "sieg",
+    "griffinLabelLastSeen": "GRIFFIN 152/640 · HEADBUTT CHARGE",
+    "heroHpLastSeen": {
+      "sieg": 16,
+      "coco": 8
+    },
+    "gameTicks": 3007,
+    "gameSeconds": 50.1,
+    "wallSeconds": 1486.5,
+    "milestones": [
+      "griffin:awake",
+      "griffin:hp<=480",
+      "griffin:hp<=320",
+      "griffin:hp<=160"
+    ],
+    "endHash": "c5f341f52ddabff9eed92df87ad4b1db87a21208ae6d148f273e0cf67a309a61"
+  },
+  "metrics": {
+    "decisions": {
+      "sieg": 146,
+      "coco": 141
+    },
+    "invalidActions": {
+      "sieg": 0,
+      "coco": 1
+    },
+    "invalidActionNote": "Coco pressed advance_dialogue when it was not available, during the arrival dialogue",
+    "messages": {
+      "sieg": 0,
+      "coco": 0
+    },
+    "modelCalls": {
+      "attempted": 117,
+      "sieg": 76,
+      "coco": 41,
+      "failed": 0,
+      "timedOut": 0,
+      "unknownUsage": 0
+    },
+    "unusableReplies": 6,
+    "latencyMs": {
+      "mean": 11920,
+      "max": 24248
+    },
+    "tokens": {
+      "input": 2271965,
+      "output": 116199,
+      "cacheRead": 872204,
+      "cacheWrite": 1399410,
+      "reasoning": 90153
+    },
+    "costUsd": 0.265961,
+    "costNote": "Runner estimate at the 2026-10-28 verified prices with the 1.1 uplift, not the provider bill. Ledger pilot-31 settled.",
+    "priceSourceDate": "2026-10-28"
+  },
+  "evidence": {
+    "folder": "midterms/saadsatter/evidence/traces/pilot-31-model-centralized-griffin-unprepared-v1-seed0/",
+    "traceSha256": "5d9cfec6b6f6140855daadc69a5a8189fe5c0478f85fb7f0d333ebc2d5309afb",
+    "recordingPath": "evaluation-runs/live/griffin-unprepared-v1-seed0-model-centralized-openai-2026-11-06T20-02-49-455Z/recording.webm (local, not committed)",
+    "recordingSha256": "5e7c3588da34b7f588f79353b55471b37a06cc7b087acf24d64c0886471f7c0a"
+  },
+  "verification": [
+    "verifyTrace: 1,804 lines",
+    "replay-video.ts --check-only at 6df4bc0: start hash, 284 step results, end hash and 3,007 ticks match",
+    "prompt hash and policy id match the pre-run packet in SITUATION_B_GRIFFIN.md"
+  ]
+}

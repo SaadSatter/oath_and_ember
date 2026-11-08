@@ -1,0 +1,80 @@
+{
+  "kind": "read-only preservation verification, not an episode or replacement registration",
+  "preservationBase": "0a89094",
+  "date": "2026-11-06",
+  "filesAndLocalVideo": {
+    "files": [
+      {
+        "file": "run.json",
+        "sha256": "521a91386048f22ca2fb4c7de43a8489f65a3be548b3073f62bdfd8bb5a76603",
+        "manifestMatches": true,
+        "originalExists": true,
+        "originalMatches": true
+      },
+      {
+        "file": "live.json",
+        "sha256": "78246715cd7c6d7186119d05ec7d5019ba5243f0ecb4a120cf977087889dfc8d",
+        "manifestMatches": true,
+        "originalExists": true,
+        "originalMatches": true
+      },
+      {
+        "file": "recording.json",
+        "sha256": "3d96961c99c6506584ad550fee0a3fbd93af97864ce07bbdb3a0714c3d921e9b",
+        "manifestMatches": true,
+        "originalExists": true,
+        "originalMatches": true
+      },
+      {
+        "file": "results.json",
+        "sha256": "c84e7bea639c5621ce0150c55246a46d5d471b3720aedabf30caaa34e4f2faf2",
+        "manifestMatches": true,
+        "originalExists": true,
+        "originalMatches": true
+      },
+      {
+        "file": "results.md",
+        "sha256": "f1e363eefd57d2fa42b41ae3cf4a68aece25165f45f45edc6b9da60477a8b918",
+        "manifestMatches": true,
+        "originalExists": true,
+        "originalMatches": true
+      },
+      {
+        "file": "summary.json",
+        "sha256": "a0ff114f83a31e9feceb7ab9fde66b66b9436c3044aeda03002eed76fba9f2e9",
+        "manifestMatches": true,
+        "originalExists": true,
+        "originalMatches": true
+      },
+      {
+        "file": "trace.jsonl",
+        "sha256": "6aa22739c28c0550d571e79a0fb7182d54f967dfd6f4ace185837098252231fb",
+        "manifestMatches": true,
+        "originalExists": true,
+        "originalMatches": true
+      }
+    ],
+    "videoExists": true,
+    "videoHashMatches": true
+  },
+  "trace": {
+    "validHashChain": true,
+    "lines": 3823,
+    "calls": 167,
+    "inputTokens": 3678281,
+    "outputTokens": 171240,
+    "chargedUsdRounded6": 0.443258,
+    "startHash": "fdc498771fe89a1ac96fb1ce8bd972c38ad96e84bdeb18b195292e42e20203ca",
+    "endHash": "6deca1132fc2e6268ff841a1b912c754127d31e740538bc662b1fd31bb9b0ec0"
+  },
+  "registration": "docs/midterm/evaluation-abc/A-pretuned-pilot30.json (unchanged)",
+  "notRepeated": [
+    "video decode and overlay inspection",
+    "game replay",
+    "provider bill verification",
+    "ledger verification",
+    "prompt/config hash recomputation"
+  ],
+  "newGriffinRuns": 0,
+  "paidCalls": 0
+}

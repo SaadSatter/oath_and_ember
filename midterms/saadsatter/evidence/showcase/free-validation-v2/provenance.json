@@ -1,0 +1,13 @@
+{
+  "sourceCodeCommit": "20d9d2813dc6f0c37a6fb3d420d049addec7a98d",
+  "kinds": [
+    "free scripted baseline (not a model result)",
+    "real-damage certification probe (privileged probe-only target; not a player)",
+    "offline exact replay of original A/B/C traces"
+  ],
+  "originalUncompressedTraceSha256": {
+    "baseline": "5928cc9c9b0436b45246e4a6b93257421371f3feeaaa3cf2b626e2211b3e7230",
+    "knockout-probe": "0d1a24c80aa15264ab98acb81815135b1d760032dfcf3194772ed2c6d54900ea"
+  },
+  "note": "Trace gzip decodes to original bytes. Replay-identification summary for the probe is metadata only; knockout-check.json is its actual certification report. Canonical ledger never mutated."
+}

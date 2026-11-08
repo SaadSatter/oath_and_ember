@@ -1,0 +1,40 @@
+{
+  "kind": "replay",
+  "source": {
+    "trace": "midterms/saadsatter/evidence/traces/pilot-28-model-centralized-S2-local-seed0/trace.jsonl",
+    "sha256": "67f068f3d2297391949187f6ba6444c49bc14077f8c148e04eaa648e8b560ebb",
+    "ledgerEntry": "pilot-28",
+    "gitHash": "678b86c"
+  },
+  "scenario": "S2-local",
+  "seed": 0,
+  "player": "model-centralized",
+  "speed": 1,
+  "gitHash": "b4bedb9",
+  "passive": true,
+  "modelCalls": 0,
+  "pacing": {
+    "method": "game-clock",
+    "pacedTicks": 7515,
+    "gameSeconds": 125.25,
+    "wallSeconds": 125.25
+  },
+  "matchesTrace": true,
+  "mismatches": [],
+  "endHash": "b639c8c9547e10eab784b61838dcbab2c4ebe122dda96494ea9e6ed826aa3283",
+  "endReason": "manual_stop",
+  "episodeTicks": 7516,
+  "status": "saved",
+  "path": "/private/tmp/oath-drive-completion/A-pre-tuned-pilot28-replay/recording.webm",
+  "relativePath": "../../../../../private/tmp/oath-drive-completion/A-pre-tuned-pilot28-replay/recording.webm",
+  "bytes": 11080844,
+  "resolution": "1280x720",
+  "browser": "chromium (GPU)",
+  "readyConfirmed": true,
+  "finalConfirmed": true,
+  "startedAt": "2026-11-08T04:33:31.625Z",
+  "stoppedAt": "2026-11-08T04:35:55.129Z",
+  "wallSeconds": 143.5,
+  "error": null,
+  "warnings": []
+}

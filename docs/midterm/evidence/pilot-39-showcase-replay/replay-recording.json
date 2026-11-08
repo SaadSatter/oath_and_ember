@@ -1,0 +1,41 @@
+{
+  "kind": "replay",
+  "source": {
+    "trace": "evaluation-runs/live/showcase-maze-griffin-complete-v1-seed0-model-centralized-openai-2026-11-07T21-45-29-018Z/showcase-maze-griffin-complete-v1-seed0/trace.jsonl",
+    "sha256": "89942ff13b3cc1dce64e6b417f723734932bd1b774359cddf3d0290b12d9a6df",
+    "ledgerEntry": "pilot-39",
+    "gitHash": "39a142b"
+  },
+  "scenario": "showcase-maze-griffin-complete-v1",
+  "seed": 0,
+  "player": "model-centralized",
+  "speed": 1,
+  "gitHash": "a49d59b",
+  "passive": true,
+  "modelCalls": 0,
+  "pacing": {
+    "method": "game-clock",
+    "pacedTicks": 14243,
+    "gameSeconds": 237.38333333333333,
+    "wallSeconds": 237.38
+  },
+  "matchesTrace": true,
+  "mismatches": [],
+  "endHash": "ba1e9a0bdaf37db12320ab06a2522698faf41ba8912913bb1d2b85e83e07adc9",
+  "endReason": "token_limit",
+  "episodeTicks": 14245,
+  "status": "saved",
+  "path": "docs/midterm/evidence/pilot-39-showcase-replay/replay.webm",
+  "relativePath": "docs/midterm/evidence/pilot-39-showcase-replay/replay.webm",
+  "bytes": 30825262,
+  "resolution": "1280x720",
+  "browser": "chromium (GPU)",
+  "readyConfirmed": true,
+  "finalConfirmed": true,
+  "startedAt": "2026-11-07T23:32:30.697Z",
+  "stoppedAt": "2026-11-07T23:36:41.491Z",
+  "wallSeconds": 250.8,
+  "error": null,
+  "warnings": [],
+  "originalReplayPath": "evaluation-runs/replay/pilot-39-showcase/recording.webm (local)"
+}

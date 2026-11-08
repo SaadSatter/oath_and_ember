@@ -1,0 +1,5 @@
+Trace ../../../../../tmp/oath-showcase-shrine/final-baseline/showcase-maze-griffin-complete-v1-seed0/trace.jsonl (sha256 b8d8bda167b62447, chain verified)
+Scenario showcase-maze-griffin-complete-v1, seed 0; Sieg 1125 actions, Coco 1228 actions; recorded end: success
+Viewer (read-only): http://127.0.0.1:3049/watch
+REPLAY MATCHES THE TRACE: start hash, 2352 step results, end (success, c0e8e3551152d57d) and 10166 ticks.
+Video: /tmp/oath-showcase-shrine/replay-video/recording.webm (1280×720, 187 s)

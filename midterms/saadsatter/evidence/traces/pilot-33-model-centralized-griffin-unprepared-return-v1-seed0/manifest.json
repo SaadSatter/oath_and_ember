@@ -1,0 +1,128 @@
+{
+  "episode": "Pilot-33",
+  "case": "B",
+  "condition": "post-tuned (owner designation)",
+  "sourceCommit": "1f0ca45",
+  "files": {
+    "trace.jsonl": {
+      "sha256": "b45719346981d2acbe385789458e89b90e8c7b0f632c2ebaf5c759b2cd9a9423",
+      "bytes": 6399592,
+      "original": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T23-57-08-007Z/griffin-unprepared-return-v1-seed0/trace.jsonl"
+    },
+    "summary.json": {
+      "sha256": "2d8d8ae79ab3cc26f764476fe3cdd7be132d2a266396ac0eaa0b75e6654eab03",
+      "bytes": 4281,
+      "original": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T23-57-08-007Z/griffin-unprepared-return-v1-seed0/summary.json"
+    },
+    "live-recording.json": {
+      "sha256": "e4c431f383ff1c8842db0b1766c9f3b0aefe27a50fbb7a0ddf37126a844da7b4",
+      "bytes": 2281,
+      "original": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T23-57-08-007Z/recording.json"
+    },
+    "run.json": {
+      "sha256": "d878ecb4826a45627bd9ad362000c883d3c7e31282c88a3d1e99e7303beccee3",
+      "bytes": 997,
+      "original": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T23-57-08-007Z/run.json"
+    },
+    "results.json": {
+      "sha256": "df16160153f70c0462b44b28bca06d733fdb66c955082cc0d51feff095314757",
+      "bytes": 5764,
+      "original": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T23-57-08-007Z/results.json"
+    },
+    "results.md": {
+      "sha256": "dea09f4eb0cdad3c39cbc3560eefd5fa2d47c0432c93f2f50822c984192d4b2a",
+      "bytes": 555,
+      "original": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T23-57-08-007Z/results.md"
+    },
+    "live.json": {
+      "sha256": "43c3964e179ae327d33dc421ef0c9b11b37611632af919046ff1fe299fa97e18",
+      "bytes": 649,
+      "original": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T23-57-08-007Z/live.json"
+    },
+    "verification.json": {
+      "sha256": "b39c0eb6c18cb1cfe53251ace2971dbd5f28f9d7bb8cd3640fc20f67dd8346a9",
+      "bytes": 1027
+    },
+    "terminal-frame.png": {
+      "sha256": "42354ac8c491d67f5dfd6652a6b82b5500f0ff9d82bb408794f595e2d829eaf6",
+      "bytes": 671021
+    }
+  },
+  "video": {
+    "path": "evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T23-57-08-007Z/recording.webm",
+    "sha256": "6af860495e545d94343a8674360e4d341509421f5bab30261bd1528bb5e879c3",
+    "bytes": 188269515,
+    "committed": false,
+    "publicUrl": null,
+    "saved": "saved",
+    "recordingMetadata": "live-recording.json"
+  },
+  "verification": {
+    "traceChain": "verified by replay-video.ts --check-only",
+    "offlineReplay": "start hash, all 443 results, terminal success/end hash and 3057 ticks match at 1f0ca45; no model calls",
+    "recordCounts": {
+      "ledger_reservation": 1,
+      "reset": 1,
+      "run": 1,
+      "observation": 450,
+      "model_call_start": 251,
+      "model_call": 251,
+      "model_reply": 251,
+      "policy_note": 412,
+      "action": 445,
+      "result": 443,
+      "step": 445,
+      "reply_rejected": 5,
+      "batch_stop": 5,
+      "skipped_actions": 5,
+      "milestone": 5,
+      "invalid_action": 1,
+      "terminal": 1,
+      "outcome": 1
+    },
+    "milestones": [
+      {
+        "tick": 2831,
+        "gameSeconds": 38.183,
+        "name": "griffin-defeated"
+      },
+      {
+        "tick": 3016,
+        "gameSeconds": 41.267,
+        "name": "holding:griffin_wig"
+      },
+      {
+        "tick": 3016,
+        "gameSeconds": 41.267,
+        "name": "claimed:griffin-nest"
+      },
+      {
+        "tick": 3385,
+        "gameSeconds": 47.417,
+        "name": "offering-accepted"
+      },
+      {
+        "tick": 3597,
+        "gameSeconds": 50.95,
+        "name": "chapter0-complete"
+      }
+    ],
+    "noKnockout": true,
+    "newPaidCalls": 0,
+    "video": {
+      "fullDecodeExit": 0,
+      "durationSeconds": 2188.88,
+      "decodeErrors": [],
+      "method": "All frames decoded to a 1x1 PNG sink; visual terminal check separate.",
+      "video": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/griffin-unprepared-return-v1-seed0-model-centralized-openai-2026-11-06T23-57-08-007Z/recording.webm",
+      "decodeWarnings": [
+        "[png @ 0xc5cc34000] ignoring invalid SAR: 16/9"
+      ],
+      "warningExplanation": "PNG sink scaled to 1x1 cannot represent the original 16:9 sample aspect ratio; this sink warning is not a WebM corruption/decode failure.",
+      "terminalFrameInspected": true,
+      "terminalFrameFinding": "Full-resolution final frame visibly shows finished: success, 51.0 s game time, 251 model calls, $0.5544, and griffin-defeated / holding:griffin_wig / claimed:griffin-nest / offering-accepted / chapter0-complete.",
+      "replay": "Existing replay-video.ts --check-only: start, 443 results, end(success,6fd8c37f7fe956e4), 3057 ticks match; no model calls."
+    }
+  },
+  "note": "Original run/trace/model replies/policy notes/video unchanged. Raw model replies and policy notes are retained in the complete trace. Video local-only, >100 MiB; no upload/push authorized or performed."
+}

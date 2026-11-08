@@ -1,0 +1,14 @@
+{
+  "pilotRemaining": 2.117789,
+  "totalRemaining": 19.114868,
+  "entries": 36,
+  "openReservations": 0,
+  "locked": false,
+  "noPaidCallOrReservationInThisWorkstream": true,
+  "olderEntryObserved": {
+    "id": "pilot-36",
+    "source": "cee0713",
+    "chargedUsd": 0.012616,
+    "status": "settled"
+  }
+}

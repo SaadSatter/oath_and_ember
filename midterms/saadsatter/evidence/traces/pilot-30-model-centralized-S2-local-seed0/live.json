@@ -1,0 +1,27 @@
+{
+  "launcher": "scripts/midterm/live.ts",
+  "scenario": "S2-local",
+  "seed": 0,
+  "player": "model-centralized",
+  "gateway": "openai:gpt-6-luna@medium",
+  "paid": true,
+  "episodeCapUsd": 0.75,
+  "speed": 1,
+  "viewer": true,
+  "viewsIssued": 4,
+  "gitHash": "040685c",
+  "interrupted": false,
+  "error": null,
+  "host": {
+    "sleepPrevention": "caffeinate",
+    "suspensions": [],
+    "suspendedSeconds": 0
+  },
+  "ledger": {
+    "path": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/.git/oath-eval/spend-ledger.json",
+    "remainingAfter": {
+      "pilot": 4.030561,
+      "total": 21.02764
+    }
+  }
+}

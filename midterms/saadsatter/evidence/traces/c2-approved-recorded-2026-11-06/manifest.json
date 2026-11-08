@@ -1,0 +1,38 @@
+{
+  "midterms/saadsatter/evidence/traces/c2-approved-recorded-2026-11-06/summary.json": {
+    "bytes": 4143,
+    "sha256": "e9b0e0467987b8ed5c7daed717435a92f877fa825f5d20697616375216178591"
+  },
+  "midterms/saadsatter/evidence/traces/c2-approved-recorded-2026-11-06/terminal.png": {
+    "bytes": 762766,
+    "sha256": "be83894b32a5966fd3ba0cbd61dfd3a1897d47afb2e4b1a9d8957827b996e9ee"
+  },
+  "midterms/saadsatter/evidence/traces/c2-approved-recorded-2026-11-06/live.json": {
+    "bytes": 441,
+    "sha256": "f854dac1ae625284585968ee1305520290ef6304d052162d5401539f73330ab5"
+  },
+  "midterms/saadsatter/evidence/traces/c2-approved-recorded-2026-11-06/results.json": {
+    "bytes": 5669,
+    "sha256": "f652ce65322642857473323f18295f99c89385564c143640ed4fe91cb219a1c9"
+  },
+  "midterms/saadsatter/evidence/traces/c2-approved-recorded-2026-11-06/recording.json": {
+    "bytes": 2036,
+    "sha256": "f13d4d99c7e20e99096df3c2c86231d7e8a7f05c69a11de5149f4fd756dc0053"
+  },
+  "midterms/saadsatter/evidence/traces/c2-approved-recorded-2026-11-06/trace.jsonl": {
+    "bytes": 7428418,
+    "sha256": "ef3fd3301b7e8789d42ecdb74ec272644065a898474560810ef40a5b6642d2d3"
+  },
+  "midterms/saadsatter/evidence/traces/c2-approved-recorded-2026-11-06/verification.json": {
+    "bytes": 505,
+    "sha256": "4be31e981c0ebb91835ce128dfeb5e2febdaef16bf8684521d9988daf231cf06"
+  },
+  "midterms/saadsatter/evidence/traces/c2-approved-recorded-2026-11-06/run.json": {
+    "bytes": 324,
+    "sha256": "fab627ac1ac735ca29d9619d2a12ca16129f480650cd90bb459e11bae48d4a26"
+  },
+  "evaluation-runs/live/c2-approved-recorded-2026-11-06/recording.webm": {
+    "bytes": 13804248,
+    "sha256": "898fcdc099c96a21224a300f75371cd3ef96f1e73de4947af226cd5096028466"
+  }
+}

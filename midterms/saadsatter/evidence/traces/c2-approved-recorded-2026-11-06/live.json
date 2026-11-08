@@ -1,0 +1,21 @@
+{
+  "launcher": "scripts/midterm/live.ts",
+  "scenario": "griffin-prepared-return-v1",
+  "seed": 0,
+  "player": "baseline-griffin-heuristic",
+  "gateway": null,
+  "paid": false,
+  "episodeCapUsd": null,
+  "speed": 1,
+  "viewer": true,
+  "viewsIssued": 2,
+  "gitHash": "19e5d87",
+  "interrupted": false,
+  "error": null,
+  "host": {
+    "sleepPrevention": "caffeinate",
+    "suspensions": [],
+    "suspendedSeconds": 0
+  },
+  "ledger": null
+}

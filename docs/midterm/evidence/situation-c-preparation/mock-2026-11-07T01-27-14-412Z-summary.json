@@ -1,0 +1,141 @@
+{
+  "situation": "griffin-prepared-return-v1",
+  "suiteRevision": 2,
+  "scenario": {
+    "preset": "griffin-prepared-return-v1",
+    "title": "Griffin Trial Prepared, return offering (C)",
+    "goal": "Situation C: holding the Vanity Mirror and Enchanted Shears, obtain the Griffin's wig (by defeat or by the nest tools), return it to the goddess and reach chapter0.complete without a hero knockout.",
+    "revision": 1,
+    "tutorialId": "2ec2f251",
+    "briefing": true
+  },
+  "seed": 0,
+  "player": "model-centralized",
+  "policies": {
+    "sieg": "centralized-f0592888(mock:random-legal@0)·batch4·tutorial-2ec2f251·briefing-63b9fbdc",
+    "coco": "centralized-f0592888(mock:random-legal@0)·batch4·tutorial-2ec2f251·briefing-63b9fbdc"
+  },
+  "gateway": "mock:random-legal@0",
+  "modelIds": [
+    "mock"
+  ],
+  "gitHash": "9f4ac38+dirty",
+  "startHash": "28777a85eebd55998461e7bbfff9ca36fd0bb0d68ba5d9888bc676acf84414d7",
+  "startTick": 540,
+  "prefix": "B-return start, then Mirror and Shears added to the backpack (owner-approved start fixture)",
+  "status": "terminated",
+  "reason": "knocked_out",
+  "success": false,
+  "gameTicks": 2620,
+  "gameSeconds": 43.7,
+  "wallSeconds": 0.4,
+  "decisions": {
+    "sieg": 85,
+    "coco": 90
+  },
+  "actions": {
+    "sieg": {
+      "defend": 3,
+      "attack": 3,
+      "wait": 49,
+      "move": 30
+    },
+    "coco": {
+      "move": 26,
+      "wait": 61,
+      "defend": 1,
+      "ability": 1,
+      "interact": 1
+    }
+  },
+  "attempt": 1,
+  "endHash": "45f8e6ffec9449de8e228e56ccf2b93c84e725b6dc2bb272c57abb2f5007b60f",
+  "limits": {
+    "maxTicks": 18000,
+    "maxDecisionsPerPlayer": 1600,
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000
+  },
+  "modelLimits": {
+    "maxModelCallsPerPlayer": 400,
+    "maxTokensPerPlayer": 4000000,
+    "maxSpendUsd": 0.75,
+    "callTimeoutMs": 30000
+  },
+  "invalidActions": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "metrics": {
+    "sieg": {
+      "modelCalls": 11,
+      "modelDecisions": 11,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 14,
+      "submittedActions": 85,
+      "executedActions": 85,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 1
+    },
+    "coco": {
+      "modelCalls": 12,
+      "modelDecisions": 12,
+      "parseFailures": 0,
+      "recoveredReplies": 0,
+      "proposedActions": 15,
+      "submittedActions": 90,
+      "executedActions": 90,
+      "staleSubmissions": 0,
+      "gameplayRejections": 0,
+      "skippedActions": 0
+    }
+  },
+  "metricsVersion": 2,
+  "messages": {
+    "sieg": 0,
+    "coco": 0
+  },
+  "batchStops": 1,
+  "modelCalls": {
+    "attempted": 23,
+    "failed": 0,
+    "timedOut": 0,
+    "unknownUsage": 0
+  },
+  "latencyMs": {
+    "mean": 0,
+    "max": 0
+  },
+  "tokens": {
+    "input": 123695,
+    "output": 630,
+    "cacheRead": 0,
+    "cacheWrite": 0
+  },
+  "spendUsd": {
+    "known": 0,
+    "charged": 0
+  },
+  "priceSource": "mock: no cost, no network",
+  "ledgerEntry": "pilot-1",
+  "episodeCapUsd": 0.75,
+  "wallLimitSeconds": 3600,
+  "launch": {
+    "launcher": "scripts/midterm/live.ts",
+    "speed": null,
+    "viewer": false
+  },
+  "finalClaim": null,
+  "evaluation": {
+    "label": "C",
+    "definitionHash": "d563c6eb948063a6d4e0c854fa5eed3ef957b592530b67c806df71ca1ab3ba11"
+  },
+  "promptHashes": {
+    "sieg": "a6fa78a05e368b6f128844eff22b4b891d4892a772a27fba9c6fac066fab079e",
+    "coco": "a6fa78a05e368b6f128844eff22b4b891d4892a772a27fba9c6fac066fab079e"
+  },
+  "configHash": "c4a17654eee1f8f64c0050cfd070d9fc99a21962870d1d35f4e146d9f39cfae8",
+  "trace": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember-eval/evaluation-runs/live/griffin-prepared-return-v1-seed0-model-centralized-mock-2026-11-07T01-27-14-412Z/griffin-prepared-return-v1-seed0/trace.jsonl"
+}

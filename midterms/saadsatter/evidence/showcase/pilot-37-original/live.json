@@ -1,0 +1,27 @@
+{
+  "launcher": "scripts/midterm/live.ts",
+  "scenario": "showcase-maze-griffin-complete-v1",
+  "seed": 0,
+  "player": "model-centralized",
+  "gateway": "openai:gpt-6-luna@medium",
+  "paid": true,
+  "episodeCapUsd": 2,
+  "speed": 1,
+  "viewer": true,
+  "viewsIssued": 4,
+  "gitHash": "14646d3",
+  "interrupted": true,
+  "error": null,
+  "host": {
+    "sleepPrevention": "caffeinate",
+    "suspensions": [],
+    "suspendedSeconds": 0
+  },
+  "ledger": {
+    "path": "/Users/saadsatter/Classes/AI_Pract_Building_Games/oath_and_ember/.git/oath-eval/spend-ledger.json",
+    "remainingAfter": {
+      "pilot": 1.667402,
+      "total": 18.664481
+    }
+  }
+}
