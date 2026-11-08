@@ -131,10 +131,8 @@ Development tools are listed in `package.json`.
 | Other sound clips (rubberduck, artisticdude, AntumDeluge, Almitory, SketchMan3, HaelDB, EZduzziteh) | CC0, per clip | `apps/client/public/assets/audio/REVISION_2026-10-21.json`, [GAME_AUDIO_INTEGRATION.md](docs/audio/GAME_AUDIO_INTEGRATION.md) |
 | LPC house interiors | CC BY-SA 3.0: credit the authors; derivatives use the same licence | `apps/client/public/assets/environment/lpc-interiors/LICENSE-CC-BY-SA-3.0.txt`, `CREDITS-original.txt` |
 | Press Start 2P font | SIL Open Font License 1.1 | `apps/client/public/assets/fonts/PressStart2P-OFL.txt` |
-| CraftPix packs (forest trees, map, paths, ruins, buildings, an example swordsman) | CraftPix file licence (https://craftpix.net/file-licenses/) | `apps/client/public/assets/environment/trees/License.txt`, `Images/Sprites/**/License.txt` |
-| Generated and hand-edited sprites (heroes, enemies, Griffin, items, maps) | Produced for this project; per-asset records | [SPRITE_ASSETS.md](docs/SPRITE_ASSETS.md), [ENVIRONMENT_ASSET_PROVENANCE.json](docs/ENVIRONMENT_ASSET_PROVENANCE.json), [COMBAT_ASSET_PROVENANCE.json](docs/COMBAT_ASSET_PROVENANCE.json), `Images/**/provenance*.json`, `Images/**/PROVENANCE.md` |
-
-**Open item:** the terms of the tool used for the generated sprites have not been independently confirmed here; the per-asset records above list how each was made.
+| CraftPix packs (forest trees, map, paths, ruins, buildings, an example swordsman) | Free downloads under the [CraftPix file licence](https://craftpix.net/file-licenses/), section 2, "Freebie products": use in personal and commercial projects is permitted (2.1.1); the assets may be modified and included in game projects (2.1.2); games with the assets may be sold and distributed (2.1.3). No attribution is required; CraftPix is credited here anyway | `apps/client/public/assets/environment/trees/License.txt`, `Images/Sprites/**/License.txt` |
+| Generated and hand-edited sprites (heroes, enemies, Griffin, items, maps) | The developer's own work, made for this project (owner statement); per-asset records | [SPRITE_ASSETS.md](docs/SPRITE_ASSETS.md), [ENVIRONMENT_ASSET_PROVENANCE.json](docs/ENVIRONMENT_ASSET_PROVENANCE.json), [COMBAT_ASSET_PROVENANCE.json](docs/COMBAT_ASSET_PROVENANCE.json), `Images/**/provenance*.json`, `Images/**/PROVENANCE.md` |
 
 ## Repository and version
 
