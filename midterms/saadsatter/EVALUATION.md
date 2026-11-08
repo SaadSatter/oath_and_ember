@@ -131,11 +131,22 @@ Confirmed trace milestones: Griffin defeated at 38.183 game-s, wig acquired at 4
 
 No new paid call, gameplay/policy change or scenario modification occurred during preservation. C remains unrun and held out.
 
-## Verification and limitations
+## Verification
 
 Typecheck and build pass in `oath_and_ember-eval`. Integration targeted suite: **78/78 tests in six files**, covering both heuristic policies, the live Griffin CLI, native reviewed Griffin scenario, frozen A and scripted behavior pins. Held-out refusal remains tested. No full-suite test run was launched concurrently with the other workstream. No paid calls, push or merge occurred.
 
-C was held out until C1 ran. C3's hint was added afterwards at the owner's request, so C is not a clean holdout for C3 (see "Situation C results"). Model memory comparison, remaining model/C trials, fresh green full CI, a short normal-speed submission recording, human playtest and student-authored reflection remain separate requirements; no completed course hand-in is claimed. Both heuristics are incomplete and development-informed; success on these cases does not prove general puzzle/combat competence.
+## Limitations
+
+The evaluation revealed several limitations in using LLM-driven agents to play a cooperative, partially observable game.
+
+**Multi-agent coordination and complexity.** Although Coco and Sieg have complementary abilities, coordinating two heroes introduced substantial complexity. The agents sometimes issued conflicting instructions, repeated completed tasks, or failed to communicate important discoveries. Their separate positions and observations also made it difficult to maintain a consistent understanding of the world. Running two model-driven controllers increased token consumption substantially, approaching twice the cost of a single-controller setup when both required comparable model calls. This made the system slower and more expensive without guaranteeing better cooperation.
+
+**Spatial reasoning and navigation.** The agents struggled to navigate the game's interconnected maps, particularly when obstacles, narrow passages, or previously explored areas were involved. They sometimes revisited locations, overlooked accessible routes, or continued attempting actions that were no longer useful. Limited visibility and imperfect spatial memory made long-horizon exploration difficult, even when the agents understood the immediate objective.
+
+**Dependence on prompt tuning and situational guidance.** Early evaluations demonstrated that general gameplay instructions were often insufficient for completing multi-step objectives reliably. Performance improved after refining prompts and providing focused, situation-specific hints about objectives, relevant abilities, and task priorities. These hints did not provide exact solutions, coordinates, or action sequences, but they helped agents concentrate on relevant information and avoid unproductive exploration. Consequently, the results reflect the effectiveness of the complete prompted agent system rather than the model's unaided ability to discover and solve every puzzle.
+
+Overall, these limitations suggest that reliable LLM gameplay requires more than knowledge of the game's rules. Effective cooperation depends on maintaining spatial memory, communicating progress, recovering from unsuccessful actions, and providing sufficiently focused objectives while preserving the challenge of solving the game itself.
+
 
 ### Excluded C exploratory baseline (unrun)
 
@@ -177,7 +188,7 @@ Paid C total: **$0.873771** of the $1.50 combined cap (ledger: pilot stage $2.13
 
 **How to read C:**
 - **Both model runs succeeded without fighting.** They delivered the prepared tools, the Griffin groomed itself, and they collected the wig and returned it. The baseline won by combat and demonstrates no use of the prepared items.
-- **C3 is outcome-informed, C-specific supplementary tuning**, not an independent B-to-C transfer test. The owner added the inventory/nest hint after C1's peaceful success was known (r11). C1 had already found the peaceful route without it.
+- **C3 is outcome-informed, C-specific supplementary tuning**, not an independent B-to-C transfer test. The owner added the inventory hint after C1's peaceful success was known (r11). C1 had already found the peaceful route without it.
 - **The C1 to C3 difference is one guidance block** (the frozen v4 text plus the hint). C3 was faster (56.3 vs 133.3 game-s), cheaper and used fewer calls. With one run per cell, this cannot be attributed to the hint, to v4, or to run-to-run model variation. **It is not a statistical result.**
 - **B vs C is not an inventory-only contrast.** The success rules differ (B requires a defeat), as does the prompt framing (B-return uses a task line; C uses the tutorial and a briefing).
 
@@ -186,4 +197,3 @@ Paid C total: **$0.873771** of the $1.50 combined cap (ledger: pilot stage $2.13
 - **C3 configuration:** C3's configuration changed after C1 (r11). The r10 C3 (v4 only, prompt `a0c6939a…`) was never run.
 
 Results registry: [declared-results.json](../../docs/midterm/evaluation-abc/declared-results.json). Only the C rows were filled; the A/B rows are unchanged, and the previous file is archived in `history/r11/`.
-
